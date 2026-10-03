@@ -1,5 +1,25 @@
 # Execution ledger
 
+## v0.2.0 extension
+
+User authorized full named typology coverage after v0.1.0. Branch
+research/full-typology-coverage preserves the original frozen snapshot.
+ADR 0002 records schema and source-family decisions. The lock expands to 160
+files at unchanged revisions. All 17 commercial types cover 83 template/type
+combinations, with no source-tagged space exclusions. Forty-one residential
+source configurations span seven classes; 524 unmatched option instances and six
+thermostat base overlaps are retained explicitly. Refrigeration evidence has
+569 conditional records. Medium Office pilot remains validated.
+
+Verification so far: 38 tests passed; 33,173 independent source-input checks
+passed; offline byte reproduction passed; named coverage reports DOE 16/16,
+PNNL 16/16 and residential 7/7. Independent review findings were fixed by regression tests; fresh retrieval
+and byte reproduction passed. v0.2.0 frozen at e9dc939, generated from 4eaa05d. Both snapshots pass frozen
+verification; a fresh Git checkout reproduces all canonical bytes and passes
+source/coverage checks. Local version tag accompanies final verification commit.
+
+## v0.1.0 historical ledger
+
 Plan: `docs/superpowers/plans/2026-10-02-atlas.md`.
 
 - Governing brief read in full; found under `docs/` rather than repository root.

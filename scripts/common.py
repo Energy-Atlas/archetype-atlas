@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 UNITS = {
     'people_per_m2': 'person/m2', 'lighting_W_m2': 'W/m2',
     'additional_lighting_W_m2': 'W/m2', 'electric_equipment_W_m2': 'W/m2',
@@ -14,8 +14,17 @@ UNITS = {
     'shgc': 'dimensionless', 'visible_transmittance': 'dimensionless',
     'area_fraction': 'dimensionless', 'multiplicity': 'count',
 }
-TABLES = ['programs', 'schedules', 'envelope_components', 'systems', 'mappings',
+LEGACY_TABLES = ['programs', 'schedules', 'envelope_components', 'systems', 'mappings',
           'efficiency_rules', 'residential_options', 'commercial_options', 'provenance', 'source_files']
+TABLES = LEGACY_TABLES + ['residential_archetypes', 'specialized_rules']
+
+
+def table_names(version):
+    if version == '0.1.0':
+        return LEGACY_TABLES
+    if version == VERSION:
+        return TABLES
+    raise ValueError(f'Unsupported schema version: {version}')
 
 
 def load_json(path):
@@ -26,7 +35,7 @@ def load_atlas(path):
     path = Path(path)
     if path.is_dir():
         data = load_json(path/'metadata.json')
-        data.update({t: load_json(path/(t+'.json')) for t in TABLES})
+        data.update({t: load_json(path/(t+'.json')) for t in table_names(data['schema_version'])})
         return data
     return load_json(path)
 

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-from scripts.common import ROOT, TABLES, UNITS, load_json, load_atlas
+from scripts.common import ROOT, TABLES, UNITS, load_json, load_atlas, table_names
 from scripts.semantics import DAY_TYPES, profile
 
 
@@ -14,16 +14,17 @@ def validate_atlas(data, contract_root=ROOT):
     errors = []
     contract_root = Path(contract_root)
     schema = load_json(contract_root/'schemas/atlas.schema.json')
+    tables = table_names(data.get('schema_version'))
     Draft202012Validator.check_schema(schema)
     for e in Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(data):
         errors.append(f'schema /{"/".join(map(str, e.absolute_path))}: {e.message}')
     if data.get('units') != UNITS:
         errors.append('units: canonical SI unit map does not match contract')
     # Structural errors must not prevent useful cross-table diagnostics.
-    if any(not isinstance(data.get(t), list) for t in TABLES):
+    if any(not isinstance(data.get(t), list) for t in tables):
         return errors
     indices = {}
-    for table in TABLES:
+    for table in tables:
         index = {}
         for row in data[table]:
             if not isinstance(row, dict) or 'id' not in row:
@@ -34,6 +35,8 @@ def validate_atlas(data, contract_root=ROOT):
         indices[table] = index
     expected = load_json(contract_root/'sources/selection.json')
     templates = {t['template'] for t in expected['templates']}
+    if expected.get('residential_template'):
+        templates.add(expected['residential_template'])
     buildings = set(expected['buildings'])
     if set(data.get('templates', [])) != templates or set(data.get('building_types', [])) != buildings:
         errors.append('template/building vocabulary differs from pinned selection')
@@ -45,13 +48,15 @@ def validate_atlas(data, contract_root=ROOT):
     locked_files = {(r['source_id'], r['path']): r for r in lock['files']}
     if len(data['source_files']) != len(locked_files):
         errors.append('source lock: file count mismatch')
+    if {(r.get('source_id'), r.get('path')) for r in data['source_files']} != set(locked_files):
+        errors.append('source lock: file key coverage mismatch')
     for row in data['source_files']:
         entry = locked_files.get((row.get('source_id'), row.get('path')))
         source = sources.get(row.get('source_id'))
         if not entry or not source or any(row.get(k) != v for k, v in entry.items()) or any(
                 row.get(k) != source[k] for k in ['version', 'project', 'repository', 'license_path']):
             errors.append(f'source lock: inconsistent metadata for {row.get("id")}')
-    for table in TABLES:
+    for table in tables:
         for row in data[table]:
             if not isinstance(row, dict):
                 continue
@@ -92,6 +97,31 @@ def validate_atlas(data, contract_root=ROOT):
         for ref in [p, s]:
             if ref and any(row.get(k) != ref.get(k) for k in ['building_type', 'template']):
                 errors.append(f'mapping cross-building/template assignment {row.get("id")}')
+    for row in data.get('residential_archetypes', []):
+        selected = row.get('selected_options', {})
+        expected_ids = {o['id'] for o in data['residential_options'] if selected.get(o['parameter']) == o['option']}
+        if set(row.get('option_ids', [])) != expected_ids:
+            errors.append(f'residential option coverage incomplete {row.get("id")}')
+        resolved = {(o['parameter'], o['option']) for oid, o in indices['residential_options'].items() if oid in expected_ids}
+        unknown = [(o['parameter'], o['option']) for o in row.get('unresolved_options', [])]
+        noargs = [(o['parameter'], o['option']) for o in row.get('non_argument_options', [])]
+        if len(set(unknown+noargs)) != len(unknown+noargs) or set(unknown+noargs) != set(selected.items())-resolved:
+            errors.append(f'residential option partition incomplete {row.get("id")}')
+        for oid in row.get('option_ids', []):
+            option = indices['residential_options'].get(oid)
+            if not option or row.get('selected_options', {}).get(option['parameter']) != option['option']:
+                errors.append(f'residential option reference mismatch {row.get("id")}/{oid}')
+        overlap = row.get('heating_base_C', -100) > row.get('cooling_base_C', 100)
+        if row.get('thermostat_base_overlap') != overlap:
+            errors.append(f'residential thermostat base overlap flag mismatch {row.get("id")}')
+    for row in data.get('specialized_rules', []):
+        numeric = {k for k, v in row.get('source_attributes', {}).items()
+                   if isinstance(v, (int, float)) and not isinstance(v, bool)}
+        if set(row.get('unit_interpretations', {})) != numeric:
+            errors.append(f'specialized numeric unit interpretation coverage {row.get("id")}')
+        for entry in row.get('unit_interpretations', {}).values():
+            if entry.get('generator_source_file_id') not in indices['source_files']:
+                errors.append(f'orphan specialized unit interpretation source {row.get("id")}')
     for s in data['schedules']:
         kind = s.get('schedule_type')
         expected_unit = {'fraction': 'dimensionless', 'temperature': 'C', 'activity': 'W/person'}.get(kind)

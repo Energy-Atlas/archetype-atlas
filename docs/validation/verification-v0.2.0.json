@@ -1,0 +1,43 @@
+{
+  "release": "0.2.0",
+  "verification_date": "2026-10-02",
+  "environment": "Windows / Python 3.14; pinned requirements",
+  "tests": {
+    "command": "python -m unittest discover -s tests -v",
+    "passed": 38,
+    "failed": 0
+  },
+  "source_files_verified": 160,
+  "source_input_comparison": {
+    "comparison_type": "locked_source_inputs_and_hvac_map_membership",
+    "simulation_or_external_scorecard_validated": false,
+    "checks": 33173,
+    "errors": []
+  },
+  "coverage": {
+    "doe_reference": "16/16",
+    "pnnl_commercial": "16/16",
+    "residential_classes": "7/7",
+    "commercial_combinations": 83,
+    "residential_configurations": 41
+  },
+  "offline_byte_reproduction": true,
+  "fresh_download_byte_reproduction": true,
+  "older_v0_1_0_integrity_and_frozen_validation": true,
+  "review": {
+    "independent_read_only_review": true,
+    "critical": 0,
+    "important": 4,
+    "important_fixed_by_regressions": 4,
+    "deferred_findings": 0,
+    "second_reviewer_pass": false
+  },
+  "scientific_limits": {
+    "simulation_ready": false,
+    "openstudio_energyplus_executed": false,
+    "direct_doe_pnnl_idf_equivalence": false,
+    "remote_ci_executed": false,
+    "residential_unmatched_option_instances": 524,
+    "residential_thermostat_base_overlaps": 6
+  }
+}

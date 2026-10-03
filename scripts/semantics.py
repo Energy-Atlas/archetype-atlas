@@ -16,7 +16,7 @@ FACTORS = {
     'dimensionless': 1,
 }
 DAY_TYPES = {'Default', 'Wkdy', 'Wknd', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri',
-             'Sat', 'Sun', 'Hol', 'WntrDsn', 'SmrDsn'}
+             'Sat', 'Sun', 'Hol', 'WntrDsn', 'SmrDsn', 'DummySmrDsn'}
 
 
 def convert(value, unit):
@@ -43,6 +43,11 @@ def profile(rules, day_type, month_day):
         tokens = set(r['day_types'].split('|'))
         if not tokens <= DAY_TYPES:
             raise ValueError('Unsupported schedule day types')
+        # Standards.Model.rb uses include?('SmrDsn'), so the source school
+        # DummySmrDsn label sets the summer design profile. Retain the original
+        # label in canonical evidence, but match the generator during inspection.
+        if 'DummySmrDsn' in tokens:
+            tokens.add('SmrDsn')
         if not applies:
             continue
         values = r['values'] * 24 if len(r['values']) == 1 else r['values']

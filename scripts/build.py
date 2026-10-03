@@ -54,7 +54,7 @@ class Builder:
         self.entries = {(e['source_id'], e['path']): e for e in self.lock['files']}
         self.sources = {s['source_id']: s for s in self.lock['sources']}
         self.data = {'schema_version': VERSION, 'units': UNITS.copy(),
-                     'templates': [t['template'] for t in self.selection['templates']],
+                     'templates': [t['template'] for t in self.selection['templates']] + [self.selection['residential_template']],
                      'building_types': self.selection['buildings'],
                      'climate_zone_sets': [], 'scope': 'source_inputs_with_explicit_gaps'}
         self.data.update({t: [] for t in TABLES})
@@ -289,13 +289,46 @@ class Builder:
                              'Capacity-dependent rules, not installed performance. Capacity units follow '
                              'standards equipment lookup (Btu/h); ratings retain metric-specific meaning.')
 
+    def specialized(self, t):
+        from scripts.specialized import unit_interpretations
+        for path in t.get('specialized_files', []):
+            for kind, rows in self.read('openstudio-standards', path).items():
+                for i, raw in enumerate(rows):
+                    record = {'id': stable_id('specialized', t['template'], path, i),
+                              'template': t['template'], 'source_family': t['family'],
+                              'rule_type': kind, 'source_attributes': raw,
+                              'unit_interpretations': unit_interpretations(raw, self.raw_root)}
+                    self.add('specialized_rules', record, 'openstudio-standards', path, f'/{kind}/{i}', raw,
+                             {'source_attributes': ('source row', 'field-specific upstream units',
+                                                    'retain specialized source rules; see unit_interpretations'),
+                              'unit_interpretations': ('source row', 'generator-declared conversion input units; source intent unverified',
+                                                       'map numeric fields to locked generator declarations; unknown units stay null')},
+                             'Conditional refrigeration evidence, not installed loads or selected equipment. '
+                             'Capacity curves, size categories and schedules require generator resolution. '
+                             'Raw numeric units remain source-specific; no guesses applied.')
+        for path in t.get('generator_files', []):
+            text = (self.raw_root/'openstudio-standards'/path).read_text(encoding='utf-8')
+            raw = {'source_path': path, 'generator_source': text}
+            record = {'id': stable_id('specialized_generator', t['template'], path),
+                      'template': t['template'], 'source_family': t['family'],
+                      'rule_type': 'prototype_generator_source', 'source_attributes': raw, 'unit_interpretations': {}}
+            self.add('specialized_rules', record, 'openstudio-standards', path, 'whole file', raw,
+                     {'source_attributes': ('source row', 'units declared within generator statements',
+                                            'retain complete source text as inert evidence; do not execute')},
+                     'Generator evidence supplies conditional process-load overrides, case assignment '
+                     'and unit interpretation. No instructions or code in this evidence are executed. '
+                     'Refrigeration generator treats capacity as Btu/h, temperatures as F, area as ft2 '
+                     'and U-values as Btu/h-ft2-R; upstream numeric intent is not independently verified.')
+
     def residential(self):
+        from scripts.residential import selected_pairs
+        selected = selected_pairs(self)
         path = 'resources/options_lookup.tsv'
         wanted = {'Heating Setpoint', 'Cooling Setpoint', 'Occupants', 'Infiltration',
                   'Plug Loads', 'Lighting', 'HVAC Heating Efficiency', 'Geometry Building Type RECS'}
         text = (self.raw_root/'resstock'/path).read_text(encoding='utf-8')
         for line_number, cols, context_line in option_rows(text):
-            if cols[0] not in wanted or len(cols) < 3 or not cols[2]:
+            if (cols[0] not in wanted and (cols[0], cols[1]) not in selected) or len(cols) < 3 or not cols[2]:
                 continue
             args = dict(c.split('=', 1) for c in cols[3:] if '=' in c)
             # Rows without measure arguments cannot supply deterministic semantics.
@@ -358,8 +391,11 @@ def build_atlas(pilot=False, raw_root=ROOT/'data/raw'):
                 b.model(t, model)
         b.envelope(t)
         b.efficiencies(t)
+        b.specialized(t)
     if not pilot:
         b.residential()
+        from scripts.residential import add_configurations
+        add_configurations(b)
         b.commercial()
     b.data['coverage_gaps'] = b.warnings
     for table in TABLES:

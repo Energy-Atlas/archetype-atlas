@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.0 — 2026-10-02
+
+Complete named typology coverage: DOE 16/16 and PNNL 16/16 through pinned
+Standards inputs, 83 selected commercial combinations and 41 residential source
+configurations across seven classes. Schema 0.2.0 adds residential_archetypes
+and specialized_rules, including 569 conditional refrigeration/generator records.
+The lock expands to 160 files without changing revisions. Exact option links,
+unmatched selections, thermostat base overlaps and runtime gaps are explicit.
+The frozen v0.1.0 snapshot remains unchanged and independently verifiable.
+
 ## v0.1.0 — 2026-10-02
 
 First normalized source-input research release. Schema 0.1.0 has deterministic

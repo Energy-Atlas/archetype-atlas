@@ -1,0 +1,527 @@
+"""Generate a static research catalogue from verified, immutable atlas releases."""
+import argparse
+from collections import defaultdict
+import csv
+import hashlib
+import html
+import io
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import shutil
+import tempfile
+import zipfile
+
+from scripts.common import ROOT, dump_json, load_atlas, load_json, stable_id, table_names
+from scripts.release import verify_release
+
+RECORD_TABLES = [t for t in table_names('0.2.0') if t not in {'provenance', 'source_files'}]
+AXES = {'building': 'Building type', 'program': 'Program', 'template': 'Vintage / template',
+        'climate': 'Climate context', 'system': 'System', 'source': 'Source / family',
+        'status': 'Data status', 'kind': 'Record kind', 'stock_vintage': 'Residential stock vintage'}
+FAMILIES = {'code_prototype_rules': 'Code / prototype rules (Standards-derived)',
+            'existing_stock_benchmark_rules': 'Existing-stock benchmark rules (Standards-derived)',
+            'existing_stock_source_fixture': 'Existing-stock source fixture (ResStock)'}
+LABELS = {'MediumOffice': 'Medium Office', 'LargeOffice': 'Large Office',
+          'SmallOffice': 'Small Office', 'RetailStandalone': 'Standalone Retail',
+          'RetailStripmall': 'Strip Mall', 'SuperMarket': 'Supermarket',
+          'SingleFamilyDetached': 'Single-family Detached', 'SingleFamilyAttached': 'Single-family Attached',
+          'MultiFamily2To4': 'Multifamily, 2–4 Units',
+          'MultiFamily5PlusLowRise': 'Multifamily, 5+ Units, Low Rise',
+          'MidriseApartment': 'Midrise Apartment', 'HighriseApartment': 'Highrise Apartment',
+          'ManufacturedHome': 'Manufactured / Mobile Home'}
+
+
+def friendly(value):
+    return LABELS.get(value, re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', value).replace('_', ' '))
+
+
+def display_value(value):
+    """Escape all source strings; retain null distinctly from numerical zero."""
+    if value is None:
+        return 'Unknown / not reported'
+    if isinstance(value, (dict, list)):
+        return '<pre>' + html.escape(json.dumps(value, indent=2, ensure_ascii=False)) + '</pre>'
+    if isinstance(value, bool):
+        return 'Yes' if value else 'No'
+    return html.escape(str(value), quote=True).replace('|', '&#124;')
+
+
+def read_release(path):
+    path = Path(path)
+    errors = verify_release(path)
+    if errors:
+        raise ValueError('Release integrity / validation failure: ' + '; '.join(errors[:8]))
+    manifest = load_json(path/'manifest.json')
+    version = 'v' + manifest['release_version']
+    if not re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', version):
+        raise ValueError('Unsupported release version')
+    return load_atlas(path), manifest, version
+
+
+def title(table, row):
+    if table == 'buildings':
+        return friendly(row['building_type']) + ' · ' + row['template']
+    if table == 'programs':
+        return friendly(row['building_type']) + ' / ' + row['program'] + ' · ' + row['template']
+    if table == 'schedules':
+        return row['source_name']
+    if table == 'residential_archetypes':
+        return friendly(row['building_type']) + ' · ' + row['variant']
+    if table == 'envelope_components':
+        return ' / '.join(row[k] for k in ['surface_type', 'construction_type', 'building_category', 'climate_zone_set', 'template'])
+    if table == 'systems':
+        return friendly(row['building_type']) + ' / ' + row['system_type'] + ' · ' + row['template']
+    if table in {'commercial_options', 'residential_options'}:
+        return row['parameter'] + ' / ' + row['option']
+    if table == 'efficiency_rules':
+        return row['equipment_table'] + ' · ' + row['template'] + ' · ' + row['id'][-6:]
+    if table == 'specialized_rules':
+        return row['rule_type'] + ' · ' + row['template'] + ' · ' + row['id'][-6:]
+    return friendly(row.get('building_type', table)) + ' · ' + row['id']
+
+
+def overview_rows(data):
+    groups = sorted({(r['building_type'], r['template']) for r in data['programs']})
+    return [{'id': stable_id('building', b, t), 'building_type': b, 'template': t,
+             'source_family': next(r['source_family'] for r in data['programs']
+                                   if r['building_type'] == b and r['template'] == t)}
+            for b, t in groups]
+
+
+def catalogue_entries(data, version):
+    """Index only source-defined records; never expand programs across climates."""
+    entries = []
+    tables = {'buildings': overview_rows(data), **{t: data.get(t, []) for t in RECORD_TABLES}}
+    prov = {r['id']: r for r in data['provenance']}
+    sources = {r['id']: r for r in data['source_files']}
+    uses = defaultdict(lambda: {'building': set(), 'template': set(), 'contexts': set()})
+    for t in ['programs', 'systems']:
+        for r in data[t]:
+            for k, v in r.items():
+                if k.endswith('_schedule_id') and v:
+                    uses[v]['building'].add(r['building_type'])
+                    uses[v]['template'].add(r['template'])
+                    uses[v]['contexts'].add((r['building_type'], r['template']))
+    for t, rows in tables.items():
+        for r in rows:
+            context = r.get('source_context', {})
+            src = sources.get(prov.get(r.get('provenance_id'), {}).get('source_file_id'), {})
+            family = r.get('source_family')
+            if not family and r.get('template') and t not in {'residential_archetypes'}:
+                family = 'existing_stock_benchmark_rules' if r['template'].startswith('DOE Ref') else 'code_prototype_rules'
+            source = src.get('project', 'openstudio-standards' if t == 'buildings' else 'Unknown source')
+            if family:
+                source += ' · ' + FAMILIES.get(family, family)
+            if t == 'envelope_components':
+                climate, basis = r['climate_zone_set'], 'Conditional envelope applicability'
+            elif context.get('ASHRAE IECC Climate Zone 2004'):
+                climate = context['ASHRAE IECC Climate Zone 2004']
+                basis = 'Reported residential source context'
+            else:
+                climate = 'Unspecified; program is climate-independent' if t == 'programs' else 'Unspecified'
+                basis = 'No climate-specific assignment'
+            status = ('Source-input bundle; assembly unresolved' if t == 'buildings' else
+                      'Source fixture; runtime gaps' if t == 'residential_archetypes' else
+                      'Conditional / unassigned' if t in {'efficiency_rules', 'envelope_components', 'specialized_rules'} else
+                      'Option arguments; configuration required' if t.endswith('_options') else
+                      'Source rules; calendar required' if t == 'schedules' else 'Source inputs; missing fields explicit')
+            entries.append({
+                'id': r['id'], 'kind': t, 'name': title(t, r),
+                'building': r.get('building_type', 'Shared / not assigned'),
+                'program': r.get('program', 'Not applicable'),
+                'template': r.get('template', 'Shared / not assigned'),
+                'stock_vintage': context.get('Vintage', 'Not applicable / not reported'),
+                'climate': climate, 'climate_basis': basis,
+                'system': r.get('system_type', 'Not applicable'),
+                'source': source, 'status': status,
+                'referenced_buildings': sorted(uses[r['id']]['building']),
+                'referenced_templates': sorted(uses[r['id']]['template']),
+                'referenced_contexts': [{'building': b, 'template': t}
+                                        for b, t in sorted(uses[r['id']]['contexts'])],
+                'path': f'releases/{version}/{t}/{r["id"]}.md',
+                'download': f'releases/{version}/records/{r["id"]}.json',
+            })
+    return sorted(entries, key=lambda r: (r['kind'], r['name'], r['id']))
+
+
+def html_url(current, destination):
+    """Raw HTML URLs are relative to the final directory URL, not Markdown."""
+    cur = PurePosixPath(current)
+    base = cur.parent if cur.name == 'index.md' else cur.with_suffix('')
+    dst = PurePosixPath(destination)
+    if dst.suffix == '.md':
+        dst = dst.parent if dst.name == 'index.md' else dst.with_suffix('')
+        suffix = '/'
+    else:
+        suffix = ''
+    return os.path.relpath(str(dst), str(base)).replace('\\', '/') + suffix
+
+
+def anchor(current, destination, label):
+    return '<a href="' + html.escape(html_url(current, destination), quote=True) + '">' + display_value(label) + '</a>'
+
+
+def render_fields(row, units, refs, current='index.md'):
+    rows = []
+    for k, v in row.items():
+        if k in {'id', 'provenance_id'}:
+            continue
+        if isinstance(v, str) and v in refs:
+            val = anchor(current, refs[v]['path'], refs[v]['name'])
+        elif isinstance(v, list) and v and all(isinstance(x, str) and x in refs for x in v):
+            val = '<ul>' + ''.join('<li>' + anchor(current, refs[x]['path'], refs[x]['name']) + '</li>' for x in v) + '</ul>'
+        else:
+            val = display_value(v)
+        unit = units.get(k, 'C' if k.endswith('_base_C') else 'person' if k == 'occupants' else
+                         'm2' if k == 'conditioned_floor_area_m2' else '—')
+        rows.append(f'<tr id="field-{k}"><th scope="row">{display_value(friendly(k))}<br><code>{k}</code></th>'
+                    f'<td>{val}</td><td>{display_value(unit)}</td>'
+                    f'<td><a href="#evidence-{k}">Evidence</a></td></tr>')
+    return '<div class="atlas-table"><table><thead><tr><th>Field</th><th>Value</th><th>Unit / basis</th><th>Trace</th></tr></thead><tbody>' + ''.join(rows) + '</tbody></table></div>'
+
+
+def provenance_html(prov, source, current, version):
+    out = ['## Provenance', '<div class="atlas-evidence">',
+           '<p><strong>Source locator:</strong> ' + display_value(prov['locator']) + '</p>',
+           '<p><strong>Extraction date:</strong> ' + display_value(prov['extraction_date']) + '</p>',
+           '<p><strong>Interpretation:</strong> ' + display_value(prov['notes']) + '</p>',
+           '<p><strong>Source revision:</strong> <code>' + display_value(source['version']) + '</code></p>',
+           '<p><strong>Source file:</strong> <a href="' + html.escape(source['url'], quote=True) + '">' +
+           display_value(source['project'] + '/' + source['path']) + '</a></p>',
+           '<p><strong>SHA-256:</strong> <code>' + source['sha256'] + '</code></p>',
+           '<p>' + anchor(current, f'releases/{version}/downloads/{source["license_path"]}', 'Upstream license notice') + '</p>']
+    for key, field in prov['fields'].items():
+        out += [f'<details id="evidence-{key}"><summary>{display_value(friendly(key))} · {display_value(field["status"])}</summary>',
+                '<dl><dt>Original field</dt><dd>' + display_value(field['original_field']) + '</dd>',
+                '<dt>Original unit</dt><dd>' + display_value(field['original_units']) + '</dd>',
+                '<dt>Original value</dt><dd>' + display_value(field['original_value']) + '</dd>',
+                '<dt>Transformation</dt><dd>' + display_value(field['transformation']) + '</dd></dl></details>']
+    return '\n'.join(out + ['</div>'])
+
+
+def table_html(rows, current, columns=('name', 'template', 'climate', 'status')):
+    head = ''.join('<th scope="col">' + display_value(friendly(c)) + '</th>' for c in columns)
+    body = []
+    for r in rows:
+        body.append('<tr>' + ''.join('<td>' + (anchor(current, r['path'], r[c]) if c == 'name' else display_value(r[c])) + '</td>' for c in columns) + '</tr>')
+    return '<div class="atlas-table"><table><thead><tr>' + head + '</tr></thead><tbody>' + ''.join(body) + '</tbody></table></div>'
+
+
+def page_header(name, version, identity, searchable=True):
+    fm = '' if searchable else 'search:\n  exclude: true\n'
+    # JSON scalar quoting is valid YAML and safely handles punctuation.
+    return f'---\ntitle: {json.dumps(name, ensure_ascii=False)}\n{fm}---\n\n# {html.escape(name)}\n\n' + (
+        f'<div class="atlas-meta"><span>Release {version}</span><span>Schema {version[1:]}</span>'
+        f'<code>{html.escape(identity)}</code></div>\n\n')
+
+
+def explorer_html(current, version, ids):
+    path = html_url(current, f'releases/{version}/records/')
+    return ('<section class="atlas-explorer" data-records-base="' + html.escape(path, quote=True) +
+            '" data-schedule-ids="' + html.escape(json.dumps(ids), quote=True) + '">'
+            '<h2>Schedule explorer</h2><p>Source-faithful daily inspection. Select a concrete day and month/day; '
+            'the final matching specific rule wins, with default fallback. This is not an annual calendar.</p>'
+            '<div class="atlas-controls"><label>Day type<select class="atlas-day">'
+            + ''.join(f'<option value="{v}">{label}</option>' for v, label in
+                      [('Mon', 'Monday'), ('Tue', 'Tuesday'), ('Wed', 'Wednesday'), ('Thu', 'Thursday'),
+                       ('Fri', 'Friday'), ('Sat', 'Saturday'), ('Sun', 'Sunday'), ('Hol', 'Holiday'),
+                       ('WntrDsn', 'Winter design day'), ('SmrDsn', 'Summer design day')]) +
+            '</select></label><label>Month / day<input class="atlas-date" type="date" value="2000-01-15" min="2000-01-01" max="2000-12-31"></label>'
+            '<button type="button" class="atlas-csv">Export selected profiles CSV</button></div>'
+            '<div class="atlas-chart-status" role="status" aria-live="polite">Loading schedule records…</div>'
+            '<div class="atlas-charts"></div><details open><summary>Selected profiles and matching source rules</summary>'
+            '<div class="atlas-profile-table"></div></details>'
+            '<p class="atlas-note">DummySmrDsn retains its source label and matches summer design days, following the pinned generator. '
+            'Units remain separate; unavailable profiles are never filled with zero.</p>'
+            '<noscript>Interactive plots require JavaScript. Source rule tables and JSON downloads remain available below.</noscript></section>')
+
+
+def pilot_data(data):
+    """Select a closed representative subset, including actual referenced schedules."""
+    result = dict(data)
+    result['programs'] = [r for r in data['programs'] if r['building_type'] == 'MediumOffice' and r['template'] == '90.1-2013']
+    result['systems'] = [r for r in data['systems'] if r['building_type'] == 'MediumOffice' and r['template'] == '90.1-2013']
+    result['mappings'] = [r for r in data['mappings'] if r['building_type'] == 'MediumOffice' and r['template'] == '90.1-2013']
+    result['residential_archetypes'] = data.get('residential_archetypes', [])[:1]
+    options = {v for r in result['residential_archetypes'] for v in r['option_ids']}
+    result['residential_options'] = [r for r in data['residential_options'] if r['id'] in options]
+    result['commercial_options'] = []
+    for t in ['envelope_components', 'efficiency_rules', 'specialized_rules']:
+        result[t] = [r for r in data.get(t, []) if r['template'] == '90.1-2013'][:1]
+    ids = {v for t in ['programs', 'systems'] for r in result[t]
+           for k, v in r.items() if k.endswith('_schedule_id') and v}
+    result['schedules'] = [r for r in data['schedules'] if r['id'] in ids]
+    return result
+
+
+def write_text(root, path, text):
+    p = root/path
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(text.rstrip() + '\n', encoding='utf-8', newline='\n')
+
+
+def axis_path(version, axis, value):
+    return f'releases/{version}/axes/{axis}/{stable_id("category", axis, value)}.md'
+
+
+def catalogue_page(entries, version, versions):
+    current = f'releases/{version}/catalogue.md'
+    base = page_header('Catalogue', version, 'catalogue')
+    base += ('<p class="atlas-intro">Find source-defined energy inputs. Browse the same records by different axes; '
+             'inspect applicability and unresolved inputs before reuse.</p>\n\n')
+    base += '<div class="atlas-version-links">' + ' · '.join(
+        anchor(current, f'releases/{v}/catalogue.md', v) for v in versions) + '</div>\n\n'
+    base += ('<section id="atlas-catalogue" data-index="' + html_url(current, f'releases/{version}/catalogue.json') + '">'
+             '<h2>Find an entry</h2><div class="atlas-controls">'
+             '<label class="atlas-search-label">Search<input id="atlas-query" type="search" placeholder="Building, program, ID, source…"></label>')
+    for k in ['kind', 'building', 'program', 'template', 'stock_vintage', 'climate', 'system', 'source', 'status']:
+        base += f'<label>{AXES[k]}<select id="atlas-filter-{k}"><option value="">All</option></select></label>'
+    base += ('<button type="button" id="atlas-reset">Reset filters</button></div>'
+             '<p id="atlas-results-count" role="status" aria-live="polite">Use the linked tables below, or enable JavaScript for filtering.</p>'
+             '<div id="atlas-results"></div><div class="atlas-pagination"><button id="atlas-prev" type="button">Previous</button>'
+             '<span id="atlas-page"></span><button id="atlas-next" type="button">Next</button></div></section>\n\n')
+    base += '## Building and residential entries\n\n' + table_html(
+        [r for r in entries if r['kind'] in {'buildings', 'residential_archetypes'}], current)
+    for axis, label in AXES.items():
+        groups = defaultdict(list)
+        for r in entries:
+            groups[r[axis]].append(r)
+        base += f'\n\n## Browse by {label.lower()}\n\n'
+        base += '<div class="atlas-table"><table><thead><tr><th>Category</th><th>Entries</th></tr></thead><tbody>'
+        for value, group in sorted(groups.items()):
+            base += '<tr><td>' + anchor(current, axis_path(version, axis, value), friendly(value)) + '</td><td>' + str(len(group)) + '</td></tr>'
+        base += '</tbody></table></div>\n'
+    return base
+
+
+def generate_release(root, release_path, data, manifest, version, versions, pilot=False):
+    entries = catalogue_entries(data, version)
+    refs = {r['id']: r for r in entries}
+    rows = {r['id']: (t, r) for t in RECORD_TABLES for r in data.get(t, [])}
+    rows.update({r['id']: ('buildings', r) for r in overview_rows(data)})
+    prov = {r['id']: r for r in data['provenance']}
+    sources = {r['id']: r for r in data['source_files']}
+    dump_json(root/f'releases/{version}/catalogue.json', {'release': version, 'pilot': pilot, 'entries': entries})
+    dump_json(root/f'releases/{version}/schedule-index.json', [
+        {'id': r['id'], 'name': r['source_name'], 'units': r['units']} for r in data['schedules']])
+    write_text(root, f'releases/{version}/catalogue.md', catalogue_page(entries, version, versions))
+    for axis, label in AXES.items():
+        groups = defaultdict(list)
+        for r in entries:
+            groups[r[axis]].append(r)
+        for value, group in sorted(groups.items()):
+            current = axis_path(version, axis, value)
+            note = ('Climate grouping preserves exact labels. Envelope sets are conditional rules; residential climates are reported fixture context. '
+                    'Thermal-only and moisture-specific sets are not silently merged.') if axis == 'climate' else (
+                    'Stock vintage and code/prototype editions have different meanings. Historical code rules are not calibrated existing stock.') if axis == 'template' else (
+                    'These entries share a browsing label; compatibility and unresolved dependencies remain on each detail page.')
+            write_text(root, current, page_header(label + ': ' + friendly(value), version, 'category', False) +
+                       note + '\n\n' + table_html(group, current, ('name', 'kind', 'template', 'climate_basis', 'status')))
+    for entry in entries:
+        t, r = rows[entry['id']]
+        current = entry['path']
+        page = page_header(entry['name'], version, r['id'], t in {'buildings', 'programs', 'residential_archetypes', 'schedules'})
+        page += '<p class="atlas-status">' + display_value(entry['status']) + '</p>\n\n'
+        page += '## Applicability\n\n' + display_value(entry['source']) + ' · ' + display_value(entry['climate']) + '\n\n'
+        page += display_value(entry['climate_basis']) + '. No complete simulation model is implied.\n\n'
+        page += anchor(current, f'releases/{version}/catalogue.md', 'Back to catalogue') + '\n\n'
+        if t == 'buildings':
+            matched = [e for e in entries if e['kind'] in {'programs', 'systems', 'mappings'}
+                       and e['building'] == r['building_type'] and e['template'] == r['template']]
+            page += ('## Assembly status\n\nSource-input overview. Area fractions, conditioned state, infiltration, '
+                     'HVAC sizing and generator overrides require downstream resolution.\n\n')
+            for kind in ['programs', 'systems', 'mappings']:
+                page += '## ' + friendly(kind) + '\n\n' + table_html([e for e in matched if e['kind'] == kind], current)
+            for kind in ['envelope_components', 'efficiency_rules', 'specialized_rules']:
+                e = next((e for e in entries if e['kind'] == kind and e['template'] == r['template']), None)
+                if e:
+                    dest = axis_path(version, 'template', r['template'])
+                    page += '\n\n' + anchor(current, dest, 'Inspect ' + friendly(kind) + ' by template; choose predicates before assignment')
+            packet = {'release': version, 'record_kind': t, 'record': r,
+                      'related_record_ids': [e['id'] for e in matched],
+                      'interpretation': 'Generated overview of source inputs; not a complete simulation configuration'}
+        else:
+            ids = {k: v for k, v in r.items() if k.endswith('_schedule_id') and v in refs}
+            if t == 'schedules':
+                ids = {'source_profile': r['id']}
+            if ids:
+                page += '\n\n' + explorer_html(current, version, ids) + '\n\n'
+            if t == 'residential_archetypes':
+                page += ('## Profiles unavailable\n\nThermostat bases are reported inputs before offsets, seasons and overrides. '
+                         'Effective daily and annual profiles require generator execution and an explicit calendar. '
+                         'No commercial apartment profiles have been substituted.\n\n')
+            page += '## Parameters and source conditions\n\n' + render_fields(r, data['units'], refs, current) + '\n\n'
+            p = prov[r['provenance_id']]
+            s = sources[p['source_file_id']]
+            page += provenance_html(p, s, current, version) + '\n\n'
+            packet = {'release': version, 'record_kind': t, 'record': r, 'provenance': p, 'source_file': s}
+        page += '## Download and cite\n\n' + anchor(current, entry['download'], 'Record JSON with provenance') + '\n\n'
+        page += anchor(current, f'releases/{version}/downloads/manifest.json', 'Frozen release manifest and checksums') + '\n\n'
+        page += '<pre>' + display_value(f'Energy Archetype Atlas {version}; {t}/{r["id"]}; schema {data["schema_version"]}. '
+                                             'See field provenance for upstream attribution and licensing.') + '</pre>\n'
+        write_text(root, current, page)
+        dump_json(root/entry['download'], packet)
+    # MkDocs renders .md files instead of copying them verbatim. Preserve the
+    # exact frozen tree in a deterministic archive, plus direct non-Markdown files.
+    downloads_root = root/f'releases/{version}/downloads'
+    downloads_root.mkdir(parents=True)
+    with zipfile.ZipFile(downloads_root/'snapshot.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+        for src in sorted(release_path.rglob('*')):
+            if not src.is_file():
+                continue
+            relative = src.relative_to(release_path).as_posix()
+            info = zipfile.ZipInfo(relative, date_time=(2026, 10, 2, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            archive.writestr(info, src.read_bytes())
+            if src.suffix != '.md':
+                dst = downloads_root/relative
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, dst)
+    downloads = f'releases/{version}/downloads.md'
+    page = page_header('Downloads and release identity', version, 'downloads')
+    page += ('The JSON snapshot is canonical. CSV files are generated inspection exports; nested values remain JSON text. '
+             'Original work is unlicensed. Upstream source terms and notices apply.\n\n')
+    for t in table_names(data['schema_version']):
+        # CSV is generated from the full release even when the presentation is a pilot.
+        canonical = load_json(release_path/(t+'.json'))
+        keys = sorted({k for r in canonical for k in r})
+        stream = io.StringIO(newline='')
+        writer = csv.DictWriter(stream, fieldnames=keys, lineterminator='\n')
+        writer.writeheader()
+        for row in canonical:
+            writer.writerow({k: json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else
+                             'null' if v is None else v for k, v in row.items()})
+        write_text(root, f'releases/{version}/downloads/{t}.csv', stream.getvalue())
+        page += '<p>' + display_value(t) + ': ' + anchor(downloads, f'releases/{version}/downloads/{t}.json', 'Canonical JSON') + ' · ' + anchor(
+            downloads, f'releases/{version}/downloads/{t}.csv', 'Inspection CSV') + '</p>\n'
+    for name in ['snapshot.zip', 'manifest.json', 'metadata.json', 'LICENSE', 'sources/lock.json']:
+        page += '<p>' + anchor(downloads, f'releases/{version}/downloads/{name}', name) + '</p>\n'
+    write_text(root, downloads, page)
+    return {'entries': len(entries), 'commercial_overviews': len(overview_rows(data)),
+            'residential_configurations': len(data.get('residential_archetypes', [])),
+            'manifest_sha256': hashlib.sha256((release_path/'manifest.json').read_bytes()).hexdigest(),
+            'counts': manifest['counts']}
+
+
+def validate_output(target, release_paths):
+    """Limit replacement to a marked generated directory under repository build."""
+    target = Path(target).resolve()
+    root, build = ROOT.resolve(), (ROOT/'build').resolve()
+    if target.is_relative_to(root) and not target.is_relative_to(build):
+        raise ValueError('Site output cannot modify repository sources')
+    if target in {root, build} or any(target.is_relative_to(Path(p).resolve()) or
+                                     Path(p).resolve().is_relative_to(target) for p in release_paths):
+        raise ValueError('Unsafe site output path')
+    if target.exists() and (not target.is_relative_to(build) or not (target/'site-manifest.json').is_file()):
+        raise ValueError('Existing output must be a marked generated directory within repository build/')
+    return target
+
+
+def generate_site(release_paths, target, pilot=False):
+    """Verify everything before writing; atomically replace only the supplied output."""
+    loaded = sorted([(Path(p), *read_release(p)) for p in release_paths],
+                    key=lambda x: tuple(int(n) for n in x[-1][1:].split('.')))
+    versions = [v for _, _, _, v in loaded]
+    if len(set(versions)) != len(versions):
+        raise ValueError('Duplicate release version')
+    target = validate_output(target, [p for p, *_ in loaded])
+    target.parent.mkdir(parents=True, exist_ok=True)
+    summary = {'pilot': pilot, 'releases': {}}
+    with tempfile.TemporaryDirectory(dir=target.parent) as d:
+        stage = Path(d)/'docs'
+        stage.mkdir()
+        curated = ROOT/'website/content'
+        if curated.exists():
+            shutil.copytree(curated, stage, dirs_exist_ok=True)
+        assets = ROOT/'website/assets'
+        if assets.exists():
+            shutil.copytree(assets, stage/'assets')
+        vendor = ROOT/'build/vendor'
+        if vendor.exists():
+            from scripts.site_assets import verify_asset
+            for entry in load_json(ROOT/'website/assets.lock.json')['assets']:
+                src = verify_asset(vendor, entry)
+                dst = stage/'assets/vendor'/entry['path']
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, dst)
+        for path, data, manifest, version in loaded:
+            summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,
+                                                          manifest, version, versions, pilot)
+        latest = versions[-1]
+        latest_data = loaded[-1][1]
+        source_page = '# Sources and licensing\n\n'
+        source_page += ('The actual extracted inputs come from the pinned projects below. DOE reference and PNNL prototype '
+                        'coverage is interpreted through OpenStudio Standards; this is not a claim that every official '
+                        'DOE/PNNL model package has been ingested or simulated.\n\n')
+        projects = {}
+        for r in latest_data['source_files']:
+            projects.setdefault(r['project'], r)
+        for project, r in sorted(projects.items()):
+            source_page += '## ' + display_value(project) + '\n\n'
+            source_page += '<p><a href="' + html.escape(r['repository'], quote=True) + '">' + display_value(r['repository']) + '</a></p>\n'
+            source_page += '<p>Pinned revision: <code>' + display_value(r['version']) + '</code></p>\n'
+            source_page += anchor('sources.md', f'releases/{latest}/downloads/{r["license_path"]}', 'Upstream license notice') + '\n\n'
+        source_page += ('## Interpretation and primary references\n\n'
+                        '- [ComStock](https://comstock.nrel.gov/) — existing commercial stock and model-generation evidence.\n'
+                        '- [ResStock](https://resstock.nrel.gov/) — residential source-fixture configurations and option arguments.\n'
+                        '- [DOE reference buildings](https://www.energy.gov/eere/buildings/commercial-reference-buildings) — legacy benchmark context.\n'
+                        '- [PNNL prototype models](https://www.energycodes.gov/prototype-building-models) — code/prototype context.\n\n'
+                        'Source-file locators, hashes and transformations appear on every record page. '
+                        'Nulls and specialized unit uncertainties remain explicit.\n\n'
+                        '## Original work and software assets\n\n'
+                        'Original atlas/site code and documentation are unlicensed by user choice. Upstream data retains '
+                        'its own terms; no blanket relicensing is implied. '
+                        + anchor('sources.md', f'releases/{latest}/downloads/LICENSE', 'Original-work notice') + ' · '
+                        + anchor('sources.md', 'assets/vendor/plotly-LICENSE.txt', 'Plotly.js MIT license') + '\n\n'
+                        'MkDocs (BSD), Material for MkDocs (MIT), and their dependencies retain the notices '
+                        'distributed with their pinned packages. The repository build guide explains dependency retrieval.\n')
+        write_text(stage, 'sources.md', source_page)
+        current = 'index.md'
+        home = page_header('Energy Archetype Atlas', latest, 'home')
+        home += ('<div class="atlas-hero"><p class="atlas-eyebrow">INPUTS FOR ZONING-LOD RESEARCH</p>'
+                 '<p class="atlas-intro">Explore the energy semantics behind building archetypes.</p>'
+                 '<p>Source-defined programs, schedules, envelope conditions and systems—versioned, inspectable and traceable.</p>'
+                 + anchor(current, f'releases/{latest}/catalogue.md', 'Explore the catalogue →') + '</div>\n\n')
+        info = summary['releases'][latest]
+        home += ('<div class="atlas-stats">' + ''.join('<div><strong>' + str(n) + '</strong><span>' + label + '</span></div>'
+            for label, n in [('commercial building / template entries', info['commercial_overviews']),
+                             ('residential configurations', info['residential_configurations']),
+                             ('program records', info['counts']['programs']), ('schedule records', info['counts']['schedules'])]) + '</div>\n\n')
+        if pilot:
+            home += '**Pilot presentation: counts of canonical records refer to the full frozen release; only representative pages are generated.**\n\n'
+        home += ('## Find → inspect → reuse\n\nStart with a building or program. Inspect source applicability, '
+                 'controls and missing inputs. Follow provenance, then download exact versioned records.\n\n'
+                 'Typology coverage is not simulation readiness. This atlas supplies deterministic energy semantics; '
+                 'geometry, population weights and simulation results are outside its scope.\n\n## Releases\n\n')
+        for version in versions:
+            home += '<p>' + anchor(current, f'releases/{version}/catalogue.md', version + ' catalogue') + ' · ' + anchor(
+                current, f'releases/{version}/downloads.md', 'Downloads and citation') + '</p>\n'
+        write_text(stage, 'index.md', home)
+        write_text(stage, 'catalogue.md', '# Catalogue\n\n' + '\n\n'.join(anchor('catalogue.md', f'releases/{v}/catalogue.md', v + ' catalogue') for v in versions))
+        write_text(stage, 'downloads.md', '# Downloads and releases\n\n' + '\n\n'.join(anchor('downloads.md', f'releases/{v}/downloads.md', v + ' snapshot, manifest and CSV') for v in versions))
+        dump_json(stage/'site-manifest.json', summary)
+        # target is checked above and contains generated files only.
+        if target.exists():
+            shutil.rmtree(target)
+        stage.rename(target)
+    return summary
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--release', type=Path, action='append', help='Repeat to preserve multiple release URLs')
+    p.add_argument('--output', type=Path, default=ROOT/'build/site-docs')
+    p.add_argument('--pilot', action='store_true')
+    args = p.parse_args()
+    from scripts.site_assets import fetch_assets
+    fetch_assets()
+    result = generate_site(args.release or [ROOT/'data/releases/v0.1.0', ROOT/'data/releases/v0.2.0'],
+                           args.output, args.pilot)
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == '__main__':
+    main()

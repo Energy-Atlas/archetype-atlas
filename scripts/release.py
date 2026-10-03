@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from scripts.common import ROOT, TABLES, VERSION, dump_json, load_atlas, load_json
+from scripts.common import ROOT, TABLES, VERSION, dump_json, load_atlas, load_json, table_names
 from scripts.validate import validate_atlas
 
 
@@ -25,6 +25,10 @@ def freeze_release(processed, target):
     covered = {r['building_type'] for r in data['programs']}
     if not {'MediumOffice', 'RetailStandalone', 'MidriseApartment'} <= covered:
         raise ValueError('Release requires commercial and multifamily coverage')
+    from scripts.coverage import coverage_report
+    coverage = coverage_report(data)
+    if coverage['errors']:
+        raise ValueError('Cannot release incomplete typology coverage: ' + '; '.join(coverage['errors']))
     # Structural validity alone cannot establish scientific source accuracy or
     # complete selected coverage. Both are required before creating a snapshot.
     from scripts.compare import compare_sources
@@ -46,6 +50,7 @@ def freeze_release(processed, target):
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT/path, dst)
         shutil.copytree(ROOT/'sources/licenses', stage/'sources/licenses')
+        dump_json(stage/'docs/validation/coverage.json', coverage)
         for path in ['docs/schema.md', 'docs/coverage.md', 'docs/source_inventory.md',
                      'docs/pilot-validation.md', 'docs/reproducibility.md', 'docs/review.md',
                      'sources/inventory.json', 'sources/parameter_matrix.csv']:
@@ -53,8 +58,16 @@ def freeze_release(processed, target):
                 dst = stage/path
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT/path, dst)
-        if (ROOT/'docs/release-notes/v0.1.0.md').exists():
-            shutil.copyfile(ROOT/'docs/release-notes/v0.1.0.md', stage/'RELEASE_NOTES.md')
+        for path in [f'docs/review-v{VERSION}.md', f'docs/validation/verification-v{VERSION}.json',
+                     'docs/validation/source-comparison.json',
+                     'docs/adr/0002-typology-coverage-and-residential-configurations.md']:
+            if (ROOT/path).is_file():
+                dst = stage/path
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT/path, dst)
+        notes = ROOT/f'docs/release-notes/v{VERSION}.md'
+        if notes.exists():
+            shutil.copyfile(notes, stage/'RELEASE_NOTES.md')
         files = {p.relative_to(stage).as_posix(): {'sha256': sha256(p), 'size_bytes': p.stat().st_size}
                  for p in sorted(stage.rglob('*')) if p.is_file()}
         manifest = {'release_version': VERSION, 'schema_version': data['schema_version'],
@@ -84,7 +97,7 @@ def verify_release(target):
         errors.append('Release file inventory mismatch')
     if not errors:
         data = load_atlas(target)
-        if manifest.get('counts') != {t: len(data[t]) for t in TABLES}:
+        if manifest.get('counts') != {t: len(data[t]) for t in table_names(data['schema_version'])}:
             errors.append('Release manifest record counts mismatch')
         if manifest.get('schema_version') != data['schema_version']:
             errors.append('Release manifest schema version mismatch')
@@ -98,7 +111,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--verify', action='store_true')
     p.add_argument('--processed', type=Path, default=ROOT/'data/processed')
-    p.add_argument('--target', type=Path, default=ROOT/'data/releases/v0.1.0')
+    p.add_argument('--target', type=Path, default=ROOT/f'data/releases/v{VERSION}')
     args = p.parse_args()
     if args.verify:
         errors = verify_release(args.target)

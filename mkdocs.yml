@@ -1,0 +1,51 @@
+site_name: Energy Archetype Atlas
+site_description: Versioned, source-traceable building energy inputs for zoning-LOD research.
+site_url: https://energy-atlas.github.io/archetype-atlas/
+repo_url: https://github.com/Energy-Atlas/archetype-atlas
+repo_name: Energy-Atlas/archetype-atlas
+edit_uri: ""
+docs_dir: build/site-docs
+site_dir: build/site
+use_directory_urls: true
+strict: true
+theme:
+  name: material
+  font: false
+  palette:
+    scheme: default
+    primary: teal
+    accent: deep orange
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+extra_css:
+  - assets/site.css
+extra_javascript:
+  - assets/core.js
+  - assets/site.js
+nav:
+  - Home: index.md
+  - Catalogue: releases/v0.2.0/catalogue.md
+  - How to use:
+      - Selection workflow: guides/selection.md
+      - Medium Office example: guides/medium-office.md
+      - Residential and multifamily: guides/residential.md
+      - Geometry assignment: guides/geometry.md
+  - Methods: methods.md
+  - Sources: sources.md
+  - Downloads: downloads.md
+validation:
+  nav:
+    omitted_files: ignore
+copyright: Original work unlicensed. Upstream data and dependency terms apply.
