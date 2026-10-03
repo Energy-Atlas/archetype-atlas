@@ -14,7 +14,9 @@ thermostat base overlaps are retained explicitly. Refrigeration evidence has
 Verification so far: 38 tests passed; 33,173 independent source-input checks
 passed; offline byte reproduction passed; named coverage reports DOE 16/16,
 PNNL 16/16 and residential 7/7. Independent review findings were fixed by regression tests; fresh retrieval
-and byte reproduction passed. The new snapshot is ready for freezing.
+and byte reproduction passed. v0.2.0 frozen at e9dc939, generated from 4eaa05d. Both snapshots pass frozen
+verification; a fresh Git checkout reproduces all canonical bytes and passes
+source/coverage checks. Local version tag accompanies final verification commit.
 
 ## v0.1.0 historical ledger
 
