@@ -25,8 +25,9 @@ rule, then default), including wrapped seasons and the documented DummySmrDsn
 interpretation. It is not an annual simulation calendar.
 
 MkDocs/Material and dependencies are pinned. CI builds and verifies an artifact;
-deployment uses an explicit workflow dispatch or a push to the default branch.
-Feature branches build without automatically replacing the public site.
+deployment uses an explicit workflow dispatch or a push to the default branch
+or designated publisher branch feat/catalogue-site. Other feature branches build
+without automatically replacing the public site.
 
 Original site code/documentation retains the repository's unlicensed status.
 Upstream data and dependency notices are retained in the generated downloads.
@@ -59,3 +60,26 @@ Upstream data and dependency notices are retained in the generated downloads.
 - Ruling: distribute Markdown-bearing frozen snapshots as a deterministic ZIP,
   with direct JSON/CSV downloads, because MkDocs renders Markdown into HTML.
   Cost if wrong: readers need to unpack the ZIP to verify the complete snapshot.
+- Task 3 complete: strict full MkDocs build, all internal links/fragments/assets,
+  real Chromium checks and 30,180-file byte reproducibility passed. Linux GitHub
+  Actions also built and uploaded the tested artifact successfully.
+- Final review: a fresh read-only reviewer found three Important defects and no
+  Critical or Minor defects. See docs/site-review.md for reproductions and fixes.
+- Final: fixed shared-ID schedule role loss — real Hospital profile/CSV/zero-
+  deadband browser regression RED→GREEN; bindings are distinct from record cache.
+- Final: fixed fabricated combined filter associations — exact-reference-pair
+  Python/Node regressions RED→GREEN; no Cartesian association is inferred.
+- Final: fixed stale asynchronous plot append — delayed Plotly browser regression
+  RED (five mixed charts) → GREEN (three current charts).
+- Final: Ruling: annual calendars, simulation generation and automatic gap
+  resolution remain outside this presentation. The atlas's explicit research
+  boundaries govern these operations. Cost if wrong: additional downstream work.
+- Final: Ruling: preserve frozen extraction/licensing evidence without claiming
+  the presentation review re-established upstream science or reuse eligibility.
+  Existing release validation and source-specific notices remain authoritative.
+  Cost if wrong: an upstream defect would require a separately versioned correction.
+- Final: Ruling: publish the verified artifact from the designated feature branch
+  using existing administrative access, because the user authorized autonomous
+  implementation of the Pages plan with no human intervention. No research
+  branch merge is required. Cost if wrong: revert the publisher policy and Pages
+  deployment; canonical data and research branches are unaffected.

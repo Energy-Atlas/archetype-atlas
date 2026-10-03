@@ -79,7 +79,8 @@ jobs:
   deploy:
     needs: build
     if: >-
-      (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch)
+      (github.event_name == 'push' && (github.ref_name == github.event.repository.default_branch
+      || github.ref_name == 'feat/catalogue-site'))
       || (github.event_name == 'workflow_dispatch' && inputs.deploy)
     runs-on: ubuntu-latest
     timeout-minutes: 10

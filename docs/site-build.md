@@ -73,14 +73,17 @@ requests. It verifies releases, Python presentation tests, browser/Python schedu
 parity, a strict MkDocs build, all links and browser interactions. It uploads the
 tested static artifact and verification screenshots.
 
-Only a push to the repository's actual default branch, or a workflow dispatch
-with deploy=true, deploys that artifact. No feature-branch push automatically
-replaces the public site. The site uses the project prefix /archetype-atlas/.
+Only a push to the designated publisher branch feat/catalogue-site or the
+repository's actual default branch, or a workflow dispatch with deploy=true,
+deploys that artifact. Other feature branches build without publication.
+The publisher branch permits autonomous initial hosting without merging the
+research branches. The site uses the project prefix /archetype-atlas/.
 The workflow has read-only contents access; only its deployment job receives
 Pages write and OIDC permissions. Actions are pinned to full commit revisions.
 
-GitHub Pages must be configured to use GitHub Actions in repository settings.
-The workflow does not grant itself repository-administration permissions.
+GitHub Pages uses GitHub Actions as its build source. Initial activation uses
+existing repository-administration authorization outside the workflow; the
+workflow does not grant itself repository-administration permissions.
 This implementation leaves research branches unmerged.
 
 ## Dependencies and licensing
