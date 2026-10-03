@@ -27,3 +27,21 @@ Plan: `docs/superpowers/plans/2026-10-02-atlas.md`.
   the convenience exports locally.
 - Task 5 in progress: clean pinned Python environment installed; mutation,
   security, release and reproducibility tests implemented; final review follows.
+- Final review: separate read-only agent found no Critical issues. Three Important
+  findings reproduced RED: empty-key audit false-positive, source-drift release
+  acceptance and missing mapping flag provenance. One fix pass adds horizontal
+  whitespace scanning, source/rebuild release gates and original flag evidence.
+- Final: minor (deferred): exact source key-set uniqueness/coverage in standalone
+  validator; current canonical/release rebuild gates enforce the selected data.
+- Final: minor (deferred): schema-version-dispatched historical unit constants;
+  0.1.0 is correct, future unit changes must preserve that contract.
+- Final: minor (deferred): independent manifest release-label contract; other
+  inventory/hash/count/schema/source-lock checks remain enforced.
+- Final: fixed Important findings — three regression classes observed RED then
+  GREEN; full 23-test suite passed. Fresh retrieval verified all 91 locked blobs;
+  full build/validation, 15,866 independent source checks and byte reproduction
+  passed. Security audit also passes after the empty-example correction.
+- Task 5 complete: clean Python 3.14 environment, pinned dependencies, Linux/
+  Windows CI definition (not remotely executed), and independent review complete.
+- Task 6 in progress: scientific coverage/reproduction/schema docs and release
+  notes written; freeze and fresh Git-checkout integrity checks remain.
