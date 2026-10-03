@@ -85,3 +85,14 @@ option instances (16 distinct pairs) remain explicit. Six raw thermostat base
 overlaps are flagged before offsets/seasonal controls. Area is a source bin,
 so exact SI area and densities remain null. HPXML defaults and annual profiles
 were not executed or invented. v0.1.0 remains unchanged and verifiable.
+
+## Research catalogue site
+
+The MkDocs catalogue presents frozen v0.1.0 and v0.2.0 through building, program,
+vintage/template, climate, system, source and status views. Entry pages include
+parameters, field provenance, exact downloads and interactive daily schedule
+inspection. Residential runtime gaps and conditional source rules remain explicit.
+
+See the [site build and verification guide](docs/site-build.md) for reproducible
+commands, preview, dependency pins and the GitHub Pages workflow.
+Generated HTML is an inspection view; canonical research data is unchanged.
