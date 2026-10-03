@@ -39,11 +39,11 @@ Interfaces: runtime.fetch_runtime(lock, destination) returns verified paths;
 residential_profiles.build_inputs(release, policy) returns deterministic run inputs;
 residential_profiles.validate_profiles(path, metadata) checks executed output.
 
-- [ ] Inspect pinned generator/runtime requirements and source input translation; document exact generation boundary.
-- [ ] Test corrupted locks/unsafe paths, annual dimensions, invalid fractions and explicit input provenance; watch tests fail.
-- [ ] Implement locked retrieval and upstream runner; test one recipe before expansion.
-- [ ] Execute all 41 recipes with fixed seeds/calendar; validate outputs, match source controls and absent end uses; rerun pilot deterministically.
-- [ ] Commit runner, locks, validation and scientific decisions after staged audit.
+- [x] Inspect pinned generator/runtime requirements and source input translation; document exact generation boundary.
+- [x] Test corrupted locks/unsafe paths, annual dimensions, invalid fractions and explicit input provenance; watch tests fail.
+- [x] Implement locked retrieval and upstream runner; test one recipe before expansion.
+- [x] Execute all 41 recipes with fixed seeds/calendar; validate outputs, match source controls and absent end uses; rerun pilot deterministically.
+- [x] Commit runner, locks, validation and scientific decisions after staged audit.
 
 ## Task 2: Selective resolution supplement
 
@@ -82,3 +82,9 @@ include source record plus separately labelled resolution/profile metadata.
 - Ruling: use an additive resolution release rather than mutate the atlas schema/frozen rows. Cost if wrong: a later normalized-schema migration; scientific source evidence stays intact.
 - Ruling: use explicit inactive conditioning, not arbitrary extreme setpoints. Cost if wrong: a downstream numerical adapter must implement its own documented sentinel policy.
 - Ruling: autonomous instruction supersedes skill design/plan approval handoffs. Cost if wrong: reversible branch/documentation changes and publication rollback.
+- Ruling: retain the plan's committed ledger instead of mechanically creating a second scratch ledger; it already survives compaction and records the same contracts. Cost if wrong: manual review-package preparation.
+- Task 1: Ruling: extract only declared upstream schedule/argument subtrees under a short runtime root to avoid Windows MAX_PATH failures in unrelated income-distribution paths. All 1,021 selected files were independently checked against Git blobs. Cost if wrong: broaden the locked include set for a later model-generation stage.
+- Task 1: Ruling: unavailable FIPS county weather is replaced only in an explicitly labelled variant by pinned ZIP-to-TMY3-station mapping from an official working archive. Cost if wrong: location-dependent profiles must be regenerated with accessible county weather; no claim of exact baseline equivalence is made.
+- Task 1: Ruling: execute the upstream schedule core and thermostat routines directly, with full source inputs, rather than generate unrelated building geometry. Honor three upstream zero-occupant skips; leave other stochastic loads unknown. Nominal thermostat profiles expose unavailable-day counts without claiming effective equipment availability. Cost if wrong: later full HPXML execution is needed for those unresolved controls/end uses.
+- Task 1 evidence: all 41 annual CSV and canonical JSON artifacts reproduce byte-for-byte on independent upstream reruns; 38 stochastic runs, three explicit zero-occupant skips, 41 nominal thermostat profiles; 8,760 hourly rows each.
+- Task 1: complete; six focused regression tests (observed RED→GREEN), whole suite 56/56 passed; runner/locks/documentation committed as the first implementation unit.
