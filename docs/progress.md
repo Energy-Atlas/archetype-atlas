@@ -45,3 +45,10 @@ Plan: `docs/superpowers/plans/2026-10-02-atlas.md`.
   Windows CI definition (not remotely executed), and independent review complete.
 - Task 6 in progress: scientific coverage/reproduction/schema docs and release
   notes written; freeze and fresh Git-checkout integrity checks remain.
+- Task 6 complete: v0.1.0 frozen at release commit `ee3830f`, generated from
+  `372ea5a`. Every staged snapshot byte matched the manifest before commit.
+  Fresh Git clone passed frozen release integrity, canonical schema validation,
+  tracked security audit, and full byte reproduction from the separately fetched
+  raw cache. No remote CI run, OpenStudio/EnergyPlus simulation or direct external
+  scorecard validation is claimed. All release work is local; tag follows this
+  final execution-record commit.
