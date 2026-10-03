@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:archetype-atlas:schema:0.1.0",
+  "$id": "urn:archetype-atlas:schema:0.2.0",
   "title": "Building Energy Archetype Atlas",
   "type": "object",
   "properties": {
     "schema_version": {
-      "const": "0.1.0"
+      "const": "0.2.0"
     },
     "units": {
       "type": "object"
@@ -127,6 +127,18 @@
       "items": {
         "$ref": "#/$defs/commercial_options"
       }
+    },
+    "residential_archetypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residential_archetypes"
+      }
+    },
+    "specialized_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/specialized_rules"
+      }
     }
   },
   "required": [
@@ -146,7 +158,9 @@
     "residential_options",
     "provenance",
     "source_files",
-    "commercial_options"
+    "commercial_options",
+    "residential_archetypes",
+    "specialized_rules"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -863,7 +877,9 @@
             "mappings",
             "efficiency_rules",
             "residential_options",
-            "commercial_options"
+            "commercial_options",
+            "residential_archetypes",
+            "specialized_rules"
           ]
         },
         "record_id": {
@@ -1061,6 +1077,202 @@
         "normalized_value",
         "normalized_units",
         "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "residential_archetypes": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_building_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_context": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "selected_options": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "option_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "unresolved_options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string",
+                "minLength": 1
+              },
+              "option": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "parameter",
+              "option",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "non_argument_options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string",
+                "minLength": 1
+              },
+              "option": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "parameter",
+              "option"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "occupants": {
+          "type": "number",
+          "minimum": 0
+        },
+        "heating_base_C": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 100
+        },
+        "cooling_base_C": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 100
+        },
+        "conditioned_floor_area_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "simulation_ready": {
+          "const": false
+        },
+        "runtime_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "thermostat_base_overlap": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "building_type",
+        "template",
+        "source_family",
+        "variant",
+        "source_building_id",
+        "provenance_id",
+        "source_context",
+        "selected_options",
+        "option_ids",
+        "unresolved_options",
+        "non_argument_options",
+        "occupants",
+        "heating_base_C",
+        "cooling_base_C",
+        "conditioned_floor_area_m2",
+        "simulation_ready",
+        "runtime_gaps",
+        "thermostat_base_overlap"
+      ],
+      "additionalProperties": false
+    },
+    "specialized_rules": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_attributes": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "template",
+        "source_family",
+        "rule_type",
+        "provenance_id",
+        "source_attributes"
       ],
       "additionalProperties": false
     }
