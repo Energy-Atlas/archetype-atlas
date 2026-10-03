@@ -52,16 +52,19 @@ they require the raw cache and do not make network calls themselves.
 
 ## Releases and Git
 
-The existing v0.1.0 snapshot is immutable. Verify it with:
+The v0.1.0 and v0.2.0 snapshots are immutable. Verify each with:
 
 ```powershell
 .venv/Scripts/python.exe -m scripts.release --verify
+.venv/Scripts/python.exe -m scripts.release --verify --target data/releases/v0.1.0
 ```
 
 The release includes canonical tables, metadata, schema, source lock/selection,
 license notices, README, supporting scientific documentation, release notes and
 a SHA-256/size/count manifest with the generating Git commit. Release creation
 enforces independent source comparison and full canonical byte reproduction.
+It also requires named typology and per-template coverage. Run
+`python -m scripts.coverage` for the machine-readable coverage report.
 Before
 freezing a new version, update the schema/version constants, target/date,
 selection, tests and release notes in a focused commit, rebuild, run all checks

@@ -60,11 +60,17 @@ scorecards were redistributed. No service needs authentication for this workflow
 
 ## Current extraction selection
 
-- Medium Office, standalone retail, strip mall, small/large hotel, quick/full
-  service restaurant, mid-rise and high-rise apartment.
-- DOE Ref Pre-1980, DOE Ref 1980-2004, 90.1-2007, 90.1-2013 and 90.1-2019 inputs.
-- High-rise apartment has no row in the two DOE reference template selections;
-  this absence is preserved (43 building/template combinations rather than 45).
-- Envelope categories and climate-zone sets are retained at source granularity,
-  including thermal-zone sets such as `ClimateZone 3`, rather than expanded into
-  moisture-zone duplicates. Weather and climate standard edition remain external.
+All 17 commercial types in the union of the official DOE Reference and PNNL
+commercial lists are selected through exact pinned prototype_inputs entries.
+Five templates retain their existing-stock versus code-rule families. Highrise
+Apartment is absent in the two DOE Reference templates: 83 combinations, not 85.
+Climate sets remain at source granularity; weather and standard edition are external.
+
+ResStock's project_national/resources/sdr_minimal_buildstock.csv supplies 41
+joint source configurations. Exact argument-bearing lookup rows are referenced;
+unmatched selections remain explicit. Five RECS classes and three 5+-unit height
+groups cover seven residential classes. These are public modeled input selections,
+not inferred population representatives; unrelated demographic columns are excluded.
+
+Twenty-five refrigeration tables and four generator files add conditional compressor/condenser/system/walk-in
+source evidence. The expanded lock has 160 files at the same three revisions.

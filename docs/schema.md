@@ -1,4 +1,4 @@
-# Schema 0.1.0
+# Schema 0.2.0
 
 `schemas/atlas.schema.json` is JSON Schema 2020-12. `metadata.json` plus named
 JSON arrays are canonical. `load_atlas(directory)` assembles them in memory;
@@ -19,6 +19,8 @@ literal `null`; nested cells are JSON. CSV is not the typed interchange contract
 | commercial_options | id | ComStock parameter/option/measure args; provenance_id |
 | provenance | id | table + record_id, source_file_id, field map |
 | source_files | id | Repository/path/revision/URL/hash/date/license lock |
+| residential_archetypes | id | Exact option_ids; joint selected_options; fixture context and runtime gaps |
+| specialized_rules | id | Conditional refrigeration source rows and provenance_id |
 
 IDs use namespace-prefixed truncated SHA-256 over semantic identity. They are
 stable for identical identity inputs, not a promise that a new source revision
@@ -47,6 +49,13 @@ Null indicates missing, unreported, unresolved or invalid source input as explai
 in provenance. It never means zero or a default. Every canonical field has an
 original field/unit/value, transformation and status in its provenance entry.
 The full original row preserves source constraints and secondary parameters.
+
+Residential occupants use person/unit; heating_base_C and cooling_base_C use °C.
+These are bases before seasonal controls/offsets; thermostat_base_overlap is
+explicitly checked. conditioned_floor_area_m2 stays null for a source area bin.
+source_context, selected_options and specialized source_attributes retain source
+units. simulation_ready is false for all fixture recipes. ADR 0002 documents the
+schema migration, source height crosswalk and residential dependencies.
 
 ## Source granularity and dependency handling
 
@@ -87,3 +96,9 @@ Breaking changes require a new major schema version and migration notes. Added
 compatible fields/source coverage require release notes; corrections identify
 affected source fields and records. Frozen releases carry their own contract
 and source selection; `release --verify` uses that frozen contract.
+
+Specialized rules include a unit_interpretations map for every numeric source
+field. It records the first conversion input unit declared in the pinned generator,
+its source file and line numbers, or an explicit unresolved-unit status. This is
+not confirmation that upstream numeric intent matches the generator. Original
+values remain unchanged; ambiguous curve dimensions are not normalized.

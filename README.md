@@ -17,21 +17,30 @@ Layout: `schemas/` contracts; `sources/` pinned retrieval and selection;
 immutable local downloads; `data/interim/` intermediate diagnostics;
 `data/processed/` canonical tables; `data/releases/` versioned snapshots.
 
-Release: **v0.1.0**, schema **0.1.0**, dated 2026-10-02. Nine building types and
-five templates cover 43 building/template combinations, including mid/high-rise
-apartments. This is a source-input research atlas; unresolved inputs are explicit.
+Release: **v0.2.0**, schema **0.2.0**, dated 2026-10-02. The 17 commercial types
+in the union of the DOE Reference and PNNL commercial suites cover 83 selected
+building/template combinations. There are 41 residential source configurations
+across seven classes: detached, attached, 2–4-unit multifamily, low-rise 5+-unit
+multifamily, midrise apartment, highrise apartment and manufactured/mobile homes.
+This is complete named typology coverage at source-input level; simulation-ready
+parameter completeness remains unresolved. Five commercial templates are selected,
+not every published code edition. [Machine-readable coverage](docs/validation/coverage.json)
+reports expected sets, observed records and unresolved inputs.
 
-| Canonical table | Records | Meaning |
-| --- | ---: | --- |
-| programs | 296 | Deterministic program loads, ventilation components and schedule IDs |
-| schedules | 319 | Full dated source rules, design days and typed units |
-| envelope_components | 2,451 | Conditional assembly limits/targets by climate set and template |
-| systems | 788 | Source HVAC descriptors and schedule references |
-| mappings | 941 | Source program/system assignments and benchmark multiplicity |
-| efficiency_rules | 707 | Capacity/fuel/subtype-dependent equipment rating rules |
-| residential_options | 139 | Explicit ResStock dwelling option/measure evidence |
-| commercial_options | 227 | Explicit ComStock option/measure evidence |
-| provenance | 5,868 | Field origins, original values/units and transformations |
+| Canonical table | Records |
+| --- | ---: |
+| programs | 768 |
+| schedules | 569 |
+| envelope_components | 2,451 |
+| systems | 1,145 |
+| mappings | 1,707 |
+| efficiency_rules | 707 |
+| residential_options | 692 |
+| commercial_options | 227 |
+| provenance | 8,876 |
+| source_files | 160 |
+| residential_archetypes | 41 |
+| specialized_rules | 569 |
 
 Templates: DOE Ref Pre-1980, DOE Ref 1980-2004, 90.1-2007, 90.1-2013 and
 90.1-2019, interpreted as OpenStudio Standards inputs. Weather remains external;
@@ -47,6 +56,7 @@ python -m venv .venv
 .venv/Scripts/python.exe -m scripts.build
 .venv/Scripts/python.exe -m scripts.validate
 .venv/Scripts/python.exe -m scripts.reproduce
+.venv/Scripts/python.exe -m scripts.coverage
 .venv/Scripts/python.exe -m scripts.release --verify
 ```
 
@@ -54,7 +64,7 @@ On macOS/Linux use `.venv/bin/python`. [The reproduction guide](docs/reproducibi
 includes the pilot, source comparisons, tests, release freezing and Git security
 audit. JSON tables under `data/processed/` are canonical; combined `atlas.json`
 and CSV views are local generated conveniences. The frozen release under
-`data/releases/v0.1.0/` includes its own schema, source lock, selection and notices.
+`data/releases/v0.2.0/` includes its own schema, source lock, selection and notices.
 
 The source input tables do not apply Ruby generation overrides, HVAC sizing,
 daylight/occupancy controls, or model defaults. Infiltration, system COP/fuel/
@@ -68,3 +78,10 @@ as calibrated existing-stock buildings.
 Original code and documentation are unlicensed at the user's request; no general
 permission to reuse them is granted by this repository. Extracted upstream data
 retains its original terms and notices. See `LICENSE` and `sources/licenses/`.
+
+Residential configurations are public modeled-input fixtures, not population
+representatives. Exact lookup matches reference measure arguments; 524 unmatched
+option instances (16 distinct pairs) remain explicit. Six raw thermostat base
+overlaps are flagged before offsets/seasonal controls. Area is a source bin,
+so exact SI area and densities remain null. HPXML defaults and annual profiles
+were not executed or invented. v0.1.0 remains unchanged and verifiable.
