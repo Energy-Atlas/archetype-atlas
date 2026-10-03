@@ -96,6 +96,13 @@ class PipelineTests(unittest.TestCase):
         prov = next(r for r in self.atlas['provenance'] if r['id'] == p['provenance_id'])
         self.assertEqual(prov['fields']['source_attributes']['original_value'], p['source_attributes'])
 
+    def test_mapping_floor_area_flag_provenance_preserves_source_flags(self):
+        for mapping in self.atlas['mappings']:
+            prov = next(p for p in self.atlas['provenance'] if p['id'] == mapping['provenance_id'])
+            field = prov['fields']['part_of_total_floor_area']
+            self.assertEqual(sorted(set(field['original_value'] or [])), mapping['part_of_total_floor_area'])
+            self.assertEqual(field['original_field'], 'Part of Total Floor Area')
+
     def test_source_lock_metadata_cannot_be_forged(self):
         self.mutate(lambda a: a['source_files'][0].__setitem__('version', 'unverified'), 'source lock')
 

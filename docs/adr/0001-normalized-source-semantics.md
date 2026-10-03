@@ -29,7 +29,8 @@ Schedules retain all named source rules, units, dates, selectors, design days,
 and order. Constant/hourly values remain exact; no artificial 8760 calendar or
 stochastic schedule is generated. The profile helper serves validation, with
 last matching specific source rule taking precedence, consistent with creating
-OpenStudio rules in source order. Annual/calendar interoperability requires an
+OpenStudio rules in source order. The [official SDK constructor documentation](https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_schedule_rule.html)
+confirms each new rule receives highest priority. Annual/calendar interoperability requires an
 explicit adapter. Holiday rules are retained even where the Ruby generator does
 not apply them. This atlas exposes source inputs, not a claim of equivalence to
 generated models after controls, overrides, sizing, or defaults.

@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -24,6 +25,16 @@ def freeze_release(processed, target):
     covered = {r['building_type'] for r in data['programs']}
     if not {'MediumOffice', 'RetailStandalone', 'MidriseApartment'} <= covered:
         raise ValueError('Release requires commercial and multifamily coverage')
+    # Structural validity alone cannot establish scientific source accuracy or
+    # complete selected coverage. Both are required before creating a snapshot.
+    from scripts.compare import compare_sources
+    from scripts.reproduce import check_rebuild
+    comparison = compare_sources(data)
+    if comparison['errors']:
+        raise ValueError('Cannot release source drift: ' + '; '.join(comparison['errors'][:5]))
+    mismatches = check_rebuild(processed)
+    if mismatches:
+        raise ValueError('Cannot release non-reproducible/incomplete tables: ' + ', '.join(mismatches))
     target.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=target.parent) as scratch:
         stage = Path(scratch)/'snapshot'
@@ -35,6 +46,13 @@ def freeze_release(processed, target):
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT/path, dst)
         shutil.copytree(ROOT/'sources/licenses', stage/'sources/licenses')
+        for path in ['docs/schema.md', 'docs/coverage.md', 'docs/source_inventory.md',
+                     'docs/pilot-validation.md', 'docs/reproducibility.md', 'docs/review.md',
+                     'sources/inventory.json', 'sources/parameter_matrix.csv']:
+            if (ROOT/path).is_file():
+                dst = stage/path
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT/path, dst)
         if (ROOT/'docs/release-notes/v0.1.0.md').exists():
             shutil.copyfile(ROOT/'docs/release-notes/v0.1.0.md', stage/'RELEASE_NOTES.md')
         files = {p.relative_to(stage).as_posix(): {'sha256': sha256(p), 'size_bytes': p.stat().st_size}
@@ -43,6 +61,7 @@ def freeze_release(processed, target):
                     'release_date': '2026-10-02', 'files': files,
                     'counts': {t: len(data[t]) for t in TABLES},
                     'agent': 'Codex / OpenAI GPT-6; exact runtime identifier unavailable',
+                    'generator_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT).decode().strip(),
                     'source_lock_sha256': sha256(ROOT/'sources/lock.json')}
         dump_json(stage/'manifest.json', manifest)
         stage.rename(target)

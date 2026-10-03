@@ -8,7 +8,7 @@ TOKEN_PATTERNS = [
     re.compile(rb'(?:sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})'),
     re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'),
     re.compile(rb'https?://[^\s/@]+:[^\s/@]+@'),
-    re.compile(rb'(?i)(?:api[_-]?key|access[_-]?token|password|secret)\s*[=:]\s*[\x22\x27]?[A-Za-z0-9_/-]{16,}'),
+    re.compile(rb'(?i)(?:api[_-]?key|access[_-]?token|password|secret)[ \t]*[=:][ \t]*[\x22\x27]?[A-Za-z0-9_/-]{16,}'),
     re.compile(rb'AKIA[0-9A-Z]{16}'),
 ]
 

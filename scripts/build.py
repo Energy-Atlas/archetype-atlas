@@ -226,10 +226,12 @@ class Builder:
                       'part_of_total_floor_area': sorted(set(s['part_of_total_floor_area'] for s in group))}
             self.add('mappings', record, 'openstudio-standards', model['geometry'],
                      'OS:Space handles ' + ','.join(s['handle'] for s in group),
-                     {'spaces': group},
+                     {'spaces': group, 'Part of Total Floor Area': [s['part_of_total_floor_area'] for s in group]},
                      {'multiplicity': ('spaces', 'zone multiplier/count', 'sum source thermal-zone multipliers'),
                       'source_space_names': ('spaces', 'source text', 'group exact source names by program and system'),
                       'program_id': ('spaces', 'source text', 'exact standards-tag lookup'),
+                      'part_of_total_floor_area': ('Part of Total Floor Area', 'source Yes/No flag',
+                                                  'sorted distinct flags from source OS:Space objects'),
                       'system_id': ('spaces', 'source text', 'exact space name join to HVAC JSON; null if unassigned')},
                      'Mapping counts are source benchmark context. Area fractions and conditioned '
                      'state are unresolved: no geometric evaluation or thermostat generation. '

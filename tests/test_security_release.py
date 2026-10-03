@@ -18,6 +18,29 @@ class SecurityReleaseTests(unittest.TestCase):
         self.assertTrue(audit.scan_blob('settings.txt', b'https://' + b'name:password' + b'@example.com'))
         self.assertFalse(audit.scan_blob('.env.example', b'# No credentials needed.\n'))
 
+    def test_adjacent_empty_key_examples_are_not_credentials(self):
+        self.assertEqual(audit.scan_blob('brief.md', b'OPENAI_API_KEY=\nANTHROPIC_API_KEY=\n'), [])
+        self.assertTrue(audit.scan_blob('config.txt', b'API_KEY=' + b'a'*32))
+
+    def test_release_rejects_plausible_drift_and_missing_semantic_tables(self):
+        data = build_atlas()
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            processed = root/'processed'
+            wrong = copy.deepcopy(data)
+            next(p for p in wrong['programs'] if p['program'] == 'office')['lighting_W_m2'] += 0.1
+            write_atlas(wrong, processed)
+            with self.assertRaises(ValueError):
+                release.freeze_release(processed, root/'wrong')
+            incomplete = copy.deepcopy(data)
+            removed = {'envelope_components', 'systems', 'mappings', 'efficiency_rules', 'residential_options', 'commercial_options'}
+            for table in removed:
+                incomplete[table] = []
+            incomplete['provenance'] = [p for p in incomplete['provenance'] if p['table'] not in removed]
+            write_atlas(incomplete, processed)
+            with self.assertRaises(ValueError):
+                release.freeze_release(processed, root/'incomplete')
+
     def test_release_immutable_manifest_and_hash_verification(self):
         data = build_atlas()
         with tempfile.TemporaryDirectory() as d:
