@@ -48,3 +48,49 @@ remain visible. Original work remains unlicensed; upstream notices are retained.
 
 The [review record](site-review.md) covers three corrected defects and the
 [ADR](adr/0003-release-backed-catalogue-site.md) records implementation decisions.
+
+## Selective resolutions and executed residential profiles
+
+Publisher branch: `feat/schedule-resolution`. Implementation commit:
+`4c651d3f0c6fc2f99f36412ff0610579e2c75336`. No research branches are merged;
+the frozen atlas v0.1.0/v0.2.0 remains unchanged. Resolution supplement v0.1.0
+has an independent schema and references the v0.2.0 manifest hash.
+
+- [Windows/Linux atlas validation](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37158611335)
+  passed, including 67 Python tests, source retrieval, schema/physical/provenance
+  checks, reproduction, source comparison, coverage, all frozen manifests and audit.
+- [Catalogue build/deployment](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37158611426)
+  passed. It verifies both catalogues and the supplement, eight Node contracts and all
+  39,830 schedule selections; it builds strictly, checks internal links/fragments
+  and exercises annual/day residential plots before deploying the same artifact.
+- Two independent local site generations produced 30,277 byte-identical files.
+  The built site contains 918,507,503 bytes. Three actual upstream residential
+  executions reproduce every frozen CSV/JSON and the profile index byte for byte.
+- Live HTTPS verification passed: 11 served artifact files match local bytes,
+  including both catalogue indexes, browser scripts, locked Plotly, commercial
+  and residential packets, an annual profile, and supplement manifest/index.
+  Public Chromium checks pass for filters/permalinks, commercial plots/CSV and
+  residential annual/day plots; July 1 occupancy values equal canonical hours.
+  No browser errors or failed site requests were observed.
+
+The supplement adds 677 resolutions across 80 records and all 41 executed
+residential configurations: 38 stochastic realizations, three upstream
+zero-occupant skips and 41 nominal thermostat profiles. Original values remain
+visible beside separately labelled resolutions, complete evidence and remaining
+unknowns. Calendar plots show actual local-standard-time 2007 hourly values;
+canonical JSON, exact upstream CSV and the complete licensed supplement download
+are linked from record pages. The Pages environment adds only this exact publisher
+branch and retains its previous two policies.
+
+v0.2.0 catalogue index SHA-256:
+`6446232cfdf4437ffd9a7d87a659387020dec9cb2554fbaf19b957d422fd730b`.
+Resolution manifest SHA-256:
+`b35e6035c7cf7006d0b50712a21941fcd126be62cde023de1a6567e4a11abca5`.
+
+The [availability report](schedule-availability.md) lists unresolved fields and
+their reasons; [generation boundaries](residential-generation.md) document the
+station-weather proxy, upstream zero-occupant skips and nominal thermostat scope.
+[ADR 0004](adr/0004-selective-resolution.md) records evidence gates, and the
+[review record](schedule-review.md) records the corrected failure-lifecycle defect.
+Catalogue/profile coverage continues to be distinct from full simulation readiness.
+The independently versioned supplement is tagged `resolution-v0.1.0`.

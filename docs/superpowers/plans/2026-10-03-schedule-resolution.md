@@ -72,7 +72,7 @@ include source record plus separately labelled resolution/profile metadata.
 - [x] Test resolution labels, original null preservation, referenced profile downloads and annual/day plot selection.
 - [x] Render assumption evidence and generated residential plots with units, seed/calendar and unresolved controls visible.
 - [x] Run Python/Node suites, release/supplement validation, strict site build, links and browser checks.
-- [ ] Obtain one fresh whole-branch review, fix material findings with regressions, and publish the verified artifact autonomously without merging research branches.
+- [x] Obtain one fresh whole-branch review, fix material findings with regressions, and publish the verified artifact autonomously without merging research branches.
 
 ## Implementation ledger
 
@@ -95,3 +95,6 @@ include source record plus separately labelled resolution/profile metadata.
 - Task 3 verification: strict MkDocs, all internal links/fragments and browser interactions pass; independent full generations produced 30,277 byte-identical files. Browser checks compare July 1 plotted residential values against canonical hours and exercise annual 8,760-hour plots.
 - Final review: one fresh whole-branch review found one Important failure-lifecycle defect; no Critical or Minor findings and no declined-to-judge items. An unsuccessful rerun could leave old profiles eligible for freezing. Two observed RED→GREEN regressions now cover failure before any output and after partial unchanged output, and reject stale raw output during freezing. Fresh attempts record running/failed/completed status; freezing requires the latest completed receipt and matching inventory/hash. The immutable supplement retains its original independently reproduced runner snapshot.
 - Final review verification: 67 Python tests and eight Node tests pass after the fix. A third real upstream execution of all 41 configurations under the new lifecycle reproduces the frozen index, CSV and canonical JSON bytes exactly. Publication remains the final delivery step; no second review pass is planned.
+- Final: fixed stale-success outputs after failed reruns — test_failed_attempts_preserve_previous_output_and_record_failure and test_failed_latest_attempt_cannot_freeze_previous_success RED→GREEN, suite 67/67 Python and 8/8 Node. Fix committed as 4c651d3; completed-receipt freezing validated on a real 41-record execution.
+- Task 3: complete. GitHub Windows/Python 3.14 and Linux/Python 3.11 validation passed for 4c651d3; strict site/link/browser build and deployment passed. Live HTTPS files (11) match local bytes and annual/day profiles match canonical values. Publisher branch feat/schedule-resolution remains separate; resolution-v0.1.0 identifies this supplement release. Publication and per-record availability are documented in docs/site-publication.md and docs/schedule-availability.md.
+- Final: no deferred minors and no declined-to-judge items. No scratch plan workspace was created; the committed ledger is retained under the documented ruling.
