@@ -1,5 +1,6 @@
 """Exercise built catalogue, schedules, downloads and mobile/no-JS fallbacks."""
 import argparse
+import csv
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -74,6 +75,18 @@ def smoke(root, screenshot_dir=None):
             expect(page.locator('#atlas-results')).to_contain_text('No matching')
             page.locator('#atlas-reset').click()
             expect(page.locator('#atlas-filter-building')).to_have_value('')
+            if not index.get('pilot'):
+                page.locator('#atlas-filter-kind').select_option('schedules')
+                page.locator('#atlas-filter-building').select_option('HighriseApartment')
+                page.locator('#atlas-filter-template').select_option('90.1-2019')
+                page.locator('#atlas-query').fill('schedule-9841fa9f62ff202db619')
+                expect(page.locator('#atlas-results-count')).to_contain_text('0 matching entries')
+                page.locator('#atlas-filter-template').select_option('90.1-2007')
+                expect(page.locator('#atlas-results-count')).to_contain_text('1 matching entries')
+                page.locator('#atlas-filter-building').select_option('MidriseApartment')
+                page.locator('#atlas-filter-template').select_option('90.1-2019')
+                expect(page.locator('#atlas-results-count')).to_contain_text('1 matching entries')
+                page.locator('#atlas-reset').click()
             page.goto(base + office['path'].removesuffix('.md') + '/')
             expect(page.locator('.atlas-charts .js-plotly-plot').first).to_be_visible(timeout=30000)
             page.locator('.atlas-day').select_option('SmrDsn')
@@ -90,6 +103,58 @@ def smoke(root, screenshot_dir=None):
             assert download.value.suggested_filename == 'atlas-selected-profiles.csv'
             if screenshot_dir:
                 page.screenshot(path=str(screenshot_dir/'office.png'), full_page=True)
+            hospital = next((r for r in index['entries'] if r['id'] == 'program-063ce56e8cb91eedd1ae'), None)
+            if not index.get('pilot'):
+                assert hospital is not None, 'Full build must contain the shared-role regression fixture'
+            if hospital:
+                page.goto(base + hospital['path'].removesuffix('.md') + '/')
+                expect(page.locator('.atlas-charts .js-plotly-plot').first).to_be_visible(timeout=30000)
+                expect(page.locator('.atlas-profile-table')).to_contain_text('heating_setpoint_schedule_id')
+                expect(page.locator('.atlas-profile-table')).to_contain_text('cooling_setpoint_schedule_id')
+                expect(page.locator('.atlas-profile-table')).to_contain_text('minimum deadband: 0.000')
+                with page.expect_download() as shared_csv:
+                    page.locator('.atlas-csv').click()
+                exported = list(csv.DictReader(Path(shared_csv.value.path()).read_text().splitlines()))
+                for role in ['heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id']:
+                    assert len([r for r in exported if r['role'] == role]) == 24, 'Shared schedule role missing from CSV'
+            race = context.new_page()
+            race.add_init_script("""
+                let api;
+                window.__pendingPlots = 0;
+                Object.defineProperty(window, 'Plotly', {
+                  configurable: true,
+                  get() { return api; },
+                  set(value) {
+                    const original = value.newPlot;
+                    value.newPlot = function (...args) {
+                      window.__pendingPlots++;
+                      const result = original.apply(value, args);
+                      if (!window.__plotHeld) {
+                        window.__plotHeld = true;
+                        return new Promise(resolve => {
+                          window.__releasePlot = () => {
+                            window.__plotReleased = true;
+                            Promise.resolve(result).then(value => {
+                              window.__pendingPlots--; resolve(value);
+                            });
+                          };
+                        });
+                      }
+                      return Promise.resolve(result).finally(() => window.__pendingPlots--);
+                    };
+                    api = value;
+                  }
+                });
+            """)
+            race.goto(base + office['path'].removesuffix('.md') + '/')
+            race.wait_for_function('window.__plotHeld === true')
+            race.locator('.atlas-day').select_option('Sat')
+            expect(race.locator('.atlas-charts .js-plotly-plot')).to_have_count(3)
+            race.evaluate('window.__releasePlot()')
+            race.wait_for_function('window.__plotReleased && window.__pendingPlots === 0')
+            race.evaluate('() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))')
+            expect(race.locator('.atlas-charts .js-plotly-plot')).to_have_count(3)
+            race.close()
             page.goto(base + residential['path'].removesuffix('.md') + '/')
             expect(page.locator('body')).to_contain_text('Profiles unavailable')
             assert page.locator('.atlas-explorer').count() == 0

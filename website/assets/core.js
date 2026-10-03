@@ -41,9 +41,10 @@
     const query = (state.q || '').toLocaleLowerCase().trim();
     return entries.filter(row => {
       if (query && !Object.values(row).flat().join(' ').toLocaleLowerCase().includes(query)) return false;
-      return keys.filter(k => k !== 'q' && state[k]).every(k => row[k] === state[k] ||
-        (k === 'building' && (row.referenced_buildings || []).includes(state[k])) ||
-        (k === 'template' && (row.referenced_templates || []).includes(state[k])));
+      const contextKeys = ['building', 'template'].filter(k => state[k]);
+      if (contextKeys.length && !contextKeys.every(k => row[k] === state[k]) &&
+          !(row.referenced_contexts || []).some(context => contextKeys.every(k => context[k] === state[k]))) return false;
+      return keys.filter(k => k !== 'q' && !contextKeys.includes(k) && state[k]).every(k => row[k] === state[k]);
     });
   }
   function parseState(search) {

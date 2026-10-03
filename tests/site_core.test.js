@@ -43,13 +43,25 @@ test('shareable filters preserve exact climate labels and referenced schedule co
     {name: 'Office', kind: 'programs', building: 'MediumOffice', climate: 'Unspecified', template: '90.1-2013'},
     {name: 'Roof', kind: 'envelope_components', climate: 'ClimateZone 4', template: '90.1-2013'},
     {name: 'Roof', kind: 'envelope_components', climate: 'ClimateZone 4A', template: '90.1-2013'},
-    {name: 'Office hours', kind: 'schedules', building: 'Shared', referenced_buildings: ['MediumOffice']},
+    {name: 'Office hours', kind: 'schedules', building: 'Shared', referenced_buildings: ['MediumOffice'],
+      referenced_contexts: [{building: 'MediumOffice', template: '90.1-2013'}]},
   ];
   assert.equal(core.filterEntries(entries, {climate: 'ClimateZone 4'}).length, 1);
   assert.equal(core.filterEntries(entries, {building: 'MediumOffice'}).length, 2);
   assert.equal(core.filterEntries(entries, {q: 'office', kind: 'programs'}).length, 1);
   const state = {q: 'roof & wall', climate: 'ClimateZone 4A', template: '90.1-2013'};
   assert.deepEqual(core.parseState(core.serializeState(state)), state);
+});
+test('shared schedule filters require one real joint building/template reference', () => {
+  ready();
+  const rows = [{name: 'Apartment schedule', building: 'Shared', template: 'Shared',
+    referenced_buildings: ['HighriseApartment', 'MidriseApartment'],
+    referenced_templates: ['90.1-2007', '90.1-2019'],
+    referenced_contexts: [{building: 'HighriseApartment', template: '90.1-2007'},
+      {building: 'MidriseApartment', template: '90.1-2019'}]}];
+  assert.equal(core.filterEntries(rows, {building: 'HighriseApartment', template: '90.1-2019'}).length, 0);
+  assert.equal(core.filterEntries(rows, {building: 'HighriseApartment', template: '90.1-2007'}).length, 1);
+  assert.equal(core.filterEntries(rows, {building: 'MidriseApartment', template: '90.1-2019'}).length, 1);
 });
 test('thermostat diagnostics report overlaps without changing source values', () => {
   ready();

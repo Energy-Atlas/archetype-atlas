@@ -110,11 +110,12 @@
     const base = new URL(section.dataset.recordsBase.replace(/\/?$/, '/'), location.href);
     const ids = JSON.parse(section.dataset.scheduleIds);
     const schedules = new Map();
+    const records = new Map();
     const status = section.querySelector('.atlas-chart-status');
     const day = section.querySelector('.atlas-day'), date = section.querySelector('.atlas-date');
     for (const [role, id] of Object.entries(ids)) {
-      const packet = await json(new URL(id + '.json', base));
-      schedules.set(id, {role, record: packet.record});
+      if (!records.has(id)) records.set(id, (await json(new URL(id + '.json', base))).record);
+      schedules.set(role, {role, record: records.get(id)});
     }
     // Overlay shared records without attaching them to the canonical program.
     const label = node('label', 'Overlay a schedule ');
@@ -180,6 +181,7 @@
         const Plotly = await plotly();
         if (ticket !== revision) return;
         for (const [unit, traces] of groups) {
+          if (ticket !== revision) return;
           const chart = node('div', undefined, {className: 'atlas-plot'});
           chart.setAttribute('role', 'img');
           chart.setAttribute('aria-label', 'Daily schedules in ' + unit + '; exact values in the following tables');
@@ -197,8 +199,9 @@
             yaxis: {title: {text: unit}, rangemode: 'normal'},
             legend: {orientation: 'h', y: -0.28}, font: {family: 'system-ui, sans-serif', color: '#253c3a'},
           }, {responsive: true, displaylogo: false, toImageButtonOptions: {format: 'png', filename: 'atlas-schedules'}});
+          if (ticket !== revision) return;
         }
-      } catch (error) {status.textContent += '. ' + error.message;}
+      } catch (error) {if (ticket === revision) status.textContent += '. ' + error.message;}
     }
     day.addEventListener('change', () => render().catch(e => {status.textContent = e.message;}));
     date.addEventListener('change', () => render().catch(e => {status.textContent = e.message;}));

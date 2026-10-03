@@ -106,6 +106,16 @@ class SiteTests(unittest.TestCase):
                 site.validate_output(root/'build/site-docs', [root/'data/releases/v0.2.0'])
                 self.assertEqual((protected/'keep.png').read_bytes(), b'keep')
 
+    def test_shared_schedule_context_preserves_exact_source_pairs(self):
+        site = self.site_module()
+        entries = site.catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'), 'v0.2.0')
+        row = next(r for r in entries if r['id'] == 'schedule-9841fa9f62ff202db619')
+        self.assertIn('referenced_contexts', row)
+        pairs = {(r['building'], r['template']) for r in row['referenced_contexts']}
+        self.assertIn(('HighriseApartment', '90.1-2007'), pairs)
+        self.assertIn(('MidriseApartment', '90.1-2019'), pairs)
+        self.assertNotIn(('HighriseApartment', '90.1-2019'), pairs)
+
 
 if __name__ == '__main__':
     unittest.main()

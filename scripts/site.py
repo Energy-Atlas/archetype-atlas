@@ -96,13 +96,14 @@ def catalogue_entries(data, version):
     tables = {'buildings': overview_rows(data), **{t: data.get(t, []) for t in RECORD_TABLES}}
     prov = {r['id']: r for r in data['provenance']}
     sources = {r['id']: r for r in data['source_files']}
-    uses = defaultdict(lambda: {'building': set(), 'template': set()})
+    uses = defaultdict(lambda: {'building': set(), 'template': set(), 'contexts': set()})
     for t in ['programs', 'systems']:
         for r in data[t]:
             for k, v in r.items():
                 if k.endswith('_schedule_id') and v:
                     uses[v]['building'].add(r['building_type'])
                     uses[v]['template'].add(r['template'])
+                    uses[v]['contexts'].add((r['building_type'], r['template']))
     for t, rows in tables.items():
         for r in rows:
             context = r.get('source_context', {})
@@ -137,6 +138,8 @@ def catalogue_entries(data, version):
                 'source': source, 'status': status,
                 'referenced_buildings': sorted(uses[r['id']]['building']),
                 'referenced_templates': sorted(uses[r['id']]['template']),
+                'referenced_contexts': [{'building': b, 'template': t}
+                                        for b, t in sorted(uses[r['id']]['contexts'])],
                 'path': f'releases/{version}/{t}/{r["id"]}.md',
                 'download': f'releases/{version}/records/{r["id"]}.json',
             })
