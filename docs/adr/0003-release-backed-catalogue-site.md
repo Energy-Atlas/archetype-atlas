@@ -83,3 +83,7 @@ Upstream data and dependency notices are retained in the generated downloads.
   implementation of the Pages plan with no human intervention. No research
   branch merge is required. Cost if wrong: revert the publisher policy and Pages
   deployment; canonical data and research branches are unaffected.
+- Publication complete: implementation 5fd0d2b passed both GitHub workflows,
+  deployed through Pages and passed live HTTPS byte/browser checks. See
+  docs/site-publication.md. Initial hosting enabled HTTPS and added only the
+  designated publisher branch to the existing deployment allowlist.

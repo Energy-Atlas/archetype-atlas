@@ -88,6 +88,9 @@ were not executed or invented. v0.1.0 remains unchanged and verifiable.
 
 ## Research catalogue site
 
+Browse the [published catalogue](https://energy-atlas.github.io/archetype-atlas/).
+It is maintained on `feat/catalogue-site`; the research branches remain unmerged.
+
 The MkDocs catalogue presents frozen v0.1.0 and v0.2.0 through building, program,
 vintage/template, climate, system, source and status views. Entry pages include
 parameters, field provenance, exact downloads and interactive daily schedule
@@ -96,3 +99,5 @@ inspection. Residential runtime gaps and conditional source rules remain explici
 See the [site build and verification guide](docs/site-build.md) for reproducible
 commands, preview, dependency pins and the GitHub Pages workflow.
 Generated HTML is an inspection view; canonical research data is unchanged.
+The [publication record](docs/site-publication.md) identifies the tested commit
+and deployment evidence.
