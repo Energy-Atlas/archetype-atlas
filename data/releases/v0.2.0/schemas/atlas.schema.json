@@ -1,0 +1,1323 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:schema:0.2.0",
+  "title": "Building Energy Archetype Atlas",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "units": {
+      "type": "object"
+    },
+    "templates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "building_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "climate_zone_sets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "scope": {
+      "const": "source_inputs_with_explicit_gaps"
+    },
+    "coverage_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "template": {
+            "type": "string",
+            "minLength": 1
+          },
+          "building_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "space": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "template",
+          "building_type",
+          "space",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "programs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/programs"
+      }
+    },
+    "schedules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/schedules"
+      }
+    },
+    "envelope_components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/envelope_components"
+      }
+    },
+    "systems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/systems"
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mappings"
+      }
+    },
+    "efficiency_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/efficiency_rules"
+      }
+    },
+    "residential_options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residential_options"
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/provenance"
+      }
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source_files"
+      }
+    },
+    "commercial_options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/commercial_options"
+      }
+    },
+    "residential_archetypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residential_archetypes"
+      }
+    },
+    "specialized_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/specialized_rules"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "units",
+    "templates",
+    "building_types",
+    "climate_zone_sets",
+    "scope",
+    "coverage_gaps",
+    "programs",
+    "schedules",
+    "envelope_components",
+    "systems",
+    "mappings",
+    "efficiency_rules",
+    "residential_options",
+    "provenance",
+    "source_files",
+    "commercial_options",
+    "residential_archetypes",
+    "specialized_rules"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "programs": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "program": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_space_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "enum": [
+            "existing_stock_benchmark",
+            "code_prototype_rules"
+          ]
+        },
+        "infiltration_m3_s_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "infiltration_basis": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_attributes": {
+          "type": "object"
+        },
+        "people_per_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10
+        },
+        "lighting_W_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "additional_lighting_W_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "electric_equipment_W_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "gas_equipment_W_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ventilation_m3_s_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ventilation_m3_s_person": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ventilation_ach": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "occupancy_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lighting_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "electric_equipment_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "gas_equipment_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "heating_setpoint_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cooling_setpoint_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "activity_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "service_water_heating_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "building_type",
+        "template",
+        "program",
+        "variant",
+        "source_building_type",
+        "source_space_type",
+        "source_family",
+        "infiltration_m3_s_m2",
+        "infiltration_basis",
+        "source_attributes",
+        "people_per_m2",
+        "lighting_W_m2",
+        "additional_lighting_W_m2",
+        "electric_equipment_W_m2",
+        "gas_equipment_W_m2",
+        "ventilation_m3_s_m2",
+        "ventilation_m3_s_person",
+        "ventilation_ach",
+        "occupancy_schedule_id",
+        "lighting_schedule_id",
+        "electric_equipment_schedule_id",
+        "gas_equipment_schedule_id",
+        "heating_setpoint_schedule_id",
+        "cooling_setpoint_schedule_id",
+        "activity_schedule_id",
+        "service_water_heating_schedule_id",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "schedules": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schedule_type": {
+          "enum": [
+            "fraction",
+            "temperature",
+            "activity"
+          ]
+        },
+        "units": {
+          "enum": [
+            "dimensionless",
+            "C",
+            "W/person"
+          ]
+        },
+        "time_resolution_minutes": {
+          "const": 60
+        },
+        "interpolation": {
+          "const": "none"
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "day_types": {
+                "type": "string",
+                "minLength": 1
+              },
+              "start_date": {
+                "type": "string",
+                "minLength": 1
+              },
+              "end_date": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "enum": [
+                  "Constant",
+                  "Hourly"
+                ]
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "source_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "source_units": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "source_category": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "day_types",
+              "start_date",
+              "end_date",
+              "type",
+              "values",
+              "source_index",
+              "source_units",
+              "source_category"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "source_name",
+        "schedule_type",
+        "units",
+        "time_resolution_minutes",
+        "interpolation",
+        "rules",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "envelope_components": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "enum": [
+            "existing_stock_benchmark",
+            "code_prototype_rules"
+          ]
+        },
+        "climate_zone_set": {
+          "type": "string",
+          "minLength": 1
+        },
+        "surface_type": {
+          "enum": [
+            "ExteriorWall",
+            "ExteriorRoof",
+            "ExteriorFloor",
+            "ExteriorWindow"
+          ]
+        },
+        "construction_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "u_W_m2_K": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 30
+        },
+        "shgc": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "visible_transmittance": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "value_basis": {
+          "enum": [
+            "source_assembly_limit_or_target",
+            "unresolved_invalid_source"
+          ]
+        },
+        "source_attributes": {
+          "type": "object"
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "template",
+        "source_family",
+        "climate_zone_set",
+        "surface_type",
+        "construction_type",
+        "building_category",
+        "u_W_m2_K",
+        "shgc",
+        "visible_transmittance",
+        "value_basis",
+        "source_attributes",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "systems": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "enum": [
+            "existing_stock_benchmark",
+            "code_prototype_rules"
+          ]
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "climate_zone_set": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "system_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "heating_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "heating_fuel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cooling_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "efficiency_or_cop": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 20
+        },
+        "zone_terminal_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ventilation_strategy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "system_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "oa_schedule_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_attributes": {
+          "type": "object"
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "building_type",
+        "template",
+        "source_family",
+        "variant",
+        "climate_zone_set",
+        "system_type",
+        "heating_type",
+        "heating_fuel",
+        "cooling_type",
+        "efficiency_or_cop",
+        "zone_terminal_type",
+        "ventilation_strategy",
+        "system_schedule_id",
+        "oa_schedule_id",
+        "source_attributes",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "mappings": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "program_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "system_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "area_fraction": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "multiplicity": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "conditioned": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "source_space_names": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "part_of_total_floor_area": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "Yes",
+              "No",
+              ""
+            ]
+          },
+          "uniqueItems": true
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "building_type",
+        "template",
+        "program_id",
+        "system_id",
+        "area_fraction",
+        "multiplicity",
+        "conditioned",
+        "source_space_names",
+        "part_of_total_floor_area",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "efficiency_rules": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "equipment_table": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "source_attributes": {
+          "type": "object"
+        },
+        "assignment_status": {
+          "const": "conditional_unassigned"
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "template",
+        "equipment_table",
+        "metrics",
+        "source_attributes",
+        "assignment_status",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "residential_options": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "option": {
+          "type": "string",
+          "minLength": 1
+        },
+        "measure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arguments": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "applicability": {
+          "const": "dwelling_unit_option_requires_complete_resstock_configuration"
+        },
+        "normalized_value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "normalized_units": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "parameter",
+        "option",
+        "measure",
+        "arguments",
+        "applicability",
+        "normalized_value",
+        "normalized_units",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "table": {
+          "enum": [
+            "programs",
+            "schedules",
+            "envelope_components",
+            "systems",
+            "mappings",
+            "efficiency_rules",
+            "residential_options",
+            "commercial_options",
+            "residential_archetypes",
+            "specialized_rules"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_file_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extraction_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "confidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fields": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "original_field": {
+                "type": "string",
+                "minLength": 1
+              },
+              "original_units": {
+                "type": "string",
+                "minLength": 1
+              },
+              "original_value": {},
+              "transformation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "unresolved",
+                  "normalized"
+                ]
+              }
+            },
+            "required": [
+              "original_field",
+              "original_units",
+              "original_value",
+              "transformation",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "table",
+        "record_id",
+        "source_file_id",
+        "locator",
+        "extraction_date",
+        "confidence",
+        "notes",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "source_files": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "license_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "retrieval_date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "id",
+        "source_id",
+        "path",
+        "url",
+        "sha256",
+        "size_bytes",
+        "project",
+        "repository",
+        "version",
+        "license_path",
+        "retrieval_date"
+      ],
+      "additionalProperties": false
+    },
+    "commercial_options": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "option": {
+          "type": "string",
+          "minLength": 1
+        },
+        "measure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arguments": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "applicability": {
+          "const": "commercial_option_requires_complete_comstock_configuration"
+        },
+        "normalized_value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "normalized_units": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "parameter",
+        "option",
+        "measure",
+        "arguments",
+        "applicability",
+        "normalized_value",
+        "normalized_units",
+        "provenance_id"
+      ],
+      "additionalProperties": false
+    },
+    "residential_archetypes": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_building_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_context": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "selected_options": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "option_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "unresolved_options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string",
+                "minLength": 1
+              },
+              "option": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "parameter",
+              "option",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "non_argument_options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string",
+                "minLength": 1
+              },
+              "option": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "parameter",
+              "option"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "occupants": {
+          "type": "number",
+          "minimum": 0
+        },
+        "heating_base_C": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 100
+        },
+        "cooling_base_C": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 100
+        },
+        "conditioned_floor_area_m2": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "simulation_ready": {
+          "const": false
+        },
+        "runtime_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "thermostat_base_overlap": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "building_type",
+        "template",
+        "source_family",
+        "variant",
+        "source_building_id",
+        "provenance_id",
+        "source_context",
+        "selected_options",
+        "option_ids",
+        "unresolved_options",
+        "non_argument_options",
+        "occupants",
+        "heating_base_C",
+        "cooling_base_C",
+        "conditioned_floor_area_m2",
+        "simulation_ready",
+        "runtime_gaps",
+        "thermostat_base_overlap"
+      ],
+      "additionalProperties": false
+    },
+    "specialized_rules": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_attributes": {
+          "type": "object"
+        },
+        "unit_interpretations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "source_units": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "generator_declared_source_intent_unverified",
+                  "unresolved_no_unique_conversion_unit"
+                ]
+              },
+              "generator_source_file_id": {
+                "type": "string"
+              },
+              "generator_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source_units",
+              "status",
+              "generator_source_file_id",
+              "generator_lines",
+              "notes"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "template",
+        "source_family",
+        "rule_type",
+        "provenance_id",
+        "source_attributes",
+        "unit_interpretations"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

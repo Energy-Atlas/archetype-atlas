@@ -1,0 +1,45 @@
+{
+  "inventory_date": "2026-10-02",
+  "families": [
+    {
+      "source_id": "comstock",
+      "project": "ComStock",
+      "official_url": "https://github.com/NatLabRockies/ComStock",
+      "parameter_locations": ["resources/options_lookup.tsv", "national/housing_characteristics/", "resources/measures/create_typical_building_from_model/measure.rb", "resources/measures/set_nist_infiltration_correlations/"],
+      "role": "Existing commercial stock options, distributions, generator measures and standards dependencies",
+      "v0_1_status": "Pinned options and generator inspected; selected deterministic option/measure rows extracted; distributions not sampled"
+    },
+    {
+      "source_id": "resstock",
+      "project": "ResStock",
+      "official_url": "https://github.com/NatLabRockies/resstock",
+      "parameter_locations": ["resources/options_lookup.tsv", "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb", "project_national/housing_characteristics/"],
+      "role": "Existing residential dwelling options, stock evidence, and HPXML model defaults",
+      "v0_1_status": "Pinned options and defaults inspected; selected thermostat, occupants, infiltration, loads, lighting and heating options extracted; complete HPXML configurations deferred"
+    },
+    {
+      "source_id": "openstudio-standards",
+      "project": "OpenStudio Standards",
+      "official_url": "https://github.com/NatLabRockies/openstudio-standards",
+      "parameter_locations": ["lib/openstudio-standards/standards/ashrae_90_1/", "data/geometry/", "lib/openstudio-standards/prototypes/common/", "lib/openstudio-standards/standards/Standards.Model.rb", "lib/openstudio-standards/standards/Standards.SpaceType.rb", "lib/openstudio-standards/standards/Standards.People.rb"],
+      "role": "Program semantics, schedules, conditional constructions, equipment rules, and reference/prototype generation inputs",
+      "v0_1_status": "Canonical deterministic programs, schedules, envelope components, HVAC maps, source-space mappings and efficiency rules extracted at locked commit"
+    },
+    {
+      "source_id": "doe-reference",
+      "project": "DOE Commercial Reference Buildings",
+      "official_url": "https://www.energy.gov/cmei/buildings/commercial-reference-buildings",
+      "parameter_locations": ["https://www.energy.gov/cmei/buildings/existing-commercial-reference-buildings-constructed-1980", "Building-type ZIP packages: IDF, scorecard and legacy output depending on version"],
+      "role": "Legacy existing-stock benchmarks: pre-1980 and post-1980; separate new-construction family",
+      "v0_1_status": "Official inventory inspected; direct Medium Office link returned HTTP 404. Atlas uses separately labeled OpenStudio Standards DOE reference inputs; no direct DOE IDF equivalence asserted"
+    },
+    {
+      "source_id": "pnnl-prototypes",
+      "project": "DOE/PNNL Prototype Building Models",
+      "official_url": "https://www.energycodes.gov/prototype-building-models",
+      "parameter_locations": ["Building-type/code ZIP packages: IDF, HTM and scorecard XLSX", "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeMedium_STD2013.zip"],
+      "role": "New construction/code benchmarks, distinct from historical existing buildings",
+      "v0_1_status": "Official inventory inspected; linked Medium Office 2013 ZIP returned HTTP 404. Direct scorecard/IDF cross-validation remains unresolved"
+    }
+  ]
+}

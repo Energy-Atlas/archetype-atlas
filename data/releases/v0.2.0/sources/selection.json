@@ -1,0 +1,675 @@
+{
+  "schema_version": "0.2.0",
+  "templates": [
+    {
+      "template": "DOE Ref Pre-1980",
+      "family": "existing_stock_benchmark",
+      "source_id": "openstudio-standards",
+      "space_types": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.spc_typ.json",
+      "envelope": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.construction_properties.json",
+      "prototype_inputs": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.prototype_inputs.json",
+      "models": [
+        {
+          "building_type": "MediumOffice",
+          "geometry": "data/geometry/ASHRAEMediumOffice.osm",
+          "hvac": "data/geometry/DOERefPre1980MediumOffice.json"
+        },
+        {
+          "building_type": "RetailStandalone",
+          "geometry": "data/geometry/DOERefRetailStandalone.osm",
+          "hvac": "data/geometry/DOERefRetailStandalone.json"
+        },
+        {
+          "building_type": "RetailStripmall",
+          "geometry": "data/geometry/ASHRAERetailStripmall.osm",
+          "hvac": "data/geometry/DOERefRetailStripmall.json"
+        },
+        {
+          "building_type": "SmallHotel",
+          "geometry": "data/geometry/DOERefSmallHotel.osm",
+          "hvac": "data/geometry/DOERefPre1980SmallHotel.json"
+        },
+        {
+          "building_type": "LargeHotel",
+          "geometry": "data/geometry/DOERefLargeHotel.osm",
+          "hvac": "data/geometry/DOERefLargeHotel.json"
+        },
+        {
+          "building_type": "QuickServiceRestaurant",
+          "geometry": "data/geometry/DOERefPre1980QuickServiceRestaurant.osm",
+          "hvac": "data/geometry/DOERefQuickServiceRestaurant.json"
+        },
+        {
+          "building_type": "FullServiceRestaurant",
+          "geometry": "data/geometry/DOERefPre1980FullServiceRestaurant.osm",
+          "hvac": "data/geometry/DOERefFullServiceRestaurant.json"
+        },
+        {
+          "building_type": "MidriseApartment",
+          "geometry": "data/geometry/DOERefMidriseApartment.osm",
+          "hvac": "data/geometry/DOERefMidriseApartment.json"
+        },
+        {
+          "building_type": "SmallOffice",
+          "geometry": "data/geometry/DOERefPre1980SmallOffice.osm",
+          "hvac": "data/geometry/DOERefSmallOffice.json"
+        },
+        {
+          "building_type": "LargeOffice",
+          "geometry": "data/geometry/DOERefLargeOffice.osm",
+          "hvac": "data/geometry/DOERefLargeOffice.json"
+        },
+        {
+          "building_type": "Warehouse",
+          "geometry": "data/geometry/DOERefWarehouse.osm",
+          "hvac": "data/geometry/DOERefWarehouse.json"
+        },
+        {
+          "building_type": "PrimarySchool",
+          "geometry": "data/geometry/DOERefPrimarySchool.osm",
+          "hvac": "data/geometry/DOERefPrimarySchool.json"
+        },
+        {
+          "building_type": "SecondarySchool",
+          "geometry": "data/geometry/DOERefSecondarySchool.osm",
+          "hvac": "data/geometry/DOERefPre1980SecondarySchool.json"
+        },
+        {
+          "building_type": "SuperMarket",
+          "geometry": "data/geometry/ASHRAESuperMarket.osm",
+          "hvac": "data/geometry/ASHRAESuperMarket.json"
+        },
+        {
+          "building_type": "Hospital",
+          "geometry": "data/geometry/ASHRAEHospital.osm",
+          "hvac": "data/geometry/DOERefHospital.json"
+        },
+        {
+          "building_type": "Outpatient",
+          "geometry": "data/geometry/ASHRAEOutpatient.osm",
+          "hvac": "data/geometry/DOERefOutpatient.json"
+        }
+      ],
+      "efficiency_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.furnaces.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.unitary_acs.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.boilers.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.heat_pumps.json"
+      ],
+      "specialized_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.refrigeration_compressors.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.refrigeration_condenser.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.refrigeration_system.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.refrigeration_walkins.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.ref_cases.json"
+      ],
+      "generator_files": [
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.SuperMarket.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Hospital.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Outpatient.rb",
+        "lib/openstudio-standards/prototypes/common/objects/Prototype.refrigeration.rb"
+      ]
+    },
+    {
+      "template": "DOE Ref 1980-2004",
+      "family": "existing_stock_benchmark",
+      "source_id": "openstudio-standards",
+      "space_types": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.spc_typ.json",
+      "envelope": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.construction_properties.json",
+      "prototype_inputs": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.prototype_inputs.json",
+      "models": [
+        {
+          "building_type": "MediumOffice",
+          "geometry": "data/geometry/ASHRAEMediumOffice.osm",
+          "hvac": "data/geometry/DOERef1980to2004MediumOffice.json"
+        },
+        {
+          "building_type": "RetailStandalone",
+          "geometry": "data/geometry/DOERefRetailStandalone.osm",
+          "hvac": "data/geometry/DOERefRetailStandalone.json"
+        },
+        {
+          "building_type": "RetailStripmall",
+          "geometry": "data/geometry/ASHRAERetailStripmall.osm",
+          "hvac": "data/geometry/DOERefRetailStripmall.json"
+        },
+        {
+          "building_type": "SmallHotel",
+          "geometry": "data/geometry/DOERefSmallHotel.osm",
+          "hvac": "data/geometry/DOERef1980to2004SmallHotel.json"
+        },
+        {
+          "building_type": "LargeHotel",
+          "geometry": "data/geometry/DOERefLargeHotel.osm",
+          "hvac": "data/geometry/DOERefLargeHotel.json"
+        },
+        {
+          "building_type": "QuickServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEQuickServiceRestaurant.osm",
+          "hvac": "data/geometry/DOERefQuickServiceRestaurant.json"
+        },
+        {
+          "building_type": "FullServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEFullServiceRestaurant.osm",
+          "hvac": "data/geometry/DOERefFullServiceRestaurant.json"
+        },
+        {
+          "building_type": "MidriseApartment",
+          "geometry": "data/geometry/DOERefMidriseApartment.osm",
+          "hvac": "data/geometry/DOERefMidriseApartment.json"
+        },
+        {
+          "building_type": "SmallOffice",
+          "geometry": "data/geometry/ASHRAESmallOffice.osm",
+          "hvac": "data/geometry/DOERefSmallOffice.json"
+        },
+        {
+          "building_type": "LargeOffice",
+          "geometry": "data/geometry/DOERefLargeOffice.osm",
+          "hvac": "data/geometry/DOERefLargeOffice.json"
+        },
+        {
+          "building_type": "Warehouse",
+          "geometry": "data/geometry/DOERefWarehouse.osm",
+          "hvac": "data/geometry/DOERefWarehouse.json"
+        },
+        {
+          "building_type": "PrimarySchool",
+          "geometry": "data/geometry/DOERefPrimarySchool.osm",
+          "hvac": "data/geometry/DOERefPrimarySchool.json"
+        },
+        {
+          "building_type": "SecondarySchool",
+          "geometry": "data/geometry/DOERefSecondarySchool.osm",
+          "hvac": "data/geometry/DOERef1980to2004SecondarySchool.json"
+        },
+        {
+          "building_type": "SuperMarket",
+          "geometry": "data/geometry/ASHRAESuperMarket.osm",
+          "hvac": "data/geometry/ASHRAESuperMarket.json"
+        },
+        {
+          "building_type": "Hospital",
+          "geometry": "data/geometry/ASHRAEHospital.osm",
+          "hvac": "data/geometry/DOERefHospital.json"
+        },
+        {
+          "building_type": "Outpatient",
+          "geometry": "data/geometry/ASHRAEOutpatient.osm",
+          "hvac": "data/geometry/DOERefOutpatient.json"
+        }
+      ],
+      "efficiency_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.furnaces.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.unitary_acs.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.boilers.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.heat_pumps.json"
+      ],
+      "specialized_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.refrigeration_compressors.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.refrigeration_condenser.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.refrigeration_system.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.refrigeration_walkins.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.ref_cases.json"
+      ],
+      "generator_files": [
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.SuperMarket.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Hospital.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Outpatient.rb",
+        "lib/openstudio-standards/prototypes/common/objects/Prototype.refrigeration.rb"
+      ]
+    },
+    {
+      "template": "90.1-2007",
+      "family": "code_prototype_rules",
+      "source_id": "openstudio-standards",
+      "space_types": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.spc_typ.json",
+      "envelope": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.construction_properties.json",
+      "prototype_inputs": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.prototype_inputs.json",
+      "models": [
+        {
+          "building_type": "MediumOffice",
+          "geometry": "data/geometry/ASHRAEMediumOffice.osm",
+          "hvac": "data/geometry/ASHRAEMediumOffice.json"
+        },
+        {
+          "building_type": "RetailStandalone",
+          "geometry": "data/geometry/ASHRAE90120042007RetailStandalone.osm",
+          "hvac": "data/geometry/ASHRAE90120042007RetailStandalone.json"
+        },
+        {
+          "building_type": "RetailStripmall",
+          "geometry": "data/geometry/ASHRAERetailStripmall.osm",
+          "hvac": "data/geometry/ASHRAERetailStripmall.json"
+        },
+        {
+          "building_type": "SmallHotel",
+          "geometry": "data/geometry/ASHRAESmallHotel.osm",
+          "hvac": "data/geometry/ASHRAESmallHotel.json"
+        },
+        {
+          "building_type": "LargeHotel",
+          "geometry": "data/geometry/ASHRAELargeHotel.osm",
+          "hvac": "data/geometry/ASHRAELargeHotel.json"
+        },
+        {
+          "building_type": "QuickServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEQuickServiceRestaurant.osm",
+          "hvac": "data/geometry/ASHRAE90120072010QuickServiceRestaurant.json"
+        },
+        {
+          "building_type": "FullServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEFullServiceRestaurant.osm",
+          "hvac": "data/geometry/ASHRAE9012007FullServiceRestaurant.json"
+        },
+        {
+          "building_type": "MidriseApartment",
+          "geometry": "data/geometry/ASHRAEMidriseApartment.osm",
+          "hvac": "data/geometry/ASHRAEMidriseApartment.json"
+        },
+        {
+          "building_type": "HighriseApartment",
+          "geometry": "data/geometry/ASHRAEHighriseApartment.osm",
+          "hvac": "data/geometry/ASHRAEHighriseApartment.json"
+        },
+        {
+          "building_type": "SmallOffice",
+          "geometry": "data/geometry/ASHRAESmallOffice.osm",
+          "hvac": "data/geometry/ASHRAE90120042007SmallOffice.json"
+        },
+        {
+          "building_type": "LargeOffice",
+          "geometry": "data/geometry/ASHRAELargeOffice.osm",
+          "hvac": "data/geometry/ASHRAELargeOffice.json"
+        },
+        {
+          "building_type": "Warehouse",
+          "geometry": "data/geometry/ASHRAE90120042007Warehouse.osm",
+          "hvac": "data/geometry/ASHRAEWarehouse.json"
+        },
+        {
+          "building_type": "PrimarySchool",
+          "geometry": "data/geometry/ASHRAEPrimarySchool.osm",
+          "hvac": "data/geometry/ASHRAEPrimarySchool.json"
+        },
+        {
+          "building_type": "SecondarySchool",
+          "geometry": "data/geometry/ASHRAESecondarySchool.osm",
+          "hvac": "data/geometry/ASHRAESecondarySchool.json"
+        },
+        {
+          "building_type": "SuperMarket",
+          "geometry": "data/geometry/ASHRAESuperMarket.osm",
+          "hvac": "data/geometry/ASHRAESuperMarket.json"
+        },
+        {
+          "building_type": "Hospital",
+          "geometry": "data/geometry/ASHRAEHospital.osm",
+          "hvac": "data/geometry/ASHRAE90120042007Hospital.json"
+        },
+        {
+          "building_type": "Outpatient",
+          "geometry": "data/geometry/ASHRAEOutpatient.osm",
+          "hvac": "data/geometry/ASHRAEOutpatient.json"
+        }
+      ],
+      "efficiency_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.furnaces.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.unitary_acs.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.boilers.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.heat_pumps.json"
+      ],
+      "specialized_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.refrigeration_compressors.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.refrigeration_condenser.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.refrigeration_system.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.refrigeration_walkins.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.ref_cases.json"
+      ],
+      "generator_files": [
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.SuperMarket.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Hospital.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Outpatient.rb",
+        "lib/openstudio-standards/prototypes/common/objects/Prototype.refrigeration.rb"
+      ]
+    },
+    {
+      "template": "90.1-2013",
+      "family": "code_prototype_rules",
+      "source_id": "openstudio-standards",
+      "space_types": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.spc_typ.json",
+      "envelope": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.construction_properties.json",
+      "prototype_inputs": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.prototype_inputs.json",
+      "models": [
+        {
+          "building_type": "MediumOffice",
+          "geometry": "data/geometry/ASHRAEMediumOffice.osm",
+          "hvac": "data/geometry/ASHRAEMediumOffice.json"
+        },
+        {
+          "building_type": "RetailStandalone",
+          "geometry": "data/geometry/ASHRAE9012013RetailStandalone.osm",
+          "hvac": "data/geometry/ASHRAE90120102013RetailStandalone.json"
+        },
+        {
+          "building_type": "RetailStripmall",
+          "geometry": "data/geometry/ASHRAERetailStripmall.osm",
+          "hvac": "data/geometry/ASHRAERetailStripmall.json"
+        },
+        {
+          "building_type": "SmallHotel",
+          "geometry": "data/geometry/ASHRAESmallHotel.osm",
+          "hvac": "data/geometry/ASHRAESmallHotel.json"
+        },
+        {
+          "building_type": "LargeHotel",
+          "geometry": "data/geometry/ASHRAELargeHotel.osm",
+          "hvac": "data/geometry/ASHRAELargeHotel.json"
+        },
+        {
+          "building_type": "QuickServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEQuickServiceRestaurant.osm",
+          "hvac": "data/geometry/ASHRAE9012013QuickServiceRestaurant.json"
+        },
+        {
+          "building_type": "FullServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEFullServiceRestaurant.osm",
+          "hvac": "data/geometry/ASHRAE9012013FullServiceRestaurant.json"
+        },
+        {
+          "building_type": "MidriseApartment",
+          "geometry": "data/geometry/ASHRAEMidriseApartment.osm",
+          "hvac": "data/geometry/ASHRAEMidriseApartment.json"
+        },
+        {
+          "building_type": "HighriseApartment",
+          "geometry": "data/geometry/ASHRAEHighriseApartment.osm",
+          "hvac": "data/geometry/ASHRAEHighriseApartment.json"
+        },
+        {
+          "building_type": "SmallOffice",
+          "geometry": "data/geometry/ASHRAESmallOffice.osm",
+          "hvac": "data/geometry/ASHRAE90120102013SmallOffice.json"
+        },
+        {
+          "building_type": "LargeOffice",
+          "geometry": "data/geometry/ASHRAE9012013LargeOffice.osm",
+          "hvac": "data/geometry/ASHRAELargeOffice.json"
+        },
+        {
+          "building_type": "Warehouse",
+          "geometry": "data/geometry/ASHRAE90120102013Warehouse.osm",
+          "hvac": "data/geometry/ASHRAEWarehouse.json"
+        },
+        {
+          "building_type": "PrimarySchool",
+          "geometry": "data/geometry/ASHRAEPrimarySchool.osm",
+          "hvac": "data/geometry/ASHRAEPrimarySchool.json"
+        },
+        {
+          "building_type": "SecondarySchool",
+          "geometry": "data/geometry/ASHRAESecondarySchool.osm",
+          "hvac": "data/geometry/ASHRAESecondarySchool.json"
+        },
+        {
+          "building_type": "SuperMarket",
+          "geometry": "data/geometry/ASHRAE9012013SuperMarket.osm",
+          "hvac": "data/geometry/ASHRAESuperMarket.json"
+        },
+        {
+          "building_type": "Hospital",
+          "geometry": "data/geometry/ASHRAE9012013Hospital.osm",
+          "hvac": "data/geometry/ASHRAE90120102013Hospital.json"
+        },
+        {
+          "building_type": "Outpatient",
+          "geometry": "data/geometry/ASHRAE9012013Outpatient.osm",
+          "hvac": "data/geometry/ASHRAEOutpatient.json"
+        }
+      ],
+      "efficiency_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.furnaces.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.unitary_acs.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.boilers.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.heat_pumps.json"
+      ],
+      "specialized_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.refrigeration_compressors.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.refrigeration_condenser.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.refrigeration_system.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.refrigeration_walkins.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.ref_cases.json"
+      ],
+      "generator_files": [
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.SuperMarket.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Hospital.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Outpatient.rb",
+        "lib/openstudio-standards/prototypes/common/objects/Prototype.refrigeration.rb"
+      ]
+    },
+    {
+      "template": "90.1-2019",
+      "family": "code_prototype_rules",
+      "source_id": "openstudio-standards",
+      "space_types": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.spc_typ.json",
+      "envelope": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json",
+      "prototype_inputs": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json",
+      "models": [
+        {
+          "building_type": "MediumOffice",
+          "geometry": "data/geometry/ASHRAEMediumOffice.osm",
+          "hvac": "data/geometry/ASHRAEMediumOffice.json"
+        },
+        {
+          "building_type": "RetailStandalone",
+          "geometry": "data/geometry/ASHRAE9012013RetailStandalone.osm",
+          "hvac": "data/geometry/ASHRAE90120102013RetailStandalone.json"
+        },
+        {
+          "building_type": "RetailStripmall",
+          "geometry": "data/geometry/ASHRAERetailStripmall.osm",
+          "hvac": "data/geometry/ASHRAERetailStripmall.json"
+        },
+        {
+          "building_type": "SmallHotel",
+          "geometry": "data/geometry/ASHRAESmallHotel.osm",
+          "hvac": "data/geometry/ASHRAESmallHotel.json"
+        },
+        {
+          "building_type": "LargeHotel",
+          "geometry": "data/geometry/ASHRAELargeHotel.osm",
+          "hvac": "data/geometry/ASHRAE90120162019LargeHotel.json"
+        },
+        {
+          "building_type": "QuickServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEQuickServiceRestaurant.osm",
+          "hvac": "data/geometry/ASHRAE9012013QuickServiceRestaurant.json"
+        },
+        {
+          "building_type": "FullServiceRestaurant",
+          "geometry": "data/geometry/ASHRAEFullServiceRestaurant.osm",
+          "hvac": "data/geometry/ASHRAE9012013FullServiceRestaurant.json"
+        },
+        {
+          "building_type": "MidriseApartment",
+          "geometry": "data/geometry/ASHRAEMidriseApartment.osm",
+          "hvac": "data/geometry/ASHRAEMidriseApartment.json"
+        },
+        {
+          "building_type": "HighriseApartment",
+          "geometry": "data/geometry/ASHRAEHighriseApartment.osm",
+          "hvac": "data/geometry/ASHRAE90120162019HighriseApartment.json"
+        },
+        {
+          "building_type": "SmallOffice",
+          "geometry": "data/geometry/ASHRAESmallOffice.osm",
+          "hvac": "data/geometry/ASHRAE90120102013SmallOffice.json"
+        },
+        {
+          "building_type": "LargeOffice",
+          "geometry": "data/geometry/ASHRAE9012013LargeOffice.osm",
+          "hvac": "data/geometry/ASHRAE90120162019LargeOffice.json"
+        },
+        {
+          "building_type": "Warehouse",
+          "geometry": "data/geometry/ASHRAE90120102013Warehouse.osm",
+          "hvac": "data/geometry/ASHRAEWarehouse.json"
+        },
+        {
+          "building_type": "PrimarySchool",
+          "geometry": "data/geometry/ASHRAEPrimarySchool.osm",
+          "hvac": "data/geometry/ASHRAEPrimarySchool.json"
+        },
+        {
+          "building_type": "SecondarySchool",
+          "geometry": "data/geometry/ASHRAESecondarySchool.osm",
+          "hvac": "data/geometry/ASHRAE90120162019SecondarySchool.json"
+        },
+        {
+          "building_type": "SuperMarket",
+          "geometry": "data/geometry/ASHRAE9012013SuperMarket.osm",
+          "hvac": "data/geometry/ASHRAESuperMarket.json"
+        },
+        {
+          "building_type": "Hospital",
+          "geometry": "data/geometry/ASHRAE9012013Hospital.osm",
+          "hvac": "data/geometry/ASHRAE90120162019Hospital.json"
+        },
+        {
+          "building_type": "Outpatient",
+          "geometry": "data/geometry/ASHRAE9012013Outpatient.osm",
+          "hvac": "data/geometry/ASHRAEOutpatient.json"
+        }
+      ],
+      "efficiency_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.furnaces.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.unitary_acs.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.boilers.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.heat_pumps.json"
+      ],
+      "specialized_files": [
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.refrigeration_compressors.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.refrigeration_condenser.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.refrigeration_system.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.refrigeration_walkins.json",
+        "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.ref_cases.json"
+      ],
+      "generator_files": [
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.SuperMarket.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Hospital.rb",
+        "lib/openstudio-standards/prototypes/common/buildings/Prototype.Outpatient.rb",
+        "lib/openstudio-standards/prototypes/common/objects/Prototype.refrigeration.rb"
+      ]
+    }
+  ],
+  "buildings": [
+    "MediumOffice",
+    "RetailStandalone",
+    "RetailStripmall",
+    "SmallHotel",
+    "LargeHotel",
+    "QuickServiceRestaurant",
+    "FullServiceRestaurant",
+    "MidriseApartment",
+    "HighriseApartment",
+    "SmallOffice",
+    "LargeOffice",
+    "Warehouse",
+    "PrimarySchool",
+    "SecondarySchool",
+    "SuperMarket",
+    "Hospital",
+    "Outpatient",
+    "SingleFamilyDetached",
+    "SingleFamilyAttached",
+    "MultiFamily2To4",
+    "MultiFamily5PlusLowRise",
+    "ManufacturedHome"
+  ],
+  "climate_zone_sets": [
+    "ClimateZone 0",
+    "ClimateZone 0A",
+    "ClimateZone 0B",
+    "ClimateZone 1",
+    "ClimateZone 1A",
+    "ClimateZone 1B",
+    "ClimateZone 2",
+    "ClimateZone 2A",
+    "ClimateZone 2B",
+    "ClimateZone 3",
+    "ClimateZone 3A",
+    "ClimateZone 3B",
+    "ClimateZone 3C",
+    "ClimateZone 4",
+    "ClimateZone 4A",
+    "ClimateZone 4B",
+    "ClimateZone 4C",
+    "ClimateZone 5",
+    "ClimateZone 5A",
+    "ClimateZone 5B",
+    "ClimateZone 5C",
+    "ClimateZone 6",
+    "ClimateZone 6A",
+    "ClimateZone 6B",
+    "ClimateZone 7",
+    "ClimateZone 8"
+  ],
+  "residential_template": "ResStock SDR source fixture",
+  "residential_buildings": [
+    "SingleFamilyDetached",
+    "SingleFamilyAttached",
+    "MultiFamily2To4",
+    "MultiFamily5PlusLowRise",
+    "ManufacturedHome",
+    "MidriseApartment",
+    "HighriseApartment"
+  ],
+  "residential_fixture": "project_national/resources/sdr_minimal_buildstock.csv",
+  "coverage_suites": {
+    "doe_reference": [
+      "FullServiceRestaurant",
+      "Hospital",
+      "LargeHotel",
+      "LargeOffice",
+      "MediumOffice",
+      "MidriseApartment",
+      "Outpatient",
+      "PrimarySchool",
+      "QuickServiceRestaurant",
+      "RetailStandalone",
+      "RetailStripmall",
+      "SecondarySchool",
+      "SmallHotel",
+      "SmallOffice",
+      "SuperMarket",
+      "Warehouse"
+    ],
+    "pnnl_commercial": [
+      "FullServiceRestaurant",
+      "HighriseApartment",
+      "Hospital",
+      "LargeHotel",
+      "LargeOffice",
+      "MediumOffice",
+      "MidriseApartment",
+      "Outpatient",
+      "PrimarySchool",
+      "QuickServiceRestaurant",
+      "RetailStandalone",
+      "RetailStripmall",
+      "SecondarySchool",
+      "SmallHotel",
+      "SmallOffice",
+      "Warehouse"
+    ],
+    "residential": [
+      "SingleFamilyDetached",
+      "SingleFamilyAttached",
+      "MultiFamily2To4",
+      "MultiFamily5PlusLowRise",
+      "ManufacturedHome",
+      "MidriseApartment",
+      "HighriseApartment"
+    ]
+  }
+}
