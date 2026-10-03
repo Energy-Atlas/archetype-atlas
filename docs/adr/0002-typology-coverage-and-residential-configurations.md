@@ -44,3 +44,13 @@ vocabularies and provenance targets. Existing field meanings and IDs are retaine
 Version-specific inventories let v0.1.0 verify against its frozen contract.
 Coverage audits check named classes and every selected commercial combination;
 they do not certify simulation readiness, every code edition or stock combination.
+
+Review extension: display-case tables and supermarket/hospital/outpatient/
+refrigeration generator routines are now locked and exported as inert source
+evidence. Numeric rule fields carry a unit_interpretations map referencing the
+first generator conversion declaration, or an explicit unresolved status. The
+source numbers can have ambiguous intent (including SI-looking temperatures
+processed as F), so no unconditional conversion or load assignment is performed.
+Source-row residential provenance is projected onto energy/physical context
+fields as well as the configuration itself; demographic columns are excluded
+from both tables and provenance.

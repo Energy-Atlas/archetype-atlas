@@ -98,6 +98,15 @@ def validate_atlas(data, contract_root=ROOT):
             if ref and any(row.get(k) != ref.get(k) for k in ['building_type', 'template']):
                 errors.append(f'mapping cross-building/template assignment {row.get("id")}')
     for row in data.get('residential_archetypes', []):
+        selected = row.get('selected_options', {})
+        expected_ids = {o['id'] for o in data['residential_options'] if selected.get(o['parameter']) == o['option']}
+        if set(row.get('option_ids', [])) != expected_ids:
+            errors.append(f'residential option coverage incomplete {row.get("id")}')
+        resolved = {(o['parameter'], o['option']) for oid, o in indices['residential_options'].items() if oid in expected_ids}
+        unknown = [(o['parameter'], o['option']) for o in row.get('unresolved_options', [])]
+        noargs = [(o['parameter'], o['option']) for o in row.get('non_argument_options', [])]
+        if len(set(unknown+noargs)) != len(unknown+noargs) or set(unknown+noargs) != set(selected.items())-resolved:
+            errors.append(f'residential option partition incomplete {row.get("id")}')
         for oid in row.get('option_ids', []):
             option = indices['residential_options'].get(oid)
             if not option or row.get('selected_options', {}).get(option['parameter']) != option['option']:
@@ -105,6 +114,14 @@ def validate_atlas(data, contract_root=ROOT):
         overlap = row.get('heating_base_C', -100) > row.get('cooling_base_C', 100)
         if row.get('thermostat_base_overlap') != overlap:
             errors.append(f'residential thermostat base overlap flag mismatch {row.get("id")}')
+    for row in data.get('specialized_rules', []):
+        numeric = {k for k, v in row.get('source_attributes', {}).items()
+                   if isinstance(v, (int, float)) and not isinstance(v, bool)}
+        if set(row.get('unit_interpretations', {})) != numeric:
+            errors.append(f'specialized numeric unit interpretation coverage {row.get("id")}')
+        for entry in row.get('unit_interpretations', {}).values():
+            if entry.get('generator_source_file_id') not in indices['source_files']:
+                errors.append(f'orphan specialized unit interpretation source {row.get("id")}')
     for s in data['schedules']:
         kind = s.get('schedule_type')
         expected_unit = {'fraction': 'dimensionless', 'temperature': 'C', 'activity': 'W/person'}.get(kind)

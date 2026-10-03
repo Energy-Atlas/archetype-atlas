@@ -89,9 +89,11 @@ def add_configurations(builder):
             'thermostat_base_overlap': ('source row', 'F', 'compare raw heating/cooling bases; flag unresolved overlap before seasonal controls'),
             'conditioned_floor_area_m2': ('Geometry Floor Area', 'ft2 bin', 'withhold exact area; source reports a bin'),
         }
+        energy_source = {'Building': raw['Building'], **{k: raw[k] for k in CONTEXT}, **selected}
         builder.add('residential_archetypes', record, 'resstock', path,
-                    f'CSV row {i+2}; Building={raw["Building"]}', raw, specs,
+                    f'CSV row {i+2}; Building={raw["Building"]}', energy_source, specs,
                     'Deterministic source fixture configuration, not a population representative. '
                     'Only exact lookup bindings are applied as references. Source families remain '
                     'separate from code apartment programs. Unresolved options and runtime defaults '
-                    'prevent claims of simulation readiness. No demographic survey columns exported.')
+                    'prevent claims of simulation readiness. Source-row provenance is projected '
+                    'onto energy and physical context fields; no demographic survey columns exported.')

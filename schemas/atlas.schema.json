@@ -1264,6 +1264,48 @@
         },
         "source_attributes": {
           "type": "object"
+        },
+        "unit_interpretations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "source_units": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "generator_declared_source_intent_unverified",
+                  "unresolved_no_unique_conversion_unit"
+                ]
+              },
+              "generator_source_file_id": {
+                "type": "string"
+              },
+              "generator_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source_units",
+              "status",
+              "generator_source_file_id",
+              "generator_lines",
+              "notes"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -1272,7 +1314,8 @@
         "source_family",
         "rule_type",
         "provenance_id",
-        "source_attributes"
+        "source_attributes",
+        "unit_interpretations"
       ],
       "additionalProperties": false
     }

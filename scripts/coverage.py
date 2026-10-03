@@ -13,6 +13,8 @@ def coverage_report(data, selection=None):
     configurations = data.get('residential_archetypes', [])
     residential_counts = collections.Counter(r['building_type'] for r in configurations)
     suites, combinations, errors = {}, [], []
+    if data['coverage_gaps']:
+        errors.append('Excluded source spaces prevent complete source-input coverage')
     for suite, expected in selection['coverage_suites'].items():
         observed = set(residential_counts) if suite == 'residential' else {b for _, b in program_counts}
         suites[suite] = {'expected': expected, 'covered': sorted(set(expected) & observed),

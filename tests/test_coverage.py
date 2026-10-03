@@ -100,6 +100,51 @@ class FullCoverageTests(unittest.TestCase):
         a['residential_archetypes'] = [r for r in a['residential_archetypes'] if r['building_type'] != 'ManufacturedHome']
         self.assertFalse(coverage.coverage_report(a)['typology_coverage_complete'])
 
+    def test_incomplete_residential_binding_partition_rejected(self):
+        from scripts.compare import compare_sources
+        a = copy.deepcopy(self.atlas)
+        a['residential_archetypes'][0]['option_ids'].pop()
+        self.assertTrue(any('residential option coverage' in e for e in validate_atlas(a)))
+        self.assertTrue(compare_sources(a)['errors'])
+        a = copy.deepcopy(self.atlas)
+        a['residential_archetypes'][0]['unresolved_options'].clear()
+        self.assertTrue(any('residential option partition' in e for e in validate_atlas(a)))
+        self.assertTrue(compare_sources(a)['errors'])
+
+    def test_source_configuration_provenance_excludes_demographic_columns(self):
+        forbidden = {'Income', 'Income RECS2015', 'Income RECS2020', 'County and PUMA', 'Household Has Tribal Persons'}
+        def keys(value):
+            if isinstance(value, dict):
+                return set(value) | set().union(*(keys(v) for v in value.values()))
+            if isinstance(value, list):
+                return set().union(*(keys(v) for v in value))
+            return set()
+        for row in self.atlas['provenance']:
+            if row['table'] == 'residential_archetypes':
+                self.assertFalse(keys(row) & forbidden)
+
+    def test_source_space_exclusions_prevent_complete_coverage_claim(self):
+        from scripts.coverage import coverage_report
+        a = copy.deepcopy(self.atlas)
+        a['coverage_gaps'].append({'template': '90.1-2019', 'building_type': 'Hospital',
+                                   'space': 'lost', 'reason': 'Missing tag'})
+        self.assertFalse(coverage_report(a)['typology_coverage_complete'])
+
+    def test_display_case_and_generator_evidence_retained(self):
+        rules = self.atlas['specialized_rules']
+        self.assertTrue(any(r['rule_type'] == 'refrigerated_cases' for r in rules))
+        for name in ['SuperMarket', 'Hospital', 'Outpatient', 'refrigeration']:
+            self.assertTrue(any(name in r['source_attributes'].get('source_path', '') for r in rules))
+
+    def test_refrigeration_numeric_units_have_explicit_interpretation_status(self):
+        for row in self.atlas['specialized_rules']:
+            raw = row['source_attributes']
+            numeric = {k for k, v in raw.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
+            self.assertEqual(set(row.get('unit_interpretations', {})), numeric)
+            if row['rule_type'] == 'refrigerated_cases':
+                self.assertEqual(row['unit_interpretations']['case_temp']['source_units'], 'F')
+                self.assertEqual(row['unit_interpretations']['case_length']['source_units'], 'ft')
+
 
 if __name__ == '__main__':
     unittest.main()

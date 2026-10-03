@@ -108,16 +108,33 @@ def compare_sources(data, raw_root=ROOT/'data/raw'):
         with (Path(raw_root)/'resstock'/selection['residential_fixture']).open(encoding='utf-8', newline='') as f:
             fixture = {row['Building']: row for row in csv.DictReader(f)}
         parameters = {p for p, _, _, _ in option_indices['resstock'].values()}
+        option_lines = {o['id']: int(re.match(r'line (\d+)', provenance[o['provenance_id']]['locator']).group(1))
+                        for o in data['residential_options']}
+        known = {(p, o) for p, o, _, _ in option_indices['resstock'].values()}
         for row in data['residential_archetypes']:
             raw = fixture[row['source_building_id']]
-            same(row['selected_options'], {k: v for k, v in raw.items() if k in parameters}, row['id']+'/selected_options')
+            selected = {k: v for k, v in raw.items() if k in parameters}
+            same(row['selected_options'], selected, row['id']+'/selected_options')
+            expected_lines = {n for n, (p, o, measure, args) in option_indices['resstock'].items()
+                              if selected.get(p) == o and measure and args}
+            same({option_lines.get(oid) for oid in row['option_ids']}, expected_lines, row['id']+'/option_bindings')
+            argument_pairs = {(p, o) for n, (p, o, _, _) in option_indices['resstock'].items() if n in expected_lines}
+            same({(o['parameter'], o['option']) for o in row['unresolved_options']},
+                 set(selected.items())-known, row['id']+'/unresolved_options')
+            same({(o['parameter'], o['option']) for o in row['non_argument_options']},
+                 (set(selected.items()) & known)-argument_pairs, row['id']+'/non_argument_options')
             same(row['occupants'], float(raw['Occupants']), row['id']+'/occupants')
             for output, source in [('heating_base_C', 'Heating Setpoint'), ('cooling_base_C', 'Cooling Setpoint')]:
                 same(row[output], (float(raw[source][:-1])-32)*5/9, row['id']+'/'+output)
             for key, value in row['source_context'].items():
                 same(value, raw[key], row['id']+'/context/'+key)
     for row in data.get('specialized_rules', []):
-        same(row['source_attributes'], raw_record(row), row['id']+'/source_attributes')
+        if row['rule_type'] == 'prototype_generator_source':
+            file = files[provenance[row['provenance_id']]['source_file_id']]
+            text = (Path(raw_root)/file['source_id']/file['path']).read_text(encoding='utf-8')
+            same(row['source_attributes'], {'source_path': file['path'], 'generator_source': text}, row['id']+'/source_attributes')
+        else:
+            same(row['source_attributes'], raw_record(row), row['id']+'/source_attributes')
     return {'comparison_type': 'locked_source_inputs_and_hvac_map_membership',
             'simulation_or_external_scorecard_validated': False, 'checks': checks, 'errors': errors}
 

@@ -58,6 +58,13 @@ def freeze_release(processed, target):
                 dst = stage/path
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT/path, dst)
+        for path in [f'docs/review-v{VERSION}.md', f'docs/validation/verification-v{VERSION}.json',
+                     'docs/validation/source-comparison.json',
+                     'docs/adr/0002-typology-coverage-and-residential-configurations.md']:
+            if (ROOT/path).is_file():
+                dst = stage/path
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT/path, dst)
         notes = ROOT/f'docs/release-notes/v{VERSION}.md'
         if notes.exists():
             shutil.copyfile(notes, stage/'RELEASE_NOTES.md')
