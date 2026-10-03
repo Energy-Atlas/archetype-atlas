@@ -55,10 +55,10 @@ Interfaces: resolve.resolve_records(data, policy, profiles) returns explicit
 resolution rows; resolve.validate_bundle(path) verifies schema, references,
 evidence, units and hashes. Profiles are linked from Task 1, never fabricated.
 
-- [ ] Test fail-closed handling of absent/positive loads, mixed/unknown fuels, conditioned spaces, water-use ambiguity and unchanged source records.
-- [ ] Implement exact evidence-backed rules and explicit reviewed record IDs; emit unresolved candidates separately.
-- [ ] Validate all applied assumptions and executed profiles, reproducibility and complete provenance; freeze the supplement with checksums and notices.
-- [ ] Commit the versioned supplement and ADR after audit.
+- [x] Test fail-closed handling of absent/positive loads, mixed/unknown fuels, conditioned spaces, water-use ambiguity and unchanged source records.
+- [x] Implement exact evidence-backed rules and explicit reviewed record IDs; emit unresolved candidates separately.
+- [x] Validate all applied assumptions and executed profiles, reproducibility and complete provenance; freeze the supplement with checksums and notices.
+- [x] Commit the versioned supplement and ADR after audit.
 
 ## Task 3: Catalogue delivery and review
 
@@ -88,3 +88,5 @@ include source record plus separately labelled resolution/profile metadata.
 - Task 1: Ruling: execute the upstream schedule core and thermostat routines directly, with full source inputs, rather than generate unrelated building geometry. Honor three upstream zero-occupant skips; leave other stochastic loads unknown. Nominal thermostat profiles expose unavailable-day counts without claiming effective equipment availability. Cost if wrong: later full HPXML execution is needed for those unresolved controls/end uses.
 - Task 1 evidence: all 41 annual CSV and canonical JSON artifacts reproduce byte-for-byte on independent upstream reruns; 38 stochastic runs, three explicit zero-occupant skips, 41 nominal thermostat profiles; 8,760 hourly rows each.
 - Task 1: complete; six focused regression tests (observed RED→GREEN), whole suite 56/56 passed; runner/locks/documentation committed as the first implementation unit.
+- Task 2: complete; seven focused tests pass, including observed RED→GREEN path/rule/release contracts; expanded whole suite 64/64 passed. Frozen supplement v0.1.0 has 677 resolutions across 80 records, 503 executed profile-column references, 33 source-zero schedules, 24 reviewed unconditioned cavities, 24 reviewed no-occupancy cavities, 29 reviewed no-hot-water programs, four demonstrated all-electric dwelling zeros, and 60 selected absent-end-use fractions. All 1,286 unsupported commercial program fields remain explicit.
+- Task 2: exact Windows upstream CSV bytes are retained with a scoped Git text-normalization exemption; canonical SI JSON uses LF. No original atlas release files changed.
