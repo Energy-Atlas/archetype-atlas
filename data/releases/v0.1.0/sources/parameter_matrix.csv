@@ -1,0 +1,11 @@
+parameter_group,primary_locations,secondary_sources,implemented_status,interpretation
+program_internal_loads,OpenStudio Standards template spc_typ.json,ComStock create_typical_building_from_model,extracted,Pre-control standards inputs; preserve additional loads and source fractions
+program_schedules,OpenStudio Standards global schedules.json,DOE/PNNL IDF or scorecard,extracted,Preserve dated rules and design days; no invented annual calendar
+thermostat_setpoints,Standards space-type schedule references,ResStock options_lookup.tsv and ComStock thermostat measures,extracted_rules_and_options,Stock options require complete configuration; no prevalence weighting
+ventilation,Standards spc_typ.json ventilation fields,Generated models and HVAC measures,extracted,Separate per-area per-person and ACH components; unresolved method remains null
+envelope,Standards template construction_properties.json,ComStock envelope measures and ResStock HPXML options,conditional_components_extracted,Assembly limits/targets and all applicability predicates preserved
+infiltration,ComStock NIST infiltration measures and ResStock options_lookup.tsv,Generated reference/prototype models,option_evidence_only,Pressure/basis is not interchangeable; canonical unresolved fields stay null
+hvac_assignment,Standards data/geometry HVAC JSON and OSM standards tags,ComStock system options and DOE/PNNL models,extracted_source_maps,Source generator maps do not imply final climate-specific systems
+equipment_efficiency,Standards furnace unitary_AC boiler and heat_pump tables,ResStock heating options and generated HVAC models,conditional_rules_extracted,Capacity/fuel/date qualifiers retained; no unconditional SEER-to-COP conversion
+building_program_mapping,Standards OSM Space/SpaceType/ThermalZone metadata,DOE/PNNL model geometry and scorecards,multiplicity_extracted,Area fractions and conditioned state require geometry/model evaluation
+stock_ranges,ComStock and ResStock housing_characteristics TSV,CBECS,inventory_only,Supporting evidence; distributions are not baseline deterministic archetype rows
