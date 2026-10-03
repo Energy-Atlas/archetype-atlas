@@ -11,6 +11,21 @@ const rule = (day, value, start = '2014-01-01', end = '2014-12-31') => ({
 });
 function ready() { assert.ok(core, 'Browser schedule/filter logic is not implemented'); }
 
+test('executed profiles select actual calendar hours and reject missing or invalid series', () => {
+  const profile = {metadata: {year: 2007, timestep_minutes: 60, columns: {occupants: 'dimensionless'}},
+    series: {occupants: Array.from({length: 8760}, (_, i) => (i % 24) / 24)}};
+  const day = core.annualProfile(profile, 'day', '2007-02-01', ['occupants']);
+  assert.equal(day.startHour, 31 * 24);
+  assert.equal(day.labels[0], '2007-02-01T00:00:00');
+  assert.equal(day.traces[0].values.length, 24);
+  assert.equal(core.annualProfile(profile, 'annual', '', ['occupants']).labels.length, 8760);
+  assert.throws(() => core.annualProfile(profile, 'day', '2008-01-01', ['occupants']));
+  assert.throws(() => core.annualProfile(profile, 'day', '2007-02-30', ['occupants']));
+  assert.throws(() => core.annualProfile(profile, 'day', '2007-01-01', ['missing']));
+  profile.series.occupants[0] = 2;
+  assert.throws(() => core.annualProfile(profile, 'day', '2007-01-01', ['occupants']));
+});
+
 test('specific seasonal rules override defaults in source order, preserving zero', () => {
   ready();
   const schedule = {rules: [rule('Default', 1), rule('Wkdy', 0.5),

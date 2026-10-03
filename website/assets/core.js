@@ -59,5 +59,25 @@
     const differences = heating.map((value, i) => cooling[i] - value);
     return {minimumDeadband: Math.min(...differences), overlapHours: differences.flatMap((v, h) => v < 0 ? [h] : [])};
   }
-  return {selectProfile, filterEntries, parseState, serializeState, thermostatDiagnostic};
+  function annualProfile(profile, view, date, columns) {
+    const {year, timestep_minutes: step} = profile.metadata;
+    if (!Number.isInteger(year) || step !== 60 || !['day', 'annual'].includes(view)) throw new Error('Unsupported executed profile calendar');
+    const first = Date.UTC(year, 0, 1), hours = (Date.UTC(year + 1, 0, 1) - first) / 3600000;
+    let startHour = 0, count = hours;
+    if (view === 'day') {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Choose a date in the executed calendar');
+      const parsed = new Date(date + 'T00:00:00Z');
+      if (!Number.isFinite(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== date || parsed.getUTCFullYear() !== year) throw new Error('Choose a date in the executed calendar');
+      startHour = (parsed.valueOf() - first) / 3600000; count = 24;
+    }
+    const traces = columns.map(column => {
+      const unit = profile.metadata.columns[column], values = profile.series[column];
+      if (!['dimensionless', 'degC'].includes(unit) || !Array.isArray(values) || values.length !== hours ||
+          values.some(v => !Number.isFinite(v) || (unit === 'dimensionless' && (v < 0 || v > 1)))) throw new Error('Missing or invalid executed series: ' + column);
+      return {column, unit, values: values.slice(startHour, startHour + count)};
+    });
+    const labels = Array.from({length: count}, (_, i) => new Date(first + (startHour + i) * 3600000).toISOString().slice(0, 19));
+    return {startHour, labels, traces};
+  }
+  return {selectProfile, filterEntries, parseState, serializeState, thermostatDiagnostic, annualProfile};
 });

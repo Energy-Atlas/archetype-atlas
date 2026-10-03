@@ -158,6 +158,21 @@ def smoke(root, screenshot_dir=None):
             page.goto(base + residential['path'].removesuffix('.md') + '/')
             expect(page.locator('body')).to_contain_text('Profiles unavailable')
             assert page.locator('.atlas-explorer').count() == 0
+            expect(page.locator('.atlas-res-charts .js-plotly-plot')).to_have_count(2)
+            expect(page.locator('.atlas-res-status')).to_contain_text('24 executed hourly intervals')
+            profile_packet = page.request.get(base + residential['download']).json()['resolution_supplement']['profile']
+            canonical = page.request.get(base + profile_packet['download']).json()
+            page.locator('.atlas-res-view').select_option('annual')
+            page.wait_for_function("document.querySelector('.atlas-res-charts .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
+            expect(page.locator('.atlas-res-date')).to_be_disabled()
+            page.locator('.atlas-res-view').select_option('day')
+            page.locator('.atlas-res-date').fill('2007-07-01')
+            page.locator('.atlas-res-date').dispatch_event('change')
+            page.wait_for_function("document.querySelector('.atlas-res-charts .js-plotly-plot')?.data?.[0]?.x?.[0] === '2007-07-01T00:00:00'")
+            plotted = page.locator('.atlas-res-charts .js-plotly-plot').first.evaluate('(el) => el.data[0].y')
+            assert plotted == canonical['series']['occupants'][181*24:182*24], 'Residential chart must show actual generated calendar data'
+            if screenshot_dir:
+                page.screenshot(path=str(screenshot_dir/'residential-profiles.png'), full_page=True)
             response = page.request.get(base + office['download'])
             assert response.ok and response.json()['record']['id'] == office['id']
             page.set_viewport_size({'width': 390, 'height': 844})
@@ -177,7 +192,7 @@ def smoke(root, screenshot_dir=None):
             browser.close()
         if errors or failed:
             raise AssertionError({'browser_errors': errors, 'failed_local_requests': failed})
-        print('Browser checks passed: filters/permalinks, plots/overlays/CSV, residential gaps, mobile and no-JS')
+        print('Browser checks passed: filters/permalinks, plots/overlays/CSV, executed residential annual/day profiles, mobile and no-JS')
     finally:
         server.shutdown()
         server.server_close()

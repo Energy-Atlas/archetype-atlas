@@ -84,12 +84,26 @@ representatives. Exact lookup matches reference measure arguments; 524 unmatched
 option instances (16 distinct pairs) remain explicit. Six raw thermostat base
 overlaps are flagged before offsets/seasonal controls. Area is a source bin,
 so exact SI area and densities remain null. HPXML defaults and annual profiles
-were not executed or invented. v0.1.0 remains unchanged and verifiable.
+were not executed or invented in that frozen source snapshot. Both original
+atlas releases remain unchanged and verifiable.
+
+The separately versioned [resolution supplement](data/resolution-releases/v0.1.0/manifest.json)
+adds actual upstream annual profiles and selective, evidence-gated assumptions.
+It contains 38 stochastic residential runs, three explicit zero-occupant skips,
+and 41 nominal thermostat profiles. All annual outputs reproduce byte-for-byte.
+Weather is an explicitly labelled station proxy; unavailable-day overrides,
+EV and other non-exported end uses remain unresolved. Four all-electric dwelling
+configurations have zero gas equipment; reviewed cavity/core assumptions and
+explicit source-zero magnitudes are documented in
+[ADR 0004](docs/adr/0004-selective-resolution.md). No blanket null-to-zero rule applies.
+See [generation instructions](docs/residential-generation.md) and verify with
+`python -m scripts.resolve --verify`.
 
 ## Research catalogue site
 
 Browse the [published catalogue](https://energy-atlas.github.io/archetype-atlas/).
-It is maintained on `feat/catalogue-site`; the research branches remain unmerged.
+The profile/resolution extension is maintained on `feat/schedule-resolution`;
+the research branches remain unmerged.
 
 The MkDocs catalogue presents frozen v0.1.0 and v0.2.0 through building, program,
 vintage/template, climate, system, source and status views. Entry pages include

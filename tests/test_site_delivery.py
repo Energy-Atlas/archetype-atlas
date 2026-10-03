@@ -4,9 +4,26 @@ import io
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 class DeliveryTests(unittest.TestCase):
+    def test_generated_directory_rename_retries_transient_windows_lock(self):
+        site=self.module('site')
+        with tempfile.TemporaryDirectory() as d:
+            source=Path(d)/'stage';target=Path(d)/'output';source.mkdir()
+            (source/'result.txt').write_text('verified artifact')
+            original=Path.rename; calls=[]
+            def temporarily_locked(path,destination):
+                calls.append(path)
+                if len(calls)==1:
+                    raise PermissionError('Temporary Windows file lock')
+                return original(path,destination)
+            with patch.object(Path,'rename',temporarily_locked):
+                site.rename_generated(source,target)
+            self.assertEqual((target/'result.txt').read_text(),'verified artifact')
+            self.assertEqual(len(calls),2)
+
     def module(self, name):
         self.assertIsNotNone(importlib.util.find_spec('scripts.' + name), name + ' is not implemented')
         return __import__('scripts.' + name, fromlist=[name])

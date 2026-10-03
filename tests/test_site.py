@@ -12,6 +12,24 @@ from scripts.common import ROOT, load_atlas, load_json
 
 
 class SiteTests(unittest.TestCase):
+    def test_executed_profiles_are_separate_from_frozen_source_values(self):
+        site=self.site_module()
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'docs'
+            site.generate_site([ROOT/'data/releases/v0.2.0'],target,pilot=True)
+            index=load_json(target/'releases/v0.2.0/catalogue.json')
+            residential=next(r for r in index['entries'] if r['kind']=='residential_archetypes')
+            packet=load_json(target/residential['download'])
+            self.assertFalse(packet['record']['simulation_ready'])
+            self.assertIn('resolution_supplement',packet)
+            self.assertIn('profile',packet['resolution_supplement'])
+            page=(target/residential['path']).read_text()
+            self.assertIn('atlas-residential-profile',page)
+            self.assertIn('Station-proxy',page)
+            profile=packet['resolution_supplement']['profile']
+            self.assertTrue((target/profile['download']).exists())
+            self.assertIn('nominal',page)
+
     def site_module(self):
         self.assertIsNotNone(importlib.util.find_spec('scripts.site'),
                              'The verified site generator has not been implemented')

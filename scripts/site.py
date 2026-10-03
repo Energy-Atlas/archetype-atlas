@@ -11,10 +11,12 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import tempfile
+import time
 import zipfile
 
 from scripts.common import ROOT, dump_json, load_atlas, load_json, stable_id, table_names
 from scripts.release import verify_release
+from scripts.resolve import DEFAULT as RESOLUTION_RELEASE, validate_bundle
 
 RECORD_TABLES = [t for t in table_names('0.2.0') if t not in {'provenance', 'source_files'}]
 AXES = {'building': 'Building type', 'program': 'Program', 'template': 'Vintage / template',
@@ -296,8 +298,49 @@ def catalogue_page(entries, version, versions):
     return base
 
 
-def generate_release(root, release_path, data, manifest, version, versions, pilot=False):
+def resolution_html(current, rows, profile, supplement_base):
+    page='## Resolution supplement v0.1.0\n\nSource values below are unchanged. These separately labelled resolutions require an explicit consumer choice.\n\n'
+    page+='<div class="atlas-table"><table><thead><tr><th>Field</th><th>Original</th><th>Resolved</th><th>Unit</th><th>Basis / rule</th></tr></thead><tbody>'
+    for row in rows:
+        page+='<tr>'+''.join('<td>'+display_value(v)+'</td>' for v in [row['field'],row['original_value'],row['resolved_value'],row['unit'],row['basis']+' / '+row['rule']])+'</tr>'
+    page+='</tbody></table></div>\n\n'
+    for row in rows:
+        page+='<details><summary>'+display_value(row['field']+' — '+row['note'])+'</summary>'+display_value(row['evidence'])+'</details>\n'
+    if profile:
+        packet=load_json(profile['source_path']); meta=packet['metadata']
+        page+='\n\n### Executed residential profiles\n\n**Station-proxy variant; nominal thermostat profiles. Complete simulation readiness remains unresolved.**\n\n'
+        page+=display_value(meta['profile_boundary'])+'\n\n'
+        page+=f'Calendar {meta["year"]}; {meta["timestep_minutes"]}-minute intervals; seed {meta["seed"]}; '+display_value(meta['status'])+'.\n\n'
+        page+=display_value(meta['interval_convention'])+'\n\n'
+        page+='Weather: '+display_value(meta['weather']['station_filename'])+'; '+display_value(meta['weather']['variant'])+'.\n\n'
+        page+='<section class="atlas-residential-profile" data-profile="'+html_url(current,profile['download'])+'">'
+        page+='<div class="atlas-controls"><label>View <select class="atlas-res-view"><option value="day">Selected day</option><option value="annual">Annual</option></select></label>'
+        page+='<label>Calendar date <input class="atlas-res-date" type="date" min="2007-01-01" max="2007-12-31" value="2007-01-01"></label>'
+        page+='<label>Series <select class="atlas-res-columns" multiple size="5"></select></label></div>'
+        page+='<p class="atlas-res-status" role="status" aria-live="polite">Loading executed profiles; exact data available in downloads.</p><div class="atlas-res-charts"></div><div class="atlas-res-table"></div></section>\n\n'
+        page+=anchor(current,profile['download'],'Annual canonical JSON with execution provenance')+' · '+anchor(current,profile['csv_download'],'Upstream execution CSV')+'\n\n'
+        page+='**Unresolved execution boundaries:**\n\n'+'\n'.join('- '+display_value(v) for v in meta['unresolved'])+'\n\n'
+    page+=anchor(current,supplement_base+'/snapshot.zip','Complete supplement, schema, provenance, locks and upstream notices')+'\n\n'
+    return page
+
+
+def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None):
     entries = catalogue_entries(data, version)
+    resolution_rows=defaultdict(list)
+    profile_index={}
+    supplement_base='resolution-supplements/v0.1.0'
+    if supplement:
+        for r in supplement['data']['resolutions']:
+            resolution_rows[r['record_id']].append(r)
+        for p in supplement['index']:
+            profile_index[p['record_id']]={**p,'download':supplement_base+'/profiles/'+p['profile_file'],
+                'csv_download':supplement_base+'/profiles/'+p['csv_file'],
+                'source_path':supplement['path']/'profiles'/p['profile_file']}
+        for entry in entries:
+            if entry['id'] in profile_index:
+                entry['status']='Executed profile supplement; model gaps remain'
+            elif entry['id'] in resolution_rows:
+                entry['status']='Selective resolution supplement; source nulls retained'
     refs = {r['id']: r for r in entries}
     rows = {r['id']: (t, r) for t in RECORD_TABLES for r in data.get(t, [])}
     rows.update({r['id']: ('buildings', r) for r in overview_rows(data)})
@@ -349,7 +392,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
             if ids:
                 page += '\n\n' + explorer_html(current, version, ids) + '\n\n'
             if t == 'residential_archetypes':
-                page += ('## Profiles unavailable\n\nThermostat bases are reported inputs before offsets, seasons and overrides. '
+                page += ('## Profiles unavailable in the frozen source snapshot\n\nThermostat bases are reported inputs before offsets, seasons and overrides. '
                          'Effective daily and annual profiles require generator execution and an explicit calendar. '
                          'No commercial apartment profiles have been substituted.\n\n')
             page += '## Parameters and source conditions\n\n' + render_fields(r, data['units'], refs, current) + '\n\n'
@@ -357,6 +400,13 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
             s = sources[p['source_file_id']]
             page += provenance_html(p, s, current, version) + '\n\n'
             packet = {'release': version, 'record_kind': t, 'record': r, 'provenance': p, 'source_file': s}
+        if r['id'] in resolution_rows:
+            profile=profile_index.get(r['id'])
+            page+='\n\n'+resolution_html(current,resolution_rows[r['id']],profile,supplement_base)
+            packet['resolution_supplement']={'version':'v0.1.0','base_manifest_sha256':supplement['base_hash'],
+                'resolutions':resolution_rows[r['id']]}
+            if profile:
+                packet['resolution_supplement']['profile']={k:v for k,v in profile.items() if k!='source_path'}
         page += '## Download and cite\n\n' + anchor(current, entry['download'], 'Record JSON with provenance') + '\n\n'
         page += anchor(current, f'releases/{version}/downloads/manifest.json', 'Frozen release manifest and checksums') + '\n\n'
         page += '<pre>' + display_value(f'Energy Archetype Atlas {version}; {t}/{r["id"]}; schema {data["schema_version"]}. '
@@ -420,13 +470,32 @@ def validate_output(target, release_paths):
     return target
 
 
-def generate_site(release_paths, target, pilot=False):
+def rename_generated(source, target):
+    # Windows antivirus/file indexing may briefly hold a newly written tree.
+    # Retry the same validated rename only; persistent permission errors still fail.
+    for attempt in range(4):
+        try:
+            return source.rename(target)
+        except PermissionError:
+            if attempt == 3:
+                raise
+            time.sleep(0.2 * (attempt + 1))
+
+
+def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE):
     """Verify everything before writing; atomically replace only the supplied output."""
     loaded = sorted([(Path(p), *read_release(p)) for p in release_paths],
                     key=lambda x: tuple(int(n) for n in x[-1][1:].split('.')))
     versions = [v for _, _, _, v in loaded]
     if len(set(versions)) != len(versions):
         raise ValueError('Duplicate release version')
+    supplement=None
+    if supplement_path is not None and 'v0.2.0' in versions:
+        supplement_path=Path(supplement_path)
+        base=next(p for p,_,_,v in loaded if v=='v0.2.0')
+        supplement={'path':supplement_path,'data':validate_bundle(supplement_path,base),
+                    'index':load_json(supplement_path/'profile-index.json'),
+                    'base_hash':hashlib.sha256((base/'manifest.json').read_bytes()).hexdigest()}
     target = validate_output(target, [p for p, *_ in loaded])
     target.parent.mkdir(parents=True, exist_ok=True)
     summary = {'pilot': pilot, 'releases': {}}
@@ -447,9 +516,25 @@ def generate_site(release_paths, target, pilot=False):
                 dst = stage/'assets/vendor'/entry['path']
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, dst)
+        if supplement:
+            destination=stage/'resolution-supplements/v0.1.0'
+            destination.mkdir(parents=True)
+            with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_DEFLATED) as archive:
+                for src in sorted(supplement['path'].rglob('*')):
+                    if not src.is_file():
+                        continue
+                    name=src.relative_to(supplement['path']).as_posix()
+                    info=zipfile.ZipInfo(name,date_time=(2026,10,3,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
+                    archive.writestr(info,src.read_bytes())
+                    if src.suffix in {'.json','.csv','.txt'} or src.name=='LICENSE':
+                        dst=destination/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst)
+            write_text(stage,'resolution-supplements/index.md','# Selective resolutions and executed profiles\n\n'+
+                'Supplement v0.1.0 explicitly overlays v0.2.0; frozen source values and older versions are unchanged.\n\n'+
+                anchor('resolution-supplements/index.md','resolution-supplements/v0.1.0/snapshot.zip','Download complete supplement with notices')+'\n\n'+
+                display_value(supplement['data']['summary']))
         for path, data, manifest, version in loaded:
             summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,
-                                                          manifest, version, versions, pilot)
+                                                          manifest, version, versions, pilot, supplement if version=='v0.2.0' else None)
         latest = versions[-1]
         latest_data = loaded[-1][1]
         source_page = '# Sources and licensing\n\n'
@@ -506,7 +591,7 @@ def generate_site(release_paths, target, pilot=False):
         # target is checked above and contains generated files only.
         if target.exists():
             shutil.rmtree(target)
-        stage.rename(target)
+        rename_generated(stage,target)
     return summary
 
 

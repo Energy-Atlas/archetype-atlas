@@ -8,6 +8,8 @@ on:
       - 'tests/site*.js'
       - 'tests/test_site*.py'
       - 'data/releases/**'
+      - 'data/resolution-releases/**'
+      - 'scripts/resolve.py'
       - 'requirements*.txt'
       - 'mkdocs.yml'
       - '.github/workflows/catalogue-site.yml'
@@ -17,6 +19,7 @@ on:
       - 'scripts/**'
       - 'tests/**'
       - 'data/releases/**'
+      - 'data/resolution-releases/**'
       - 'requirements*.txt'
       - 'mkdocs.yml'
       - '.github/workflows/catalogue-site.yml'
@@ -54,6 +57,7 @@ jobs:
         run: |
           python -m scripts.release --verify --target data/releases/v0.1.0
           python -m scripts.release --verify --target data/releases/v0.2.0
+          python -m scripts.resolve --verify
           python -m unittest tests.test_site tests.test_site_delivery -q
           node --test tests/site_core.test.js tests/site_parity.test.js
       - name: Generate both versioned catalogues and build
@@ -80,7 +84,7 @@ jobs:
     needs: build
     if: >-
       (github.event_name == 'push' && (github.ref_name == github.event.repository.default_branch
-      || github.ref_name == 'feat/catalogue-site'))
+      || github.ref_name == 'feat/catalogue-site' || github.ref_name == 'feat/schedule-resolution'))
       || (github.event_name == 'workflow_dispatch' && inputs.deploy)
     runs-on: ubuntu-latest
     timeout-minutes: 10

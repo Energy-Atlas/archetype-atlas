@@ -28,4 +28,5 @@ jobs:
       - run: python -m scripts.coverage --report build/coverage.json
       - run: python -m scripts.release --verify
       - run: python -m scripts.release --verify --target data/releases/v0.1.0
+      - run: python -m scripts.resolve --verify
       - run: python -m scripts.audit
