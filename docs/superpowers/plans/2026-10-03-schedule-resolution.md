@@ -71,7 +71,7 @@ include source record plus separately labelled resolution/profile metadata.
 
 - [x] Test resolution labels, original null preservation, referenced profile downloads and annual/day plot selection.
 - [x] Render assumption evidence and generated residential plots with units, seed/calendar and unresolved controls visible.
-- [ ] Run Python/Node suites, release/supplement validation, strict site build, links and browser checks.
+- [x] Run Python/Node suites, release/supplement validation, strict site build, links and browser checks.
 - [ ] Obtain one fresh whole-branch review, fix material findings with regressions, and publish the verified artifact autonomously without merging research branches.
 
 ## Implementation ledger
@@ -92,3 +92,6 @@ include source record plus separately labelled resolution/profile metadata.
 - Task 2: exact Windows upstream CSV bytes are retained with a scoped Git text-normalization exemption; canonical SI JSON uses LF. No original atlas release files changed.
 - Task 3 implementation checkpoint: record packets retain source rows unchanged and attach a separately labelled supplement; annual/day plots use actual 2007 calendar hours. Schema/rule/profile validation precedes rendering. Python 64/64 and Node 8/8 passed; strict full MkDocs build completed in 246.46 seconds. Browser/link checks and final full suite remain in progress before publication.
 - Task 3 regression: a transient Windows tree-rename lock was observed during the independent site generation. A bounded retry of the same validated rename passes an observed RED→GREEN file-lock test; permanent permission failures still propagate. Independent generation then completed.
+- Task 3 verification: strict MkDocs, all internal links/fragments and browser interactions pass; independent full generations produced 30,277 byte-identical files. Browser checks compare July 1 plotted residential values against canonical hours and exercise annual 8,760-hour plots.
+- Final review: one fresh whole-branch review found one Important failure-lifecycle defect; no Critical or Minor findings and no declined-to-judge items. An unsuccessful rerun could leave old profiles eligible for freezing. Two observed RED→GREEN regressions now cover failure before any output and after partial unchanged output, and reject stale raw output during freezing. Fresh attempts record running/failed/completed status; freezing requires the latest completed receipt and matching inventory/hash. The immutable supplement retains its original independently reproduced runner snapshot.
+- Final review verification: 67 Python tests and eight Node tests pass after the fix. A third real upstream execution of all 41 configurations under the new lifecycle reproduces the frozen index, CSV and canonical JSON bytes exactly. Publication remains the final delivery step; no second review pass is planned.

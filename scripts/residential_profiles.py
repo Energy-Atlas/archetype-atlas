@@ -9,6 +9,7 @@ import subprocess
 import zipfile
 from pathlib import Path
 import urllib.request
+import uuid
 
 from scripts.common import ROOT, load_json, dump_json
 from scripts.runtime import fetch_runtime
@@ -181,24 +182,71 @@ def collect_outputs(inputs, output):
     return profiles
 
 
+def run_attempt(destination, producer, record_ids):
+    """Record an isolated attempt before fetching/executing; publish only success."""
+    destination=Path(destination).resolve()
+    relative='attempts/'+str(uuid.uuid4())
+    attempt=destination/relative
+    (attempt/'output').mkdir(parents=True)
+    receipt={'status':'running','attempt':relative,'output':relative+'/output',
+             'expected_record_ids':record_ids}
+    def record():
+        dump_json(attempt/'run.json',receipt)
+        # A failed/interrupted latest attempt must supersede a previous success.
+        dump_json(destination/'latest-run.json',receipt)
+    record()
+    try:
+        index=producer(attempt)
+        if [p['record_id'] for p in index]!=record_ids:
+            raise ValueError('Attempt record inventory is incomplete')
+        receipt['profile_index_sha256']=hashlib.sha256((attempt/'output/profile-index.json').read_bytes()).hexdigest()
+        receipt['status']='completed'
+        record()
+        return attempt/'output'
+    except BaseException as error:
+        receipt.update(status='failed',error_type=type(error).__name__,error=str(error))
+        record()
+        raise
+
+
+def completed_output(destination):
+    """Accept only a completed recorded attempt; raw stale output is rejected."""
+    destination=Path(destination).resolve()
+    receipt_path=destination/'latest-run.json'
+    if not receipt_path.is_file():
+        raise ValueError('A completed generation attempt is required; raw/stale output cannot be frozen')
+    receipt=load_json(receipt_path)
+    if receipt.get('status')!='completed':
+        raise ValueError('Latest generation attempt must be completed before freezing')
+    output=(destination/receipt['output']).resolve()
+    if not output.is_relative_to(destination) or output==destination:
+        raise ValueError('Unsafe completed attempt output path')
+    index=load_json(output/'profile-index.json')
+    if ([p['record_id'] for p in index]!=receipt['expected_record_ids'] or
+            hashlib.sha256((output/'profile-index.json').read_bytes()).hexdigest()!=receipt['profile_index_sha256']):
+        raise ValueError('Completed attempt index inventory/checksum mismatch')
+    return output
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--destination', type=Path, default=ROOT/'build/residential')
     parser.add_argument('--runtime', type=Path, default=ROOT/'build/runtime')
     parser.add_argument('--pilot', action='store_true')
     args = parser.parse_args()
-    runtime = fetch_runtime(load_json(ROOT/'sources/runtime-lock.json'), args.runtime)
-    lock = load_json(ROOT/'sources/weather-lock.json')
-    weather = fetch_weather(lock, ROOT/'build/runtime-archives/usa-tmy3-epw.zip')
     records = load_json(ROOT/'data/releases/v0.2.0/residential_archetypes.json')
-    inputs = prepare_inputs(records[:1] if args.pilot else records, runtime['rs'], weather, args.destination)
-    output = args.destination/'output'
-    output.mkdir(parents=True, exist_ok=True)
-    subprocess.run([str(runtime['openstudio-windows']/'bin/openstudio.exe'), 'execute_ruby_script',
-                    str(ROOT/'scripts/run_residential_profiles.rb'), str(runtime['rs'].resolve()),
-                    str((args.destination/'inputs.json').resolve()), str(output.resolve())], check=True)
-    profiles = collect_outputs(inputs, output)
-    print(f'Validated {len(profiles)} annual profiles')
+    records=records[:1] if args.pilot else records
+    def generate(attempt):
+        runtime=fetch_runtime(load_json(ROOT/'sources/runtime-lock.json'),args.runtime)
+        weather=fetch_weather(load_json(ROOT/'sources/weather-lock.json'),ROOT/'build/runtime-archives/usa-tmy3-epw.zip')
+        inputs=prepare_inputs(records,runtime['rs'],weather,attempt)
+        output=attempt/'output'
+        subprocess.run([str(runtime['openstudio-windows']/'bin/openstudio.exe'),'execute_ruby_script',
+                        str(ROOT/'scripts/run_residential_profiles.rb'),str(runtime['rs'].resolve()),
+                        str((attempt/'inputs.json').resolve()),str(output.resolve())],check=True)
+        return collect_outputs(inputs,output)
+    output=run_attempt(args.destination,generate,[r['id'] for r in records])
+    print(f'Validated {len(records)} annual profiles in completed attempt: {output}')
 
 
 if __name__ == '__main__':

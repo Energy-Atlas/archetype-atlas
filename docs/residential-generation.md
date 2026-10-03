@@ -15,6 +15,14 @@ Run on Windows with Python 3.11.8 or newer and enough disk space for approximate
 1 GB of locked runtime/source archives and extraction. Other operating systems can
 validate and publish the frozen supplement without executing the Windows runtime.
 Execution is opt-in; ordinary source fetch/build never invokes downloaded code.
+Each invocation first records a running attempt, then fetches/executes into a
+fresh `attempts/<id>/` directory. `latest-run.json` records running, failed or
+completed status and the expected record IDs/index hash. Failures never reuse
+an old index; earlier successful files remain intact. Freezing with
+`python -m scripts.resolve --profiles build/residential --target <new-directory>`
+requires the latest attempt to be completed. Raw output directories and failed
+or interrupted attempts are rejected. The immutable v0.1.0 supplement preserves
+the runner snapshot originally used to generate its independently verified data.
 Runtime reuse verifies every extracted file against its extraction inventory.
 The source archive is SHA-256 locked; independently verified Git blob hashes
 confirmed the selected 1,021 source files. Upstream export attributes change CRLF

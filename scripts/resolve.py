@@ -13,7 +13,7 @@ import jsonschema
 
 from scripts.common import ROOT, dump_json, load_atlas, load_json, stable_id
 from scripts.release import verify_release
-from scripts.residential_profiles import validate_profiles
+from scripts.residential_profiles import validate_profiles, completed_output
 
 BASE = ROOT/'data/releases/v0.2.0'
 DEFAULT = ROOT/'data/resolution-releases/v0.1.0'
@@ -190,6 +190,7 @@ def freeze(profiles, target, base=BASE):
     target,profiles=Path(target),Path(profiles)
     if target.exists():
         raise ValueError('Never overwrite a frozen resolution release')
+    profiles=completed_output(profiles)
     if verify_release(base):
         raise ValueError('Base release validation failed')
     index=load_json(profiles/'profile-index.json')
@@ -224,7 +225,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify',action='store_true')
     parser.add_argument('--target',type=Path,default=DEFAULT)
-    parser.add_argument('--profiles',type=Path,default=ROOT/'build/residential/output')
+    parser.add_argument('--profiles',type=Path,default=ROOT/'build/residential',help='Generation directory with a completed latest-run.json receipt')
     args=parser.parse_args()
     result=validate_bundle(args.target) if args.verify else freeze(args.profiles,args.target)
     print(json.dumps(result['summary'],indent=2))

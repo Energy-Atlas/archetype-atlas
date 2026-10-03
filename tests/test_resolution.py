@@ -1,10 +1,11 @@
 """Evidence gates for selective resolutions; unknown values stay unknown."""
 import copy
 import importlib
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
-from scripts.common import ROOT, load_json
+from scripts.common import ROOT, load_json, dump_json
 
 
 class ResolutionTests(unittest.TestCase):
@@ -81,6 +82,18 @@ class ResolutionTests(unittest.TestCase):
         for path in ['../outside.json','C:/outside.csv','profiles/x.json','wrong.json']:
             with self.assertRaises(ValueError):
                 rule(path)
+
+    def test_failed_latest_attempt_cannot_freeze_previous_success(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d); previous=root/'output'
+            bundle=ROOT/'data/resolution-releases/v0.1.0'
+            shutil.copytree(bundle/'profiles',previous)
+            shutil.copyfile(bundle/'profile-index.json',previous/'profile-index.json')
+            dump_json(root/'latest-run.json',{'status':'failed','output':'output'})
+            target=root/'new-release'
+            with self.assertRaisesRegex(ValueError,'completed'):
+                self.module().freeze(previous,target)
+            self.assertFalse(target.exists())
 
 
 if __name__ == '__main__':

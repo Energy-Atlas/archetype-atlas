@@ -6,6 +6,8 @@ import io
 from pathlib import Path
 import tarfile
 import tempfile
+import subprocess
+import shutil
 import unittest
 
 
@@ -80,6 +82,29 @@ class ResidentialProfilesTests(unittest.TestCase):
             self.assertEqual(binding['line'], 1)
             with self.assertRaisesRegex(ValueError, 'exact'):
                 profiles.option_binding(path, 'Dishwasher', 'invented')
+
+    def test_failed_attempts_preserve_previous_output_and_record_failure(self):
+        profiles=self.module('residential_profiles')
+        from scripts.common import ROOT,load_json
+        bundle=ROOT/'data/resolution-releases/v0.1.0'
+        index=load_json(bundle/'profile-index.json')
+        for partial in [False,True]:
+            with self.subTest(partial=partial),tempfile.TemporaryDirectory() as d:
+                destination=Path(d);old=destination/'output';old.mkdir()
+                previous=(bundle/'profile-index.json').read_bytes()
+                (old/'profile-index.json').write_bytes(previous)
+                def failing_producer(attempt):
+                    if partial:
+                        shutil.copyfile(bundle/'profiles'/index[0]['csv_file'],attempt/'output'/index[0]['csv_file'])
+                    raise subprocess.CalledProcessError(7,['openstudio'])
+                with self.assertRaises(subprocess.CalledProcessError):
+                    profiles.run_attempt(destination,failing_producer,[p['record_id'] for p in index])
+                latest=load_json(destination/'latest-run.json')
+                self.assertEqual(latest['status'],'failed')
+                self.assertEqual((old/'profile-index.json').read_bytes(),previous)
+                self.assertTrue((destination/latest['attempt']/'run.json').exists())
+                with self.assertRaisesRegex(ValueError,'completed'):
+                    profiles.completed_output(destination)
 
 
 if __name__ == '__main__':
