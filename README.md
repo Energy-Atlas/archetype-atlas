@@ -87,7 +87,7 @@ so exact SI area and densities remain null. HPXML defaults and annual profiles
 were not executed or invented in that frozen source snapshot. Both original
 atlas releases remain unchanged and verifiable.
 
-The separately versioned [resolution supplement](data/resolution-releases/v0.1.0/manifest.json)
+The separately versioned [resolution supplement](data/resolution-releases/v0.2.0/manifest.json)
 adds actual upstream annual profiles and selective, evidence-gated assumptions.
 It contains 38 stochastic residential runs, three explicit zero-occupant skips,
 and 41 nominal thermostat profiles. All annual outputs reproduce byte-for-byte.
@@ -96,6 +96,11 @@ EV and other non-exported end uses remain unresolved. Four all-electric dwelling
 configurations have zero gas equipment; reviewed cavity/core assumptions and
 explicit source-zero magnitudes are documented in
 [ADR 0004](docs/adr/0004-selective-resolution.md). No blanket null-to-zero rule applies.
+Supplement v0.2.0 adds ten reviewed plenum lighting zeros and six data-centre
+occupancy zeros; frozen v0.1.0 remains verifiable. The
+[source review](docs/schedule-source-review.md) answers remaining recipe and
+availability questions. [ADR 0005](docs/adr/0005-parametric-schedule-generators.md)
+records the future parametric generator and DOE reference-location direction.
 See [generation instructions](docs/residential-generation.md) and verify with
 `python -m scripts.resolve --verify`.
 

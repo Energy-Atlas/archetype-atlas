@@ -1,16 +1,17 @@
 # Schedule availability after selective resolution
 
 The immutable source atlas v0.2.0 retains its original missing values. Opt-in
-resolution supplement v0.1.0 adds 677 explicit resolutions for 80 records.
+resolution supplement v0.2.0 adds 693 explicit resolutions for 86 records.
 The per-record inventory and reasons are machine-readable in
-[`resolutions.json`](../data/resolution-releases/v0.1.0/resolutions.json);
+[`resolutions.json`](../data/resolution-releases/v0.2.0/resolutions.json);
 the catalogue displays the same evidence alongside each original record.
 
 | Added resolution | Count | Basis |
 | --- | ---: | --- |
 | Executed residential profile-column references | 503 | Pinned upstream execution; includes three explicitly zero-occupant occupancy references |
 | Missing schedules with reported zero magnitudes | 33 | Source zero, not inference from absence |
-| Reviewed no-occupancy cavities | 24 | Exact allowlisted attic/plenum IDs; excludes transient maintenance |
+| Reviewed no-occupancy programs | 30 | 24 cavities and six exact data-centre IDs; excludes transient maintenance |
+| Reviewed plenum lighting zeros | 10 | Exact user-approved Medium/Large Office ceiling plenums |
 | Reviewed unconditioned cavities | 24 | No mapped HVAC, excluded floor area and absent thermostats |
 | Reviewed local hot-water demand zeros | 29 | 24 cavities and five elevator cores; no central-loop inference |
 | Demonstrated all-electric dwelling gas loads | 4 | Every relevant selected fuel option checked; zero W without invented floor area |
@@ -30,7 +31,7 @@ Their other stochastic loads remain unknown; occupancy zero does not imply
 lights/appliances zero. The [profile index](../data/resolution-releases/v0.1.0/profile-index.json)
 links every record to its exact columns, status and artifact hashes.
 
-The supplement leaves 1,286 commercial program fields unresolved:
+The supplement leaves 1,270 commercial program fields unresolved:
 
 | Field | Count | Why unresolved |
 | --- | ---: | --- |
@@ -39,8 +40,6 @@ The supplement leaves 1,286 commercial program fields unresolved:
 | Electric equipment schedule | 24 | Cavities can contain equipment; absent source magnitude alone does not justify zero |
 | Heating setpoint schedule | 19 | No reviewed evidence sufficient to disable heating |
 | Cooling setpoint schedule | 19 | No reviewed evidence sufficient to disable cooling |
-| Lighting schedule | 10 | Office plenums outside an explicit zero-lighting source statement |
-| Occupancy schedule | 6 | Office data centres without sufficient evidence to model no occupants |
 
 Residential unresolved end uses/controls are listed separately in each profile:
 EV, refrigerator/freezer, exterior lighting and non-exported uses; stochastic
@@ -50,3 +49,11 @@ inaccessible. These boundaries and exact generation inputs are explained in
 [residential generation](residential-generation.md) and
 [ADR 0004](adr/0004-selective-resolution.md). Applying this supplement does not
 establish complete simulation readiness.
+
+The active assessment excludes attic/plenum/basement source programs; their
+archival records remain available. This leaves 1,202 unresolved fields: 679 gas,
+485 local water, 19 heating and 19 cooling schedules. See the
+[source review](schedule-source-review.md) for component-level gas/water verdicts,
+fixed default schedule sources, exact HVAC unavailable-day cases and the DOE
+reference-location decision. [ADR 0005](adr/0005-parametric-schedule-generators.md)
+records the future parametric-generator direction; its interface is deferred.

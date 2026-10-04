@@ -72,8 +72,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-only', action='store_true')
     parser.add_argument('--cache-root', type=Path, default=ROOT/'data/raw')
+    parser.add_argument('--lock', type=Path, default=ROOT/'sources/lock.json')
     args = parser.parse_args()
-    lock = load_json(ROOT/'sources/lock.json')
+    lock = load_json(args.lock)
     for entry in lock['files']:
         if args.verify_only:
             verify_file(entry, args.cache_root)

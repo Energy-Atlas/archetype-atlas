@@ -9,6 +9,47 @@ from scripts.common import ROOT, load_json, dump_json
 
 
 class ResolutionTests(unittest.TestCase):
+    def test_approved_plenum_lighting_and_data_center_occupancy(self):
+        from scripts.common import load_atlas
+        data=load_atlas(ROOT/'data/releases/v0.2.0')
+        policy=load_json(ROOT/'sources/resolution-policy.json')
+        result=self.module().resolve_records(data,policy,[])
+        lights=[r for r in result['resolutions'] if r['rule']=='reviewed_no_lighting']
+        self.assertEqual(len(lights),10)
+        rows={r['id']:r for r in data['programs']}
+        for r in lights:
+            self.assertEqual(rows[r['record_id']]['source_space_type'],'Plenum')
+            self.assertEqual(r['resolved_value']['constant_value'],0)
+        centers=[r for r in result['resolutions'] if r['rule']=='reviewed_no_occupancy'
+                 and 'Data Center' in rows[r['record_id']]['source_space_type']]
+        self.assertEqual(len(centers),6)
+        for r in centers:
+            row=rows[r['record_id']]
+            self.assertIsNotNone(row['lighting_schedule_id'])
+            self.assertGreater(row['electric_equipment_W_m2'],0)
+            self.assertIn('data-centre',r['note'])
+        self.assertEqual(result['schema_version'],'0.2.0')
+
+    def test_approved_zeros_reject_contradictory_loads_and_unreviewed_rooms(self):
+        from scripts.common import load_atlas
+        data=load_atlas(ROOT/'data/releases/v0.2.0')
+        policy=load_json(ROOT/'sources/resolution-policy.json')
+        lights=next(r for r in data['programs'] if r['source_space_type']=='Plenum'
+                    and r['lighting_schedule_id'] is None)
+        center=next(r for r in data['programs'] if 'Data Center' in r['source_space_type'])
+        for field,value in [('lighting_W_m2',1),('lighting_schedule_id','actual')]:
+            altered=copy.deepcopy(data)
+            next(r for r in altered['programs'] if r['id']==lights['id'])[field]=value
+            resolutions=self.module().resolve_records(altered,policy,[])['resolutions']
+            self.assertFalse(any(r['record_id']==lights['id'] and r['rule']=='reviewed_no_lighting' for r in resolutions))
+        center['people_per_m2']=0.01
+        resolutions=self.module().resolve_records(data,policy,[])['resolutions']
+        self.assertFalse(any(r['record_id']==center['id'] and r['rule']=='reviewed_no_occupancy' for r in resolutions))
+        altered=copy.deepcopy(data)
+        next(r for r in altered['programs'] if r['id']==lights['id'])['id']='program-unreviewed'
+        resolutions=self.module().resolve_records(altered,policy,[])['resolutions']
+        self.assertFalse(any(r['record_id']=='program-unreviewed' and r['rule']=='reviewed_no_lighting' for r in resolutions))
+
     def module(self):
         return importlib.import_module('scripts.resolve')
 
@@ -75,6 +116,10 @@ class ResolutionTests(unittest.TestCase):
     def test_frozen_bundle_reproduces_rules_and_profiles(self):
         result=self.module().validate_bundle(ROOT/'data/resolution-releases/v0.1.0')
         self.assertEqual(result['summary']['by_rule']['reviewed_unconditioned'],24)
+        latest=self.module().validate_bundle(ROOT/'data/resolution-releases/v0.2.0')
+        self.assertEqual(latest['summary']['resolution_rows'],693)
+        self.assertEqual(latest['summary']['by_rule']['reviewed_no_lighting'],10)
+        self.assertEqual(latest['summary']['by_rule']['reviewed_no_occupancy'],30)
 
     def test_profile_paths_cannot_escape_output(self):
         rule=self.module().profile_name

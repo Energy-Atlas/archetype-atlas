@@ -1,5 +1,20 @@
 # Changelog
 
+## Resolution supplement v0.2.0 — 2026-10-04
+
+Add ten user-reviewed ceiling-plenum lighting zeros and six Large Office data-
+centre routine occupancy zeros. Schema 0.2.0 adds `reviewed_no_lighting`;
+693 resolutions cover 86 records, with 1,270 commercial fields unresolved.
+Atlas releases and resolution v0.1.0 remain immutable. Existing annual execution
+artifacts are reused byte-for-byte. Catalogue pages use the latest overlay and
+retain older supplement downloads.
+
+Document ResStock generator shipping as an accepted future direction, ComStock's
+distinct operating-hours transformation, upstream fixed background defaults,
+component-scoped gas/water absence, ten residential HVAC-unavailability fixtures
+and DOE's sixteen reference locations. Twenty primary references are SHA-256
+locked for reproducible inspection; generator interface design remains deferred.
+
 ## v0.2.0 — 2026-10-02
 
 Complete named typology coverage: DOE 16/16 and PNNL 16/16 through pinned
