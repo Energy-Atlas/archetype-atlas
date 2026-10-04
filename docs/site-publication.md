@@ -163,3 +163,54 @@ SI density units, fixed-reference evaluation and preserved snapshot inventories.
 [ADR 0006](adr/0006-deterministic-coverage-release.md) records the proposed
 source-conserving hot-water equivalent and its existing Medium Office curve
 candidate. Program allocation remains a separate verification step.
+
+
+## Program water equivalent and release scope — 2026-10-04
+
+Data/decision implementation and `water-v0.1.0` tag: `63885ec`. Portable archive
+delivery: `38e4769`. Both are on `feat/schedule-resolution`; research branches
+remain unmerged, and no published tag or frozen snapshot was rewritten.
+
+- [Windows/Linux validation](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37237145237)
+  passed: 84 Python tests, schema/physical/referential/schedule/provenance checks,
+  byte reproduction, 33,173 locked-source comparisons, all historical atlas and
+  resolution snapshots, the water pilot and security audit.
+- [Catalogue build and deployment](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37237145220)
+  passed: eight JavaScript tests and 39,830 source schedule selections, frozen
+  contracts, strict MkDocs build, links/fragments/project-subpath assets,
+  publication size, Chromium and deployment. Local built size with the corrected
+  archive: 988,564,492 bytes.
+- The seven-file primary water evidence lock was independently fetched and
+  verified. An independent water freeze reproduced every frozen file byte for
+  byte. The new schema preserves source rules, dates, selectors, design days,
+  indices and field-level evidence; historical releases retain their hashes.
+- Live HTTPS verification matched eight exact artifacts, including the canonical
+  equivalent, schema, manifest, source lock, complete ZIP, office and derived
+  schedule packets and per-record coverage inventory. Original/equivalent plots,
+  the dedicated provenance page, gas notes and scope/coverage guides passed with
+  no browser errors. Plotted hourly curves include a repeated hour-24 endpoint;
+  source draw equals equivalent fraction times 0.57 at every plotted interval.
+
+The pilot attaches to the existing Medium Office 90.1-2013 office program and
+conserves its mixed fixture demand. It creates no extra restroom program and
+closes zero missing schedules because that office already had a source curve.
+The original curve and source nulls remain available beside derived/resolved
+values. The documented 713 zero gas-equipment schedules/densities apply to the
+reviewed program recipe, independently of building heating/water-heating fuel.
+
+The release-scope policy excludes sampled HVAC equipment unavailability and
+complete magnitudes/full-model controls. Near-full deterministic coverage still
+precedes parametric-generator delivery. Active commercial coverage is 4,615 of
+5,138 schedule fields (89.8%), with 485 water and 38 thermostat gaps. Residential
+coverage is 473 of 574 assessed profile fields (82.4%), with 101 missing pairs;
+EV/exterior lighting and specialized end uses retain separate applicability
+reviews. No near-full milestone is claimed.
+
+See [release notes](release-notes-water-v0.1.0.md),
+[ADR 0007](adr/0007-program-water-equivalents.md),
+[public water guide](https://energy-atlas.github.io/archetype-atlas/guides/hot-water/)
+and [public coverage guide](https://energy-atlas.github.io/archetype-atlas/guides/coverage/).
+Water manifest SHA-256:
+`85f870364bdee8fb718a851e5ce392c8049d96173025cdcbc4c6f6ccc3ca97d1`.
+Portable snapshot ZIP SHA-256:
+`27d189b5f099b153e656ab3df9a1f1c5eb877b2c37cfbf9878c1c7031d5a8a30`.
