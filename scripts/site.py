@@ -567,13 +567,17 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         if water:
             destination = stage/'water-equivalents/v0.1.0'
             destination.mkdir(parents=True)
-            with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_DEFLATED) as archive:
-                for src in sorted(Path(water_path).rglob('*')):
+            # Store the small pilot without zlib-dependent bytes, and fix all
+            # host-dependent metadata/order for identical Windows/Linux delivery.
+            with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_STORED) as archive:
+                for src in sorted(Path(water_path).rglob('*'),
+                                  key=lambda p:p.relative_to(water_path).as_posix()):
                     if not src.is_file():
                         continue
                     name = src.relative_to(water_path).as_posix()
                     info = zipfile.ZipInfo(name,date_time=(2026,10,4,0,0,0))
-                    info.compress_type = zipfile.ZIP_DEFLATED
+                    info.compress_type = zipfile.ZIP_STORED
+                    info.create_system = 3
                     info.external_attr = 0o644<<16
                     archive.writestr(info,src.read_bytes())
                     if src.suffix in {'.json','.txt'} or src.name == 'LICENSE':

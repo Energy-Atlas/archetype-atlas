@@ -35,3 +35,9 @@ delivery follows near-full deterministic coverage.
 The MkDocs office page provides original/equivalent interactive curves and
 canonical JSON; new water and coverage guides explain conservation, scope and
 per-record completeness denominators. See [ADR 0007](adr/0007-program-water-equivalents.md).
+
+Public snapshot packaging fixes case-sensitive POSIX member order, creator system,
+timestamp and permissions and stores entries without compression. This avoids
+host and compression-library differences in Windows/Linux delivery. Every member
+is an unchanged frozen-release file; the canonical manifest and release tag remain
+unchanged.

@@ -94,6 +94,19 @@ class SiteTests(unittest.TestCase):
             self.assertEqual(load_json(target/f'releases/v0.2.0/records/{derived_id}.json')['record'],
                              record['water_equivalent']['equivalent_schedule'])
             self.assertTrue((target/f'releases/v0.2.0/schedules/{derived_id}.md').exists())
+            # The public archive must have identical bytes on Windows and Linux:
+            # names, creator metadata and compression defaults cannot depend on host.
+            with zipfile.ZipFile(target/'water-equivalents/v0.1.0/snapshot.zip') as archive:
+                names=archive.namelist()
+                self.assertEqual(names,sorted(names))
+                expected=ROOT/'data/water-releases/v0.1.0'
+                self.assertEqual(set(names),{p.relative_to(expected).as_posix()
+                                            for p in expected.rglob('*') if p.is_file()})
+                for item in archive.infolist():
+                    self.assertEqual(item.create_system,3)
+                    self.assertEqual(item.compress_type,zipfile.ZIP_STORED)
+                    self.assertEqual(item.date_time,(2026,10,4,0,0,0))
+                    self.assertEqual(archive.read(item.filename),(expected/item.filename).read_bytes())
             self.assertEqual(result['releases']['v0.2.0']['commercial_overviews'], 1)
             residential = next(r for r in index['entries'] if r['kind'] == 'residential_archetypes')
             rp = (target/residential['path']).read_text()
