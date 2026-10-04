@@ -94,3 +94,37 @@ station-weather proxy, upstream zero-occupant skips and nominal thermostat scope
 [review record](schedule-review.md) records the corrected failure-lifecycle defect.
 Catalogue/profile coverage continues to be distinct from full simulation readiness.
 The independently versioned supplement is tagged `resolution-v0.1.0`.
+
+## Reviewed schedule resolutions — 2026-10-04
+
+Published implementation: `362aaad`; publisher branch `feat/schedule-resolution`.
+Data/decision commit: `ae539bb`. Research branches remain unmerged.
+
+- [Windows/Linux validation](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37184883453)
+  passed: 70 Python tests, schema/physical/provenance checks, byte reproduction,
+  33,173 locked-source comparisons, coverage, both atlas releases and both
+  resolution supplements, stable primary evidence retrieval and security audit.
+- [Catalogue build/deployment](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37184883408)
+  passed: frozen contracts, eight Node tests and 39,830 schedule selections,
+  strict MkDocs build, internal links/fragments, Chromium checks and deployment.
+- Live HTTPS verification passed for 15 exact artifact files, including both
+  supplement manifests/indexes and representative plenum/data-centre packets.
+  Those packets retain original nulls beside approved constant-zero resolutions.
+  Filters, commercial plots/CSV and actual residential annual/day plots pass;
+  July 1 occupancy values match canonical hours. No browser/HTTP errors occurred.
+- The public schedule-methods guide includes the zero-occupant default sources,
+  ten raw unavailable-day options versus nine fixtures with selected affected
+  equipment, and the DOE representative-city/weather-location distinctions.
+
+Supplement v0.2.0 adds ten plenum lighting zeros and six routine data-centre
+occupancy zeros: 693 resolutions across 86 records, with 1,270 commercial fields
+unresolved. Excluding attic/plenum/basement source programs leaves 1,202 active
+gap fields. The 41 profile artifacts and index are byte-identical to supplement
+v0.1.0; no generator rerun or silent weather replacement was introduced.
+
+The active source evidence lock uses the stable official DOE technical report,
+SHA-256 `39520427c39c4a424d8b0d072c47d5bfdc248631632e880501866aae6b0d131a`.
+Hosted CI identified delivery-dependent bytes in the earlier HTML page; that
+receipt remains historical. All frozen release/supplement hashes are unchanged.
+The future parametric-generator direction remains a documented decision, with
+the interface and runtime parity contract deferred to the next discussion.

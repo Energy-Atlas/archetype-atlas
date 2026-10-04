@@ -66,6 +66,10 @@ Hours distributions were derived from one year of AMI data for 6,070 buildings
 across eight utilities. Weekday/weekend selections are independent; the source
 uses national distributions combined across seasons/utilities. Given selected
 inputs, the inspected schedule transformation is deterministic.
+Commercial runtime parity has not been executed. The atlas Standards revision
+is independently selected source evidence; it must not be assumed to be
+ComStock's exact runtime dependency. The next design must pin the actual
+commercial dependency bindings and test the effects of operating-hour inputs.
 
 ## Reference-location boundary
 
