@@ -33,6 +33,17 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def load_completion(policy):
+    version=policy.get('commercial_completion_release')
+    if version is None:return None
+    if version!='v0.1.0':raise ValueError('Unreviewed commercial completion release')
+    from scripts.commercial_completion import validate_bundle
+    path=ROOT/'data/completion-releases'/version
+    if sha(path/'manifest.json')!=policy['commercial_completion_manifest_sha256']:
+        raise ValueError('Commercial completion binding mismatch')
+    return validate_bundle(path)
+
+
 def verify_completion_reviews(policy, lock_path):
     """Check quoted vacancy source fragments against immutable official blobs."""
     from scripts.fetch import verify_file
@@ -97,6 +108,25 @@ def resolve_records(data, policy, profiles, fixed_background=None, completion=No
         if review['column'] not in supported_vacancy or not review['evidence']:
             raise ValueError('Invalid vacancy end-use evidence')
     for row in data['programs']:
+        if completion:
+            from scripts.commercial_completion import evidence_for,inactive_control
+            control=next((c for c in completion['controls'] if c['record_id']==row['id']),None)
+            if control:
+                if (row['heating_setpoint_schedule_id'] is not None or row['cooling_setpoint_schedule_id'] is not None
+                        or any(m['system_id'] is not None for m in data['mappings'] if m['program_id']==row['id']) or not inactive_control(control)):
+                    raise ValueError('Inactive conditioning conflicts with source')
+                add('programs',row,'conditioning',{'heating_enabled':False,'cooling_enabled':False},'state','inspected_inactive_controls','executed_upstream',
+                    'Dedicated source zone has empty thermostat schedules and no direct HVAC through loads, zone recreation, HVAC, custom tweaks and transfer-air phases at 4A. Passive thermal coupling remains possible; no complete simulation claimed.',
+                    ['heating_setpoint_schedule_id','cooling_setpoint_schedule_id'])
+                resolutions[-1]['evidence'] += [{**e,'provenance_id':row['provenance_id']} for e in evidence_for(completion,control)]
+            gap=next((g for g in completion['missing_program_evidence'] if g['program_id']==row['id']),None)
+            if gap and gap['zero_schedule_eligible']:
+                if row['service_water_heating_schedule_id'] is not None or any(type(row['source_attributes'].get(k)) in (int,float) and row['source_attributes'][k]>0 for k in ['service_water_heating_peak_flow_rate','service_water_heating_peak_flow_per_area']):
+                    raise ValueError('Complete water zero conflicts with positive source')
+                add('programs',row,'service_water_heating_schedule_id',constant,'dimensionless','source_complete_no_water_draw','source_zero',
+                    'Pinned complete main/booster/laundry source path creates no modeled program fixture draw and no unallocated service remains for this building/template. Zero applies to fixture demand, not central heater energy or circulation.',
+                    ['service_water_heating_schedule_id','source_attributes'])
+                resolutions[-1]['evidence'] += [{**e,'provenance_id':row['provenance_id']} for e in evidence_for(completion,gap)]
         for schedule,magnitude in LOADS.items():
             if source_zero(row,magnitude,schedule):
                 add('programs',row,schedule,constant,'dimensionless','explicit_zero_magnitude','source_zero',
@@ -228,7 +258,7 @@ def validate_bundle(path, base=BASE):
         from scripts.fixed_background import build
         if fixed!=build(evidence_lock=path/'sources/schedule-evidence-lock.json',names=policy.get('fixed_default_names')):
             raise ValueError('Fixed background defaults do not reproduce pinned source')
-    expected=resolve_records(data,policy,index,fixed)
+    expected=resolve_records(data,policy,index,fixed,load_completion(policy))
     if result!=expected:
         raise ValueError('Resolution evidence/rules do not reproduce')
     if (manifest['schema_version']!=result['schema_version'] or manifest['release_version']!=policy['policy_version']
@@ -283,7 +313,7 @@ def freeze(profiles, target, base=BASE):
     if policy.get('fixed_background_record_ids'):
         from scripts.fixed_background import build
         fixed=build(names=policy.get('fixed_default_names'))
-    result=resolve_records(load_atlas(base),policy,index,fixed)
+    result=resolve_records(load_atlas(base),policy,index,fixed,load_completion(policy))
     target.mkdir(parents=True)
     for p in index:
         for field in ['profile_file','csv_file']:
