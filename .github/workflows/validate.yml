@@ -29,4 +29,6 @@ jobs:
       - run: python -m scripts.release --verify
       - run: python -m scripts.release --verify --target data/releases/v0.1.0
       - run: python -m scripts.resolve --verify
+      - run: python -m scripts.resolve --verify --target data/resolution-releases/v0.1.0
+      - run: python -m scripts.fetch --lock sources/schedule-evidence-lock.json
       - run: python -m scripts.audit

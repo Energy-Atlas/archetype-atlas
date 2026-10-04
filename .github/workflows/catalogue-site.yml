@@ -58,6 +58,7 @@ jobs:
           python -m scripts.release --verify --target data/releases/v0.1.0
           python -m scripts.release --verify --target data/releases/v0.2.0
           python -m scripts.resolve --verify
+          python -m scripts.resolve --verify --target data/resolution-releases/v0.1.0
           python -m unittest tests.test_site tests.test_site_delivery -q
           node --test tests/site_core.test.js tests/site_parity.test.js
       - name: Generate both versioned catalogues and build

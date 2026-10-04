@@ -299,7 +299,7 @@ def catalogue_page(entries, version, versions):
 
 
 def resolution_html(current, rows, profile, supplement_base):
-    page='## Resolution supplement v0.1.0\n\nSource values below are unchanged. These separately labelled resolutions require an explicit consumer choice.\n\n'
+    page='## Resolution supplement '+supplement_base.split('/')[-1]+'\n\nSource values below are unchanged. These separately labelled resolutions require an explicit consumer choice.\n\n'
     page+='<div class="atlas-table"><table><thead><tr><th>Field</th><th>Original</th><th>Resolved</th><th>Unit</th><th>Basis / rule</th></tr></thead><tbody>'
     for row in rows:
         page+='<tr>'+''.join('<td>'+display_value(v)+'</td>' for v in [row['field'],row['original_value'],row['resolved_value'],row['unit'],row['basis']+' / '+row['rule']])+'</tr>'
@@ -328,7 +328,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
     entries = catalogue_entries(data, version)
     resolution_rows=defaultdict(list)
     profile_index={}
-    supplement_base='resolution-supplements/v0.1.0'
+    supplement_base='resolution-supplements/'+supplement['version'] if supplement else ''
     if supplement:
         for r in supplement['data']['resolutions']:
             resolution_rows[r['record_id']].append(r)
@@ -403,7 +403,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
         if r['id'] in resolution_rows:
             profile=profile_index.get(r['id'])
             page+='\n\n'+resolution_html(current,resolution_rows[r['id']],profile,supplement_base)
-            packet['resolution_supplement']={'version':'v0.1.0','base_manifest_sha256':supplement['base_hash'],
+            packet['resolution_supplement']={'version':supplement['version'],'base_manifest_sha256':supplement['base_hash'],
                 'resolutions':resolution_rows[r['id']]}
             if profile:
                 packet['resolution_supplement']['profile']={k:v for k,v in profile.items() if k!='source_path'}
@@ -494,6 +494,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         supplement_path=Path(supplement_path)
         base=next(p for p,_,_,v in loaded if v=='v0.2.0')
         supplement={'path':supplement_path,'data':validate_bundle(supplement_path,base),
+                    'version':'v'+load_json(supplement_path/'manifest.json')['release_version'],
                     'index':load_json(supplement_path/'profile-index.json'),
                     'base_hash':hashlib.sha256((base/'manifest.json').read_bytes()).hexdigest()}
     target = validate_output(target, [p for p, *_ in loaded])
@@ -517,20 +518,31 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, dst)
         if supplement:
-            destination=stage/'resolution-supplements/v0.1.0'
-            destination.mkdir(parents=True)
-            with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_DEFLATED) as archive:
-                for src in sorted(supplement['path'].rglob('*')):
-                    if not src.is_file():
-                        continue
-                    name=src.relative_to(supplement['path']).as_posix()
-                    info=zipfile.ZipInfo(name,date_time=(2026,10,3,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
-                    archive.writestr(info,src.read_bytes())
-                    if src.suffix in {'.json','.csv','.txt'} or src.name=='LICENSE':
-                        dst=destination/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst)
+            history=[supplement['path']]
+            for older in sorted(supplement['path'].parent.glob('v*')):
+                if older!=supplement['path'] and older.is_dir() and re.fullmatch(r'v\d+\.\d+\.\d+',older.name):
+                    if tuple(map(int,older.name[1:].split('.'))) < tuple(map(int,supplement['version'][1:].split('.'))):
+                        validate_bundle(older,base)
+                        history.append(older)
+            downloads=[]
+            for bundle in history:
+                meta=load_json(bundle/'manifest.json'); ver='v'+meta['release_version']
+                destination=stage/'resolution-supplements'/ver
+                destination.mkdir(parents=True)
+                stamp=tuple(map(int,meta['generation_date'].split('-')))+(0,0,0)
+                with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_DEFLATED) as archive:
+                    for src in sorted(bundle.rglob('*')):
+                        if not src.is_file():
+                            continue
+                        name=src.relative_to(bundle).as_posix()
+                        info=zipfile.ZipInfo(name,date_time=stamp);info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
+                        archive.writestr(info,src.read_bytes())
+                        if src.suffix in {'.json','.csv','.txt'} or src.name=='LICENSE':
+                            dst=destination/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst)
+                downloads.append(anchor('resolution-supplements/index.md','resolution-supplements/'+ver+'/snapshot.zip','Download '+ver+' with notices'))
             write_text(stage,'resolution-supplements/index.md','# Selective resolutions and executed profiles\n\n'+
-                'Supplement v0.1.0 explicitly overlays v0.2.0; frozen source values and older versions are unchanged.\n\n'+
-                anchor('resolution-supplements/index.md','resolution-supplements/v0.1.0/snapshot.zip','Download complete supplement with notices')+'\n\n'+
+                'Supplement '+supplement['version']+' explicitly overlays v0.2.0; frozen source values and older versions are unchanged.\n\n'+
+                '\n\n'.join(downloads)+'\n\n'+
                 display_value(supplement['data']['summary']))
         for path, data, manifest, version in loaded:
             summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,

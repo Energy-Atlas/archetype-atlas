@@ -22,12 +22,15 @@ class SiteTests(unittest.TestCase):
             packet=load_json(target/residential['download'])
             self.assertFalse(packet['record']['simulation_ready'])
             self.assertIn('resolution_supplement',packet)
+            self.assertEqual(packet['resolution_supplement']['version'],'v0.2.0')
             self.assertIn('profile',packet['resolution_supplement'])
             page=(target/residential['path']).read_text()
             self.assertIn('atlas-residential-profile',page)
             self.assertIn('Station-proxy',page)
             profile=packet['resolution_supplement']['profile']
             self.assertTrue((target/profile['download']).exists())
+            self.assertTrue(profile['download'].startswith('resolution-supplements/v0.2.0/'))
+            self.assertTrue((target/'resolution-supplements/v0.1.0/manifest.json').exists())
             self.assertIn('nominal',page)
 
     def site_module(self):

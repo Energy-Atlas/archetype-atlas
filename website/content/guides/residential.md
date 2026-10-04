@@ -27,7 +27,7 @@ fixtures are examples of source inputs, not population representatives.
 
 Heating and cooling bases are Celsius values before offsets, seasons and
 unavailable-day controls. Base overlaps are flagged where present.
-The v0.1.0 resolution supplement now provides profiles produced by pinned
+The v0.2.0 resolution supplement provides profiles produced by pinned
 ResStock/OpenStudio-HPXML code: 38 stochastic configurations, three zero-occupant
 skips with explicitly zero occupancy, and 41 nominal thermostat profiles.
 Use the calendar date and annual view controls to inspect actual generated hours.
@@ -39,6 +39,9 @@ proxy because the original county archive is unavailable. Nominal thermostat
 profiles execute source offsets and overlap correction; equipment unavailable-day
 placement remains unresolved. EV and other non-exported end uses remain unknown.
 The three zero-occupant skips do not imply lights/appliances are off.
+Upstream fixed defaults exist for background loads; their conditional application
+has not been executed here. See [schedule mechanisms](schedule-methods.md) for
+these sources, the ten HVAC-unavailability cases and future generator decisions.
 
 Floor area remains a reported bin; exact SI area and derived densities remain
 unknown in the frozen source snapshot. Full building HPXML defaults and EnergyPlus
