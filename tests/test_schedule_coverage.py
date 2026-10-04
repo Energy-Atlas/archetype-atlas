@@ -7,6 +7,17 @@ from scripts.common import ROOT, load_atlas, load_json
 
 
 class ScheduleCoverageTests(unittest.TestCase):
+    def test_excluded_end_use_is_removed_from_assessment_not_counted_as_missing(self):
+        data,resolutions=self.inputs()
+        scope=load_json(ROOT/'sources/schedule-release-scope.json')
+        scope['excluded_residential_end_uses']=['electric_vehicle']
+        report=importlib.import_module('scripts.schedule_coverage').build(data,resolutions,scope)
+        extra=report['residential']['additional_end_uses']
+        self.assertNotIn('electric_vehicle',extra['columns'])
+        self.assertNotIn('electric_vehicle',extra['missing_by_column'])
+        self.assertTrue(all(r['column']!='electric_vehicle' for r in extra['missing_records']))
+        self.assertEqual(extra['missing_by_column']['lighting_exterior'],41)
+
     def inputs(self):
         data = load_atlas(ROOT/'data/releases/v0.2.0')
         supplement = ROOT/'data/resolution-releases/v0.3.0'

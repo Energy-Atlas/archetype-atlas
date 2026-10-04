@@ -19,6 +19,7 @@ def build(data=None, resolutions=None, scope=None, supplement_version='v0.3.0'):
     if resolutions is None:
         resolutions = load_json(ROOT/'data/resolution-releases/v0.3.0/resolutions.json')
     scope = scope or load_json(ROOT/'sources/schedule-release-scope.json')
+    extensions = [c for c in EXTENSIONS if c not in scope.get('excluded_residential_end_uses', [])]
     applied = {(r['record_id'],r['field']):r for r in resolutions['resolutions']}
     excluded = set(scope['excluded_commercial_space_types'])
     programs = [p for p in data['programs'] if p['source_space_type'] not in excluded]
@@ -40,7 +41,7 @@ def build(data=None, resolutions=None, scope=None, supplement_version='v0.3.0'):
                                 'source_space_type':p['source_space_type'],'field':field})
     residential_missing, extension_missing = [], []
     for row in data['residential_archetypes']:
-        for col in COLUMNS + EXTENSIONS:
+        for col in COLUMNS + extensions:
             if (row['id'],'profile:'+col) not in applied:
                 target = residential_missing if col in COLUMNS else extension_missing
                 target.append({'record_id':row['id'],'source_building_id':row['source_building_id'],
@@ -59,11 +60,11 @@ def build(data=None, resolutions=None, scope=None, supplement_version='v0.3.0'):
                 'missing_profile_fields':len(residential_missing),
                 'missing_by_column':dict(sorted(Counter(m['column'] for m in residential_missing).items())),
                 'missing_records':residential_missing,
-                'additional_end_uses':{'columns':EXTENSIONS,'missing_by_column':dict(sorted(Counter(m['column'] for m in extension_missing).items())),
+                'additional_end_uses':{'columns':extensions,'missing_by_column':dict(sorted(Counter(m['column'] for m in extension_missing).items())),
                                        'missing_records':extension_missing}},
             'limitations':['Counts describe source-input records and explicit variants, not all stock combinations or simulation readiness.',
                            'Residential freezer/refrigerator gaps include selected-absent options not yet resolved for those IDs.',
-                           'Two fixtures select EV chargers; 39 select None. All 41 EV columns remain unexported; exterior lighting applicability remains to be resolved.',
+                           'Additional end uses are assessed only when explicitly in the selected release scope.',
                            'Medium Office water pilot validates an existing source schedule and closes zero missing schedules.',
                            'HVAC unavailability and complete magnitudes/control application are excluded from the current schedule milestone.',
                            'Reference-location fan/lighting variants and exact DOE/PNNL generated-model equivalence remain separate evidence tasks.']}
