@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://energy-atlas.github.io/archetype-atlas/schemas/resolution-0.3.0.json",
+  "$id": "https://energy-atlas.github.io/archetype-atlas/schemas/resolution-0.4.0.json",
   "title": "Additive energy-atlas resolution supplement",
   "type": "object",
   "additionalProperties": false,
@@ -13,7 +13,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "base_release": {
       "const": "v0.2.0"
@@ -233,7 +233,8 @@
                 "fixed_schedule_id": {
                   "enum": [
                     "refrigerator",
-                    "freezer"
+                    "freezer",
+                    "lighting_exterior"
                   ]
                 },
                 "schedule_file": {
@@ -263,7 +264,10 @@
             "executed_residential_profile",
             "reviewed_no_lighting",
             "reviewed_no_gas_equipment",
-            "fixed_background_default"
+            "fixed_background_default",
+            "reviewed_vacancy_zero",
+            "inspected_inactive_controls",
+            "source_complete_no_water_draw"
           ]
         },
         "basis": {

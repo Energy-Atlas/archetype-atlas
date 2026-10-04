@@ -16,7 +16,10 @@ ELEMENTS={'WeekdayScheduleFractions':('weekday_fractions',24),
           'MonthlyScheduleMultipliers':('monthly_multipliers',12)}
 
 
-def build(cache_root=ROOT/'data/raw',evidence_lock=ROOT/'sources/schedule-evidence-lock.json'):
+def build(cache_root=ROOT/'data/raw',evidence_lock=ROOT/'sources/schedule-evidence-lock.json',names=None):
+    names=set(names if names is not None else ['refrigerator','freezer'])
+    if not names or not names <= {'refrigerator','freezer','lighting_exterior'}:
+        raise ValueError('Unsupported fixed default name')
     lock=load_json(evidence_lock)
     entry=next(e for e in lock['files'] if e['source_id']=='resstock' and e['path']==SOURCE_PATH)
     source=verify_file(entry,cache_root)
@@ -24,13 +27,15 @@ def build(cache_root=ROOT/'data/raw',evidence_lock=ROOT/'sources/schedule-eviden
     with source.open(encoding='utf-8',newline='') as stream:
         for number,row in enumerate(csv.DictReader(stream),2):
             name,element=row['Schedule Name'],row['Element']
-            if name not in {'refrigerator','freezer'} or element not in ELEMENTS:
+            selected_elements = {('Exterior'+k if name=='lighting_exterior' else k):v for k,v in ELEMENTS.items()}
+            output_name=name
+            if output_name not in names or element not in selected_elements:
                 continue
-            field,length=ELEMENTS[element]
+            field,length=selected_elements[element]
             values=[float(v.strip()) for v in row['Values'].split(',')]
             if len(values)!=length or any(not math.isfinite(v) or v<0 for v in values):
                 raise ValueError('Invalid fixed schedule source shape')
-            schedule=schedules.setdefault(name,{'id':name,'unit':'dimensionless','temperature_dependent':False,
+            schedule=schedules.setdefault(output_name,{'id':output_name,'unit':'dimensionless','temperature_dependent':False,
                 'interval_convention':'Local standard time; hour 0 covers [00:00,01:00); Monday-Friday weekday, Saturday-Sunday weekend; January-December multipliers',
                 'special_days':'No source holiday/design-day override reported for this fixed variant',
                 'normalization':'weekday/weekend hourly fraction multiplied by month multiplier, divided by the maximum possible product; load magnitude excluded',
@@ -49,9 +54,9 @@ def build(cache_root=ROOT/'data/raw',evidence_lock=ROOT/'sources/schedule-eviden
         schedule['peak_divisor']=max(schedule['weekday_fractions']+schedule['weekend_fractions'])*max(schedule['monthly_multipliers'])
         if schedule['peak_divisor']<=0:
             raise ValueError('Nonpositive fixed shape peak')
-    if set(schedules)!={'refrigerator','freezer'}:
+    if set(schedules)!=names:
         raise ValueError('Missing refrigeration defaults')
-    return {'schema_version':'0.1.0','variant':'fixed_source_default_no_temperature_feedback',
+    return {'schema_version':'0.2.0' if 'lighting_exterior' in names else '0.1.0','variant':'fixed_source_default_no_temperature_feedback',
             'schedules':schedules}
 
 

@@ -45,7 +45,7 @@ class ResolutionTests(unittest.TestCase):
             self.assertFalse(schedule['temperature_dependent'])
         from scripts.common import load_atlas
         result=self.module().resolve_records(load_atlas(ROOT/'data/releases/v0.2.0'),
-                  load_json(ROOT/'sources/resolution-policy.json'),[],packet)
+                  load_json(ROOT/'data/resolution-releases/v0.3.0/sources/resolution-policy.json'),[],packet)
         defaults=[r for r in result['resolutions'] if r['rule']=='fixed_background_default']
         self.assertEqual(len(defaults),5)
         self.assertEqual(len({r['record_id'] for r in defaults}),3)
@@ -69,7 +69,7 @@ class ResolutionTests(unittest.TestCase):
             self.assertIsNotNone(row['lighting_schedule_id'])
             self.assertGreater(row['electric_equipment_W_m2'],0)
             self.assertIn('data-centre',r['note'])
-        self.assertEqual(result['schema_version'],'0.3.0')
+        self.assertEqual(result['schema_version'],'0.4.0')
 
     def test_approved_zeros_reject_contradictory_loads_and_unreviewed_rooms(self):
         from scripts.common import load_atlas

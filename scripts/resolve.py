@@ -33,6 +33,20 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def verify_completion_reviews(policy, lock_path):
+    """Check quoted vacancy source fragments against immutable official blobs."""
+    from scripts.fetch import verify_file
+    entries={e['sha256']:e for e in load_json(lock_path)['files']}
+    for review in policy.get('vacancy_zero_reviews',[]):
+        for proof in review['evidence']:
+            entry=entries.get(proof['source_file_sha256'])
+            if entry is None or proof['source_revision']!=entry['source_revision']:
+                raise ValueError('Unbound completion evidence')
+            raw=verify_file(entry).read_text(encoding='utf-8')
+            if proof['original_value'].strip() not in raw:
+                raise ValueError('Completion source fragment mismatch')
+
+
 def profile_name(name):
     if not re.fullmatch(r'residential_archetype-[a-f0-9]{20}\.(json|csv)',name):
         raise ValueError('Unsafe profile path')
@@ -55,7 +69,7 @@ def unconditioned(row, mappings, reviewed_ids):
             and bool(matched) and all(m['system_id'] is None and m['part_of_total_floor_area']==['No'] for m in matched))
 
 
-def resolve_records(data, policy, profiles, fixed_background=None):
+def resolve_records(data, policy, profiles, fixed_background=None, completion=None):
     resolutions, unresolved = [], []
     provenance = {p['id']:p for p in data['provenance']}
     sources = {s['id']:s for s in data['source_files']}
@@ -78,6 +92,10 @@ def resolve_records(data, policy, profiles, fixed_background=None):
             'resolved_value':value,'unit':unit,'rule':rule,'basis':basis,
             'note':note,'evidence':proofs})
     constant = {'constant_value':0,'calendar_independent':True}
+    supported_vacancy={'lighting_interior','lighting_exterior','plug_loads_other','plug_loads_tv','cooking_range','clothes_washer','clothes_dryer','dishwasher','hot_water_fixtures','hot_water_dishwasher','hot_water_clothes_washer'}
+    for review in policy.get('vacancy_zero_reviews',[]):
+        if review['column'] not in supported_vacancy or not review['evidence']:
+            raise ValueError('Invalid vacancy end-use evidence')
     for row in data['programs']:
         for schedule,magnitude in LOADS.items():
             if source_zero(row,magnitude,schedule):
@@ -123,7 +141,7 @@ def resolve_records(data, policy, profiles, fixed_background=None):
                 ['source_attributes','service_water_heating_schedule_id'])
     for row in data.get('residential_archetypes',[]):
         opts=row['selected_options']
-        if fixed_background and row['id'] in policy.get('fixed_background_record_ids',[]) and row['occupants']==0:
+        if fixed_background and row['id'] in policy.get('fixed_background_record_ids',[]) and (row['occupants']==0 or policy.get('fixed_background_all_records')):
             for parameter,column in [('Refrigerator','refrigerator'),('Misc Freezer','freezer')]:
                 if opts.get(parameter) in (None,''):
                     raise ValueError('Unknown selected background appliance')
@@ -132,7 +150,7 @@ def resolve_records(data, policy, profiles, fixed_background=None):
                         'selected_absent_end_use','source_zero',parameter+' is explicitly absent; fixed background use is zero.',['selected_options'])
                     continue
                 schedule=fixed_background['schedules'][column]
-                note='User-selected fixed normalized refrigeration default for a zero-occupant dwelling; source weekday/weekend fractions and monthly multipliers retained; no temperature feedback, load magnitude or stochastic execution claimed.'
+                note=('User-selected fixed normalized refrigeration default for a dwelling; separate appliance load, not miscellaneous plugs; source fractions retained without temperature feedback or load magnitude.' if policy.get('fixed_background_all_records') else 'User-selected fixed normalized refrigeration default for a zero-occupant dwelling; source weekday/weekend fractions and monthly multipliers retained; no temperature feedback, load magnitude or stochastic execution claimed.')
                 add('residential_archetypes',row,'profile:'+column,
                     {'fixed_schedule_id':column,'schedule_file':'fixed-background-schedules.json'},'dimensionless',
                     'fixed_background_default','research_assumption',note,['selected_options'])
@@ -140,6 +158,22 @@ def resolve_records(data, policy, profiles, fixed_background=None):
                     resolutions[-1]['evidence'].append({k:v for k,v in {
                         **e,'provenance_id':row['provenance_id'],'interpretation_note':note+' '+e['interpretation_note']
                         }.items() if k!='original_field'})
+        for review in policy.get('vacancy_zero_reviews',[]):
+            if review['record_id']!=row['id']:continue
+            if row['occupants']!=0 or review.get('eri_version')!='latest' or review.get('apply_ashrae140_assumptions') is not False:
+                raise ValueError('Invalid vacancy zero applicability')
+            add('residential_archetypes',row,'profile:'+review['column'],constant,'dimensionless',
+                'reviewed_vacancy_zero','executed_upstream',
+                'Pinned upstream operational zero-occupant rule; refrigeration continues separately. No shared/common-area load inferred.', ['occupants','selected_options'])
+            resolutions[-1]['evidence'] += [{k:v for k,v in {**e,'provenance_id':row['provenance_id']}.items() if k!='original_field'} for e in review['evidence']]
+        if fixed_background and 'lighting_exterior' in fixed_background['schedules'] and row['occupants']!=0 and row['id'] in policy.get('exterior_record_ids',[]):
+            if opts.get('Lighting') in (None,'','None') or opts.get('Lighting Other Use')!='100% Usage':
+                raise ValueError('Unknown exterior lighting applicability')
+            schedule=fixed_background['schedules']['lighting_exterior']
+            note='Fixed source dwelling exterior lighting default; weekday/weekend and monthly product peak-normalized. Multifamily common-area lighting is separately unreported.'
+            add('residential_archetypes',row,'profile:lighting_exterior',{'fixed_schedule_id':'lighting_exterior','schedule_file':'fixed-background-schedules.json'},'dimensionless',
+                'fixed_background_default','research_assumption',note,['selected_options'])
+            resolutions[-1]['evidence'] += [{k:v for k,v in {**e,'provenance_id':row['provenance_id']}.items() if k!='original_field'} for e in schedule['evidence']]
         if all_electric(opts):
             add('residential_archetypes',row,'gas_equipment_W',0,'W','demonstrated_all_electric','source_zero',
                 'All selected fuel-using end uses are electricity/absent, including secondary heat, water heating, dryer, cooking and miscellaneous gas/pool/spa loads; dwelling gas equipment is zero.',
@@ -187,10 +221,12 @@ def validate_bundle(path, base=BASE):
     jsonschema.validate(result,load_json(path/'schemas/resolution.schema.json'))
     index=load_json(path/'profile-index.json')
     policy=load_json(path/'sources/resolution-policy.json')
+    if policy.get('vacancy_zero_reviews'):
+        verify_completion_reviews(policy,path/'sources/completion-evidence-lock.json')
     fixed=load_json(path/'fixed-background-schedules.json') if policy.get('fixed_background_record_ids') else None
     if fixed is not None:
         from scripts.fixed_background import build
-        if fixed!=build(evidence_lock=path/'sources/schedule-evidence-lock.json'):
+        if fixed!=build(evidence_lock=path/'sources/schedule-evidence-lock.json',names=policy.get('fixed_default_names')):
             raise ValueError('Fixed background defaults do not reproduce pinned source')
     expected=resolve_records(data,policy,index,fixed)
     if result!=expected:
@@ -224,7 +260,7 @@ def validate_bundle(path, base=BASE):
         if any(h>c+1e-8 for h,c in zip(series['heating_setpoint'],series['cooling_setpoint'])):
             raise ValueError('Profile thermostat overlap')
         for r in result['resolutions']:
-            if r['record_id']==row['id'] and r['rule']=='selected_absent_end_use':
+            if r['record_id']==row['id'] and r['rule'] in {'selected_absent_end_use','reviewed_vacancy_zero'}:
                 col=r['field'].split(':')[1]
                 if col in series and any(series[col]):
                     raise ValueError('Absent end use conflicts with executed positive profile')
@@ -246,7 +282,7 @@ def freeze(profiles, target, base=BASE):
     fixed=None
     if policy.get('fixed_background_record_ids'):
         from scripts.fixed_background import build
-        fixed=build()
+        fixed=build(names=policy.get('fixed_default_names'))
     result=resolve_records(load_atlas(base),policy,index,fixed)
     target.mkdir(parents=True)
     for p in index:
@@ -270,7 +306,11 @@ def freeze(profiles, target, base=BASE):
         src=(ROOT/name).resolve()
         if not src.is_relative_to(ROOT.resolve()) or name not in {
                 'docs/adr/0005-parametric-schedule-generators.md','docs/schedule-source-review.md',
-                'sources/schedule-evidence-lock.json','sources/licenses/comstock.txt'}:
+                'sources/schedule-evidence-lock.json','sources/licenses/comstock.txt',
+                'sources/completion-evidence-lock.json','sources/schedule-release-scope.json',
+                'docs/adr/0008-reviewed-schedule-completion.md','sources/residential-completion-inputs.json',
+                'scripts/inspect_residential_zero.rb','scripts/inspect_exterior_defaults.rb',
+                'sources/residential-completion-receipt.json'}:
             raise ValueError('Unrecognized supplement supporting file')
         dst=target/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst)
     dump_json(target/'manifest.json',{'release_version':policy['policy_version'],'schema_version':result['schema_version'],
