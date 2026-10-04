@@ -14,6 +14,10 @@ distinct operating-hours transformation, upstream fixed background defaults,
 component-scoped gas/water absence, ten residential HVAC-unavailability fixtures
 and DOE's sixteen reference locations. Twenty primary references are SHA-256
 locked for reproducible inspection; generator interface design remains deferred.
+The current evidence lock uses the stable DOE technical report for locations;
+the original HTML receipt is retained historically after hosted CI demonstrated
+delivery-dependent page bytes. Preserve Denver/Boulder and Chicago/O'Hare city/
+weather distinctions. All frozen release hashes remain unchanged.
 
 ## v0.2.0 — 2026-10-02
 

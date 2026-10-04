@@ -9,7 +9,7 @@ from pathlib import Path
 
 from scripts.common import ROOT, load_json
 
-ALLOWED_HOSTS = {'raw.githubusercontent.com', 'www.energycodes.gov', 'www.energy.gov'}
+ALLOWED_HOSTS = {'raw.githubusercontent.com', 'www.energycodes.gov', 'www.energy.gov', 'docs.nlr.gov'}
 
 
 def cache_path(entry, cache_root):

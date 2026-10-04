@@ -74,6 +74,8 @@ DOE Commercial Reference Building representative locations, rather than every
 county. Use the explicit DOE set of 16 location cases; preserve both coastal
 Los Angeles and inland Las Vegas under 3B. This is not interchangeable with a
 PNNL or a newer ASHRAE climate-zone set. Do not arbitrarily choose between them.
+The original technical report's Table 2 distinguishes representative city from
+weather-file location: 5B is Denver/Boulder; 5A is Chicago/Chicago-O'Hare.
 
 Cache ceiling-fan operating months, solar/location lighting inputs and heating/
 cooling season inputs per location, source EPW, calendar, algorithm revision and
@@ -104,3 +106,8 @@ Supporting primary blobs are retrieved immutably using SHA-256 checksums in
 `sources/schedule-evidence-lock.json`. Run
 `python -m scripts.fetch --lock sources/schedule-evidence-lock.json` to retrieve;
 add `--verify-only` for offline verification. Source notices remain applicable.
+
+Source clarification after freezing v0.2.0: the DOE HTML snapshot varies across
+delivery environments and is retained as an informational historical receipt.
+Active evidence lock version 2 pins the stable official technical report
+NREL/TP-5500-46861, DOI 10.2172/1009264, Table 2. No frozen source hash is changed.

@@ -63,11 +63,14 @@ by their unavailable-day options. Full model control application remains separat
 ## Location variants
 
 Future weather-derived elements will use the
-[DOE reference location set](https://www.energy.gov/cmei/buildings/new-construction-commercial-reference-buildings-archive):
+[DOE technical report location set](https://docs.nlr.gov/docs/fy11osti/46861.pdf), Table 2:
 Miami, Houston, Phoenix, Atlanta, Los Angeles, Las Vegas, San Francisco, Baltimore,
-Albuquerque, Seattle, Chicago, Boulder, Minneapolis, Helena, Duluth and Fairbanks.
+Albuquerque, Seattle, Chicago, Denver/Boulder, Minneapolis, Helena, Duluth and Fairbanks.
 Retain both coastal and inland 3B cases. Exact EPW files still require a separate
 locked binding. Current fixture station proxies remain their original variants.
+The report distinguishes representative city from weather-file location: 5B
+uses Denver/Boulder; 5A uses Chicago/Chicago-O'Hare. The source PDF is SHA-256
+locked; a historical HTML receipt is retained but is not a current build dependency.
 
 Cache fan-season months, lighting location/solar inputs and HVAC seasons per
 location and algorithm revision. Core occupant transitions do not require EPW.

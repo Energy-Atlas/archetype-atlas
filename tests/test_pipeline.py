@@ -10,6 +10,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class PipelineTests(unittest.TestCase):
+    def test_official_doe_report_host_is_allowed_without_weakening_url_guards(self):
+        fetch.safe_url('https://docs.nlr.gov/docs/fy11osti/46861.pdf')
+        for url in ['http://docs.nlr.gov/docs/fy11osti/46861.pdf',
+                    'https://docs.nlr.gov.attacker.invalid/report.pdf',
+                    'https://docs.nlr.gov/report.pdf?token=credential',
+                    'https://' + 'user:credential' + '@docs.nlr.gov/report.pdf']:
+            with self.assertRaises(ValueError):
+                fetch.safe_url(url)
+
     @classmethod
     def setUpClass(cls):
         cls.atlas = build.build_atlas(pilot=True)

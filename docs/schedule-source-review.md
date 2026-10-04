@@ -131,8 +131,10 @@ annual profiles are unchanged.
 
 ## DOE reference locations for the next generator design
 
-Use the official [DOE reference location table](https://www.energy.gov/cmei/buildings/new-construction-commercial-reference-buildings-archive),
-retrieved and SHA-256 locked as a dated primary-source snapshot:
+Use Table 2 of the official [DOE technical report](https://docs.nlr.gov/docs/fy11osti/46861.pdf),
+NREL/TP-5500-46861 (February 2011), printed page 7 / PDF page 16. The stable PDF
+is SHA-256 locked. The [DOE archive listing](https://www.energy.gov/cmei/buildings/new-construction-commercial-reference-buildings-archive)
+uses weather-location names; preserve the distinction from representative cities:
 
 | Climate case | Representative location |
 | --- | --- |
@@ -146,8 +148,8 @@ retrieved and SHA-256 locked as a dated primary-source snapshot:
 | 4A | Baltimore, MD |
 | 4B | Albuquerque, NM |
 | 4C | Seattle, WA |
-| 5A | Chicago, IL |
-| 5B | Boulder, CO |
+| 5A | Chicago, IL; source weather Chicago-O'Hare |
+| 5B | Denver, CO; source weather Boulder |
 | 6A | Minneapolis, MN |
 | 6B | Helena, MT |
 | 7 | Duluth, MN |
@@ -160,6 +162,14 @@ ceiling-fan season (monthly mean outdoors above 63°F / 17.22°C), lighting sola
 location inputs, and unavailable-day season placement. Occupant activity-chain
 probabilities do not require EPW weather. Appliance-location temperature is a
 separate dependency of some fixed refrigerator defaults.
+
+Hosted CI demonstrated that the HTML page's bytes differ across delivery
+environments. Its original local receipt remains in the frozen supplement and
+the active lock's historical receipts. It is not a current build dependency.
+Evidence lock version 2 uses the stable technical report; fresh retrieval through
+the official OSTI redirect and direct report host gave identical PDF SHA-256
+`39520427c39c4a424d8b0d072c47d5bfdc248631632e880501866aae6b0d131a`.
+The frozen v0.2.0 atlas, profiles, supplement and original receipt are unchanged.
 
 ## Reproduction and remaining gaps
 

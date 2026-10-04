@@ -1,5 +1,5 @@
 {
-  "lock_version": 1,
+  "lock_version": 2,
   "retrieval_date": "2026-10-04",
   "interpretation": "Pinned primary schedule-generation and load-application evidence. Read-only retrieval; no new generator execution implied. Upstream notices are in sources/licenses.",
   "files": [
@@ -176,11 +176,24 @@
     },
     {
       "source_id": "doe-reference-locations",
+      "path": "DOE-46861.pdf",
+      "url": "https://docs.nlr.gov/docs/fy11osti/46861.pdf",
+      "source_revision": "NREL/TP-5500-46861, February 2011; DOI 10.2172/1009264",
+      "sha256": "39520427c39c4a424d8b0d072c47d5bfdc248631632e880501866aae6b0d131a",
+      "size_bytes": 5595461,
+      "locator": "Table 2, printed page 7 (PDF page 16)",
+      "interpretation_note": "Separate representative city from TMY2 weather-file location: 5B Denver/Boulder and 5A Chicago/Chicago-OHare; preserve 3B-CA and 3B-other."
+    }
+  ],
+  "historical_receipts": [
+    {
+      "source_id": "doe-reference-locations",
       "path": "reference-location-page.html",
       "url": "https://www.energy.gov/cmei/buildings/new-construction-commercial-reference-buildings-archive",
       "source_revision": "DOE public archive snapshot 2026-10-04",
       "sha256": "7768abfccd4c04fa4db83431e7e5411653645f4765c2367163a1c0e7fcd5ad66",
-      "size_bytes": 124927
+      "size_bytes": 124927,
+      "retrieval_note": "Historical local HTML receipt retained. Page bytes differ across delivery environments, as demonstrated by hosted CI checksum failure. Informational citation only; current locked location evidence is the immutable technical report. Frozen supplement v0.2.0 retains its original receipt and hashes."
     }
   ]
 }
