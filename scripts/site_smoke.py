@@ -56,6 +56,11 @@ def smoke(root, screenshot_dir=None):
             page.on('response', lambda response: failed.append(response.url) if
                     response.status >= 400 and response.url.startswith(base) else None)
             page.goto(base)
+            query=page.locator('[data-md-component="search-query"]')
+            query.fill('Medium Office')
+            expect(page.locator('.md-search-result__list')).to_contain_text('Medium Office')
+            query.fill('')
+            query.press('Escape')
             expect(page.locator('.atlas-hero')).to_be_visible()
             if screenshot_dir:
                 screenshot_dir.mkdir(parents=True, exist_ok=True)
@@ -173,6 +178,21 @@ def smoke(root, screenshot_dir=None):
             assert plotted == canonical['series']['occupants'][181*24:182*24], 'Residential chart must show actual generated calendar data'
             if screenshot_dir:
                 page.screenshot(path=str(screenshot_dir/'residential-profiles.png'), full_page=True)
+            fixed_record=next(r for r in index['entries'] if r['id']=='residential_archetype-28457c00121833f065f2')
+            page.goto(base + fixed_record['path'].removesuffix('.md') + '/')
+            fixed_section=page.locator('.atlas-residential-profile[data-fixed="true"]')
+            expect(fixed_section.locator('.atlas-res-columns option')).to_have_count(1)
+            expect(fixed_section.locator('.atlas-res-status')).to_contain_text('no temperature feedback')
+            page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 24")
+            fixed_url=fixed_section.get_attribute('data-profile')
+            from urllib.parse import urljoin
+            fixed_packet=page.request.get(urljoin(page.url,fixed_url)).json()
+            actual=fixed_section.locator('.js-plotly-plot').first.evaluate('(el) => el.data[0].y')
+            assert actual==fixed_packet['series']['refrigerator'][:24], 'Fixed refrigeration chart differs from canonical recipe expansion'
+            fixed_section.locator('.atlas-res-view').select_option('annual')
+            page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
+            if screenshot_dir:
+                page.screenshot(path=str(screenshot_dir/'fixed-refrigeration.png'),full_page=True)
             response = page.request.get(base + office['download'])
             assert response.ok and response.json()['record']['id'] == office['id']
             page.set_viewport_size({'width': 390, 'height': 844})

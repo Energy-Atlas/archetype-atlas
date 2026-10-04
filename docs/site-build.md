@@ -93,3 +93,13 @@ only during generation; runtime scripts and plots use local assets and its MIT
 notice is distributed. System fonts avoid a remote font dependency.
 MkDocs and Material retain their package license notices. Original site code
 and documentation remain unlicensed under the repository's existing notice.
+# Publication size
+
+The global documentation search indexes record titles and the full text of
+guides. The catalogue's own
+filters/query retain the full record metadata used by its axes. This avoids
+duplicating lengthy provenance and source-code excerpts in a second full-text
+index. Generated catalogue JSON uses compact serialization without changing
+values; frozen download files and complete snapshots retain their exact bytes.
+Current identical residential profile downloads reuse historical URLs, with an
+explicit download map; complete snapshot ZIPs retain each manifest inventory.

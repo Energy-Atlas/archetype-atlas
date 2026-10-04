@@ -4,7 +4,8 @@ The accepted direction is to provide upstream parametric schedule mechanisms
 with explicit inputs, seeds, source revisions and parity checks. Fixed annual
 realizations remain useful evidence. The interface and meaning of "mimic" will
 be defined in the next design discussion; a general generator library is not
-yet delivered. Deterministic experimental archetypes remain the atlas baseline.
+yet delivered. Full or near-full preprogrammed data coverage now explicitly
+precedes generator shipping. Deterministic archetypes remain the atlas baseline.
 
 ## ResStock and ComStock
 
@@ -30,8 +31,10 @@ thermostat columns. The upstream stochastic measure skips them. The source
 contains fixed lighting/plug/appliance shapes and refrigerator/freezer shapes
 and temperature coefficients. All three have a selected refrigerator; two have
 a selected freezer. Refrigerator defaults may use temperature coefficients when
-fractional schedules are not supplied. Retrieved recipes are available, but no
-record-level background annual profiles have been assigned or executed here.
+fractional schedules are not supplied. Supplement v0.3.0 supplies a user-selected
+fixed fractional alternative for their refrigeration background loads, with
+monthly multipliers and no temperature feedback. Their other skipped end uses
+are still unresolved; no new upstream full-model execution is claimed.
 
 ## HVAC unavailable-day options
 
@@ -85,7 +88,42 @@ occupants, positive lighting/equipment and thermostats are preserved. Maintenanc
 is outside this adopted baseline. Attic/plenum/basement records remain archived
 but are excluded from the active gap assessment.
 
-Blank gas density means the generic recipe adds no gas equipment in a clean
-model. It does not prove a complete building has no gas use. Similarly, absent
-local water allocation does not disable a central water loop. These component
-boundaries explain why the broader gas/water source nulls remain visible.
+Supplement v0.3.0 adopts user-approved zero gas-equipment schedules and densities
+for the exact 713 clean-recipe programs. This does not classify their buildings
+as all-electric or zero gas HVAC/water heating. Original source nulls remain
+visible beside the explicit opt-in zero. There are 523 active non-cavity gaps:
+485 local water and 38 thermostat schedules.
+
+## Fixed backgrounds and coverage-first delivery
+
+Full or near-full deterministic data coverage precedes shipping any parametric
+generator. The three zero-occupant dwelling fixtures are 165449 and 447245
+(detached single-family) and 494980 (low-rise multifamily dwelling unit).
+All have refrigerators; only the two detached fixtures have freezers. Fixed
+source hourly fractions and monthly multipliers supply their refrigeration
+shapes without temperature feedback. The apartment freezer is zero. These are
+clearly labelled defaults, not stochastic execution or inferred lighting/plug use.
+Entry pages provide daily/annual plots and the canonical tables with provenance.
+
+Current profile download links may reuse byte-identical historical assets.
+Use the complete supplement snapshot ZIP for the canonical manifest inventory;
+the public `profile-download-map.json` records shared download URLs.
+
+## Hot-water equivalent and availability controls
+
+The next water-coverage step will map source fixture draw schedules to programs,
+preserving local demand zeros and separating shared-service allocation variants.
+Sum fixture flows within each program and normalize the resulting curve; verify
+that all program allocations reproduce the source building draw at every time
+step. This avoids double counting appliance water and preserves the difference
+between draw demand and heater/circulation operation. The 495 source water gaps
+have not been resolved by assigning generic occupancy shapes.
+
+HVAC unavailable days are separate from vacancy. All ten affected fixtures have
+`Vacancy Status=Occupied` and 1-5 occupants. The source cites RECS and sampling
+dependencies on poverty level, building type, tenure and cooling unavailability;
+its controls use `No Space Heating`/`No Space Cooling`, while vacancy is separate.
+EIA describes the underlying survey's inability-to-use questions as broken
+equipment households could not afford to fix or unaffordable energy
+([EIA explanation](https://www.eia.gov/todayinenergy/detail.php?id=51979)).
+Nominal thermostat profiles still precede availability overlays.

@@ -14,9 +14,34 @@ import tempfile
 import time
 import zipfile
 
-from scripts.common import ROOT, dump_json, load_atlas, load_json, stable_id, table_names
+from scripts.common import ROOT, load_atlas, load_json, stable_id, table_names
 from scripts.release import verify_release
 from scripts.resolve import DEFAULT as RESOLUTION_RELEASE, validate_bundle
+
+
+def write_site_json(path,data):
+    """Compact generated presentation packets; never rewrite frozen download files."""
+    content=json.dumps(data,ensure_ascii=False,allow_nan=False,separators=(',',':'))+'\n'
+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_text(content,encoding='utf-8',newline='\n')
+
+
+def shared_profile_downloads(bundle,history):
+    """Preserve direct v0.1/v0.2 URLs and stable aliases for subsequent snapshots."""
+    version=lambda p:tuple(map(int,p.name[1:].split('.')))
+    if version(bundle)<(0,3,0):
+        return {}
+    downloads={}
+    older=sorted((p for p in history if version(p)<version(bundle)),key=version)
+    for p in load_json(bundle/'profile-index.json'):
+        for field,hash_field in [('profile_file','profile_sha256'),('csv_file','csv_sha256')]:
+            name=p[field]
+            for previous in older:
+                candidate=previous/'profiles'/name
+                if candidate.is_file() and hashlib.sha256(candidate.read_bytes()).hexdigest()==p[hash_field]:
+                    downloads[name]='resolution-supplements/'+previous.name+'/profiles/'+name
+                    break
+    return downloads
 
 RECORD_TABLES = [t for t in table_names('0.2.0') if t not in {'provenance', 'source_files'}]
 AXES = {'building': 'Building type', 'program': 'Program', 'template': 'Vintage / template',
@@ -306,6 +331,15 @@ def resolution_html(current, rows, profile, supplement_base):
     page+='</tbody></table></div>\n\n'
     for row in rows:
         page+='<details><summary>'+display_value(row['field']+' — '+row['note'])+'</summary>'+display_value(row['evidence'])+'</details>\n'
+    fixed=[r['resolved_value']['fixed_schedule_id'] for r in rows if r['rule']=='fixed_background_default']
+    if fixed:
+        page+='\n\n### Fixed refrigeration background variant\n\nUser-selected source default shapes with no temperature feedback. Selected appliance presence is checked; magnitudes and other skipped end uses remain separate.\n\n'
+        page+='<section class="atlas-residential-profile" data-fixed="true" data-columns="'+','.join(fixed)+'" data-profile="'+html_url(current,supplement_base+'/fixed-background-annual.json')+'">'
+        page+='<div class="atlas-controls"><label>View <select class="atlas-res-view"><option value="day">Selected day</option><option value="annual">Annual</option></select></label>'
+        page+='<label>Calendar date <input class="atlas-res-date" type="date" min="2007-01-01" max="2007-12-31" value="2007-01-01"></label>'
+        page+='<label>Series <select class="atlas-res-columns" multiple size="2"></select></label></div>'
+        page+='<p class="atlas-res-status" role="status">Loading fixed profiles.</p><div class="atlas-res-charts"></div><div class="atlas-res-table"></div></section>\n\n'
+        page+=anchor(current,supplement_base+'/fixed-background-schedules.json','Canonical fixed tables and field provenance')+'\n\n'
     if profile:
         packet=load_json(profile['source_path']); meta=packet['metadata']
         page+='\n\n### Executed residential profiles\n\n**Station-proxy variant; nominal thermostat profiles. Complete simulation readiness remains unresolved.**\n\n'
@@ -333,8 +367,9 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
         for r in supplement['data']['resolutions']:
             resolution_rows[r['record_id']].append(r)
         for p in supplement['index']:
-            profile_index[p['record_id']]={**p,'download':supplement_base+'/profiles/'+p['profile_file'],
-                'csv_download':supplement_base+'/profiles/'+p['csv_file'],
+            downloads=supplement.get('profile_downloads',{})
+            profile_index[p['record_id']]={**p,'download':downloads.get(p['profile_file'],supplement_base+'/profiles/'+p['profile_file']),
+                'csv_download':downloads.get(p['csv_file'],supplement_base+'/profiles/'+p['csv_file']),
                 'source_path':supplement['path']/'profiles'/p['profile_file']}
         for entry in entries:
             if entry['id'] in profile_index:
@@ -346,8 +381,8 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
     rows.update({r['id']: ('buildings', r) for r in overview_rows(data)})
     prov = {r['id']: r for r in data['provenance']}
     sources = {r['id']: r for r in data['source_files']}
-    dump_json(root/f'releases/{version}/catalogue.json', {'release': version, 'pilot': pilot, 'entries': entries})
-    dump_json(root/f'releases/{version}/schedule-index.json', [
+    write_site_json(root/f'releases/{version}/catalogue.json', {'release': version, 'pilot': pilot, 'entries': entries})
+    write_site_json(root/f'releases/{version}/schedule-index.json', [
         {'id': r['id'], 'name': r['source_name'], 'units': r['units']} for r in data['schedules']])
     write_text(root, f'releases/{version}/catalogue.md', catalogue_page(entries, version, versions))
     for axis, label in AXES.items():
@@ -412,7 +447,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
         page += '<pre>' + display_value(f'Energy Archetype Atlas {version}; {t}/{r["id"]}; schema {data["schema_version"]}. '
                                              'See field provenance for upstream attribution and licensing.') + '</pre>\n'
         write_text(root, current, page)
-        dump_json(root/entry['download'], packet)
+        write_site_json(root/entry['download'], packet)
     # MkDocs renders .md files instead of copying them verbatim. Preserve the
     # exact frozen tree in a deterministic archive, plus direct non-Markdown files.
     downloads_root = root/f'releases/{version}/downloads'
@@ -525,7 +560,11 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                         validate_bundle(older,base)
                         history.append(older)
             downloads=[]
+            # Reuse identical current profile downloads at already-published historical
+            # URLs. Every complete snapshot ZIP still contains its own exact inventory.
+            supplement['profile_downloads']=shared_profile_downloads(supplement['path'],history)
             for bundle in history:
+                aliases=shared_profile_downloads(bundle,history)
                 meta=load_json(bundle/'manifest.json'); ver='v'+meta['release_version']
                 destination=stage/'resolution-supplements'/ver
                 destination.mkdir(parents=True)
@@ -538,11 +577,18 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                         info=zipfile.ZipInfo(name,date_time=stamp);info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
                         archive.writestr(info,src.read_bytes())
                         if src.suffix in {'.json','.csv','.txt'} or src.name=='LICENSE':
+                            if name.startswith('profiles/') and src.name in aliases:
+                                continue
                             dst=destination/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst)
+                if tuple(map(int,ver[1:].split('.')))>=(0,3,0):
+                    write_site_json(destination/'profile-download-map.json',aliases)
+                    if (bundle/'fixed-background-schedules.json').exists():
+                        from scripts.fixed_background import annual_packet
+                        write_site_json(destination/'fixed-background-annual.json',annual_packet(load_json(bundle/'fixed-background-schedules.json')))
                 downloads.append(anchor('resolution-supplements/index.md','resolution-supplements/'+ver+'/snapshot.zip','Download '+ver+' with notices'))
             write_text(stage,'resolution-supplements/index.md','# Selective resolutions and executed profiles\n\n'+
                 'Supplement '+supplement['version']+' explicitly overlays v0.2.0; frozen source values and older versions are unchanged.\n\n'+
-                '\n\n'.join(downloads)+'\n\n'+
+                '\n\n'.join(downloads)+'\n\nCurrent identical profile downloads reuse historical URLs listed in `profile-download-map.json`. Download a complete snapshot ZIP to reproduce its manifest inventory.\n\n'+
                 display_value(supplement['data']['summary']))
         for path, data, manifest, version in loaded:
             summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,
@@ -599,7 +645,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         write_text(stage, 'index.md', home)
         write_text(stage, 'catalogue.md', '# Catalogue\n\n' + '\n\n'.join(anchor('catalogue.md', f'releases/{v}/catalogue.md', v + ' catalogue') for v in versions))
         write_text(stage, 'downloads.md', '# Downloads and releases\n\n' + '\n\n'.join(anchor('downloads.md', f'releases/{v}/downloads.md', v + ' snapshot, manifest and CSV') for v in versions))
-        dump_json(stage/'site-manifest.json', summary)
+        write_site_json(stage/'site-manifest.json', summary)
         # target is checked above and contains generated files only.
         if target.exists():
             shutil.rmtree(target)

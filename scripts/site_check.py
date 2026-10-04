@@ -62,15 +62,20 @@ def check_links(root, prefix='/archetype-atlas/'):
     return errors
 
 
+def check_size(root,max_bytes=1_000_000_000):
+    total=sum(p.stat().st_size for p in Path(root).rglob('*') if p.is_file())
+    return [f'Site size {total} exceeds selected publication ceiling {max_bytes} bytes'] if total>max_bytes else []
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--site', type=Path, default=ROOT/'build/site')
     p.add_argument('--prefix', default='/archetype-atlas/')
     args = p.parse_args()
-    errors = check_links(args.site, args.prefix)
+    errors = check_links(args.site, args.prefix)+check_size(args.site)
     if errors:
         raise SystemExit('\n'.join(errors[:50]) + f'\n{len(errors)} broken references')
-    print('All built internal links, fragments and project-subpath assets passed')
+    print('All built internal links, fragments, project-subpath assets and publication size passed')
 
 
 if __name__ == '__main__':

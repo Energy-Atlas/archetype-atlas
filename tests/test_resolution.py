@@ -9,6 +9,47 @@ from scripts.common import ROOT, load_json, dump_json
 
 
 class ResolutionTests(unittest.TestCase):
+    def test_reviewed_gas_absence_cannot_override_positive_or_unreviewed_loads(self):
+        from scripts.common import load_atlas
+        data=load_atlas(ROOT/'data/releases/v0.2.0')
+        policy=load_json(ROOT/'sources/resolution-policy.json')
+        def gas(rows):
+            return [r for r in self.module().resolve_records(rows,policy,[])['resolutions']
+                    if r['rule']=='reviewed_no_gas_equipment']
+        resolved=gas(data)
+        self.assertEqual(len(resolved),1426)  # 713 schedules and matching densities
+        row=next(r for r in data['programs'] if r['id']==resolved[0]['record_id'])
+        for field,value in [('gas_equipment_W_m2',1),('gas_equipment_schedule_id','existing')]:
+            altered=copy.deepcopy(data)
+            next(r for r in altered['programs'] if r['id']==row['id'])[field]=value
+            self.assertFalse(any(r['record_id']==row['id'] for r in gas(altered)))
+        for field,value in [('gas_equipment_per_area',1),('additional_gas_equipment_schedule','existing')]:
+            altered=copy.deepcopy(data)
+            next(r for r in altered['programs'] if r['id']==row['id'])['source_attributes'][field]=value
+            self.assertFalse(any(r['record_id']==row['id'] for r in gas(altered)))
+        altered=copy.deepcopy(data)
+        next(r for r in altered['programs'] if r['id']==row['id'])['id']='program-unreviewed'
+        self.assertFalse(any(r['record_id']=='program-unreviewed' for r in gas(altered)))
+
+    def test_background_defaults_have_no_weather_dependency_and_preserve_seasonality(self):
+        from scripts.fixed_background import build, annual_series
+        packet=build()
+        self.assertEqual(set(packet['schedules']),{'refrigerator','freezer'})
+        for schedule in packet['schedules'].values():
+            annual=annual_series(schedule,2007)
+            self.assertEqual(len(annual),8760)
+            self.assertEqual(max(annual),1)
+            self.assertGreater(min(annual),0)
+            self.assertLess(annual[17],annual[24*181+17])
+            self.assertEqual(len(schedule['evidence']),3)
+            self.assertFalse(schedule['temperature_dependent'])
+        from scripts.common import load_atlas
+        result=self.module().resolve_records(load_atlas(ROOT/'data/releases/v0.2.0'),
+                  load_json(ROOT/'sources/resolution-policy.json'),[],packet)
+        defaults=[r for r in result['resolutions'] if r['rule']=='fixed_background_default']
+        self.assertEqual(len(defaults),5)
+        self.assertEqual(len({r['record_id'] for r in defaults}),3)
+
     def test_approved_plenum_lighting_and_data_center_occupancy(self):
         from scripts.common import load_atlas
         data=load_atlas(ROOT/'data/releases/v0.2.0')
@@ -28,7 +69,7 @@ class ResolutionTests(unittest.TestCase):
             self.assertIsNotNone(row['lighting_schedule_id'])
             self.assertGreater(row['electric_equipment_W_m2'],0)
             self.assertIn('data-centre',r['note'])
-        self.assertEqual(result['schema_version'],'0.2.0')
+        self.assertEqual(result['schema_version'],'0.3.0')
 
     def test_approved_zeros_reject_contradictory_loads_and_unreviewed_rooms(self):
         from scripts.common import load_atlas

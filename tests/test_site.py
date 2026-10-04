@@ -22,15 +22,21 @@ class SiteTests(unittest.TestCase):
             packet=load_json(target/residential['download'])
             self.assertFalse(packet['record']['simulation_ready'])
             self.assertIn('resolution_supplement',packet)
-            self.assertEqual(packet['resolution_supplement']['version'],'v0.2.0')
+            self.assertEqual(packet['resolution_supplement']['version'],'v0.3.0')
             self.assertIn('profile',packet['resolution_supplement'])
             page=(target/residential['path']).read_text()
             self.assertIn('atlas-residential-profile',page)
             self.assertIn('Station-proxy',page)
             profile=packet['resolution_supplement']['profile']
             self.assertTrue((target/profile['download']).exists())
-            self.assertTrue(profile['download'].startswith('resolution-supplements/v0.2.0/'))
+            self.assertTrue(profile['download'].startswith('resolution-supplements/v0.1.0/'))
             self.assertTrue((target/'resolution-supplements/v0.1.0/manifest.json').exists())
+            self.assertTrue((target/'resolution-supplements/v0.2.0/manifest.json').exists())
+            self.assertTrue((target/'resolution-supplements/v0.3.0/profile-download-map.json').exists())
+            self.assertFalse((target/'resolution-supplements/v0.3.0/profiles').exists())
+            fixed=load_json(target/'resolution-supplements/v0.3.0/fixed-background-annual.json')
+            self.assertEqual(len(fixed['series']['refrigerator']),8760)
+            self.assertEqual(max(fixed['series']['freezer']),1)
             self.assertIn('nominal',page)
 
     def site_module(self):

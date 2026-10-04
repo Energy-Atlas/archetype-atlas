@@ -87,7 +87,7 @@ so exact SI area and densities remain null. HPXML defaults and annual profiles
 were not executed or invented in that frozen source snapshot. Both original
 atlas releases remain unchanged and verifiable.
 
-The separately versioned [resolution supplement](data/resolution-releases/v0.2.0/manifest.json)
+The separately versioned [resolution supplement](data/resolution-releases/v0.3.0/manifest.json)
 adds actual upstream annual profiles and selective, evidence-gated assumptions.
 It contains 38 stochastic residential runs, three explicit zero-occupant skips,
 and 41 nominal thermostat profiles. All annual outputs reproduce byte-for-byte.
@@ -103,6 +103,15 @@ availability questions. [ADR 0005](docs/adr/0005-parametric-schedule-generators.
 records the future parametric generator and DOE reference-location direction.
 See [generation instructions](docs/residential-generation.md) and verify with
 `python -m scripts.resolve --verify`.
+
+Supplement v0.3.0 adds approved gas-equipment zero schedules and densities for
+713 programs, five fixed refrigeration background shapes for three zero-occupant
+dwelling fixtures, and one explicitly absent freezer zero. It has 2,125 resolutions
+and leaves 523 active non-cavity schedule gaps: 485 water and 38 thermostats.
+[ADR 0006](docs/adr/0006-deterministic-coverage-release.md) prioritizes near-full
+deterministic coverage before generator shipping and proposes a source-conserving
+program-level hot-water allocation equivalent. This is an incremental supplement,
+not a claim of complete schedule coverage.
 
 ## Research catalogue site
 
