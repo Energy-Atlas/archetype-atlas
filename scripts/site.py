@@ -17,6 +17,7 @@ import zipfile
 from scripts.common import ROOT, load_atlas, load_json, stable_id, table_names
 from scripts.release import verify_release
 from scripts.resolve import DEFAULT as RESOLUTION_RELEASE, validate_bundle
+from scripts.water_equivalent import DEFAULT as WATER_RELEASE, validate_bundle as validate_water
 
 
 def write_site_json(path,data):
@@ -347,18 +348,19 @@ def resolution_html(current, rows, profile, supplement_base):
         page+=f'Calendar {meta["year"]}; {meta["timestep_minutes"]}-minute intervals; seed {meta["seed"]}; '+display_value(meta['status'])+'.\n\n'
         page+=display_value(meta['interval_convention'])+'\n\n'
         page+='Weather: '+display_value(meta['weather']['station_filename'])+'; '+display_value(meta['weather']['variant'])+'.\n\n'
+        page+='Current release scope excludes sampled HVAC equipment-unavailability overlays. These desired-temperature profiles remain nominal. Archived source options and historical execution notes are retained in the download.\n\n'
         page+='<section class="atlas-residential-profile" data-profile="'+html_url(current,profile['download'])+'">'
         page+='<div class="atlas-controls"><label>View <select class="atlas-res-view"><option value="day">Selected day</option><option value="annual">Annual</option></select></label>'
         page+='<label>Calendar date <input class="atlas-res-date" type="date" min="2007-01-01" max="2007-12-31" value="2007-01-01"></label>'
         page+='<label>Series <select class="atlas-res-columns" multiple size="5"></select></label></div>'
         page+='<p class="atlas-res-status" role="status" aria-live="polite">Loading executed profiles; exact data available in downloads.</p><div class="atlas-res-charts"></div><div class="atlas-res-table"></div></section>\n\n'
         page+=anchor(current,profile['download'],'Annual canonical JSON with execution provenance')+' · '+anchor(current,profile['csv_download'],'Upstream execution CSV')+'\n\n'
-        page+='**Unresolved execution boundaries:**\n\n'+'\n'.join('- '+display_value(v) for v in meta['unresolved'])+'\n\n'
+        page+='**Historical execution notes (some items are outside current release scope):**\n\n'+'\n'.join('- '+display_value(v) for v in meta['unresolved'])+'\n\n'
     page+=anchor(current,supplement_base+'/snapshot.zip','Complete supplement, schema, provenance, locks and upstream notices')+'\n\n'
     return page
 
 
-def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None):
+def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None, water=None):
     entries = catalogue_entries(data, version)
     resolution_rows=defaultdict(list)
     profile_index={}
@@ -422,6 +424,8 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
                       'interpretation': 'Generated overview of source inputs; not a complete simulation configuration'}
         else:
             ids = {k: v for k, v in r.items() if k.endswith('_schedule_id') and v in refs}
+            if water and r['id'] == water['program_id']:
+                ids['fixture_draw_equivalent_peak_normalized'] = water['equivalent_schedule']['id']
             if t == 'schedules':
                 ids = {'source_profile': r['id']}
             if ids:
@@ -435,6 +439,13 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
             s = sources[p['source_file_id']]
             page += provenance_html(p, s, current, version) + '\n\n'
             packet = {'release': version, 'record_kind': t, 'record': r, 'provenance': p, 'source_file': s}
+        if water and r['id'] == water['program_id']:
+            page += '\n\n## Fixture draw equivalent\n\n'
+            page += 'Optional source-conserving variant attached to this existing office program. No new restroom program is created. The schedule explorer includes both the original draw fractions and the peak-normalized equivalent.\n\n'
+            page += 'The source maximum is 0.57. Divide its fractions by 0.57 and multiply its rated flow by 0.57 to preserve demand. Apply once per represented office area; never add another building-wide copy. This is fixture draw at the source target temperature, not heater energy or circulation.\n\n'
+            page += display_value(water['interpretation'])+'\n\n'
+            page += anchor(current,'water-equivalents/v0.1.0/water-equivalent.json','Canonical equivalent, SI scaling and field evidence')+' · '+anchor(current,'guides/hot-water.md','Allocation and conservation method')+'\n\n'
+            packet['water_equivalent'] = water
         if r['id'] in resolution_rows:
             profile=profile_index.get(r['id'])
             page+='\n\n'+resolution_html(current,resolution_rows[r['id']],profile,supplement_base)
@@ -517,7 +528,7 @@ def rename_generated(source, target):
             time.sleep(0.2 * (attempt + 1))
 
 
-def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE):
+def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE, water_path=WATER_RELEASE):
     """Verify everything before writing; atomically replace only the supplied output."""
     loaded = sorted([(Path(p), *read_release(p)) for p in release_paths],
                     key=lambda x: tuple(int(n) for n in x[-1][1:].split('.')))
@@ -525,6 +536,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
     if len(set(versions)) != len(versions):
         raise ValueError('Duplicate release version')
     supplement=None
+    water = validate_water(water_path) if water_path is not None and 'v0.2.0' in versions else None
     if supplement_path is not None and 'v0.2.0' in versions:
         supplement_path=Path(supplement_path)
         base=next(p for p,_,_,v in loaded if v=='v0.2.0')
@@ -552,6 +564,40 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                 dst = stage/'assets/vendor'/entry['path']
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, dst)
+        if water:
+            destination = stage/'water-equivalents/v0.1.0'
+            destination.mkdir(parents=True)
+            with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_DEFLATED) as archive:
+                for src in sorted(Path(water_path).rglob('*')):
+                    if not src.is_file():
+                        continue
+                    name = src.relative_to(water_path).as_posix()
+                    info = zipfile.ZipInfo(name,date_time=(2026,10,4,0,0,0))
+                    info.compress_type = zipfile.ZIP_DEFLATED
+                    info.external_attr = 0o644<<16
+                    archive.writestr(info,src.read_bytes())
+                    if src.suffix in {'.json','.txt'} or src.name == 'LICENSE':
+                        dst = destination/name
+                        dst.parent.mkdir(parents=True,exist_ok=True)
+                        shutil.copyfile(src,dst)
+            write_site_json(stage/f'releases/v0.2.0/records/{water["equivalent_schedule"]["id"]}.json',
+                            {'record':water['equivalent_schedule'],'water_equivalent':water})
+            derived_id = water['equivalent_schedule']['id']
+            current = f'releases/v0.2.0/schedules/{derived_id}.md'
+            page = page_header('Medium Office fixture draw equivalent','v0.2.0',derived_id,False)
+            page += 'Optional water-equivalent pilot v0.1.0, schema 0.1.0, attached to the existing office program. The original source schedule remains unchanged.\n\n'
+            page += explorer_html(current,'v0.2.0',{'source_fixture_draw':water['source_schedule_id'],
+                                                   'fixture_draw_equivalent_peak_normalized':derived_id})+'\n\n'
+            page += '## Conservation and interpretation\n\n'+display_value(water['conservation'])+'\n\n'+display_value(water['interpretation'])+'\n\n'
+            page += '## Field evidence\n\n'+display_value(water['evidence'])+'\n\n'
+            page += anchor(current,f'releases/v0.2.0/programs/{water["program_id"]}.md','Existing office program')+' · '+anchor(current,'water-equivalents/v0.1.0/water-equivalent.json','Canonical equivalent and provenance')+' · '+anchor(current,'water-equivalents/v0.1.0/snapshot.zip','Frozen pilot snapshot')+'\n\n'
+            write_text(stage,current,page)
+        if 'v0.2.0' in versions:
+            from scripts.schedule_coverage import build as schedule_coverage
+            coverage_base = next(data for _,data,_,v in loaded if v == 'v0.2.0')
+            write_site_json(stage/'schedule-coverage.json',schedule_coverage(coverage_base,
+                supplement['data'] if supplement else {'resolutions':[]},
+                supplement_version=supplement['version'] if supplement else None))
         if supplement:
             history=[supplement['path']]
             for older in sorted(supplement['path'].parent.glob('v*')):
@@ -592,7 +638,8 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                 display_value(supplement['data']['summary']))
         for path, data, manifest, version in loaded:
             summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,
-                                                          manifest, version, versions, pilot, supplement if version=='v0.2.0' else None)
+                                                          manifest, version, versions, pilot, supplement if version=='v0.2.0' else None,
+                                                          water if version=='v0.2.0' else None)
         latest = versions[-1]
         latest_data = loaded[-1][1]
         source_page = '# Sources and licensing\n\n'

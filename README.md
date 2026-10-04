@@ -27,6 +27,15 @@ parameter completeness remains unresolved. Five commercial templates are selecte
 not every published code edition. [Machine-readable coverage](docs/validation/coverage.json)
 reports expected sets, observed records and unresolved inputs.
 
+The [finite water pilot](data/water-releases/v0.1.0/water-equivalent.json) attaches
+a source-conserving fixture draw equivalent to the existing Medium Office
+90.1-2013 office program. [ADR 0007](docs/adr/0007-program-water-equivalents.md)
+defines its semantics and excludes sampled HVAC unavailability from the schedule
+release. [Schedule coverage](docs/validation/schedule-coverage.json) inventories
+523 active commercial schedule gaps and 101 residential gaps across 14 assessed
+columns; EV/exterior lighting and specialized uses are listed separately.
+Near-full deterministic coverage remains the prerequisite to generator delivery.
+
 | Canonical table | Records |
 | --- | ---: |
 | programs | 768 |

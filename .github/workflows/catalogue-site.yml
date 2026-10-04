@@ -9,6 +9,11 @@ on:
       - 'tests/test_site*.py'
       - 'data/releases/**'
       - 'data/resolution-releases/**'
+      - 'data/water-releases/**'
+      - 'scripts/water_equivalent.py'
+      - 'scripts/schedule_coverage.py'
+      - 'sources/water-evidence-lock.json'
+      - 'sources/schedule-release-scope.json'
       - 'scripts/resolve.py'
       - 'requirements*.txt'
       - 'mkdocs.yml'
@@ -20,6 +25,7 @@ on:
       - 'tests/**'
       - 'data/releases/**'
       - 'data/resolution-releases/**'
+      - 'data/water-releases/**'
       - 'requirements*.txt'
       - 'mkdocs.yml'
       - '.github/workflows/catalogue-site.yml'
@@ -56,11 +62,13 @@ jobs:
       - name: Verify frozen releases and presentation contracts
         run: |
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
+          python -m scripts.fetch --lock sources/water-evidence-lock.json
           python -m scripts.release --verify --target data/releases/v0.1.0
           python -m scripts.release --verify --target data/releases/v0.2.0
           python -m scripts.resolve --verify
           python -m scripts.resolve --verify --target data/resolution-releases/v0.1.0
           python -m scripts.resolve --verify --target data/resolution-releases/v0.2.0
+          python -m scripts.water_equivalent --verify
           python -m unittest tests.test_site tests.test_site_delivery -q
           node --test tests/site_core.test.js tests/site_parity.test.js
       - name: Generate both versioned catalogues and build

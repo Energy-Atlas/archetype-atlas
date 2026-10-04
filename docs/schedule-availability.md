@@ -43,9 +43,10 @@ The supplement leaves 557 commercial program fields unresolved:
 | Heating setpoint schedule | 19 | No reviewed evidence sufficient to disable heating |
 | Cooling setpoint schedule | 19 | No reviewed evidence sufficient to disable cooling |
 
-Residential unresolved end uses/controls are listed separately in each profile:
-EV, refrigerator/freezer, exterior lighting and non-exported uses; stochastic
-loads for the three upstream skips; and unavailable-day placement/overrides.
+Residential unresolved end uses are listed separately in each profile:
+EV, refrigerator/freezer, exterior lighting and non-exported uses; and stochastic
+loads for the three upstream skips. Historical profiles also note unexecuted
+unavailable-day placement, now excluded from the schedule release scope.
 Weather is an explicitly labelled station proxy because the county archive was
 inaccessible. These boundaries and exact generation inputs are explained in
 [residential generation](residential-generation.md) and
@@ -62,4 +63,32 @@ records the future parametric-generator direction; its interface is deferred.
 [ADR 0006](adr/0006-deterministic-coverage-release.md) defers generator shipping
 until near-full deterministic coverage and describes a source-conserving
 program-level hot-water allocation equivalent. The 495 water gaps are not yet
-closed; the method needs explicit fixture/service-zone mapping before assignment.
+closed. [ADR 0007](adr/0007-program-water-equivalents.md) implements the first
+source-conserving Medium Office pilot on its **existing office program**. It
+normalizes the already supplied curve and preserves compatible flow scaling;
+no new program or additional missing-water resolution is counted.
+
+## Gap to the deterministic schedule milestone
+
+The [machine-readable inventory](validation/schedule-coverage.json), reproduced
+by `python -m scripts.schedule_coverage`, applies explicit resolutions and the
+[release-scope policy](../sources/schedule-release-scope.json). It assesses 734
+active commercial programs and seven schedule fields each: 4,615 of 5,138 fields
+are supplied (89.8%), with 523 unknowns. Named building-class coverage remains
+complete; field completeness is a different denominator.
+
+For 41 residential configurations, 14 assessed columns give 574 profile fields.
+473 are supplied (82.4%); 101 lack a profile: refrigerator 38, freezer 38,
+interior lighting/other plugs/TV plugs/cooking/fixture water three each, and
+washer/dryer/dishwasher/their two appliance-water columns two each. Refrigeration
+gaps include selected-absent options not yet explicitly resolved for those IDs.
+Occupancy, nominal thermostats and ceiling-fan columns are supplied for all 41.
+Additional EV/exterior-lighting columns are unexported for all 41; two select EV
+chargers and 39 select None. Other specialized end uses require applicability
+review outside the 14-column denominator. These are not population-weighted counts.
+
+HVAC equipment-unavailability overlays are excluded by user decision; nominal
+desired-temperature profiles are the baseline. Complete magnitudes and full-model
+control application are also excluded from this schedule milestone. Raw source
+options and frozen historical notes remain available. Reference-location weather
+variants and direct DOE/PNNL model equivalence are separate evidence tasks.

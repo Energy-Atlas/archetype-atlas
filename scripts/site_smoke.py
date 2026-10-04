@@ -106,6 +106,16 @@ def smoke(root, screenshot_dir=None):
             with page.expect_download() as download:
                 page.locator('.atlas-csv').click()
             assert download.value.suggested_filename == 'atlas-selected-profiles.csv'
+            exported_water = list(csv.DictReader(Path(download.value.path()).read_text().splitlines()))
+            normalized = [float(r['value']) for r in exported_water
+                          if r['role'] == 'fixture_draw_equivalent_peak_normalized']
+            source_draw = [float(r['value']) for r in exported_water
+                           if r['role'] == 'service_water_heating_schedule_id']
+            assert len(normalized) == len(source_draw) == 24, 'Water equivalent missing from explorer CSV'
+            assert all(abs(a-b*0.57) < 1e-12 for a,b in zip(source_draw,normalized)), 'Water equivalent changes draw shape/scaling'
+            water_link = page.locator('.atlas-profile-table details').filter(has_text='fixture_draw_equivalent_peak_normalized').locator('a').first
+            detail_url = water_link.get_attribute('href')
+            assert detail_url and context.request.get(detail_url).status == 200, 'Equivalent source-rule detail page is unavailable'
             if screenshot_dir:
                 page.screenshot(path=str(screenshot_dir/'office.png'), full_page=True)
             hospital = next((r for r in index['entries'] if r['id'] == 'program-063ce56e8cb91eedd1ae'), None)

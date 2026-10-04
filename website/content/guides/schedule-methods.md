@@ -38,6 +38,10 @@ are still unresolved; no new upstream full-model execution is claimed.
 
 ## HVAC unavailable-day options
 
+**Excluded from the current schedule release by user decision.** Use nominal
+desired-temperature profiles without sampled equipment interruptions. The
+following raw source options remain archived evidence, not pending release work.
+
 These affect residential dwelling HVAC, not commercial room programs. The other
 31 source fixtures specify Never/Never. Exact placement remains unexecuted in
 the schedule-only runner; nominal thermostats remain visible.
@@ -94,6 +98,12 @@ as all-electric or zero gas HVAC/water heating. Original source nulls remain
 visible beside the explicit opt-in zero. There are 523 active non-cavity gaps:
 485 local water and 38 thermostat schedules.
 
+Select both the always-zero fraction and 0 W/m2 density as the resolved variant.
+This applies to program equipment in the clean source recipe; custom/direct
+equipment needs its own variant. Gas heating and gas water-heating fuel remain
+independent inputs. Each program page shows the original null, explicit zero
+and its source/code evidence. See [coverage and remaining gaps](coverage.md).
+
 ## Fixed backgrounds and coverage-first delivery
 
 Full or near-full deterministic data coverage precedes shipping any parametric
@@ -111,13 +121,13 @@ the public `profile-download-map.json` records shared download URLs.
 
 ## Hot-water equivalent and availability controls
 
-The next water-coverage step will map source fixture draw schedules to programs,
-preserving local demand zeros and separating shared-service allocation variants.
-Sum fixture flows within each program and normalize the resulting curve; verify
-that all program allocations reproduce the source building draw at every time
-step. This avoids double counting appliance water and preserves the difference
-between draw demand and heater/circulation operation. The 495 source water gaps
-have not been resolved by assigning generic occupancy shapes.
+The [Medium Office pilot](hot-water.md) attaches a conserved fixture-draw
+equivalent to its existing office program, without creating a new restroom
+program. Its normalized fractions and compatible peak-flow scaling preserve
+source demand. All rule dates, selectors, design days and source order remain.
+This office already has a source water curve, so the pilot closes zero gaps.
+Extension to the remaining programs requires explicit serving/allocation evidence
+and conservation checks; no generic occupancy shape fills the 495 source nulls.
 
 HVAC unavailable days are separate from vacancy. All ten affected fixtures have
 `Vacancy Status=Occupied` and 1-5 occupants. The source cites RECS and sampling
@@ -126,4 +136,5 @@ its controls use `No Space Heating`/`No Space Cooling`, while vacancy is separat
 EIA describes the underlying survey's inability-to-use questions as broken
 equipment households could not afford to fix or unaffordable energy
 ([EIA explanation](https://www.eia.gov/todayinenergy/detail.php?id=51979)).
-Nominal thermostat profiles still precede availability overlays.
+Availability overlays are excluded from this release. Nominal thermostat
+profiles are the requested baseline; archived source options remain traceable.

@@ -100,3 +100,12 @@ Nominal setpoints remain separate from future equipment-availability overlays.
 
 Primary references and SHA-256 receipts are in the active evidence lock. See
 [source review](../schedule-source-review.md) and [future generator decision](0005-parametric-schedule-generators.md).
+
+## Subsequent implementation decision
+
+[ADR 0007](0007-program-water-equivalents.md) supersedes the pending pilot and
+availability-overlay scope above: execute the Medium Office fixture draw
+equivalent on its existing office program, and exclude HVAC equipment-unavailability
+overlays from the deterministic schedule release. Preserve raw source options and
+historical notes. The published water pilot closes zero source nulls because that
+office already has its source schedule. Coverage-first delivery remains in force.

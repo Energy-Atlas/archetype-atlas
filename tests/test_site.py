@@ -12,6 +12,17 @@ from scripts.common import ROOT, load_atlas, load_json
 
 
 class SiteTests(unittest.TestCase):
+    def test_coverage_matches_the_selected_historical_supplement(self):
+        site=self.site_module()
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'docs'
+            site.generate_site([ROOT/'data/releases/v0.2.0'],target,pilot=True,
+                               supplement_path=ROOT/'data/resolution-releases/v0.1.0')
+            report=load_json(target/'schedule-coverage.json')
+            self.assertEqual(report['resolution_supplement'],'v0.1.0')
+            self.assertEqual(report['commercial']['missing_schedule_fields'],1208)
+            self.assertEqual(report['residential']['missing_profile_fields'],107)
+
     def test_executed_profiles_are_separate_from_frozen_source_values(self):
         site=self.site_module()
         with tempfile.TemporaryDirectory() as d:
@@ -74,6 +85,15 @@ class SiteTests(unittest.TestCase):
             self.assertAlmostEqual(record['record']['lighting_W_m2'], 0.82/0.09290304)
             self.assertEqual(record['release'], 'v0.2.0')
             self.assertTrue(record['provenance']['fields'])
+            self.assertEqual(record['water_equivalent']['program_id'],office['id'])
+            self.assertEqual(record['water_equivalent']['peak_divisor'],0.57)
+            derived_id=record['water_equivalent']['equivalent_schedule']['id']
+            self.assertIn(derived_id,page)
+            self.assertIn('Fixture draw equivalent',page)
+            self.assertTrue((target/'water-equivalents/v0.1.0/manifest.json').exists())
+            self.assertEqual(load_json(target/f'releases/v0.2.0/records/{derived_id}.json')['record'],
+                             record['water_equivalent']['equivalent_schedule'])
+            self.assertTrue((target/f'releases/v0.2.0/schedules/{derived_id}.md').exists())
             self.assertEqual(result['releases']['v0.2.0']['commercial_overviews'], 1)
             residential = next(r for r in index['entries'] if r['kind'] == 'residential_archetypes')
             rp = (target/residential['path']).read_text()

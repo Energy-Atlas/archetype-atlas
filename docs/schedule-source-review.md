@@ -228,3 +228,29 @@ and sampling definitions. Old frozen locks remain unchanged. See
 [ADR 0006](adr/0006-deterministic-coverage-release.md) for release sequencing,
 fixed shape semantics and the proposed program-level hot-water allocation
 equivalent. Generator shipping follows near-full deterministic coverage.
+
+## Current program-water pilot and release exclusions
+
+The user now excludes HVAC equipment-unavailability from the schedule release.
+This is a nominal desired-temperature baseline without sampled repair/affordability
+interruptions. The raw options and historical notes above remain source evidence;
+unexecuted interruption placement is no longer pending coverage work.
+
+The [water pilot](../data/water-releases/v0.1.0/water-equivalent.json) attaches
+to the existing MediumOffice / 90.1-2013 office program. Locked prototype inputs
+and source code establish its per-space-type water path, and the pinned OSM tags
+match 15 distinct office spaces. No new restroom program is invented. The source
+curve's maximum is 0.57; normalized fractions and compatible peak-flow scaling
+conserve fixture draw for all retained rules. Physical fixture locations remain
+unspecified: the heater location is not a demand-location mapping. This supplies
+a reviewed equivalent of an already known curve, so it closes zero missing fields.
+
+Gas zeros remain program equipment resolutions with the source nulls preserved;
+they do not zero gas heating, gas water heating, custom/direct equipment or imply
+whole-building electrification. Both density (0 W/m2) and fraction (always zero)
+must be selected deliberately as the resolved variant. The MkDocs schedule methods
+and program pages display this scope alongside the original evidence.
+
+See [ADR 0007](adr/0007-program-water-equivalents.md) for water semantics and the
+[per-record coverage inventory](validation/schedule-coverage.json) for denominators,
+remaining commercial and residential gaps, and the current release exclusions.

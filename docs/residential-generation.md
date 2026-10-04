@@ -55,9 +55,17 @@ line endings in 619 files; executable archive bytes have their own hashes.
   OpenStudio model evaluates schedules only; it supplies no research geometry.
   Unavailable-day counts remain reported inputs: their placement/overrides are
   **not executed**, so these are not effective equipment availability profiles.
+  The subsequent user-selected release scope excludes HVAC unavailability;
+  missing interruption placement is no longer a schedule-release gap. Nominal
+  desired-temperature schedules remain the baseline; archived source options
+  and frozen execution notes are retained for traceability.
 - EV, refrigerator/freezer, exterior lighting and other non-exported end uses
   remain explicitly unresolved. Appliance installation, load magnitudes and
   complete HPXML/model feasibility must be resolved separately.
+  Supplement v0.3.0 separately supplies fixed refrigeration for the three
+  zero-occupant skips. The current per-record inventory is
+  [schedule coverage](validation/schedule-coverage.json); it excludes complete
+  magnitudes and full-model control application from this schedule milestone.
 
 ## Validation and licensing
 
