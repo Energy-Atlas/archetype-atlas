@@ -118,7 +118,16 @@ options; exact placed dates have not been executed in the current schedule-only
 runner. A 3-day unavailable period would suppress equipment availability during
 those selected days even though the nominal desired-temperature curve remains.
 The year-round fixture can retain nominal thermostat profiles while its
-equipment is unavailable all year. Missing overlays matter for these ten only.
+equipment is unavailable all year. These are ten raw option cases, rather than
+ten confirmed active overrides: fixture 143851 also selects `HVAC Cooling
+Efficiency=None` and no cooling partial conditioning. Its three cooling-
+unavailable days have no selected cooler to disable. The other nine fixtures
+select equipment affected by their unavailable-day options. Full model control
+application remains separate from this source-option inventory.
+
+This applicability clarification was added after freezing supplement v0.2.0.
+The frozen review remains its dated archival text; its source fixture values and
+annual profiles are unchanged.
 
 ## DOE reference locations for the next generator design
 

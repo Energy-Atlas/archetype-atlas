@@ -55,6 +55,10 @@ the schedule-only runner; nominal thermostats remain visible.
 [Post-HPXML source logic](https://github.com/NatLabRockies/ResStock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/measures/ResStockArgumentsPostHPXML/measure.rb)
 uses weather-defined seasons and a seeded start day for consecutive equipment-
 unavailable periods. Desired temperatures are distinct from availability.
+These are ten raw option cases. Fixture 143851 also selects no cooling equipment
+and no cooling partial conditioning; its three cooling-unavailable days have no
+selected cooler to disable. The other nine fixtures select equipment affected
+by their unavailable-day options. Full model control application remains separate.
 
 ## Location variants
 
