@@ -128,3 +128,38 @@ Hosted CI identified delivery-dependent bytes in the earlier HTML page; that
 receipt remains historical. All frozen release/supplement hashes are unchanged.
 The future parametric-generator direction remains a documented decision, with
 the interface and runtime parity contract deferred to the next discussion.
+
+## Coverage-first schedule supplement — 2026-10-04
+
+Published implementation and `resolution-v0.3.0` tag: `6a7be09`, on
+`feat/schedule-resolution`. Research branches remain unmerged.
+
+- [Windows/Linux validation](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37190981569)
+  passed: 75 Python tests, schema/physical/referential/schedule/provenance checks,
+  byte reproduction, 33,173 primary-source comparisons, all historical atlas and
+  resolution snapshots, 30 locked primary evidence files and security audit.
+- [Catalogue build and deployment](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37190981539)
+  passed: eight JavaScript tests, 39,830 source schedule selections, strict build,
+  links/fragments/assets, publication size and Chromium checks. Global search
+  retains all 14,870 record titles and guide text; full entry evidence remains
+  on each page and in canonical downloads. Built size: 978,986,697 bytes locally.
+- Two independent site-source generations produced 30,393 byte-identical files.
+  All 83 pre-existing residential profile/index artifacts match supplement v0.2.0.
+- Live verification matched 19 served artifact hashes, including all three
+  supplement manifests/indexes, v0.3.0 resolutions, fixed recipe tables, annual
+  fixed plot values and the shared profile download map. Public search and daily/
+  annual refrigeration plots passed with no browser errors. The low-rise
+  apartment exposes only its selected refrigerator in the fixed-profile view.
+
+Supplement v0.3.0 has 2,125 resolution rows for 754 records: approved zero gas
+equipment schedules/densities for 713 programs; five fixed refrigeration defaults
+for three zero-occupant dwelling fixtures; and one explicitly absent freezer zero.
+The active non-cavity assessment retains 523 commercial schedule gaps: 485 water
+and 38 thermostats. Other residential end uses/availability overlays remain
+documented. Full or near-full deterministic coverage precedes generator shipping.
+
+The [release notes](release-notes-resolution-v0.3.0.md) document new schema enums,
+SI density units, fixed-reference evaluation and preserved snapshot inventories.
+[ADR 0006](adr/0006-deterministic-coverage-release.md) records the proposed
+source-conserving hot-water equivalent and its existing Medium Office curve
+candidate. Program allocation remains a separate verification step.
