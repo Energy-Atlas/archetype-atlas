@@ -266,3 +266,56 @@ Live supplement ZIP SHA-256:
 Live commercial ZIP SHA-256:
 `318155e78a5334c89983cb6ad4f95c17952e6c71bd26115f9b4b6f588bdddaf7`.
 Manifest hashes are recorded in the release notes and validation receipt.
+
+## Complete water reporting and catalogue names — 2026-10-05
+
+Published and tested commit: `b653d5a` on `feat/schedule-resolution`. Annotated
+tag `water-reporting-v0.1.0` identifies the verified code and frozen bundle.
+The branch remains unmerged; previous snapshots and tags retain their contents.
+
+- [Windows/Linux scientific validation](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37281126958)
+  passed **116 tests on each OS**, canonical byte reproduction, 33,173 source
+  comparisons, schema/physical/referential/schedule/provenance checks, historical
+  release verification, the new reporting reproduction and repository security.
+- [Catalogue build and deployment](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37281126977)
+  passed frozen contracts on Python 3.12, ten JavaScript/parity tests, strict
+  MkDocs, all internal links/fragments/subpath assets, size and browser checks.
+  The locally verified site is **995,497,562 bytes**, below the configured
+  1,000,000,000-byte publication ceiling.
+- Live HTTPS downloads matched the frozen manifest, canonical reporting JSON
+  and complete snapshot ZIP, including every archived file. Both versioned
+  catalogue indexes and the coverage report matched the verified local build.
+  Live old-code filters and compound queries, program packet, reporting CSV
+  parity and public guides passed without browser errors.
+- Independent policy and final code/site reviews were completed. A legacy
+  compound-search regression was fixed and retested; no material findings remain.
+  Each implementation commit passed staged diff inspection and security audit.
+
+The optional [water-reporting catalogue](https://energy-atlas.github.io/archetype-atlas/water-reporting/)
+supplies operational schedules for all **734 active commercial programs** and
+accounts for all **217 source draw paths**. Combined assessed commercial schedule
+availability is **5,138/5,138**. Original source-only coverage remains
+**4,859/5,138**, including **279 unknown local water allocations**. Reporting
+allocations, source-supported local no-draw, reporting-policy zeros and shared
+references remain distinct; ten hospital services are applied once per building.
+The variant does not infer physical fixture placement, zone gains or complete
+simulation readiness. Residential coverage remains 574/574 assessed fields and
+41/41 exterior profiles. Excluded end uses and sampled HVAC unavailability stay
+outside active coverage; parametric-generator delivery remains deferred.
+
+The [name guide](https://energy-atlas.github.io/archetype-atlas/guides/catalogue-names/)
+documents one display vocabulary for all **22 building codes and 108 program
+codes**, used consistently in titles, filters, mappings and shared schedule
+contexts. Numbered, floor, occupied/vacant and other source variants retain
+distinct records; source strings, IDs, provenance and old query/category
+addresses remain available. Coarse source descriptors are not conflated with
+specific building typologies.
+
+See [release notes](release-notes-water-reporting-v0.1.0.md),
+[ADR 0009](adr/0009-complete-water-reporting-variant.md),
+[ADR 0010](adr/0010-catalogue-display-vocabulary.md) and the
+[validation receipt](validation/water-reporting-v0.1.0.json).
+Reporting manifest SHA-256:
+`fd80264defa43381735ab8f3618ac57fe4985b1d212f783415f5145ba7597fa3`.
+Live snapshot ZIP SHA-256:
+`347bc02e687bf0fae27300ae914d10feadbe94a93fa256affd3e79de7f73578e`.
