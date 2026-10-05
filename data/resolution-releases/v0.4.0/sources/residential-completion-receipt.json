@@ -1,0 +1,163 @@
+{
+  "schema_version": "0.1.0",
+  "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+  "extraction_date": "2026-10-04",
+  "runtime_lock": "sources/runtime-lock.json",
+  "inputs_sha256": "e8a61a172797bbf7f313c5a256626ca79d0f068c5af22e84a193febe25fb0461",
+  "scripts": {
+    "scripts/inspect_residential_zero.rb": "0f2a05d73c12afe64b34604bd5f0b4e52c6aaebcc738eeba9d1afb40a175b40c",
+    "scripts/inspect_exterior_defaults.rb": "aed8b24e473470a27675a43be57dc01b75a88644da019a83b57ee2f03f0f975a"
+  },
+  "zero_probe": {
+    "status": "completed",
+    "runtime_version": "3.10.0",
+    "results": [
+      {
+        "record_id": "residential_archetype-08a27444abac71d3b335",
+        "source_building_id": "165449",
+        "occupants": 0.0,
+        "bedrooms": 2,
+        "eri_version": "latest",
+        "apply_ashrae140_assumptions": false,
+        "transient_source_default_cfa_ft2": 1698,
+        "zero_calculations": {
+          "cooking_range": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "clothes_washer_and_hot_water_clothes_washer": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "clothes_dryer": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hot_water_fixtures_gpd_no_effectiveness_input": 0.0,
+          "hot_water_fixtures_gpd_not_low_flow": 0.0,
+          "hot_water_fixtures_gpd_low_flow": 0.0,
+          "plug_loads_other_and_tv_electric_equipment_count": 0,
+          "lighting_interior_lights_count": 0,
+          "lighting_exterior_lights_count": 0,
+          "refrigerators_rated_kwh_energy_probe": [
+            434.0,
+            1.0,
+            0.0
+          ],
+          "freezers_rated_kwh_energy_probe": [
+            935.0,
+            1.0,
+            0.0
+          ]
+        },
+        "warnings": [],
+        "limitations": "Calculation proofs only. CFA uses pinned source mapping transiently; atlas null retained. Low-flow endpoints are an independence check, not fixture assumptions. Refrigeration positive probe uses source rated option only; separate source usage multiplier retained in input and excluded from active magnitude outputs."
+      },
+      {
+        "record_id": "residential_archetype-28457c00121833f065f2",
+        "source_building_id": "494980",
+        "occupants": 0.0,
+        "bedrooms": 2,
+        "eri_version": "latest",
+        "apply_ashrae140_assumptions": false,
+        "transient_source_default_cfa_ft2": 854,
+        "zero_calculations": {
+          "cooking_range": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "dishwasher_and_hot_water_dishwasher": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hot_water_fixtures_gpd_no_effectiveness_input": 0.0,
+          "hot_water_fixtures_gpd_not_low_flow": 0.0,
+          "hot_water_fixtures_gpd_low_flow": 0.0,
+          "plug_loads_other_and_tv_electric_equipment_count": 0,
+          "lighting_interior_lights_count": 0,
+          "lighting_exterior_lights_count": 0,
+          "refrigerators_rated_kwh_energy_probe": [
+            434.0,
+            1.0,
+            0.0
+          ]
+        },
+        "warnings": [],
+        "limitations": "Calculation proofs only. CFA uses pinned source mapping transiently; atlas null retained. Low-flow endpoints are an independence check, not fixture assumptions. Refrigeration positive probe uses source rated option only; separate source usage multiplier retained in input and excluded from active magnitude outputs."
+      },
+      {
+        "record_id": "residential_archetype-aa1f864c610bf3d98e2e",
+        "source_building_id": "447245",
+        "occupants": 0.0,
+        "bedrooms": 3,
+        "eri_version": "latest",
+        "apply_ashrae140_assumptions": false,
+        "transient_source_default_cfa_ft2": 1228,
+        "zero_calculations": {
+          "cooking_range": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "dishwasher_and_hot_water_dishwasher": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "clothes_washer_and_hot_water_clothes_washer": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "clothes_dryer": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hot_water_fixtures_gpd_no_effectiveness_input": 0.0,
+          "hot_water_fixtures_gpd_not_low_flow": 0.0,
+          "hot_water_fixtures_gpd_low_flow": 0.0,
+          "plug_loads_other_and_tv_electric_equipment_count": 0,
+          "lighting_interior_lights_count": 0,
+          "lighting_exterior_lights_count": 0,
+          "refrigerators_rated_kwh_energy_probe": [
+            384.0,
+            1.0,
+            0.0
+          ],
+          "freezers_rated_kwh_energy_probe": [
+            935.0,
+            1.0,
+            0.0
+          ]
+        },
+        "warnings": [],
+        "limitations": "Calculation proofs only. CFA uses pinned source mapping transiently; atlas null retained. Low-flow endpoints are an independence check, not fixture assumptions. Refrigeration positive probe uses source rated option only; separate source usage multiplier retained in input and excluded from active magnitude outputs."
+      }
+    ]
+  },
+  "exterior_shape_verification": {
+    "year": 2007,
+    "timestep_minutes": 60,
+    "rows": 8760,
+    "minimum": 0.228571428571429,
+    "maximum": 1.0,
+    "max_error_to_source_product": 4.996003610813204e-16,
+    "peak_divisor": 0.084,
+    "no_temperature_feedback": true
+  }
+}
