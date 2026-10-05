@@ -1,12 +1,51 @@
 """Delivery checks exercise artifacts rather than matching workflow source text."""
 import importlib.util
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 class DeliveryTests(unittest.TestCase):
+    def test_publication_size_rejects_a_site_above_the_selected_ceiling(self):
+        checker=self.module('site_check')
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            (root/'asset').write_bytes(b'123456')
+            self.assertEqual(checker.check_size(root,6),[])
+            self.assertTrue(checker.check_size(root,5))
+
+    def test_compact_presentation_json_preserves_values_and_rejects_nonfinite_data(self):
+        site=self.module('site')
+        packet={'record':{'original':None,'zero':0,'SI_value':0.82/0.09290304,
+                         'note':'Literal <tag>, unicode °C and newline\ntext'},
+                'evidence':[{'value':list(range(24))} for _ in range(3)]}
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'packet.json'
+            site.write_site_json(path,packet)
+            self.assertEqual(json.loads(path.read_text(encoding='utf-8')),packet)
+            self.assertLess(path.stat().st_size,len(json.dumps(packet,indent=2).encode()))
+            with self.assertRaises(ValueError):
+                site.write_site_json(path,{'invalid':float('nan')})
+
+    def test_generated_directory_rename_retries_transient_windows_lock(self):
+        site=self.module('site')
+        with tempfile.TemporaryDirectory() as d:
+            source=Path(d)/'stage';target=Path(d)/'output';source.mkdir()
+            (source/'result.txt').write_text('verified artifact')
+            original=Path.rename; calls=[]
+            def temporarily_locked(path,destination):
+                calls.append(path)
+                if len(calls)==1:
+                    raise PermissionError('Temporary Windows file lock')
+                return original(path,destination)
+            with patch.object(Path,'rename',temporarily_locked):
+                site.rename_generated(source,target)
+            self.assertEqual((target/'result.txt').read_text(),'verified artifact')
+            self.assertEqual(len(calls),2)
+
     def module(self, name):
         self.assertIsNotNone(importlib.util.find_spec('scripts.' + name), name + ' is not implemented')
         return __import__('scripts.' + name, fromlist=[name])

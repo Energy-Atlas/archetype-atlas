@@ -70,7 +70,7 @@
       }
     }
     function restore() {
-      const s = core.parseState(location.search);
+      const s = core.normalizeState(entries, core.parseState(location.search));
       query.value = s.q || '';
       filters.forEach(select => {
         const value = s[select.id.replace('atlas-filter-', '')] || '';
@@ -208,6 +208,58 @@
     section.querySelector('.atlas-csv').addEventListener('click', () => downloadCsv(csvRows));
     await render();
   }
+  async function residentialProfile(section) {
+    const profile = await json(new URL(section.dataset.profile, location.href));
+    const view = section.querySelector('.atlas-res-view'), date = section.querySelector('.atlas-res-date');
+    const columns = section.querySelector('.atlas-res-columns'), status = section.querySelector('.atlas-res-status');
+    const charts = section.querySelector('.atlas-res-charts'), table = section.querySelector('.atlas-res-table');
+    const fixed = section.dataset.fixed === 'true';
+    const allowed = fixed ? new Set(section.dataset.columns.split(',')) : null;
+    const defaults = fixed ? allowed : new Set(['occupants', 'lighting_interior', 'heating_setpoint', 'cooling_setpoint']);
+    Object.keys(profile.metadata.columns).forEach(column => {
+      if (allowed && !allowed.has(column)) return;
+      const option = node('option', column + ' (' + profile.metadata.columns[column] + ')', {value: column});
+      option.selected = defaults.has(column); columns.append(option);
+    });
+    let revision = 0;
+    async function render() {
+      const ticket = ++revision;
+      const selected = [...columns.selectedOptions].map(o => o.value);
+      const result = core.annualProfile(profile, view.value, date.value, selected);
+      date.disabled = view.value === 'annual';
+      charts.replaceChildren(); table.replaceChildren();
+      status.textContent = result.labels.length + (fixed ? ' fixed hourly intervals; local standard time; source monthly multipliers; no temperature feedback' : ' executed hourly intervals; local standard time; nominal thermostat setpoints; station-proxy weather');
+      const summary = node('table'); summary.className = 'atlas-profile-table';
+      const head = node('tr'); ['Series', 'Unit', 'Minimum', 'Maximum', 'Mean'].forEach(t => head.append(node('th', t))); summary.append(head);
+      for (const trace of result.traces) {
+        const row = node('tr'), values = trace.values;
+        [trace.column, trace.unit, Math.min(...values).toPrecision(5), Math.max(...values).toPrecision(5),
+          (values.reduce((a, b) => a + b, 0) / values.length).toPrecision(5)].forEach(t => row.append(node('td', t)));
+        summary.append(row);
+      }
+      const wrapper = node('div'); wrapper.className = 'atlas-table'; wrapper.append(summary); table.append(wrapper);
+      if (!selected.length) {status.textContent = 'Select at least one series; missing end uses remain unresolved.'; return;}
+      const Plotly = await plotly();
+      if (ticket !== revision) return;
+      for (const unit of ['dimensionless', 'degC']) {
+        const traces = result.traces.filter(t => t.unit === unit);
+        if (!traces.length) continue;
+        const chart = node('div', undefined, {className: 'atlas-plot'});
+        chart.setAttribute('aria-label', (fixed ? 'Fixed source-default profiles in ' : 'Executed residential profiles in ') + unit);
+        charts.append(chart);
+        await Plotly.newPlot(chart, traces.map(t => ({x: result.labels, y: t.values, name: t.column, mode: 'lines',
+          line: {shape: 'hv'}, hovertemplate: '%{x}<br>%{y} ' + unit + '<extra>' + t.column + '</extra>'})),
+          {title: {text: unit === 'degC' ? 'Nominal thermostat profiles (before unavailable-day overrides)' : (fixed ? 'Fixed normalized source defaults' : 'Executed normalized use profiles')},
+           xaxis: {title: {text: 'Calendar / local standard time'}, rangeslider: {visible: view.value === 'annual'}},
+           yaxis: {title: {text: unit}}, margin: {l: 65, r: 25, t: 65, b: 75},
+           legend: {orientation: 'h', y: -0.25}, height: 390}, {responsive: true, displaylogo: false});
+        if (ticket !== revision) return;
+      }
+    }
+    const update = () => render().catch(error => {status.textContent = error.message;});
+    view.addEventListener('change', update); date.addEventListener('change', update); columns.addEventListener('change', update);
+    await render();
+  }
   const start = () => {
     const catalog = document.getElementById('atlas-catalogue');
     if (catalog) catalogue(catalog).catch(error => {
@@ -215,6 +267,9 @@
     });
     document.querySelectorAll('.atlas-explorer').forEach(section => explorer(section).catch(error => {
       section.querySelector('.atlas-chart-status').textContent = error.message + '. Inspect source rule tables and downloads below.';
+    }));
+    document.querySelectorAll('.atlas-residential-profile').forEach(section => residentialProfile(section).catch(error => {
+      section.querySelector('.atlas-res-status').textContent = error.message + '. Inspect canonical downloads below.';
     }));
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

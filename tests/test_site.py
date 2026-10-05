@@ -12,6 +12,154 @@ from scripts.common import ROOT, load_atlas, load_json
 
 
 class SiteTests(unittest.TestCase):
+    def test_readable_names_preserve_mapping_facets_and_historical_aliases(self):
+        site = self.site_module()
+        for version in ['v0.1.0', 'v0.2.0']:
+            data = load_atlas(ROOT/'data/releases'/version)
+            original = copy.deepcopy(data)
+            entries = {r['id']: r for r in site.catalogue_entries(data, version)}
+            office = next(r for r in data['programs']
+                          if r['building_type'] == 'MediumOffice' and r['program'] == 'office')
+            shown = entries[office['id']]
+            self.assertEqual(shown['building'], 'Medium Office')
+            self.assertEqual(shown['program'], 'Office')
+            self.assertIn('MediumOffice', shown['facet_aliases']['building'])
+            self.assertIn('office', shown['facet_aliases']['program'])
+            for mapping in data['mappings']:
+                self.assertEqual(entries[mapping['id']]['program'], entries[mapping['program_id']]['program'])
+            self.assertEqual(data, original)
+
+    def test_source_program_variants_remain_distinguishable_in_titles(self):
+        site = self.site_module()
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        entries = {r['id']: r for r in site.catalogue_entries(data, 'v0.2.0')}
+        apartments = [r for r in data['programs'] if
+                      (r['building_type'], r['program'], r['template']) ==
+                      ('HighriseApartment', 'apartment_unit', '90.1-2013')]
+        self.assertEqual(len({entries[r['id']]['name'] for r in apartments}), 3)
+        self.assertEqual({entries[r['id']]['program'] for r in apartments}, {'Apartment unit'})
+        offices = [r for r in data['programs'] if
+                   (r['building_type'], r['program'], r['template']) == ('LargeOffice', 'office', '90.1-2013')]
+        self.assertEqual({entries[r['id']]['name'] for r in offices},
+                         {'Large Office / Office, basement · 90.1-2013',
+                          'Large Office / Office, other floors · 90.1-2013'})
+        corridors = [entries[r['id']]['program'] for r in data['programs'] if
+                     r['building_type'] == 'SmallHotel' and r['program'] in {'corridor', 'corridor4'}]
+        self.assertEqual(set(corridors), {'Corridor', 'Corridor 4'})
+
+    def test_readable_schedule_contexts_keep_joint_source_pairs(self):
+        site = self.site_module()
+        entries = site.catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'), 'v0.2.0')
+        row = next(r for r in entries if r['id'] == 'schedule-9841fa9f62ff202db619')
+        self.assertEqual(row['referenced_buildings'], ['Highrise Apartment', 'Midrise Apartment'])
+        pairs = {(r['building'], r['template']) for r in row['referenced_contexts']}
+        self.assertIn(('Highrise Apartment', '90.1-2007'), pairs)
+        self.assertIn(('Midrise Apartment', '90.1-2019'), pairs)
+        self.assertNotIn(('Highrise Apartment', '90.1-2019'), pairs)
+
+    def test_reviewed_vocabulary_covers_every_active_building_and_program_code(self):
+        from scripts.catalogue_names import BUILDING_LABELS, PROGRAM_LABELS
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        buildings = {r['building_type'] for t in ['programs', 'residential_archetypes'] for r in data[t]}
+        programs = {r['program'] for r in data['programs']}
+        self.assertEqual(set(BUILDING_LABELS), buildings)
+        self.assertEqual(set(PROGRAM_LABELS), programs)
+        self.assertEqual(len(set(BUILDING_LABELS.values())), len(buildings))
+
+    def test_equivalent_program_abbreviations_share_labels_without_losing_records(self):
+        site = self.site_module()
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        entries = {r['id']: r for r in site.catalogue_entries(data, 'v0.2.0')}
+        for codes, label in [({'nursestation', 'nursestn'}, 'Nurse station'),
+                             ({'physicaltherapy', 'phystherapy'}, 'Physical therapy')]:
+            source_rows = [r for r in data['programs'] if r['program'] in codes]
+            self.assertEqual({entries[r['id']]['program'] for r in source_rows}, {label})
+            for row in source_rows:
+                self.assertIn(row['program'], entries[row['id']]['facet_aliases']['program'])
+            self.assertEqual(len({entries[r['id']]['name'] for r in source_rows}), len(source_rows))
+
+    def test_presentation_scope_filters_nested_options_and_keeps_source_immutable(self):
+        site=self.site_module()
+        row={'selected_options':{'Electric Vehicle':'None','Lighting':'100% LED'},
+             'source_attributes':{'Electric Vehicle Charger':'None','Vintage':'1980s'},
+             'option_ids':['excluded','retained']}
+        original=copy.deepcopy(row)
+        shown=site.presentation_scope(row,{'excluded'})
+        self.assertEqual(shown['selected_options'],{'Lighting':'100% LED'})
+        self.assertEqual(shown['source_attributes'],{'Vintage':'1980s'})
+        self.assertEqual(shown['option_ids'],['retained'])
+        self.assertEqual(row,original)
+
+    def test_commercial_paths_attach_only_source_supported_beneficiaries(self):
+        site=self.site_module()
+        packet=load_json(ROOT/'data/completion-releases/v0.1.0/commercial-completion.json')
+        p=next(d for d in packet['draw_paths'] if d['beneficiary_program_ids'])
+        links=site.completion_links(packet,p['beneficiary_program_ids'][0])
+        self.assertIn(p['path_id'],links['assigned_path_ids'])
+        self.assertFalse(set(links['assigned_path_ids']) &
+                         {d['path_id'] for d in packet['draw_paths'] if not d['beneficiary_program_ids']})
+        self.assertTrue(site.completion_page(p).startswith('commercial-completion/paths/'))
+
+    def test_active_catalogue_excludes_out_of_scope_end_uses_without_mutating_source(self):
+        site=self.site_module();data=load_atlas(ROOT/'data/releases/v0.2.0');original=copy.deepcopy(data)
+        entries=site.catalogue_entries(data,'v0.2.0')
+        self.assertFalse(any('Electric Vehicle' in e['name'] for e in entries))
+        self.assertEqual(data,original)
+
+    def test_coverage_matches_the_selected_historical_supplement(self):
+        site=self.site_module()
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'docs'
+            site.generate_site([ROOT/'data/releases/v0.2.0'],target,pilot=True,
+                               supplement_path=ROOT/'data/resolution-releases/v0.1.0')
+            report=load_json(target/'schedule-coverage.json')
+            self.assertEqual(report['resolution_supplement'],'v0.1.0')
+            self.assertEqual(report['commercial']['missing_schedule_fields'],1208)
+            self.assertEqual(report['residential']['missing_profile_fields'],107)
+
+    def test_executed_profiles_are_separate_from_frozen_source_values(self):
+        site=self.site_module()
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/'docs'
+            site.generate_site([ROOT/'data/releases/v0.2.0'],target,pilot=True)
+            index=load_json(target/'releases/v0.2.0/catalogue.json')
+            residential=next(r for r in index['entries'] if r['kind']=='residential_archetypes')
+            packet=load_json(target/residential['download'])
+            self.assertFalse(packet['record']['simulation_ready'])
+            self.assertIn('resolution_supplement',packet)
+            self.assertEqual(packet['resolution_supplement']['version'],'v0.4.0')
+            self.assertIn('profile',packet['resolution_supplement'])
+            page=(target/residential['path']).read_text()
+            self.assertIn('atlas-residential-profile',page)
+            self.assertIn('Station-proxy',page)
+            profile=packet['resolution_supplement']['profile']
+            self.assertTrue((target/profile['download']).exists())
+            self.assertTrue(profile['download'].startswith('resolution-supplements/v0.1.0/'))
+            self.assertTrue((target/'resolution-supplements/v0.1.0/manifest.json').exists())
+            self.assertTrue((target/'resolution-supplements/v0.2.0/manifest.json').exists())
+            self.assertTrue((target/'resolution-supplements/v0.3.0/profile-download-map.json').exists())
+            self.assertFalse((target/'resolution-supplements/v0.3.0/profiles').exists())
+            fixed=load_json(target/'resolution-supplements/v0.3.0/fixed-background-annual.json')
+            self.assertEqual(len(fixed['series']['refrigerator']),8760)
+            self.assertEqual(max(fixed['series']['freezer']),1)
+            self.assertIn('nominal',page)
+            current=load_json(target/'resolution-supplements/v0.4.0/fixed-background-annual.json')
+            self.assertEqual(len(current['series']['lighting_exterior']),8760)
+            self.assertNotIn('Electric Vehicle',page)
+            data=load_atlas(ROOT/'data/releases/v0.2.0')
+            archived=next(r for r in site.pilot_data(data)['residential_options']
+                          if r['parameter'].startswith('Electric Vehicle'))
+            archive_page=target/f'releases/v0.2.0/residential_options/{archived["id"]}.md'
+            self.assertIn('Archived out-of-scope option',archive_page.read_text())
+            self.assertNotIn('Electric Vehicle',archive_page.read_text())
+            self.assertIn('commercial-completion',
+                          (target/'releases/v0.2.0/programs/program-29f8fa7a1d5e5afcf1f0.md').read_text())
+            self.assertFalse((target/'resolution-supplements/v0.4.0/resolutions.json').exists())
+            with zipfile.ZipFile(target/'resolution-supplements/v0.4.0/snapshot.zip') as archive:
+                self.assertTrue(all(i.create_system==3 for i in archive.infolist()))
+                self.assertEqual(archive.read('resolutions.json'),
+                                 (ROOT/'data/resolution-releases/v0.4.0/resolutions.json').read_bytes())
+
     def site_module(self):
         self.assertIsNotNone(importlib.util.find_spec('scripts.site'),
                              'The verified site generator has not been implemented')
@@ -35,7 +183,7 @@ class SiteTests(unittest.TestCase):
             result = site.generate_site([ROOT/'data/releases/v0.2.0'], target, pilot=True)
             index = load_json(target/'releases/v0.2.0/catalogue.json')
             office = next(r for r in index['entries'] if r['kind'] == 'programs'
-                          and r['building'] == 'MediumOffice' and r['program'] == 'office')
+                          and r['building'] == 'Medium Office' and r['program'] == 'Office')
             page = (target/office['path']).read_text()
             self.assertIn('0.82', page)  # Original W/ft2 in field provenance
             self.assertIn('W/m2', page)
@@ -46,7 +194,38 @@ class SiteTests(unittest.TestCase):
             record = load_json(target/office['download'])
             self.assertAlmostEqual(record['record']['lighting_W_m2'], 0.82/0.09290304)
             self.assertEqual(record['release'], 'v0.2.0')
+            self.assertEqual(record['record']['building_type'], 'MediumOffice')
+            self.assertEqual(record['record']['program'], 'office')
+            building = next(r for r in index['entries'] if r['kind'] == 'buildings')
+            self.assertIn(office['id'], load_json(target/building['download'])['related_record_ids'])
+            for axis, old, aligned in [('building', 'MediumOffice', 'Medium Office'), ('program', 'office', 'Office')]:
+                alias = (target/site.axis_path('v0.2.0', axis, old)).read_text()
+                self.assertIn('This browsing label is now aligned', alias)
+                self.assertIn(aligned, alias)
+                self.assertTrue((target/site.axis_path('v0.2.0', axis, aligned)).exists())
             self.assertTrue(record['provenance']['fields'])
+            self.assertEqual(record['water_equivalent']['program_id'],office['id'])
+            self.assertEqual(record['water_equivalent']['peak_divisor'],0.57)
+            derived_id=record['water_equivalent']['equivalent_schedule']['id']
+            self.assertIn(derived_id,page)
+            self.assertIn('Fixture draw equivalent',page)
+            self.assertTrue((target/'water-equivalents/v0.1.0/manifest.json').exists())
+            self.assertEqual(load_json(target/f'releases/v0.2.0/records/{derived_id}.json')['record'],
+                             record['water_equivalent']['equivalent_schedule'])
+            self.assertTrue((target/f'releases/v0.2.0/schedules/{derived_id}.md').exists())
+            # The public archive must have identical bytes on Windows and Linux:
+            # names, creator metadata and compression defaults cannot depend on host.
+            with zipfile.ZipFile(target/'water-equivalents/v0.1.0/snapshot.zip') as archive:
+                names=archive.namelist()
+                self.assertEqual(names,sorted(names))
+                expected=ROOT/'data/water-releases/v0.1.0'
+                self.assertEqual(set(names),{p.relative_to(expected).as_posix()
+                                            for p in expected.rglob('*') if p.is_file()})
+                for item in archive.infolist():
+                    self.assertEqual(item.create_system,3)
+                    self.assertEqual(item.compress_type,zipfile.ZIP_STORED)
+                    self.assertEqual(item.date_time,(2026,10,4,0,0,0))
+                    self.assertEqual(archive.read(item.filename),(expected/item.filename).read_bytes())
             self.assertEqual(result['releases']['v0.2.0']['commercial_overviews'], 1)
             residential = next(r for r in index['entries'] if r['kind'] == 'residential_archetypes')
             rp = (target/residential['path']).read_text()
@@ -67,10 +246,36 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(sum(r['kind'] == 'schedules' for r in entries), 569)
         self.assertEqual(len({r['path'] for r in entries}), len(entries))
         p = next(r for r in entries if r['kind'] == 'programs')
-        self.assertEqual(p['climate'], 'Unspecified; program is climate-independent')
+        self.assertEqual(p['climate'], 'Climate-independent')
         e = next(r for r in entries if r['kind'] == 'envelope_components')
-        self.assertTrue(e['climate'].startswith('ClimateZone '))
+        self.assertFalse(e['climate'].startswith('ClimateZone '))
         self.assertEqual(e['climate_basis'], 'Conditional envelope applicability')
+
+    def test_equivalent_filter_labels_share_categories_without_merging_climate_sets(self):
+        site = self.site_module()
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        entries = site.catalogue_entries(data, 'v0.2.0')
+        envelope_id = next(r['id'] for r in data['envelope_components'] if r['climate_zone_set'] == 'ClimateZone 2B')
+        envelope = next(r for r in entries if r['id'] == envelope_id)
+        dwelling = next(r for r in entries if r['kind'] == 'residential_archetypes' and r['climate'] == '2B')
+        self.assertEqual(envelope['climate'], dwelling['climate'])
+        self.assertEqual(envelope['facet_aliases']['climate'], ['ClimateZone 2B'])
+        climates = {r['climate'] for r in entries}
+        self.assertTrue({'2', '2A', '2B', '7AK', '8AK', 'Climate-independent', 'Unspecified'} <= climates)
+        self.assertFalse(any(c.startswith('ClimateZone ') for c in climates))
+        families = {r['source'] for r in entries}
+        self.assertFalse(any('existing_stock_benchmark' in f or f.startswith('resstock') for f in families))
+        self.assertIn('OpenStudio Standards · Existing-stock benchmark rules (Standards-derived)', families)
+
+    def test_mapping_filters_follow_explicit_program_and_system_references(self):
+        site = self.site_module()
+        entries = site.catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'), 'v0.2.0')
+        mapping = next(r for r in entries if r['id'] == 'mapping-130635e6a30d1f7353a1')
+        self.assertEqual(mapping['program'], 'Office')
+        self.assertEqual(mapping['system'], 'PVAV')
+        attic = next(r for r in entries if r['id'] == 'mapping-0108ff9fd80d9d9a3496')
+        self.assertEqual(attic['program'], 'Attic')
+        self.assertEqual(attic['system'], 'Unassigned / not reported')
 
     def test_source_text_is_escaped_and_null_is_not_zero(self):
         site = self.site_module()
@@ -112,9 +317,9 @@ class SiteTests(unittest.TestCase):
         row = next(r for r in entries if r['id'] == 'schedule-9841fa9f62ff202db619')
         self.assertIn('referenced_contexts', row)
         pairs = {(r['building'], r['template']) for r in row['referenced_contexts']}
-        self.assertIn(('HighriseApartment', '90.1-2007'), pairs)
-        self.assertIn(('MidriseApartment', '90.1-2019'), pairs)
-        self.assertNotIn(('HighriseApartment', '90.1-2019'), pairs)
+        self.assertIn(('Highrise Apartment', '90.1-2007'), pairs)
+        self.assertIn(('Midrise Apartment', '90.1-2019'), pairs)
+        self.assertNotIn(('Highrise Apartment', '90.1-2019'), pairs)
 
 
 if __name__ == '__main__':

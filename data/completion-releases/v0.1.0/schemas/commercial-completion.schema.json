@@ -1,0 +1,2088 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "base_atlas",
+    "branch_analyses",
+    "controls",
+    "draw_paths",
+    "execution_policy",
+    "extraction_date",
+    "interpretation",
+    "missing_program_evidence",
+    "release_version",
+    "schedules",
+    "schema_version",
+    "source_revision",
+    "summary",
+    "evidence"
+  ],
+  "properties": {
+    "base_atlas": {
+      "type": "string"
+    },
+    "branch_analyses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "booster_enabled",
+          "building_type",
+          "custom_swh_tweaks",
+          "evidence_ids",
+          "geometry_embedded_draw_audit",
+          "laundry_enabled",
+          "main_branch",
+          "main_condition_original",
+          "prototype_locator",
+          "prototype_original_water_fields",
+          "template"
+        ],
+        "properties": {
+          "booster_enabled": {
+            "type": "boolean"
+          },
+          "building_type": {
+            "type": "string"
+          },
+          "custom_swh_tweaks": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "classification",
+              "source_locator",
+              "source_text"
+            ],
+            "properties": {
+              "classification": {
+                "type": "string"
+              },
+              "source_locator": {
+                "type": "string"
+              },
+              "source_text": {
+                "type": "string"
+              }
+            }
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "geometry_embedded_draw_audit": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "extraction_date",
+                "git_blob_sha1",
+                "interpretation_note",
+                "original_unit",
+                "original_value",
+                "source_file_sha256",
+                "source_locator",
+                "source_revision",
+                "transformation"
+              ],
+              "properties": {
+                "extraction_date": {
+                  "type": "string"
+                },
+                "git_blob_sha1": {
+                  "type": "string"
+                },
+                "interpretation_note": {
+                  "type": "string"
+                },
+                "original_unit": {
+                  "type": "string"
+                },
+                "original_value": {},
+                "source_file_sha256": {
+                  "type": "string"
+                },
+                "source_locator": {
+                  "type": "string"
+                },
+                "source_revision": {
+                  "type": "string"
+                },
+                "transformation": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "laundry_enabled": {
+            "type": "boolean"
+          },
+          "main_branch": {
+            "type": "string"
+          },
+          "main_condition_original": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "main_service_water_peak_flowrate",
+              "main_water_heater_volume"
+            ],
+            "properties": {
+              "main_service_water_peak_flowrate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_water_heater_volume": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            }
+          },
+          "prototype_locator": {
+            "type": "string"
+          },
+          "prototype_original_water_fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "booster_inlet_water_temperature",
+              "booster_service_water_flowrate_schedule",
+              "booster_service_water_parasitic_fuel_consumption_rate",
+              "booster_service_water_peak_flowrate",
+              "booster_water_heater_capacity",
+              "booster_water_heater_fuel",
+              "booster_water_heater_space_name",
+              "booster_water_heater_volume",
+              "booster_water_temperature",
+              "booster_water_use_temperature",
+              "laundry_service_water_flowrate_schedule",
+              "laundry_service_water_parasitic_fuel_consumption_rate",
+              "laundry_service_water_peak_flowrate",
+              "laundry_service_water_pump_head",
+              "laundry_service_water_pump_motor_efficiency",
+              "laundry_service_water_temperature",
+              "laundry_service_water_temperature_at_fixture",
+              "laundry_water_heater_capacity",
+              "laundry_water_heater_fuel",
+              "laundry_water_heater_volume",
+              "laundry_water_use_temperature",
+              "main_service_water_flowrate_schedule",
+              "main_service_water_parasitic_fuel_consumption_rate",
+              "main_service_water_peak_flowrate",
+              "main_service_water_pump_head",
+              "main_service_water_pump_motor_efficiency",
+              "main_service_water_temperature",
+              "main_service_water_temperature_at_fixture",
+              "main_water_heater_capacity",
+              "main_water_heater_fuel",
+              "main_water_heater_space_name",
+              "main_water_heater_volume",
+              "main_water_use_temperature"
+            ],
+            "properties": {
+              "booster_inlet_water_temperature": {
+                "type": "null"
+              },
+              "booster_service_water_flowrate_schedule": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "booster_service_water_parasitic_fuel_consumption_rate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "booster_service_water_peak_flowrate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "booster_water_heater_capacity": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "booster_water_heater_fuel": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "booster_water_heater_space_name": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "booster_water_heater_volume": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "booster_water_temperature": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "booster_water_use_temperature": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_service_water_flowrate_schedule": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "laundry_service_water_parasitic_fuel_consumption_rate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_service_water_peak_flowrate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_service_water_pump_head": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_service_water_pump_motor_efficiency": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_service_water_temperature": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_service_water_temperature_at_fixture": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_water_heater_capacity": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_water_heater_fuel": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "laundry_water_heater_volume": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "laundry_water_use_temperature": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_service_water_flowrate_schedule": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "main_service_water_parasitic_fuel_consumption_rate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_service_water_peak_flowrate": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_service_water_pump_head": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_service_water_pump_motor_efficiency": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_service_water_temperature": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_service_water_temperature_at_fixture": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_water_heater_capacity": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_water_heater_fuel": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "main_water_heater_space_name": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "main_water_heater_volume": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "main_water_use_temperature": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            }
+          },
+          "template": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "building_type",
+          "evidence_ids",
+          "executed_climate_zone",
+          "execution_receipt_sha256",
+          "extraction_date",
+          "full_simulation_executed",
+          "interpretation",
+          "original_unit",
+          "recommended_control_status",
+          "record_id",
+          "runtime_evidence",
+          "runtime_phases",
+          "source_locator",
+          "source_space_type",
+          "source_values",
+          "template",
+          "transformation"
+        ],
+        "properties": {
+          "building_type": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "executed_climate_zone": {
+            "type": "string"
+          },
+          "execution_receipt_sha256": {
+            "type": "string"
+          },
+          "extraction_date": {
+            "type": "string"
+          },
+          "full_simulation_executed": {
+            "type": "boolean"
+          },
+          "interpretation": {
+            "type": "string"
+          },
+          "original_unit": {
+            "type": "string"
+          },
+          "recommended_control_status": {
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "runtime_evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "air_loops",
+                "cooling_schedule",
+                "equipment",
+                "heating_schedule",
+                "ideal_loads",
+                "source_space_type",
+                "space",
+                "thermostat",
+                "zone",
+                "zone_mixing",
+                "zone_spaces"
+              ],
+              "properties": {
+                "air_loops": {
+                  "type": "array",
+                  "items": {}
+                },
+                "cooling_schedule": {
+                  "type": "null"
+                },
+                "equipment": {
+                  "type": "array",
+                  "items": {}
+                },
+                "heating_schedule": {
+                  "type": "null"
+                },
+                "ideal_loads": {
+                  "type": "boolean"
+                },
+                "source_space_type": {
+                  "type": "string"
+                },
+                "space": {
+                  "type": "string"
+                },
+                "thermostat": {
+                  "type": "string"
+                },
+                "zone": {
+                  "type": "string"
+                },
+                "zone_mixing": {
+                  "type": "array",
+                  "items": {}
+                },
+                "zone_spaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "runtime_phases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source_locator": {
+            "type": "string"
+          },
+          "source_space_type": {
+            "type": "string"
+          },
+          "source_values": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cooling_setpoint_schedule",
+              "heating_setpoint_schedule"
+            ],
+            "properties": {
+              "cooling_setpoint_schedule": {
+                "type": "null"
+              },
+              "heating_setpoint_schedule": {
+                "type": "null"
+              }
+            }
+          },
+          "template": {
+            "type": "string"
+          },
+          "transformation": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "draw_paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "allocation_status",
+          "allocation_weights",
+          "beneficiary_program_ids",
+          "building_type",
+          "end_use",
+          "equivalent_peak_flow_m3_s",
+          "equivalent_peak_flow_per_area_m3_s_m2",
+          "equivalent_schedule_id",
+          "evidence_ids",
+          "interpretation_note",
+          "matching_atlas_schedule_ids",
+          "original_flow",
+          "original_flow_unit",
+          "path_id",
+          "physical_fixture_locations",
+          "rated_flow_m3_s",
+          "rated_flow_per_area_m3_s_m2",
+          "source_branch",
+          "source_schedule_name",
+          "target_temperature_degC",
+          "template"
+        ],
+        "properties": {
+          "allocation_status": {
+            "type": "string"
+          },
+          "allocation_weights": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "program-00de6b5e117e0ed077bd": {
+                "type": "number"
+              },
+              "program-01ea318e7653f7a1223d": {
+                "type": "number"
+              },
+              "program-052aafb0ba6e0c13cd6a": {
+                "type": "number"
+              },
+              "program-05689eb4117ef76679c1": {
+                "type": "number"
+              },
+              "program-07e08a3400947d1d6411": {
+                "type": "number"
+              },
+              "program-07fc78c335bb4744d903": {
+                "type": "number"
+              },
+              "program-0bdfedcd3090419a7d6b": {
+                "type": "number"
+              },
+              "program-0cdb676f834b9cabc376": {
+                "type": "number"
+              },
+              "program-0d92e1d07a04cd064a6a": {
+                "type": "number"
+              },
+              "program-0d99c9b0dcf921c02867": {
+                "type": "number"
+              },
+              "program-0dc7fe14ebc2937199d9": {
+                "type": "number"
+              },
+              "program-0f10d015049d41072e7e": {
+                "type": "number"
+              },
+              "program-10b91a70c9be0490ff14": {
+                "type": "number"
+              },
+              "program-125e5dda522eb1fc15d1": {
+                "type": "number"
+              },
+              "program-1399dcc1df6f11a82e7c": {
+                "type": "number"
+              },
+              "program-15d5b31c9328931254c4": {
+                "type": "number"
+              },
+              "program-1778e2d2d205fa35b90d": {
+                "type": "number"
+              },
+              "program-18894f3cd997e64a6595": {
+                "type": "number"
+              },
+              "program-18dc5ad6c395709702b6": {
+                "type": "number"
+              },
+              "program-1ad9edab97bda2d9a435": {
+                "type": "number"
+              },
+              "program-1b2e254e582c18ca1469": {
+                "type": "number"
+              },
+              "program-202488fd9e78d235764e": {
+                "type": "number"
+              },
+              "program-20ec302d75e7aefcdaac": {
+                "type": "number"
+              },
+              "program-21e8beae36e16022e6f0": {
+                "type": "number"
+              },
+              "program-25680b9c90c2d4a6bd8c": {
+                "type": "number"
+              },
+              "program-25b5c5574db43a4baee2": {
+                "type": "number"
+              },
+              "program-2775251928d8ad21e51b": {
+                "type": "number"
+              },
+              "program-28adc432010432f527a4": {
+                "type": "number"
+              },
+              "program-29f8fa7a1d5e5afcf1f0": {
+                "type": "number"
+              },
+              "program-2ae7684816b693347e38": {
+                "type": "number"
+              },
+              "program-2c0fc49002ff9e1a00ba": {
+                "type": "number"
+              },
+              "program-2db6283d63eb52c7538d": {
+                "type": "number"
+              },
+              "program-2f085f7b317cabd04e04": {
+                "type": "number"
+              },
+              "program-2fdf36522933e16c08d9": {
+                "type": "number"
+              },
+              "program-2fe90a418d031dfc4b01": {
+                "type": "number"
+              },
+              "program-33a9eee73f39e0a89695": {
+                "type": "number"
+              },
+              "program-36c48339cad5ec23e484": {
+                "type": "number"
+              },
+              "program-3810e06b418fd79730df": {
+                "type": "number"
+              },
+              "program-3efc08fc0e264d650072": {
+                "type": "number"
+              },
+              "program-3f27b66befb054639634": {
+                "type": "number"
+              },
+              "program-4037bbdebf2b78d71ae2": {
+                "type": "number"
+              },
+              "program-412304da17c4887d2e95": {
+                "type": "number"
+              },
+              "program-41d7357a7272c7b793bf": {
+                "type": "number"
+              },
+              "program-4207ea932535c54885fd": {
+                "type": "number"
+              },
+              "program-4215c27d2f8596123852": {
+                "type": "number"
+              },
+              "program-4bb46a62064a95e846aa": {
+                "type": "number"
+              },
+              "program-50434e2ed88f39812746": {
+                "type": "number"
+              },
+              "program-557645cb81cce0648fdc": {
+                "type": "number"
+              },
+              "program-570fc2db946090b2364b": {
+                "type": "number"
+              },
+              "program-586992985a0abde87a52": {
+                "type": "number"
+              },
+              "program-597f3f70a89814ee8725": {
+                "type": "number"
+              },
+              "program-5e3294ff071b601411e5": {
+                "type": "number"
+              },
+              "program-5e7071130a48fc8d8d3c": {
+                "type": "number"
+              },
+              "program-5ebbbc03f320f8738767": {
+                "type": "number"
+              },
+              "program-69df57c3db4d64f1613e": {
+                "type": "number"
+              },
+              "program-6c3d0d17415b2bc68ef0": {
+                "type": "number"
+              },
+              "program-6d1867a999f6e2f6b0d2": {
+                "type": "number"
+              },
+              "program-7105d9b9b200b56ed947": {
+                "type": "number"
+              },
+              "program-7438c6a4237d89d739d3": {
+                "type": "number"
+              },
+              "program-758d224ed4a92e25675f": {
+                "type": "number"
+              },
+              "program-79cd154397039c7a0e48": {
+                "type": "number"
+              },
+              "program-7cdfabbb2c324f9a9fed": {
+                "type": "number"
+              },
+              "program-7d4cbae84e1ac46dcbf4": {
+                "type": "number"
+              },
+              "program-7ecf5a6c76c30f3ca1bb": {
+                "type": "number"
+              },
+              "program-81acfafa3e0ef34a5efe": {
+                "type": "number"
+              },
+              "program-84b5ebcc89d78a4d4541": {
+                "type": "number"
+              },
+              "program-84dfaa2d84970bf1fe51": {
+                "type": "number"
+              },
+              "program-85e199b9208781487b79": {
+                "type": "number"
+              },
+              "program-86047dd508f324e9509e": {
+                "type": "number"
+              },
+              "program-864e4eab955ade54f063": {
+                "type": "number"
+              },
+              "program-8726f7b88248637b9ca4": {
+                "type": "number"
+              },
+              "program-87a533b54a4769d0666d": {
+                "type": "number"
+              },
+              "program-88864d2d1321f6685123": {
+                "type": "number"
+              },
+              "program-88b02e7aaade2e18b079": {
+                "type": "number"
+              },
+              "program-90807d0a796ec5e255d5": {
+                "type": "number"
+              },
+              "program-91c1fe30a785dc4393c2": {
+                "type": "number"
+              },
+              "program-957ada978b1569f37b62": {
+                "type": "number"
+              },
+              "program-99186cce87d604efd2f5": {
+                "type": "number"
+              },
+              "program-9b5758ae6f42574d256a": {
+                "type": "number"
+              },
+              "program-9c65b3ed237d3f584cda": {
+                "type": "number"
+              },
+              "program-9c83128cc2eee8833fad": {
+                "type": "number"
+              },
+              "program-9caaf4b37503fa7ff03e": {
+                "type": "number"
+              },
+              "program-9d42040f9cb939638dac": {
+                "type": "number"
+              },
+              "program-9dc46bf366d0557c9f5a": {
+                "type": "number"
+              },
+              "program-9e45a64340f1a6523584": {
+                "type": "number"
+              },
+              "program-9e6e2e32638e4e39f568": {
+                "type": "number"
+              },
+              "program-9f540a106f78f1b6993f": {
+                "type": "number"
+              },
+              "program-9fac72b96be9e29c76c5": {
+                "type": "number"
+              },
+              "program-a042c9c2b86b3cb25b15": {
+                "type": "number"
+              },
+              "program-a2a0afd42241f0a5d943": {
+                "type": "number"
+              },
+              "program-a485d7da399ea41018ac": {
+                "type": "number"
+              },
+              "program-a52f7846706b65101f3f": {
+                "type": "number"
+              },
+              "program-ab841894e0c9e9a75969": {
+                "type": "number"
+              },
+              "program-acd72e81025ca0eaf003": {
+                "type": "number"
+              },
+              "program-ada0c018a85b1ea35941": {
+                "type": "number"
+              },
+              "program-adfdc156955459b63051": {
+                "type": "number"
+              },
+              "program-b02e9a0ac49958af1a1a": {
+                "type": "number"
+              },
+              "program-ba8ad804d10f855240b9": {
+                "type": "number"
+              },
+              "program-baa882248f9740b610f0": {
+                "type": "number"
+              },
+              "program-babd873cb606431bb21c": {
+                "type": "number"
+              },
+              "program-bb9c79c9d794275513fc": {
+                "type": "number"
+              },
+              "program-bf4a1191b6a203700c5f": {
+                "type": "number"
+              },
+              "program-bf51d163af5dc4abdf5a": {
+                "type": "number"
+              },
+              "program-c1cd4af7c1cf80776e42": {
+                "type": "number"
+              },
+              "program-c3a4537c8fa39c1c21ee": {
+                "type": "number"
+              },
+              "program-c3f7750c707909ce4910": {
+                "type": "number"
+              },
+              "program-c6ab5e0863324dfc6e2a": {
+                "type": "number"
+              },
+              "program-ccda69932e94dec876cf": {
+                "type": "number"
+              },
+              "program-cd1ff5f5ca70813975c2": {
+                "type": "number"
+              },
+              "program-cd2c812ef2f106e3080d": {
+                "type": "number"
+              },
+              "program-ce820ecc10a772f0cbf5": {
+                "type": "number"
+              },
+              "program-cf66663f85623aa92697": {
+                "type": "number"
+              },
+              "program-d4bc70e9af656c792352": {
+                "type": "number"
+              },
+              "program-d6c214d8c1df7f685b23": {
+                "type": "number"
+              },
+              "program-d6de8ff161f0206b96b1": {
+                "type": "number"
+              },
+              "program-d71e3b51887cbd4fb468": {
+                "type": "number"
+              },
+              "program-da029fa0c9df3b40a0f3": {
+                "type": "number"
+              },
+              "program-da50dc5e121a48f7ae1f": {
+                "type": "number"
+              },
+              "program-db72edcb9a707936f2be": {
+                "type": "number"
+              },
+              "program-dd654cb2a12761deb832": {
+                "type": "number"
+              },
+              "program-ddb836dca748e32a48a4": {
+                "type": "number"
+              },
+              "program-de3aa3daaf0974192dc5": {
+                "type": "number"
+              },
+              "program-deb827b7aebea913fe3d": {
+                "type": "number"
+              },
+              "program-df253ea412f39a61e3c5": {
+                "type": "number"
+              },
+              "program-e08b0aaf7a16a790d73a": {
+                "type": "number"
+              },
+              "program-e31ac1ac099301b9e867": {
+                "type": "number"
+              },
+              "program-e321dcb156e686ba9868": {
+                "type": "number"
+              },
+              "program-e3e4706899457f11e2fe": {
+                "type": "number"
+              },
+              "program-e4cd92ad274bace6dd0c": {
+                "type": "number"
+              },
+              "program-e950fdcb4a0889e201b7": {
+                "type": "number"
+              },
+              "program-ebcbd7741f66d11c65dd": {
+                "type": "number"
+              },
+              "program-ef20a2326a5e420bb133": {
+                "type": "number"
+              },
+              "program-f0db35296160af4b9f24": {
+                "type": "number"
+              },
+              "program-f0ddc5a4dc9bba691de7": {
+                "type": "number"
+              },
+              "program-f0e068dcbcdd885be36b": {
+                "type": "number"
+              },
+              "program-f50d3b2c6b51cfb314ba": {
+                "type": "number"
+              },
+              "program-f5884f4e80476dcbe417": {
+                "type": "number"
+              },
+              "program-f6913fd04d73c43bc074": {
+                "type": "number"
+              },
+              "program-f7142fc883310f0e5b6c": {
+                "type": "number"
+              },
+              "program-f74e5df638f8f536c02a": {
+                "type": "number"
+              },
+              "program-f9bcf303b937b3ae540d": {
+                "type": "number"
+              },
+              "program-fa22324ec0ec4682c2d7": {
+                "type": "number"
+              },
+              "program-fc870adf6c2cc5960448": {
+                "type": "number"
+              },
+              "program-fcc6bd2f8df1ad7a1e83": {
+                "type": "number"
+              },
+              "program-fe11d8507d5e7c38d79b": {
+                "type": "number"
+              },
+              "program-ff4d6c413c1b87c368bc": {
+                "type": "number"
+              }
+            }
+          },
+          "alternate_original_total": {
+            "type": "number"
+          },
+          "alternate_original_total_unit": {
+            "type": "string"
+          },
+          "beneficiary_program_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "building_type": {
+            "type": "string"
+          },
+          "end_use": {
+            "type": "string"
+          },
+          "equivalent_peak_flow_m3_s": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "equivalent_peak_flow_per_area_m3_s_m2": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "equivalent_schedule_id": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fixture_instances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "handle",
+                "multiplier",
+                "name",
+                "part_of_total_floor_area",
+                "source_building_type",
+                "source_space_type",
+                "zone"
+              ],
+              "properties": {
+                "handle": {
+                  "type": "string"
+                },
+                "multiplier": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "part_of_total_floor_area": {
+                  "type": "string"
+                },
+                "source_building_type": {
+                  "type": "string"
+                },
+                "source_space_type": {
+                  "type": "string"
+                },
+                "zone": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "flow_instance_count": {
+            "type": "number"
+          },
+          "interpretation_note": {
+            "type": "string"
+          },
+          "matching_atlas_schedule_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "original_flow": {
+            "type": "number"
+          },
+          "original_flow_unit": {
+            "type": "string"
+          },
+          "path_id": {
+            "type": "string"
+          },
+          "physical_fixture_locations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rated_flow_m3_s": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "rated_flow_per_area_m3_s_m2": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "reported_heater_space_name": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "source_branch": {
+            "type": "string"
+          },
+          "source_schedule_name": {
+            "type": "string"
+          },
+          "source_space_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "target_temperature_degC": {
+            "type": "number"
+          },
+          "template": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "execution_policy": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "extraction_date": {
+      "type": "string"
+    },
+    "interpretation": {
+      "type": "string"
+    },
+    "missing_program_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "building_service_paths",
+          "building_type",
+          "classification",
+          "coverage_resolution_status",
+          "evidence_ids",
+          "interpretation_note",
+          "normalized_physical_flow",
+          "program_id",
+          "source_schedule_name",
+          "source_space_names",
+          "source_space_type",
+          "template",
+          "zero_schedule_eligible"
+        ],
+        "properties": {
+          "building_service_paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "building_type": {
+            "type": "string"
+          },
+          "classification": {
+            "type": "string"
+          },
+          "coverage_resolution_status": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "interpretation_note": {
+            "type": "string"
+          },
+          "normalized_physical_flow": {
+            "type": "null"
+          },
+          "program_id": {
+            "type": "string"
+          },
+          "source_schedule_name": {
+            "type": "null"
+          },
+          "source_space_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source_space_type": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "zero_schedule_eligible": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "release_version": {
+      "const": "0.1.0"
+    },
+    "schedules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "equivalent_schedule",
+          "evidence_ids",
+          "matching_atlas_schedule_ids",
+          "normalization_status",
+          "normalized_source_rows",
+          "peak_divisor",
+          "source_name",
+          "source_order",
+          "source_rows",
+          "source_schedule",
+          "status"
+        ],
+        "properties": {
+          "equivalent_schedule": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "interpolation",
+              "rules",
+              "schedule_type",
+              "source_name",
+              "time_resolution_minutes",
+              "units"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "interpolation": {
+                "type": "string"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "day_types",
+                    "end_date",
+                    "source_category",
+                    "source_index",
+                    "source_units",
+                    "start_date",
+                    "type",
+                    "values"
+                  ],
+                  "properties": {
+                    "day_types": {
+                      "type": "string"
+                    },
+                    "end_date": {
+                      "type": "string"
+                    },
+                    "source_category": {
+                      "type": "string"
+                    },
+                    "source_index": {
+                      "type": "number"
+                    },
+                    "source_units": {
+                      "type": "null"
+                    },
+                    "start_date": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              },
+              "schedule_type": {
+                "type": "string"
+              },
+              "source_name": {
+                "type": "string"
+              },
+              "time_resolution_minutes": {
+                "type": "number"
+              },
+              "units": {
+                "type": "string"
+              }
+            }
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "matching_atlas_schedule_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "normalization_status": {
+            "type": "string"
+          },
+          "normalized_source_rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "category",
+                "day_types",
+                "end_date",
+                "name",
+                "notes",
+                "start_date",
+                "type",
+                "units",
+                "values"
+              ],
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "day_types": {
+                  "type": "string"
+                },
+                "end_date": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "notes": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "start_date": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "units": {
+                  "type": "null"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "peak_divisor": {
+            "type": "number"
+          },
+          "source_name": {
+            "type": "string"
+          },
+          "source_order": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "source_rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "category",
+                "day_types",
+                "end_date",
+                "name",
+                "notes",
+                "start_date",
+                "type",
+                "units",
+                "values"
+              ],
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "day_types": {
+                  "type": "string"
+                },
+                "end_date": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "notes": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "start_date": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "units": {
+                  "type": "null"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "source_schedule": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "interpolation",
+              "rules",
+              "schedule_type",
+              "source_name",
+              "time_resolution_minutes",
+              "units"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "interpolation": {
+                "type": "string"
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "day_types",
+                    "end_date",
+                    "source_category",
+                    "source_index",
+                    "source_units",
+                    "start_date",
+                    "type",
+                    "values"
+                  ],
+                  "properties": {
+                    "day_types": {
+                      "type": "string"
+                    },
+                    "end_date": {
+                      "type": "string"
+                    },
+                    "source_category": {
+                      "type": "string"
+                    },
+                    "source_index": {
+                      "type": "number"
+                    },
+                    "source_units": {
+                      "type": "null"
+                    },
+                    "start_date": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              },
+              "schedule_type": {
+                "type": "string"
+              },
+              "source_name": {
+                "type": "string"
+              },
+              "time_resolution_minutes": {
+                "type": "number"
+              },
+              "units": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "source_revision": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "building_template_paths",
+        "building_types",
+        "coverage_resolution_status",
+        "demand_rules",
+        "gap_classifications",
+        "inactive_direct_control_records",
+        "missing_gap_resolution_by_building",
+        "missing_programs",
+        "new_source_schedule_names_without_atlas_id",
+        "schedule_names",
+        "unallocated_service_rules",
+        "verified_geometry_files_without_embedded_water_use_objects"
+      ],
+      "properties": {
+        "building_template_paths": {
+          "type": "number"
+        },
+        "building_types": {
+          "type": "number"
+        },
+        "coverage_resolution_status": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "allocation_unknown",
+            "source_proved_no_modeled_program_draw"
+          ],
+          "properties": {
+            "allocation_unknown": {
+              "type": "number"
+            },
+            "source_proved_no_modeled_program_draw": {
+              "type": "number"
+            }
+          }
+        },
+        "demand_rules": {
+          "type": "number"
+        },
+        "gap_classifications": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_no_local_main_fixture_draw",
+            "source_no_local_main_fixture_outside_core",
+            "source_no_swh_end_use_for_building_template",
+            "unallocated_building_main_draw"
+          ],
+          "properties": {
+            "source_no_local_main_fixture_draw": {
+              "type": "number"
+            },
+            "source_no_local_main_fixture_outside_core": {
+              "type": "number"
+            },
+            "source_no_swh_end_use_for_building_template": {
+              "type": "number"
+            },
+            "unallocated_building_main_draw": {
+              "type": "number"
+            }
+          }
+        },
+        "inactive_direct_control_records": {
+          "type": "number"
+        },
+        "missing_gap_resolution_by_building": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "FullServiceRestaurant",
+            "HighriseApartment",
+            "Hospital",
+            "LargeHotel",
+            "LargeOffice",
+            "MidriseApartment",
+            "Outpatient",
+            "PrimarySchool",
+            "QuickServiceRestaurant",
+            "RetailStandalone",
+            "SecondarySchool",
+            "SmallHotel",
+            "SuperMarket",
+            "Warehouse"
+          ],
+          "properties": {
+            "FullServiceRestaurant": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown",
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                },
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "HighriseApartment": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "Hospital": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                }
+              }
+            },
+            "LargeHotel": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown",
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                },
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "LargeOffice": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "MidriseApartment": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "Outpatient": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "PrimarySchool": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                }
+              }
+            },
+            "QuickServiceRestaurant": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "RetailStandalone": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown",
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                },
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "SecondarySchool": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                }
+              }
+            },
+            "SmallHotel": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown",
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                },
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            },
+            "SuperMarket": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                }
+              }
+            },
+            "Warehouse": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allocation_unknown",
+                "source_proved_no_modeled_program_draw"
+              ],
+              "properties": {
+                "allocation_unknown": {
+                  "type": "number"
+                },
+                "source_proved_no_modeled_program_draw": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "missing_programs": {
+          "type": "number"
+        },
+        "new_source_schedule_names_without_atlas_id": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schedule_names": {
+          "type": "number"
+        },
+        "unallocated_service_rules": {
+          "type": "number"
+        },
+        "verified_geometry_files_without_embedded_water_use_objects": {
+          "type": "number"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "extraction_date",
+          "interpretation_note",
+          "original_unit",
+          "original_value",
+          "source_file_sha256",
+          "source_locator",
+          "source_revision",
+          "transformation"
+        ],
+        "properties": {
+          "extraction_date": {
+            "type": "string"
+          },
+          "interpretation_note": {
+            "type": "string"
+          },
+          "original_unit": {
+            "type": "string"
+          },
+          "original_value": {},
+          "source_file_sha256": {
+            "type": "string"
+          },
+          "source_locator": {
+            "type": "string"
+          },
+          "source_revision": {
+            "type": "string"
+          },
+          "transformation": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://energy-atlas.github.io/archetype-atlas/schemas/commercial-completion-0.1.0.json",
+  "title": "Pinned commercial fixture paths and inspected controls"
+}

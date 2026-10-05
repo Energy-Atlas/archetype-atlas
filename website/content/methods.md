@@ -4,6 +4,20 @@ The site is a generated presentation of frozen atlas releases. It does not
 modify canonical records, fill missing fields or establish simulation readiness.
 Each release has its own schema, source lock, manifest and stable record URLs.
 
+An explicitly selected resolution supplement appears separately on v0.2.0
+record pages. It contains executed residential profiles and narrowly reviewed
+zero/inactive assumptions. Original nulls remain visible. Missing or positive
+loads, electric HVAC alone, and support-space names do not automatically justify
+zero. Reviewed attic/plenum conditioning uses explicit disabled states; no
+arbitrary thermostat temperature is presented as a source fact.
+
+The supplement has a separate version/schema, base-manifest hash, field evidence
+and complete artifact inventory. The site verifies schema, reproducible rules,
+profile/CSV equality, source input context, SI units, annual lengths, bounds and
+thermostat consistency before rendering it. Execution provenance describes
+station-proxy weather, fixed seeds/calendar, nominal setpoints and unresolved
+controls. See the supplement downloads for exact policy and upstream notices.
+
 ## Data integrity
 
 Before generating pages, the build verifies every manifest file's SHA-256 and

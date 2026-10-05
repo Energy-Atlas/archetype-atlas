@@ -7,7 +7,22 @@ on:
       - 'scripts/site*.py'
       - 'tests/site*.js'
       - 'tests/test_site*.py'
+      - 'tests/test_water_reporting*.py'
+      - 'schemas/water-reporting.schema.json'
       - 'data/releases/**'
+      - 'data/resolution-releases/**'
+      - 'data/water-releases/**'
+      - 'data/completion-releases/**'
+      - 'data/water-reporting-releases/**'
+      - 'scripts/water_reporting.py'
+      - 'scripts/catalogue_names.py'
+      - 'scripts/commercial*.py'
+      - 'sources/completion-evidence-lock.json'
+      - 'scripts/water_equivalent.py'
+      - 'scripts/schedule_coverage.py'
+      - 'sources/water-evidence-lock.json'
+      - 'sources/schedule-release-scope.json'
+      - 'scripts/resolve.py'
       - 'requirements*.txt'
       - 'mkdocs.yml'
       - '.github/workflows/catalogue-site.yml'
@@ -17,7 +32,11 @@ on:
       - 'scripts/**'
       - 'tests/**'
       - 'data/releases/**'
+      - 'data/resolution-releases/**'
+      - 'data/water-releases/**'
+      - 'data/completion-releases/**'
       - 'requirements*.txt'
+      - 'data/water-reporting-releases/**'
       - 'mkdocs.yml'
       - '.github/workflows/catalogue-site.yml'
   workflow_dispatch:
@@ -52,9 +71,21 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Verify frozen releases and presentation contracts
         run: |
+          python -m scripts.fetch
+          python -m scripts.fetch --lock sources/schedule-evidence-lock.json
+          python -m scripts.fetch --lock sources/water-evidence-lock.json
+          python -m scripts.fetch --lock sources/completion-evidence-lock.json
           python -m scripts.release --verify --target data/releases/v0.1.0
           python -m scripts.release --verify --target data/releases/v0.2.0
-          python -m unittest tests.test_site tests.test_site_delivery -q
+          python -m scripts.resolve --verify
+          python -m scripts.resolve --verify --target data/resolution-releases/v0.1.0
+          python -m scripts.resolve --verify --target data/resolution-releases/v0.2.0
+          python -m scripts.resolve --verify --target data/resolution-releases/v0.3.0
+          python -m scripts.commercial_completion --verify
+          python -m scripts.water_equivalent --verify
+          python -m scripts.water_reporting --verify
+          python -m unittest tests.test_water_reporting_site -q
+          python -m unittest tests.test_site tests.test_site_delivery tests.test_html_delivery -q
           node --test tests/site_core.test.js tests/site_parity.test.js
       - name: Generate both versioned catalogues and build
         run: |
@@ -80,7 +111,7 @@ jobs:
     needs: build
     if: >-
       (github.event_name == 'push' && (github.ref_name == github.event.repository.default_branch
-      || github.ref_name == 'feat/catalogue-site'))
+      || github.ref_name == 'feat/catalogue-site' || github.ref_name == 'feat/schedule-resolution'))
       || (github.event_name == 'workflow_dispatch' && inputs.deploy)
     runs-on: ubuntu-latest
     timeout-minutes: 10

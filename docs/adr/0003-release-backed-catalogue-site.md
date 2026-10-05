@@ -87,3 +87,37 @@ Upstream data and dependency notices are retained in the generated downloads.
   deployed through Pages and passed live HTTPS byte/browser checks. See
   docs/site-publication.md. Initial hosting enabled HTTPS and added only the
   designated publisher branch to the existing deployment allowlist.
+
+## Filter alignment correction, 2026-10-04
+
+User catalogue review identified duplicate climate labels. Normalize presentation
+labels such as `ClimateZone 2B` to `2B`, so envelope rules and residential context
+can be found with one filter. Preserve source values and climate basis on record
+pages. `2` remains distinct from `2A`/`2B`; `7AK`/`8AK` remain distinct regional
+source labels. Climate-independent programs and unspecified climate are separate
+categories. A shared label does not establish compatibility between climate-zone
+editions, applicability sets, source families or code vintages.
+
+Audit all nine filter axes in both frozen release catalogues. Building, program,
+template, stock vintage, system, record kind and data status have no verified
+equivalent-label duplicates requiring a merge. Source labels have one historical
+family alias (`existing_stock_benchmark` versus `existing_stock_benchmark_rules`)
+and inconsistent project capitalization. Align these known presentation aliases
+to the same existing-stock benchmark family and official project display names.
+Keep source-only rows, source-fixture rows, existing-stock rules and code rules
+distinct. Do not infer equivalence between differently named program variants.
+Mapping entries previously displayed program and system as not applicable even
+when their foreign keys identified both. Derive these two presentation facets
+from exact references. A mapping without a system keeps an explicit unassigned
+label; it does not become proof of absent conditioning.
+
+Per-entry facet aliases preserve old query parameters, and static alias pages
+preserve published category URLs. Unknown or ambiguous aliases remain unmatched;
+do not silently discard a user's filter. Index generation and browser filtering
+have regression tests for combined `2B` coverage, distinct thermal-only sets and
+legacy shared links. Research table bytes and all frozen data remain unchanged.
+
+The hot-water guide also clarifies that plant-connected water demand with no
+zone reference is valid EnergyPlus modeling. Program beneficiary allocation,
+physical fixture location and zone heat/moisture gains are separate questions.
+No remaining scientific gap is closed by this presentation correction.

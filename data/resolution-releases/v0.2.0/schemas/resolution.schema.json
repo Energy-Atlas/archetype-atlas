@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://energy-atlas.github.io/archetype-atlas/schemas/resolution-0.2.0.json",
+  "title": "Additive energy-atlas resolution supplement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "base_release",
+    "resolutions",
+    "unresolved",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "base_release": {
+      "const": "v0.2.0"
+    },
+    "resolutions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/resolution"
+      }
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "record_table",
+          "record_id",
+          "field",
+          "reason"
+        ],
+        "properties": {
+          "record_table": {
+            "const": "programs"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resolution_rows",
+        "records_with_resolutions",
+        "unresolved_program_fields",
+        "by_rule"
+      ],
+      "properties": {
+        "resolution_rows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "records_with_resolutions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved_program_fields": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_rule": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_locator",
+        "source_revision",
+        "source_file_sha256",
+        "provenance_id",
+        "original_value",
+        "original_unit",
+        "transformation",
+        "extraction_date",
+        "interpretation_note"
+      ],
+      "properties": {
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_file_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "provenance_id": {
+          "type": "string"
+        },
+        "original_value": {},
+        "original_unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transformation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extraction_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "interpretation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "record_table",
+        "record_id",
+        "field",
+        "original_value",
+        "resolved_value",
+        "unit",
+        "rule",
+        "basis",
+        "note",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^resolution-[a-f0-9]{20}$"
+        },
+        "record_table": {
+          "enum": [
+            "programs",
+            "residential_archetypes"
+          ]
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "original_value": {},
+        "resolved_value": {
+          "oneOf": [
+            {
+              "const": 0
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "constant_value",
+                "calendar_independent"
+              ],
+              "properties": {
+                "constant_value": {
+                  "const": 0
+                },
+                "calendar_independent": {
+                  "const": true
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "heating_enabled",
+                "cooling_enabled"
+              ],
+              "properties": {
+                "heating_enabled": {
+                  "const": false
+                },
+                "cooling_enabled": {
+                  "const": false
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "profile_file",
+                "column"
+              ],
+              "properties": {
+                "profile_file": {
+                  "type": "string",
+                  "pattern": "^profiles/residential_archetype-[a-f0-9]{20}\\.json$"
+                },
+                "column": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "unit": {
+          "enum": [
+            "dimensionless",
+            "degC",
+            "W",
+            "state"
+          ]
+        },
+        "rule": {
+          "enum": [
+            "explicit_zero_magnitude",
+            "reviewed_no_occupancy",
+            "reviewed_unconditioned",
+            "reviewed_no_hot_water",
+            "demonstrated_all_electric",
+            "selected_absent_end_use",
+            "executed_residential_profile",
+            "reviewed_no_lighting"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "source_zero",
+            "research_assumption",
+            "executed_upstream"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        }
+      }
+    }
+  }
+}

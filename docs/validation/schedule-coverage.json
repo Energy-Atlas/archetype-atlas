@@ -1,0 +1,2357 @@
+{
+  "schema_version": "0.1.0",
+  "base_release": "v0.2.0",
+  "resolution_supplement": "v0.4.0",
+  "scope": {
+    "policy_version": "0.2.0",
+    "decision_date": "2026-10-04",
+    "apply_hvac_unavailability": false,
+    "excluded_commercial_space_types": [
+      "Attic",
+      "Plenum",
+      "Basement"
+    ],
+    "excluded_deliverables": [
+      "HVAC equipment-unavailability placement and overlays",
+      "Complete load magnitudes, multipliers and full-model control application"
+    ],
+    "interpretation": "User-selected preprogrammed schedule baseline. Retain nominal desired-temperature profiles and archived source unavailability options for traceability; no sampled repair/affordability interruptions applied. Generator delivery follows near-full deterministic schedule coverage.",
+    "excluded_residential_end_uses": [
+      "electric_vehicle"
+    ]
+  },
+  "near_full_coverage_claim": false,
+  "commercial": {
+    "active_program_records": 734,
+    "excluded_program_records": 34,
+    "required_fields": [
+      "occupancy_schedule_id",
+      "lighting_schedule_id",
+      "electric_equipment_schedule_id",
+      "gas_equipment_schedule_id",
+      "heating_setpoint_schedule_id",
+      "cooling_setpoint_schedule_id",
+      "service_water_heating_schedule_id"
+    ],
+    "required_schedule_fields": 5138,
+    "statuses": {
+      "disabled_conditioning": 38,
+      "explicit_resolution": 915,
+      "source": 3906,
+      "unknown": 279
+    },
+    "missing_schedule_fields": 279,
+    "missing_by_field": {
+      "service_water_heating_schedule_id": 279
+    },
+    "missing_by_building": {
+      "FullServiceRestaurant": 3,
+      "Hospital": 47,
+      "LargeHotel": 27,
+      "PrimarySchool": 41,
+      "RetailStandalone": 11,
+      "SecondarySchool": 43,
+      "SmallHotel": 48,
+      "SuperMarket": 50,
+      "Warehouse": 9
+    },
+    "missing_records": [
+      {
+        "record_id": "program-0253b125b9d293d56416",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-03e3cad63de90940f7c0",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "elevatorcore4",
+        "source_space_type": "ElevatorCore4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-04a5f9d30d76f2a723f2",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "icu_open",
+        "source_space_type": "ICU_Open",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0576a4f8fbd2d2d30d95",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "sales",
+        "source_space_type": "Sales",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-05ae9aac410e890eba86",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "drystorage",
+        "source_space_type": "DryStorage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-063ce56e8cb91eedd1ae",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "icu_nursestn",
+        "source_space_type": "ICU_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-06d9d33c2b31092c7290",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-078e74825707af0597f7",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-089f3cf821148d98c73f",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-08d343ed8ae1901aaee0",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "computerroom",
+        "source_space_type": "ComputerRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-09708c705f8c623a5359",
+        "building_type": "Warehouse",
+        "template": "90.1-2019",
+        "program": "fine",
+        "source_space_type": "Fine",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0af167671bfbebe2af42",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0b76195827a0db2eedcc",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "corridor4",
+        "source_space_type": "Corridor4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0bc75854bbebf5bf1cca",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0de0e92f0d9af23d4245",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0e76579df4b3a22cdee4",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "auditorium",
+        "source_space_type": "Auditorium",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0eb31f178b4be44f35ab",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "nursestn",
+        "source_space_type": "NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-0fc2d22b04a17db83cb4",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-10567aa6ae3b3f5e092d",
+        "building_type": "Warehouse",
+        "template": "90.1-2013",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-11087f9575e9f3e72598",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-114f27c2f8081fe31097",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-116399114c559ce25dbe",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "exercise",
+        "source_space_type": "Exercise",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-135ae04833a29e31ce58",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "corridor2",
+        "source_space_type": "Corridor2",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-157860e4b974bcb13c51",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "retail",
+        "source_space_type": "Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-15b71e48cf8e2f777faf",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-15ebd6dee774599a0db3",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "icu_nursestn",
+        "source_space_type": "ICU_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-167565237f1880beb7ba",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "auditorium",
+        "source_space_type": "Auditorium",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-16a1f340c588e675d46b",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "storage",
+        "source_space_type": "Storage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-173159d4140a83f552d3",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-18965f968f4eaf11b69c",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-18c253d7303bd4aa5b85",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1bcc4c2eb4bebcffea24",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1cf69d96d00f329b026c",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "gym",
+        "source_space_type": "Gym",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1d88b97fa408e35f4aa3",
+        "building_type": "FullServiceRestaurant",
+        "template": "90.1-2013",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1e072a27c6f48360758c",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2013",
+        "program": "point_of_sale",
+        "source_space_type": "Point_of_Sale",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1e2a87f16d21748495bb",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "sales",
+        "source_space_type": "Sales",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1ea13e3a51d350446b62",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "corridor2",
+        "source_space_type": "Corridor2",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1f2b3506140d8dc0692b",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "sales",
+        "source_space_type": "Sales",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1f6f1ab9ebf34706f379",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-1fe92d0279b0d8800cb2",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "stair",
+        "source_space_type": "Stair",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-20654d279f17f37a5cac",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "gym",
+        "source_space_type": "Gym",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-230e8fac5ac4a384e04c",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-27ffeb352fd44579af6e",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "banquet",
+        "source_space_type": "Banquet",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2a794571e0f4aa42922a",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2acddd3e2f135dcdb6ca",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "icu_open",
+        "source_space_type": "ICU_Open",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2b77515f8858d1843357",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2c4e4ab80dc4d95e6bde",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "nursestn",
+        "source_space_type": "NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2ef0d8fb5d94cebfe4f7",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "produce",
+        "source_space_type": "Produce",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2f11966c5bc92db997d1",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2f3dd35789797104aef3",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-2feaec401cc43fa4f1db",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-32379ebab9d1e37bd74e",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-32a24b1b08ee9746854f",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-32d1cc84425f1e434319",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "computerroom",
+        "source_space_type": "ComputerRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-33b5ffa1a82ade1e807a",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-35c26ea0083c33182977",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-36370d88f03d6f4be270",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-37ebfa02dadd76b7aea0",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-3859d69ada614080467b",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "icu_open",
+        "source_space_type": "ICU_Open",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-38ca6d01616345db57a2",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-38d1f38ad2a8f4cbcef3",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-3e3593b9cb89464f2e3f",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-3f4ada44168fb20389b0",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-428cdee3d0057e29249d",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-43708c2b8e8c83a56f09",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "guestlounge",
+        "source_space_type": "GuestLounge",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4375fc23a60f407c5930",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-43a71bc79c77741a11d0",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-43a9c6c37d4745b06740",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-43b4f26678b6dfff5155",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4511272226b8c72d878c",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4516588559bcd0c6dbc2",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "er_nursestn",
+        "source_space_type": "ER_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-48ccee2c0b4344b8fa5b",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "nursestn",
+        "source_space_type": "NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4929de104c2fd6ee53ec",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-495e51e8a0636d11844d",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4a0879bc0716eed9717e",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "corridor2",
+        "source_space_type": "Corridor2",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4a76a4d11b3318452097",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4ab07f407e77c1d51f60",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "computerroom",
+        "source_space_type": "ComputerRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4b0bd0acdb05e67e842f",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "auditorium",
+        "source_space_type": "Auditorium",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4d027095f2ab20a92d2a",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4dafd759b99730b0da00",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "elevatorcore4",
+        "source_space_type": "ElevatorCore4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4dc7329fdcb6828931c1",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "hospitalofficeflr5",
+        "source_space_type": "HospitalOfficeFlr5",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-4e1426d9e31231ff366a",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-507b384e86482753de04",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-51408f266f732dcc9aa0",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "produce",
+        "source_space_type": "Produce",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-51d9946b5876de5bac5f",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "icu_patrm",
+        "source_space_type": "ICU_PatRm",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-534ff8f3254eea5d231e",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "restroom",
+        "source_space_type": "Restroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-538866ea0a421caa67be",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-544ccc6f9288f7f2ac36",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "storage",
+        "source_space_type": "Storage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-54a6b3ed76fe11a5e995",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "stafflounge",
+        "source_space_type": "StaffLounge",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-55cd3cebafd43940ef67",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-570fee543a1b6cf0693f",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "stair",
+        "source_space_type": "Stair",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-57c8aa84b4603f523d3c",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "storage",
+        "source_space_type": "Storage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-57e9edff97f8da9cfd39",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "storage4front",
+        "source_space_type": "Storage4Front",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-5940655208a9552614ce",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "vestibule",
+        "source_space_type": "Vestibule",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-5b489ed690a153672d03",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "cafe",
+        "source_space_type": "Cafe",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-5d7f44a929e2f4c9e84f",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "produce",
+        "source_space_type": "Produce",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-5da00d20c2476c33572b",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-5e94fd52082418cb3132",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-5ff67f2588b0a526e18d",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-60d044fdfe35895109b2",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "retail",
+        "source_space_type": "Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-61ac88e1f6a91422cdc5",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "nursestn",
+        "source_space_type": "NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6222c4aa702302a253f2",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6254e843d76052375e96",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "restroom",
+        "source_space_type": "Restroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-62c8cdb4671d04ca447c",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-63b91d56bd9f7bc61eeb",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6548d1a391ab7f388dca",
+        "building_type": "Warehouse",
+        "template": "90.1-2019",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-65bd88ae87b8dcde2f24",
+        "building_type": "Warehouse",
+        "template": "90.1-2007",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-67ef09e40ca85ff8da86",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "guestlounge",
+        "source_space_type": "GuestLounge",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6870843cb6773e8ea09f",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-690c3c995ef313f2217e",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-69d1a7b5a7bcdf587da6",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-69f75fc98bb6edb01439",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6a0d72a9e1253de0b60b",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6b71dc4f6d10feb9ebef",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "icu_nursestn",
+        "source_space_type": "ICU_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6d0ae477beedfde35634",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6f6826f61c7e4291e4b1",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "storage",
+        "source_space_type": "Storage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-6fbd08d96aef974b70c1",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-715a1b3c1e6761408b21",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-71cd09c09f0c0afe378b",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "hospitalofficeflr1",
+        "source_space_type": "HospitalOfficeFlr1",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-71eef6cfb7c2c660799c",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7283fc9ad6f1bda7b9c1",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-728afdcf3826c883358e",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-72b9ddc5cf7ccd9eb93d",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "vestibule",
+        "source_space_type": "Vestibule",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7411a203e85b0fb5648b",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "stafflounge",
+        "source_space_type": "StaffLounge",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-74871e5c7c04f2af484e",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-76a584a279c6173123fa",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2013",
+        "program": "entry",
+        "source_space_type": "Entry",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-76b871ace68c70447825",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "nursestn",
+        "source_space_type": "NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-77e26d2ed7de857d5631",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2019",
+        "program": "front_retail",
+        "source_space_type": "Front_Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-78552767069bf36b17fe",
+        "building_type": "Warehouse",
+        "template": "90.1-2013",
+        "program": "fine",
+        "source_space_type": "Fine",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-794b4bc0dc233ca14ede",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "exercise",
+        "source_space_type": "Exercise",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-798ad2ce91e5ff904773",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "retail2",
+        "source_space_type": "Retail2",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7a0b0d0f9c00f490ab0d",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7a84cfe80e840af5116b",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "cafe",
+        "source_space_type": "Cafe",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7b0c62c71bba60e73e86",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "gym",
+        "source_space_type": "Gym",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7b8f4ca33b03fe04666b",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7b98a1f2d25e6466b12e",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7bd78f1c1bf8ad7b8472",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "vestibule",
+        "source_space_type": "Vestibule",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7e8b22c731d146686d69",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2007",
+        "program": "point_of_sale",
+        "source_space_type": "Point_of_Sale",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7efcda51de8142d9c21f",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "gym",
+        "source_space_type": "Gym",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-7ffa435f2c59ae895d1b",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "icu_patrm",
+        "source_space_type": "ICU_PatRm",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-808be8dfe86ce7cf1647",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-80fcb9568907ad9d38e5",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "stair",
+        "source_space_type": "Stair",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-82937886a3febd503f04",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-83503e705803742561ce",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "restroom",
+        "source_space_type": "Restroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-838af2b063e61774f70d",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "stafflounge",
+        "source_space_type": "StaffLounge",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-84ecec39fff027437647",
+        "building_type": "Warehouse",
+        "template": "90.1-2013",
+        "program": "bulk",
+        "source_space_type": "Bulk",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-856185aae43c4a2ce8ea",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8683b921facaee0319a8",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "icu_patrm",
+        "source_space_type": "ICU_PatRm",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-86c1d6ce898dfa67b0cd",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "storage4rear",
+        "source_space_type": "Storage4Rear",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-873330179c38a1279693",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "icu_patrm",
+        "source_space_type": "ICU_PatRm",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8788053032ae0bba7409",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8939f915b2c7d4a79e21",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8971e8419b807bd1d7d5",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "cafe",
+        "source_space_type": "Cafe",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8a4c00250005c065306a",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8ad19195286ace727a3d",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8cc259a6497c6c9c11ea",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "auditorium",
+        "source_space_type": "Auditorium",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8f320594570f078ab44c",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8f703bdd5e5d94537d44",
+        "building_type": "Warehouse",
+        "template": "90.1-2007",
+        "program": "fine",
+        "source_space_type": "Fine",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8fad5df363b26f468748",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2019",
+        "program": "point_of_sale",
+        "source_space_type": "Point_of_Sale",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-8fbe797c37aec05f4bb7",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "storage4rear",
+        "source_space_type": "Storage4Rear",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-921229df310a4205f8e1",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-94238e98328ea442ec99",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-9433dcd64d153874367e",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "storage",
+        "source_space_type": "Storage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-95b316e88d56f4acbe66",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-9607b5e761f1b247c736",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "stair4",
+        "source_space_type": "Stair4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-966c72030770fdf2c68c",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "icu_nursestn",
+        "source_space_type": "ICU_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-96ee1a5ce981f09f9e9b",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "hospitalofficeflr1",
+        "source_space_type": "HospitalOfficeFlr1",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-972612fb8b3671e79fc6",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-97ab72ff074429d455a8",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-97eb26533ae171878dca",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-981e1666851359e8c3fb",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "icu_open",
+        "source_space_type": "ICU_Open",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-9845b30196eb3fabe2db",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-98bda65452dc66458d95",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-99ac819310823ee5f5e6",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "computerroom",
+        "source_space_type": "ComputerRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-9b2fbbeaa3c74ae9c349",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-9fc40777cf4677d08820",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a01efa15e42b6e92c1f5",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a0d94ea243020137d4fd",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a13040e0b621d848917b",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a174200dee67fefaffcb",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "er_nursestn",
+        "source_space_type": "ER_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a2a2a0995fd6b5a12a49",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "classroom",
+        "source_space_type": "Classroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a2a2ddbadd4b7c643940",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a4f9a6bf307cf18459da",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a71f8618469c29430b0e",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-a8d63bf5beb2dbce4e21",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "auditorium",
+        "source_space_type": "Auditorium",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-aa70fec68fcfa9659f42",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "storage4front",
+        "source_space_type": "Storage4Front",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ab7e6b6bd4bdad2ee349",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "restroom",
+        "source_space_type": "Restroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-abe32bb04c16c67619d6",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2013",
+        "program": "front_retail",
+        "source_space_type": "Front_Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-abf0a23bf29241c1545c",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-accc1a4590dad1d5662d",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "publicrestroom",
+        "source_space_type": "PublicRestroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ae5cdf279bdc4910f86c",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-af060ae4231dfb36b820",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2019",
+        "program": "entry",
+        "source_space_type": "Entry",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-af90d73d7f0c1d50a4be",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "computerroom",
+        "source_space_type": "ComputerRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-afad0f7b2a135ceb16e5",
+        "building_type": "FullServiceRestaurant",
+        "template": "90.1-2007",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b03afd531fd76567f555",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "sales",
+        "source_space_type": "Sales",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b05b8985bdc53bb2dbea",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "retail2",
+        "source_space_type": "Retail2",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b0e3c8d565e01d456cae",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b21b5e957c248bf7a8dd",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "icu_open",
+        "source_space_type": "ICU_Open",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b2443da6f70eb0d8b578",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b3a39944c78d23c4711c",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2019",
+        "program": "core_retail",
+        "source_space_type": "Core_Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b4943ccf07b5845102c0",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b6436c3952e4ead74160",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b682652e148237bc8126",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b769ebfad8a14e6eb58e",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "storage",
+        "source_space_type": "Storage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b904d1d23789fa909a76",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "stair4",
+        "source_space_type": "Stair4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-b9c064321c4845869043",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "storage4rear",
+        "source_space_type": "Storage4Rear",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ba1dc4a8069da110e24e",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-bbad54125e77d986f9b0",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c12746d6404d11acf8f1",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "computerroom",
+        "source_space_type": "ComputerRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c12d2efec11a663fed2a",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "er_nursestn",
+        "source_space_type": "ER_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c195a4e747ea848e9e71",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "vestibule",
+        "source_space_type": "Vestibule",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c2c0bcae51ef297804c5",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "elevatorcore4",
+        "source_space_type": "ElevatorCore4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c4499355455babeb6bb1",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c5d264ef599456b8be18",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c6636e8e30e014f6f688",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "drystorage",
+        "source_space_type": "DryStorage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c69a082e2082869ee2ab",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c6d8608fea6f69b9c02e",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-c74b7f93cd6a181157f7",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2007",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-cb02543935b5666ad6ec",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "publicrestroom",
+        "source_space_type": "PublicRestroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-cb68ad0024438f6640e1",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2013",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-cbacd251de6905706ee8",
+        "building_type": "Hospital",
+        "template": "90.1-2013",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-cdffb8447a12a50ba333",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "guestlounge",
+        "source_space_type": "GuestLounge",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-cfdc24a34f1aa20871fa",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "corridor4",
+        "source_space_type": "Corridor4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d1b7d66fc806a61e2fec",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d20a0baff1da99fb0416",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "hospitalofficeflr5",
+        "source_space_type": "HospitalOfficeFlr5",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d28ddfd5f9ff729186f4",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d29e35b12b4f1b376050",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d2b65002feaf33c03a57",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d4d7f4d84bcb33165ad3",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "gym",
+        "source_space_type": "Gym",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d4ef20f8accbd0e32b73",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "storage4front",
+        "source_space_type": "Storage4Front",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d542119280bb568482ce",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "banquet",
+        "source_space_type": "Banquet",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d5a346211da8f257058e",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "retail2",
+        "source_space_type": "Retail2",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d65881aee6f356960774",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d700a533cc480b3cd97a",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2007",
+        "program": "retail",
+        "source_space_type": "Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d74584da0453a37e6362",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "cafeteria",
+        "source_space_type": "Cafeteria",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d76826d25e180af690e1",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-d9b9f1acfb086dca2829",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-da4c5435419dbc4eb01a",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "produce",
+        "source_space_type": "Produce",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-dc0b6412a50a31ecdf8b",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-dce06ad90ed8925d3dc0",
+        "building_type": "Hospital",
+        "template": "DOE Ref Pre-1980",
+        "program": "icu_patrm",
+        "source_space_type": "ICU_PatRm",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-dd7e414f037ac84d9175",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "elec_mechroom",
+        "source_space_type": "Elec/MechRoom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ded0be2a891b05663fff",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "icu_nursestn",
+        "source_space_type": "ICU_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-dfc88b786656285c53ef",
+        "building_type": "SmallHotel",
+        "template": "90.1-2019",
+        "program": "corridor4",
+        "source_space_type": "Corridor4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-dfe7ba6d3c334529a571",
+        "building_type": "Warehouse",
+        "template": "90.1-2019",
+        "program": "bulk",
+        "source_space_type": "Bulk",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-e339fa82f0004045d254",
+        "building_type": "Warehouse",
+        "template": "90.1-2007",
+        "program": "bulk",
+        "source_space_type": "Bulk",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-e3422426e8d0c3677d1b",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "produce",
+        "source_space_type": "Produce",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-e370e7e5c27335b7a734",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "drystorage",
+        "source_space_type": "DryStorage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-e4d8c544727d987841e7",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref Pre-1980",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-e5430f39eb09ad2a1e5f",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "exercise",
+        "source_space_type": "Exercise",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-e7800d310c5249171a21",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "drystorage",
+        "source_space_type": "DryStorage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-eab1e10f503ddc1dd0fd",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-eb0494689bc07c53c0d5",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref 1980-2004",
+        "program": "sales",
+        "source_space_type": "Sales",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ec240a7bec4929758c87",
+        "building_type": "Hospital",
+        "template": "90.1-2007",
+        "program": "er_nursestn",
+        "source_space_type": "ER_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-eca8cb57439115ec9bba",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ee521e784791284755ed",
+        "building_type": "SuperMarket",
+        "template": "90.1-2019",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ee6e11320943f2a2d0fd",
+        "building_type": "SmallHotel",
+        "template": "90.1-2013",
+        "program": "publicrestroom",
+        "source_space_type": "PublicRestroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-ef8effd7d0a260d39db1",
+        "building_type": "FullServiceRestaurant",
+        "template": "90.1-2019",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f0977709f48cce96873a",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "meeting",
+        "source_space_type": "Meeting",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f1413e87260714ff6816",
+        "building_type": "PrimarySchool",
+        "template": "90.1-2019",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f302c0d76281ddcfb46f",
+        "building_type": "LargeHotel",
+        "template": "90.1-2013",
+        "program": "mechanical",
+        "source_space_type": "Mechanical",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f47e006d92cd9ed4326b",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2007",
+        "program": "entry",
+        "source_space_type": "Entry",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f4e2505229c6df4120ba",
+        "building_type": "SecondarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f525765cf47ae8b996a4",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2013",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f53f321f81e61c5aacc6",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "office",
+        "source_space_type": "Office",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f6305d100e193c92f268",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2007",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f74441fbab6b01261071",
+        "building_type": "LargeHotel",
+        "template": "90.1-2007",
+        "program": "retail",
+        "source_space_type": "Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f748e1272c56c9a7fae0",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f7bd26c7bb1452953508",
+        "building_type": "SuperMarket",
+        "template": "90.1-2007",
+        "program": "restroom",
+        "source_space_type": "Restroom",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f7ef7f1e5e34abf2a88a",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f8000ffd73e419d09809",
+        "building_type": "SmallHotel",
+        "template": "90.1-2007",
+        "program": "stair4",
+        "source_space_type": "Stair4",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f85457b37f65c0c24e55",
+        "building_type": "SuperMarket",
+        "template": "DOE Ref Pre-1980",
+        "program": "drystorage",
+        "source_space_type": "DryStorage",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f86f4cd029a566a69879",
+        "building_type": "SecondarySchool",
+        "template": "90.1-2019",
+        "program": "library",
+        "source_space_type": "Library",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f9b0051d181b3723393f",
+        "building_type": "LargeHotel",
+        "template": "90.1-2019",
+        "program": "banquet",
+        "source_space_type": "Banquet",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f9c831a396ce4d2a6863",
+        "building_type": "Hospital",
+        "template": "DOE Ref 1980-2004",
+        "program": "corridor",
+        "source_space_type": "Corridor",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-f9f4687b34221cbc9d5f",
+        "building_type": "SuperMarket",
+        "template": "90.1-2013",
+        "program": "vestibule",
+        "source_space_type": "Vestibule",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-fa06519fc62b5094965b",
+        "building_type": "PrimarySchool",
+        "template": "DOE Ref 1980-2004",
+        "program": "lobby",
+        "source_space_type": "Lobby",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-fa6e74c9d1411e554275",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "er_nursestn",
+        "source_space_type": "ER_NurseStn",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-fae2d9c7e99a12f7fe57",
+        "building_type": "RetailStandalone",
+        "template": "90.1-2013",
+        "program": "core_retail",
+        "source_space_type": "Core_Retail",
+        "field": "service_water_heating_schedule_id"
+      },
+      {
+        "record_id": "program-fd441dca858adbb82245",
+        "building_type": "Hospital",
+        "template": "90.1-2019",
+        "program": "dining",
+        "source_space_type": "Dining",
+        "field": "service_water_heating_schedule_id"
+      }
+    ]
+  },
+  "residential": {
+    "record_count": 41,
+    "assessed_columns": [
+      "occupants",
+      "lighting_interior",
+      "plug_loads_other",
+      "plug_loads_tv",
+      "cooking_range",
+      "clothes_washer",
+      "clothes_dryer",
+      "dishwasher",
+      "hot_water_fixtures",
+      "hot_water_dishwasher",
+      "hot_water_clothes_washer",
+      "ceiling_fan",
+      "refrigerator",
+      "freezer"
+    ],
+    "assessed_profile_fields": 574,
+    "missing_profile_fields": 0,
+    "missing_by_column": {},
+    "missing_records": [],
+    "additional_end_uses": {
+      "columns": [
+        "lighting_exterior"
+      ],
+      "missing_by_column": {},
+      "missing_records": []
+    }
+  },
+  "limitations": [
+    "Counts describe source-input records and explicit variants, not all stock combinations or simulation readiness.",
+    "Residential defaults and reviewed absences are finite record-specific variants, not inferred from missing stochastic columns.",
+    "Additional end uses are assessed only when explicitly in the selected release scope.",
+    "Shared commercial water services require a supported beneficiary allocation; a heater location alone is insufficient.",
+    "HVAC unavailability and complete magnitudes/control application are excluded from the current schedule milestone.",
+    "Reference-location fan/lighting variants and exact DOE/PNNL generated-model equivalence remain separate evidence tasks."
+  ],
+  "water_reporting_variant": {
+    "release": "v0.1.0",
+    "variant": "complete_deterministic_water_reporting",
+    "required_schedule_fields": 5138,
+    "supplied_schedule_fields": 5138,
+    "remaining_schedule_gaps": 0,
+    "remaining_records": [],
+    "source_only_water_gaps_preserved": 279,
+    "retained_shared_service_paths": 10,
+    "allocation_statuses": {
+      "derived_dedicated_kitchen_process": 17,
+      "derived_dedicated_laundry_process": 6,
+      "derived_design_occupant_allocation": 26,
+      "retained_shared_service": 10,
+      "source_assignment": 158
+    },
+    "program_reporting_statuses": {
+      "derived_reporting_allocation": 142,
+      "shared_service_reference": 87,
+      "source_assigned_draw": 134,
+      "zero_attribution_only": 81,
+      "zero_local_draw": 290
+    },
+    "full_simulation_readiness": false,
+    "interpretation": "Complete operational schedule availability through source curves, derived allocations, explicit reporting zeros and separately retained shared services. Original local unknowns remain unknown; reporting does not place zone gains."
+  }
+}

@@ -22,6 +22,9 @@ theme:
     - content.code.copy
 plugins:
   - search
+hooks:
+  - website/hooks/search_index.py
+  - website/hooks/html_delivery.py
 markdown_extensions:
   - admonition
   - attr_list
@@ -42,7 +45,14 @@ nav:
       - Medium Office example: guides/medium-office.md
       - Residential and multifamily: guides/residential.md
       - Geometry assignment: guides/geometry.md
+      - Hot-water equivalents: guides/hot-water.md
+      - Commercial fixture catalogue: commercial-completion/index.md
+      - Complete water reporting: water-reporting/index.md
+      - Catalogue names: guides/catalogue-names.md
+      - Coverage and remaining gaps: guides/coverage.md
   - Methods: methods.md
+  - Resolution supplement: resolution-supplements/index.md
+  - Schedule mechanisms: guides/schedule-methods.md
   - Sources: sources.md
   - Downloads: downloads.md
 validation:

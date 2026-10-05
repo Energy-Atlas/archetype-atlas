@@ -24,6 +24,11 @@ explicit selectors. The date is an inspection control, not a simulation calendar
 Use **Overlay a schedule** for comparisons. An overlay is an inspection view
 and does not modify the program or attach a new schedule to the atlas.
 
+The office now has an optional [fixture draw equivalent](hot-water.md) attached
+to the existing program. Its peak-normalized curve appears alongside the original
+water schedule. Pair it with its compatible flow scaling to conserve demand;
+do not add another building-wide sanitary load. No restroom program is invented.
+
 ## Inspect assembly gaps
 
 The building page lists mappings and systems. Mapping multiplicity is source

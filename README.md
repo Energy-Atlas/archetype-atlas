@@ -27,6 +27,15 @@ parameter completeness remains unresolved. Five commercial templates are selecte
 not every published code edition. [Machine-readable coverage](docs/validation/coverage.json)
 reports expected sets, observed records and unresolved inputs.
 
+The [finite water pilot](data/water-releases/v0.1.0/water-equivalent.json) attaches
+a source-conserving fixture draw equivalent to the existing Medium Office
+90.1-2013 office program. [ADR 0007](docs/adr/0007-program-water-equivalents.md)
+defines its semantics and excludes sampled HVAC unavailability from the schedule
+release. [Schedule coverage](docs/validation/schedule-coverage.json) inventories
+523 active commercial schedule gaps and 101 residential gaps across 14 assessed
+columns; EV/exterior lighting and specialized uses are listed separately.
+Near-full deterministic coverage remains the prerequisite to generator delivery.
+
 | Canonical table | Records |
 | --- | ---: |
 | programs | 768 |
@@ -84,12 +93,61 @@ representatives. Exact lookup matches reference measure arguments; 524 unmatched
 option instances (16 distinct pairs) remain explicit. Six raw thermostat base
 overlaps are flagged before offsets/seasonal controls. Area is a source bin,
 so exact SI area and densities remain null. HPXML defaults and annual profiles
-were not executed or invented. v0.1.0 remains unchanged and verifiable.
+were not executed or invented in that frozen source snapshot. Both original
+atlas releases remain unchanged and verifiable.
+
+The separately versioned [resolution supplement](data/resolution-releases/v0.4.0/manifest.json)
+adds actual upstream annual profiles and selective, evidence-gated assumptions.
+It contains 38 stochastic residential runs, three explicit zero-occupant skips,
+and 41 nominal thermostat profiles. All annual outputs reproduce byte-for-byte.
+Weather is an explicitly labelled station proxy; sampled HVAC unavailability
+and complete load magnitudes are excluded from the schedule milestone. Four all-electric dwelling
+configurations have zero gas equipment; reviewed cavity/core assumptions and
+explicit source-zero magnitudes are documented in
+[ADR 0004](docs/adr/0004-selective-resolution.md). No blanket null-to-zero rule applies.
+Supplement v0.2.0 adds ten reviewed plenum lighting zeros and six data-centre
+occupancy zeros; frozen v0.1.0 remains verifiable. The
+[source review](docs/schedule-source-review.md) answers remaining recipe and
+availability questions. [ADR 0005](docs/adr/0005-parametric-schedule-generators.md)
+records the future parametric generator and DOE reference-location direction.
+See [generation instructions](docs/residential-generation.md) and verify with
+`python -m scripts.resolve --verify`.
+
+Supplement v0.3.0 adds approved gas-equipment zero schedules and densities for
+713 programs, five fixed refrigeration background shapes for three zero-occupant
+dwelling fixtures, and one explicitly absent freezer zero. It has 2,125 resolutions
+and leaves 523 active non-cavity schedule gaps: 485 water and 38 thermostats.
+[ADR 0006](docs/adr/0006-deterministic-coverage-release.md) prioritizes near-full
+deterministic coverage before generator shipping and proposes a source-conserving
+program-level hot-water allocation equivalent. This is an incremental supplement,
+not a claim of complete schedule coverage.
+
+Supplement **v0.4.0** supplies all **574 assessed residential profile fields**,
+plus exterior lighting for all 41 dwelling fixtures. Refrigeration defaults are
+selected-equipment variants, rather than zeros inferred from absent stochastic
+columns. Eight executed commercial source-phase cases resolve inactive controls
+for 19 exact programs. The associated
+[commercial-completion bundle](data/completion-releases/v0.1.0/manifest.json)
+preserves 217 fixture paths, conserved source/normalized curves and source evidence.
+It closes 206 water absences and retains **279 unsupported program allocations**;
+active commercial schedule coverage is **4,859/5,138 (94.6%)**.
+See [ADR 0008](docs/adr/0008-reviewed-schedule-completion.md) and
+[release notes](docs/release-notes-v0.4.0.md). Both new bundles reproduced byte-for-byte.
+
+The optional [water-reporting v0.1.0 bundle](data/water-reporting-releases/v0.1.0/manifest.json)
+supplies **5,138/5,138 operational commercial schedule fields**, preserving the
+**279 source-only water allocation gaps**. All 217 fixture paths are assigned
+once through source relationships, labeled design-occupant/process allocations,
+or retained shared hospital services. Every active program has a reporting curve;
+unknown local fixture assignment remains explicit. This does not establish full
+simulation readiness. [ADR 0009](docs/adr/0009-complete-water-reporting-variant.md)
+documents the distinction. Reproduce/verify with `python -m scripts.water_reporting --verify`.
 
 ## Research catalogue site
 
 Browse the [published catalogue](https://energy-atlas.github.io/archetype-atlas/).
-It is maintained on `feat/catalogue-site`; the research branches remain unmerged.
+The profile/resolution extension is maintained on `feat/schedule-resolution`;
+the research branches remain unmerged.
 
 The MkDocs catalogue presents frozen v0.1.0 and v0.2.0 through building, program,
 vintage/template, climate, system, source and status views. Entry pages include

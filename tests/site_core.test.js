@@ -3,6 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const {execFileSync} = require('node:child_process');
 const corePath = path.resolve(__dirname, '../website/assets/core.js');
 const exists = fs.existsSync(corePath);
 const core = exists ? require(corePath) : null;
@@ -10,6 +11,44 @@ const rule = (day, value, start = '2014-01-01', end = '2014-12-31') => ({
   day_types: day, values: [value], start_date: start, end_date: end,
 });
 function ready() { assert.ok(core, 'Browser schedule/filter logic is not implemented'); }
+
+test('generated readable names preserve raw filter queries and paired schedule contexts', () => {
+  const rows = JSON.parse(execFileSync('python', ['-c',
+    "import json; from scripts.common import ROOT,load_atlas; from scripts.site import catalogue_entries; print(json.dumps(catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'),'v0.2.0')))"],
+    {cwd: path.resolve(__dirname, '..'), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024}));
+  const ids = state => core.filterEntries(rows, state).map(r => r.id);
+  assert.deepEqual(ids({building: 'MediumOffice', program: 'office'}),
+    ids({building: 'Medium Office', program: 'Office'}));
+  assert.ok(ids({building: 'Medium Office', program: 'Office'}).length > 0);
+  assert.deepEqual(core.normalizeState(rows, {building: 'MediumOffice', program: 'office'}),
+    {building: 'Medium Office', program: 'Office'});
+  assert.ok(ids({building: 'HighriseApartment', template: '90.1-2007'}).includes('schedule-9841fa9f62ff202db619'));
+  assert.equal(ids({building: 'HighriseApartment', template: '90.1-2019'}).includes('schedule-9841fa9f62ff202db619'), false);
+  assert.deepEqual(ids({program: 'corridor4'}), ids({program: 'Corridor 4'}));
+  assert.notDeepEqual(ids({program: 'Corridor'}), ids({program: 'Corridor 4'}));
+  assert.deepEqual(ids({q: 'corridor4'}), ids({program: 'Corridor 4'}));
+  assert.deepEqual(ids({q: 'apartment_unit', kind: 'programs'}),
+    ids({program: 'Apartment unit', kind: 'programs'}));
+  assert.ok(ids({q: 'HighriseApartment', kind: 'schedules'}).includes('schedule-9841fa9f62ff202db619'));
+  assert.equal(ids({q: 'Large Hotel / guestroom'}).length, 23);
+  assert.equal(ids({q: 'Hospital / nursestn'}).length, 5);
+  assert.equal(ids({q: 'Small Hotel / corridor4'}).length, 3);
+});
+
+test('executed profiles select actual calendar hours and reject missing or invalid series', () => {
+  const profile = {metadata: {year: 2007, timestep_minutes: 60, columns: {occupants: 'dimensionless'}},
+    series: {occupants: Array.from({length: 8760}, (_, i) => (i % 24) / 24)}};
+  const day = core.annualProfile(profile, 'day', '2007-02-01', ['occupants']);
+  assert.equal(day.startHour, 31 * 24);
+  assert.equal(day.labels[0], '2007-02-01T00:00:00');
+  assert.equal(day.traces[0].values.length, 24);
+  assert.equal(core.annualProfile(profile, 'annual', '', ['occupants']).labels.length, 8760);
+  assert.throws(() => core.annualProfile(profile, 'day', '2008-01-01', ['occupants']));
+  assert.throws(() => core.annualProfile(profile, 'day', '2007-02-30', ['occupants']));
+  assert.throws(() => core.annualProfile(profile, 'day', '2007-01-01', ['missing']));
+  profile.series.occupants[0] = 2;
+  assert.throws(() => core.annualProfile(profile, 'day', '2007-01-01', ['occupants']));
+});
 
 test('specific seasonal rules override defaults in source order, preserving zero', () => {
   ready();
@@ -62,6 +101,24 @@ test('shared schedule filters require one real joint building/template reference
   assert.equal(core.filterEntries(rows, {building: 'HighriseApartment', template: '90.1-2019'}).length, 0);
   assert.equal(core.filterEntries(rows, {building: 'HighriseApartment', template: '90.1-2007'}).length, 1);
   assert.equal(core.filterEntries(rows, {building: 'MidriseApartment', template: '90.1-2019'}).length, 1);
+});
+
+test('legacy facet aliases select the same records as aligned labels without broadening climate sets', () => {
+  const rows = [
+    {id: 'envelope', climate: '2B', facet_aliases: {climate: ['ClimateZone 2B']}},
+    {id: 'dwelling', climate: '2B'},
+    {id: 'thermal', climate: '2'},
+    {id: 'moist', climate: '2A'},
+    {id: 'alaska', climate: '7AK'},
+    {id: 'general-seven', climate: '7'},
+  ];
+  assert.deepEqual(core.filterEntries(rows, {climate: 'ClimateZone 2B'}).map(r => r.id), ['envelope', 'dwelling']);
+  assert.deepEqual(core.filterEntries(rows, {climate: '2B'}).map(r => r.id), ['envelope', 'dwelling']);
+  assert.deepEqual(core.filterEntries(rows, {climate: '2'}).map(r => r.id), ['thermal']);
+  assert.deepEqual(core.normalizeState(rows, {climate: 'ClimateZone 2B', q: 'roof'}), {climate: '2B', q: 'roof'});
+  assert.equal(core.filterEntries(rows, {climate: '7AK'}).length, 1);
+  assert.equal(core.filterEntries(rows, {climate: 'unknown'}).length, 0);
+  assert.equal(core.filterEntries([{source: 'Aligned', facet_aliases: {source: ['Legacy']}}], {source: 'Legacy'}).length, 1);
 });
 test('thermostat diagnostics report overlaps without changing source values', () => {
   ready();

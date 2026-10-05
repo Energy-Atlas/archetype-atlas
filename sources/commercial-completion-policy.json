@@ -1,0 +1,1270 @@
+{
+  "policy_version": "0.1.0",
+  "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+  "execution_receipt_sha256": "25af6746dc8b6a5c0a2cc22643196f981959dfcedf793ff23230025d2f9cce3f",
+  "controls": [
+    {
+      "record_id": "program-03e3cad63de90940f7c0",
+      "building_type": "SmallHotel",
+      "template": "90.1-2013",
+      "source_space_type": "ElevatorCore4",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.spc_typ.json#/space_types/226",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr4",
+          "source_space_type": "ElevatorCore4",
+          "zone": "ElevatorCoreFlr4 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr4"
+          ],
+          "thermostat": "SmallHotel ElevatorCore4 Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-186332d2683bcee443fc",
+      "building_type": "SmallHotel",
+      "template": "DOE Ref 1980-2004",
+      "source_space_type": "Elec/MechRoom",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.spc_typ.json#/space_types/188",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr1",
+          "source_space_type": "Elec/MechRoom",
+          "zone": "ElevatorCoreFlr1 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr1"
+          ],
+          "thermostat": "SmallHotel Elec/MechRoom Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-2978a44a5e1fa43749d7",
+      "building_type": "SmallHotel",
+      "template": "90.1-2013",
+      "source_space_type": "ElevatorCore",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.spc_typ.json#/space_types/225",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr2",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr2 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr2"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr3",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr3 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr3"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-2f331cb70d150ed518c5",
+      "building_type": "SmallHotel",
+      "template": "90.1-2007",
+      "source_space_type": "ElevatorCore",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.spc_typ.json#/space_types/218",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr2",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr2 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr2"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr3",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr3 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr3"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-48acf095cf6d68639533",
+      "building_type": "HighriseApartment",
+      "template": "90.1-2019",
+      "source_space_type": "Corridor_topfloor",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.spc_typ.json#/space_types/45",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "T Corridor",
+          "source_space_type": "Corridor_topfloor",
+          "zone": "T Corridor ZN",
+          "zone_spaces": [
+            "T Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor_topfloor Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-4dafd759b99730b0da00",
+      "building_type": "SmallHotel",
+      "template": "90.1-2019",
+      "source_space_type": "ElevatorCore4",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.spc_typ.json#/space_types/225",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr4",
+          "source_space_type": "ElevatorCore4",
+          "zone": "ElevatorCoreFlr4 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr4"
+          ],
+          "thermostat": "SmallHotel ElevatorCore4 Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-5578ce8df569c0516156",
+      "building_type": "HighriseApartment",
+      "template": "90.1-2019",
+      "source_space_type": "Corridor",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.spc_typ.json#/space_types/44",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "F2 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F2 Corridor ZN",
+          "zone_spaces": [
+            "F2 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F3 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F3 Corridor ZN",
+          "zone_spaces": [
+            "F3 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F4 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F4 Corridor ZN",
+          "zone_spaces": [
+            "F4 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 3",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F6 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F6 Corridor ZN",
+          "zone_spaces": [
+            "F6 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 4",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F7 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F7 Corridor ZN",
+          "zone_spaces": [
+            "F7 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 5",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F8 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F8 Corridor ZN",
+          "zone_spaces": [
+            "F8 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 6",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F9 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F9 Corridor ZN",
+          "zone_spaces": [
+            "F9 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 7",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "G Corridor",
+          "source_space_type": "Corridor",
+          "zone": "G Corridor ZN",
+          "zone_spaces": [
+            "G Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 8",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "M Corridor",
+          "source_space_type": "Corridor",
+          "zone": "M Corridor ZN",
+          "zone_spaces": [
+            "M Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 9",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-5cda7f2858c06aa1f40e",
+      "building_type": "SmallHotel",
+      "template": "DOE Ref Pre-1980",
+      "source_space_type": "Elec/MechRoom",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.spc_typ.json#/space_types/186",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr1",
+          "source_space_type": "Elec/MechRoom",
+          "zone": "ElevatorCoreFlr1 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr1"
+          ],
+          "thermostat": "SmallHotel Elec/MechRoom Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-69fbb076f0175c3bdfe9",
+      "building_type": "SmallHotel",
+      "template": "90.1-2019",
+      "source_space_type": "ElevatorCore",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.spc_typ.json#/space_types/224",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr2",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr2 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr2"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr3",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr3 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr3"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-6fc2a18b27b7d8b9379f",
+      "building_type": "SmallHotel",
+      "template": "DOE Ref 1980-2004",
+      "source_space_type": "ElevatorCore",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_1980_2004/data/doe_ref_1980_2004.spc_typ.json#/space_types/189",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr2",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr2 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr2"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr3",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr3 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr3"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr4",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr4 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr4"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 3",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-752a92d8fdbaaaae6631",
+      "building_type": "HighriseApartment",
+      "template": "90.1-2013",
+      "source_space_type": "Corridor_topfloor",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.spc_typ.json#/space_types/45",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "T Corridor",
+          "source_space_type": "Corridor_topfloor",
+          "zone": "T Corridor ZN",
+          "zone_spaces": [
+            "T Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor_topfloor Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-8788053032ae0bba7409",
+      "building_type": "SmallHotel",
+      "template": "90.1-2019",
+      "source_space_type": "Elec/MechRoom",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.spc_typ.json#/space_types/223",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr1",
+          "source_space_type": "Elec/MechRoom",
+          "zone": "ElevatorCoreFlr1 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr1"
+          ],
+          "thermostat": "SmallHotel Elec/MechRoom Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-98a1e40889c8b22f42a8",
+      "building_type": "HighriseApartment",
+      "template": "90.1-2013",
+      "source_space_type": "Corridor",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.spc_typ.json#/space_types/44",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "F2 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F2 Corridor ZN",
+          "zone_spaces": [
+            "F2 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F3 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F3 Corridor ZN",
+          "zone_spaces": [
+            "F3 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F4 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F4 Corridor ZN",
+          "zone_spaces": [
+            "F4 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 3",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F6 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F6 Corridor ZN",
+          "zone_spaces": [
+            "F6 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 4",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F7 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F7 Corridor ZN",
+          "zone_spaces": [
+            "F7 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 5",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F8 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F8 Corridor ZN",
+          "zone_spaces": [
+            "F8 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 6",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F9 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F9 Corridor ZN",
+          "zone_spaces": [
+            "F9 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 7",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "G Corridor",
+          "source_space_type": "Corridor",
+          "zone": "G Corridor ZN",
+          "zone_spaces": [
+            "G Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 8",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "M Corridor",
+          "source_space_type": "Corridor",
+          "zone": "M Corridor ZN",
+          "zone_spaces": [
+            "M Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 9",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-c2c0bcae51ef297804c5",
+      "building_type": "SmallHotel",
+      "template": "90.1-2007",
+      "source_space_type": "ElevatorCore4",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.spc_typ.json#/space_types/219",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr4",
+          "source_space_type": "ElevatorCore4",
+          "zone": "ElevatorCoreFlr4 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr4"
+          ],
+          "thermostat": "SmallHotel ElevatorCore4 Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-c4499355455babeb6bb1",
+      "building_type": "SmallHotel",
+      "template": "90.1-2007",
+      "source_space_type": "Elec/MechRoom",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.spc_typ.json#/space_types/217",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr1",
+          "source_space_type": "Elec/MechRoom",
+          "zone": "ElevatorCoreFlr1 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr1"
+          ],
+          "thermostat": "SmallHotel Elec/MechRoom Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-c791216bca5a4414c6d7",
+      "building_type": "HighriseApartment",
+      "template": "90.1-2007",
+      "source_space_type": "Corridor_topfloor",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.spc_typ.json#/space_types/45",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "T Corridor",
+          "source_space_type": "Corridor_topfloor",
+          "zone": "T Corridor ZN",
+          "zone_spaces": [
+            "T Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor_topfloor Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-dd7e414f037ac84d9175",
+      "building_type": "SmallHotel",
+      "template": "90.1-2013",
+      "source_space_type": "Elec/MechRoom",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2013/data/ashrae_90_1_2013.spc_typ.json#/space_types/224",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr1",
+          "source_space_type": "Elec/MechRoom",
+          "zone": "ElevatorCoreFlr1 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr1"
+          ],
+          "thermostat": "SmallHotel Elec/MechRoom Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-e767a4d5ce39a70ec1b0",
+      "building_type": "SmallHotel",
+      "template": "DOE Ref Pre-1980",
+      "source_space_type": "ElevatorCore",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/doe_ref_pre_1980/data/doe_ref_pre_1980.spc_typ.json#/space_types/187",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "ElevatorCoreFlr2",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr2 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr2"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr3",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr3 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr3"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "ElevatorCoreFlr4",
+          "source_space_type": "ElevatorCore",
+          "zone": "ElevatorCoreFlr4 ZN",
+          "zone_spaces": [
+            "ElevatorCoreFlr4"
+          ],
+          "thermostat": "SmallHotel ElevatorCore Thermostat 3",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    },
+    {
+      "record_id": "program-fcacfbb35e4b7f7e3fac",
+      "building_type": "HighriseApartment",
+      "template": "90.1-2007",
+      "source_space_type": "Corridor",
+      "source_values": {
+        "heating_setpoint_schedule": null,
+        "cooling_setpoint_schedule": null
+      },
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2007/data/ashrae_90_1_2007.spc_typ.json#/space_types/44",
+      "original_unit": "schedule name; null means unreported",
+      "transformation": "Trace null source names through actual empty-controller, one-space-per-zone, HVAC, custom-tweak and transfer-air phases; recommend separate inactive-control semantic, not temperature substitution.",
+      "extraction_date": "2026-10-04",
+      "interpretation": "No direct HVAC heating or cooling control exists in the executed pre-sizing phases. Empty OpenStudio thermostat object does exist. Passive thermal coupling may occur; no modeled transfer-air or ZoneMixing conditioning, no shared thermostat.",
+      "recommended_control_status": "inactive_no_direct_conditioning",
+      "runtime_evidence": [
+        {
+          "space": "F2 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F2 Corridor ZN",
+          "zone_spaces": [
+            "F2 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 1",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F3 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F3 Corridor ZN",
+          "zone_spaces": [
+            "F3 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 2",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F4 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F4 Corridor ZN",
+          "zone_spaces": [
+            "F4 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 3",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F6 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F6 Corridor ZN",
+          "zone_spaces": [
+            "F6 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 4",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F7 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F7 Corridor ZN",
+          "zone_spaces": [
+            "F7 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 5",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F8 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F8 Corridor ZN",
+          "zone_spaces": [
+            "F8 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 6",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "F9 Corridor",
+          "source_space_type": "Corridor",
+          "zone": "F9 Corridor ZN",
+          "zone_spaces": [
+            "F9 Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 7",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "G Corridor",
+          "source_space_type": "Corridor",
+          "zone": "G Corridor ZN",
+          "zone_spaces": [
+            "G Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 8",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        },
+        {
+          "space": "M Corridor",
+          "source_space_type": "Corridor",
+          "zone": "M Corridor ZN",
+          "zone_spaces": [
+            "M Corridor"
+          ],
+          "thermostat": "HighriseApartment Corridor Thermostat 9",
+          "heating_schedule": null,
+          "cooling_schedule": null,
+          "equipment": [],
+          "air_loops": [],
+          "ideal_loads": false,
+          "zone_mixing": []
+        }
+      ],
+      "runtime_phases": [
+        "loads",
+        "thermal_zones",
+        "hvac",
+        "custom_hvac_tweaks",
+        "transfer_air"
+      ],
+      "executed_climate_zone": "ASHRAE 169-2013-4A",
+      "full_simulation_executed": false
+    }
+  ]
+}

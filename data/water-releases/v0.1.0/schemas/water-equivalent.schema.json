@@ -1,0 +1,447 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://energy-atlas.github.io/archetype-atlas/schemas/water-equivalent-0.1.0.json",
+  "title": "Reviewed finite Medium Office fixture draw equivalent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "allocation_weight",
+    "base_release",
+    "building_type",
+    "conservation",
+    "equivalent_peak_flow_m3_s_m2",
+    "equivalent_schedule",
+    "evidence",
+    "field_provenance",
+    "interpretation",
+    "newly_resolved_missing_schedules",
+    "peak_divisor",
+    "physical_fixture_locations",
+    "program_id",
+    "rated_flow_m3_s_m2",
+    "release_version",
+    "schema_version",
+    "source_schedule_id",
+    "source_space_names",
+    "status",
+    "target_temperature_degC",
+    "template",
+    "variant"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0"
+    },
+    "release_version": {
+      "const": "0.1.0"
+    },
+    "base_release": {
+      "const": "v0.2.0"
+    },
+    "program_id": {
+      "const": "program-29f8fa7a1d5e5afcf1f0"
+    },
+    "building_type": {
+      "const": "MediumOffice"
+    },
+    "template": {
+      "const": "90.1-2013"
+    },
+    "variant": {
+      "const": "source_conserving_fixture_draw_equivalent"
+    },
+    "status": {
+      "const": "allocation_equivalent"
+    },
+    "source_schedule_id": {
+      "const": "schedule-1a7eda5cfd8f681cc7d7"
+    },
+    "source_space_names": {
+      "type": "array",
+      "minItems": 15,
+      "maxItems": 15,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "allocation_weight": {
+      "const": 1
+    },
+    "physical_fixture_locations": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "rated_flow_m3_s_m2": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "equivalent_peak_flow_m3_s_m2": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "peak_divisor": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "target_temperature_degC": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "equivalent_schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_name",
+        "schedule_type",
+        "units",
+        "time_resolution_minutes",
+        "interpolation",
+        "rules"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^water_schedule-[a-f0-9]{20}$"
+        },
+        "source_name": {
+          "type": "string"
+        },
+        "schedule_type": {
+          "const": "fraction"
+        },
+        "units": {
+          "const": "dimensionless"
+        },
+        "time_resolution_minutes": {
+          "const": 60
+        },
+        "interpolation": {
+          "const": "none"
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "day_types",
+              "start_date",
+              "end_date",
+              "type",
+              "values",
+              "source_index",
+              "source_units",
+              "source_category"
+            ],
+            "properties": {
+              "day_types": {
+                "type": "string",
+                "minLength": 1
+              },
+              "start_date": {
+                "type": "string",
+                "minLength": 10
+              },
+              "end_date": {
+                "type": "string",
+                "minLength": 10
+              },
+              "type": {
+                "const": "Hourly"
+              },
+              "values": {
+                "type": "array",
+                "minItems": 24,
+                "maxItems": 24,
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "source_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "source_units": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "source_category": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "interpretation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conservation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "newly_resolved_missing_schedules": {
+      "const": 0
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_locator",
+          "source_revision",
+          "source_file_sha256",
+          "original_value",
+          "original_unit",
+          "transformation",
+          "extraction_date",
+          "interpretation_note"
+        ],
+        "properties": {
+          "source_locator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_revision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_file_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "original_value": {},
+          "original_unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "transformation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "extraction_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "interpretation_note": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "field_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allocation_weight",
+        "building_type",
+        "conservation",
+        "equivalent_peak_flow_m3_s_m2",
+        "equivalent_schedule",
+        "interpretation",
+        "newly_resolved_missing_schedules",
+        "peak_divisor",
+        "physical_fixture_locations",
+        "program_id",
+        "rated_flow_m3_s_m2",
+        "source_schedule_id",
+        "source_space_names",
+        "status",
+        "target_temperature_degC",
+        "template",
+        "variant"
+      ],
+      "properties": {
+        "allocation_weight": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "building_type": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "conservation": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "equivalent_peak_flow_m3_s_m2": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "equivalent_schedule": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "interpretation": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "newly_resolved_missing_schedules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "peak_divisor": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "physical_fixture_locations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "program_id": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "rated_flow_m3_s_m2": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "source_schedule_id": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "source_space_names": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "status": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "target_temperature_degC": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "template": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        },
+        "variant": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          }
+        }
+      }
+    }
+  }
+}
