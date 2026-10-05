@@ -123,7 +123,7 @@ downloads, and computes coverage using its actual selected overlay.
   referential/schedule/provenance/security checks, strict build, links and browser.
 - [x] Stage/inspect/security-audit and commit; obtain a fresh whole-change review,
   fix material findings with regression tests, then push the publisher branch.
-- [ ] Wait for hosted validation/deployment, verify served artifact hashes and
+- [x] Wait for hosted validation/deployment, verify served artifact hashes and
   browser behavior, tag verified data and append publication evidence.
 
 ## Execution record

@@ -214,3 +214,55 @@ Water manifest SHA-256:
 `85f870364bdee8fb718a851e5ce392c8049d96173025cdcbc4c6f6ccc3ca97d1`.
 Portable snapshot ZIP SHA-256:
 `27d189b5f099b153e656ab3df9a1f1c5eb877b2c37cfbf9878c1c7031d5a8a30`.
+
+## Reviewed schedule completion — 2026-10-04
+
+Published and tested commit: `a82e5c7` on `feat/schedule-resolution`. Annotated
+tags `resolution-v0.4.0` and `completion-v0.1.0` identify the verified tree.
+Research branches remain unmerged; prior tags and frozen snapshots are unchanged.
+
+- [Windows/Linux scientific validation](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37248120174)
+  passed **97 tests on each OS**, canonical byte reproduction, 33,173 source
+  comparisons, all historical snapshots and repository security. Every local
+  implementation commit also passed the staged security audit.
+- [Catalogue build and deployment](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37248120414)
+  passed: frozen contracts, eight JavaScript tests, schedule parity, strict
+  MkDocs build, every link/fragment, publication size and Chromium behavior.
+  The local verified artifact is **955,861,081 bytes**. The HTML hook preserves
+  literal regions and links while reducing repeated template indentation.
+- A clean four-lock cache reproduced the commercial packet, including all 34
+  geometry witnesses. The hosted workflow explicitly fetches the base source
+  lock as well as schedule, water and completion evidence locks.
+- Independent repeated freezes matched all 13 commercial-completion and 114
+  supplement files byte-for-byte. Eight locked source-phase control cases and
+  upstream vacancy/exterior default application were executed and verified.
+  Independent code and site reviews found no material findings.
+- Live HTTPS verification matched both manifests and **every archived file**
+  against the frozen trees. The stored commercial ZIP also matched local bytes;
+  the compressed supplement ZIP was verified through its complete canonical
+  inventory. The historic water ZIP retained its published hash. Live plots
+  matched exterior/refrigeration source expansions and both conserved fixture
+  curves, including their repeated hour-24 endpoints.
+
+The [fixture catalogue](https://energy-atlas.github.io/archetype-atlas/commercial-completion/)
+preserves 217 draw paths, 28 recipes and 59 unallocated services. Source-supported
+demand attaches to existing programs; 206 reviewed absences have zero profiles.
+**279 commercial program-water allocations remain unknown**. Active commercial
+coverage is 4,859/5,138 fields (94.6%). All 574 assessed residential fields and all
+41 dwelling exterior-lighting profiles are supplied. Missing stochastic columns
+alone do not establish appliance absence. Sampled HVAC unavailability, complete
+magnitudes and full-model controls remain excluded; inactive zone evidence is
+limited to inspected pre-sizing phases at climate 4A.
+
+Excluded end uses have no active schedules, catalogue entries, plots or coverage
+denominator. Historical public option addresses point to source archives without
+being indexed. Original snapshots and source nulls retain their original meaning.
+No full-stock or complete-model equivalence claim is made; parametric generators
+remain deferred. See [release notes](release-notes-v0.4.0.md) and the
+[current public coverage](https://energy-atlas.github.io/archetype-atlas/guides/coverage/).
+
+Live supplement ZIP SHA-256:
+`33eebbc773096275ebedff80d2f6f0d1261666df4e97d1266806bf8262310202`.
+Live commercial ZIP SHA-256:
+`318155e78a5334c89983cb6ad4f95c17952e6c71bd26115f9b4b6f588bdddaf7`.
+Manifest hashes are recorded in the release notes and validation receipt.
