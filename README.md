@@ -134,6 +134,15 @@ active commercial schedule coverage is **4,859/5,138 (94.6%)**.
 See [ADR 0008](docs/adr/0008-reviewed-schedule-completion.md) and
 [release notes](docs/release-notes-v0.4.0.md). Both new bundles reproduced byte-for-byte.
 
+The optional [water-reporting v0.1.0 bundle](data/water-reporting-releases/v0.1.0/manifest.json)
+supplies **5,138/5,138 operational commercial schedule fields**, preserving the
+**279 source-only water allocation gaps**. All 217 fixture paths are assigned
+once through source relationships, labeled design-occupant/process allocations,
+or retained shared hospital services. Every active program has a reporting curve;
+unknown local fixture assignment remains explicit. This does not establish full
+simulation readiness. [ADR 0009](docs/adr/0009-complete-water-reporting-variant.md)
+documents the distinction. Reproduce/verify with `python -m scripts.water_reporting --verify`.
+
 ## Research catalogue site
 
 Browse the [published catalogue](https://energy-atlas.github.io/archetype-atlas/).

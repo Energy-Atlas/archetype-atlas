@@ -16,6 +16,7 @@ import time
 import zipfile
 
 from scripts.common import ROOT, load_atlas, load_json, stable_id, table_names
+from scripts.catalogue_names import BUILDING_LABELS, building_label, program_label, program_title
 from scripts.release import verify_release
 from scripts.resolve import DEFAULT as RESOLUTION_RELEASE, validate_bundle
 from scripts.water_equivalent import DEFAULT as WATER_RELEASE, validate_bundle as validate_water
@@ -136,14 +137,7 @@ FAMILIES = {'code_prototype_rules': 'Code / prototype rules (Standards-derived)'
             'existing_stock_benchmark': 'Existing-stock benchmark rules (Standards-derived)',
             'existing_stock_source_fixture': 'Existing-stock source fixture (ResStock)'}
 PROJECT_LABELS = {'openstudio-standards': 'OpenStudio Standards', 'resstock': 'ResStock', 'ComStock': 'ComStock'}
-LABELS = {'MediumOffice': 'Medium Office', 'LargeOffice': 'Large Office',
-          'SmallOffice': 'Small Office', 'RetailStandalone': 'Standalone Retail',
-          'RetailStripmall': 'Strip Mall', 'SuperMarket': 'Supermarket',
-          'SingleFamilyDetached': 'Single-family Detached', 'SingleFamilyAttached': 'Single-family Attached',
-          'MultiFamily2To4': 'Multifamily, 2–4 Units',
-          'MultiFamily5PlusLowRise': 'Multifamily, 5+ Units, Low Rise',
-          'MidriseApartment': 'Midrise Apartment', 'HighriseApartment': 'Highrise Apartment',
-          'ManufacturedHome': 'Manufactured / Mobile Home'}
+LABELS = BUILDING_LABELS
 
 
 def friendly(value):
@@ -177,7 +171,7 @@ def title(table, row):
     if table == 'buildings':
         return friendly(row['building_type']) + ' · ' + row['template']
     if table == 'programs':
-        return friendly(row['building_type']) + ' / ' + row['program'] + ' · ' + row['template']
+        return building_label(row['building_type']) + ' / ' + program_title(row) + ' · ' + row['template']
     if table == 'schedules':
         return row['source_name']
     if table == 'residential_archetypes':
@@ -253,6 +247,17 @@ def catalogue_entries(data, version):
                 climate = 'Climate-independent'
             facet_aliases = {k: [old] for k, old, new in
                              [('climate', original_climate, climate), ('source', original_source, source)] if old != new}
+            original_building = r.get('building_type', 'Shared / not assigned')
+            building = building_label(original_building)
+            original_program = programs[r['program_id']]['program'] if t == 'mappings' else r.get('program', 'Not applicable')
+            program = program_label(original_program)
+            for key, old, new in [('building', original_building, building), ('program', original_program, program)]:
+                if old != new:
+                    facet_aliases[key] = [old]
+            # Shared schedules use exactly the same browsing vocabulary as their
+            # parent programs/systems; paired contexts remain paired.
+            referenced_buildings = sorted({building_label(b) for b in uses[r['id']]['building']})
+            previous_title = (friendly(r['building_type']) + ' / ' + r['program'] + ' · ' + r['template']) if t == 'programs' else title(t, r)
             status = ('Source-input bundle; assembly unresolved' if t == 'buildings' else
                       'Source fixture; runtime gaps' if t == 'residential_archetypes' else
                       'Conditional / unassigned' if t in {'efficiency_rules', 'envelope_components', 'specialized_rules'} else
@@ -260,8 +265,8 @@ def catalogue_entries(data, version):
                       'Source rules; calendar required' if t == 'schedules' else 'Source inputs; missing fields explicit')
             entries.append({
                 'id': r['id'], 'kind': t, 'name': title(t, r),
-                'building': r.get('building_type', 'Shared / not assigned'),
-                'program': programs[r['program_id']]['program'] if t == 'mappings' else r.get('program', 'Not applicable'),
+                'building': building,
+                'program': program,
                 'template': r.get('template', 'Shared / not assigned'),
                 'stock_vintage': context.get('Vintage', 'Not applicable / not reported'),
                 'climate': climate, 'climate_basis': basis,
@@ -269,9 +274,10 @@ def catalogue_entries(data, version):
                           if t == 'mappings' else r.get('system_type', 'Not applicable'),
                 'source': source, 'status': status,
                 'facet_aliases': facet_aliases,
-                'referenced_buildings': sorted(uses[r['id']]['building']),
+                'search_aliases': [original_building, original_program, previous_title, *sorted(uses[r['id']]['building'])],
+                'referenced_buildings': referenced_buildings,
                 'referenced_templates': sorted(uses[r['id']]['template']),
-                'referenced_contexts': [{'building': b, 'template': t}
+                'referenced_contexts': [{'building': building_label(b), 'template': t}
                                         for b, t in sorted(uses[r['id']]['contexts'])],
                 'path': f'releases/{version}/{t}/{r["id"]}.md',
                 'download': f'releases/{version}/records/{r["id"]}.json',
@@ -465,7 +471,7 @@ def resolution_html(current, rows, profile, supplement_base):
     return page
 
 
-def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None, water=None, completion=None):
+def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None, water=None, completion=None, water_reporting=None):
     entries = catalogue_entries(data, version)
     resolution_rows=defaultdict(list)
     profile_index={}
@@ -486,6 +492,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
     refs = {r['id']: r for r in entries}
     rows = {r['id']: (t, r) for t in RECORD_TABLES for r in data.get(t, [])}
     rows.update({r['id']: ('buildings', r) for r in overview_rows(data)})
+    reporting_programs={p['program_id']:p for p in water_reporting['programs']} if water_reporting else {}
     prov = {r['id']: r for r in data['provenance']}
     sources = {r['id']: r for r in data['source_files']}
     excluded_ids={r['id'] for t in ['commercial_options','residential_options'] for r in data.get(t,[])
@@ -541,7 +548,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
         page += anchor(current, f'releases/{version}/catalogue.md', 'Back to catalogue') + '\n\n'
         if t == 'buildings':
             matched = [e for e in entries if e['kind'] in {'programs', 'systems', 'mappings'}
-                       and e['building'] == r['building_type'] and e['template'] == r['template']]
+                       and e['building'] == building_label(r['building_type']) and e['template'] == r['template']]
             page += ('## Assembly status\n\nSource-input overview. Area fractions, conditioned state, infiltration, '
                      'HVAC sizing and generator overrides require downstream resolution.\n\n')
             for kind in ['programs', 'systems', 'mappings']:
@@ -558,6 +565,8 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
             ids = {k: v for k, v in r.items() if k.endswith('_schedule_id') and v in refs}
             if water and r['id'] == water['program_id']:
                 ids['fixture_draw_equivalent_peak_normalized'] = water['equivalent_schedule']['id']
+            if r['id'] in reporting_programs:
+                ids['attributed_hot_water_reporting']=reporting_programs[r['id']]['reporting_schedule_id']
             if t == 'schedules':
                 ids = {'source_profile': r['id']}
             if ids:
@@ -592,6 +601,13 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
                     page+=display_value(links['missing_program_evidence'])+'\n\n'
                 page+=anchor(current,'commercial-completion/index.md','Commercial fixture-demand catalogue')+'\n\n'
                 packet['commercial_completion']=links
+        if r['id'] in reporting_programs:
+            from scripts.site_water_reporting import program_html
+            report_row=reporting_programs[r['id']]
+            page+='\n\n'+program_html(current,report_row,water_reporting)
+            packet['water_reporting']={'version':'v'+water_reporting['release_version'],
+                                      'record':report_row,
+                                      'download':'water-reporting/v'+water_reporting['release_version']+'/water-reporting.json'}
         if r['id'] in resolution_rows:
             profile=profile_index.get(r['id'])
             page+='\n\n'+resolution_html(current,presentation_scope(resolution_rows[r['id']],excluded_ids),profile,supplement_base)
@@ -674,7 +690,7 @@ def rename_generated(source, target):
             time.sleep(0.2 * (attempt + 1))
 
 
-def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE, water_path=WATER_RELEASE):
+def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE, water_path=WATER_RELEASE, water_reporting_path=ROOT/'data/water-reporting-releases/v0.1.0'):
     """Verify everything before writing; atomically replace only the supplied output."""
     loaded = sorted([(Path(p), *read_release(p)) for p in release_paths],
                     key=lambda x: tuple(int(n) for n in x[-1][1:].split('.')))
@@ -683,6 +699,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         raise ValueError('Duplicate release version')
     supplement=None
     completion=None
+    reporting=None
     water = validate_water(water_path) if water_path is not None and 'v0.2.0' in versions else None
     if supplement_path is not None and 'v0.2.0' in versions:
         supplement_path=Path(supplement_path)
@@ -695,6 +712,9 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         if policy.get('commercial_completion_release'):
             from scripts.resolve import load_completion
             completion=load_completion(policy)
+            if supplement['version']=='v0.4.0' and water_reporting_path is not None:
+                from scripts.water_reporting import validate_bundle as validate_reporting
+                reporting=validate_reporting(water_reporting_path)
     target = validate_output(target, [p for p, *_ in loaded])
     target.parent.mkdir(parents=True, exist_ok=True)
     summary = {'pilot': pilot, 'releases': {}}
@@ -721,6 +741,12 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
             generate_completion(stage,completion,completion_path,pilot_data(full_data) if pilot else full_data,pilot)
         else:
             write_text(stage,'commercial-completion/index.md','# Commercial fixture-demand catalogue\n\nThe selected historical supplement does not include the commercial-completion bundle.')
+        if reporting:
+            from scripts.site_water_reporting import generate as generate_reporting
+            full_data=next(data for _,data,_,v in loaded if v=='v0.2.0')
+            generate_reporting(stage,reporting,water_reporting_path,full_data,pilot)
+        else:
+            write_text(stage,'water-reporting/index.md','# Complete water reporting catalogue\n\nThe selected historical supplement does not include the optional complete reporting variant.')
         if water:
             destination = stage/'water-equivalents/v0.1.0'
             destination.mkdir(parents=True)
@@ -758,7 +784,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
             coverage_base = next(data for _,data,_,v in loaded if v == 'v0.2.0')
             write_site_json(stage/'schedule-coverage.json',schedule_coverage(coverage_base,
                 supplement['data'] if supplement else {'resolutions':[]},
-                supplement_version=supplement['version'] if supplement else None))
+                supplement_version=supplement['version'] if supplement else None,water_reporting=reporting))
         if supplement:
             history=[supplement['path']]
             for older in sorted(supplement['path'].parent.glob('v*')):
@@ -808,7 +834,8 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         for path, data, manifest, version in loaded:
             summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,
                                                           manifest, version, versions, pilot, supplement if version=='v0.2.0' else None,
-                                                          water if version=='v0.2.0' else None,completion if version=='v0.2.0' else None)
+                                                          water if version=='v0.2.0' else None,completion if version=='v0.2.0' else None,
+                                                          reporting if version=='v0.2.0' else None)
         latest = versions[-1]
         latest_data = loaded[-1][1]
         source_page = '# Sources and licensing\n\n'

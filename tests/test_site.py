@@ -12,6 +12,72 @@ from scripts.common import ROOT, load_atlas, load_json
 
 
 class SiteTests(unittest.TestCase):
+    def test_readable_names_preserve_mapping_facets_and_historical_aliases(self):
+        site = self.site_module()
+        for version in ['v0.1.0', 'v0.2.0']:
+            data = load_atlas(ROOT/'data/releases'/version)
+            original = copy.deepcopy(data)
+            entries = {r['id']: r for r in site.catalogue_entries(data, version)}
+            office = next(r for r in data['programs']
+                          if r['building_type'] == 'MediumOffice' and r['program'] == 'office')
+            shown = entries[office['id']]
+            self.assertEqual(shown['building'], 'Medium Office')
+            self.assertEqual(shown['program'], 'Office')
+            self.assertIn('MediumOffice', shown['facet_aliases']['building'])
+            self.assertIn('office', shown['facet_aliases']['program'])
+            for mapping in data['mappings']:
+                self.assertEqual(entries[mapping['id']]['program'], entries[mapping['program_id']]['program'])
+            self.assertEqual(data, original)
+
+    def test_source_program_variants_remain_distinguishable_in_titles(self):
+        site = self.site_module()
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        entries = {r['id']: r for r in site.catalogue_entries(data, 'v0.2.0')}
+        apartments = [r for r in data['programs'] if
+                      (r['building_type'], r['program'], r['template']) ==
+                      ('HighriseApartment', 'apartment_unit', '90.1-2013')]
+        self.assertEqual(len({entries[r['id']]['name'] for r in apartments}), 3)
+        self.assertEqual({entries[r['id']]['program'] for r in apartments}, {'Apartment unit'})
+        offices = [r for r in data['programs'] if
+                   (r['building_type'], r['program'], r['template']) == ('LargeOffice', 'office', '90.1-2013')]
+        self.assertEqual({entries[r['id']]['name'] for r in offices},
+                         {'Large Office / Office, basement · 90.1-2013',
+                          'Large Office / Office, other floors · 90.1-2013'})
+        corridors = [entries[r['id']]['program'] for r in data['programs'] if
+                     r['building_type'] == 'SmallHotel' and r['program'] in {'corridor', 'corridor4'}]
+        self.assertEqual(set(corridors), {'Corridor', 'Corridor 4'})
+
+    def test_readable_schedule_contexts_keep_joint_source_pairs(self):
+        site = self.site_module()
+        entries = site.catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'), 'v0.2.0')
+        row = next(r for r in entries if r['id'] == 'schedule-9841fa9f62ff202db619')
+        self.assertEqual(row['referenced_buildings'], ['Highrise Apartment', 'Midrise Apartment'])
+        pairs = {(r['building'], r['template']) for r in row['referenced_contexts']}
+        self.assertIn(('Highrise Apartment', '90.1-2007'), pairs)
+        self.assertIn(('Midrise Apartment', '90.1-2019'), pairs)
+        self.assertNotIn(('Highrise Apartment', '90.1-2019'), pairs)
+
+    def test_reviewed_vocabulary_covers_every_active_building_and_program_code(self):
+        from scripts.catalogue_names import BUILDING_LABELS, PROGRAM_LABELS
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        buildings = {r['building_type'] for t in ['programs', 'residential_archetypes'] for r in data[t]}
+        programs = {r['program'] for r in data['programs']}
+        self.assertEqual(set(BUILDING_LABELS), buildings)
+        self.assertEqual(set(PROGRAM_LABELS), programs)
+        self.assertEqual(len(set(BUILDING_LABELS.values())), len(buildings))
+
+    def test_equivalent_program_abbreviations_share_labels_without_losing_records(self):
+        site = self.site_module()
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        entries = {r['id']: r for r in site.catalogue_entries(data, 'v0.2.0')}
+        for codes, label in [({'nursestation', 'nursestn'}, 'Nurse station'),
+                             ({'physicaltherapy', 'phystherapy'}, 'Physical therapy')]:
+            source_rows = [r for r in data['programs'] if r['program'] in codes]
+            self.assertEqual({entries[r['id']]['program'] for r in source_rows}, {label})
+            for row in source_rows:
+                self.assertIn(row['program'], entries[row['id']]['facet_aliases']['program'])
+            self.assertEqual(len({entries[r['id']]['name'] for r in source_rows}), len(source_rows))
+
     def test_presentation_scope_filters_nested_options_and_keeps_source_immutable(self):
         site=self.site_module()
         row={'selected_options':{'Electric Vehicle':'None','Lighting':'100% LED'},
@@ -117,7 +183,7 @@ class SiteTests(unittest.TestCase):
             result = site.generate_site([ROOT/'data/releases/v0.2.0'], target, pilot=True)
             index = load_json(target/'releases/v0.2.0/catalogue.json')
             office = next(r for r in index['entries'] if r['kind'] == 'programs'
-                          and r['building'] == 'MediumOffice' and r['program'] == 'office')
+                          and r['building'] == 'Medium Office' and r['program'] == 'Office')
             page = (target/office['path']).read_text()
             self.assertIn('0.82', page)  # Original W/ft2 in field provenance
             self.assertIn('W/m2', page)
@@ -128,6 +194,15 @@ class SiteTests(unittest.TestCase):
             record = load_json(target/office['download'])
             self.assertAlmostEqual(record['record']['lighting_W_m2'], 0.82/0.09290304)
             self.assertEqual(record['release'], 'v0.2.0')
+            self.assertEqual(record['record']['building_type'], 'MediumOffice')
+            self.assertEqual(record['record']['program'], 'office')
+            building = next(r for r in index['entries'] if r['kind'] == 'buildings')
+            self.assertIn(office['id'], load_json(target/building['download'])['related_record_ids'])
+            for axis, old, aligned in [('building', 'MediumOffice', 'Medium Office'), ('program', 'office', 'Office')]:
+                alias = (target/site.axis_path('v0.2.0', axis, old)).read_text()
+                self.assertIn('This browsing label is now aligned', alias)
+                self.assertIn(aligned, alias)
+                self.assertTrue((target/site.axis_path('v0.2.0', axis, aligned)).exists())
             self.assertTrue(record['provenance']['fields'])
             self.assertEqual(record['water_equivalent']['program_id'],office['id'])
             self.assertEqual(record['water_equivalent']['peak_divisor'],0.57)
@@ -196,10 +271,10 @@ class SiteTests(unittest.TestCase):
         site = self.site_module()
         entries = site.catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'), 'v0.2.0')
         mapping = next(r for r in entries if r['id'] == 'mapping-130635e6a30d1f7353a1')
-        self.assertEqual(mapping['program'], 'office')
+        self.assertEqual(mapping['program'], 'Office')
         self.assertEqual(mapping['system'], 'PVAV')
         attic = next(r for r in entries if r['id'] == 'mapping-0108ff9fd80d9d9a3496')
-        self.assertEqual(attic['program'], 'attic')
+        self.assertEqual(attic['program'], 'Attic')
         self.assertEqual(attic['system'], 'Unassigned / not reported')
 
     def test_source_text_is_escaped_and_null_is_not_zero(self):
@@ -242,9 +317,9 @@ class SiteTests(unittest.TestCase):
         row = next(r for r in entries if r['id'] == 'schedule-9841fa9f62ff202db619')
         self.assertIn('referenced_contexts', row)
         pairs = {(r['building'], r['template']) for r in row['referenced_contexts']}
-        self.assertIn(('HighriseApartment', '90.1-2007'), pairs)
-        self.assertIn(('MidriseApartment', '90.1-2019'), pairs)
-        self.assertNotIn(('HighriseApartment', '90.1-2019'), pairs)
+        self.assertIn(('Highrise Apartment', '90.1-2007'), pairs)
+        self.assertIn(('Midrise Apartment', '90.1-2019'), pairs)
+        self.assertNotIn(('Highrise Apartment', '90.1-2019'), pairs)
 
 
 if __name__ == '__main__':

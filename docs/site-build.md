@@ -61,6 +61,7 @@ python -m scripts.fetch --lock sources/water-evidence-lock.json
 python -m scripts.fetch --lock sources/completion-evidence-lock.json
 python -m scripts.commercial_completion --verify
 python -m scripts.resolve --verify
+python -m scripts.water_reporting --verify
 ```
 
 The snapshot ZIP retains every frozen file byte-for-byte, including Markdown,
@@ -76,6 +77,14 @@ is compact presentation JSON; use its ZIP for exact manifest hashes. Fixture
 pages provide source and normalized plots and attach only supported beneficiaries
 to existing programs. Excluded end uses are removed from active presentations;
 immutable upstream and historical snapshots retain their provenance.
+
+The separately frozen water-reporting v0.1.0 variant adds attributed-volume
+plots and service links to every active program. Its canonical download and
+snapshot are under `water-reporting/v0.1.0/`; original local unknowns and source
+curves remain visible. `schedule-coverage.json` reports source-only gaps and
+operational variant availability separately. Catalogue names come from the
+controlled `scripts/catalogue_names.py` vocabulary; canonical source codes and
+old browsing aliases remain available.
 
 Schedule controls inspect a month/day and an explicitly chosen day type, using
 the leap-year date picker solely for date validation. They are not an annual

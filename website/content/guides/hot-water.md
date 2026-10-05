@@ -46,9 +46,63 @@ For the atlas, two questions remain separate:
   adding zone sensible/latent gains. That additional thermal assignment requires
   its own evidence or explicitly labeled assumption.
 
-The 279 program allocations remain open. This clarification neither closes them
-nor changes the frozen coverage denominator. The mapping, envelope, HVAC,
-reference-location and model-equivalence questions also remain open.
+The original 279 program allocations remain source-unknown. The optional
+[complete reporting variant](../water-reporting/index.md) supplies operational
+curves and service relationships without rewriting those source fields. The
+mapping, envelope, HVAC, reference-location and model-equivalence questions
+remain separate work.
+
+## Complete deterministic reporting variant
+
+Water-reporting **v0.1.0** assesses all **734 active commercial programs**.
+Together with resolution v0.4.0 it supplies **5,138/5,138 operational schedule
+fields**. Original source-only coverage remains **4,859/5,138**, with **279 unknown
+water allocations**. These are different metrics; complete reporting availability
+does not establish full simulation readiness or source-proved fixture locations.
+
+Every program has an attributed mixed-water curve and a separate local-source
+status. A plotted zero can mean no demand attributed under the reporting policy;
+it must not be read as proof that a source-unknown space has no real plumbing.
+Shared-service references retain institutional demand once per building.
+
+| Service resolution | Paths | Meaning |
+| --- | ---: | --- |
+| Original source assignment | 158 | Existing source program assignment retained |
+| Design-occupant reporting allocation | 26 | Derived shares of the unchanged main-service draw |
+| Dedicated kitchen process | 17 | Derived process attribution to an existing Kitchen program |
+| Dedicated laundry process | 6 | Derived process attribution to an existing Laundry program |
+| Retained shared service | 10 | Five hospital main and five hospital laundry paths; no beneficiary split inferred |
+| **Total** | **217** | Each original fixture path accounted for once |
+
+Main reporting shares use positive source design occupants: source floor area
+times its zone multiplier times people density. Source floor polygons and space
+handles are checksum-locked; overlapping HVAC mappings do not multiply people.
+These are fixed **reference benchmark weights**, not downstream geometry
+assignments. Stairs, corridors, storage, electrical/mechanical spaces, entries and
+restrooms are excluded from occupant-beneficiary weighting; existing
+source-assigned restroom fixtures remain assigned. Null densities are never
+silently interpreted as zero; an incomplete eligible population leaves demand
+shared. Hospital institutional demand remains shared because headcount cannot
+separate its clinical, sanitary and process components.
+
+Kitchen and laundry attribution is a labeled domain assumption about process
+responsibility. It does not establish physical fixture location, room heat gains,
+or individual linen beneficiaries. Hospital laundry has no unique Laundry
+program, so it remains shared. Booster heat exchange does not create another
+copy of the booster fixture draw in the main service.
+
+Program inspection equivalents sum component reference volume curves, then
+normalize the sum by its peak. Keep component target temperatures separate for
+heating calculations. Derived curves use a leap-capable month/day inspection
+calendar (2000), including holidays and both design days. Original rule dates,
+selectors and order remain intact in the bound commercial-completion bundle.
+The reference peak is for conservation and inspection, not a released downstream
+load magnitude. Consumers must apply either allocated components or the retained
+shared service once, never both an allocation and another original shared copy.
+
+Download the [canonical tables and reference evidence](../water-reporting/v0.1.0/water-reporting.json),
+[complete reproducible snapshot](../water-reporting/v0.1.0/snapshot.zip), and
+[manifest/checksums](../water-reporting/v0.1.0/manifest.json).
 
 ## Medium Office pilot
 
@@ -115,6 +169,6 @@ after summation, and require summed allocated draw to equal source draw at every
 interval. A fixture's physical location is not automatically its beneficiary.
 
 Retain reviewed local zeros where no fixture is assigned, and retain unknowns
-where allocation evidence is insufficient. Never substitute occupancy timing
-for every missing water schedule. The [coverage inventory](coverage.md) describes
-the remaining work.
+where source allocation evidence is insufficient. The optional reporting variant
+labels its allocations separately; it never substitutes occupancy timing for
+water timing. The [coverage inventory](coverage.md) reports both coverage metrics.

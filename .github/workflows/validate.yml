@@ -37,5 +37,6 @@ jobs:
       - run: python -m scripts.resolve --verify --target data/resolution-releases/v0.3.0
       - run: python -m scripts.commercial_completion --verify
       - run: python -m scripts.water_equivalent --verify
+      - run: python -m scripts.water_reporting --verify
       - run: python -m scripts.schedule_coverage --report build/schedule-coverage.json
       - run: python -m scripts.audit

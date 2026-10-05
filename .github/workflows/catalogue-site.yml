@@ -7,10 +7,15 @@ on:
       - 'scripts/site*.py'
       - 'tests/site*.js'
       - 'tests/test_site*.py'
+      - 'tests/test_water_reporting*.py'
+      - 'schemas/water-reporting.schema.json'
       - 'data/releases/**'
       - 'data/resolution-releases/**'
       - 'data/water-releases/**'
       - 'data/completion-releases/**'
+      - 'data/water-reporting-releases/**'
+      - 'scripts/water_reporting.py'
+      - 'scripts/catalogue_names.py'
       - 'scripts/commercial*.py'
       - 'sources/completion-evidence-lock.json'
       - 'scripts/water_equivalent.py'
@@ -31,6 +36,7 @@ on:
       - 'data/water-releases/**'
       - 'data/completion-releases/**'
       - 'requirements*.txt'
+      - 'data/water-reporting-releases/**'
       - 'mkdocs.yml'
       - '.github/workflows/catalogue-site.yml'
   workflow_dispatch:
@@ -77,6 +83,8 @@ jobs:
           python -m scripts.resolve --verify --target data/resolution-releases/v0.3.0
           python -m scripts.commercial_completion --verify
           python -m scripts.water_equivalent --verify
+          python -m scripts.water_reporting --verify
+          python -m unittest tests.test_water_reporting_site -q
           python -m unittest tests.test_site tests.test_site_delivery tests.test_html_delivery -q
           node --test tests/site_core.test.js tests/site_parity.test.js
       - name: Generate both versioned catalogues and build

@@ -42,7 +42,7 @@ def smoke(root, screenshot_dir=None):
     root = Path(root)
     index = load_json(root/'releases/v0.2.0/catalogue.json')
     office = next(r for r in index['entries'] if r['kind'] == 'programs'
-                  and r['building'] == 'MediumOffice' and r['program'] == 'office'
+                  and r['building'] == 'Medium Office' and r['program'] == 'Office'
                   and r['template'] == '90.1-2013')
     residential = next(r for r in index['entries'] if r['kind'] == 'residential_archetypes')
     server, base = serve(root)
@@ -78,10 +78,15 @@ def smoke(root, screenshot_dir=None):
                 expect(page.locator('#atlas-filter-climate')).to_have_value('2B')
                 expect(page.locator('#atlas-results-count')).to_contain_text(str(expected) + ' matching entries')
                 page.locator('#atlas-reset').click()
-            page.locator('#atlas-filter-building').select_option('MediumOffice')
+                page.goto(base + 'releases/v0.2.0/catalogue/?building=MediumOffice&program=office&template=90.1-2013&kind=mappings&system=PVAV')
+                expect(page.locator('#atlas-filter-building')).to_have_value('Medium Office')
+                expect(page.locator('#atlas-filter-program')).to_have_value('Office')
+                expect(page.locator('#atlas-results-count')).to_contain_text('3 matching entries')
+                page.locator('#atlas-reset').click()
+            page.locator('#atlas-filter-building').select_option('Medium Office')
             page.locator('#atlas-filter-template').select_option('90.1-2013')
             page.locator('#atlas-filter-kind').select_option('mappings')
-            page.locator('#atlas-filter-program').select_option('office')
+            page.locator('#atlas-filter-program').select_option('Office')
             page.locator('#atlas-filter-system').select_option('PVAV')
             # The pinned source has one PVAV office mapping for each of its three floors.
             expect(page.locator('#atlas-results-count')).to_contain_text('3 matching entries')
@@ -91,7 +96,7 @@ def smoke(root, screenshot_dir=None):
             expect(page.locator('#atlas-results-count')).to_contain_text('2 matching entries')
             saved = page.url
             page.reload()
-            expect(page.locator('#atlas-filter-building')).to_have_value('MediumOffice')
+            expect(page.locator('#atlas-filter-building')).to_have_value('Medium Office')
             expect(page.locator('#atlas-results-count')).to_contain_text('2 matching entries')
             page.locator('#atlas-query').fill('no-such-program-xyz')
             expect(page.locator('#atlas-results-count')).to_contain_text('0 matching entries')
@@ -100,13 +105,13 @@ def smoke(root, screenshot_dir=None):
             expect(page.locator('#atlas-filter-building')).to_have_value('')
             if not index.get('pilot'):
                 page.locator('#atlas-filter-kind').select_option('schedules')
-                page.locator('#atlas-filter-building').select_option('HighriseApartment')
+                page.locator('#atlas-filter-building').select_option('Highrise Apartment')
                 page.locator('#atlas-filter-template').select_option('90.1-2019')
                 page.locator('#atlas-query').fill('schedule-9841fa9f62ff202db619')
                 expect(page.locator('#atlas-results-count')).to_contain_text('0 matching entries')
                 page.locator('#atlas-filter-template').select_option('90.1-2007')
                 expect(page.locator('#atlas-results-count')).to_contain_text('1 matching entries')
-                page.locator('#atlas-filter-building').select_option('MidriseApartment')
+                page.locator('#atlas-filter-building').select_option('Midrise Apartment')
                 page.locator('#atlas-filter-template').select_option('90.1-2019')
                 expect(page.locator('#atlas-results-count')).to_contain_text('1 matching entries')
                 page.locator('#atlas-reset').click()
@@ -131,6 +136,14 @@ def smoke(root, screenshot_dir=None):
                            if r['role'] == 'service_water_heating_schedule_id']
             assert len(normalized) == len(source_draw) == 24, 'Water equivalent missing from explorer CSV'
             assert all(abs(a-b*0.57) < 1e-12 for a,b in zip(source_draw,normalized)), 'Water equivalent changes draw shape/scaling'
+            attributed = [float(r['value']) for r in exported_water if r['role']=='attributed_hot_water_reporting']
+            assert len(attributed)==24 and all(abs(a-b)<1e-12 for a,b in zip(attributed,normalized)), 'Program reporting curve differs from the conserved Medium Office pilot'
+            office_packet=page.request.get(base+office['download']).json()
+            assert office_packet['water_reporting']['record']['program_id']==office['id']
+            report=page.request.get(base+'schedule-coverage.json').json()
+            assert report['commercial']['missing_schedule_fields']==279
+            assert report['water_reporting_variant']['supplied_schedule_fields']==5138
+            assert report['water_reporting_variant']['remaining_schedule_gaps']==0
             water_link = page.locator('.atlas-profile-table details').filter(has_text='fixture_draw_equivalent_peak_normalized').locator('a').first
             detail_url = water_link.get_attribute('href')
             assert detail_url and context.request.get(detail_url).status == 200, 'Equivalent source-rule detail page is unavailable'

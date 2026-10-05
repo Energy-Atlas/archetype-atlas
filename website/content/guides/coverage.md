@@ -11,6 +11,14 @@ Occupancy, lighting, electric/gas equipment and thermostat applicability are
 resolved within the reviewed source recipe. **279 fields remain unknown**, all
 concerning program allocation of fixture/service-water demand.
 
+The optional [water-reporting v0.1.0 variant](../water-reporting/index.md) now
+supplies **5,138/5,138 operational schedule fields (100%)**, with no remaining
+schedule-availability gaps for these active programs. It provides labeled
+allocations, explicit reporting zeros and retained shared services. **The original
+279 source-only allocations remain unknown**; the table below inventories those
+source gaps, not missing operational curves. The canonical source fields and
+frozen releases are unchanged.
+
 | Building type | Remaining program-water assignments |
 | --- | ---: |
 | Full-service restaurant | 3 |
@@ -31,11 +39,14 @@ A heater's room is insufficient allocation evidence. These services block
 unsupported program zeros. **206 source-complete no-draw cases** now have explicit
 zeros; positive assigned paths retain conserved source and peak-normalized curves.
 
-To fill the remaining 279 assignments, inspect generated water-use equipment,
-space connections and service mappings. Where those still give no beneficiary,
-publish a separate, documented allocation variant with supported area/use weights
-summing to one. Do not distribute a shared draw by silently substituting occupancy
-or by applying it to every room. [Hot-water methods](hot-water.md) describe scaling.
+The reporting variant accounts for all 217 paths: 158 source assignments,
+26 design-occupant main allocations, 17 kitchen process allocations, six laundry
+process allocations and ten hospital services retained shared. Its 88 normalized
+inspection shapes preserve original water timing through component references.
+Design-occupant weights are derived assumptions, not upstream sanitary-demand
+measurements. A reporting zero differs from a source-proved local zero. Shared
+services are applied once per building, not per referencing program.
+[Hot-water methods](hot-water.md) describe policy, scaling and conservation.
 
 ## Residential profiles
 
