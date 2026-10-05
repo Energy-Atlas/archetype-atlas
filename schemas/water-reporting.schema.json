@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Complete deterministic water reporting variant",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release_version", "extraction_date", "variant", "dependencies", "policy", "summary", "services", "programs", "schedules", "reference_programs"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "release_version": {"const": "0.1.0"},
+    "extraction_date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "variant": {"const": "complete_deterministic_water_reporting"},
+    "dependencies": {
+      "type": "object", "additionalProperties": false, "required": ["atlas", "completion", "resolution"],
+      "properties": {"atlas": {"$ref": "#/$defs/dependency"}, "completion": {"$ref": "#/$defs/dependency"}, "resolution": {"$ref": "#/$defs/dependency"}}
+    },
+    "policy": {"type": "object", "required": ["support_space_exclusions", "institutional_shared_main", "allocation_basis", "zone_gain_assignment", "original_unknowns"]},
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["active_program_records", "source_only_water_gaps", "operational_water_gaps", "source_demand_paths", "allocation_statuses", "program_reporting_statuses", "reporting_schedule_shapes", "complete_simulation_readiness"],
+      "properties": {
+        "active_program_records": {"type": "integer", "minimum": 1},
+        "source_only_water_gaps": {"type": "integer", "minimum": 0},
+        "operational_water_gaps": {"type": "integer", "minimum": 0},
+        "source_demand_paths": {"type": "integer", "minimum": 1},
+        "allocation_statuses": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+        "program_reporting_statuses": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+        "reporting_schedule_shapes": {"type": "integer", "minimum": 1},
+        "complete_simulation_readiness": {"const": false}
+      }
+    },
+    "services": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/service"}},
+    "programs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/program"}},
+    "schedules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/schedule"}},
+    "reference_programs": {"type": "object", "additionalProperties": {"type": "object", "required": ["represented_area_m2", "design_occupants", "space_evidence", "density_evidence"], "properties": {"represented_area_m2": {"type": "number", "exclusiveMinimum": 0}, "design_occupants": {"type": ["number", "null"], "minimum": 0}, "space_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/spaceEvidence"}}, "density_evidence": {"$ref": "#/$defs/evidence"}}}}
+  },
+  "$defs": {
+    "dependency": {"type": "object", "additionalProperties": false, "required": ["path", "manifest_sha256"], "properties": {"path": {"type": "string", "pattern": "^data/[a-z-]+/v[0-9]+\\.[0-9]+\\.[0-9]+$"}, "manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}},
+    "evidence": {"type": "object", "required": ["source_locator", "source_revision", "source_file_sha256", "original_value", "original_unit", "transformation", "extraction_date", "interpretation_note"], "properties": {"source_locator": {"type": "string", "minLength": 1}, "source_revision": {"type": "string", "pattern": "^[a-f0-9]{40}$"}, "source_file_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "original_unit": {"type": "string", "minLength": 1}, "transformation": {"type": "string", "minLength": 1}, "interpretation_note": {"type": "string", "minLength": 1}}},
+    "spaceEvidence": {"allOf": [{"$ref": "#/$defs/evidence"}, {"type": "object", "required": ["space_handle", "space_name", "floor_area_m2", "zone_multiplier", "represented_area_m2"], "properties": {"floor_area_m2": {"type": "number", "exclusiveMinimum": 0}, "zone_multiplier": {"type": "number", "exclusiveMinimum": 0}, "represented_area_m2": {"type": "number", "exclusiveMinimum": 0}}}]},
+    "service": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path_id", "building_type", "template", "end_use", "source_schedule_name", "source_schedule_id", "equivalent_schedule_id", "source_allocation_status", "allocation_status", "allocation_weights", "reference_rated_flow_m3_s", "reference_area_m2", "target_temperature_degC", "physical_fixture_locations", "source_evidence_ids", "field_provenance", "interpretation_note"],
+      "properties": {
+        "path_id": {"type": "string"}, "building_type": {"type": "string"}, "template": {"type": "string"},
+        "end_use": {"enum": ["main", "booster", "laundry"]},
+        "source_schedule_name": {"type": "string"}, "source_schedule_id": {"type": "string"}, "equivalent_schedule_id": {"type": "string"},
+        "source_allocation_status": {"type": "string"},
+        "allocation_status": {"enum": ["source_assignment", "derived_design_occupant_allocation", "derived_dedicated_kitchen_process", "derived_dedicated_laundry_process", "retained_shared_service"]},
+        "allocation_weights": {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}},
+        "reference_rated_flow_m3_s": {"type": "number", "minimum": 0}, "reference_area_m2": {"type": ["number", "null"], "minimum": 0},
+        "target_temperature_degC": {"type": ["number", "null"]},
+        "physical_fixture_locations": {"type": "array", "items": {"type": "string"}},
+        "source_evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "field_provenance": {"type": "object", "required": ["source_fields", "allocation", "reference_flow"]},
+        "interpretation_note": {"type": "string"}
+      }
+    },
+    "program": {
+      "type": "object", "additionalProperties": false,
+      "required": ["program_id", "building_type", "template", "program", "source_space_type", "source_water_schedule_id", "local_draw_status", "reporting_status", "reporting_schedule_id", "reference_reporting_peak_flow_m3_s", "components", "building_service_path_ids", "source_gap_evidence_ids", "source_branch_evidence_ids", "source_water_branch", "field_provenance", "interpretation_note"],
+      "properties": {
+        "program_id": {"type": "string"}, "building_type": {"type": "string"}, "template": {"type": "string"}, "program": {"type": "string"}, "source_space_type": {"type": "string"}, "source_water_schedule_id": {"type": ["string", "null"]},
+        "local_draw_status": {"enum": ["source_assigned_draw", "source_no_local_draw", "source_local_assignment_unknown"]},
+        "reporting_status": {"enum": ["source_assigned_draw", "derived_reporting_allocation", "zero_local_draw", "shared_service_reference", "zero_attribution_only"]},
+        "reporting_schedule_id": {"type": "string"}, "reference_reporting_peak_flow_m3_s": {"type": "number", "minimum": 0},
+        "components": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path_id", "allocation_weight"], "properties": {"path_id": {"type": "string"}, "allocation_weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}}}},
+        "building_service_path_ids": {"type": "array", "items": {"type": "string"}},
+        "source_gap_evidence_ids": {"type": "array", "items": {"type": "string"}},
+        "source_branch_evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "source_water_branch": {"type": "string"},
+        "field_provenance": {"type": "object", "required": ["identity", "local_draw_status", "reporting_fields"]}, "interpretation_note": {"type": "string"}
+      }
+    },
+    "schedule": {"type": "object", "additionalProperties": false, "required": ["id", "source_name", "schedule_type", "units", "time_resolution_minutes", "interpolation", "rules", "interpretation_note"], "properties": {
+      "id": {"type": "string"}, "source_name": {"type": "string"}, "schedule_type": {"const": "fraction"}, "units": {"const": "dimensionless"}, "time_resolution_minutes": {"const": 60}, "interpolation": {"const": "none"}, "interpretation_note": {"type": "string"},
+      "rules": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["day_types", "start_date", "end_date", "type", "values", "source_index"], "properties": {"day_types": {"enum": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Hol", "SmrDsn", "WntrDsn"]}, "start_date": {"type": "string"}, "end_date": {"type": "string"}, "type": {"const": "Hourly"}, "source_index": {"type": "integer", "minimum": 0}, "values": {"type": "array", "minItems": 24, "maxItems": 24, "items": {"type": "number", "minimum": 0, "maximum": 1}}}}}
+    }}
+  }
+}

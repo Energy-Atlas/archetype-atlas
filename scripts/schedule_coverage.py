@@ -14,7 +14,7 @@ COLUMNS = ['occupants','lighting_interior','plug_loads_other','plug_loads_tv','c
 EXTENSIONS = ['electric_vehicle','lighting_exterior']
 
 
-def build(data=None, resolutions=None, scope=None, supplement_version='v0.4.0'):
+def build(data=None, resolutions=None, scope=None, supplement_version='v0.4.0', water_reporting=None):
     data = data or load_atlas(ROOT/'data/releases/v0.2.0')
     if resolutions is None:
         resolutions = load_json(ROOT/'data/resolution-releases/v0.4.0/resolutions.json')
@@ -47,7 +47,7 @@ def build(data=None, resolutions=None, scope=None, supplement_version='v0.4.0'):
                 target.append({'record_id':row['id'],'source_building_id':row['source_building_id'],
                                'building_type':row['building_type'],'column':col,
                                'reason':'No executed or explicit resolved profile column; raw absence selections are evidence for a future reviewed zero, not an applied profile.'})
-    return {'schema_version':'0.1.0','base_release':'v0.2.0','resolution_supplement':supplement_version,
+    report = {'schema_version':'0.1.0','base_release':'v0.2.0','resolution_supplement':supplement_version,
             'scope':scope,'near_full_coverage_claim':False,
             'commercial':{'active_program_records':len(programs),'excluded_program_records':len(data['programs'])-len(programs),
                 'required_fields':FIELDS,'required_schedule_fields':len(programs)*len(FIELDS),
@@ -68,13 +68,32 @@ def build(data=None, resolutions=None, scope=None, supplement_version='v0.4.0'):
                            'Shared commercial water services require a supported beneficiary allocation; a heater location alone is insufficient.',
                            'HVAC unavailability and complete magnitudes/control application are excluded from the current schedule milestone.',
                            'Reference-location fan/lighting variants and exact DOE/PNNL generated-model equivalence remain separate evidence tasks.']}
+    if water_reporting is not None:
+        assessed={p['program_id'] for p in water_reporting['programs'] if p['reporting_schedule_id']}
+        if assessed!={p['id'] for p in programs}:
+            raise ValueError('Water reporting active-program inventory mismatch')
+        remaining=[m for m in missing if m['field']!='service_water_heating_schedule_id' or m['record_id'] not in assessed]
+        report['water_reporting_variant']={
+            'release':'v'+water_reporting['release_version'], 'variant':water_reporting['variant'],
+            'required_schedule_fields':len(programs)*len(FIELDS),
+            'supplied_schedule_fields':len(programs)*len(FIELDS)-len(remaining),
+            'remaining_schedule_gaps':len(remaining),'remaining_records':remaining,
+            'source_only_water_gaps_preserved':sum(m['field']=='service_water_heating_schedule_id' for m in missing),
+            'retained_shared_service_paths':water_reporting['summary']['allocation_statuses'].get('retained_shared_service',0),
+            'allocation_statuses':water_reporting['summary']['allocation_statuses'],
+            'program_reporting_statuses':water_reporting['summary']['program_reporting_statuses'],
+            'full_simulation_readiness':False,
+            'interpretation':'Complete operational schedule availability through source curves, derived allocations, explicit reporting zeros and separately retained shared services. Original local unknowns remain unknown; reporting does not place zone gains.'}
+    return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report',type=Path,default=ROOT/'docs/validation/schedule-coverage.json')
     args = parser.parse_args()
-    report = build()
+    from scripts.water_reporting import DEFAULT
+    packet=load_json(DEFAULT/'water-reporting.json') if DEFAULT.exists() else None
+    report = build(water_reporting=packet)
     dump_json(args.report,report)
     print('Active commercial gaps:',report['commercial']['missing_schedule_fields'],
           '; residential assessed-column gaps:',report['residential']['missing_profile_fields'],
