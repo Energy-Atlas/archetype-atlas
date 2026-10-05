@@ -60,6 +60,13 @@ and decoded sizes. SHA-256 binds the encoded file; consumers verify before bound
 decompression. Packets remain at most 131072 decoded bytes. This substantially
 reduces static-host storage without changing the generic JSON model.
 
+Byte reproducibility of compressed output assumes the same Python/zlib runtime.
+The gzip envelope has a fixed timestamp and OS byte, but different compression
+implementations can produce different valid encoded files from identical JSON.
+Their content addresses, derived schedule IDs and snapshot IDs differ accordingly.
+Cross-runtime verification compares the full decoded resource graph, including provenance and
+selectors; consumers always pin the descriptor of the actual publication.
+
 Clean publishers restore a checksum-bound retention ZIP before rebuilding, so old
 snapshot URLs survive later publications. It is publisher-only, never a query
 download. Schema files and license notices are content-addressed too. Examples
