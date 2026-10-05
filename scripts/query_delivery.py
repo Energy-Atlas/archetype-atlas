@@ -374,8 +374,10 @@ def validate_delivery(root):
         for path in (root/'resources').rglob('*'):
             if path.is_file():
                 if (not re.fullmatch(r'[a-f0-9]{64}\.(?:json(?:\.gz)?|schema\.json|txt)', path.name)
-                        or path.parent != root/'resources' or sha(path.read_bytes()) != path.name[:64]):
-                    raise ValueError('Invalid content-addressed retained resource')
+                        or path.parent != root/'resources'):
+                    raise ValueError('Invalid content-addressed retained resource path')
+                if sha(path.read_bytes()) != path.name[:64]:
+                    raise ValueError('Retained resource checksum mismatch')
         for path in (root/'snapshots').rglob('*'):
             if path.is_file():
                 rel = path.relative_to(root/'snapshots')
