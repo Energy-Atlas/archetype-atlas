@@ -70,3 +70,8 @@ linking every repeated field to that same complete source value. The field's own
 locator, units and transformation remain independent. This presentation reduction
 fits the existing static-host limit; canonical archives and scientific values stay
 byte-identical.
+
+The Material theme prunes inactive navigation branches from individual pages;
+top-level links still lead to each guide group, whose active branch lists its
+pages. This removes repeated navigation markup across thousands of record pages
+while retaining navigation and the no-JavaScript documentation.
