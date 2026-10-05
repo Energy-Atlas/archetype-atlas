@@ -1,0 +1,54 @@
+# ADR 0011: Generic static query delivery
+
+Date: 2026-10-05. Status: accepted by the user's delivery design and autonomous
+implementation authorization. Work remains on `feature/query-dto`; no main merge.
+
+## Decision
+
+Publish a generated machine interface alongside MkDocs. Keep canonical tables and
+all frozen archives unchanged. The interface is generic to energy-data consumers;
+BEMGen implements its own conversion to presets and units. There is no online
+database or query backend. A future service may implement the same exact-filter,
+field-projection request and response without changing scientific semantics.
+
+Expose a small mutable `delivery/v1/latest.json` pointer to a checksum-bound
+snapshot manifest. Route by natural table context (building/template/source family
+where present), splitting oversized groups deterministically. Store schedules,
+annual series and field evidence as independently referenced resources. No climate
+Cartesian expansion, per-request-variable shards, stock-variant merging, or annual
+calendar compilation is introduced. Exact climate-set filters retain the source
+classification; a climate-independent program has no climate filter.
+
+Requests select one record type, exact scalar filters, an explicit field list and
+`source` or `reviewed` view. Source is the default. Results retain IDs, units,
+unknown versus zero, evidence and snapshot identity. Multiple matches are returned;
+zero matches are explicit. Unknown filters/fields, invalid DTOs, unsupported
+schema majors, path escapes and corrupt downloads fail closed. The static resolver
+fetches a bounded superset and projects locally; query parameters on static URLs
+do not execute queries. No SQL, authentication, service deployment or BEMGen API.
+
+Reviewed resolutions remain optional and evidence-backed; source field values stay
+available. Commercial water attribution and services are separate record types,
+never automatic physical zone loads. Annual residential profiles preserve their
+original calendar, seed and proxy-weather metadata. Schedule rules preserve order,
+dates, day selectors and design days. Raw details and provenance are lazy resources
+and retain original units. Payload completeness is not simulation readiness.
+
+Content hashes identify snapshots and resources. Resolve latest once per operation,
+then use that immutable manifest and cache verified bytes. Build and publication
+verify all references, schemas, source fidelity and deterministic output. Publishers
+must retain advertised snapshot URLs when adding releases; material changes to the
+projection need a new contract version and retained export implementation. Current
+v1 exposes atlas v0.2.0, resolution v0.4.0, commercial-completion v0.1.0 and optional
+water-reporting v0.1.0 under one dependency-locked snapshot.
+
+## Trade-offs
+
+Natural groups cost a few extra scalar values per download but avoid a backend and
+millions of precomputed condition/field combinations. Per-field series are larger
+and fetched only on demand. Consumers port a short normative resolution algorithm;
+the Python implementation is a reference, not a required runtime dependency.
+
+Original work stays unlicensed; upstream notices travel with the delivery. The
+owner explicitly authorized publication. No permission to relabel the delivery as
+MIT follows from BEMGen's license.
