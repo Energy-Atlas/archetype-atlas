@@ -23,7 +23,10 @@ class DeliveryHTML(HTMLParser):
             self.literal.pop()
 
     def handle_data(self,data):
-        self.parts.append(data if self.literal else re.sub(r'\n[ \t]+','\n',data))
+        if not self.literal:
+            data=re.sub(r'\n[ \t]+','\n',data)
+            data=re.sub(r'\n{2,}','\n',data)
+        self.parts.append(data)
 
     def handle_entityref(self,name):self.parts.append('&'+name+';')
     def handle_charref(self,name):self.parts.append('&#'+name+';')

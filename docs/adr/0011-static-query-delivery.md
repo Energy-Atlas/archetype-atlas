@@ -75,3 +75,6 @@ The Material theme prunes inactive navigation branches from individual pages;
 top-level links still lead to each guide group, whose active branch lists its
 pages. This removes repeated navigation markup across thousands of record pages
 while retaining navigation and the no-JavaScript documentation.
+The existing HTML delivery hook also collapses redundant blank lines outside
+literal regions; scripts, code, source JSON, inline spacing and license comments
+retain their content.

@@ -5,6 +5,18 @@ import unittest
 
 
 class HtmlDeliveryTests(unittest.TestCase):
+    def test_redundant_blank_lines_shrink_but_literal_blank_lines_and_inline_spaces_survive(self):
+        path=Path(__file__).resolve().parents[1]/'website/hooks/html_delivery.py'
+        spec=importlib.util.spec_from_file_location('html_delivery',path)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        literal='<pre>first\n\n\nsecond</pre>'
+        original='<p>first <em>second</em> third</p>\n\n\n'+literal+'\n\n\n<p>end</p>'
+        compact=module.on_post_page(original,page=None,config=None)
+        self.assertIn(literal,compact)
+        self.assertIn('<p>first <em>second</em> third</p>',compact)
+        self.assertNotIn('</p>\n\n',compact)
+        self.assertLess(len(compact),len(original))
+
     def test_indentation_is_reduced_without_altering_literal_regions_or_links(self):
         path=Path(__file__).resolve().parents[1]/'website/hooks/html_delivery.py'
         self.assertTrue(path.exists(),'Delivery hook must exist')
