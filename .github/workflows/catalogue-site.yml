@@ -65,6 +65,7 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Verify frozen releases and presentation contracts
         run: |
+          python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
           python -m scripts.fetch --lock sources/water-evidence-lock.json
           python -m scripts.fetch --lock sources/completion-evidence-lock.json

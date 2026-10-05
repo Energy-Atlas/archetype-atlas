@@ -1,6 +1,6 @@
 # Finite Schedule Completion Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Inspect and resolve every approved finite schedule group using primary
 source rules, retaining explicitly documented unknowns where allocation is absent.
@@ -121,7 +121,7 @@ downloads, and computes coverage using its actual selected overlay.
   original and resolved meanings. Preserve public historical URLs and budget.
 - [x] Run full Python/JavaScript suites, source comparison, schema/physical/
   referential/schedule/provenance/security checks, strict build, links and browser.
-- [ ] Stage/inspect/security-audit and commit; obtain a fresh whole-change review,
+- [x] Stage/inspect/security-audit and commit; obtain a fresh whole-change review,
   fix material findings with regression tests, then push the publisher branch.
 - [ ] Wait for hosted validation/deployment, verify served artifact hashes and
   browser behavior, tag verified data and append publication evidence.
