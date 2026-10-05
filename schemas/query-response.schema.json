@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Atlas projected query result 1.0.0",
+  "oneOf": [
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "snapshot_id", "record_type", "view", "query", "match_count", "records"],
+      "properties": {
+        "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$"},
+        "snapshot_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "record_type": {"type": "string"}, "view": {"enum": ["source", "reviewed"]},
+        "query": {"type": "object"}, "match_count": {"type": "integer", "minimum": 0},
+        "records": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false,
+          "required": ["id", "fields", "evidence"],
+          "properties": {
+            "id": {"type": "string"},
+            "fields": {"type": "object", "additionalProperties": {
+              "type": "object", "additionalProperties": false,
+              "required": ["value", "unit", "status", "evidence_pointer"],
+              "properties": {
+                "value": {}, "unit": {"type": ["string", "null"]},
+                "status": {"enum": ["source", "unknown", "reviewed", "not_reported"]},
+                "evidence_pointer": {"type": ["string", "null"]},
+                "resource": {"$ref": "#/$defs/reference"}
+              }
+            }},
+            "evidence": {"$ref": "#/$defs/reference"}
+          }
+        }}
+      }
+    },
+    {
+      "type": "object", "additionalProperties": false, "required": ["schema_version", "error"],
+      "properties": {
+        "schema_version": {"type": "string"},
+        "error": {"type": "object", "additionalProperties": false, "required": ["code", "message"],
+                  "properties": {"code": {"type": "string"}, "message": {"type": "string"}}}
+      }
+    }
+  ],
+  "$defs": {
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["href", "sha256", "size_bytes"],
+      "properties": {
+        "href": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "size_bytes": {"type": "integer", "minimum": 0, "maximum": 16000000},
+        "encoding": {"const": "gzip"},
+        "decoded_size_bytes": {"type": "integer", "minimum": 0, "maximum": 16000000}
+      },
+      "dependentRequired": {"encoding": ["decoded_size_bytes"], "decoded_size_bytes": ["encoding"]}
+    }
+  }
+}
