@@ -154,12 +154,14 @@ def freeze(target=DEFAULT):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--verify',action='store_true');p.add_argument('--target',type=Path,default=DEFAULT)
-    p.add_argument('--inspect-controls',action='store_true');p.add_argument('--openstudio',type=Path);a=p.parse_args()
+    p.add_argument('--inspect-controls',action='store_true');p.add_argument('--openstudio',type=Path)
+    p.add_argument('--runtime-cache',type=Path,default=ROOT/'build/cc',help='Short verified archive/extraction directory; Windows Ruby/file APIs need paths below MAX_PATH')
+    a=p.parse_args()
     if a.inspect_controls:
         from scripts.runtime import fetch_runtime
         expected='46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361'
         if not a.openstudio or sha(a.openstudio)!=expected:raise ValueError('Use the locked OpenStudio 3.10.0 Windows executable')
-        source=fetch_runtime(load_json(ROOT/'sources/commercial-runtime-lock.json'),ROOT/'build/commercial-runtime')['standards-controls']
+        source=fetch_runtime(load_json(ROOT/'sources/commercial-runtime-lock.json'),a.runtime_cache)['standards-controls']
         out=ROOT/'build/reproduced-commercial-controls.json'
         subprocess.run([str(a.openstudio.resolve()),'execute_ruby_script',str(ROOT/'scripts/inspect_commercial_controls.rb'),str(source),str(out)],check=True)
         if load_json(out)!=load_json(ROOT/'sources/commercial-control-receipt.json')['cases']:raise ValueError('Generated control phases do not reproduce')

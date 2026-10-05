@@ -245,11 +245,11 @@
         const traces = result.traces.filter(t => t.unit === unit);
         if (!traces.length) continue;
         const chart = node('div', undefined, {className: 'atlas-plot'});
-        chart.setAttribute('aria-label', (fixed ? 'Fixed refrigeration profiles in ' : 'Executed residential profiles in ') + unit);
+        chart.setAttribute('aria-label', (fixed ? 'Fixed source-default profiles in ' : 'Executed residential profiles in ') + unit);
         charts.append(chart);
         await Plotly.newPlot(chart, traces.map(t => ({x: result.labels, y: t.values, name: t.column, mode: 'lines',
           line: {shape: 'hv'}, hovertemplate: '%{x}<br>%{y} ' + unit + '<extra>' + t.column + '</extra>'})),
-          {title: {text: unit === 'degC' ? 'Nominal thermostat profiles (before unavailable-day overrides)' : (fixed ? 'Fixed normalized refrigeration defaults' : 'Executed normalized use profiles')},
+          {title: {text: unit === 'degC' ? 'Nominal thermostat profiles (before unavailable-day overrides)' : (fixed ? 'Fixed normalized source defaults' : 'Executed normalized use profiles')},
            xaxis: {title: {text: 'Calendar / local standard time'}, rangeslider: {visible: view.value === 'annual'}},
            yaxis: {title: {text: unit}}, margin: {l: 65, r: 25, t: 65, b: 75},
            legend: {orientation: 'h', y: -0.25}, height: 390}, {responsive: true, displaylogo: false});

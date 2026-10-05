@@ -171,20 +171,29 @@ def smoke(root, screenshot_dir=None):
             expect(race.locator('.atlas-charts .js-plotly-plot')).to_have_count(3)
             race.close()
             page.goto(base + residential['path'].removesuffix('.md') + '/')
+            fixed_active=page.locator('.atlas-residential-profile[data-fixed="true"]')
+            expect(fixed_active.locator('.atlas-res-columns option')).to_have_count(3)
+            fixed_active.locator('.atlas-res-columns').select_option('lighting_exterior')
+            page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 24")
+            exterior=fixed_active.locator('.js-plotly-plot').first.evaluate('(el) => el.data[0].y')
+            from urllib.parse import urljoin
+            exterior_packet=page.request.get(urljoin(page.url,fixed_active.get_attribute('data-profile'))).json()
+            assert exterior==exterior_packet['series']['lighting_exterior'][:24], 'Exterior plot differs from fixed source profile'
+            executed_section=page.locator('.atlas-residential-profile:not([data-fixed])')
             expect(page.locator('body')).to_contain_text('Profiles unavailable')
             assert page.locator('.atlas-explorer').count() == 0
-            expect(page.locator('.atlas-res-charts .js-plotly-plot')).to_have_count(2)
-            expect(page.locator('.atlas-res-status')).to_contain_text('24 executed hourly intervals')
+            expect(executed_section.locator('.atlas-res-charts .js-plotly-plot')).to_have_count(2)
+            expect(executed_section.locator('.atlas-res-status')).to_contain_text('24 executed hourly intervals')
             profile_packet = page.request.get(base + residential['download']).json()['resolution_supplement']['profile']
             canonical = page.request.get(base + profile_packet['download']).json()
-            page.locator('.atlas-res-view').select_option('annual')
-            page.wait_for_function("document.querySelector('.atlas-res-charts .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
-            expect(page.locator('.atlas-res-date')).to_be_disabled()
-            page.locator('.atlas-res-view').select_option('day')
-            page.locator('.atlas-res-date').fill('2007-07-01')
-            page.locator('.atlas-res-date').dispatch_event('change')
-            page.wait_for_function("document.querySelector('.atlas-res-charts .js-plotly-plot')?.data?.[0]?.x?.[0] === '2007-07-01T00:00:00'")
-            plotted = page.locator('.atlas-res-charts .js-plotly-plot').first.evaluate('(el) => el.data[0].y')
+            executed_section.locator('.atlas-res-view').select_option('annual')
+            page.wait_for_function("document.querySelector('.atlas-residential-profile:not([data-fixed]) .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
+            expect(executed_section.locator('.atlas-res-date')).to_be_disabled()
+            executed_section.locator('.atlas-res-view').select_option('day')
+            executed_section.locator('.atlas-res-date').fill('2007-07-01')
+            executed_section.locator('.atlas-res-date').dispatch_event('change')
+            page.wait_for_function("document.querySelector('.atlas-residential-profile:not([data-fixed]) .js-plotly-plot')?.data?.[0]?.x?.[0] === '2007-07-01T00:00:00'")
+            plotted = executed_section.locator('.atlas-res-charts .js-plotly-plot').first.evaluate('(el) => el.data[0].y')
             assert plotted == canonical['series']['occupants'][181*24:182*24], 'Residential chart must show actual generated calendar data'
             if screenshot_dir:
                 page.screenshot(path=str(screenshot_dir/'residential-profiles.png'), full_page=True)
@@ -203,6 +212,21 @@ def smoke(root, screenshot_dir=None):
             page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
             if screenshot_dir:
                 page.screenshot(path=str(screenshot_dir/'fixed-refrigeration.png'),full_page=True)
+            completion=page.request.get(base+'commercial-completion/v0.1.0/catalogue.json').json()
+            draw=next(d for d in completion['draw_paths'] if d['beneficiary_program_ids'])
+            from scripts.site import completion_page
+            page.goto(base+completion_page(draw).removesuffix('.md')+'/')
+            expect(page.locator('.atlas-chart-status')).to_contain_text('2 schedules inspected')
+            with page.expect_download() as draw_csv:
+                page.locator('.atlas-csv').click()
+            curves=list(csv.DictReader(Path(draw_csv.value.path()).read_text().splitlines()))
+            raw=[float(r['value']) for r in curves if r['role']=='source_fixture_draw']
+            normalized=[float(r['value']) for r in curves if r['role']=='conserved_peak_normalized_draw']
+            recipe=next(s for s in completion['schedules'] if s['source_name']==draw['source_schedule_name'])
+            assert len(raw)==len(normalized)==24
+            assert all(abs(a-b*recipe['peak_divisor'])<1e-12 for a,b in zip(raw,normalized)), 'Fixture plot does not conserve draw'
+            if screenshot_dir:
+                page.screenshot(path=str(screenshot_dir/'commercial-fixture.png'),full_page=True)
             response = page.request.get(base + office['download'])
             assert response.ok and response.json()['record']['id'] == office['id']
             page.set_viewport_size({'width': 390, 'height': 844})

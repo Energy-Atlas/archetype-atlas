@@ -14,10 +14,10 @@ COLUMNS = ['occupants','lighting_interior','plug_loads_other','plug_loads_tv','c
 EXTENSIONS = ['electric_vehicle','lighting_exterior']
 
 
-def build(data=None, resolutions=None, scope=None, supplement_version='v0.3.0'):
+def build(data=None, resolutions=None, scope=None, supplement_version='v0.4.0'):
     data = data or load_atlas(ROOT/'data/releases/v0.2.0')
     if resolutions is None:
-        resolutions = load_json(ROOT/'data/resolution-releases/v0.3.0/resolutions.json')
+        resolutions = load_json(ROOT/'data/resolution-releases/v0.4.0/resolutions.json')
     scope = scope or load_json(ROOT/'sources/schedule-release-scope.json')
     extensions = [c for c in EXTENSIONS if c not in scope.get('excluded_residential_end_uses', [])]
     applied = {(r['record_id'],r['field']):r for r in resolutions['resolutions']}
@@ -63,9 +63,9 @@ def build(data=None, resolutions=None, scope=None, supplement_version='v0.3.0'):
                 'additional_end_uses':{'columns':extensions,'missing_by_column':dict(sorted(Counter(m['column'] for m in extension_missing).items())),
                                        'missing_records':extension_missing}},
             'limitations':['Counts describe source-input records and explicit variants, not all stock combinations or simulation readiness.',
-                           'Residential freezer/refrigerator gaps include selected-absent options not yet resolved for those IDs.',
+                           'Residential defaults and reviewed absences are finite record-specific variants, not inferred from missing stochastic columns.',
                            'Additional end uses are assessed only when explicitly in the selected release scope.',
-                           'Medium Office water pilot validates an existing source schedule and closes zero missing schedules.',
+                           'Shared commercial water services require a supported beneficiary allocation; a heater location alone is insufficient.',
                            'HVAC unavailability and complete magnitudes/control application are excluded from the current schedule milestone.',
                            'Reference-location fan/lighting variants and exact DOE/PNNL generated-model equivalence remain separate evidence tasks.']}
 

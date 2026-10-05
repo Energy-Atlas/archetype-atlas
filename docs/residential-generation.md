@@ -46,9 +46,9 @@ line endings in 619 files; executable archive bytes have their own hashes.
   explicitly **station-proxy variants**, not exact county-weather reproductions.
 - Three source configurations explicitly contain zero occupants. The upstream
   measure skips their stochastic generation. We honor that skip, supply only a
-  zero occupancy fraction as an explicit resolution, and leave their other
-  stochastic profiles unresolved. Occupancy zero does not imply lights or
-  appliances are always off.
+  zero occupancy fraction as an explicit resolution. Supplement v0.4.0 adds
+  source-verified operational zeros for skipped foreground uses; selected
+  refrigeration remains active. Occupancy zero alone is not a blanket zero rule.
 - All 41 nominal thermostat profiles execute upstream offset translation,
   Fahrenheit-to-Celsius conversion and overlap correction in `HVAC.apply_setpoints`.
   Both seasons are Jan 1–Dec 31 in the selected source bindings. The temporary
@@ -59,11 +59,13 @@ line endings in 619 files; executable archive bytes have their own hashes.
   missing interruption placement is no longer a schedule-release gap. Nominal
   desired-temperature schedules remain the baseline; archived source options
   and frozen execution notes are retained for traceability.
-- EV, refrigerator/freezer, exterior lighting and other non-exported end uses
-  remain explicitly unresolved. Appliance installation, load magnitudes and
-  complete HPXML/model feasibility must be resolved separately.
-  Supplement v0.3.0 separately supplies fixed refrigeration for the three
-  zero-occupant skips. The current per-record inventory is
+- Supplement v0.4.0 separately supplies fixed source-default refrigerator/freezer
+  variants selected by installation evidence and dwelling exterior lighting.
+  Missing stochastic columns alone never imply absence. All 574 assessed profile
+  fields and all 41 exterior-lighting profiles are supplied. Load magnitudes,
+  shared/common-area services and complete model feasibility remain separate.
+  Excluded end uses have no active schedules or coverage denominator; frozen
+  source/execution snapshots remain unchanged. The current per-record inventory is
   [schedule coverage](validation/schedule-coverage.json); it excludes complete
   magnitudes and full-model control application from this schedule milestone.
 

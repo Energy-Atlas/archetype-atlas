@@ -1,6 +1,6 @@
 # Finite Schedule Completion Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Inspect and resolve every approved finite schedule group using primary
 source rules, retaining explicitly documented unknowns where allocation is absent.
@@ -47,13 +47,13 @@ produces locked entries compatible with `scripts.fetch.verify_file(entry, cache)
 `schedule_coverage.build(data, resolutions, scope, supplement_version)` retains its
 selected-release contract and excludes EV from additional assessed end uses.
 
-- [ ] Write a failing coverage test: explicit excluded EV never appears in
+- [x] Write a failing coverage test: explicit excluded EV never appears in
   assessed/additional missing columns, while exterior lighting remains assessed.
-- [ ] Run `python -m unittest tests.test_schedule_coverage -v`; observe the expected failure.
-- [ ] Lock inspected primary files/receipts and document decisions, source-phase
+- [x] Run `python -m unittest tests.test_schedule_coverage -v`; observe the expected failure.
+- [x] Lock inspected primary files/receipts and document decisions, source-phase
   boundaries and historical preservation. Implement explicit scope filtering.
-- [ ] Rerun targeted tests; verify all locked source bytes offline and by fresh retrieval.
-- [ ] Inspect staged diff, run `python -m scripts.audit --staged`, commit a focused unit.
+- [x] Rerun targeted tests; verify all locked source bytes offline and by fresh retrieval.
+- [x] Inspect staged diff, run `python -m scripts.audit --staged`, commit a focused unit.
 
 ### Task 2: Resolve residential refrigeration, vacancy and exterior lighting
 
@@ -67,15 +67,15 @@ finite source shapes. `resolve_records(data, policy, profiles, fixed_background,
 completion=None)` adds version-gated reviewed applications without changing old
 policy behavior. New schema/policy version is 0.4.0.
 
-- [ ] Write failing tests for selected positive refrigeration beyond vacant
+- [x] Write failing tests for selected positive refrigeration beyond vacant
   records, selected absence, zero-occupant foreground/end-use rules, positive
   occupied exterior lighting and occupied loads blocked from vacancy zeros.
-- [ ] Run `python -m unittest tests.test_schedule_completion -v`; observe feature failures.
-- [ ] Extend source shape parsing, installation/zero guards and policy/evidence.
+- [x] Run `python -m unittest tests.test_schedule_completion -v`; observe feature failures.
+- [x] Extend source shape parsing, installation/zero guards and policy/evidence.
   Verify upstream zero calculations for the three exact vacant fixtures. Add no EV binding.
-- [ ] Run new and historical resolution tests. Confirm unknown option bindings,
+- [x] Run new and historical resolution tests. Confirm unknown option bindings,
   contradictory positive profiles and temperature coefficients cannot be guessed.
-- [ ] Stage/inspect/security-audit and commit the independently usable residential unit.
+- [x] Stage/inspect/security-audit and commit the independently usable residential unit.
 
 ### Task 3: Inspect commercial controls and all water paths
 
@@ -90,16 +90,16 @@ returns source-bound water service components, program assignments/statuses and
 source-derived inventory and non-duplicating assignment/conservation constraints.
 `freeze(target)` refuses an existing destination.
 
-- [ ] Write failing tests for no-SWH, per-space source assignment/zero, positive
+- [x] Write failing tests for no-SWH, per-space source assignment/zero, positive
   lumped unallocated demand, unchanged selector/date/order and deduplication.
-- [ ] Write failing control tests for inactive equipment/empty controllers and
+- [x] Write failing control tests for inactive equipment/empty controllers and
   positive late/shared controllers blocking inactive classifications.
-- [ ] Run `python -m unittest tests.test_commercial_completion -v`; observe failures.
-- [ ] Implement branch extraction against locked prototype inputs/code and exact
+- [x] Run `python -m unittest tests.test_commercial_completion -v`; observe failures.
+- [x] Implement branch extraction against locked prototype inputs/code and exact
   model/source inspection receipts. Keep ambiguous services distinct and unknown.
-- [ ] Verify all affected program/template paths; independently reproduce the
+- [x] Verify all affected program/template paths; independently reproduce the
   inspection inventory and interval conservation. Test mutation/tampering guards.
-- [ ] Stage/inspect/security-audit and commit the reviewed commercial unit.
+- [x] Stage/inspect/security-audit and commit the reviewed commercial unit.
 
 ### Task 4: Freeze releases and update the catalogue
 
@@ -113,13 +113,13 @@ the independent commercial bundle retains building services/control evidence.
 The site attaches existing-program references, supplies appropriate plots and
 downloads, and computes coverage using its actual selected overlay.
 
-- [ ] Add failing site tests for new fixed/zero profiles, commercial component
+- [x] Add failing site tests for new fixed/zero profiles, commercial component
   evidence and EV exclusion without altering canonical historical downloads.
-- [ ] Freeze new snapshots; repeat into ignored directories and compare every
+- [x] Freeze new snapshots; repeat into ignored directories and compare every
   artifact byte. Reverify all historical snapshots with their own schemas/policies.
-- [ ] Implement presentation/download integration and current docs, retaining
+- [x] Implement presentation/download integration and current docs, retaining
   original and resolved meanings. Preserve public historical URLs and budget.
-- [ ] Run full Python/JavaScript suites, source comparison, schema/physical/
+- [x] Run full Python/JavaScript suites, source comparison, schema/physical/
   referential/schedule/provenance/security checks, strict build, links and browser.
 - [ ] Stage/inspect/security-audit and commit; obtain a fresh whole-change review,
   fix material findings with regression tests, then push the publisher branch.

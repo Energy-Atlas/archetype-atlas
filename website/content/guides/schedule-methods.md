@@ -31,10 +31,13 @@ thermostat columns. The upstream stochastic measure skips them. The source
 contains fixed lighting/plug/appliance shapes and refrigerator/freezer shapes
 and temperature coefficients. All three have a selected refrigerator; two have
 a selected freezer. Refrigerator defaults may use temperature coefficients when
-fractional schedules are not supplied. Supplement v0.3.0 supplies a user-selected
-fixed fractional alternative for their refrigeration background loads, with
-monthly multipliers and no temperature feedback. Their other skipped end uses
-are still unresolved; no new upstream full-model execution is claimed.
+fractional schedules are not supplied. Supplement v0.4.0 supplies a user-selected
+fixed fractional alternative for all 41 fixtures' selected refrigeration loads,
+with monthly multipliers and no temperature feedback. Missing generator columns
+are not evidence of appliance absence: upstream appliance routines model these
+separately. The three vacant cases have 25 additional operational-zero profiles,
+verified by executing the upstream zero-occupant load methods. Their selected
+refrigerators/freezers remain active. No full-model simulation is claimed.
 
 ## HVAC unavailable-day options
 
@@ -95,8 +98,10 @@ but are excluded from the active gap assessment.
 Supplement v0.3.0 adopts user-approved zero gas-equipment schedules and densities
 for the exact 713 clean-recipe programs. This does not classify their buildings
 as all-electric or zero gas HVAC/water heating. Original source nulls remain
-visible beside the explicit opt-in zero. There are 523 active non-cavity gaps:
-485 local water and 38 thermostat schedules.
+visible beside the explicit opt-in zero. Supplement v0.4.0 resolves another 206
+water absences and 38 thermostat fields; 279 program-water allocations remain
+unknown. Eight generated source-phase cases establish inactive dedicated zones
+for 19 exact core/corridor programs, rather than substituting extreme setpoints.
 
 Select both the always-zero fraction and 0 W/m2 density as the resolved variant.
 This applies to program equipment in the clean source recipe; custom/direct
@@ -126,8 +131,14 @@ equivalent to its existing office program, without creating a new restroom
 program. Its normalized fractions and compatible peak-flow scaling preserve
 source demand. All rule dates, selectors, design days and source order remain.
 This office already has a source water curve, so the pilot closes zero gaps.
-Extension to the remaining programs requires explicit serving/allocation evidence
-and conservation checks; no generic occupancy shape fills the 495 source nulls.
+Commercial-completion v0.1.0 extends the same conservation method to 217 source
+draw paths. Source-supported beneficiaries attach to existing programs; 59 shared
+service paths remain unallocated. No generic occupancy shape fills unknown draws.
+
+Dwelling exterior lighting uses fixed source weekday/weekend fractions and monthly
+multipliers, verified against upstream application for all 8,760 hours. There are
+38 positive defaults and three reviewed vacant-use zeros. Shared multifamily
+common-area lighting remains outside this dwelling-level profile.
 
 HVAC unavailable days are separate from vacancy. All ten affected fixtures have
 `Vacancy Status=Occupied` and 1-5 occupants. The source cites RECS and sampling

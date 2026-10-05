@@ -96,12 +96,12 @@ so exact SI area and densities remain null. HPXML defaults and annual profiles
 were not executed or invented in that frozen source snapshot. Both original
 atlas releases remain unchanged and verifiable.
 
-The separately versioned [resolution supplement](data/resolution-releases/v0.3.0/manifest.json)
+The separately versioned [resolution supplement](data/resolution-releases/v0.4.0/manifest.json)
 adds actual upstream annual profiles and selective, evidence-gated assumptions.
 It contains 38 stochastic residential runs, three explicit zero-occupant skips,
 and 41 nominal thermostat profiles. All annual outputs reproduce byte-for-byte.
-Weather is an explicitly labelled station proxy; unavailable-day overrides,
-EV and other non-exported end uses remain unresolved. Four all-electric dwelling
+Weather is an explicitly labelled station proxy; sampled HVAC unavailability
+and complete load magnitudes are excluded from the schedule milestone. Four all-electric dwelling
 configurations have zero gas equipment; reviewed cavity/core assumptions and
 explicit source-zero magnitudes are documented in
 [ADR 0004](docs/adr/0004-selective-resolution.md). No blanket null-to-zero rule applies.
@@ -121,6 +121,18 @@ and leaves 523 active non-cavity schedule gaps: 485 water and 38 thermostats.
 deterministic coverage before generator shipping and proposes a source-conserving
 program-level hot-water allocation equivalent. This is an incremental supplement,
 not a claim of complete schedule coverage.
+
+Supplement **v0.4.0** supplies all **574 assessed residential profile fields**,
+plus exterior lighting for all 41 dwelling fixtures. Refrigeration defaults are
+selected-equipment variants, rather than zeros inferred from absent stochastic
+columns. Eight executed commercial source-phase cases resolve inactive controls
+for 19 exact programs. The associated
+[commercial-completion bundle](data/completion-releases/v0.1.0/manifest.json)
+preserves 217 fixture paths, conserved source/normalized curves and source evidence.
+It closes 206 water absences and retains **279 unsupported program allocations**;
+active commercial schedule coverage is **4,859/5,138 (94.6%)**.
+See [ADR 0008](docs/adr/0008-reviewed-schedule-completion.md) and
+[release notes](docs/release-notes-v0.4.0.md). Both new bundles reproduced byte-for-byte.
 
 ## Research catalogue site
 

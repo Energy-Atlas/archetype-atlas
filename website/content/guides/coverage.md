@@ -1,69 +1,75 @@
-# Gap to a near-complete schedule release
+# Schedule coverage and remaining gaps
 
-All **16 DOE Reference types, 16 PNNL commercial types and seven residential
-classes** have named source-input coverage. The atlas includes 83 commercial
-type/template combinations, 768 program records and 41 dwelling configurations.
-This establishes typology coverage, not every schedule or every stock variant.
+Supplement **v0.4.0** and commercial-completion **v0.1.0** cover the atlas's named
+**16 DOE Reference types, 16 PNNL types and seven residential classes**. These
+are source-input archetypes: 83 commercial type/template combinations, 768
+program records and 41 dwelling configurations, rather than every stock variant.
 
-The current schedule assessment applies supplement **v0.3.0**. Attic, plenum and
-basement programs are excluded from the active milestone, leaving **734 programs**.
-Seven schedule fields per program give **5,138 assessed fields**; **4,615 are
-supplied** by source references or explicit resolutions (**89.8%**).
+Attic, plenum and basement records are excluded from the active milestone.
+For **734 active programs**, **4,859 of 5,138 schedule fields are supplied (94.6%)**.
+Occupancy, lighting, electric/gas equipment and thermostat applicability are
+resolved within the reviewed source recipe. **279 fields remain unknown**, all
+concerning program allocation of fixture/service-water demand.
 
-| Remaining commercial field | Gaps |
+| Building type | Remaining program-water assignments |
 | --- | ---: |
-| Fixture/service-water draw schedule | 485 |
-| Heating setpoint schedule | 19 |
-| Cooling setpoint schedule | 19 |
-| Occupancy, lighting, electric and gas equipment schedules | 0 |
-| **Total** | **523** |
+| Full-service restaurant | 3 |
+| Hospital | 47 |
+| Large hotel | 27 |
+| Primary school | 41 |
+| Standalone retail | 11 |
+| Secondary school | 43 |
+| Small hotel | 48 |
+| Supermarket | 50 |
+| Warehouse | 9 |
+| **Total** | **279** |
 
-Most remaining commercial fields are water assignments. The Medium Office
-[water-equivalent pilot](hot-water.md) validates allocation and conservation of
-an already supplied source schedule; it does not reduce these 485 gaps.
+The [fixture catalogue](../commercial-completion/index.md) preserves **217 draw
+paths, 28 schedule recipes and 59 unallocated building-service paths**. The source
+does not identify beneficiaries for some lumped main, booster and laundry draws.
+A heater's room is insufficient allocation evidence. These services block
+unsupported program zeros. **206 source-complete no-draw cases** now have explicit
+zeros; positive assigned paths retain conserved source and peak-normalized curves.
+
+To fill the remaining 279 assignments, inspect generated water-use equipment,
+space connections and service mappings. Where those still give no beneficiary,
+publish a separate, documented allocation variant with supported area/use weights
+summing to one. Do not distribute a shared draw by silently substituting occupancy
+or by applying it to every room. [Hot-water methods](hot-water.md) describe scaling.
 
 ## Residential profiles
 
-For 41 configurations, 14 explicitly assessed columns give **574 profile fields**.
-Current executed profiles and explicit resolutions supply **473 (82.4%)**;
-**101 column/record pairs** still lack a supplied profile. These counts are fields,
-not households, buildings or missing generators.
+All **574 assessed profile fields (41 configurations × 14 columns)** are supplied.
+Dwelling exterior lighting is also supplied for **41/41** configurations: **38
+fixed positive profiles and three reviewed vacant-use zeros**. This does not
+establish shared/common-area exterior lighting for multifamily buildings.
 
-| Remaining residential column | Gaps |
-| --- | ---: |
-| Refrigerator | 38 |
-| Freezer | 38 |
-| Interior lighting, other plugs, TV plugs, cooking and fixture water | 3 each |
-| Clothes washer, clothes dryer, dishwasher and their two appliance-water columns | 2 each |
+Refrigeration is a separate upstream appliance modeling path. Missing stochastic
+columns alone do not imply absence. Selected-equipment evidence yields **40
+refrigerator defaults, 19 freezer defaults and 23 absent-appliance zeros**. Fixed
+fractions include source monthly multipliers and no temperature feedback. The
+three vacant fixtures also have **25 reviewed operational zeros** for skipped
+foreground loads, verified against upstream zero-occupant behavior. Their selected
+refrigerators and freezers remain active background loads.
 
-The refrigeration gaps include source-selected absences that can support future
-reviewed zeros; they are not all positive appliance needs. The three zero-occupant
-records have fixed refrigerator defaults, two fixed freezer defaults and one
-freezer zero, but occupancy zero does not justify zeroing every other end use.
-Occupancy, nominal heating/cooling setpoints and ceiling-fan columns are supplied
-for all 41 configurations.
+## Reviewed controls and scope
 
-Additional end uses need a separate applicability review: EV and exterior lighting
-have no exported columns for any configuration. **Two** fixtures select EV chargers;
-**39** explicitly select none. Exterior-lighting applicability and other specialized
-uses, such as pools/spas and ventilation controls, are not covered by the 14-column
-denominator. These boundaries prevent a claim of complete residential schedules.
+Eight executed source-phase cases support inactive conditioning for **19 exact
+Small Hotel electrical/core and Highrise Apartment corridor programs**, resolving
+38 missing thermostat fields. Dedicated generated zones have no active equipment,
+air loops, ideal loads or setpoint schedules. Evidence is limited to the inspected
+pre-sizing phases at climate 4A; passive heat transfer and later custom model
+modifications are outside this result. No extreme-temperature placeholders are used.
 
-## Scope and release order
+The existing **713 program gas-equipment zeros** remain opt-in recipe resolutions.
+They concern space equipment, not gas HVAC or gas water heating. Source nulls
+remain unchanged and visible on every program page.
 
-**HVAC equipment-unavailability overlays are excluded** by user decision. Nominal
-desired-temperature schedules are the baseline. Archived unavailability options
-remain traceable; missing placement of interruptions is no longer a release gap.
-Complete magnitudes and full-model control application are also outside this
-schedule milestone. Reference-location fan/lighting variants and direct generated
-DOE/PNNL model equivalence remain separate evidence tasks.
+Sampled HVAC equipment-unavailability overlays, complete load magnitudes and
+full-model control application are excluded. Reference-city fan/lighting variants,
+shared residential services and direct DOE/PNNL model equivalence remain separate
+evidence tasks. Shipping parametric generators follows deterministic data coverage.
+No full-stock or simulation-readiness claim is made.
 
-Near-full deterministic coverage precedes shipping ResStock or ComStock parametric
-generators. No numeric milestone threshold has been asserted. Close the active
-schedule assignments and selected residential end uses, or explicitly classify
-their applicability, before claiming that milestone.
-
-[Machine-readable per-record gap inventory](../schedule-coverage.json) includes
-the exact fields, record IDs, building types, templates and release-scope policy.
-Its counts describe the supplied atlas configurations, not all possible climates,
-code editions, equipment selections or existing-stock combinations.
+[Per-record machine-readable gap inventory](../schedule-coverage.json) identifies
+every remaining field, record, template and scope decision.

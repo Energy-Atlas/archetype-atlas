@@ -12,6 +12,34 @@ from scripts.common import ROOT, load_atlas, load_json
 
 
 class SiteTests(unittest.TestCase):
+    def test_presentation_scope_filters_nested_options_and_keeps_source_immutable(self):
+        site=self.site_module()
+        row={'selected_options':{'Electric Vehicle':'None','Lighting':'100% LED'},
+             'source_attributes':{'Electric Vehicle Charger':'None','Vintage':'1980s'},
+             'option_ids':['excluded','retained']}
+        original=copy.deepcopy(row)
+        shown=site.presentation_scope(row,{'excluded'})
+        self.assertEqual(shown['selected_options'],{'Lighting':'100% LED'})
+        self.assertEqual(shown['source_attributes'],{'Vintage':'1980s'})
+        self.assertEqual(shown['option_ids'],['retained'])
+        self.assertEqual(row,original)
+
+    def test_commercial_paths_attach_only_source_supported_beneficiaries(self):
+        site=self.site_module()
+        packet=load_json(ROOT/'data/completion-releases/v0.1.0/commercial-completion.json')
+        p=next(d for d in packet['draw_paths'] if d['beneficiary_program_ids'])
+        links=site.completion_links(packet,p['beneficiary_program_ids'][0])
+        self.assertIn(p['path_id'],links['assigned_path_ids'])
+        self.assertFalse(set(links['assigned_path_ids']) &
+                         {d['path_id'] for d in packet['draw_paths'] if not d['beneficiary_program_ids']})
+        self.assertTrue(site.completion_page(p).startswith('commercial-completion/paths/'))
+
+    def test_active_catalogue_excludes_out_of_scope_end_uses_without_mutating_source(self):
+        site=self.site_module();data=load_atlas(ROOT/'data/releases/v0.2.0');original=copy.deepcopy(data)
+        entries=site.catalogue_entries(data,'v0.2.0')
+        self.assertFalse(any('Electric Vehicle' in e['name'] for e in entries))
+        self.assertEqual(data,original)
+
     def test_coverage_matches_the_selected_historical_supplement(self):
         site=self.site_module()
         with tempfile.TemporaryDirectory() as d:
@@ -33,7 +61,7 @@ class SiteTests(unittest.TestCase):
             packet=load_json(target/residential['download'])
             self.assertFalse(packet['record']['simulation_ready'])
             self.assertIn('resolution_supplement',packet)
-            self.assertEqual(packet['resolution_supplement']['version'],'v0.3.0')
+            self.assertEqual(packet['resolution_supplement']['version'],'v0.4.0')
             self.assertIn('profile',packet['resolution_supplement'])
             page=(target/residential['path']).read_text()
             self.assertIn('atlas-residential-profile',page)
@@ -49,6 +77,22 @@ class SiteTests(unittest.TestCase):
             self.assertEqual(len(fixed['series']['refrigerator']),8760)
             self.assertEqual(max(fixed['series']['freezer']),1)
             self.assertIn('nominal',page)
+            current=load_json(target/'resolution-supplements/v0.4.0/fixed-background-annual.json')
+            self.assertEqual(len(current['series']['lighting_exterior']),8760)
+            self.assertNotIn('Electric Vehicle',page)
+            data=load_atlas(ROOT/'data/releases/v0.2.0')
+            archived=next(r for r in site.pilot_data(data)['residential_options']
+                          if r['parameter'].startswith('Electric Vehicle'))
+            archive_page=target/f'releases/v0.2.0/residential_options/{archived["id"]}.md'
+            self.assertIn('Archived out-of-scope option',archive_page.read_text())
+            self.assertNotIn('Electric Vehicle',archive_page.read_text())
+            self.assertIn('commercial-completion',
+                          (target/'releases/v0.2.0/programs/program-29f8fa7a1d5e5afcf1f0.md').read_text())
+            self.assertFalse((target/'resolution-supplements/v0.4.0/resolutions.json').exists())
+            with zipfile.ZipFile(target/'resolution-supplements/v0.4.0/snapshot.zip') as archive:
+                self.assertTrue(all(i.create_system==3 for i in archive.infolist()))
+                self.assertEqual(archive.read('resolutions.json'),
+                                 (ROOT/'data/resolution-releases/v0.4.0/resolutions.json').read_bytes())
 
     def site_module(self):
         self.assertIsNotNone(importlib.util.find_spec('scripts.site'),

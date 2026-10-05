@@ -1,5 +1,6 @@
 """Generate a static research catalogue from verified, immutable atlas releases."""
 import argparse
+import copy
 from collections import defaultdict
 import csv
 import hashlib
@@ -25,6 +26,88 @@ def write_site_json(path,data):
     content=json.dumps(data,ensure_ascii=False,allow_nan=False,separators=(',',':'))+'\n'
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(content,encoding='utf-8',newline='\n')
+
+
+def presentation_scope(value, excluded_ids=()):
+    """Remove excluded end-use fields from generated views; retain frozen evidence."""
+    if isinstance(value,dict):
+        return {k:presentation_scope(v,excluded_ids) for k,v in value.items()
+                if not k.lower().replace('_',' ').replace('.',' ').startswith(('electric vehicle','in electric vehicle'))}
+    if isinstance(value,list):
+        return [presentation_scope(v,excluded_ids) for v in value
+                if not isinstance(v,str) or v not in excluded_ids]
+    return copy.deepcopy(value)
+
+
+def completion_page(path):
+    return 'commercial-completion/paths/'+stable_id('fixture_path',path['path_id'])+'.md'
+
+
+def completion_links(packet, record_id):
+    """A physical heater location does not establish a program beneficiary."""
+    return {'release':'v'+packet['release_version'],
+            'assigned_path_ids':[d['path_id'] for d in packet['draw_paths']
+                                 if record_id in d['beneficiary_program_ids']],
+            'missing_program_evidence':next((g for g in packet['missing_program_evidence']
+                                            if g['program_id']==record_id),None),
+            'download':'commercial-completion/v'+packet['release_version']+'/snapshot.zip'}
+
+
+def generate_completion(root, packet, path, data, pilot=False):
+    """Publish fixture components and both conserved curve representations."""
+    version='v'+packet['release_version'];destination=root/'commercial-completion'/version
+    destination.mkdir(parents=True)
+    with zipfile.ZipFile(destination/'snapshot.zip','w',compression=zipfile.ZIP_STORED) as archive:
+        for src in sorted(path.rglob('*'),key=lambda p:p.relative_to(path).as_posix()):
+            if not src.is_file():continue
+            name=src.relative_to(path).as_posix()
+            info=zipfile.ZipInfo(name,date_time=(2026,10,4,0,0,0));info.create_system=3
+            info.compress_type=zipfile.ZIP_STORED;info.external_attr=0o644<<16
+            archive.writestr(info,src.read_bytes())
+            if src.name in {'manifest.json','LICENSE'}:
+                shutil.copyfile(src,destination/src.name)
+    write_site_json(destination/'catalogue.json',packet)
+    programs={r['id']:r for r in data['programs']}
+    selected=[d for d in packet['draw_paths'] if not pilot or
+              (d['building_type'],d['template'])==('MediumOffice','90.1-2013')]
+    schedules={s['source_name']:s for s in packet['schedules']}
+    for s in packet['schedules']:
+        for key in ['source_schedule','equivalent_schedule']:
+            row=s[key]
+            write_site_json(root/f'releases/v0.2.0/records/{row["id"]}.json',{'record':row})
+            current=f'releases/v0.2.0/schedules/{row["id"]}.md'
+            page=page_header(row['source_name'],'v0.2.0',row['id'],False)
+            page+='Commercial-completion '+version+' supplies this source-ordered schedule variant; base atlas tables remain unchanged.\n\n'
+            page+=explorer_html(current,'v0.2.0',{'draw_variant':row['id']})+'\n\n'
+            page+=display_value(row)+'\n\n'+anchor(current,'commercial-completion/index.md','Fixture catalogue and flow scaling')+'\n'
+            write_text(root,current,page)
+    index='# Commercial fixture-demand catalogue\n\n'
+    index+='Source fixture components are attached to existing programs only when serving relationships are supported. Unallocated services remain building-level evidence. Apply each fixture once, with represented area and multiplier once.\n\n'
+    index+=display_value(packet['summary'])+'\n\n'+anchor('commercial-completion/index.md',f'commercial-completion/{version}/snapshot.zip','Complete canonical bundle, schema, provenance and notices')+' · '+anchor('commercial-completion/index.md',f'commercial-completion/{version}/manifest.json','Manifest and checksums')+'\n\n'
+    index+='<div class="atlas-table"><table><thead><tr><th>Building</th><th>Template</th><th>Fixture path</th><th>Allocation</th><th>Programs</th></tr></thead><tbody>'
+    for d in selected:
+        current=completion_page(d);s=schedules[d['source_schedule_name']]
+        beneficiaries=[]
+        for record_id in d['beneficiary_program_ids']:
+            if record_id in programs:
+                r=programs[record_id]
+                beneficiaries.append(anchor(current,f'releases/v0.2.0/programs/{record_id}.md',r['program']))
+        page=page_header(friendly(d['building_type'])+' / '+d['end_use']+' · '+d['template'],version,d['path_id'],False)
+        page+='Source fixture path; not a new program. Allocation status: **'+display_value(d['allocation_status'])+'**.\n\n'
+        page+='Serving programs: '+(' · '.join(beneficiaries) or 'Unknown; not assigned to a program')+'.\n\n'
+        page+=explorer_html(current,'v0.2.0',{'source_fixture_draw':s['source_schedule']['id'],
+                                             'conserved_peak_normalized_draw':s['equivalent_schedule']['id']})+'\n\n'
+        page+='## Flow scaling and source conditions\n\n'+display_value(d)+'\n\n'
+        page+='The normalized fraction is source fraction divided by its peak '+str(s['peak_divisor'])+'. Its compatible rated flow is original rated flow multiplied by that peak; both representations preserve draw at every interval. An always-zero source retains zero.\n\n'
+        page+='Fixture draw is distinct from heater energy and circulation. A booster heat exchanger does not create an additional copy of the main fixture draw. Unallocated laundry/booster services block unsupported program zeros.\n\n'
+        page+='## Evidence\n\n'
+        for evidence_id in d['evidence_ids']:
+            proof=packet['evidence'][evidence_id]
+            page+='<details><summary>'+display_value(proof['source_locator'])+'</summary>'+display_value(proof)+'</details>\n'
+        page+='\n'+anchor(current,'commercial-completion/index.md','Fixture-demand catalogue')+' · '+anchor(current,f'commercial-completion/{version}/snapshot.zip','Canonical packet with complete evidence')+'\n'
+        write_text(root,current,page)
+        index+='<tr>'+''.join('<td>'+v+'</td>' for v in [display_value(friendly(d['building_type'])),display_value(d['template']),anchor('commercial-completion/index.md',current,d['path_id']),display_value(d['allocation_status']),display_value(d['beneficiary_program_ids'])])+'</tr>'
+    write_text(root,'commercial-completion/index.md',index+'</tbody></table></div>\n')
 
 
 def shared_profile_downloads(bundle,history):
@@ -134,6 +217,8 @@ def catalogue_entries(data, version):
                     uses[v]['contexts'].add((r['building_type'], r['template']))
     for t, rows in tables.items():
         for r in rows:
+            if t in {'residential_options','commercial_options'} and r.get('parameter','').startswith('Electric Vehicle'):
+                continue
             context = r.get('source_context', {})
             src = sources.get(prov.get(r.get('provenance_id'), {}).get('source_file_id'), {})
             family = r.get('source_family')
@@ -334,7 +419,7 @@ def resolution_html(current, rows, profile, supplement_base):
         page+='<details><summary>'+display_value(row['field']+' — '+row['note'])+'</summary>'+display_value(row['evidence'])+'</details>\n'
     fixed=[r['resolved_value']['fixed_schedule_id'] for r in rows if r['rule']=='fixed_background_default']
     if fixed:
-        page+='\n\n### Fixed refrigeration background variant\n\nUser-selected source default shapes with no temperature feedback. Selected appliance presence is checked; magnitudes and other skipped end uses remain separate.\n\n'
+        page+='\n\n### Fixed source default profiles\n\nUser-selected refrigeration and dwelling exterior-lighting shapes with no temperature feedback. Selected end-use presence is checked; magnitudes and shared/common-area loads remain separate.\n\n'
         page+='<section class="atlas-residential-profile" data-fixed="true" data-columns="'+','.join(fixed)+'" data-profile="'+html_url(current,supplement_base+'/fixed-background-annual.json')+'">'
         page+='<div class="atlas-controls"><label>View <select class="atlas-res-view"><option value="day">Selected day</option><option value="annual">Annual</option></select></label>'
         page+='<label>Calendar date <input class="atlas-res-date" type="date" min="2007-01-01" max="2007-12-31" value="2007-01-01"></label>'
@@ -355,12 +440,12 @@ def resolution_html(current, rows, profile, supplement_base):
         page+='<label>Series <select class="atlas-res-columns" multiple size="5"></select></label></div>'
         page+='<p class="atlas-res-status" role="status" aria-live="polite">Loading executed profiles; exact data available in downloads.</p><div class="atlas-res-charts"></div><div class="atlas-res-table"></div></section>\n\n'
         page+=anchor(current,profile['download'],'Annual canonical JSON with execution provenance')+' · '+anchor(current,profile['csv_download'],'Upstream execution CSV')+'\n\n'
-        page+='**Historical execution notes (some items are outside current release scope):**\n\n'+'\n'.join('- '+display_value(v) for v in meta['unresolved'])+'\n\n'
+        page+='The original execution packet retains historical runner notes. Current fixed defaults and reviewed zeros are supplied by this separately versioned overlay; complete load magnitudes remain downstream.\n\n'
     page+=anchor(current,supplement_base+'/snapshot.zip','Complete supplement, schema, provenance, locks and upstream notices')+'\n\n'
     return page
 
 
-def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None, water=None):
+def generate_release(root, release_path, data, manifest, version, versions, pilot=False, supplement=None, water=None, completion=None):
     entries = catalogue_entries(data, version)
     resolution_rows=defaultdict(list)
     profile_index={}
@@ -383,6 +468,20 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
     rows.update({r['id']: ('buildings', r) for r in overview_rows(data)})
     prov = {r['id']: r for r in data['provenance']}
     sources = {r['id']: r for r in data['source_files']}
+    excluded_ids={r['id'] for t in ['commercial_options','residential_options'] for r in data.get(t,[])
+                  if r.get('parameter','').startswith('Electric Vehicle')}
+    # Retain historical public addresses as non-indexed archive pointers, while
+    # removing excluded options from active catalogue and parameter presentation.
+    for record_id in sorted(excluded_ids):
+        table,_=rows[record_id]
+        current=f'releases/{version}/{table}/{record_id}.md'
+        page=page_header('Archived out-of-scope option',version,record_id,False)
+        page+='This source option is outside the active schedule catalogue. Its original evidence remains in the immutable frozen snapshot.\n\n'
+        page+=anchor(current,f'releases/{version}/downloads/snapshot.zip','Original complete source snapshot')+'\n'
+        write_text(root,current,page)
+        write_site_json(root/f'releases/{version}/records/{record_id}.json',
+                        {'release':version,'record_kind':'archived_out_of_scope_option','id':record_id,
+                         'snapshot':f'releases/{version}/downloads/snapshot.zip'})
     write_site_json(root/f'releases/{version}/catalogue.json', {'release': version, 'pilot': pilot, 'entries': entries})
     write_site_json(root/f'releases/{version}/schedule-index.json', [
         {'id': r['id'], 'name': r['source_name'], 'units': r['units']} for r in data['schedules']])
@@ -401,6 +500,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
                        note + '\n\n' + table_html(group, current, ('name', 'kind', 'template', 'climate_basis', 'status')))
     for entry in entries:
         t, r = rows[entry['id']]
+        r=presentation_scope(r,excluded_ids)
         current = entry['path']
         page = page_header(entry['name'], version, r['id'], t in {'buildings', 'programs', 'residential_archetypes', 'schedules'})
         page += '<p class="atlas-status">' + display_value(entry['status']) + '</p>\n\n'
@@ -435,7 +535,7 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
                          'Effective daily and annual profiles require generator execution and an explicit calendar. '
                          'No commercial apartment profiles have been substituted.\n\n')
             page += '## Parameters and source conditions\n\n' + render_fields(r, data['units'], refs, current) + '\n\n'
-            p = prov[r['provenance_id']]
+            p = presentation_scope(prov[r['provenance_id']],excluded_ids)
             s = sources[p['source_file_id']]
             page += provenance_html(p, s, current, version) + '\n\n'
             packet = {'release': version, 'record_kind': t, 'record': r, 'provenance': p, 'source_file': s}
@@ -446,11 +546,25 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
             page += display_value(water['interpretation'])+'\n\n'
             page += anchor(current,'water-equivalents/v0.1.0/water-equivalent.json','Canonical equivalent, SI scaling and field evidence')+' · '+anchor(current,'guides/hot-water.md','Allocation and conservation method')+'\n\n'
             packet['water_equivalent'] = water
+        if completion and t in {'programs','buildings'}:
+            attached=[d for d in completion['draw_paths'] if
+                      (r['id'] in d['beneficiary_program_ids'] if t=='programs' else
+                       (r['building_type'],r['template'])==(d['building_type'],d['template']))]
+            links=completion_links(completion,r['id'])
+            if attached or links['missing_program_evidence']:
+                page+='\n\n## Complete source water-demand paths\n\n'
+                page+='Conserved fixture components use existing programs where source serving relationships are explicit. Shared services remain unallocated; no new restroom program is created.\n\n'
+                for draw in attached:
+                    page+=anchor(current,completion_page(draw),draw['end_use']+' / '+draw['source_schedule_name'])+' · '+display_value(draw['allocation_status'])+'\n\n'
+                if links['missing_program_evidence']:
+                    page+=display_value(links['missing_program_evidence'])+'\n\n'
+                page+=anchor(current,'commercial-completion/index.md','Commercial fixture-demand catalogue')+'\n\n'
+                packet['commercial_completion']=links
         if r['id'] in resolution_rows:
             profile=profile_index.get(r['id'])
-            page+='\n\n'+resolution_html(current,resolution_rows[r['id']],profile,supplement_base)
+            page+='\n\n'+resolution_html(current,presentation_scope(resolution_rows[r['id']],excluded_ids),profile,supplement_base)
             packet['resolution_supplement']={'version':supplement['version'],'base_manifest_sha256':supplement['base_hash'],
-                'resolutions':resolution_rows[r['id']]}
+                'resolutions':presentation_scope(resolution_rows[r['id']],excluded_ids)}
             if profile:
                 packet['resolution_supplement']['profile']={k:v for k,v in profile.items() if k!='source_path'}
         page += '## Download and cite\n\n' + anchor(current, entry['download'], 'Record JSON with provenance') + '\n\n'
@@ -536,6 +650,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
     if len(set(versions)) != len(versions):
         raise ValueError('Duplicate release version')
     supplement=None
+    completion=None
     water = validate_water(water_path) if water_path is not None and 'v0.2.0' in versions else None
     if supplement_path is not None and 'v0.2.0' in versions:
         supplement_path=Path(supplement_path)
@@ -544,6 +659,10 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                     'version':'v'+load_json(supplement_path/'manifest.json')['release_version'],
                     'index':load_json(supplement_path/'profile-index.json'),
                     'base_hash':hashlib.sha256((base/'manifest.json').read_bytes()).hexdigest()}
+        policy=load_json(supplement_path/'sources/resolution-policy.json')
+        if policy.get('commercial_completion_release'):
+            from scripts.resolve import load_completion
+            completion=load_completion(policy)
     target = validate_output(target, [p for p, *_ in loaded])
     target.parent.mkdir(parents=True, exist_ok=True)
     summary = {'pilot': pilot, 'releases': {}}
@@ -564,6 +683,12 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                 dst = stage/'assets/vendor'/entry['path']
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, dst)
+        if completion:
+            completion_path=ROOT/'data/completion-releases'/policy['commercial_completion_release']
+            full_data=next(data for _,data,_,v in loaded if v=='v0.2.0')
+            generate_completion(stage,completion,completion_path,pilot_data(full_data) if pilot else full_data,pilot)
+        else:
+            write_text(stage,'commercial-completion/index.md','# Commercial fixture-demand catalogue\n\nThe selected historical supplement does not include the commercial-completion bundle.')
         if water:
             destination = stage/'water-equivalents/v0.1.0'
             destination.mkdir(parents=True)
@@ -625,9 +750,17 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
                             continue
                         name=src.relative_to(bundle).as_posix()
                         info=zipfile.ZipInfo(name,date_time=stamp);info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
+                        if tuple(map(int,ver[1:].split('.')))>=(0,4,0):
+                            info.create_system=3
                         archive.writestr(info,src.read_bytes())
                         if src.suffix in {'.json','.csv','.txt'} or src.name=='LICENSE':
                             if name.startswith('profiles/') and src.name in aliases:
+                                continue
+                            # New bundles expose exact large canonical tables in
+                            # the complete ZIP, avoiding redundant Pages storage.
+                            # Previously published direct URLs remain unchanged.
+                            if tuple(map(int,ver[1:].split('.')))>=(0,4,0) and name not in {
+                                    'manifest.json','fixed-background-schedules.json','profile-index.json','LICENSE'}:
                                 continue
                             dst=destination/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst)
                 if tuple(map(int,ver[1:].split('.')))>=(0,3,0):
@@ -643,7 +776,7 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         for path, data, manifest, version in loaded:
             summary['releases'][version] = generate_release(stage, path, pilot_data(data) if pilot else data,
                                                           manifest, version, versions, pilot, supplement if version=='v0.2.0' else None,
-                                                          water if version=='v0.2.0' else None)
+                                                          water if version=='v0.2.0' else None,completion if version=='v0.2.0' else None)
         latest = versions[-1]
         latest_data = loaded[-1][1]
         source_page = '# Sources and licensing\n\n'

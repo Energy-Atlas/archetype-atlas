@@ -16,7 +16,7 @@ from scripts.release import verify_release
 from scripts.residential_profiles import validate_profiles, completed_output
 
 BASE = ROOT/'data/releases/v0.2.0'
-DEFAULT = ROOT/'data/resolution-releases/v0.3.0'
+DEFAULT = ROOT/'data/resolution-releases/v0.4.0'
 LOADS = {'occupancy_schedule_id':'people_per_m2', 'lighting_schedule_id':'lighting_W_m2',
          'electric_equipment_schedule_id':'electric_equipment_W_m2',
          'gas_equipment_schedule_id':'gas_equipment_W_m2'}

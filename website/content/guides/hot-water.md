@@ -39,7 +39,28 @@ This pilot validates a known source schedule. It creates **no additional program
 and closes **zero missing schedules**. It is an explicitly optional equivalent;
 the original atlas and schedule supplement remain unchanged.
 
-## Extend to missing programs
+## Complete commercial source paths
+
+Commercial-completion **v0.1.0** inventories 217 fixture-demand paths across all
+83 represented building/template pairs. [Browse the fixture catalogue](../commercial-completion/index.md)
+for source and conserved peak-normalized plots, SI rated flows, allocation weights,
+source rule order, design days and field-level evidence. Positive demand attaches
+to **existing programs**, with no new restroom program. Named source restrooms
+remain their original programs.
+
+The extension closes **206 missing program schedules** with source-complete no-draw
+zeros. **279 assignments remain unknown** because 59 building-service paths lack
+supported beneficiaries. Known positive source assignments are retained; an
+unallocated main/booster/laundry service is not copied into each program. Large
+Office's three core fixture instances and source multipliers remain distinct.
+
+The exact canonical bundle, schema, source lock, executed control receipt and
+notices are in the [complete snapshot](../commercial-completion/v0.1.0/snapshot.zip).
+Its [manifest](../commercial-completion/v0.1.0/manifest.json) identifies every file.
+The browser [catalogue JSON](../commercial-completion/v0.1.0/catalogue.json) is a
+compact presentation of the canonical packet, not the manifest-hashed file.
+
+## Remaining program allocations
 
 Inspect each prototype's fixture/main/booster/laundry branch and its source
 schedules before assigning demand. Map serving relationships explicitly. If a

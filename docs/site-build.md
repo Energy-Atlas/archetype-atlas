@@ -50,15 +50,32 @@ home page and recorded in site-manifest.json.
 - scripts/site_smoke.py: browser tests and project-subpath preview server.
 - build/site-docs/ and build/site/: ignored generated documents and HTML.
 
-Raw source downloads are not needed to build the site. Its release loader checks
-the frozen contracts and manifests. The full scientific unittest suite does
-require the atlas' locked raw-source retrieval; run scripts.fetch first in a
-fresh checkout.
+The release loader checks frozen contracts, manifests and source reproduction.
+A fresh checkout must retrieve the base, schedule, water and completion locks
+before validation or site generation:
+
+```powershell
+python -m scripts.fetch
+python -m scripts.fetch --lock sources/schedule-evidence-lock.json
+python -m scripts.fetch --lock sources/water-evidence-lock.json
+python -m scripts.fetch --lock sources/completion-evidence-lock.json
+python -m scripts.commercial_completion --verify
+python -m scripts.resolve --verify
+```
 
 The snapshot ZIP retains every frozen file byte-for-byte, including Markdown,
 manifest and notices. JSON tables also have direct downloads and generated CSV.
 CSV nulls are literal null; source strings such as None remain strings.
 Nested values are JSON text. CSV is an inspection export, not a schema substitute.
+
+The selected default supplement is v0.4.0, paired with commercial-completion
+v0.1.0. New supplement canonical tables are supplied inside their complete ZIP;
+large tables are not duplicated as direct files. Historical direct URLs and
+byte-identical profiles are retained. The commercial browser `catalogue.json`
+is compact presentation JSON; use its ZIP for exact manifest hashes. Fixture
+pages provide source and normalized plots and attach only supported beneficiaries
+to existing programs. Excluded end uses are removed from active presentations;
+immutable upstream and historical snapshots retain their provenance.
 
 Schedule controls inspect a month/day and an explicitly chosen day type, using
 the leap-year date picker solely for date validation. They are not an annual
@@ -66,14 +83,30 @@ calendar. Step curves, matched-rule evidence, exact tables, CSV and PNG export
 are available. Thermostat overlaps are reported without altering source values.
 An overlay does not change canonical program assignments.
 
-## GitHub Pages
+## Optional source-phase control reproduction
+
+Use the locked Windows OpenStudio executable and source archive from
+`sources/commercial-runtime-lock.json`:
+
+```powershell
+python -m scripts.commercial_completion --inspect-controls --runtime-cache build/cc --openstudio build/runtime/openstudio-windows/OpenStudio-3.10.0+86d7e215a1-Windows/bin/openstudio.exe
+```
+
+The short cache path avoids Windows MAX_PATH failures from nested upstream
+standards filenames. In a deeply nested checkout, select a shorter absolute
+`--runtime-cache` location. Archive/file checksums and the eight-case receipt
+remain required. Frozen recipe snapshots preserve their original code; this
+current CLI adds cache-path configuration without altering canonical data.
+
+## GitHub Pages delivery
 
 .github/workflows/catalogue-site.yml builds on feature-branch pushes and pull
 requests. It verifies releases, Python presentation tests, browser/Python schedule
 parity, a strict MkDocs build, all links and browser interactions. It uploads the
 tested static artifact and verification screenshots.
 
-Only a push to the designated publisher branch feat/catalogue-site or the
+Only a push to the designated publisher branches feat/catalogue-site or
+feat/schedule-resolution, or the
 repository's actual default branch, or a workflow dispatch with deploy=true,
 deploys that artifact. Other feature branches build without publication.
 The publisher branch permits autonomous initial hosting without merging the
@@ -94,6 +127,13 @@ notice is distributed. System fonts avoid a remote font dependency.
 MkDocs and Material retain their package license notices. Original site code
 and documentation remain unlicensed under the repository's existing notice.
 # Publication size
+
+The HTML delivery hook removes template indentation after newlines outside
+literal `pre`, `code`, `textarea`, `script`, `style`, SVG and MathML regions.
+Links, attributes, source values and literal text remain intact. This reduces
+repeated theme formatting across the catalogue while keeping the built artifact
+below the selected 1,000,000,000-byte publication ceiling. The strict build,
+whole-site link check and browser suite run against that delivered HTML.
 
 The global documentation search indexes record titles and the full text of
 guides. The catalogue's own

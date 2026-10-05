@@ -1,5 +1,9 @@
 # Schedule source review — 2026-10-04
 
+This is the historical source review underlying the initial overlays. Current
+coverage and later executed decisions are in
+[v0.4.0 release notes](release-notes-v0.4.0.md); source nulls remain unchanged.
+
 This review addresses the user's follow-up annotations. The scientific decisions
 are in [ADR 0005](adr/0005-parametric-schedule-generators.md). Source facts are
 separate from adopted experimental zeros. The immutable atlas v0.2.0 and
