@@ -9,6 +9,21 @@ from unittest.mock import patch
 
 
 class DeliveryTests(unittest.TestCase):
+    def test_repeated_original_arrays_share_one_source_value_with_working_anchor(self):
+        site = self.module('site')
+        original = [{'quoted': '<unsafe>', 'hours': list(range(24))}]
+        field = {'status': 'known', 'original_field': 'source row', 'original_units': None,
+                 'original_value': original, 'transformation': 'Retain original'}
+        prov = {'locator': '/record/0', 'extraction_date': '2026-10-05', 'notes': 'note',
+                'fields': {'a': field, 'b': dict(field)}}
+        source = {'version': 'abc', 'url': 'https://example.org/source', 'project': 'project',
+                  'path': 'source.json', 'sha256': '0'*64, 'license_path': 'LICENSE'}
+        rendered = site.provenance_html(prov, source, 'records/record.md', 'v0.2.0')
+        self.assertEqual(rendered.count('&lt;unsafe&gt;'), 1)
+        self.assertIn('id="original-a"', rendered)
+        self.assertIn('href="#original-a"', rendered)
+        self.assertIn('id="evidence-b"', rendered)
+
     def test_publication_size_rejects_a_site_above_the_selected_ceiling(self):
         checker=self.module('site_check')
         with tempfile.TemporaryDirectory() as d:

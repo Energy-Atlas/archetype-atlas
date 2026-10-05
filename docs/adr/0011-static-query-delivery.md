@@ -52,3 +52,21 @@ the Python implementation is a reference, not a required runtime dependency.
 Original work stays unlicensed; upstream notices travel with the delivery. The
 owner explicitly authorized publication. No permission to relabel the delivery as
 MIT follows from BEMGen's license.
+
+## Transport and publication bounds
+
+Large JSON resources use deterministic gzip files with explicitly declared encoded
+and decoded sizes. SHA-256 binds the encoded file; consumers verify before bounded
+decompression. Packets remain at most 131072 decoded bytes. This substantially
+reduces static-host storage without changing the generic JSON model.
+
+Clean publishers restore a checksum-bound retention ZIP before rebuilding, so old
+snapshot URLs survive later publications. It is publisher-only, never a query
+download. Schema files and license notices are content-addressed too. Examples
+are current conformance fixtures with an explicit pinned manifest descriptor.
+
+Catalogue HTML displays repeated original arrays/objects once per record page,
+linking every repeated field to that same complete source value. The field's own
+locator, units and transformation remain independent. This presentation reduction
+fits the existing static-host limit; canonical archives and scientific values stay
+byte-identical.

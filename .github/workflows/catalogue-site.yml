@@ -5,6 +5,9 @@ on:
     paths:
       - 'website/**'
       - 'scripts/site*.py'
+      - 'scripts/query*.py'
+      - 'tests/test_query*.py'
+      - 'schemas/query-*.schema.json'
       - 'tests/site*.js'
       - 'tests/test_site*.py'
       - 'tests/test_water_reporting*.py'
@@ -43,6 +46,10 @@ on:
     inputs:
       deploy:
         description: Publish the verified artifact to GitHub Pages
+        type: boolean
+        default: false
+      bootstrap_query_delivery:
+        description: Allow missing query latest only for the first-ever v1 publication
         type: boolean
         default: false
 
@@ -86,7 +93,15 @@ jobs:
           python -m scripts.water_reporting --verify
           python -m unittest tests.test_water_reporting_site -q
           python -m unittest tests.test_site tests.test_site_delivery tests.test_html_delivery -q
+          python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
           node --test tests/site_core.test.js tests/site_parity.test.js
+      - name: Restore previously published immutable query snapshots
+        run: |
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap_query_delivery }}" = "true" ]; then
+            python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history --allow-missing
+          else
+            python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history
+          fi
       - name: Generate both versioned catalogues and build
         run: |
           python -m scripts.site

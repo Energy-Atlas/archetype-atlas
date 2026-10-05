@@ -149,7 +149,7 @@ def display_value(value):
     if value is None:
         return 'Unknown / not reported'
     if isinstance(value, (dict, list)):
-        return '<pre>' + html.escape(json.dumps(value, indent=2, ensure_ascii=False)) + '</pre>'
+        return '<pre>' + html.escape(json.dumps(value, separators=(',', ':'), ensure_ascii=False)) + '</pre>'
     if isinstance(value, bool):
         return 'Yes' if value else 'No'
     return html.escape(str(value), quote=True).replace('|', '&#124;')
@@ -331,11 +331,22 @@ def provenance_html(prov, source, current, version):
            display_value(source['project'] + '/' + source['path']) + '</a></p>',
            '<p><strong>SHA-256:</strong> <code>' + source['sha256'] + '</code></p>',
            '<p>' + anchor(current, f'releases/{version}/downloads/{source["license_path"]}', 'Upstream license notice') + '</p>']
+    originals = {}
     for key, field in prov['fields'].items():
+        original = field['original_value']
+        shown = display_value(original)
+        if isinstance(original, (dict, list)):
+            identity = json.dumps(original, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+            if identity in originals:
+                shown = '<a href="#' + originals[identity] + '">Shared original source value above</a>'
+            else:
+                original_id = 'original-' + key
+                originals[identity] = original_id
+                shown = '<div id="' + html.escape(original_id, quote=True) + '">' + shown + '</div>'
         out += [f'<details id="evidence-{key}"><summary>{display_value(friendly(key))} · {display_value(field["status"])}</summary>',
                 '<dl><dt>Original field</dt><dd>' + display_value(field['original_field']) + '</dd>',
                 '<dt>Original unit</dt><dd>' + display_value(field['original_units']) + '</dd>',
-                '<dt>Original value</dt><dd>' + display_value(field['original_value']) + '</dd>',
+                '<dt>Original value</dt><dd>' + shown + '</dd>',
                 '<dt>Transformation</dt><dd>' + display_value(field['transformation']) + '</dd></dl></details>']
     return '\n'.join(out + ['</div>'])
 
@@ -888,6 +899,15 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
         write_text(stage, 'index.md', home)
         write_text(stage, 'catalogue.md', '# Catalogue\n\n' + '\n\n'.join(anchor('catalogue.md', f'releases/{v}/catalogue.md', v + ' catalogue') for v in versions))
         write_text(stage, 'downloads.md', '# Downloads and releases\n\n' + '\n\n'.join(anchor('downloads.md', f'releases/{v}/downloads.md', v + ' snapshot, manifest and CSV') for v in versions))
+        from scripts.query_site import publish_query_delivery
+        if pilot:
+            from scripts.query_delivery import sha
+            inputs = (pilot_data(latest_data), {'atlas': {'version': latest[1:],
+                      'manifest_sha256': sha((loaded[-1][0]/'manifest.json').read_bytes())}},
+                      None, None, None, {'LICENSE': (ROOT/'LICENSE').read_bytes()}, None)
+            summary['query_delivery'] = publish_query_delivery(stage, inputs=inputs)
+        else:
+            summary['query_delivery'] = publish_query_delivery(stage, history=ROOT/'build/query-history')
         write_site_json(stage/'site-manifest.json', summary)
         # target is checked above and contains generated files only.
         if target.exists():

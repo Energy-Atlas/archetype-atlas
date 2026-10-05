@@ -274,6 +274,13 @@ def smoke(root, screenshot_dir=None):
             fallback.goto(base + office['path'].removesuffix('.md') + '/')
             expect(fallback.locator('body')).to_contain_text('Source locator')
             expect(fallback.locator('a[href$=".json"]').first).to_be_visible()
+            for slug, heading in [('data-delivery', 'Data delivery for software'),
+                                  ('data-delivery-contract', 'Query contract v1'),
+                                  ('data-delivery-schedules', 'Schedules and conformance')]:
+                fallback.goto(base + 'guides/' + slug + '/')
+                expect(fallback.locator('h1')).to_contain_text(heading)
+                if screenshot_dir and slug == 'data-delivery':
+                    fallback.screenshot(path=str(screenshot_dir/'data-delivery.png'), full_page=True)
             browser.close()
         if errors or failed:
             raise AssertionError({'browser_errors': errors, 'failed_local_requests': failed})
