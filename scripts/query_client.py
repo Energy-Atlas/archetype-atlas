@@ -145,7 +145,7 @@ class QueryClient:
                 or not isinstance(reference.get('sha256'), str)
                 or not re.fullmatch('[a-f0-9]{64}', reference['sha256'])
                 or type(reference.get('size_bytes')) is not int or not 0 <= reference['size_bytes'] <= 16_000_000
-                or reference.get('encoding') not in {None, 'gzip'}
+                or 'encoding' in reference and reference['encoding'] != 'gzip'
                 or ('encoding' in reference) != ('decoded_size_bytes' in reference)
                 or 'encoding' in reference and (type(reference['decoded_size_bytes']) is not int
                                                or not 0 <= reference['decoded_size_bytes'] <= 16_000_000)):

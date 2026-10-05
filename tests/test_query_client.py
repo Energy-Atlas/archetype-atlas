@@ -115,6 +115,10 @@ class QueryClientTests(unittest.TestCase):
         with self.assertRaises(mod.QueryError) as cm:
             client.fetch(dict(latest['manifest'], href='../escape.json'))
         self.assertEqual(cm.exception.code, 'unsafe_reference')
+        with self.assertRaises(mod.QueryError) as cm:
+            client.fetch(dict(latest['manifest'], encoding=None,
+                              decoded_size_bytes=latest['manifest']['size_bytes']))
+        self.assertEqual(cm.exception.code, 'invalid_artifact')
 
     def test_id_only_lookup_does_not_fetch_other_context_packets(self):
         client = self.module().QueryClient(self.root)
