@@ -5,6 +5,51 @@ its serving relationship. A water schedule alone does not require a new restroom
 program. Keep actual source-defined restrooms or service programs if present;
 leave unsupported building-to-program allocations unknown.
 
+## How EnergyPlus represents shared demand
+
+A shared water draw need not be assigned to a thermal zone. EnergyPlus uses a
+`WaterUse:Equipment` object with peak flow, a flow-fraction schedule and water
+temperatures. `WaterUse:Connections` can connect that demand to the service-water
+`PlantLoop`. The equipment's zone reference is optional. With no zone reference,
+the draw still loads the water system, but contributes no fixture sensible or
+latent gains to a room. EnergyPlus does not automatically distribute it among
+the building's zones.
+
+The pinned Standards [water-use constructor](https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/service_water_heating/create_water_use.rb#L21-L102)
+defaults to `space: nil`, always creates a water connection, and calls `setSpace`
+only when a space is supplied. It can connect either kind of fixture to the
+service-water loop. Main, booster and laundry source calls without a space are
+therefore meaningful shared system demands, rather than automatically missing
+EnergyPlus inputs. A fixture's name or a heater's location alone does not assign
+its heat and moisture gains to a zone.
+
+This behavior is confirmed in [EnergyPlus 24.2 water-use source](https://github.com/NatLabRockies/EnergyPlus/blob/v24.2.0/src/EnergyPlus/WaterUse.cc):
+zone lookup is conditional on a nonblank zone field, and zone internal-gain
+registration is conditional on a positive zone index. Stand-alone water-use
+objects also exist; their energy accounting differs from plant-connected demand.
+See the [Input Output Reference](https://bigladdersoftware.com/epx/docs/24-2/input-output-reference/group-water-systems.html).
+
+Other loads have different attachment rules. People, interior lights and ordinary
+electric/gas internal gains require zone/space targets (or lists); building-wide
+report totals aggregate these assignments. Exterior energy-use objects and
+central plant components can operate without room assignments. There is no
+universal rule that all unspecified loads attach to the `Building` object.
+
+For the atlas, two questions remain separate:
+
+- **Source-faithful simulation:** retain the shared water service once, with its
+  source curve and original zone-gain behavior. A complete building demand can
+  coexist with unknown program beneficiaries.
+- **Program reporting equivalent:** optionally allocate that same demand to
+  existing programs using documented weights, conserving every interval. Those
+  reporting weights do not establish physical fixture locations or authorize
+  adding zone sensible/latent gains. That additional thermal assignment requires
+  its own evidence or explicitly labeled assumption.
+
+The 279 program allocations remain open. This clarification neither closes them
+nor changes the frozen coverage denominator. The mapping, envelope, HVAC,
+reference-location and model-equivalence questions also remain open.
+
 ## Medium Office pilot
 
 The pilot covers **MediumOffice / 90.1-2013 / office**. Its source already assigns

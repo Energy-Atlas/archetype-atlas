@@ -67,8 +67,26 @@ def smoke(root, screenshot_dir=None):
                 page.screenshot(path=str(screenshot_dir/'home.png'), full_page=True)
             page.goto(base + 'releases/v0.2.0/catalogue/')
             expect(page.locator('#atlas-results-count')).to_contain_text('matching entries')
+            if not index.get('pilot'):
+                climates = page.locator('#atlas-filter-climate option').evaluate_all('(options) => options.map(o => o.value)')
+                assert '2B' in climates and 'ClimateZone 2B' not in climates, 'Equivalent climate labels split the filter'
+                page.locator('#atlas-filter-climate').select_option('2B')
+                expected = sum(r['climate'] == '2B' for r in index['entries'])
+                expect(page.locator('#atlas-results-count')).to_contain_text(str(expected) + ' matching entries')
+                expect(page.locator('#atlas-filter-climate')).to_have_value('2B')
+                page.goto(base + 'releases/v0.2.0/catalogue/?climate=ClimateZone+2B')
+                expect(page.locator('#atlas-filter-climate')).to_have_value('2B')
+                expect(page.locator('#atlas-results-count')).to_contain_text(str(expected) + ' matching entries')
+                page.locator('#atlas-reset').click()
             page.locator('#atlas-filter-building').select_option('MediumOffice')
             page.locator('#atlas-filter-template').select_option('90.1-2013')
+            page.locator('#atlas-filter-kind').select_option('mappings')
+            page.locator('#atlas-filter-program').select_option('office')
+            page.locator('#atlas-filter-system').select_option('PVAV')
+            # The pinned source has one PVAV office mapping for each of its three floors.
+            expect(page.locator('#atlas-results-count')).to_contain_text('3 matching entries')
+            page.locator('#atlas-filter-program').select_option('')
+            page.locator('#atlas-filter-system').select_option('')
             page.locator('#atlas-filter-kind').select_option('programs')
             expect(page.locator('#atlas-results-count')).to_contain_text('2 matching entries')
             saved = page.url

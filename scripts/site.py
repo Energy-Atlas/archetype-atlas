@@ -133,7 +133,9 @@ AXES = {'building': 'Building type', 'program': 'Program', 'template': 'Vintage 
         'status': 'Data status', 'kind': 'Record kind', 'stock_vintage': 'Residential stock vintage'}
 FAMILIES = {'code_prototype_rules': 'Code / prototype rules (Standards-derived)',
             'existing_stock_benchmark_rules': 'Existing-stock benchmark rules (Standards-derived)',
+            'existing_stock_benchmark': 'Existing-stock benchmark rules (Standards-derived)',
             'existing_stock_source_fixture': 'Existing-stock source fixture (ResStock)'}
+PROJECT_LABELS = {'openstudio-standards': 'OpenStudio Standards', 'resstock': 'ResStock', 'ComStock': 'ComStock'}
 LABELS = {'MediumOffice': 'Medium Office', 'LargeOffice': 'Large Office',
           'SmallOffice': 'Small Office', 'RetailStandalone': 'Standalone Retail',
           'RetailStripmall': 'Strip Mall', 'SuperMarket': 'Supermarket',
@@ -207,6 +209,8 @@ def catalogue_entries(data, version):
     tables = {'buildings': overview_rows(data), **{t: data.get(t, []) for t in RECORD_TABLES}}
     prov = {r['id']: r for r in data['provenance']}
     sources = {r['id']: r for r in data['source_files']}
+    programs = {r['id']: r for r in data['programs']}
+    systems = {r['id']: r for r in data['systems']}
     uses = defaultdict(lambda: {'building': set(), 'template': set(), 'contexts': set()})
     for t in ['programs', 'systems']:
         for r in data[t]:
@@ -224,9 +228,15 @@ def catalogue_entries(data, version):
             family = r.get('source_family')
             if not family and r.get('template') and t not in {'residential_archetypes'}:
                 family = 'existing_stock_benchmark_rules' if r['template'].startswith('DOE Ref') else 'code_prototype_rules'
-            source = src.get('project', 'openstudio-standards' if t == 'buildings' else 'Unknown source')
-            if family:
-                source += ' · ' + FAMILIES.get(family, family)
+            # Keep legacy browsing labels as aliases; canonical research records are unchanged.
+            project = src.get('project', 'openstudio-standards' if t == 'buildings' else 'Unknown source')
+            original_source = project
+            original_family = r.get('source_family') or family
+            if original_family:
+                old_family = ('existing_stock_benchmark' if original_family == 'existing_stock_benchmark'
+                              else FAMILIES.get(original_family, original_family))
+                original_source += ' · ' + old_family
+            source = PROJECT_LABELS.get(project, project) + (' · ' + FAMILIES.get(family, family) if family else '')
             if t == 'envelope_components':
                 climate, basis = r['climate_zone_set'], 'Conditional envelope applicability'
             elif context.get('ASHRAE IECC Climate Zone 2004'):
@@ -235,6 +245,14 @@ def catalogue_entries(data, version):
             else:
                 climate = 'Unspecified; program is climate-independent' if t == 'programs' else 'Unspecified'
                 basis = 'No climate-specific assignment'
+            original_climate = climate
+            climate_match = re.fullmatch(r'Climate\s*Zone\s+([0-8](?:[ABC])?)', climate, re.IGNORECASE)
+            if climate_match:
+                climate = climate_match[1].upper()
+            elif t == 'programs':
+                climate = 'Climate-independent'
+            facet_aliases = {k: [old] for k, old, new in
+                             [('climate', original_climate, climate), ('source', original_source, source)] if old != new}
             status = ('Source-input bundle; assembly unresolved' if t == 'buildings' else
                       'Source fixture; runtime gaps' if t == 'residential_archetypes' else
                       'Conditional / unassigned' if t in {'efficiency_rules', 'envelope_components', 'specialized_rules'} else
@@ -243,12 +261,14 @@ def catalogue_entries(data, version):
             entries.append({
                 'id': r['id'], 'kind': t, 'name': title(t, r),
                 'building': r.get('building_type', 'Shared / not assigned'),
-                'program': r.get('program', 'Not applicable'),
+                'program': programs[r['program_id']]['program'] if t == 'mappings' else r.get('program', 'Not applicable'),
                 'template': r.get('template', 'Shared / not assigned'),
                 'stock_vintage': context.get('Vintage', 'Not applicable / not reported'),
                 'climate': climate, 'climate_basis': basis,
-                'system': r.get('system_type', 'Not applicable'),
+                'system': (systems[r['system_id']]['system_type'] if r.get('system_id') else 'Unassigned / not reported')
+                          if t == 'mappings' else r.get('system_type', 'Not applicable'),
                 'source': source, 'status': status,
+                'facet_aliases': facet_aliases,
                 'referenced_buildings': sorted(uses[r['id']]['building']),
                 'referenced_templates': sorted(uses[r['id']]['template']),
                 'referenced_contexts': [{'building': b, 'template': t}
@@ -492,12 +512,24 @@ def generate_release(root, release_path, data, manifest, version, versions, pilo
             groups[r[axis]].append(r)
         for value, group in sorted(groups.items()):
             current = axis_path(version, axis, value)
-            note = ('Climate grouping preserves exact labels. Envelope sets are conditional rules; residential climates are reported fixture context. '
+            note = ('Climate grouping aligns equivalent label spellings. Envelope sets are conditional rules; residential climates are reported fixture context. '
                     'Thermal-only and moisture-specific sets are not silently merged.') if axis == 'climate' else (
                     'Stock vintage and code/prototype editions have different meanings. Historical code rules are not calibrated existing stock.') if axis == 'template' else (
                     'These entries share a browsing label; compatibility and unresolved dependencies remain on each detail page.')
             write_text(root, current, page_header(label + ': ' + friendly(value), version, 'category', False) +
                        note + '\n\n' + table_html(group, current, ('name', 'kind', 'template', 'climate_basis', 'status')))
+        aliases = defaultdict(set)
+        for r in entries:
+            for old in r.get('facet_aliases', {}).get(axis, []):
+                aliases[old].add(r[axis])
+        for old, values in sorted(aliases.items()):
+            if old in groups or len(values) != 1:
+                continue
+            current = axis_path(version, axis, old)
+            value = next(iter(values))
+            write_text(root, current, page_header(label + ': ' + friendly(old), version, 'category-alias', False) +
+                       'This browsing label is now aligned with ' + anchor(current, axis_path(version, axis, value), value) +
+                       '. Original source fields remain unchanged.\n')
     for entry in entries:
         t, r = rows[entry['id']]
         r=presentation_scope(r,excluded_ids)

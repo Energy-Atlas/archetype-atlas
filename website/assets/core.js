@@ -37,7 +37,17 @@
     if (!selected) throw new Error('No profile for this date and day type');
     return {...selected, matching};
   }
+  function normalizeState(entries, state) {
+    const aligned = {...state};
+    for (const key of keys.filter(k => k !== 'q' && state[k])) {
+      if (entries.some(row => row[key] === state[key])) continue;
+      const candidates = new Set(entries.filter(row => (row.facet_aliases?.[key] || []).includes(state[key])).map(row => row[key]));
+      if (candidates.size === 1) aligned[key] = [...candidates][0];
+    }
+    return aligned;
+  }
   function filterEntries(entries, state) {
+    state = normalizeState(entries, state);
     const query = (state.q || '').toLocaleLowerCase().trim();
     return entries.filter(row => {
       if (query && !Object.values(row).flat().join(' ').toLocaleLowerCase().includes(query)) return false;
@@ -79,5 +89,5 @@
     const labels = Array.from({length: count}, (_, i) => new Date(first + (startHour + i) * 3600000).toISOString().slice(0, 19));
     return {startHour, labels, traces};
   }
-  return {selectProfile, filterEntries, parseState, serializeState, thermostatDiagnostic, annualProfile};
+  return {selectProfile, normalizeState, filterEntries, parseState, serializeState, thermostatDiagnostic, annualProfile};
 });

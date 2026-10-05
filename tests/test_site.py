@@ -171,10 +171,36 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(sum(r['kind'] == 'schedules' for r in entries), 569)
         self.assertEqual(len({r['path'] for r in entries}), len(entries))
         p = next(r for r in entries if r['kind'] == 'programs')
-        self.assertEqual(p['climate'], 'Unspecified; program is climate-independent')
+        self.assertEqual(p['climate'], 'Climate-independent')
         e = next(r for r in entries if r['kind'] == 'envelope_components')
-        self.assertTrue(e['climate'].startswith('ClimateZone '))
+        self.assertFalse(e['climate'].startswith('ClimateZone '))
         self.assertEqual(e['climate_basis'], 'Conditional envelope applicability')
+
+    def test_equivalent_filter_labels_share_categories_without_merging_climate_sets(self):
+        site = self.site_module()
+        data = load_atlas(ROOT/'data/releases/v0.2.0')
+        entries = site.catalogue_entries(data, 'v0.2.0')
+        envelope_id = next(r['id'] for r in data['envelope_components'] if r['climate_zone_set'] == 'ClimateZone 2B')
+        envelope = next(r for r in entries if r['id'] == envelope_id)
+        dwelling = next(r for r in entries if r['kind'] == 'residential_archetypes' and r['climate'] == '2B')
+        self.assertEqual(envelope['climate'], dwelling['climate'])
+        self.assertEqual(envelope['facet_aliases']['climate'], ['ClimateZone 2B'])
+        climates = {r['climate'] for r in entries}
+        self.assertTrue({'2', '2A', '2B', '7AK', '8AK', 'Climate-independent', 'Unspecified'} <= climates)
+        self.assertFalse(any(c.startswith('ClimateZone ') for c in climates))
+        families = {r['source'] for r in entries}
+        self.assertFalse(any('existing_stock_benchmark' in f or f.startswith('resstock') for f in families))
+        self.assertIn('OpenStudio Standards · Existing-stock benchmark rules (Standards-derived)', families)
+
+    def test_mapping_filters_follow_explicit_program_and_system_references(self):
+        site = self.site_module()
+        entries = site.catalogue_entries(load_atlas(ROOT/'data/releases/v0.2.0'), 'v0.2.0')
+        mapping = next(r for r in entries if r['id'] == 'mapping-130635e6a30d1f7353a1')
+        self.assertEqual(mapping['program'], 'office')
+        self.assertEqual(mapping['system'], 'PVAV')
+        attic = next(r for r in entries if r['id'] == 'mapping-0108ff9fd80d9d9a3496')
+        self.assertEqual(attic['program'], 'attic')
+        self.assertEqual(attic['system'], 'Unassigned / not reported')
 
     def test_source_text_is_escaped_and_null_is_not_zero(self):
         site = self.site_module()

@@ -78,6 +78,24 @@ test('shared schedule filters require one real joint building/template reference
   assert.equal(core.filterEntries(rows, {building: 'HighriseApartment', template: '90.1-2007'}).length, 1);
   assert.equal(core.filterEntries(rows, {building: 'MidriseApartment', template: '90.1-2019'}).length, 1);
 });
+
+test('legacy facet aliases select the same records as aligned labels without broadening climate sets', () => {
+  const rows = [
+    {id: 'envelope', climate: '2B', facet_aliases: {climate: ['ClimateZone 2B']}},
+    {id: 'dwelling', climate: '2B'},
+    {id: 'thermal', climate: '2'},
+    {id: 'moist', climate: '2A'},
+    {id: 'alaska', climate: '7AK'},
+    {id: 'general-seven', climate: '7'},
+  ];
+  assert.deepEqual(core.filterEntries(rows, {climate: 'ClimateZone 2B'}).map(r => r.id), ['envelope', 'dwelling']);
+  assert.deepEqual(core.filterEntries(rows, {climate: '2B'}).map(r => r.id), ['envelope', 'dwelling']);
+  assert.deepEqual(core.filterEntries(rows, {climate: '2'}).map(r => r.id), ['thermal']);
+  assert.deepEqual(core.normalizeState(rows, {climate: 'ClimateZone 2B', q: 'roof'}), {climate: '2B', q: 'roof'});
+  assert.equal(core.filterEntries(rows, {climate: '7AK'}).length, 1);
+  assert.equal(core.filterEntries(rows, {climate: 'unknown'}).length, 0);
+  assert.equal(core.filterEntries([{source: 'Aligned', facet_aliases: {source: ['Legacy']}}], {source: 'Legacy'}).length, 1);
+});
 test('thermostat diagnostics report overlaps without changing source values', () => {
   ready();
   assert.equal(typeof core.thermostatDiagnostic, 'function', 'Thermostat diagnostic is not implemented');

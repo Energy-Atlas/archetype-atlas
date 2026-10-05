@@ -70,7 +70,7 @@
       }
     }
     function restore() {
-      const s = core.parseState(location.search);
+      const s = core.normalizeState(entries, core.parseState(location.search));
       query.value = s.q || '';
       filters.forEach(select => {
         const value = s[select.id.replace('atlas-filter-', '')] || '';
