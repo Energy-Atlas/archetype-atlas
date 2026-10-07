@@ -81,8 +81,13 @@ def _resistance(layer):
 
 def adjust_layers(layers, target_u, insulation_name, films):
     result = copy.deepcopy(layers)
+    if target_u is not None and abs(target_u/U_FACTOR)<.01:
+        if not insulation_name:return result,'unresolved_zero_target_without_named_insulation'
+        return [v for v in result if v['name']!=insulation_name],'source_zero_target_insulation_removed'
     if target_u is None or target_u <= 0:
         return result, 'unresolved_target'
+    if films and target_u>=1/films:
+        target_u=1/(films+.001) # Locked construction_set_u_value clamp, in SI.
     if not insulation_name:
         candidates = [(i, _resistance(layer)) for i, layer in enumerate(result)]
         if not candidates or any(r is None for _, r in candidates):
@@ -127,9 +132,19 @@ def build_constructions(context, programs):
                        'Generic experimental fallback' if assumed else 'Source assembly and target are distinct; unresolved is not ready.')
         bundle['provenance'].append(eid); row['evidence_ids'] = [eid['id']]
         for key, unit in [('u_W_m2_K','W/m2/K'), ('shgc','1'), ('visible_transmittance','1')]:
-            row['parameters'][key] = parameter(source.get(key), unit, eid['id'])
+            field_eid=source_evidence(context,source,key,unit,bundle) if source.get('provenance_id') else eid['id']
+            row['parameters'][key] = parameter(source.get(key), unit, field_eid)
         try:
             raw = unique_named(constructions, name)
+            raw_materials=[unique_named(materials,n) if 'simple glazing' not in n.lower() else {'name':n}
+                           for n in raw['materials']]
+            me=evidence(context,stable_id('sourcefile',{'path':material_path}),
+                material_path+'#/materials/names='+','.join(raw['materials']),
+                {'construction':raw,'materials':raw_materials},
+                'thickness inch; conductivity Btu*in/(h*ft2*degF); density lb/ft3; specific heat Btu/(lb*degF); resistance h*ft2*degF/Btu',
+                'SI factors in normalize_material; target thickness/resistance follows locked constructions/modify.rb and film coefficients information.rb',
+                'Ordered source layers with original values and units; generated glazing defaults originate in Standards.Model.rb')
+            bundle['provenance'].append(me);row['evidence_ids'].append(me['id'])
             layers = [normalize_material(unique_named(materials, n))
                       if 'simple glazing' not in n.lower() else normalize_material({'name': n})
                       for n in raw['materials']]
@@ -150,7 +165,7 @@ def build_constructions(context, programs):
                         layers[0][key] = source[key]
             for index, layer in enumerate(layers):
                 mid = stable_id('material', {'properties': layer, 'assembly_evidence': eid['id']})
-                mat = {'id': mid, **layer, 'evidence_ids': [eid['id']],
+                mat = {'id': mid, **layer, 'evidence_ids': [eid['id'],me['id']],
                        'source_material_locator': material_path+'#/materials/name='+layer['name']}
                 bundle['materials'].append(mat)
                 row['layers'].append({'material_id': mid, 'properties': layer, 'order': index})
@@ -173,7 +188,9 @@ def build_constructions(context, programs):
         row = assembly(source, attr['construction'], source['surface_type'], source.get('u_W_m2_K'))
         row['conditioning_category'] = source['building_category']
         row['construction_type'] = source['construction_type']
-        row['gate'] = ['residential'] if source['building_category']=='Residential' else ['nonresidential']
+        # A thermal conditioning category is not a building-family navigation gate
+        # (hotel guest rooms also use Residential source envelope requirements).
+        row['gate'] = ['residential','nonresidential']
     source_templates = {}
     provs = {r['id']: r for r in context.atlas.get('provenance', [])}
     for original in context.atlas.get('envelope_components', []):
@@ -193,7 +210,7 @@ def build_constructions(context, programs):
             row = assembly(source, attr['construction'], role)
             row['conditioning_category'] = attr['building_category']
             row['construction_type'] = attr['standards_construction_type']
-            row['gate'] = ['residential'] if attr['building_category']=='Residential' else ['nonresidential']
+            row['gate'] = ['residential','nonresidential']
             for field, target_field, unit, factor in [('assembly_maximum_f_factor','f_W_m_K','W/m/K',1.730734667),
                        ('assembly_maximum_c_factor','c_W_m2_K','W/m2/K',U_FACTOR)]:
                 val = attr.get(field)
@@ -203,6 +220,7 @@ def build_constructions(context, programs):
                 bundle['provenance'].append(ev)
                 row['parameters'][target_field] = parameter(val*factor if val is not None else None, unit, ev['id'])
             row['ground_model'] = 'F-factor ground floor' if attr.get('assembly_maximum_f_factor') is not None else 'C-factor underground wall'
+            row['assembly_status']='source_layers_only; F/C physical ground construction requires consumer geometry'
             row['required_inputs'] = ['surface_area','exposed_perimeter'] if role=='GroundContactFloor' else ['wall_height']
     for path, local in context.sources.items():
         if not path.endswith('.construction_sets.json'):
@@ -214,6 +232,8 @@ def build_constructions(context, programs):
                 continue
             source = dict(source, id=stable_id('construction-set-source', {'path': path, 'index': index}),
                           source_family='existing_stock_benchmark' if source['template'].startswith('DOE') else 'code_prototype_rules')
+            source['source_building_type']=source['building_type']
+            source['building_type']={'Retail':'RetailStandalone','StripMall':'RetailStripmall'}.get(source['building_type'],source['building_type'])
             package = record('construction', source, source['building_type']+' construction package')
             package.update(representation='package', role='package', elements={}, air_exchange=[],
                            source_set=source, space_type=source.get('space_type'), climate=source.get('climate_zone_set'))
@@ -246,6 +266,8 @@ def build_constructions(context, programs):
                 if source['building_type']=='Office' and program['building_type'] not in {'SmallOffice','MediumOffice','LargeOffice'}:
                     continue
                 original = next(s for s in context.atlas['programs'] if s['id']==program['source_id'])
+                if source.get('space_type') and original['source_space_type']!=source['space_type']:
+                    continue
                 for field, unit, category in [('infiltration_m3_s_m2','m3/s/m2','infiltration'),
                         ('ventilation_m3_s_m2','m3/s/m2','outdoor_air'),
                         ('ventilation_m3_s_person','m3/s/person','outdoor_air'),
@@ -265,4 +287,8 @@ def build_constructions(context, programs):
         element = assembly(fallback, name, role, assumed=True)
         element['gate'] = ['residential','nonresidential']
         element['fallback_policy'] = 'Use building-wide only where no resolved source role assignment exists; keep fixed across comparisons.'
+    for row in bundle['constructions']:
+        if row.get('representation')=='element':
+            row['performance_id']=stable_id('construction-performance',physical_properties({
+                k:row.get(k) for k in ('layers','parameters','role','target_adjustment','ground_model')}))
     return DefinitionBundle().merge(bundle)

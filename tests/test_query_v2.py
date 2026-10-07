@@ -13,12 +13,14 @@ class QueryTests(unittest.TestCase):
             bundle['programs']=[{'id':'p','kind':'program','name':'Office','template':'90.1-2019',
                 'building_type':'MediumOffice','source_family':'code_prototype_rules',
                 'gate':['nonresidential'],'evidence_view':'source','derivation':'normalized',
+                'detail':'SourcePrograms','available_details':['SourcePrograms','GeneralMix'],
                 'parameters':{},'loads':[],'evidence_ids':['e'],'required_inputs':[]}]
             bundle['provenance']=[{'id':'e','locator':'source'}]
             generate_delivery(bundle,path)
             client=QueryClient(path)
             result=client.query('program',{'building_type':'MediumOffice'},['name'])
             self.assertEqual(result['records'][0]['fields'],{'name':'Office'})
+            self.assertEqual(client.query('program',{'detail':'GeneralMix'},['name'])['match_count'],1)
             self.assertEqual(client.query('program',{'template':'not-present'},['name'])['records'],[])
             with self.assertRaises(ValueError):client.query('program',{'madeup':1},['name'])
             with self.assertRaises(ValueError):client.query('program',{},['madeup'])

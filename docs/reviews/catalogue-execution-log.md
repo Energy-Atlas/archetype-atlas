@@ -77,3 +77,16 @@ assemblies and load magnitudes stay explicit. All existing determined annual
 channels retain year/seed/weather and nominal-control limitations. Three vacant
 fixtures export occupancy only; absent end-use channels are unknown, not zero.
 No HPXML defaults, capacity sizing or generators are executed.
+
+Task 8: expanded graph covers all source rows, with 140 ancillary descriptors
+classified as supporting resources. Forty-three expanded tests passed before the
+final selector normalization; the final full-graph run is recorded below. Source
+material values/units and target provenance now accompany adjusted layers.
+Finding: all 48 positive total-air-change values are Outpatient, not Hospital.
+Ruling: source conditioning categories are independent of navigation gates;
+shared elements can appear in both gates. Cost if wrong: applicability filters
+may need narrowing; source categories and package selectors remain preserved.
+Finding for Task 9: the existing built site is 993 MB against the 1 GB publication
+ceiling. Preserve immutable history; reduce repeated presentation chrome and
+use compact selective v2 resources rather than dropping historical artifacts.
+Task 8 final gate: five full-graph/query tests pass; frozen hashes verify and canonical bytes reproduce exactly.

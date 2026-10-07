@@ -6,7 +6,7 @@ from scripts.definition_compare import physical_properties
 from scripts.program_definitions import source_evidence
 
 BTUH_TO_W = .2930710701722222
-ANCILLARY = {'Refrigeration_system', 'ExhaustFan', 'ZoneVentilation'}
+ANCILLARY = {'Refrigeration_system', 'Exhaust Fan', 'Zone Ventilation'}
 
 
 def normalize_rule(source, rating_date):
@@ -22,7 +22,7 @@ def normalize_rule(source, rating_date):
         # EER/SEER are ratings, not instantaneous COP. Retain their metric names.
         native_ip = 'energy_efficiency_ratio' in name or 'seasonal_energy_efficiency_ratio' in name
         metrics[name] = {'value': value*BTUH_TO_W if native_ip else value,
-                         'unit': '1', 'original_value': value,
+                         'unit': 'W/W' if native_ip else '1', 'original_value': value,
                          'original_unit': 'Btu/Wh' if native_ip else 'dimensionless source rating',
                          'transformation': 'Btu/Wh to W/W; metric unchanged' if native_ip else 'identity'}
     return {'id': stable_id('performance-rule', {'source':source['id']}),
@@ -84,7 +84,13 @@ def build_hvac(context):
         row['performance_id']=stable_id('hvac-performance',physical_properties({
             'system_type':row['system_type'],'parameters':row['parameters'],
             'components':[c for c in bundle['components'] if c['id'] in row['component_ids']]}))
-        bundle['hvac_systems'].append(row)
+        if source['system_type'] in ANCILLARY:
+            row['role']='ancillary_equipment'
+            bundle['components'].append(row)
+            bundle['coverage'].append({'id':'coverage-'+source['id'],'source_id':source['id'],
+                'status':'supporting_ancillary_equipment','reason':'Exhaust, ventilation or refrigeration descriptor is not a complete HVAC system',
+                'definition_id':row['id']})
+        else:bundle['hvac_systems'].append(row)
     path='lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.curves.json'
     if path in context.sources:
         for index,curve in enumerate(load_json(context.sources[path])['curves']):

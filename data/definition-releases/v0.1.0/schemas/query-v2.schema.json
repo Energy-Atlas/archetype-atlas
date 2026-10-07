@@ -1,0 +1,595 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Selective element definition delivery 2.0.0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "kind": {
+      "enum": [
+        "latest",
+        "manifest",
+        "index",
+        "packet",
+        "resource",
+        "resource_index",
+        "response"
+      ]
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "manifest": {
+      "type": "object",
+      "required": [
+        "href",
+        "sha256",
+        "size_bytes"
+      ],
+      "properties": {
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "encoding": {
+          "const": "gzip"
+        },
+        "decoded_size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        }
+      },
+      "additionalProperties": false
+    },
+    "record_type": {
+      "enum": [
+        "program",
+        "construction",
+        "hvac_system"
+      ]
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "record": {
+      "type": "object"
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "href",
+          "sha256",
+          "size_bytes"
+        ],
+        "properties": {
+          "href": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "encoding": {
+            "const": "gzip"
+          },
+          "decoded_size_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16777216
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "table": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_types": {
+      "type": "object",
+      "required": [
+        "program",
+        "construction",
+        "hvac_system"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "program": {
+          "type": "object",
+          "required": [
+            "index",
+            "fields",
+            "filter_fields",
+            "record_count"
+          ],
+          "properties": {
+            "index": {
+              "type": "object",
+              "required": [
+                "href",
+                "sha256",
+                "size_bytes"
+              ],
+              "properties": {
+                "href": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "encoding": {
+                  "const": "gzip"
+                },
+                "decoded_size_bytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16777216
+                }
+              },
+              "additionalProperties": false
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "filter_fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "record_count": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "construction": {
+          "type": "object",
+          "required": [
+            "index",
+            "fields",
+            "filter_fields",
+            "record_count"
+          ],
+          "properties": {
+            "index": {
+              "type": "object",
+              "required": [
+                "href",
+                "sha256",
+                "size_bytes"
+              ],
+              "properties": {
+                "href": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "encoding": {
+                  "const": "gzip"
+                },
+                "decoded_size_bytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16777216
+                }
+              },
+              "additionalProperties": false
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "filter_fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "record_count": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "hvac_system": {
+          "type": "object",
+          "required": [
+            "index",
+            "fields",
+            "filter_fields",
+            "record_count"
+          ],
+          "properties": {
+            "index": {
+              "type": "object",
+              "required": [
+                "href",
+                "sha256",
+                "size_bytes"
+              ],
+              "properties": {
+                "href": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "encoding": {
+                  "const": "gzip"
+                },
+                "decoded_size_bytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16777216
+                }
+              },
+              "additionalProperties": false
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "filter_fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "record_count": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "supporting_tables": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "href",
+          "sha256",
+          "size_bytes"
+        ],
+        "properties": {
+          "href": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "encoding": {
+            "const": "gzip"
+          },
+          "decoded_size_bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16777216
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "selectors",
+          "record_ids",
+          "packets"
+        ],
+        "properties": {
+          "selectors": {
+            "type": "object",
+            "required": [
+              "building_type",
+              "template",
+              "source_family",
+              "evidence_view"
+            ]
+          },
+          "record_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "packets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "href",
+                "sha256",
+                "size_bytes"
+              ],
+              "properties": {
+                "href": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "encoding": {
+                  "const": "gzip"
+                },
+                "decoded_size_bytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16777216
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "max_packet_bytes": {
+      "const": 131072
+    },
+    "schema": {
+      "type": "object",
+      "required": [
+        "href",
+        "sha256",
+        "size_bytes"
+      ],
+      "properties": {
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "encoding": {
+          "const": "gzip"
+        },
+        "decoded_size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "latest"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "snapshot_id",
+          "manifest"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "manifest"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "snapshot_id",
+          "record_types",
+          "supporting_tables",
+          "max_packet_bytes",
+          "schema"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "packet"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "record_type",
+          "records"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "index"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "record_type",
+          "routes"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "resource"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "record"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "resource_index"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "table",
+          "resources"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "response"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "snapshot_id",
+          "manifest",
+          "record_type",
+          "requested_view",
+          "match_count",
+          "records"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "descriptor": {
+      "type": "object",
+      "required": [
+        "href",
+        "sha256",
+        "size_bytes"
+      ],
+      "properties": {
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "encoding": {
+          "const": "gzip"
+        },
+        "decoded_size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

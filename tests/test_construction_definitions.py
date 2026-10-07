@@ -7,6 +7,12 @@ from scripts.construction_definitions import build_constructions
 
 
 class ConstructionTests(unittest.TestCase):
+    def test_near_zero_target_removes_named_insulation_as_source_does(self):
+        layers=[{'name':'board','thickness_m':.1,'conductivity_W_m_K':1},
+                {'name':'insulation','thickness_m':.05,'conductivity_W_m_K':.05}]
+        result,status=adjust_layers(layers,.01,'insulation',.15)
+        self.assertEqual(len(result),1)
+        self.assertEqual(status,'source_zero_target_insulation_removed')
     def test_material_conversion_preserves_mass(self):
         result = normalize_material({'name': 'Board', 'material_type': 'StandardOpaqueMaterial',
                  'thickness': 1, 'conductivity': 1, 'density': 1, 'specific_heat': 1})

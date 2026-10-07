@@ -4,6 +4,7 @@ import copy
 import gzip
 import hashlib
 import json
+import math
 from pathlib import Path
 from jsonschema import Draft202012Validator, ValidationError
 from scripts.common import ROOT, load_json
@@ -101,9 +102,9 @@ class QueryClient(TransportClient):
             raise QueryError('invalid_request','Unknown primary kind or evidence view')
         info=self.manifest['record_types'][kind]
         if (not isinstance(filters,dict) or set(filters)-set(info['filter_fields']) or
-                any(isinstance(v,(dict,list)) for v in filters.values()) or
-                not isinstance(fields,list) or not fields or len(fields)!=len(set(fields)) or
-                any(not isinstance(f,str) for f in fields) or set(fields)-set(info['fields'])):
+                any(isinstance(v,(dict,list)) or isinstance(v,float) and not math.isfinite(v) for v in filters.values()) or
+                not isinstance(fields,list) or not fields or any(not isinstance(f,str) for f in fields) or
+                len(fields)!=len(set(fields)) or set(fields)-set(info['fields'])):
             raise QueryError('invalid_request','Unknown/non-scalar filter or invalid projected field')
         index=self.fetch(info['index']);rows=[]
         for route in index['routes']:
@@ -117,7 +118,8 @@ class QueryClient(TransportClient):
             rows=[r for r in rows if r['id'] not in replaced]
         result=[]
         for row in rows:
-            if all(val in row.get('gate',[]) if key=='gate' else same_scalar(row.get(key),val)
+            if all(val in row.get('gate',[]) if key=='gate' else
+                   val in row.get('available_details',[row.get('detail')]) if key=='detail' else same_scalar(row.get(key),val)
                    for key,val in filters.items()):
                 result.append({'id':row['id'],'fields':{key:row.get(key) for key in fields},
                                'evidence_view':row['evidence_view'],'derivation':row['derivation']})

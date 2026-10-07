@@ -27,6 +27,15 @@ def build(context):
                 'transformation':'retained schedule provenance; field-specific conversions preserved',
                 'extraction_date':source['extraction_date'],'interpretation':source['notes']})
     bundle['policies']=[{'id':'definition-policy-v1',**context.policy}]
+    if context.scope=='full':
+        for table,source_table in [('programs','programs'),('constructions','envelope_components'),('hvac_systems','systems')]:
+            represented={r.get('source_id') for r in bundle[table]}
+            ancillary={r['source_id'] for r in bundle['coverage']}
+            for source in context.atlas[source_table]:
+                if source['id'] not in ancillary:
+                    bundle['coverage'].append({'id':'coverage-'+source['id'],'source_id':source['id'],
+                        'source_table':source_table,'status':'represented' if source['id'] in represented else 'unsupported',
+                        'reason':'Normalized source definition; individual unknowns retained' if source['id'] in represented else 'No supported normalized definition'})
     return DefinitionBundle(**{k:v for k,v in bundle.items() if k not in TABLES}).merge(bundle)
 
 
