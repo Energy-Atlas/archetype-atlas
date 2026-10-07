@@ -127,3 +127,11 @@ test('thermostat diagnostics report overlaps without changing source values', ()
   assert.deepEqual(core.thermostatDiagnostic(heating, cooling), {minimumDeadband: -1, overlapHours: [1]});
   assert.deepEqual(heating, [20, 24, 19]);
 });
+
+test('definition filters preserve exact unavailable contexts and reset dependent facets', () => {
+  const definitions = require('../website/assets/definition_core.js');
+  const entries = [{id:'a',name:'Office',building:'Medium Office',vintage:'2019',detail:'SourcePrograms',available_details:['SourcePrograms','GeneralMix'],evidence_view:'source'}];
+  assert.equal(definitions.filter(entries,{detail:'GeneralMix',vintage:'2019'}).length,1);
+  assert.equal(definitions.filter(entries,{vintage:'2004'}).length,0);
+  assert.deepEqual(definitions.change({detail:'GeneralMix',vintage:'2019',climate:'5A'},'building','Hospital'),{building:'Hospital',detail:'',vintage:'',climate:'',system_type:''});
+});

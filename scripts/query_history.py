@@ -14,10 +14,18 @@ from scripts.query_delivery import (checked_target, check_reference, descriptor,
 from scripts.query_client import strict_json
 
 
-def export_history(root):
+def validator(major):
+    if major==1:return validate_delivery
+    if major==2:
+        from scripts.query_v2 import validate_delivery as validate_v2
+        return validate_v2
+    raise ValueError('Unsupported delivery major')
+
+
+def export_history(root,major=1):
     """Publisher-only archive; ordinary queries never request it."""
     root = Path(root)
-    errors = validate_delivery(root)
+    errors = validator(major)(root)
     if errors:
         raise ValueError('; '.join(errors))
     content = io.BytesIO()
@@ -37,7 +45,7 @@ def export_history(root):
     return latest['history']
 
 
-def restore_history(source, target, allow_missing=False):
+def restore_history(source, target, allow_missing=False,major=1):
     """Restore only verified publisher output; never silently discard bad history.
 
     source is a delivery/v1 directory path or HTTPS root. An initial 404 is allowed
@@ -90,7 +98,8 @@ def restore_history(source, target, allow_missing=False):
                 path.write_bytes(archive.read(info))
         (stage/'latest.json').write_bytes(latest_bytes)
         (stage/'history.zip').write_bytes(archive_bytes)
-        errors = validate_delivery(stage)
+        if latest.get('schema_version','').split('.')[0]!=str(major):raise ValueError('History delivery major mismatch')
+        errors = validator(major)(stage)
         if errors:
             raise ValueError('Invalid restored history: ' + '; '.join(errors[:4]))
         # The manifest schema references are content-addressed and retained too.
@@ -110,12 +119,13 @@ def main():
     parser.add_argument('--restore', help='Previously published delivery/v1 HTTPS root')
     parser.add_argument('--target', type=Path, default=ROOT/'build/query-history')
     parser.add_argument('--allow-missing', action='store_true')
+    parser.add_argument('--major',type=int,choices=[1,2],default=1)
     args = parser.parse_args()
     if args.restore:
-        restored = restore_history(args.restore, args.target, args.allow_missing)
+        restored = restore_history(args.restore, args.target, args.allow_missing,args.major)
         print('Query history restored' if restored else 'Initial publication: no earlier query history')
     else:
-        ref = export_history(args.target)
+        ref = export_history(args.target,args.major)
         print('Query history archived: ' + str(ref['size_bytes']) + ' bytes')
 
 

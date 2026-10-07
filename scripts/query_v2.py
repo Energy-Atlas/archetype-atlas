@@ -137,6 +137,37 @@ class QueryClient(TransportClient):
         raise QueryError('not_found','Unknown supporting resource ID')
 
 
+def validate_delivery(root):
+    """Validate every historical manifest and its transitive resource graph."""
+    from scripts.query_delivery import references
+    errors=[];root=Path(root);seen=set()
+    try:
+        current=QueryClient(root)
+        for path in (root/'resources').glob('*'):
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=path.name[:64]:
+                raise ValueError('Retained resource checksum mismatch')
+        for path in (root/'snapshots').glob('*/manifest.json'):
+            content=path.read_bytes();ref=descriptor(path.relative_to(root).as_posix(),content)
+            client=QueryClient(root,manifest_ref=ref)
+            if path.parent.name!=client.manifest['snapshot_id']:raise ValueError('Retained snapshot path mismatch')
+            pending=list(references(client.manifest))
+            while pending:
+                ref=pending.pop();identity=canonical(ref)
+                if identity in seen:continue
+                seen.add(identity);value=client.fetch(ref)
+                pending.extend(r for r in references(value) if isinstance(r.get('href'),str))
+            for kind,info in client.manifest['record_types'].items():
+                index=client.fetch(info['index']);ids=[]
+                for route in index['routes']:
+                    packet_ids=[r['id'] for ref in route['packets'] for r in client.fetch(ref)['records']]
+                    if packet_ids!=route['record_ids']:raise ValueError('Packet/route inventory mismatch')
+                    ids.extend(packet_ids)
+                if len(ids)!=len(set(ids)) or len(ids)!=info['record_count']:raise ValueError('Record count/identity mismatch')
+        if not (root/current.manifest_ref['href']).exists():raise ValueError('Missing current manifest')
+    except (ValueError,OSError,KeyError,TypeError) as error:errors.append(str(error))
+    return errors
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--input',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True);args=p.parse_args()

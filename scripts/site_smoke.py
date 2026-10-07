@@ -37,6 +37,51 @@ def serve(root, port=0):
     return server, f'http://127.0.0.1:{server.server_port}' + PREFIX
 
 
+def definition_smoke(browser,base,screenshot_dir=None):
+    from playwright.sync_api import expect
+    page=browser.new_page(viewport={'width':1440,'height':960})
+    errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
+    page.goto(base+'catalogue/')
+    expect(page.locator('.definition-gate')).to_have_count(2)
+    page.locator('.definition-gate').nth(1).focus();page.keyboard.press('Enter')
+    expect(page.locator('.definition-kind')).to_have_count(3)
+    page.locator('.definition-kind').first.click()
+    expect(page.locator('.definition-status')).to_contain_text('matching entries')
+    expect(page.locator('[data-filter="climate"]')).to_have_count(0)
+    page.locator('[data-filter="building"]').select_option('Medium Office')
+    page.locator('[data-filter="vintage"]').select_option('90.1-2019')
+    expect(page.locator('.definition-status')).to_contain_text('2 matching entries')
+    page.reload();expect(page.locator('[data-filter="vintage"]')).to_have_value('90.1-2019')
+    if screenshot_dir:page.screenshot(path=str(screenshot_dir/'definition-finder.png'),full_page=True)
+    page.locator('.definition-result a').first.click()
+    expect(page.locator('.definition-copy')).to_be_visible()
+    resource=page.locator('.definition-resource').first
+    resource.locator('summary').click();resource.locator('button').click()
+    expect(resource.locator('button')).to_have_text('Verified')
+    expect(resource.locator('pre')).not_to_be_empty()
+    if screenshot_dir:page.screenshot(path=str(screenshot_dir/'definition-detail.png'),full_page=True)
+    page.reload()
+    page.route('**/delivery/v2/resources/**',lambda route:route.fulfill(status=404,body='missing'))
+    resource=page.locator('.definition-resource').first
+    resource.locator('summary').click();resource.locator('button').click()
+    expect(resource.locator('pre')).to_contain_text('Resource unavailable (404)')
+    page.unroute('**/delivery/v2/resources/**')
+    page.goto(base+'catalogue/nonresidential/program/?building=Medium+Office&vintage=Unsupported')
+    expect(page.locator('.definition-status')).to_contain_text('No entries match')
+    page.set_viewport_size({'width':390,'height':844})
+    page.goto(base+'catalogue/')
+    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'Definition gate mobile overflow'
+    if screenshot_dir:page.screenshot(path=str(screenshot_dir/'definition-mobile.png'),full_page=True)
+    offline=browser.new_context(java_script_enabled=False);fallback=offline.new_page()
+    fallback.goto(base+'catalogue/');expect(fallback.locator('.definition-gate')).to_have_count(2)
+    fallback.goto(base+'catalogue/nonresidential/program/')
+    fallback.locator('.definition-static summary').click()
+    expect(fallback.locator('.definition-static a').first).to_be_visible()
+    fallback.locator('.definition-static a').first.click();expect(fallback.locator('h1')).to_be_visible()
+    offline.close();page.close()
+    assert not errors,errors
+
+
 def smoke(root, screenshot_dir=None):
     from playwright.sync_api import sync_playwright, expect
     root = Path(root)
@@ -281,6 +326,8 @@ def smoke(root, screenshot_dir=None):
                 expect(fallback.locator('h1')).to_contain_text(heading)
                 if screenshot_dir and slug == 'data-delivery':
                     fallback.screenshot(path=str(screenshot_dir/'data-delivery.png'), full_page=True)
+            if (root/'catalogue/nonresidential/program/entries.json').exists():
+                definition_smoke(browser,base,screenshot_dir)
             browser.close()
         if errors or failed:
             raise AssertionError({'browser_errors': errors, 'failed_local_requests': failed})

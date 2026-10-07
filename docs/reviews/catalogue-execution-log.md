@@ -90,3 +90,15 @@ Finding for Task 9: the existing built site is 993 MB against the 1 GB publicati
 ceiling. Preserve immutable history; reduce repeated presentation chrome and
 use compact selective v2 resources rather than dropping historical artifacts.
 Task 8 final gate: five full-graph/query tests pass; frozen hashes verify and canonical bytes reproduce exactly.
+
+Task 9 verification in progress: two gates/three kinds, generated facets, exact
+empty states, dependent resets, no-JS lists and verified lazy resources are
+implemented. Six UI/retention/shell tests and 11 Node tests pass.
+Task 10 retention was advanced to support Task 9 v2 publication: each major has
+its own archive and explicit first-publication bootstrap. No historical resource
+is deleted to meet the size ceiling.
+Ruling: perform the fresh whole-implementation review before publication while
+long build/regression checks run, including current UI/docs/CI changes. Cost if
+wrong: any later changed behavior requires its own regression verification.
+Finding: Git normalized a frozen CRLF policy; every staged release blob is now
+checked against its manifest and exact frozen bytes are preserved via attributes.

@@ -55,3 +55,20 @@
   .atlas-meta { font-size: .6rem; }
 }
 @media print { .atlas-controls, .atlas-pagination { display: none; } }
+
+.definition-gates,.definition-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2rem;margin:2rem 0}
+.definition-kinds{grid-template-columns:repeat(3,minmax(0,1fr))}
+.definition-gate,.definition-kind{display:block;padding:1.8rem;border:1px solid var(--atlas-line);border-radius:.6rem;background:var(--md-default-bg-color);font-size:1.1rem;font-weight:600;box-shadow:0 3px 12px #1232}
+.definition-gate span{display:block;font-size:.7rem;font-weight:400;margin-top:1rem;color:var(--md-default-fg-color--light)}
+.definition-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;padding:1rem;background:#edf4f2;border-radius:.5rem}
+.definition-filters label{display:flex;flex-direction:column;font-size:.7rem;gap:.3rem}
+.definition-filters select,.definition-filters input{min-height:42px;background:white;border:1px solid #78928b;border-radius:.3rem;padding:.5rem;color:#173b32;max-width:100%;font:inherit}
+.definition-filters button,.definition-more,.definition-copy,.definition-resource button{padding:.5rem .8rem;border:1px solid #437f71;border-radius:.3rem;cursor:pointer;min-height:36px}
+.definition-result{padding:.8rem 0;border-bottom:1px solid var(--atlas-line)}
+.definition-result a{font-weight:600}.definition-result p{font-size:.65rem;margin:.3rem 0;color:var(--md-default-fg-color--light)}
+.definition-document{max-width:1100px;padding:1.5rem;margin:auto}.definition-document .md-typeset{font-size:16px}
+.definition-header{padding:1rem;border-bottom:1px solid #bacbc5;font-size:16px}.definition-header a{color:#176652}
+.definition-resource{margin:.5rem 0;padding:.5rem;border:1px solid #cbd8d3;border-radius:.3rem}.definition-resource summary{cursor:pointer;overflow-wrap:anywhere}
+.definition-resource pre{max-height:34rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
+.definition-id{overflow-wrap:anywhere}.definition-static ul{font-size:.7rem}
+@media(max-width:700px){.definition-gates,.definition-kinds{grid-template-columns:1fr}.definition-document{padding:.7rem}.definition-filters{grid-template-columns:1fr}}

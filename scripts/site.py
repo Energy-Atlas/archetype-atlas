@@ -701,7 +701,7 @@ def rename_generated(source, target):
             time.sleep(0.2 * (attempt + 1))
 
 
-def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE, water_path=WATER_RELEASE, water_reporting_path=ROOT/'data/water-reporting-releases/v0.1.0'):
+def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION_RELEASE, water_path=WATER_RELEASE, water_reporting_path=ROOT/'data/water-reporting-releases/v0.1.0',definition_release=None):
     """Verify everything before writing; atomically replace only the supplied output."""
     loaded = sorted([(Path(p), *read_release(p)) for p in release_paths],
                     key=lambda x: tuple(int(n) for n in x[-1][1:].split('.')))
@@ -908,6 +908,16 @@ def generate_site(release_paths, target, pilot=False, supplement_path=RESOLUTION
             summary['query_delivery'] = publish_query_delivery(stage, inputs=inputs)
         else:
             summary['query_delivery'] = publish_query_delivery(stage, history=ROOT/'build/query-history')
+        if definition_release is not None:
+            from scripts.definition_release import verify,read_bundle
+            from scripts.definition_site import generate
+            report=verify(definition_release)
+            if report.errors:raise ValueError('Invalid frozen definitions: '+'; '.join(report.errors[:4]))
+            generate(read_bundle(definition_release),stage,history=ROOT/'build/query-history-v2')
+            write_text(stage,'guides/definitions.md',(ROOT/'docs/definition-contract.md').read_text(encoding='utf-8'))
+            home=(stage/'index.md').read_text(encoding='utf-8')
+            home=home.replace(f'releases/{latest}/catalogue/','catalogue/')
+            write_text(stage,'index.md',home)
         write_site_json(stage/'site-manifest.json', summary)
         # target is checked above and contains generated files only.
         if target.exists():
@@ -921,11 +931,12 @@ def main():
     p.add_argument('--release', type=Path, action='append', help='Repeat to preserve multiple release URLs')
     p.add_argument('--output', type=Path, default=ROOT/'build/site-docs')
     p.add_argument('--pilot', action='store_true')
+    p.add_argument('--definitions',type=Path,default=ROOT/'data/definition-releases/v0.1.0')
     args = p.parse_args()
     from scripts.site_assets import fetch_assets
     fetch_assets()
     result = generate_site(args.release or [ROOT/'data/releases/v0.1.0', ROOT/'data/releases/v0.2.0'],
-                           args.output, args.pilot)
+                           args.output, args.pilot,definition_release=args.definitions)
     print(json.dumps(result, indent=2))
 
 
