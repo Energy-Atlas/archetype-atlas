@@ -941,4 +941,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    from scripts.active_site import main as active_main
+    active_main()

@@ -20,7 +20,7 @@ def write(root,path,text):
     target.write_text(text,encoding='utf-8',newline='\n')
 
 
-def generate(bundle,target,publish=True,history=None):
+def generate(bundle,target,publish=True,history=None,pages=True):
     root=Path(target);refs={}
     if publish:
         from scripts.query_v2 import generate_delivery
@@ -77,6 +77,7 @@ def generate(bundle,target,publish=True,history=None):
             page+='</ul></details>\n'
             write(root,f'catalogue/{gate_key}/{kind}/index.md',page)
             write(root,f'catalogue/{gate_key}/{kind}/entries.json',canonical(entries).decode())
+    if not pages:return
     ids={r['id'] for table in PRIMARY.values() for r in bundle[table]}
     supporting={r['id']:(table,r) for table in TABLES if table not in PRIMARY.values() for r in bundle[table]}
     for table in PRIMARY.values():

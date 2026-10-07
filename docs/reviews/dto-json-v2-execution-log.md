@@ -37,3 +37,18 @@ largest decoded payload was 673,497 bytes. A further RED/GREEN check ensures
 source-known water targets are not labelled as experimental defaults. Annual
 2007 calendars, count-based residential loads and positive mixture leaves remain
 intact. Source definitions and the handed-over schemas are unchanged.
+
+## Task 2
+
+Three active-site tests first failed for the missing current-only generator.
+Nine active/definition/HTML tests now pass. The active CLI builds a fresh staging
+tree from the definition bundle only: no release catalogues, historical download
+trees, v1 delivery, retained snapshots or old curated navigation are copied.
+Programs expose verified raw/defaulted DTO descriptors and unknown values;
+materials, components, schedules and all referenced records have designated pages.
+
+Ruling: Energy objects use MkDocs pages; the much larger evidence/coverage tables
+use compact generated HTML object pages with the same JSON inspection controls.
+This keeps every record inspectable without expanding 43,000 evidence records
+through the Markdown engine. Cost if wrong: metadata pages need their own small
+presentation shell rather than Material's navigation runtime.

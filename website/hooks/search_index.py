@@ -32,6 +32,11 @@ def on_post_build(config):
     for finder in (Path(config['docs_dir'])/'catalogue').glob('*/*/entries.json'):
         for entry in json.loads(finder.read_text(encoding='utf-8')):
             record_titles['definitions/'+entry['id']+'/']=entry['name']
+    objects=Path(config['docs_dir'])/'object-index.json'
+    if objects.exists():
+        for row in json.loads(objects.read_text(encoding='utf-8')).values():
+            if row['path'].endswith('.md'):
+                record_titles[row['path'].removesuffix('.md')+'/']=row['name']
     index=json.loads(path.read_text(encoding='utf-8'))
     result=compact_records(index,record_titles)
     indexed={entry['location'].split('#',1)[0] for entry in result['docs']}
