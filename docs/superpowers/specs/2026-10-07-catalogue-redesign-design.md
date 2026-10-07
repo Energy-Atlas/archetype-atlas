@@ -175,6 +175,8 @@ experimental fallback, with:
 This permission does not choose numerical fallback values in this design, and
 does not convert unknown source fields into source measurements. Ground-contact
 representations that require perimeter, area or depth retain those dependencies.
+No additional generic defaults are authorized: unresolved residential load,
+infiltration and HVAC inputs remain explicit gaps or consumer requirements.
 
 ## HVAC elements and comparison
 
@@ -184,12 +186,16 @@ technology/fuel, rated performance and rating basis, fan/pump parameters, curves
 control parameters and sizing inputs. Keep capacities and instance multiplicities
 explicit. A common type label is insufficient.
 
-Separate reusable definition identity from instantiated size. Autosizing can
-change component capacities and even the selected efficiency rule; report which
-parameters remain identical. Resolve conditional efficiency using the actual
-capacity/subtype/fuel/date predicates. Pin the lookup date instead of relying on
-the machine's current date. Preserve metric distinctions and any source-specific
-conversion method, including fan inclusion/exclusion.
+The atlas is a library of fixed performance definitions, independent of the
+model to which a consumer applies them. Model sizing and experiment sizing modes
+are downstream responsibilities and are outside the atlas contract. Preserve
+source-reported capacities or capacity bands as definition metadata and retain
+unresolved requirements explicitly. Conditional efficiency tables must expose
+their actual capacity/subtype/fuel/date predicates; deterministic resolved
+variants must state their source-supported rating context. Do not choose an
+arbitrary capacity to manufacture a fixed COP. Pin the lookup date instead of
+relying on the machine's current date. Preserve metric distinctions and any
+source-specific conversion method, including fan inclusion/exclusion.
 
 Similarity reports identify compared properties and tolerances. Missing values
 prevent claims of full identity; they do not count as matched zeros. No requirement
@@ -227,7 +233,7 @@ independent consumer implementation.
 Validate a Medium Office pilot before expanding. The implementation must then
 exercise whole-dwelling semantics, mixed programs, one-time shared equipment,
 construction layer/target resolution, generic internal/ground assumptions and
-component-level HVAC sizing/performance selection. Run the repository's schema,
+component-level fixed HVAC performance definitions. Run the repository's schema,
 physical, referential, schedule, provenance and reproducibility checks before
 release; check the gate, filters and supporting links in the browser.
 
