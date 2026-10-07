@@ -55,3 +55,17 @@ v1 compatibility tests are running separately before the full release gate.
 Ruling: subclass the existing verified transport instead of modifying v1 modules;
 this preserves their public default behavior. Cost if wrong: shared transport
 changes later require compatibility tests for both majors.
+
+Task 5 gate complete: 47 pilot/v1 compatibility tests passed in 203 seconds.
+Task 6: complete. Seven composition tests pass, covering all 83 contexts/768
+source rows, source calendar/design days, required unknowns and conserved loads.
+Strip-mall 25/25/50 weights are reproduced from geometry. Recipe-specific
+schedule evidence prevents identical shapes from losing their distinct lineage.
+The review area extractor now delegates to production code without import side
+effects; its inspection format remains available. Full-family unknown magnitudes
+and missing member demands are explicitly retained, not averaged away.
+
+Task 6 finding: aggregate weekday selectors must precede explicit weekdays in
+derived rules. A seasonal/wrap-year regression caught and verifies the correction.
+The OpenStudio 2.2.1 counted-area default is checked against its locked source.
+Baseline full suite: 141 tests passed (1326 seconds).
