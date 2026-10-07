@@ -52,3 +52,20 @@ use compact generated HTML object pages with the same JSON inspection controls.
 This keeps every record inspectable without expanding 43,000 evidence records
 through the Markdown engine. Cost if wrong: metadata pages need their own small
 presentation shell rather than Material's navigation runtime.
+
+## Task 3
+
+The eight schedule-core tests first failed for the missing module; all 22 Node
+tests now pass. New pure schedule functions preserve wrapped seasons, leap days,
+last-specific precedence, separate holidays/design days, exact unique profiles,
+unknown gaps and recorded annual years. The interactive controller adds step
+curves, a clickable annual heatmap and exact daily tables.
+
+Plotly cartesian 3.1.0 includes scatter and heatmap (official distribution README).
+Its local asset is locked at 1,339,916 bytes, SHA-256
+`c462b40a1a542e16c3533f97d39fbbb91af4f5267f3cbf23bd70d785efc44c38`;
+the existing MIT notice remains required.
+
+Ruling: Run browser plot integration in Task 4 because it consumes that task's
+verified object loader. Pure schedule and asset checks run now. Cost if wrong:
+integration problems appear in Task 4 rather than this task's first test cycle.

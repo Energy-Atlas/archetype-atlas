@@ -74,3 +74,23 @@
 .definition-resource pre{max-height:34rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
 .definition-id{overflow-wrap:anywhere}.definition-static ul{font-size:.7rem}
 @media(max-width:700px){.definition-gates,.definition-kinds{grid-template-columns:1fr}.definition-document{padding:.7rem}.definition-filters{grid-template-columns:1fr}}
+
+.definition-document{font-family:system-ui,sans-serif;color:#233c33;line-height:1.6;overflow-wrap:anywhere}
+.definition-document a{color:#176652;text-underline-offset:.18em}
+.object-json{margin:1.2rem 0;padding:1rem;border:1px solid #cbd8d3;border-radius:.4rem;background:#f7faf8}
+.object-copy,.schedule-load,.schedule-update,.object-dialog button{font:inherit;padding:.55rem .85rem;border:1px solid #437f71;border-radius:.3rem;background:white;color:#164b47;cursor:pointer}
+.object-source{margin-top:.7rem}.object-source summary{cursor:pointer;font-weight:600}
+.object-source pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:32rem;overflow:auto;font-size:12px;background:white;padding:.7rem}
+.object-status,.schedule-status{font-size:14px;color:#52665f}.object-references{margin:1rem 0}
+.object-references summary{cursor:pointer}.object-references ul{max-height:22rem;overflow:auto}
+.schedule-viewer{margin:1.5rem 0;border-top:1px solid #cbd8d3;padding-top:1rem;min-width:0}
+.schedule-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;background:#edf4f2;padding:.8rem}
+.schedule-controls[hidden]{display:none}.schedule-controls label{display:flex;flex-direction:column;font-size:14px;gap:.4rem}
+.schedule-controls input,.schedule-controls select{width:100%;min-width:0;font:inherit;padding:.5rem;border:1px solid #78928b;border-radius:.3rem;background:white;color:#173b32}
+.schedule-day-chart,.schedule-annual-chart{width:100%;min-width:0;max-width:100%}
+.schedule-values table{width:100%;border-collapse:collapse;font-size:14px}.schedule-values td,.schedule-values th{padding:.3rem;border-bottom:1px solid #d9e2de;text-align:left}
+.object-dialog{max-width:600px;width:calc(100% - 2rem);border:1px solid #437f71;border-radius:.6rem;padding:1.5rem;color:#233c33;background:white;font:16px/1.5 system-ui,sans-serif}
+.object-dialog::backdrop{background:#102f2bb3}.object-dialog h2{margin-top:0}.object-dialog button{margin:.35rem .35rem .35rem 0}
+.object-dialog button:disabled{opacity:.5;cursor:default}.object-dialog textarea{width:100%;height:18rem;font:12px/1.4 monospace;padding:.6rem}
+.object-dialog :focus-visible,.object-copy:focus-visible,.object-source summary:focus-visible,.schedule-controls :focus-visible{outline:3px solid #bc623b;outline-offset:3px}
+@media(max-width:700px){.schedule-controls{grid-template-columns:1fr}.object-json{padding:.7rem}.object-dialog{padding:1rem}.schedule-viewer{font-size:14px}}
