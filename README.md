@@ -20,7 +20,7 @@ immutable local downloads; `data/interim/` intermediate diagnostics;
 Release: **v0.2.0**, schema **0.2.0**, dated 2026-10-02. The 17 commercial types
 in the union of the DOE Reference and PNNL commercial suites cover 83 selected
 building/template combinations. There are 41 residential source configurations
-across seven classes: detached, attached, 2–4-unit multifamily, low-rise 5+-unit
+across seven classes: detached, attached, 2â€“4-unit multifamily, low-rise 5+-unit
 multifamily, midrise apartment, highrise apartment and manufactured/mobile homes.
 This is complete named typology coverage at source-input level; simulation-ready
 parameter completeness remains unresolved. Five commercial templates are selected,
@@ -145,21 +145,20 @@ documents the distinction. Reproduce/verify with `python -m scripts.water_report
 
 ## Research catalogue site
 
-Browse the [published catalogue](https://energy-atlas.github.io/archetype-atlas/).
-The profile/resolution extension is maintained on `feat/schedule-resolution`;
-the research branches remain unmerged.
+The local `feature/dto-json-v2` implementation replaces the active site with the
+Residential / Non Residential object catalogue. Program, construction and HVAC
+pages link to inspectable nested objects. Programs copy self-contained raw or
+default-filled JSON, including their schedules, under the
+[connector contract](docs/program-json-v2-contract.md). Schedules have unique day
+step plots and annual heatmaps. Source unknowns remain explicit.
 
-The MkDocs catalogue presents frozen v0.1.0 and v0.2.0 through building, program,
-vintage/template, climate, system, source and status views. Entry pages include
-parameters, field provenance, exact downloads and interactive daily schedule
-inspection. Residential runtime gaps and conditional source rules remain explicit.
-
-See the [site build and verification guide](docs/site-build.md) for reproducible
-commands, preview, dependency pins and the GitHub Pages workflow.
-Generated HTML is an inspection view; canonical research data is unchanged.
-The [publication record](docs/site-publication.md) identifies the tested commit
-and deployment evidence.
-
+The [site build guide](docs/site-build.md) provides local verification and preview
+commands. Superseded pages, historical URLs and versioned downloads are removed
+from the generated site. Frozen research inputs remain immutable in this repository.
+This implementation has not been pushed or deployed; the
+[published site](https://energy-atlas.github.io/archetype-atlas/) reflects its last
+deployment. [Execution findings](docs/reviews/dto-json-v2-execution-log.md) record
+local decisions and checks.
 
 ## Element definition library and catalogue v2
 
@@ -167,7 +166,7 @@ The [catalogue](https://energy-atlas.github.io/archetype-atlas/catalogue/)
 starts with Residential / Non Residential, then Programs / Constructions / HVAC
 systems. [The contract](docs/definition-contract.md) describes load bases, scoped
 air requirements, component comparison, fixed conditional HVAC ratings and lazy,
-manifest-pinned delivery. V1 remains available without changing its contract.
+manifest-pinned current delivery. Legacy v1 publication is retired.
 
 Canonical definitions: `data/definition-releases/v0.1.1/` (schema 1.0.0).
 [Coverage](docs/reviews/catalogue-definition-coverage.md) separates supported
@@ -185,4 +184,6 @@ python -m scripts.query_v2 --input data/definition-releases/v0.1.1 --output buil
 The library does not size consumer models. Residential definitions reuse existing
 determined profiles; stochastic generators remain deferred. Unknown load
 magnitudes, infiltration and HVAC details remain explicit. Only the documented
-internal/ground construction fallbacks introduce generic assumptions.
+internal/ground construction fallbacks introduce generic construction assumptions.
+The explicitly selected program copy defaults are separately recorded and never
+replace source evidence.

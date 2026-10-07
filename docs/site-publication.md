@@ -1,3 +1,16 @@
+# Local DTO catalogue status — 2026-10-07
+
+`feature/dto-json-v2` is a local implementation only. No push, workflow dispatch,
+merge or deployment is authorized in this work. See the
+[execution log](reviews/dto-json-v2-execution-log.md) for current verification.
+
+The next active build removes superseded routes and downloads entirely; historical
+URLs are not retained. Canonical research snapshots remain immutable repository
+inputs. The records below describe earlier deployments and are historical evidence,
+not descriptions of the new generated site.
+
+---
+
 # Initial catalogue publication
 
 Verified on 2026-10-03 at
@@ -95,7 +108,7 @@ station-weather proxy, upstream zero-occupant skips and nominal thermostat scope
 Catalogue/profile coverage continues to be distinct from full simulation readiness.
 The independently versioned supplement is tagged `resolution-v0.1.0`.
 
-## Reviewed schedule resolutions — 2026-10-04
+## Reviewed schedule resolutions â€” 2026-10-04
 
 Published implementation: `362aaad`; publisher branch `feat/schedule-resolution`.
 Data/decision commit: `ae539bb`. Research branches remain unmerged.
@@ -129,7 +142,7 @@ receipt remains historical. All frozen release/supplement hashes are unchanged.
 The future parametric-generator direction remains a documented decision, with
 the interface and runtime parity contract deferred to the next discussion.
 
-## Coverage-first schedule supplement — 2026-10-04
+## Coverage-first schedule supplement â€” 2026-10-04
 
 Published implementation and `resolution-v0.3.0` tag: `6a7be09`, on
 `feat/schedule-resolution`. Research branches remain unmerged.
@@ -165,7 +178,7 @@ source-conserving hot-water equivalent and its existing Medium Office curve
 candidate. Program allocation remains a separate verification step.
 
 
-## Program water equivalent and release scope — 2026-10-04
+## Program water equivalent and release scope â€” 2026-10-04
 
 Data/decision implementation and `water-v0.1.0` tag: `63885ec`. Portable archive
 delivery: `38e4769`. Both are on `feat/schedule-resolution`; research branches
@@ -215,7 +228,7 @@ Water manifest SHA-256:
 Portable snapshot ZIP SHA-256:
 `27d189b5f099b153e656ab3df9a1f1c5eb877b2c37cfbf9878c1c7031d5a8a30`.
 
-## Reviewed schedule completion — 2026-10-04
+## Reviewed schedule completion â€” 2026-10-04
 
 Published and tested commit: `a82e5c7` on `feat/schedule-resolution`. Annotated
 tags `resolution-v0.4.0` and `completion-v0.1.0` identify the verified tree.
@@ -267,7 +280,7 @@ Live commercial ZIP SHA-256:
 `318155e78a5334c89983cb6ad4f95c17952e6c71bd26115f9b4b6f588bdddaf7`.
 Manifest hashes are recorded in the release notes and validation receipt.
 
-## Complete water reporting and catalogue names — 2026-10-05
+## Complete water reporting and catalogue names â€” 2026-10-05
 
 Published and tested commit: `b653d5a` on `feat/schedule-resolution`. Annotated
 tag `water-reporting-v0.1.0` identifies the verified code and frozen bundle.

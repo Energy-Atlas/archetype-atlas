@@ -1,5 +1,6 @@
 """Linked energy objects and bounded content-addressed JSON disclosures."""
 import gzip
+import datetime as dt
 import hashlib
 import html
 import json
@@ -76,6 +77,28 @@ def schedule_markup():
             '<details><summary>Exact values for the selected day</summary><div class="schedule-values"></div></details></section>')
 
 
+def static_schedule(record):
+    """Exact unique source profiles remain inspectable without browser scripting."""
+    from scripts.schedule_json import normalize_schedule
+    schedule = normalize_schedule(record);profiles = {}
+    if schedule['type'] == 'annual':
+        start = dt.date(schedule['year'], 1, 1)
+        for offset in range(0, len(schedule['values']), 24):
+            values = tuple(schedule['values'][offset:offset + 24])
+            profiles.setdefault(values, []).append((start + dt.timedelta(days=offset // 24)).isoformat())
+    else:
+        for i, rule in enumerate(schedule['rules']):
+            values = rule['values'] * 24 if len(rule['values']) == 1 else rule['values']
+            profiles.setdefault(tuple(values), []).append(f'Rule {i}: {rule["start_date"]}–{rule["end_date"]} · {", ".join(rule["day_types"])}')
+    text = '<details class="schedule-static"><summary>Exact source day profiles (available without JavaScript)</summary>'
+    text += f'<p>Unit: {esc(schedule["unit"])}. Hourly interval values; source order and special-day selectors are retained in labels.</p>'
+    text += '<div class="schedule-static-table"><table><tr><th>Contributing rules or recorded dates</th>'
+    text += ''.join(f'<th>{hour:02}:00–{hour+1:02}:00</th>' for hour in range(24)) + '</tr>'
+    for values, labels in profiles.items():
+        text += '<tr><th>' + esc('; '.join(labels)) + '</th>' + ''.join(f'<td>{esc(v)}</td>' for v in values) + '</tr>'
+    return text + '</table></div></details>'
+
+
 def generate_objects(bundle, root):
     root = Path(root); store = JSONStore(root); exporter = ProgramExporter(bundle)
     records = {r['id']: (table, r) for table in TABLES for r in bundle[table]}
@@ -132,7 +155,7 @@ def generate_objects(bundle, root):
             text += '\n'
         if table == 'programs': text += 'Unknown source values stay **Unknown**. Copy with defaults applies labelled experimental assumptions.\n\n'
         text += json_markup(descriptor, defaulted, count, reason) + '\n\n'
-        if table == 'schedules': text += schedule_markup() + '\n\n'
+        if table == 'schedules': text += schedule_markup() + '\n\n' + static_schedule(row) + '\n\n'
         refs = sorted(references(row, registry), key=lambda r: (registry[r]['table'], registry[r]['name']))
         if refs:
             text += '<details class="object-references"><summary>Referenced objects</summary><ul>'

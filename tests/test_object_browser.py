@@ -4,9 +4,11 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
-import yaml
-
-from playwright.sync_api import sync_playwright, expect
+try:
+    from playwright.sync_api import sync_playwright, expect
+    import yaml
+except ModuleNotFoundError:
+    raise unittest.SkipTest('Install requirements-site.txt and requirements-browser.txt for browser checks')
 from scripts.active_site import generate_active_site
 from scripts.common import ROOT, load_json
 from scripts.site_smoke import serve
@@ -50,7 +52,11 @@ class ObjectBrowserTests(unittest.TestCase):
 
     def test_copy_before_expansion_copies_complete_raw_and_defaulted_json(self):
         self.program();page=self.page
-        page.locator('.object-copy').click();page.get_by_role('button', name='Copy raw', exact=True).click()
+        page.locator('.object-copy').click()
+        page.locator('.object-default-info summary').click()
+        expect(page.locator('.object-dialog')).to_contain_text('atlas-program-defaults-1.0.0')
+        expect(page.locator('.object-default-info pre')).to_contain_text('required_bindings')
+        page.get_by_role('button', name='Copy raw', exact=True).click()
         expect(page.locator('.object-status')).to_contain_text('copied')
         raw=json.loads(page.evaluate('navigator.clipboard.readText()'))
         self.assertEqual(raw['export_mode'], 'raw');self.assertIsNone(raw['loads'][0]['value'])
@@ -67,6 +73,10 @@ class ObjectBrowserTests(unittest.TestCase):
         expect(page.get_by_role('button',name='Copy raw',exact=True)).to_be_focused()
         page.keyboard.press('Escape');expect(page.locator('.object-dialog')).to_have_count(0)
         expect(page.locator('.object-copy')).to_be_focused()
+
+    def test_active_smoke_exercises_pilot_gates_copy_plots_mobile_and_nojs(self):
+        from scripts.active_smoke import active_smoke
+        active_smoke(self.browser, self.base)
 
     def test_clipboard_denial_offers_selectable_complete_json(self):
         self.page.add_init_script("Object.defineProperty(navigator,'clipboard',{value:{writeText:async()=>{throw new Error('denied')}}});")

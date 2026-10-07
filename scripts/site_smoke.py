@@ -91,6 +91,9 @@ def definition_smoke(browser,base,screenshot_dir=None):
 
 
 def smoke(root, screenshot_dir=None):
+    if (Path(root) / 'object-index.json').exists():
+        from scripts.active_smoke import smoke as current_smoke
+        return current_smoke(root, screenshot_dir)
     from playwright.sync_api import sync_playwright, expect
     root = Path(root)
     index = load_json(root/'releases/v0.2.0/catalogue.json')

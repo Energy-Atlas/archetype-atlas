@@ -81,3 +81,33 @@ text, checksum rejection without changing the clipboard, linked step/heatmap
 plots, leap-year updates, recorded annual calendar locking and component JSON.
 A repeated-copy test exposed stale success text; opening a new choice clears it
 so consumers cannot mistake an earlier copy for the current operation.
+
+## Task 5 — verification in progress
+
+The retirement/export checker first failed because it was absent; its pilot now
+passes and rejects retired routes, stale search entries and missing defaulted
+exports. The fresh active browser smoke first failed for the missing module;
+its pilot passes search, gates, filters, full copying, plots, mobile and no-JS.
+Static exact source profiles first failed their presence check and now pass,
+including all recorded annual day profiles. The popup policy inspection also
+passed RED/GREEN: it exposes verified substitutions and external bindings without
+changing the two copy choices. The focused acceptance suite passed 20/20 before
+these additions; the latest fallback/browser suite passed 11/11 and the expanded
+browser suite passed 7/7.
+
+The first full active generation produced 65,597 object pages, including all
+1,900 raw/defaulted program pairs with zero export failures. Independent
+definition and canonical table rebuilds reproduced their original bytes. Schema,
+physical, schedule, relationship and provenance validation passed. Full-suite,
+final HTML/size/link checks and fresh review are still pending here.
+
+Ruling: Retain only the freshly generated current v2 manifest and its single
+content-addressed snapshot path, because the current finder delivery contract
+requires it. No previously published snapshots or v1 output are restored.
+Cost if wrong: removing that internal manifest path would require changing the
+current delivery contract and client, rather than merely retiring old pages.
+
+Ruling: Include exact unique source-day tables in schedule HTML so values remain
+inspectable without Plotly or JavaScript. All annual dates are associated with
+their exact source profiles. Cost if wrong: larger HTML output; the unchanged
+publication ceiling and mobile overflow checks remain mandatory.

@@ -1,7 +1,7 @@
 # Plain program JSON for connector import
 
 Contract version: **2.0.0**, JSON Schema Draft 2020-12.
-Prepared on `feature/dto-json-v2`; not yet emitted by the website.
+Implemented locally on `feature/dto-json-v2`; the catalogue emits this contract.
 
 ## Files to use now
 
@@ -25,7 +25,7 @@ unknowns preserved in this connector representation; it is not a byte-for-byte
 copy of the older archive's record format. The canonical research archive stays
 unchanged. `defaulted` is the form the BEMGen connector should accept for ordinary
 program creation. A JSON Schema validator validates values; it does not fill
-them. The atlas exporter will apply the policy before producing this form.
+them. The atlas exporter applies the policy before producing this form.
 
 ## Program structure
 
@@ -180,4 +180,5 @@ fraction bounds, and vector lengths. The importer must also check:
 The prepared raw and defaulted Medium Office examples pass their schema,
 reference closure, schedule-unit and heat-fraction checks. The defaulted sample
 contains six loads, ten embedded schedules and twenty-two recorded substitutions.
-No website or BEMGen connector implementation is included in this handoff.
+The atlas exporter and website implement this contract. The BEMGen connector is
+maintained separately and is outside this branch's implementation scope.

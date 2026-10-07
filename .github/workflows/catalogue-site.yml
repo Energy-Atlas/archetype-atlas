@@ -4,6 +4,17 @@ on:
   push:
     paths:
       - 'website/**'
+      - 'scripts/active*.py'
+      - 'scripts/object_site.py'
+      - 'scripts/program_json.py'
+      - 'scripts/schedule_json.py'
+      - 'tests/test_active_site.py'
+      - 'tests/test_object_browser.py'
+      - 'tests/test_program_json*.py'
+      - 'tests/schedule_core.test.js'
+      - 'schemas/*-json-v2.schema.json'
+      - 'sources/program-json-defaults.json'
+      - 'docs/program-json-v2-contract.md'
       - 'scripts/definition*.py'
       - 'scripts/program_definitions.py'
       - 'scripts/program_composition.py'
@@ -47,6 +58,9 @@ on:
       - 'data/definition-releases/**'
       - 'schemas/definitions.schema.json'
       - 'schemas/query-v2.schema.json'
+      - 'schemas/*-json-v2.schema.json'
+      - 'sources/program-json-defaults.json'
+      - 'docs/program-json-v2-contract.md'
       - 'sources/definition*.json'
       - 'sources/program-composition-policy.json'
       - 'docs/definition-contract.md'
@@ -64,14 +78,6 @@ on:
     inputs:
       deploy:
         description: Publish the verified artifact to GitHub Pages
-        type: boolean
-        default: false
-      bootstrap_query_delivery:
-        description: Allow missing query latest only for the first-ever v1 publication
-        type: boolean
-        default: false
-      bootstrap_definition_delivery:
-        description: Allow missing v2 latest only for the first-ever definition publication
         type: boolean
         default: false
 
@@ -120,20 +126,9 @@ jobs:
           python -m unittest tests.test_water_reporting_site -q
           python -m unittest tests.test_site tests.test_site_delivery tests.test_html_delivery -q
           python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
-          node --test tests/site_core.test.js tests/site_parity.test.js tests/definition_review.test.js
-      - name: Restore previously published immutable query snapshots
-        run: |
-          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap_query_delivery }}" = "true" ]; then
-            python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history --allow-missing
-          else
-            python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history
-          fi
-          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap_definition_delivery }}" = "true" ]; then
-            python -m scripts.query_history --major 2 --restore https://energy-atlas.github.io/archetype-atlas/delivery/v2/ --target build/query-history-v2 --allow-missing
-          else
-            python -m scripts.query_history --major 2 --restore https://energy-atlas.github.io/archetype-atlas/delivery/v2/ --target build/query-history-v2
-          fi
-      - name: Generate both versioned catalogues and build
+          python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_active_site tests.test_object_browser -q
+          node --test tests/*.test.js
+      - name: Generate the current definition catalogue and build
         run: |
           python -m scripts.site
           python -m mkdocs build --strict

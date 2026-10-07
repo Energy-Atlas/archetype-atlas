@@ -52,6 +52,18 @@
     [raw, ready, cancel].forEach(b => { b.type = 'button'; }); ready.disabled = !section.dataset.defaulted;
     const status = node('p', ''); status.className = 'object-dialog-status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
     dialog.append(heading, explanation, raw, ready, cancel, status); document.body.append(dialog);
+    if (section.dataset.defaulted) {
+      const info = document.createElement('details');info.className = 'object-default-info';
+      const summary = node('summary', 'Policy, substitutions and required bindings'), content = node('pre', 'Expand to inspect the verified default policy application.');
+      content.tabIndex = 0;info.append(summary, content);dialog.insertBefore(info, raw);
+      info.addEventListener('toggle', async () => {
+        if (!info.open) return;
+        try {
+          const value = await load(section, 'defaulted');
+          content.textContent = JSON.stringify({default_policy_id: value.default_policy_id, assumptions: value.assumptions, required_bindings: value.required_bindings}, null, 2);
+        } catch (error) { content.textContent = error.message; }
+      });
+    }
     dialog.addEventListener('close', () => { dialog.remove(); trigger.focus(); });
     cancel.addEventListener('click', () => dialog.close());
     async function copy(mode) {
