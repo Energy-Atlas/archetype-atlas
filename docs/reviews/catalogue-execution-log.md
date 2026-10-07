@@ -31,3 +31,11 @@ keep original fields intact. Water extraction uses the frozen helper branch,
 not simultaneous per-area and alternate absolute values. Services retain one-time
 ownership and distinct physical heat assignment. Medium Office source scope:
 10 programs, 5 services, 17 original schedule references before reviewed overlays.
+
+Task 3: complete. Nine construction/comparison tests pass, including the real
+Medium Office extraction. Source ground F/C targets were available outside the
+old envelope projection and are now preserved with geometry dependencies.
+Generic fallbacks reuse pinned typical assemblies only when source assignment
+cannot resolve the role. Material record IDs retain assembly provenance while
+physical comparison ignores provenance-only identifiers. A regression test
+caught and fixed conflicting evidence on shared physical material identities.

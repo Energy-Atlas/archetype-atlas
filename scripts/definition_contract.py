@@ -148,5 +148,9 @@ def load_context(root: Path = ROOT, scope: str = 'pilot') -> BuildContext:
         dependencies[name] = hashlib.sha256((directory/'manifest.json').read_bytes()).hexdigest()
     lock = load_json(root/'sources/definition-evidence-lock.json')
     sources = {entry['path']: fetch_file(entry, root/'data/raw') for entry in lock['files']}
-    return BuildContext(root, scope, load_atlas(root/policy['dependencies']['atlas']),
+    atlas = load_atlas(root/policy['dependencies']['atlas'])
+    for entry in atlas['source_files']:
+        if entry['path'].endswith('.construction_properties.json'):
+            sources[entry['path']] = fetch_file(entry, root/'data/raw')
+    return BuildContext(root, scope, atlas,
                         policy, sources, policy['extraction_date'], dependencies)
