@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Selective element definition delivery 2.0.0",
+  "type": "object",
+  "required": ["schema_version", "kind"],
+  "properties": {
+    "schema_version": {"const": "2.0.0"},
+    "kind": {"enum": ["latest", "manifest", "index", "packet", "resource", "resource_index", "response"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "latest"}}}, "then": {"required": ["snapshot_id", "manifest"]}},
+    {"if": {"properties": {"kind": {"const": "manifest"}}}, "then": {"required": ["snapshot_id", "record_types", "supporting_tables", "max_packet_bytes"]}},
+    {"if": {"properties": {"kind": {"const": "packet"}}}, "then": {"required": ["record_type", "records"]}},
+    {"if": {"properties": {"kind": {"const": "index"}}}, "then": {"required": ["record_type", "routes"]}},
+    {"if": {"properties": {"kind": {"const": "resource"}}}, "then": {"required": ["record"]}}
+  ]
+}

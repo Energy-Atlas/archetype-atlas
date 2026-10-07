@@ -45,3 +45,13 @@ component roles and conditional capacity/date/rating rules are preserved.
 Finding: current descriptors do not establish fan pressure, complete topology,
 curve assignments or a resolved COP. These remain explicit rather than inferred
 from the system label. Ancillary refrigeration/exhaust records are distinguished.
+
+Task 5: pilot implementation validated. Three-kind integration, corruption and
+immutability tests pass. Canonical pilot rebuilt byte-identically. Initial v2
+pilot snapshot fa09a9e2e194e69afa74d37425c81e1452e4d9b12327730ae4f8c5558125e4af.
+Selective queries for the three 2019 contexts transferred 207,581 bytes in 25
+requests; no supporting schedules/evidence were loaded automatically. Existing
+v1 compatibility tests are running separately before the full release gate.
+Ruling: subclass the existing verified transport instead of modifying v1 modules;
+this preserves their public default behavior. Cost if wrong: shared transport
+changes later require compatibility tests for both majors.
