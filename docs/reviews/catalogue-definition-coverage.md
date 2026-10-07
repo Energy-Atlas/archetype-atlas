@@ -1,4 +1,4 @@
-# Definition library v0.1.0 coverage
+# Definition library v0.1.1 coverage
 
 Canonical definition schema 1.0.0; selective delivery schema 2.0.0.
 
@@ -6,7 +6,7 @@ Canonical definition schema 1.0.0; selective delivery schema 2.0.0.
 |---|---:|---:|---:|---:|
 | constructions | 3798 | 4 | 2997 | 8946 |
 | hvac_systems | 1046 | 0 | 41 | 4020 |
-| programs | 1885 | 0 | 5281 | 417 |
+| programs | 1900 | 0 | 5326 | 417 |
 
 These field counts exclude nested load and component parameters. Coverage is not
 simulation readiness. All 768 commercial source programs, 2,451 envelope targets

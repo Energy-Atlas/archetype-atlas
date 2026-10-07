@@ -76,11 +76,18 @@ Retain that exact manifest descriptor to reproduce the session later.
 
 The manifest has `record_types` for exactly `program`, `construction` and
 `hvac_system`, each with `index`, allowed `fields`, `filter_fields` and count.
-An index contains natural-context routes, scalar `selectors`, exact `record_ids`
-and packet descriptors. Skip incompatible routes; fetch only candidate packets.
+An index contains natural-context routes, scalar `selectors`, exact `record_ids`,
+per-record `record_filters`, `packet_records` keyed by packet SHA-256, and packet
+descriptors. Build the effective source/reviewed record set from `record_filters`
+before applying filters. In reviewed view, remove every source ID referenced by
+an overlay's `source_definition_id`. Apply exact filters to the remaining metadata,
+including correlated construction applicability; then fetch only packets whose
+`packet_records` intersect the selected IDs. Route selectors are grouping labels
+and cannot replace the applicability test. Recheck payload records and project the
+requested fields, retaining only selected IDs.
 Packets are gzip JSON with at most 131,072 decoded bytes. Verify encoded size and
 hash, then enforce `decoded_size_bytes` during bounded decompression. Supporting
-resource indexes and resources have a separate 16 MiB decoded transport ceiling.
+resource indexes and resources have a separate 16,000,000-byte decoded transport ceiling.
 Wire artifacts use schema version `2.0.0`; definition records use schema `1.0.0`.
 The manifest's `schema` descriptor supplies the [wire schema](../delivery/v2/latest.json).
 
