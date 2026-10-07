@@ -82,7 +82,7 @@ plots, leap-year updates, recorded annual calendar locking and component JSON.
 A repeated-copy test exposed stale success text; opening a new choice clears it
 so consumers cannot mistake an earlier copy for the current operation.
 
-## Task 5 — verification in progress
+## Task 5 — local verification
 
 The retirement/export checker first failed because it was absent; its pilot now
 passes and rejects retired routes, stale search entries and missing defaulted
@@ -139,8 +139,8 @@ calendar/profile inspections passed. There are 503 recorded annual schedules and
 6,264 uncovered raw hours in the audit's leap-year rule preview. The post-fix full
 suite passed 232/232 in 631.8 s; fresh generation again produced all 65,597 objects
 and 1,900 raw/defaulted program pairs with zero failures. Final HTML checks are
-running. There is no
-second review; the regressions and green full suite verify this single fix pass.
+running at that point. There is no second review; the regressions and green full
+suite verify this single fix pass.
 
 Final: fixed existing positive fractional schedule gaps —
 `test_existing_positive_schedule_gap_uses_zero_not_missing_schedule_one`
@@ -162,3 +162,47 @@ results; the author's final acceptance checks must cover that evidence.
 Final: minor (deferred): the default policy's final note and ADR 0015's status
 still describe website integration as pending. Their numeric policy/contract is
 unchanged; current build docs and this execution log state the implementation.
+
+Final: minor (deferred): inherited disclosure icons overlap the first letters of
+some summary labels in the compact document shell. Copying, disclosure controls,
+keyboard access and plots pass; the remaining issue is visual polish.
+
+## Final built-artifact acceptance
+
+The final strict MkDocs build passed in 853.85 s. It contains 194,086 files and
+382,786,361 bytes, below the unchanged 1,000,000,000-byte publication ceiling.
+The final Chromium smoke passed gates, search, filters, complete copying, plots,
+metadata pages, mobile overflow and no-JavaScript fallbacks.
+
+Additional real-library Chromium checks compared four complete copied DTOs with
+fresh exports: a residential whole dwelling, the corrected Data Center defaulted
+program, the corrected raw Surgery/Outpatient mixture and a corrected defaulted
+mixture assumption record. All passed semantic validation. Every one of the
+8,760 plotted residential annual values matched its canonical schedule; its
+recorded calendar remained locked. An actual mouse click selected the correct
+date and exact daily curve. Linked material and HVAC component navigation and
+copying also passed. An initial QA helper tried clicking a link inside a closed
+reference disclosure; expanding the disclosure corrected the helper, with no
+product change required.
+
+The final post-fix Python suite passed 232/232 in 631.794 s, and Node passed
+22/22. Canonical scientific validation, independent table and definition byte
+reproduction, locked assets and all 4,410 schedule inspections passed. The two
+handed-over schemas remain unchanged from `b45f15a`; canonical data is unchanged
+from `c1538e3`.
+
+The exhaustive final checker passed all built links, fragments, assets,
+publication size, retirement and complete raw/defaulted program resources. The
+tracked repository security audit passed. The verified output has been promoted
+to the standard ignored `build/site-docs/` and `build/site/` directories for local
+preview. The machine-readable receipt is
+`docs/validation/dto-json-v2-local.json`; detailed verification logs and
+screenshots remain under ignored `build/dto-*` paths.
+
+Task 5 is complete. Keep branch `feature/dto-json-v2` and the checkout at
+`D:\archetype-atlas` for the user's review. No push, remote workflow, merge or
+deployment has been performed; the BEMGen connector and prior Task 11 remain
+outside scope. Automatic approval review rejected cleanup of this plan's ignored
+`.superpowers/sdd/2026-10-07-dto-json-v2` workspace with "blocked by policy".
+The scratch directory is retained; the committed plan, findings and rulings
+remain the durable record. No deletion workaround was attempted.
