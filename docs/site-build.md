@@ -1,7 +1,7 @@
 # Build and verify the current catalogue
 
-Local implementation branch: `feature/dto-json-v2`. No push, hosted workflow or
-deployment is part of this change. Canonical research releases remain immutable.
+The catalogue is built, verified and deployed by `.github/workflows/catalogue-site.yml`
+(see [Release gate](#release-gate)). Canonical research releases remain immutable.
 
 ## Reproduce locally
 
@@ -80,6 +80,35 @@ guide text without duplicating full provenance. JSON resources are limited to
 16 MB decoded; both compressed and decoded sizes are checked before use.
 
 The Pages workflow definition builds this current catalogue and no longer restores
-historical query snapshots. Its existing deployment gate remains unchanged.
-This branch has not run or deployed that workflow. Original work remains unlicensed
-by user choice; upstream and dependency notices remain applicable.
+historical query snapshots. Original work remains unlicensed by user choice;
+upstream and dependency notices remain applicable.
+
+## Release gate
+
+Every run of the catalogue workflow's build job verifies the presentation
+contracts (delivery, query, program JSON, active-site and browser tests, Node
+tests), generates the catalogue, builds it with `mkdocs build --strict`,
+and passes `site_check` and the Chromium smoke test before it uploads the Pages
+artifact. Deployment still needs that build, and still runs only for a push to
+the default branch or a designated publisher branch, or a manual dispatch with
+`deploy` set.
+
+The frozen-release checks (evidence fetches, definition release verification
+and byte reproduction, atlas, resolution, completion, water and water-reporting
+release verification, their tests, and the historical research-site tests of
+`test_site`, which read the fetched sources; about 11 minutes) run only when needed.
+They are skipped only when every path changed since the previous pushed commit,
+or since a pull request's base, is presentation-only:
+
+- `website/`, `design/`, `docs/`, `mkdocs.yml`, and the top-level Markdown files;
+- the site scripts `active_site`, `active_smoke`, `object_site`, `definition_site`,
+  `site_check`, `site_smoke`, `site_assets`;
+- the site tests `test_active_site`, `test_object_browser`, `test_html_delivery`,
+  `test_site_delivery`, `test_search_index`, `test_definition_site`, and the Node
+  tests.
+
+Any other change (data, schemas, sources, requirements, other scripts or tests,
+or the workflow itself), a new branch whose comparison with the default branch
+cannot be made, and every manual dispatch run the full checks. Independently of
+deployment, `validate.yml` fetches the sources and verifies every frozen release
+on every push and pull request.

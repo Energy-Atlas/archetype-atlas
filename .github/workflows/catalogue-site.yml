@@ -104,7 +104,42 @@ jobs:
         run: |
           python -m pip install -r requirements-site.txt -r requirements-browser.txt
           python -m playwright install --with-deps chromium
-      - name: Verify frozen releases and presentation contracts
+      - name: Decide whether the frozen releases need verification
+        id: scope
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          # Release verification is skipped only when every changed path is presentation-only
+          # (docs/site-build.md, "Release gate"). Anything else, an unknown base, or a manual
+          # dispatch verifies the frozen releases. validate.yml verifies them on every push regardless.
+          presentation='^(website/|design/|docs/|mkdocs\.yml$|(README|CHANGELOG|AGENTS|CLAUDE)\.md$|scripts/(active_site|active_smoke|object_site|definition_site|site_check|site_smoke|site_assets)\.py$|tests/(test_active_site|test_object_browser|test_html_delivery|test_site_delivery|test_search_index|test_definition_site)\.py$|tests/[^/]+\.test\.js$)'
+          base=""
+          case "$EVENT" in
+            push) base="$BEFORE" ;;
+            pull_request) base="$PR_BASE" ;;
+          esac
+          if [ "$EVENT" = push ] && { [ -z "$base" ] || [ "$base" = 0000000000000000000000000000000000000000 ]; }; then
+            # A new branch: compare with the default branch's tip.
+            git fetch --no-tags --depth=1 origin "$DEFAULT_BRANCH" && base=$(git rev-parse FETCH_HEAD) || base=""
+          elif [ -n "$base" ]; then
+            git fetch --no-tags --depth=1 origin "$base" || base=""
+          fi
+          if [ -z "$base" ] || ! changed=$(git diff --name-only "$base" "$GITHUB_SHA"); then
+            echo "No comparable base ($EVENT); verifying the frozen releases."
+            echo "releases=true" >> "$GITHUB_OUTPUT"
+          elif relevant=$(grep -Ev "$presentation" <<< "$changed" | grep .); then
+            echo "Release-relevant paths changed:"
+            head -50 <<< "$relevant"
+            echo "releases=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Only presentation paths changed since $base; the frozen release checks are skipped."
+            echo "releases=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Verify frozen releases
+        if: steps.scope.outputs.releases == 'true'
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
@@ -113,7 +148,7 @@ jobs:
           python -m scripts.fetch --lock sources/definition-evidence-lock.json
           python -m scripts.definition_release --verify
           python -m scripts.definition_release --reproduce
-          python -m unittest tests.test_definition_full tests.test_definition_site tests.test_query_v2 tests.test_query_v2_history -q
+          python -m unittest tests.test_definition_full tests.test_query_v2 tests.test_query_v2_history -q
           python -m scripts.release --verify --target data/releases/v0.1.0
           python -m scripts.release --verify --target data/releases/v0.2.0
           python -m scripts.resolve --verify
@@ -123,8 +158,12 @@ jobs:
           python -m scripts.commercial_completion --verify
           python -m scripts.water_equivalent --verify
           python -m scripts.water_reporting --verify
-          python -m unittest tests.test_water_reporting_site -q
-          python -m unittest tests.test_site tests.test_site_delivery tests.test_html_delivery -q
+          python -m unittest tests.test_water_reporting_site tests.test_site -q
+      - name: Verify presentation contracts
+        run: |
+          python -m scripts.definition_release --verify
+          python -m unittest tests.test_definition_site -q
+          python -m unittest tests.test_site_delivery tests.test_html_delivery -q
           python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
           python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_active_site tests.test_object_browser -q
           node --test tests/*.test.js

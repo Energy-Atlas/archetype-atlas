@@ -121,3 +121,14 @@ The hot-water guide also clarifies that plant-connected water demand with no
 zone reference is valid EnergyPlus modeling. Program beneficiary allocation,
 physical fixture location and zone heat/moisture gains are separate questions.
 No remaining scientific gap is closed by this presentation correction.
+
+## Amendment — 2026-10-07: release verification scoped to release changes
+
+The catalogue workflow's frozen-release verification runs only when a push or
+pull request changes a release-relevant path; presentation-only changes skip it
+and deploy about eleven minutes sooner. Presentation contracts, generation,
+strict build, link and browser checks still gate every artifact, and
+`validate.yml` still verifies every release on every push. The path rule and its
+fallbacks are documented in [the build guide](../site-build.md#release-gate).
+Cost if wrong: a release-affecting path missing from the rule would reach a
+deployment verified only by `validate.yml`; restore the unconditional step.

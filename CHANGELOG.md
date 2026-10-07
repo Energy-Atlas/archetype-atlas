@@ -1,5 +1,19 @@
 # Changelog
 
+## Site UI and release gate — 2026-10-07
+
+Restyle the catalogue site into the EnergyAtlas family design
+(`design/ui-design-spec.md`): the wiki palette with contrast-adjusted tokens,
+self-hosted Geist, Geist Mono and Cormorant Garamond with their OFL notices,
+system-preference light and dark themes, framed columns, technical tables,
+square controls, breadcrumbs, a restrained landing hero with section grids, and
+themed record pages and schedule charts. No data, schema or release changes.
+
+The catalogue workflow now verifies the frozen releases only when a
+release-relevant path changes ([release gate](docs/site-build.md#release-gate));
+presentation checks still gate every deployment, and `validate.yml` still
+verifies every release on every push.
+
 ## Resolution supplement v0.2.0 — 2026-10-04
 
 Add ten user-reviewed ceiling-plenum lighting zeros and six Large Office data-
