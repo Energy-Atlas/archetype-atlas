@@ -159,3 +159,30 @@ commands, preview, dependency pins and the GitHub Pages workflow.
 Generated HTML is an inspection view; canonical research data is unchanged.
 The [publication record](docs/site-publication.md) identifies the tested commit
 and deployment evidence.
+
+
+## Element definition library and catalogue v2
+
+The [catalogue](https://energy-atlas.github.io/archetype-atlas/catalogue/)
+starts with Residential / Non Residential, then Programs / Constructions / HVAC
+systems. [The contract](docs/definition-contract.md) describes load bases, scoped
+air requirements, component comparison, fixed conditional HVAC ratings and lazy,
+manifest-pinned delivery. V1 remains available without changing its contract.
+
+Canonical definitions: `data/definition-releases/v0.1.0/` (schema 1.0.0).
+[Coverage](docs/reviews/catalogue-definition-coverage.md) separates supported
+inputs from unknowns; definitions are not automatically simulation-ready models.
+[Execution findings](docs/reviews/catalogue-execution-log.md) record decisions.
+
+```console
+python -m scripts.definitions --scope pilot --output build/definitions-pilot
+python -m scripts.definitions --scope full --output build/definitions-full
+python -m scripts.definition_release --verify
+python -m scripts.definition_release --reproduce
+python -m scripts.query_v2 --input data/definition-releases/v0.1.0 --output build/delivery-v2
+```
+
+The library does not size consumer models. Residential definitions reuse existing
+determined profiles; stochastic generators remain deferred. Unknown load
+magnitudes, infiltration and HVAC details remain explicit. Only the documented
+internal/ground construction fallbacks introduce generic assumptions.

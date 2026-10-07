@@ -152,3 +152,33 @@ index. Generated catalogue JSON uses compact serialization without changing
 values; frozen download files and complete snapshots retain their exact bytes.
 Current identical residential profile downloads reuse historical URLs, with an
 explicit download map; complete snapshot ZIPs retain each manifest inventory.
+
+
+## Definition catalogue and independent delivery majors
+
+`python -m scripts.site` consumes verified `data/definition-releases/v0.1.0`
+by default. The Python generator's optional `definition_release` argument keeps
+legacy fixture builds available. The new catalogue exposes exactly two entry
+gates and three kinds. Metadata drives facets; evidence, schedules and components
+are verified and decompressed only when requested. No backend is required.
+
+Before publication restore both majors independently:
+
+```console
+python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history
+python -m scripts.query_history --major 2 --restore https://energy-atlas.github.io/archetype-atlas/delivery/v2/ --target build/query-history-v2
+```
+
+Only the first v2 publication may use the explicit workflow input
+`bootstrap_definition_delivery`. Missing established history blocks publication;
+invalid archives never fall back to a bootstrap. The `deploy` workflow dispatch
+publishes the verified feature-branch artifact without merging main. Both majors
+retain previously advertised manifests/resources, with publisher-only archives.
+
+Archived detail pages and new definition pages use a compact document shell:
+original article content, literal data, charts and verified resource controls are
+retained, with Home/Catalogue/Downloads links. Repeated global navigation markup
+is omitted from these pages to meet the unchanged 1 GB publication ceiling.
+Top-level catalogue and guide pages retain the full navigation/search shell.
+Frozen definition files have Git text normalization disabled so their exact
+manifest hashes survive Windows/Linux checkout.

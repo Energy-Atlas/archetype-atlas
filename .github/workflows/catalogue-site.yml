@@ -4,6 +4,18 @@ on:
   push:
     paths:
       - 'website/**'
+      - 'scripts/definition*.py'
+      - 'scripts/program_definitions.py'
+      - 'scripts/program_composition.py'
+      - 'scripts/construction_definitions.py'
+      - 'scripts/hvac_definitions.py'
+      - 'scripts/residential_definitions.py'
+      - 'tests/test_definition*.py'
+      - 'sources/definition*.json'
+      - 'sources/program-composition-policy.json'
+      - 'data/definition-releases/**'
+      - 'schemas/definitions.schema.json'
+      - 'docs/definition-contract.md'
       - 'scripts/site*.py'
       - 'scripts/query*.py'
       - 'tests/test_query*.py'
@@ -32,6 +44,12 @@ on:
   pull_request:
     paths:
       - 'website/**'
+      - 'data/definition-releases/**'
+      - 'schemas/definitions.schema.json'
+      - 'schemas/query-v2.schema.json'
+      - 'sources/definition*.json'
+      - 'sources/program-composition-policy.json'
+      - 'docs/definition-contract.md'
       - 'scripts/**'
       - 'tests/**'
       - 'data/releases/**'
@@ -52,6 +70,10 @@ on:
         description: Allow missing query latest only for the first-ever v1 publication
         type: boolean
         default: false
+      bootstrap_definition_delivery:
+        description: Allow missing v2 latest only for the first-ever definition publication
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -63,7 +85,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
@@ -82,6 +104,10 @@ jobs:
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
           python -m scripts.fetch --lock sources/water-evidence-lock.json
           python -m scripts.fetch --lock sources/completion-evidence-lock.json
+          python -m scripts.fetch --lock sources/definition-evidence-lock.json
+          python -m scripts.definition_release --verify
+          python -m scripts.definition_release --reproduce
+          python -m unittest tests.test_definition_full tests.test_definition_site tests.test_query_v2 tests.test_query_v2_history -q
           python -m scripts.release --verify --target data/releases/v0.1.0
           python -m scripts.release --verify --target data/releases/v0.2.0
           python -m scripts.resolve --verify
@@ -101,6 +127,11 @@ jobs:
             python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history --allow-missing
           else
             python -m scripts.query_history --restore https://energy-atlas.github.io/archetype-atlas/delivery/v1/ --target build/query-history
+          fi
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap_definition_delivery }}" = "true" ]; then
+            python -m scripts.query_history --major 2 --restore https://energy-atlas.github.io/archetype-atlas/delivery/v2/ --target build/query-history-v2 --allow-missing
+          else
+            python -m scripts.query_history --major 2 --restore https://energy-atlas.github.io/archetype-atlas/delivery/v2/ --target build/query-history-v2
           fi
       - name: Generate both versioned catalogues and build
         run: |
