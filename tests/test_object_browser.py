@@ -30,6 +30,7 @@ class ObjectBrowserTests(unittest.TestCase):
         config = yaml.safe_load((ROOT / 'mkdocs.yml').read_text())
         config.update(docs_dir=str(cls.docs), site_dir=str(cls.site))
         config['hooks'] = [str(ROOT / p) for p in config['hooks']]
+        config['theme']['custom_dir'] = str(ROOT / config['theme']['custom_dir'])
         cfg = ROOT / 'build/dto-browser.yml';cfg.write_text(yaml.safe_dump(config, sort_keys=False))
         run = subprocess.run([sys.executable, '-m', 'mkdocs', 'build', '--strict', '-f', str(cfg)], cwd=ROOT, capture_output=True, text=True)
         if run.returncode: raise AssertionError(run.stdout + run.stderr)

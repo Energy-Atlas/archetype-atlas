@@ -168,8 +168,9 @@ def generate_objects(bundle, root):
         if is_markdown: write(root, path, text)
         else:
             document = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-                f'<title>{esc(info["name"])}</title><link rel="stylesheet" href="{PREFIX}assets/site.css"></head><body>'
-                f'<header class="definition-header"><a href="{PREFIX}catalogue/">Catalogue</a> · <a href="{PREFIX}sources/">Sources</a></header>'
+                f'<title>{esc(info["name"])}</title><link rel="stylesheet" href="{PREFIX}assets/fonts.css">'
+                f'<link rel="stylesheet" href="{PREFIX}assets/site.css"><script src="{PREFIX}assets/theme.js"></script></head><body>'
+                f'<header class="definition-header"><a href="{PREFIX}">Energy Archetype Atlas</a> · <a href="{PREFIX}catalogue/">Catalogue</a> · <a href="{PREFIX}sources/">Sources</a></header>'
                 f'<main class="definition-document"><h1>{esc(info["name"])}</h1>{text}</main><script src="{PREFIX}assets/object.js"></script></body></html>')
             write(root, path, document)
     write(root, 'object-index.json', canonical(registry).decode())

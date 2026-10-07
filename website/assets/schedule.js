@@ -24,8 +24,13 @@
       profiles.forEach((p,i)=>{const o=node('option','Profile '+(i+1)+' · '+p.labels.slice(0,2).join(', ')+(p.labels.length>2?' …':''));o.value=i;select.append(o);});
       const daily=section.querySelector('.schedule-day-chart'),heatmap=section.querySelector('.schedule-annual-chart');
       const config={responsive:true,displaylogo:false,toImageButtonOptions:{format:'png',filename:'atlas-schedule'}};
-      const layout={height:370,margin:{t:35,r:30,b:80,l:70},font:{family:'system-ui, sans-serif'},
-        xaxis:{title:{text:'Hour of day'},range:[0,24],dtick:3},yaxis:{title:{text:s.unit}},legend:{orientation:'h'}};
+      // Chart colours follow the page's theme tokens (design/ui-design-spec.md, section 0.15).
+      const css=getComputedStyle(document.body),token=name=>css.getPropertyValue(name).trim();
+      const axis={gridcolor:token('--ea-plot-grid'),zerolinecolor:token('--ea-plot-zeroline'),linecolor:token('--ea-plot-grid')};
+      const theme={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:'Geist, system-ui, sans-serif',color:token('--ea-plot-font')},
+        colorway:[token('--ea-accent'),'#ff7f0e','#2ca02c','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']};
+      const layout={...theme,height:370,margin:{t:35,r:30,b:80,l:70},
+        xaxis:{...axis,title:{text:'Hour of day'},range:[0,24],dtick:3},yaxis:{...axis,title:{text:s.unit}},legend:{orientation:'h'}};
       function table(values,label) {
         const output=section.querySelector('.schedule-values');output.replaceChildren(node('p',label));
         const t=document.createElement('table'),head=document.createElement('tr');
@@ -48,7 +53,7 @@
             customdata:custom,colorscale:'Viridis',hoverongaps:false,
             ...(s.unit==='1'?{zmin:0,zmax:1}:{}),colorbar:{title:{text:s.unit}},
             hovertemplate:'%{x}<br>%{customdata[0]}<br>%{z} '+s.unit+'<br>%{customdata[1]} · rule %{customdata[2]}<extra></extra>'}],
-            {height:420,margin:{t:20,r:60,b:65,l:65},xaxis:{title:{text:'Calendar date'}},yaxis:{title:{text:'Hour of day'},dtick:3,autorange:'reversed'}},config);
+            {...theme,height:420,margin:{t:20,r:60,b:65,l:65},xaxis:{...axis,title:{text:'Calendar date'}},yaxis:{...axis,title:{text:'Hour of day'},dtick:3,autorange:'reversed'}},config);
           heatmap.removeAllListeners('plotly_click');
           heatmap.on('plotly_click',async event=>{
             const i=data.dates.indexOf(String(event.points[0].x).slice(0,10));if(i<0)return;

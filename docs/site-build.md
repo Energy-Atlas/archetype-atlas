@@ -66,6 +66,8 @@ frozen input releases remain available for scientific verification.
 - `website/assets/object.js`: verified disclosure and accessible copy choices.
 - `website/assets/schedule_core.js`, `schedule.js`: calendar semantics and plots.
 - `website/assets.lock.json`: asset version, size and SHA-256 locks.
+- `website/assets/site.css`, `fonts.css`, `fonts/`, `theme.js`, `website/overrides/`:
+  the EnergyAtlas family UI of `design/ui-design-spec.md`, with self-hosted OFL fonts.
 - `scripts/site_check.py`: links, fragments, assets, retirement, complete program
   exports and the 1,000,000,000-byte publication ceiling.
 - `scripts/active_smoke.py`: Chromium gates, search, filters, copying, plots,

@@ -10,13 +10,31 @@ use_directory_urls: true
 strict: true
 theme:
   name: material
+  # Templates: preloads the self-hosted fonts (design/ui-design-spec.md, section 0.4).
+  custom_dir: website/overrides
+  # No font host: assets/fonts.css serves the vendored fonts from the site.
   font: false
+  # The system preference picks the first scheme; the toggle switches (spec section 0.3).
   palette:
-    scheme: default
-    primary: teal
-    accent: deep orange
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  # navigation.instant stays off: record pages use a compact shell and catalogue
+  # scripts initialise on page load (spec section 0.12).
   features:
     - navigation.tabs
+    - navigation.path
     - navigation.prune
     - navigation.top
     - navigation.footer
@@ -29,11 +47,13 @@ hooks:
 markdown_extensions:
   - admonition
   - attr_list
+  - md_in_html
   - tables
   - toc:
       permalink: true
   - pymdownx.superfences
 extra_css:
+  - assets/fonts.css
   - assets/site.css
 extra_javascript:
   - assets/definition_core.js

@@ -1,98 +1,1799 @@
-/* An understated research catalogue; locally rendered system fonts. */
-:root { --md-primary-fg-color: #164b47; --md-accent-fg-color: #b65332; --atlas-line: #d9e2de; }
-.md-header { background: #123e3b; box-shadow: none; border-bottom: 1px solid #47736c; }
-.md-tabs { background: #164b47; }
-.md-grid { max-width: 88rem; }
-.md-typeset h1 { color: #173e3a; font-weight: 600; letter-spacing: -.025em; }
-.md-typeset h2 { color: #254f49; font-weight: 600; }
-.md-typeset a { text-underline-offset: .2em; }
-.atlas-hero { border-left: 4px solid #b65332; background: #f1f6f3; padding: 1.4rem 1.8rem; margin: 1.4rem 0; }
-.atlas-eyebrow { font-size: .65rem; letter-spacing: .12em; font-weight: 700; color: #58716b; }
-.atlas-intro { font-size: 1.35rem; line-height: 1.45; max-width: 40rem; color: #173e3a; }
-.atlas-hero > a { display: inline-block; padding: .45rem .85rem; background: #164b47; color: white; border-radius: 3px; font-weight: 600; }
-.atlas-stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--atlas-line); margin: 1rem 0 2rem; }
-.atlas-stats > div { padding: 1rem; border-right: 1px solid var(--atlas-line); }
-.atlas-stats strong { display: block; font-size: 1.75rem; font-variant-numeric: tabular-nums; color: #164b47; }
-.atlas-stats span { font-size: .68rem; color: #54665f; }
-.atlas-meta { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; font-size: .68rem; color: #52665f; padding-bottom: .7rem; border-bottom: 1px solid var(--atlas-line); }
-.atlas-meta code { overflow-wrap: anywhere; }
-.atlas-status { display: inline-block; border-radius: 3px; padding: .25rem .55rem; background: #fbf0e2; color: #795222; font-size: .7rem; }
-.atlas-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; padding: 1rem; border: 1px solid var(--atlas-line); background: #f6f8f6; }
-.atlas-controls label { display: flex; flex-direction: column; gap: .25rem; font-size: .66rem; font-weight: 600; color: #3d554e; }
-.atlas-controls input, .atlas-controls select { width: 100%; min-width: 0; padding: .5rem; background: white; border: 1px solid #91a69c; border-radius: 3px; font: inherit; color: #233c33; height: 2.1rem; }
-.atlas-search-label { grid-column: 1 / -1; }
-.atlas-controls button, .atlas-pagination button { padding: .5rem .8rem; color: #164b47; border: 1px solid #76978a; background: white; border-radius: 3px; font: inherit; font-size: .7rem; cursor: pointer; align-self: end; }
-.atlas-controls button:hover, .atlas-pagination button:hover { background: #e8f1ea; }
-.atlas-controls :focus-visible, .atlas-pagination :focus-visible { outline: 3px solid #bc623b; outline-offset: 2px; }
-.atlas-pagination { display: flex; gap: 1rem; align-items: center; margin: .7rem 0 2rem; font-size: .7rem; }
-.atlas-pagination button:disabled { opacity: .4; cursor: default; }
-.atlas-table { width: 100%; overflow-x: auto; margin: .8rem 0 1.3rem; }
-.atlas-table table { width: 100%; border-collapse: collapse; font-size: .68rem; }
-.atlas-table th { text-align: left; padding: .6rem; background: #edf3ef; color: #314e43; font-weight: 600; }
-.atlas-table td { padding: .6rem; vertical-align: top; border-bottom: 1px solid var(--atlas-line); }
-.atlas-table tbody tr:hover { background: #f7f9f7; }
-.atlas-table th[scope="row"] { width: 23%; background: #f7f9f7; border-bottom: 1px solid var(--atlas-line); }
-.atlas-table code { font-size: .6rem; overflow-wrap: anywhere; }
-.atlas-table pre, .atlas-evidence pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .62rem; max-height: 24rem; overflow: auto; }
-.atlas-evidence { border-top: 1px solid var(--atlas-line); padding-top: .7rem; font-size: .72rem; overflow-wrap: anywhere; }
-.atlas-evidence details { border: 1px solid var(--atlas-line); margin: .4rem 0; padding: .6rem; }
-.atlas-evidence summary, .atlas-explorer summary { cursor: pointer; color: #164b47; font-weight: 600; }
-.atlas-evidence dt { font-weight: 600; margin-top: .5rem; }
-.atlas-evidence dd { margin-left: 1rem; }
-.atlas-explorer { border: 1px solid var(--atlas-line); padding: 1rem; margin: 1.5rem 0; }
-.atlas-explorer h2 { margin-top: 0; }
-.atlas-chart-status, .atlas-note { font-size: .66rem; color: #53685e; }
-.atlas-plot { width: 100%; min-height: 380px; }
-.atlas-profile-table details { padding: .6rem 0; border-bottom: 1px solid var(--atlas-line); }
-.atlas-profile-table table { border-collapse: collapse; font-size: .65rem; }
-.atlas-profile-table td, .atlas-profile-table th { padding: .2rem .7rem; border-bottom: 1px solid var(--atlas-line); }
-@media (max-width: 700px) {
-  .atlas-stats { grid-template-columns: repeat(2, 1fr); }
-  .atlas-controls { grid-template-columns: 1fr; }
-  .atlas-intro { font-size: 1.15rem; }
-  .atlas-hero { padding: 1rem; }
-  .atlas-explorer { padding: .5rem; }
-  .atlas-meta { font-size: .6rem; }
+/*
+ * Energy Archetype Atlas site styling. It follows design/ui-design-spec.md: flat, square, rule-framed surfaces; Geist,
+ * Geist Mono, and Cormorant Garamond; the EnergyAtlas palette with the contrast adjustments of its section 0.6. Sizes
+ * are in rem so that they scale with Material's root font size (1rem = 20px at the base size, so 0.8rem = 16px).
+ * Record pages (spec section 0.14) load this file without Material's runtime; their rules follow the Material ones.
+ */
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Tokens
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+:root {
+  --font-sans: "Geist", "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono", "IBM Plex Mono", Consolas, monospace;
+  --font-serif: "Cormorant Garamond", "Cormorant", Georgia, serif;
+
+  --md-text-font: "Geist";
+  --md-code-font: "Geist Mono";
+
+  --ea-primary: #003978;
+  --ea-transition: 150ms ease;
+
+  /* Horizontal margin of the article inside the content column; full-bleed strips and grids cancel it. */
+  --ea-gutter: 0.8rem;
 }
-@media print { .atlas-controls, .atlas-pagination { display: none; } }
 
-.definition-gates,.definition-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2rem;margin:2rem 0}
-.definition-kinds{grid-template-columns:repeat(3,minmax(0,1fr))}
-.definition-gate,.definition-kind{display:block;padding:1.8rem;border:1px solid var(--atlas-line);border-radius:.6rem;background:var(--md-default-bg-color);font-size:1.1rem;font-weight:600;box-shadow:0 3px 12px #1232}
-.definition-gate span{display:block;font-size:.7rem;font-weight:400;margin-top:1rem;color:var(--md-default-fg-color--light)}
-.definition-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;padding:1rem;background:#edf4f2;border-radius:.5rem}
-.definition-filters label{display:flex;flex-direction:column;font-size:.7rem;gap:.3rem}
-.definition-filters select,.definition-filters input{min-height:42px;background:white;border:1px solid #78928b;border-radius:.3rem;padding:.5rem;color:#173b32;max-width:100%;font:inherit}
-.definition-filters button,.definition-more,.definition-copy,.definition-resource button{padding:.5rem .8rem;border:1px solid #437f71;border-radius:.3rem;cursor:pointer;min-height:36px}
-.definition-result{padding:.8rem 0;border-bottom:1px solid var(--atlas-line)}
-.definition-result a{font-weight:600}.definition-result p{font-size:.65rem;margin:.3rem 0;color:var(--md-default-fg-color--light)}
-.definition-document{max-width:1100px;padding:1.5rem;margin:auto}.definition-document .md-typeset{font-size:16px}
-.definition-header{padding:1rem;border-bottom:1px solid #bacbc5;font-size:16px}.definition-header a{color:#176652}
-.definition-resource{margin:.5rem 0;padding:.5rem;border:1px solid #cbd8d3;border-radius:.3rem}.definition-resource summary{cursor:pointer;overflow-wrap:anywhere}
-.definition-document .definition-resource>summary{padding-left:2.2rem}
-.definition-document .definition-resource>summary::before{left:.6rem}
-.definition-resource pre{max-height:34rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
-.definition-id{overflow-wrap:anywhere}.definition-static ul{font-size:.7rem}
-@media(max-width:700px){.definition-gates,.definition-kinds{grid-template-columns:1fr}.definition-document{padding:.7rem}.definition-filters{grid-template-columns:1fr}}
+@media screen and (min-width: 76.25em) {
+  :root {
+    --ea-gutter: 1.2rem;
+  }
+}
 
-.definition-document{font-family:system-ui,sans-serif;color:#233c33;line-height:1.6;overflow-wrap:anywhere}
-.definition-document a{color:#176652;text-underline-offset:.18em}
-.object-json{margin:1.2rem 0;padding:1rem;border:1px solid #cbd8d3;border-radius:.4rem;background:#f7faf8}
-.object-copy,.schedule-load,.schedule-update,.object-dialog button{font:inherit;padding:.55rem .85rem;border:1px solid #437f71;border-radius:.3rem;background:white;color:#164b47;cursor:pointer}
-.object-source{margin-top:.7rem}.object-source summary{cursor:pointer;font-weight:600}
-.object-source pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:32rem;overflow:auto;font-size:12px;background:white;padding:.7rem}
-.object-status,.schedule-status{font-size:14px;color:#52665f}.object-references{margin:1rem 0}
-.object-references summary{cursor:pointer}.object-references ul{max-height:22rem;overflow:auto}
-.schedule-viewer{margin:1.5rem 0;border-top:1px solid #cbd8d3;padding-top:1rem;min-width:0}
-.schedule-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;background:#edf4f2;padding:.8rem}
-.schedule-controls[hidden]{display:none}.schedule-controls label{display:flex;flex-direction:column;font-size:14px;gap:.4rem}
-.schedule-controls input,.schedule-controls select{width:100%;min-width:0;font:inherit;padding:.5rem;border:1px solid #78928b;border-radius:.3rem;background:white;color:#173b32}
-.schedule-day-chart,.schedule-annual-chart{width:100%;min-width:0;max-width:100%}
-.schedule-values table{width:100%;border-collapse:collapse;font-size:14px}.schedule-values td,.schedule-values th{padding:.3rem;border-bottom:1px solid #d9e2de;text-align:left}
-.schedule-static-table{max-width:100%;overflow:auto;max-height:32rem}.schedule-static table{font-size:12px;border-collapse:collapse}.schedule-static td,.schedule-static th{padding:.3rem;border:1px solid #d9e2de;min-width:4rem}.schedule-static th:first-child{min-width:15rem}
-.object-dialog{max-width:600px;width:calc(100% - 2rem);border:1px solid #437f71;border-radius:.6rem;padding:1.5rem;color:#233c33;background:white;font:16px/1.5 system-ui,sans-serif}
-.object-dialog::backdrop{background:#102f2bb3}.object-dialog h2{margin-top:0}.object-dialog button{margin:.35rem .35rem .35rem 0}
-.object-dialog button:disabled{opacity:.5;cursor:default}.object-dialog textarea{width:100%;height:18rem;font:12px/1.4 monospace;padding:.6rem}
-.object-default-info pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:14rem;overflow:auto;font:12px/1.4 monospace}.object-default-info summary{cursor:pointer}
-.object-dialog :focus-visible,.object-copy:focus-visible,.object-source summary:focus-visible,.schedule-controls :focus-visible{outline:3px solid #bc623b;outline-offset:3px}
-@media(max-width:700px){.schedule-controls{grid-template-columns:1fr}.object-json{padding:.7rem}.object-dialog{padding:1rem}.schedule-viewer{font-size:14px}}
+/* Light tokens also apply on :root, so record pages without a scheme attribute render light (spec section 0.3). */
+:root,
+[data-md-color-scheme="default"] {
+  --ea-accent: #125dae;
+  --ea-accent-tint: rgba(18, 93, 174, 0.08);
+  --ea-text-primary: #18202c;
+  --ea-text-secondary: #3f4b5b;
+  --ea-text-muted: #5f6b7a;
+  --ea-bg-base: #ffffff;
+  --ea-bg-surface-1: #f8fafc;
+  --ea-bg-surface-2: #f4f7fb;
+  --ea-bg-surface-3: #e7edf5;
+  --ea-border-subtle: #cfd8e5;
+  --ea-border-interactive: #768599;
+  --ea-success: #188038;
+  --ea-warning: #9a6700;
+  --ea-error: #c5221f;
+  --ea-code-bg: var(--ea-bg-surface-2);
+  /* Chart colours of the wiki's Plotly theme (spec section 0.15), read by assets/schedule.js. */
+  --ea-plot-font: #18202c;
+  --ea-plot-grid: rgba(24, 32, 44, 0.14);
+  --ea-plot-zeroline: rgba(24, 32, 44, 0.24);
+}
+
+[data-md-color-scheme="slate"] {
+  --ea-accent: #4da3ff;
+  --ea-accent-tint: rgba(77, 163, 255, 0.08);
+  --ea-text-primary: #e5e5e5;
+  --ea-text-secondary: #b0b0b0;
+  --ea-text-muted: #999999;
+  --ea-bg-base: #000000;
+  --ea-bg-surface-1: #1a1a1a;
+  --ea-bg-surface-2: #2a2a2a;
+  --ea-bg-surface-3: #3a3a3a;
+  --ea-border-subtle: #404040;
+  --ea-border-interactive: #6b6b6b;
+  --ea-success: #28a745;
+  --ea-warning: #ffc107;
+  --ea-error: #f44336;
+  --ea-code-bg: var(--ea-bg-surface-1);
+  --ea-plot-font: #e5e5e5;
+  --ea-plot-grid: rgba(255, 255, 255, 0.12);
+  --ea-plot-zeroline: rgba(255, 255, 255, 0.2);
+}
+
+/* Material's own variables, mapped onto the tokens for both schemes. */
+:root,
+[data-md-color-scheme="slate"],
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: var(--ea-bg-base);
+  --md-default-fg-color: var(--ea-text-primary);
+  --md-default-fg-color--light: var(--ea-text-secondary);
+  --md-default-fg-color--lighter: var(--ea-text-muted);
+  --md-default-fg-color--lightest: var(--ea-border-subtle);
+
+  --md-primary-fg-color: var(--ea-bg-base);
+  --md-primary-fg-color--light: var(--ea-bg-surface-1);
+  --md-primary-fg-color--dark: var(--ea-bg-base);
+  --md-primary-bg-color: var(--ea-text-primary);
+  --md-primary-bg-color--light: var(--ea-text-secondary);
+
+  --md-accent-fg-color: var(--ea-accent);
+  --md-accent-fg-color--transparent: var(--ea-accent-tint);
+  --md-accent-bg-color: var(--ea-bg-base);
+  --md-accent-bg-color--light: var(--ea-bg-surface-1);
+
+  --md-typeset-color: var(--ea-text-secondary);
+  --md-typeset-a-color: var(--ea-accent);
+  --md-typeset-table-color: var(--ea-border-subtle);
+  --md-typeset-table-color--light: var(--ea-accent-tint);
+
+  --md-code-bg-color: var(--ea-code-bg);
+  --md-code-fg-color: var(--ea-text-primary);
+
+  --md-admonition-bg-color: transparent;
+  --md-admonition-fg-color: var(--ea-text-secondary);
+
+  --md-footer-bg-color: var(--ea-bg-base);
+  --md-footer-bg-color--dark: var(--ea-bg-base);
+  --md-footer-fg-color: var(--ea-text-primary);
+  --md-footer-fg-color--light: var(--ea-text-secondary);
+  --md-footer-fg-color--lighter: var(--ea-text-muted);
+
+  --md-shadow-z1: none;
+  --md-shadow-z2: none;
+  --md-shadow-z3: none;
+}
+
+/* Only an element that carries a scheme paints its surface, so a full page's root never shows the other theme. */
+[data-md-color-scheme] {
+  background-color: var(--ea-bg-base);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Page frame
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+/* Reserve the scrollbar's width on every page, so that moving between short and long pages does not shift the layout. */
+html {
+  scrollbar-gutter: stable;
+}
+
+.md-grid {
+  max-width: 76rem;
+}
+
+.md-main__inner {
+  margin-top: 0;
+}
+
+/* The content column is bounded by two thin vertical rules, like the frame of a drawing sheet. */
+@media screen and (min-width: 60em) {
+  .md-content {
+    border-left: 1px solid var(--ea-border-subtle);
+    border-right: 1px solid var(--ea-border-subtle);
+    min-height: calc(100vh - 4.8rem);
+  }
+}
+
+.md-sidebar {
+  padding-top: 1.6rem;
+}
+
+.md-content__inner {
+  padding-top: 1.2rem;
+}
+
+/*
+ * A page that hides a sidebar (the landing page hides both) keeps the sidebar's width as an empty margin, without its
+ * rule, so its text lines up with the text of every other page. Only the content moves: strips and grids still run
+ * from frame to frame. --ea-inset-left and --ea-inset-right hold the empty margins.
+ */
+.md-content {
+  --ea-inset-left: 0rem;
+  --ea-inset-right: 0rem;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary[hidden] ~ .md-content {
+    --ea-inset-left: 12.1rem;
+  }
+
+  .md-sidebar--secondary[hidden] ~ .md-content {
+    --ea-inset-right: 12.1rem;
+  }
+}
+
+[dir] .md-main__inner > .md-content > .md-content__inner.md-typeset,
+[dir] .md-main__inner > .md-content > .md-path {
+  margin-left: calc(var(--ea-gutter) + var(--ea-inset-left));
+  margin-right: calc(var(--ea-gutter) + var(--ea-inset-right));
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Header and tabs
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-header,
+.md-header--shadow {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  box-shadow: none;
+}
+
+.md-header__title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.md-header__button.md-logo {
+  opacity: 0.9;
+}
+
+.md-source {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+}
+
+.md-tabs {
+  border-bottom: 1px solid var(--ea-border-subtle);
+}
+
+.md-tabs__item {
+  height: 2.2rem;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+.md-tabs__link {
+  align-items: center;
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.575rem;
+  font-weight: 600;
+  height: 1.2rem;
+  letter-spacing: 0.14em;
+  margin-top: 0.5rem;
+  opacity: 1;
+  padding: 0 0.4rem;
+  text-transform: uppercase;
+  transition: color var(--ea-transition), background-color var(--ea-transition);
+}
+
+.md-tabs__link:focus,
+.md-tabs__link:hover {
+  color: var(--ea-text-primary);
+}
+
+/* The active tab is a small inverted block inside a thin accent outline, as in the reference header. */
+.md-tabs__item--active .md-tabs__link {
+  background-color: var(--ea-text-primary);
+  color: var(--ea-bg-base);
+  outline: 1px solid var(--ea-accent);
+  outline-offset: 0.15rem;
+}
+
+.md-tabs__item--active .md-tabs__link:focus,
+.md-tabs__item--active .md-tabs__link:hover {
+  color: var(--ea-bg-base);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Search
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+@media screen and (min-width: 60em) {
+  .md-search__form {
+    background-color: transparent;
+    border: 1px solid var(--ea-border-interactive);
+    border-radius: 0;
+    transition: border-color var(--ea-transition);
+  }
+
+  .md-search__form:hover {
+    background-color: transparent;
+    border-color: var(--ea-text-muted);
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+    background-color: var(--ea-bg-base);
+    border-color: var(--ea-accent);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .md-search__output {
+    border: 1px solid var(--ea-border-interactive);
+    border-top: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.md-search__input {
+  font-family: var(--font-sans);
+}
+
+.md-search__input::placeholder {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.md-search-result__meta {
+  background-color: var(--ea-bg-surface-1);
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.md-search-result__link:focus,
+.md-search-result__link:hover,
+.md-search-result__more > summary:focus > div,
+.md-search-result__more > summary:hover > div {
+  background-color: var(--ea-accent-tint);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Breadcrumbs
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-path {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  margin-left: var(--ea-gutter);
+  margin-right: var(--ea-gutter);
+  padding-top: 1.2rem;
+  text-transform: uppercase;
+}
+
+.md-path__list {
+  gap: 0.4rem;
+}
+
+.md-path__item:not(:first-child) {
+  gap: 0.4rem;
+}
+
+.md-path__item:not(:first-child)::before {
+  background: none;
+  color: var(--ea-text-muted);
+  content: "/";
+  height: auto;
+  -webkit-mask-image: none;
+  mask-image: none;
+  width: auto;
+}
+
+.md-path__link {
+  color: var(--ea-text-muted);
+}
+
+.md-path ~ .md-content__inner {
+  padding-top: 0.4rem;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Sidebars: navigation and table of contents
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-nav {
+  font-size: 0.68rem;
+}
+
+.md-nav__link {
+  color: var(--ea-text-secondary);
+  transition: color var(--ea-transition);
+}
+
+.md-nav__link:is(:focus, :hover),
+.md-nav__item .md-nav__link--active:is(:focus, :hover) {
+  color: var(--ea-text-primary);
+}
+
+.md-nav__item .md-nav__link--active,
+.md-nav__item .md-nav__link--active code {
+  color: var(--ea-accent);
+}
+
+/* Section labels and the "Table of contents" title read as technical labels, not as links. */
+.md-nav__title,
+.md-nav__item--section > .md-nav__link,
+.md-nav__item--section > .md-nav__link[for] {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-nav__item--section > .md-nav__link {
+    margin-bottom: 0.4rem;
+  }
+
+  /* Nested pages hang from a thin rule; the active page marks it with an accent edge. */
+  .md-nav--primary .md-nav__item--nested:not(.md-nav__item--section) > .md-nav > .md-nav__list {
+    border-left: 1px solid var(--ea-border-subtle);
+    margin-left: 0.6rem;
+  }
+
+  .md-nav--primary .md-nav__item--nested:not(.md-nav__item--section) > .md-nav > .md-nav__list > .md-nav__item {
+    padding-left: 0.4rem;
+  }
+
+  .md-nav--primary .md-nav__link--active:not(.md-nav__container) {
+    box-shadow: -0.45rem 0 0 -0.4rem var(--ea-accent);
+  }
+
+  .md-nav--secondary {
+    border-left: 1px solid var(--ea-border-subtle);
+    padding-left: 0.6rem;
+  }
+}
+
+.md-nav--secondary .md-nav__title {
+  background: none;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Typography
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset {
+  font-feature-settings: "ss01" off;
+  line-height: 1.6;
+}
+
+.md-typeset :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--ea-text-primary);
+  font-family: var(--font-sans);
+}
+
+.md-typeset h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 1.2rem;
+}
+
+.md-typeset h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 3.2rem 0 0.8rem;
+}
+
+.md-typeset h3 {
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin: 2rem 0 0.6rem;
+}
+
+.md-typeset h4 {
+  font-size: 0.9rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 1.6rem 0 0.4rem;
+}
+
+.md-typeset :is(h5, h6) {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset h1 {
+    font-size: 1.6rem;
+  }
+
+  .md-typeset h2 {
+    font-size: 1.25rem;
+    margin-top: 2.4rem;
+  }
+
+  .md-typeset h3 {
+    font-size: 1rem;
+  }
+}
+
+.md-typeset p {
+  margin: 0 0 1.25em;
+}
+
+.md-typeset :is(strong, b) {
+  color: var(--ea-text-primary);
+}
+
+.md-typeset a {
+  text-decoration-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color var(--ea-transition), text-decoration-color var(--ea-transition);
+}
+
+.md-typeset a:is(:focus, :hover) {
+  color: var(--ea-accent);
+  text-decoration-color: currentcolor;
+}
+
+.md-typeset .headerlink {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.md-typeset hr {
+  border-bottom: 1px solid var(--ea-border-subtle);
+}
+
+.md-typeset img {
+  border-radius: 0;
+}
+
+/* Long-form prose keeps a readable measure; tables, code, panels, figures, and grids use the full column (spec section 0.9). */
+.md-typeset > :is(p, ul, ol, dl, blockquote, .admonition, h1, h2, h3, h4) {
+  max-width: 46rem;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Code
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset code {
+  border-radius: 0;
+  padding: 0.1em 0.3em;
+}
+
+.md-typeset pre > code {
+  border: 1px solid var(--ea-border-subtle);
+}
+
+.md-typeset .highlight {
+  border-radius: 0;
+}
+
+.md-clipboard {
+  color: var(--ea-text-muted);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Tables: technical data sheets
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset table:not([class]) {
+  border: 1px solid var(--ea-border-subtle);
+  border-radius: 0;
+  font-size: 0.72rem;
+}
+
+.md-typeset table:not([class]) th {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  min-width: 3rem;
+  text-transform: uppercase;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) :is(th, td) {
+  padding: 0.6em 1em;
+}
+
+.md-typeset table:not([class]) :is(th, td) + :is(th, td) {
+  border-left: 1px solid var(--ea-border-subtle);
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--ea-border-subtle);
+}
+
+.md-typeset table:not([class]) tbody tr {
+  transition: background-color var(--ea-transition);
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: var(--ea-accent-tint);
+  box-shadow: none;
+}
+
+.md-typeset table:not([class]) code {
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Admonitions: technical panels with a semantic edge (spec section 0.5)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+/* Collapsible admonitions (pymdownx.details) are not enabled; every <details> is an atlas panel (see below). */
+.md-typeset .admonition[class] {
+  --ea-state: var(--ea-accent);
+
+  background-color: transparent;
+  border: 1px solid var(--ea-border-subtle);
+  border-left: 2px solid var(--ea-state);
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 0.72rem;
+}
+
+.md-typeset .admonition:is(.success, .check, .done)[class] {
+  --ea-state: var(--ea-success);
+}
+
+.md-typeset .admonition:is(.warning, .caution, .attention)[class] {
+  --ea-state: var(--ea-warning);
+}
+
+.md-typeset .admonition:is(.danger, .error, .failure, .fail, .missing, .bug)[class] {
+  --ea-state: var(--ea-error);
+}
+
+.md-typeset .admonition:is(.example, .quote, .cite)[class] {
+  --ea-state: var(--ea-text-muted);
+}
+
+.md-typeset .admonition[class] > :is(.admonition-title, summary) {
+  background-color: transparent;
+  border-bottom: 1px solid var(--ea-border-subtle);
+  color: var(--ea-state);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin: 0 -0.6rem;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+.md-typeset .admonition[class] > :is(.admonition-title, summary)::before {
+  background-color: var(--ea-state);
+  height: 0.8rem;
+  top: 0.55rem;
+  width: 0.8rem;
+}
+
+.md-typeset .admonition[class] > :is(.admonition-title, summary)::after {
+  color: var(--ea-state);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Buttons and the back-to-top control
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset .md-button {
+  background-color: transparent;
+  border: 1px solid var(--ea-border-interactive);
+  border-radius: 0;
+  color: var(--ea-text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 0.6rem 0.8rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color var(--ea-transition), background-color var(--ea-transition), border-color var(--ea-transition);
+}
+
+.md-typeset .md-button:is(:focus, :hover) {
+  background-color: transparent;
+  border-color: var(--ea-accent);
+  color: var(--ea-accent);
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--ea-text-primary);
+  border-color: var(--ea-text-primary);
+  color: var(--ea-bg-base);
+}
+
+.md-typeset .md-button--primary:is(:focus, :hover) {
+  background-color: var(--ea-accent);
+  border-color: var(--ea-accent);
+  color: var(--ea-bg-base);
+}
+
+.md-top {
+  border: 1px solid var(--ea-border-interactive);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--ea-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.md-top:is(:focus, :hover) {
+  background-color: var(--ea-bg-base);
+  border-color: var(--ea-accent);
+  color: var(--ea-accent);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Content tabs
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset .tabbed-labels {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  box-shadow: none;
+}
+
+.md-typeset .tabbed-labels > label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Footer: previous and next pages, then the meta line
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-footer {
+  border-top: 1px solid var(--ea-border-subtle);
+}
+
+.md-footer__direction {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  opacity: 1;
+  text-transform: uppercase;
+}
+
+.md-footer__title {
+  font-weight: 650;
+}
+
+.md-footer-meta {
+  border-top: 1px solid var(--ea-border-subtle);
+}
+
+.md-copyright {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Section strips (spec sections 7 and 0.8). Only on overview pages, set per heading with attr_list:
+ *   ## Where to start { .ea-strip data-index="01" data-note="Six entry points" }
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset h2.ea-strip {
+  align-items: center;
+  border-bottom: 1px solid var(--ea-border-subtle);
+  border-top: 1px solid var(--ea-border-subtle);
+  color: var(--ea-text-muted);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  margin: 3.2rem calc(-1 * (var(--ea-gutter) + var(--ea-inset-right))) 1.6rem
+    calc(-1 * (var(--ea-gutter) + var(--ea-inset-left)));
+  max-width: none;
+  min-height: 2.2rem;
+  padding: 0.5rem calc(var(--ea-gutter) + var(--ea-inset-right)) 0.5rem calc(var(--ea-gutter) + var(--ea-inset-left));
+  position: relative;
+  text-transform: uppercase;
+}
+
+.md-typeset h2.ea-strip[data-index]::before {
+  content: attr(data-index) "\00a0/";
+}
+
+.md-typeset h2.ea-strip[data-note]::after {
+  content: attr(data-note);
+  margin-left: auto;
+  text-align: right;
+}
+
+.md-typeset h2.ea-strip .headerlink {
+  margin-left: 0;
+}
+
+/* A strip followed directly by a grid shares its bottom rule with the grid. */
+.md-typeset h2.ea-strip + .grid {
+  border-top: 0;
+  margin-top: -1.6rem;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset h2.ea-strip[data-note]::after {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Grids of cells (spec sections 6 and 8). Material's `grid cards` markup becomes one continuous grid with shared
+ * borders. The outer block draws the top and bottom rules from frame to frame; the list inside it is the grid, inset
+ * like the text, and each cell draws its right and bottom rule, which the list clips at its outer edge. Cells pad
+ * their text by the gutter, so it lines up with the prose above and below.
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset .grid.cards {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  border-top: 1px solid var(--ea-border-subtle);
+  display: block;
+  margin: 1.6rem calc(-1 * (var(--ea-gutter) + var(--ea-inset-right))) 1.6rem
+    calc(-1 * (var(--ea-gutter) + var(--ea-inset-left)));
+  max-width: none;
+  padding: 0 var(--ea-inset-right) 0 var(--ea-inset-left);
+}
+
+.md-typeset .grid.cards > :is(ul, ol) {
+  counter-reset: ea-cell;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/*
+ * Where an empty sidebar margin moves the grid in from the frame, the grid closes its outer edge with its own rule,
+ * drawn just outside the margin so that the cells' text keeps its alignment.
+ */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary[hidden] ~ .md-content .md-typeset .grid.cards > :is(ul, ol) {
+    border-left: 1px solid var(--ea-border-subtle);
+    margin-left: -1px;
+  }
+
+  .md-sidebar--secondary[hidden] ~ .md-content .md-typeset .grid.cards > :is(ul, ol) {
+    border-right: 1px solid var(--ea-border-subtle);
+    margin-right: -1px;
+  }
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li {
+  border: 0;
+  border-radius: 0;
+  box-shadow: 1px 0 0 var(--ea-border-subtle), 0 1px 0 var(--ea-border-subtle);
+  counter-increment: ea-cell;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 1.4rem var(--ea-gutter) 1.6rem;
+  position: relative;
+  transition: background-color var(--ea-transition);
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li:is(:hover, :focus-within) {
+  background-color: var(--ea-bg-surface-1);
+  border-color: transparent;
+  box-shadow: 1px 0 0 var(--ea-border-subtle), 0 1px 0 var(--ea-border-subtle);
+}
+
+/*
+ * A cell whose title is a link is a link as a whole: the title link stretches over the cell. Other links in the cell
+ * (a button, a link in the description) stay above it and keep their own targets.
+ */
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-child::after {
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li a:not(p:first-of-type > a:only-child) {
+  position: relative;
+  z-index: 1;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li:has(> p:first-of-type > a:only-child):hover > p:first-of-type > a {
+  color: var(--ea-accent);
+}
+
+/* The stretched link gives the cell its focus ring, so a keyboard user sees the whole cell selected. */
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-child:focus-visible {
+  outline: none;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-child:focus-visible::after {
+  outline: 1px solid var(--ea-accent);
+  outline-offset: -2px;
+}
+
+/* The cell index: A, B, C in a list; 01, 02, 03 in a numbered list. */
+.md-typeset .grid.cards > :is(ul, ol) > li::before {
+  color: var(--ea-text-muted);
+  content: counter(ea-cell, upper-alpha);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin-bottom: 1.2rem;
+}
+
+.md-typeset .grid.cards > ol > li::before {
+  content: counter(ea-cell, decimal-leading-zero);
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > :first-child {
+  margin-top: 0;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > p {
+  max-width: 34rem;
+}
+
+/* The first line of a cell is its title. */
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type {
+  color: var(--ea-text-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type a {
+  color: inherit;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type a:is(:focus, :hover) {
+  color: var(--ea-accent);
+}
+
+/* A cell's button sits at its bottom edge, so the buttons of a row line up. */
+.md-typeset .grid.cards > :is(ul, ol) > li > p:last-child:has(> .md-button) {
+  margin-bottom: 0;
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+
+/* Compact cells: the numbered reading lists of the section index pages. */
+/* Compact cells are narrower, so a short reading list fills one row instead of leaving an empty trailing cell. */
+.md-typeset .grid.cards.compact > :is(ul, ol) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+
+.md-typeset .grid.cards.compact > :is(ul, ol) > li {
+  padding: 1.1rem var(--ea-gutter) 1.2rem;
+}
+
+.md-typeset .grid.cards.compact > :is(ul, ol) > li::before {
+  margin-bottom: 0.8rem;
+}
+
+.md-typeset .grid.cards.compact > :is(ul, ol) > li > p:first-of-type {
+  font-size: 0.9rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.4rem;
+}
+
+.md-typeset .grid.cards.compact > :is(ul, ol) > li > p {
+  font-size: 0.72rem;
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Landing hero (spec sections 17 and 0.7)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset .ea-hero {
+  container-type: inline-size;
+  padding: 2.4rem 0 3.2rem;
+}
+
+/* Sized to the hero's own width: "Deterministic energy definitions" is about 14.8 em wide, so 6.2cqi keeps it on one line. */
+.md-typeset .ea-hero h1 {
+  font-size: clamp(1.6rem, 6.2cqi, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  margin: 0 0 1.6rem;
+}
+
+.md-typeset .ea-hero h1 em {
+  font-family: var(--font-serif);
+  font-size: 1.1em;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset .ea-hero h1 .headerlink {
+  display: none;
+}
+
+.md-typeset .ea-hero p {
+  color: var(--ea-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 32rem;
+}
+
+
+/* Hero metadata: the release counts as one mono line, then the primary action. */
+.md-typeset .ea-hero p.ea-hero__meta {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin-top: 1.2rem;
+  text-transform: uppercase;
+}
+
+.md-typeset .ea-hero p:last-child:has(> .md-button) {
+  margin-top: 1.6rem;
+}
+
+/* =====================================================================================================================
+ * Atlas components, shared by full pages and record pages (spec sections 0.13 to 0.15)
+ * ================================================================================================================== */
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Controls: square, interactive border, mono uppercase labels, accent focus (spec section 0.15)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+:is(.definition-filters, .schedule-controls) :is(input, select),
+.object-dialog textarea {
+  background-color: var(--ea-bg-base);
+  border: 1px solid var(--ea-border-interactive);
+  border-radius: 0;
+  box-sizing: border-box;
+  color: var(--ea-text-primary);
+  font: inherit;
+  font-family: var(--font-sans);
+  max-width: 100%;
+  min-height: 2.1rem;
+  min-width: 0;
+  padding: 0.4rem 0.5rem;
+  transition: border-color var(--ea-transition);
+  width: 100%;
+}
+
+:is(.definition-filters, .schedule-controls) :is(input, select):hover {
+  border-color: var(--ea-text-muted);
+}
+
+:is(.definition-filters, .schedule-controls) label {
+  color: var(--ea-text-muted);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  gap: 0.35rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Field values keep their own case and the sans face; only the label text is a technical label. */
+:is(.definition-filters, .schedule-controls) label :is(input, select) {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(.definition-filters, .schedule-controls) input::placeholder {
+  color: var(--ea-text-muted);
+}
+
+.definition-filters button,
+.definition-more,
+.definition-copy,
+.definition-resource button,
+.object-copy,
+.schedule-load,
+.schedule-update,
+.object-dialog button {
+  align-self: end;
+  background-color: transparent;
+  border: 1px solid var(--ea-border-interactive);
+  border-radius: 0;
+  color: var(--ea-text-primary);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  min-height: 2.1rem;
+  padding: 0.5rem 0.8rem;
+  text-transform: uppercase;
+  transition: color var(--ea-transition), background-color var(--ea-transition), border-color var(--ea-transition);
+}
+
+:is(.definition-filters button, .definition-more, .definition-copy, .definition-resource button, .schedule-update,
+  .object-dialog button):is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--ea-accent);
+  color: var(--ea-accent);
+}
+
+/* The main action of a record page is inverted, as Material's primary button. */
+.object-copy,
+.schedule-load {
+  background-color: var(--ea-text-primary);
+  border-color: var(--ea-text-primary);
+  color: var(--ea-bg-base);
+}
+
+:is(.object-copy, .schedule-load):is(:hover, :focus-visible):not(:disabled) {
+  background-color: var(--ea-accent);
+  border-color: var(--ea-accent);
+  color: var(--ea-bg-base);
+}
+
+:is(.definition-filters, .schedule-controls, .object-dialog, .object-json) button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+:is(.definition-filters, .schedule-controls, .object-dialog, .object-json, .object-references, .schedule-static,
+  .definition-static, .definition-resource, .definition-header, .definition-results) :focus-visible,
+:is(.object-copy, .schedule-load, .definition-more):focus-visible {
+  outline: 2px solid var(--ea-accent);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Catalogue choices: building families and object kinds become shared-border cells (spec section 0.13)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.md-typeset :is(.definition-gates, .definition-kinds) {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  border-top: 1px solid var(--ea-border-subtle);
+  counter-reset: ea-choice;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.6rem calc(-1 * var(--ea-gutter));
+  overflow: hidden;
+}
+
+.md-typeset .definition-kinds {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.md-typeset :is(.definition-gate, .definition-kind) {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 1px 0 0 var(--ea-border-subtle), 0 1px 0 var(--ea-border-subtle);
+  color: var(--ea-text-primary);
+  counter-increment: ea-choice;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  padding: 1.4rem var(--ea-gutter) 1.6rem;
+  text-decoration: none;
+  transition: background-color var(--ea-transition), color var(--ea-transition);
+}
+
+.md-typeset :is(.definition-gate, .definition-kind)::before {
+  color: var(--ea-text-muted);
+  content: counter(ea-choice, upper-alpha);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin-bottom: 1.2rem;
+}
+
+.md-typeset :is(.definition-gate, .definition-kind):is(:hover, :focus-visible) {
+  background-color: var(--ea-bg-surface-1);
+  color: var(--ea-accent);
+}
+
+.md-typeset :is(.definition-gate, .definition-kind):focus-visible {
+  outline: 2px solid var(--ea-accent);
+  outline-offset: -2px;
+}
+
+.md-typeset .definition-gate span {
+  color: var(--ea-text-secondary);
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.6;
+  margin-top: 0.6rem;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset :is(.definition-gates, .definition-kinds) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Catalogue finder: filters, status, results, and the no-script list
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.definition-filters {
+  background-color: var(--ea-bg-surface-1);
+  border: 1px solid var(--ea-border-subtle);
+  border-radius: 0;
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  padding: 0.8rem;
+}
+
+.md-typeset .definition-status {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  margin: 1rem 0 0;
+  text-transform: uppercase;
+}
+
+.definition-results {
+  border-top: 1px solid var(--ea-border-subtle);
+  margin-top: 0.6rem;
+}
+
+.definition-result {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  padding: 0.7rem 0;
+}
+
+.md-typeset .definition-result a {
+  color: var(--ea-text-primary);
+  font-weight: 650;
+}
+
+.md-typeset .definition-result a:is(:hover, :focus) {
+  color: var(--ea-accent);
+}
+
+.md-typeset .definition-result p {
+  color: var(--ea-text-muted);
+  font-size: 0.65rem;
+  margin: 0.25rem 0 0;
+}
+
+.md-typeset .definition-more {
+  margin-top: 1rem;
+}
+
+.md-typeset .definition-static {
+  margin-top: 1.6rem;
+}
+
+.md-typeset .definition-static ul {
+  font-size: 0.7rem;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Record pages: the compact shell (spec section 0.14). Evidence pages load this file alone, without Material's CSS.
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+body:has(> .definition-document) {
+  background-color: var(--ea-bg-base);
+  color: var(--ea-text-secondary);
+  font-family: var(--font-sans);
+  margin: 0;
+}
+
+.definition-header {
+  align-items: center;
+  border-bottom: 1px solid var(--ea-border-subtle);
+  box-sizing: border-box;
+  color: var(--ea-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  /* The markup separates the links with " · " text; spacing separates them here, as in the tabs of full pages. */
+  font-size: 0;
+  font-weight: 600;
+  gap: 0.3rem 1.2rem;
+  letter-spacing: 0.14em;
+  min-height: 48px;
+  padding: 0.5rem max(16px, calc((100% - 1100px) / 2 + 24px));
+  text-transform: uppercase;
+}
+
+.definition-header a {
+  color: var(--ea-text-muted);
+  font-size: 11px;
+  text-decoration: none;
+  transition: color var(--ea-transition);
+}
+
+.definition-header a:is(:hover, :focus-visible) {
+  color: var(--ea-text-primary);
+}
+
+/* The site's name leads the header in the sans face, like Material's header title. */
+.definition-header a[href$="/archetype-atlas/"] {
+  color: var(--ea-text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin-right: auto;
+  text-transform: none;
+}
+
+.definition-document {
+  box-sizing: border-box;
+  color: var(--ea-text-secondary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: auto;
+  max-width: 1100px;
+  min-height: calc(100vh - 49px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 1.5rem 24px 3rem;
+  /* Material's body is a flex column; with auto margins the column would shrink-wrap to its widest table. */
+  width: 100%;
+}
+
+/* The document column is bounded by the two frame rules where the viewport leaves room for margins. */
+@media screen and (min-width: 1140px) {
+  .definition-document {
+    border-left: 1px solid var(--ea-border-subtle);
+    border-right: 1px solid var(--ea-border-subtle);
+  }
+}
+
+.definition-document .md-typeset {
+  font-size: 16px;
+}
+
+/* The article sits directly in the framed column, so its text starts where the header's links start. */
+.definition-document > .md-content__inner {
+  margin: 0;
+  padding-top: 0;
+}
+
+.definition-document :is(h1, h2, h3) {
+  color: var(--ea-text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Record pages size type in px: Material's rem (20px) would make their dense data sheets too large. */
+.definition-document > h1,
+.definition-document .md-typeset h1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+.definition-document > h2,
+.definition-document .md-typeset h2 {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin: 2rem 0 0.6rem;
+}
+
+.definition-document a {
+  color: var(--ea-accent);
+  text-decoration-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--ea-transition);
+}
+
+.definition-document a:is(:hover, :focus) {
+  text-decoration-color: currentcolor;
+}
+
+.definition-document code {
+  font-family: var(--font-mono);
+}
+
+.definition-document .definition-id {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.definition-document .definition-id code {
+  background: none;
+  color: var(--ea-text-primary);
+  font-size: 12px;
+  padding: 0;
+}
+
+/* Tables of record pages are technical data sheets (spec section 12) that scroll inside their own container. */
+.definition-document .md-typeset table:not([class]) {
+  font-size: 14px;
+}
+
+.definition-document .md-typeset table:not([class]) th {
+  font-size: 11px;
+}
+
+.definition-document > table {
+  border: 1px solid var(--ea-border-subtle);
+  border-collapse: collapse;
+  display: block;
+  font-size: 14px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.definition-document > table :is(th, td) {
+  border-top: 1px solid var(--ea-border-subtle);
+  padding: 0.5em 0.9em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.definition-document > table th {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * JSON panels, reference lists, resources, and the copy dialog
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.object-json {
+  background-color: var(--ea-bg-surface-1);
+  border: 1px solid var(--ea-border-subtle);
+  border-radius: 0;
+  margin: 1.6rem 0;
+  padding: 1rem;
+}
+
+/*
+ * Every <details> of the site is an atlas panel: JSON sources, reference lists, resources, schedule tables, and the copy
+ * dialog's policy (the site has no collapsible admonitions). Square, rule-bordered, mono uppercase summary, and none of
+ * the admonition chrome Material gives <details>: no icon, no tint, a muted chevron.
+ */
+:is(.md-typeset, .definition-document, .object-dialog) details {
+  background-color: var(--ea-bg-base);
+  border: 1px solid var(--ea-border-subtle);
+  border-radius: 0;
+  box-shadow: none;
+  font-size: inherit;
+  margin: 0.8rem 0 0;
+  padding: 0;
+}
+
+.md-typeset :is(.object-references, .schedule-static, .definition-static),
+.definition-document > :is(.object-references, .schedule-static) {
+  margin: 1.2rem 0;
+}
+
+:is(.md-typeset, .definition-document, .object-dialog) details > summary {
+  background: none;
+  border-radius: 0;
+  margin: 0;
+  color: var(--ea-text-primary);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  overflow-wrap: anywhere;
+  padding: 0.6rem 2rem 0.6rem 0.8rem;
+  text-transform: uppercase;
+}
+
+/* Material sets the summary's padding per direction ([dir=ltr] .md-typeset summary); match that specificity. */
+:is([dir], .definition-document) .md-typeset details > summary {
+  padding: 0.6rem 2rem 0.6rem 0.8rem;
+}
+
+.md-typeset details > summary::before {
+  display: none;
+}
+
+.md-typeset details > summary::after {
+  background-color: var(--ea-text-muted);
+  right: 0.6rem;
+}
+
+/* On full pages the type scale is in rem; record pages keep the 11px label size above. */
+[dir] .md-typeset details > summary {
+  font-size: 0.55rem;
+}
+
+:is(.md-typeset, .definition-document, .object-dialog) details[open] > summary {
+  border-bottom: 1px solid var(--ea-border-subtle);
+}
+
+:is(.md-typeset, .definition-document, .object-dialog) details > :not(summary) {
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+}
+
+.object-source pre,
+.definition-resource pre,
+.object-default-info pre {
+  background-color: var(--ea-bg-surface-1);
+  border: 1px solid var(--ea-border-subtle);
+  color: var(--ea-text-primary);
+  font: 12px/1.45 var(--font-mono);
+  max-height: 32rem;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 0.7rem;
+  white-space: pre-wrap;
+}
+
+.object-references ul {
+  font-size: 14px;
+  max-height: 22rem;
+  overflow: auto;
+  padding-bottom: 0.4rem;
+}
+
+.object-status,
+.schedule-status,
+.object-dialog-status {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.object-dialog {
+  background-color: var(--ea-bg-base);
+  border: 1px solid var(--ea-border-interactive);
+  border-radius: 0;
+  box-sizing: border-box;
+  color: var(--ea-text-secondary);
+  font: 16px/1.5 var(--font-sans);
+  max-width: 600px;
+  padding: 1.5rem;
+  width: calc(100% - 2rem);
+}
+
+.object-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.object-dialog h2 {
+  color: var(--ea-text-primary);
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  margin-top: 0;
+}
+
+.object-dialog button {
+  margin: 0.35rem 0.35rem 0.35rem 0;
+}
+
+.object-dialog textarea {
+  font: 12px/1.4 var(--font-mono);
+  height: 18rem;
+  padding: 0.6rem;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Schedules: controls, charts, and tables (spec section 0.15)
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.schedule-viewer {
+  border-top: 1px solid var(--ea-border-subtle);
+  margin: 1.6rem 0;
+  min-width: 0;
+  padding-top: 1rem;
+}
+
+.schedule-controls {
+  background-color: var(--ea-bg-surface-1);
+  border: 1px solid var(--ea-border-subtle);
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 1rem 0;
+  padding: 0.8rem;
+}
+
+.schedule-controls[hidden] {
+  display: none;
+}
+
+.schedule-controls label {
+  font-size: 11px;
+}
+
+.schedule-controls label :is(input, select) {
+  font-size: 14px;
+}
+
+.schedule-day-chart,
+.schedule-annual-chart {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.schedule-values table,
+.schedule-static table {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.schedule-values table {
+  width: 100%;
+}
+
+.schedule-values :is(td, th),
+.schedule-static :is(td, th) {
+  border: 1px solid var(--ea-border-subtle);
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+}
+
+.schedule-values th,
+.schedule-static th {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.schedule-static-table {
+  margin-bottom: 0.8rem;
+  max-height: 32rem;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.schedule-static :is(td, th) {
+  min-width: 4rem;
+}
+
+.schedule-static th:first-child {
+  min-width: 15rem;
+}
+
+@media (max-width: 700px) {
+  .schedule-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .definition-document > h1,
+  .definition-document .md-typeset h1 {
+    font-size: 26px;
+  }
+
+  .definition-header {
+    column-gap: 0.6rem;
+  }
+
+  .definition-document {
+    padding: 1rem 16px 2rem;
+  }
+
+  .object-json {
+    padding: 0.7rem;
+  }
+
+  .object-dialog {
+    padding: 1rem;
+  }
+
+  .schedule-viewer {
+    font-size: 14px;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Research pages of the repository's fixture builds (scripts/site.py), kept on the same tokens
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+.atlas-table {
+  margin: 0.8rem 0 1.3rem;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.atlas-table table,
+.atlas-profile-table table {
+  border-collapse: collapse;
+  font-size: 0.68rem;
+  width: 100%;
+}
+
+.atlas-table :is(th, td),
+.atlas-profile-table :is(th, td) {
+  border-bottom: 1px solid var(--ea-border-subtle);
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.atlas-table th {
+  color: var(--ea-text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.atlas-table pre,
+.atlas-evidence pre {
+  font-size: 0.62rem;
+  max-height: 24rem;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.atlas-meta,
+.atlas-chart-status,
+.atlas-note {
+  color: var(--ea-text-muted);
+  font-size: 0.66rem;
+}
+
+.atlas-meta {
+  align-items: center;
+  border-bottom: 1px solid var(--ea-border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-bottom: 0.7rem;
+}
+
+.atlas-status {
+  border: 1px solid currentcolor;
+  color: var(--ea-warning);
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.atlas-evidence,
+.atlas-explorer {
+  border-top: 1px solid var(--ea-border-subtle);
+  font-size: 0.72rem;
+  margin: 1.5rem 0;
+  overflow-wrap: anywhere;
+  padding-top: 0.7rem;
+}
+
+.atlas-evidence details {
+  border: 1px solid var(--ea-border-subtle);
+  margin: 0.4rem 0;
+  padding: 0.6rem;
+}
+
+.atlas-plot {
+  min-height: 380px;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Print: controls are not printed
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+@media print {
+  .definition-filters,
+  .schedule-controls,
+  .object-copy,
+  .schedule-load {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Motion: none for visitors who ask for less
+ * ------------------------------------------------------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

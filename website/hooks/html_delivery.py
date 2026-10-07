@@ -54,8 +54,9 @@ def on_post_page(output,*,page,config):
             # The compact shell does not load Material's navigation runtime.
             # Retain title, viewport, canonical/icon links and shared styles.
             retained=re.findall(r'<title\b[^>]*>.*?</title>|<meta\b[^>]*(?:charset|name="viewport")[^>]*>|<link\b[^>]*>',head[0],re.S)
-            compact_head='<head>'+''.join(retained)+'</head>'
             prefix=urlsplit(config['site_url']).path.rstrip('/')+'/'
+            # theme.js applies the visitor's colour scheme before the body renders.
+            compact_head='<head>'+''.join(retained)+'<script src="'+prefix+'assets/theme.js"></script></head>'
             scripts=re.findall(r'<script\b[^>]*src="[^"]*(?:assets/(?:core|site|definition|definition_core|object|schedule|schedule_core)\.js|plotly[^"/]*)"[^>]*>.*?</script>',output,re.S)
             output='<!doctype html><html lang="en">'+compact_head+'<body><header class="definition-header"><a href="'+prefix+'">Energy Archetype Atlas</a> · <a href="'+prefix+'catalogue/">Catalogue</a> · <a href="'+prefix+'sources/">Sources</a></header><main class="definition-document">'+article[0]+'</main>'+''.join(scripts)+'</body></html>'
     parser=DeliveryHTML();parser.feed(output);parser.close()
