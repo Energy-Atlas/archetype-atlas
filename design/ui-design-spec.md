@@ -138,17 +138,19 @@ What the family takes from the ArtCraft reference:
 
 **Atlas.** Program, construction, HVAC, schedule, material, component, and evidence pages are rendered by `website/hooks/html_delivery.py` as a compact shell: a one-line header and the article, without Material's navigation markup. They follow the same system:
 
-- the header is the family header in miniature: the site name, then mono uppercase links, on the base surface with a thin bottom rule;
+- the header is the family header in miniature: the site name at the left, mono uppercase links at the right, on the base surface with a thin bottom rule; the markup's ` · ` text separators are hidden and spacing separates the links;
+- the article's text starts where the header's links start; the column's two frame rules show where the viewport leaves margins;
 - the document column is framed by the two vertical rules, at the record pages' existing width;
-- tables are technical data sheets (section 12); JSON panels, reference lists, and evidence details are square bordered panels; copy and load buttons follow section 10; the copy dialog is a square panel with an interactive border;
-- the theme follows section 0.3.
+- tables are technical data sheets (section 12) that scroll inside their own container; JSON panels, reference lists, and evidence details are square bordered panels; *Copy JSON* and *Load interactive plots* are inverted primary buttons, other buttons outlined (section 10); the copy dialog is a square panel with an interactive border;
+- every `<details>` of the site is such a panel, without Material's admonition chrome (the site has no collapsible admonitions);
+- the theme follows section 0.3. Evidence pages, which load only the site's own CSS, get the same fonts, tokens, and theme script.
 
 ### 0.15 Interactive controls and charts
 
 **Atlas.**
 
 - Filters, selects, inputs, and buttons are square, bordered with `--ea-border-interactive`, with mono uppercase labels; focus is a 2px accent outline. Existing minimum control heights stay.
-- Schedule charts (Plotly) take the wiki's Plotly tokens at render time: transparent paper and plot, text `#e5e5e5` / `#18202c`, grid `rgba(255,255,255,0.12)` / `rgba(24,32,44,0.14)`, zero lines `rgba(255,255,255,0.2)` / `rgba(24,32,44,0.24)`, Geist text, accent line traces. The heatmap keeps its perceptually uniform Viridis scale, which reads on both themes.
+- Schedule charts (Plotly) take the wiki's Plotly tokens at render time: transparent paper and plot, text `#e5e5e5` / `#18202c`, grid `rgba(255,255,255,0.12)` / `rgba(24,32,44,0.14)`, zero lines `rgba(255,255,255,0.2)` / `rgba(24,32,44,0.24)`, Geist text. The first line trace is the accent; further profiles follow Plotly's default sequence without its red (section 0.5). The heatmap keeps its perceptually uniform Viridis scale, which reads on both themes.
 
 ---
 
