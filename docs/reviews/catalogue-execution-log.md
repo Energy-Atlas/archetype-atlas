@@ -102,3 +102,31 @@ long build/regression checks run, including current UI/docs/CI changes. Cost if
 wrong: any later changed behavior requires its own regression verification.
 Finding: Git normalized a frozen CRLF policy; every staged release blob is now
 checked against its manifest and exact frozen bytes are preserved via attributes.
+
+## Fresh final review and correction pass
+
+One fresh reviewer found no Critical issues and six Important issues. All six
+were accepted for one combined RED/GREEN correction pass: unchanged reviewed
+mixture members, impossible-filter packet pruning, reviewed exact-ID replacement,
+shared construction applicability, supported finder defaults, and validation of
+root versions/units/bounds/nested references. Regressions reproduced each issue.
+The stronger reference check additionally exposed 53 ancillary equipment rows
+whose schedules had not been included in the definition graph; their source
+schedules are now retained. No missing value was filled by an invented default.
+
+Ruling: retain the initial unpublished v0.1.0 freeze unchanged and supersede it
+with corrected v0.1.1. Publish no initial local v2 snapshot containing the defect.
+Cost if wrong: consumers using the audit freeze require explicit migration;
+the public contract identifies the supported version.
+
+Final: minor (deferred): residential program climate visibility uses the whole
+gate, and HVAC lacks a distinct unreported-climate UI choice. Exact null-climate
+queries remain available in delivery v2.
+
+Final: Ruling: the reviewer declined to judge live publication and full CI while
+those checks were ongoing. Parent execution must finish those gates before claiming
+Tasks 9-10 complete. Cost if wrong: an unverified public artifact could be served.
+
+Final: Ruling: explicit unknown inputs do not establish simulation readiness.
+Keep them queryable with required inputs; consumer capability checks determine
+usability. Cost if wrong: consumers that ignore unknowns can produce invalid models.

@@ -19,6 +19,17 @@ GROUPS=('building_type','template','source_family','evidence_view')
 LAZY_FIELDS={'air_exchange','source_set','source_descriptor'}
 
 
+def matches(row,filters):
+    contexts=row.get('applicability')
+    contextual={k:v for k,v in filters.items() if k in {'building_type','climate'} }
+    if contexts and contextual and not any(all(same_scalar(c.get(k),v) for k,v in contextual.items()) for c in contexts):
+        return False
+    return all(True if contexts and key in contextual else
+        val in row.get('gate',[]) if key=='gate' else
+        val in (row.get('available_details') or [row.get('detail')]) if key=='detail' else
+        same_scalar(row.get(key),val) for key,val in filters.items())
+
+
 def generate_delivery(bundle,target):
     target=checked_target(target);target.mkdir(parents=True,exist_ok=True)
     def write(value,compressed=True):
@@ -29,7 +40,8 @@ def generate_delivery(bundle,target):
         href='resources/'+hashlib.sha256(content).hexdigest()+('.json.gz' if compressed else '.json')
         path=target/href;path.parent.mkdir(exist_ok=True)
         if path.exists() and path.read_bytes()!=content:raise ValueError('Immutable resource collision')
-        path.write_bytes(content);ref=descriptor(href,content)
+        if not path.exists():path.write_bytes(content)
+        ref=descriptor(href,content)
         if compressed:ref.update(encoding='gzip',decoded_size_bytes=len(decoded))
         return ref
     supporting={}
@@ -55,16 +67,21 @@ def generate_delivery(bundle,target):
             groups.setdefault(group,[]).append(row)
         routes=[]
         for group,rows in sorted(groups.items(),key=lambda item:str(item[0])):
-            packets=[];chunk=[]
+            packets=[];chunk=[];packet_records={}
             def packet(values):return {'schema_version':VERSION,'kind':'packet','record_type':kind,'records':values}
+            def add_packet(values):
+                ref=write(packet(values));packets.append(ref)
+                packet_records[ref['sha256']]=[r['id'] for r in values]
             for row in rows:
                 if len(canonical(packet(chunk+[row])))>MAX_PACKET_BYTES:
                     if not chunk:raise ValueError('Definition exceeds selective packet bound: '+row['id'])
-                    packets.append(write(packet(chunk)));chunk=[]
+                    add_packet(chunk);chunk=[]
                 if len(canonical(packet([row])))>MAX_PACKET_BYTES:raise ValueError('Oversized definition: '+row['id'])
                 chunk.append(row)
-            if chunk:packets.append(write(packet(chunk)))
-            routes.append({'selectors':dict(zip(GROUPS,group)),'record_ids':[r['id'] for r in rows], 'packets':packets})
+            if chunk:add_packet(chunk)
+            routes.append({'selectors':dict(zip(GROUPS,group)),'record_ids':[r['id'] for r in rows], 'packets':packets,
+                'record_filters':[{k:r.get(k) for k in FILTERS|{'evidence_view','source_definition_id','available_details','applicability'}} for r in rows],
+                'packet_records':packet_records})
         index=write({'schema_version':VERSION,'kind':'index','record_type':kind,'routes':routes})
         types[kind]={'index':index,'fields':sorted(fields),'filter_fields':sorted(FILTERS & fields),
                      'record_count':len(bundle.get(table,[]))}
@@ -107,20 +124,19 @@ class QueryClient(TransportClient):
                 len(fields)!=len(set(fields)) or set(fields)-set(info['fields'])):
             raise QueryError('invalid_request','Unknown/non-scalar filter or invalid projected field')
         index=self.fetch(info['index']);rows=[]
-        for route in index['routes']:
-            if view=='source' and route['selectors']['evidence_view']!='source':continue
-            if any(key in route['selectors'] and not same_scalar(route['selectors'][key],val)
-                   for key,val in filters.items()):continue
-            if 'id' in filters and filters['id'] not in route['record_ids']:continue
-            for ref in route['packets']:rows.extend(self.fetch(ref)['records'])
+        metadata=[r for route in index['routes'] for r in route['record_filters']]
         if view=='reviewed':
-            replaced={r['source_definition_id'] for r in rows if r.get('source_definition_id')}
-            rows=[r for r in rows if r['id'] not in replaced]
+            replaced={r['source_definition_id'] for r in metadata if r.get('source_definition_id')}
+            metadata=[r for r in metadata if r['id'] not in replaced]
+        else:metadata=[r for r in metadata if r['evidence_view']=='source']
+        selected={r['id'] for r in metadata if matches(r,filters)}
+        for route in index['routes']:
+            if not selected.intersection(route['record_ids']):continue
+            for ref in route['packets']:
+                if selected.intersection(route['packet_records'][ref['sha256']]):rows.extend(self.fetch(ref)['records'])
         result=[]
         for row in rows:
-            if all(val in row.get('gate',[]) if key=='gate' else
-                   val in row.get('available_details',[row.get('detail')]) if key=='detail' else same_scalar(row.get(key),val)
-                   for key,val in filters.items()):
+            if row['id'] in selected and matches(row,filters):
                 result.append({'id':row['id'],'fields':{key:row.get(key) for key in fields},
                                'evidence_view':row['evidence_view'],'derivation':row['derivation']})
         return {'schema_version':VERSION,'kind':'response','snapshot_id':self.manifest['snapshot_id'],

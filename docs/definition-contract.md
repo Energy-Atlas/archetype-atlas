@@ -115,6 +115,19 @@ manifest's declared fields. Common filters include `id`, `building_type`,
 not differentiated; it is not every climate. Climate sets remain exact source
 selectors, not inferred individual climate zones.
 
+Shared construction elements expose `applicability` contexts derived from source
+construction packages. A building/climate pair must match one context; independent
+facet unions do not establish applicability. This relationship does not change an
+element's ID or physical identity. Packages retain their unreported scalar climate
+while their supported contexts can be searched.
+
+The index carries per-record filter metadata and packet membership, so an
+impossible exact filter reads no primary packets. Reviewed replacement happens
+before filtering: querying a superseded source ID in reviewed view returns an
+empty result, while the overlay retains its own exact ID. Finder defaults are
+90.1-2019 and Finest where the selected context supports them; explicit URL
+choices, including unavailable combinations and All, are preserved.
+
 Responses contain `schema_version`, `kind: response`, `snapshot_id`, `manifest`,
 `record_type`, `requested_view`, `match_count` and sorted `records`. Each result
 has `id`, projected `fields`, `evidence_view` and `derivation`. Lazy primary
@@ -131,7 +144,7 @@ schema plus their required physical capabilities before applying any definition.
 
 ## Coverage and reproducibility
 
-Definition release v0.1.0 contains 1,885 programs, 3,798 constructions and 1,046
+Definition release v0.1.1 contains 1,900 programs, 3,798 constructions and 1,046
 HVAC system definitions (including reviewed/composed variants). Another 140
 ancillary descriptors are supporting equipment. These counts are not complete
 simulation-ready models. Missing commercial infiltration, unresolved HVAC
@@ -147,3 +160,9 @@ V1 and v2 retain every advertised immutable snapshot independently. Publisher
 history archives are for deployment retention, not ordinary consumer queries.
 Encoded gzip reproducibility requires the pinned Python/zlib runtime; other
 runtimes must reproduce the same decoded graph and validate their own descriptors.
+
+The initial, unpublished v0.1.0 definition freeze is retained unchanged for audit
+and superseded by v0.1.1. The correction restores unchanged source members in
+reviewed mixtures, adds construction applicability, and retains schedules used
+by ancillary equipment. Use v0.1.1 for catalogue queries; stronger current
+validation intentionally rejects the superseded freeze's orphan references.

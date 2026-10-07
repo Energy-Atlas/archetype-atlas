@@ -7,7 +7,8 @@
     const entries = await response.json();
     const controls = [...section.querySelectorAll('[data-filter]')];
     const params = new URLSearchParams(location.search);
-    let filters = Object.fromEntries(controls.map(c => [c.dataset.filter, params.get(c.dataset.filter) || (c.dataset.filter === 'evidence_view' ? 'source' : '')]));
+    const explicit = [...params.keys()];
+    let filters = DefinitionCore.defaults(entries, Object.fromEntries(controls.map(c => [c.dataset.filter, params.has(c.dataset.filter) ? params.get(c.dataset.filter) : (c.dataset.filter === 'evidence_view' ? 'source' : '')])), explicit);
     let limit = 40;
     const status = section.querySelector('.definition-status'), results = section.querySelector('.definition-results'), more = section.querySelector('.definition-more');
     function render() {
@@ -31,15 +32,22 @@
         results.append(card);
       }
       more.hidden = matches.length <= limit;
-      const query = new URLSearchParams(Object.entries(filters).filter(([,v]) => v));
+      const query = new URLSearchParams(Object.entries(filters).filter(([k,v]) => v || explicit.includes(k)));
       history.replaceState(null, '', location.pathname + (query.size ? '?' + query : ''));
     }
     for (const c of controls) c.addEventListener(c.type === 'search' ? 'input' : 'change', () => {
-      filters = DefinitionCore.change(filters, c.dataset.filter, c.value); limit = 40; render();
+      const key = c.dataset.filter;
+      const cleared = key === 'building' ? ['detail','vintage','climate','system_type'] : key === 'vintage' ? ['climate'] : [];
+      for (const dependent of cleared) {const i = explicit.indexOf(dependent); if (i >= 0) explicit.splice(i,1);}
+      if (!explicit.includes(key)) explicit.push(key);
+      filters = DefinitionCore.change(filters, c.dataset.filter, c.value);
+      if (c.dataset.filter === 'building') filters = DefinitionCore.defaults(entries, filters);
+      limit = 40; render();
     });
     section.querySelector('form').addEventListener('submit', e => e.preventDefault());
     section.querySelector('form').addEventListener('reset', e => {
-      e.preventDefault(); filters = Object.fromEntries(controls.map(c => [c.dataset.filter, c.dataset.filter === 'evidence_view' ? 'source' : ''])); limit = 40; render();
+      e.preventDefault(); explicit.length = 0;
+      filters = DefinitionCore.defaults(entries, Object.fromEntries(controls.map(c => [c.dataset.filter, c.dataset.filter === 'evidence_view' ? 'source' : '']))); limit = 40; render();
     });
     more.addEventListener('click', () => {limit += 40; render();}); render();
   }

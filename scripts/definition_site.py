@@ -49,6 +49,7 @@ def generate(bundle,target,publish=True,history=None):
             for r in rows:
                 entries.append({k:r.get(k) for k in ('id','name','building_type','template','source_family','climate','detail','system_type','role','derivation','evidence_view','source_definition_id','available_details')} |
                     {'building':building_label(r['building_type']) if r['building_type'] else 'Shared elements',
+                     'applicability':[{**c,'building':building_label(c['building_type'])} for c in r.get('applicability',[])],
                      'vintage':r.get('vintage') or r['template'],'path':'../../../definitions/'+r['id']+'/'})
             fields=[('search','Search')]
             if kind!='hvac_system' or len({r['building_type'] for r in rows})>1:fields.append(('building','Building type'))
@@ -64,7 +65,8 @@ def generate(bundle,target,publish=True,history=None):
                 page+=f'<label>{label}'
                 if key=='search':page+='<input type="search" data-filter="search" placeholder="Name or ID">'
                 else:
-                    values=sorted({str(v) for r in entries for v in (r.get('available_details',[]) if key=='detail' else [r.get(key)]) if v is not None})
+                    values=sorted({str(v) for r in entries for v in (r.get('available_details',[]) if key=='detail' else
+                        [r.get(key)]+[c.get(key) for c in r.get('applicability',[]) if key in {'building','climate'}]) if v is not None})
                     page+=f'<select data-filter="{key}"><option value="">All</option>'
                     page+=''.join(f'<option value="{esc(v)}">{esc(DETAILS.get(v,v))}</option>' for v in values)
                     page+='</select>'

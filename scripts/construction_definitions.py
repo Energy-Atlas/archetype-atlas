@@ -287,7 +287,29 @@ def build_constructions(context, programs):
         element = assembly(fallback, name, role, assumed=True)
         element['gate'] = ['residential','nonresidential']
         element['fallback_policy'] = 'Use building-wide only where no resolved source role assignment exists; keep fixed across comparisons.'
+    # Applicability is a source relationship, not part of an element's physical
+    # identity. Preserve correlated building/climate contexts without cloning it.
+    by_id={r['id']:r for r in bundle['constructions']}
+    families={r['building_type'] for r in programs['programs']}
+    for package in list(bundle['constructions']):
+        if package.get('representation')!='package':continue
+        building=package['building_type']
+        applicable=sorted(families & {'SmallOffice','MediumOffice','LargeOffice'}) if building=='Office' else [building]
+        linked=[by_id[i] for ids in package['elements'].values() for i in ids]
+        climates=sorted({r['climate'] for r in linked if r.get('climate')}) or [package.get('climate')]
+        for role,ids in package['elements'].items():
+            for identity in ids:
+                element=by_id[identity]
+                for family in applicable:
+                    for climate in [element['climate']] if element.get('climate') else climates:
+                        context={'building_type':family,'template':package['template'],'climate':climate,
+                            'source_package_id':package['id'],'source_space_type':package.get('space_type'),
+                            'element_role':role}
+                        element.setdefault('applicability',[]).append(context)
+                        package.setdefault('applicability',[]).append(context)
     for row in bundle['constructions']:
+        if row.get('applicability'):
+            row['applicability']=[dict(items) for items in sorted({tuple(sorted(c.items())) for c in row['applicability']},key=str)]
         if row.get('representation')=='element':
             row['performance_id']=stable_id('construction-performance',physical_properties({
                 k:row.get(k) for k in ('layers','parameters','role','target_adjustment','ground_model')}))

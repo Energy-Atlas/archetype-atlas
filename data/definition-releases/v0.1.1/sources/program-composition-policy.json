@@ -1,0 +1,264 @@
+{
+  "schema_version": "1.0.0",
+  "decision_baseline": "45bfe27",
+  "matrix": "docs/reviews/program-aggregation-matrix.md",
+  "exclude_name_tokens": [
+    "basement",
+    "attic"
+  ],
+  "recipes": [
+    {
+      "building_type": "Hospital",
+      "departments": {
+        "ER_Mixed_Hospital": [
+          "ER_Exam",
+          "ER_NurseStn",
+          "ER_Trauma",
+          "ER_Triage"
+        ],
+        "ICU_Mixed_Hospital": [
+          "ICU_NurseStn",
+          "ICU_Open",
+          "ICU_PatRm"
+        ],
+        "FoodService_Mixed_Hospital": [
+          "Kitchen",
+          "Dining"
+        ],
+        "Diagnostics_Mixed_Hospital": [
+          "Lab",
+          "PhysTherapy",
+          "Radiology"
+        ],
+        "Office_Mixed_Hospital": [
+          "Office",
+          "HospitalOfficeFlr1",
+          "HospitalOfficeFlr5"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Corridor",
+        "Lobby"
+      ]
+    },
+    {
+      "building_type": "Outpatient",
+      "departments": {
+        "Surgery_Mixed_Outpatient": [
+          "OR",
+          "Anesthesia",
+          "PACU",
+          "PreOp",
+          "ProcedureRoom"
+        ],
+        "Diagnostics_Mixed_Outpatient": [
+          "Exam",
+          "MRI",
+          "MRI_Control",
+          "Xray",
+          "PhysicalTherapy"
+        ],
+        "ClinicalSupport_Mixed_Outpatient": [
+          "CleanWork",
+          "Soil Work",
+          "NurseStation",
+          "MedGas",
+          "BioHazard"
+        ],
+        "Office_Mixed_Outpatient": [
+          "Office",
+          "Conference",
+          "OutpatientFloor2Work"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Hall",
+        "Hall_infil",
+        "Stair",
+        "Lobby"
+      ]
+    },
+    {
+      "building_type": "LargeHotel",
+      "departments": {
+        "GuestRooms_Mixed_LargeHotel": [
+          "GuestRoom",
+          "GuestRoom2",
+          "GuestRoom3",
+          "GuestRoom4",
+          "GuestRoom8"
+        ],
+        "Retail_Mixed_LargeHotel": [
+          "Retail",
+          "Retail2"
+        ],
+        "FoodService_Mixed_LargeHotel": [
+          "Kitchen",
+          "Cafe",
+          "Banquet"
+        ],
+        "Support_Mixed_LargeHotel": [
+          "Mechanical",
+          "Laundry",
+          "Storage"
+        ],
+        "Corridor_Mixed_LargeHotel": [
+          "Corridor",
+          "Corridor2"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Corridor",
+        "Corridor2",
+        "Lobby"
+      ]
+    },
+    {
+      "building_type": "SmallHotel",
+      "departments": {
+        "GuestRooms_Mixed_SmallHotel": [
+          "GuestRoom",
+          "GuestRoom123Occ",
+          "GuestRoom123Vac",
+          "GuestRoom4Occ",
+          "GuestRoom4Vac"
+        ],
+        "Support_Mixed_SmallHotel": [
+          "Mechanical",
+          "Elec/MechRoom",
+          "Laundry",
+          "Storage",
+          "Storage4Front",
+          "Storage4Rear"
+        ],
+        "Corridor_Mixed_SmallHotel": [
+          "Corridor",
+          "Corridor4"
+        ],
+        "Amenities_Mixed_SmallHotel": [
+          "Exercise",
+          "Meeting",
+          "GuestLounge"
+        ],
+        "StaffOffice_Mixed_SmallHotel": [
+          "StaffLounge",
+          "Office"
+        ],
+        "VerticalCirculation_Mixed_SmallHotel": [
+          "Stair",
+          "Stair4",
+          "ElevatorCore",
+          "ElevatorCore4"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Corridor",
+        "Corridor4",
+        "Lobby"
+      ]
+    },
+    {
+      "building_type": "PrimarySchool",
+      "departments": {
+        "FoodService_Mixed_PrimarySchool": [
+          "Cafeteria",
+          "Kitchen"
+        ],
+        "Activity_Mixed_PrimarySchool": [
+          "ComputerRoom",
+          "Gym",
+          "Library"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Corridor"
+      ]
+    },
+    {
+      "building_type": "SecondarySchool",
+      "departments": {
+        "FoodService_Mixed_SecondarySchool": [
+          "Cafeteria",
+          "Kitchen"
+        ],
+        "Activity_Mixed_SecondarySchool": [
+          "ComputerRoom",
+          "Gym",
+          "Library",
+          "Auditorium",
+          "Gym - audience"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Corridor"
+      ]
+    },
+    {
+      "building_type": "RetailStandalone",
+      "departments": {
+        "Sales_Mixed_RetailStandalone": [
+          "Front_Retail",
+          "Core_Retail",
+          "Point_of_Sale",
+          "Retail"
+        ]
+      },
+      "general": true,
+      "general_exclusions": [
+        "Back_Space"
+      ]
+    },
+    {
+      "building_type": "RetailStripmall",
+      "departments": {
+        "Retail_Mixed_RetailStripmall": [
+          "Strip mall - type 1",
+          "Strip mall - type 2",
+          "Strip mall - type 3"
+        ]
+      },
+      "general": false,
+      "general_exclusions": []
+    },
+    {
+      "building_type": "SuperMarket",
+      "departments": {
+        "Office_Mixed_SuperMarket": [
+          "Office",
+          "Meeting"
+        ],
+        "CustomerServices_Mixed_SuperMarket": [
+          "Vestibule",
+          "Bakery",
+          "Deli",
+          "Dining",
+          "Produce"
+        ],
+        "Support_Mixed_SuperMarket": [
+          "DryStorage",
+          "Elec/MechRoom",
+          "Restroom"
+        ]
+      },
+      "general": true,
+      "general_exclusions": []
+    },
+    {
+      "building_type": "Warehouse",
+      "departments": {
+        "Storage_Mixed_Warehouse": [
+          "Bulk",
+          "Fine"
+        ]
+      },
+      "general": false,
+      "general_exclusions": []
+    }
+  ]
+}

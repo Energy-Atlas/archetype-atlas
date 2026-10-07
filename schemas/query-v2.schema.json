@@ -354,7 +354,9 @@
         "required": [
           "selectors",
           "record_ids",
-          "packets"
+          "packets",
+          "record_filters",
+          "packet_records"
         ],
         "properties": {
           "selectors": {
@@ -405,6 +407,25 @@
                 }
               },
               "additionalProperties": false
+            }
+          },
+          "record_filters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "evidence_view"
+              ]
+            }
+          },
+          "packet_records": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         },

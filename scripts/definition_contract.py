@@ -21,6 +21,7 @@ class DefinitionError(ValueError):
 class DefinitionBundle(dict):
     def __init__(self, **values):
         super().__init__({table: [] for table in TABLES})
+        self['schema_version']='1.0.0'
         self.update(values)
 
     def merge(self, other):
@@ -100,6 +101,18 @@ def _validate_parameter(value, name):
         raise DefinitionError('Missing physical field evidence: '+name)
     if not value['evidence_id'] or not value['unit']:
         raise DefinitionError('Missing evidence/unit: '+name)
+    categorical={'schedule reference','source fuel','source strategy','source technology','state','fuel'}
+    numeric={'1','W/m2','W/m2/K','person/m2','m3/s/m2','1/h','W','Pa','m3/s/person',
+             'W/m/K','W/dwelling','m3/s','W/W','person/dwelling','m2','1/s','m2*K/W',
+             'm','kg/m3','J/kg/K','degC','K','W/person','m3/s/dwelling'}
+    if value['unit'] not in categorical|numeric:
+        raise DefinitionError('Unsupported physical unit: '+name+'/'+value['unit'])
+    val=value['value']
+    if val is not None and value['unit'] in numeric:
+        if isinstance(val,bool) or not isinstance(val,(int,float)) or not math.isfinite(val):
+            raise DefinitionError('Invalid numeric physical value: '+name)
+        if value['unit'] not in {'degC','K'} and val<0:
+            raise DefinitionError('Negative physical value: '+name)
     if value['status'] not in {'known', 'unknown', 'not_reported', 'not_applicable', 'requires_input'}:
         raise DefinitionError('Invalid value status: '+name)
     if (value['value'] is None) == (value['status'] == 'known'):

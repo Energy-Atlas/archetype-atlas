@@ -156,7 +156,7 @@ explicit download map; complete snapshot ZIPs retain each manifest inventory.
 
 ## Definition catalogue and independent delivery majors
 
-`python -m scripts.site` consumes verified `data/definition-releases/v0.1.0`
+`python -m scripts.site` consumes verified `data/definition-releases/v0.1.1`
 by default. The Python generator's optional `definition_release` argument keeps
 legacy fixture builds available. The new catalogue exposes exactly two entry
 gates and three kinds. Metadata drives facets; evidence, schedules and components

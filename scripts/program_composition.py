@@ -125,6 +125,13 @@ def compose(context,programs):
     for row in programs['programs']:
         row['available_details']=['SourcePrograms']
         contexts[row['building_type'],row['template'],row['evidence_view']].append(row)
+    # A reviewed view substitutes overlays into the entire source context.
+    # An unchanged leaf still contributes its area and its source load trajectory.
+    for (family,template,view),leaves in list(contexts.items()):
+        if view!='reviewed':continue
+        overlays={r['source_definition_id']:r for r in leaves}
+        contexts[family,template,view]=[overlays.get(r['id'],r)
+            for r in contexts[family,template,'source']]
     for (family,template,view),leaves in contexts.items():
         eligible=represented_weights(areas[family,template])
         by_name={source_map[r['source_id']]['source_space_type']:r for r in leaves if r['source_id'] in eligible}
@@ -139,7 +146,7 @@ def compose(context,programs):
             if not mode_groups:continue
             covered={n for _,_,names in mode_groups for n in names}
             for name,leaf in by_name.items():
-                if name not in covered:leaf['available_details'].append(mode)
+                if name not in covered and mode not in leaf['available_details']:leaf['available_details'].append(mode)
         for mode,name,names in groups:
             members=[by_name[n] for n in names];denominator=math.fsum(eligible[m['source_id']] for m in members)
             weights=[eligible[m['source_id']]/denominator for m in members]

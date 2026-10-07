@@ -169,7 +169,7 @@ systems. [The contract](docs/definition-contract.md) describes load bases, scope
 air requirements, component comparison, fixed conditional HVAC ratings and lazy,
 manifest-pinned delivery. V1 remains available without changing its contract.
 
-Canonical definitions: `data/definition-releases/v0.1.0/` (schema 1.0.0).
+Canonical definitions: `data/definition-releases/v0.1.1/` (schema 1.0.0).
 [Coverage](docs/reviews/catalogue-definition-coverage.md) separates supported
 inputs from unknowns; definitions are not automatically simulation-ready models.
 [Execution findings](docs/reviews/catalogue-execution-log.md) record decisions.
@@ -179,7 +179,7 @@ python -m scripts.definitions --scope pilot --output build/definitions-pilot
 python -m scripts.definitions --scope full --output build/definitions-full
 python -m scripts.definition_release --verify
 python -m scripts.definition_release --reproduce
-python -m scripts.query_v2 --input data/definition-releases/v0.1.0 --output build/delivery-v2
+python -m scripts.query_v2 --input data/definition-releases/v0.1.1 --output build/delivery-v2
 ```
 
 The library does not size consumer models. Residential definitions reuse existing

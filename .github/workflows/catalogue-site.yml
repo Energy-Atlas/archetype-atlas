@@ -120,7 +120,7 @@ jobs:
           python -m unittest tests.test_water_reporting_site -q
           python -m unittest tests.test_site tests.test_site_delivery tests.test_html_delivery -q
           python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
-          node --test tests/site_core.test.js tests/site_parity.test.js
+          node --test tests/site_core.test.js tests/site_parity.test.js tests/definition_review.test.js
       - name: Restore previously published immutable query snapshots
         run: |
           if [ "${{ github.event_name == 'workflow_dispatch' && inputs.bootstrap_query_delivery }}" = "true" ]; then

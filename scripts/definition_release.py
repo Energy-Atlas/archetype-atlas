@@ -15,7 +15,7 @@ def read_bundle(path):
     return bundle
 
 
-def freeze(bundle,target):
+def freeze(bundle,target,version='0.1.1'):
     report=validate(bundle)
     if report.errors:raise DefinitionError('; '.join(report.errors[:10]))
     target=Path(target)
@@ -24,7 +24,7 @@ def freeze(bundle,target):
     files['coverage-report.json']=canonical(report.__dict__)
     for relative in ('schemas/definitions.schema.json','schemas/query-v2.schema.json',
                      'sources/definition-evidence-lock.json','sources/definition-policy.json',
-                     'sources/program-composition-policy.json'):
+                     'sources/program-composition-policy.json','docs/reviews/source-default-lock.json'):
         if (ROOT/relative).is_file():files[relative]=(ROOT/relative).read_bytes()
     for path in (ROOT/'data/releases/v0.2.0/sources/licenses').glob('*.txt'):
         files['sources/licenses/'+path.name]=path.read_bytes()
@@ -34,7 +34,7 @@ def freeze(bundle,target):
         writer.writerow(['id','name','building_type','template','source_family','evidence_view','derivation'])
         for row in bundle[table]:writer.writerow([row.get(k) for k in ('id','name','building_type','template','source_family','evidence_view','derivation')])
         files['inspection/'+table+'.csv']=stream.getvalue().encode()
-    manifest={'release_version':'0.1.0','schema_version':'1.0.0','dependencies':bundle.get('dependencies',{}),
+    manifest={'release_version':version,'schema_version':'1.0.0','dependencies':bundle.get('dependencies',{}),
               'files':{name:{'sha256':hashlib.sha256(content).hexdigest(),'size_bytes':len(content)}
                        for name,content in sorted(files.items())}}
     files['manifest.json']=canonical(manifest)
@@ -67,7 +67,7 @@ def verify(target):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--target',type=Path,default=ROOT/'data/definition-releases/v0.1.0')
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--target',type=Path,default=ROOT/'data/definition-releases/v0.1.1')
     p.add_argument('--input',type=Path);p.add_argument('--verify',action='store_true');p.add_argument('--reproduce',action='store_true');a=p.parse_args()
     if a.verify:
         report=verify(a.target)
@@ -81,7 +81,7 @@ def main():
         print('Canonical definition bytes reproduced')
     else:
         if not a.input:p.error('--input required to freeze')
-        freeze(read_bundle(a.input),a.target);print('Definitions frozen at '+str(a.target))
+        freeze(read_bundle(a.input),a.target,version=a.target.name.removeprefix('v'));print('Definitions frozen at '+str(a.target))
 
 
 if __name__=='__main__':main()

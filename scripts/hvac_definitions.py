@@ -102,6 +102,6 @@ def build_hvac(context):
             bundle['components'].append({'id':stable_id('curve',{'path':path,'index':index}),
                 'role':'performance_curve','definition':curve,'assignment_status':'unassigned',
                 'evidence_ids':[eid['id']]})
-    wanted={sid for r in bundle['hvac_systems'] for sid in r['schedule_ids']}
+    wanted={sid for r in bundle['hvac_systems']+bundle['components'] for sid in r.get('schedule_ids',[])}
     bundle['schedules']=[s for s in context.atlas.get('schedules',[]) if s['id'] in wanted]
     return DefinitionBundle().merge(bundle)

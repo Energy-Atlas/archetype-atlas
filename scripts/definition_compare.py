@@ -5,7 +5,7 @@ METADATA = {'id', 'name', 'source_id', 'source_file_id', 'evidence_id', 'evidenc
             'locator', 'original_value', 'original_unit', 'interpretation', 'extraction_date',
             'building_type', 'template', 'source_family', 'gate', 'climate', 'evidence_view',
             'derivation', 'performance_id', 'source_definition_id', 'applicable_building_types',
-            'material_id', 'source_code_defaults', 'source_material_locator'}
+            'material_id', 'source_code_defaults', 'source_material_locator','applicability','source_package_id'}
 
 
 def physical_properties(value):

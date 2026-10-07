@@ -10,13 +10,17 @@
       const replaced = new Set(entries.map(r => r.source_definition_id).filter(Boolean));
       pool = entries.filter(r => !replaced.has(r.id));
     }
-    return pool.filter(row => Object.entries(filters).every(([key, value]) => {
+    return pool.filter(row => {
+      const contextual = Object.entries(filters).filter(([k,v]) => ['building','climate'].includes(k) && v);
+      if (row.applicability?.length && !row.applicability.some(c => contextual.every(([k,v]) => c[k] === v))) return false;
+      return Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
+      if (row.applicability?.length && ['building','climate'].includes(key)) return true;
       if (key === 'search') return [row.name, row.id, row.building, row.template, row.source_family].join(' ').toLowerCase().includes(value.toLowerCase());
       if (key === 'detail') return (row.available_details || [row.detail]).includes(value);
       if (key === 'evidence_view' && value === 'reviewed') return true;
       return row[key] === value;
-    }));
+    });});
   }
   function change(filters, key, value) {
     const next = {...filters, [key]: value};
@@ -24,5 +28,12 @@
     if (key === 'vintage') next.climate = '';
     return next;
   }
-  return {filter, change};
+  function defaults(entries, filters, explicitKeys = []) {
+    const next = {...filters};
+    for (const [key,value] of [['vintage','90.1-2019'],['detail','SourcePrograms']]) {
+      if (!next[key] && !explicitKeys.includes(key) && filter(entries,{...next,[key]:value}).length) next[key] = value;
+    }
+    return next;
+  }
+  return {filter, change, defaults};
 });

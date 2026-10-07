@@ -931,7 +931,7 @@ def main():
     p.add_argument('--release', type=Path, action='append', help='Repeat to preserve multiple release URLs')
     p.add_argument('--output', type=Path, default=ROOT/'build/site-docs')
     p.add_argument('--pilot', action='store_true')
-    p.add_argument('--definitions',type=Path,default=ROOT/'data/definition-releases/v0.1.0')
+    p.add_argument('--definitions',type=Path,default=ROOT/'data/definition-releases/v0.1.1')
     args = p.parse_args()
     from scripts.site_assets import fetch_assets
     fetch_assets()
