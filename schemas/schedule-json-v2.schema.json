@@ -1,0 +1,351 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:schedule-json:2.0.0",
+  "title": "Embedded schedule JSON 2.0.0",
+  "$ref": "#/$defs/schedule",
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date",
+        "day_types",
+        "values"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        },
+        "end_date": {
+          "type": "string",
+          "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        },
+        "day_types": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "Default",
+              "Wkdy",
+              "Wknd",
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri",
+              "Sat",
+              "Sun",
+              "Hol",
+              "WntrDsn",
+              "SmrDsn"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "values": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 24,
+              "maxItems": 24
+            }
+          ]
+        }
+      },
+      "description": "Dates are inclusive recurring MM-DD boundaries; start > end wraps New Year. One value is constant; 24 values describe hourly intervals [h,h+1). Array order is authoritative."
+    },
+    "ruleset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "unit",
+        "timestep_minutes",
+        "type",
+        "rule_selection",
+        "rules"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "1",
+            "degC",
+            "W/person"
+          ]
+        },
+        "timestep_minutes": {
+          "const": 60
+        },
+        "source_context": {
+          "type": "object",
+          "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns."
+        },
+        "type": {
+          "const": "ruleset"
+        },
+        "rule_selection": {
+          "const": "last_specific_match_else_last_default"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          },
+          "minItems": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "1"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "W/person"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "annual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "unit",
+        "timestep_minutes",
+        "type",
+        "year",
+        "clock",
+        "values"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "1",
+            "degC",
+            "W/person"
+          ]
+        },
+        "timestep_minutes": {
+          "const": 60
+        },
+        "source_context": {
+          "type": "object",
+          "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns."
+        },
+        "type": {
+          "const": "annual"
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
+        "clock": {
+          "const": "local_standard_time"
+        },
+        "values": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 8760,
+              "maxItems": 8760
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 8784,
+              "maxItems": 8784
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "1"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "W/person"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "Chronological hourly intervals from Jan 1 00:00; length must equal hours in the recorded year, with no DST. Never remap to another year."
+    },
+    "schedule": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ruleset"
+        },
+        {
+          "$ref": "#/$defs/annual"
+        }
+      ]
+    }
+  }
+}

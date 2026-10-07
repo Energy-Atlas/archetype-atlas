@@ -1,0 +1,1357 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:program-json:2.0.0",
+  "title": "Self-contained program JSON 2.0.0",
+  "description": "Connector contract. All referenced schedules are embedded. Defaults are already applied to defaulted exports; JSON Schema default keywords do not perform conversion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "export_mode",
+    "id",
+    "name",
+    "scope",
+    "source",
+    "loads",
+    "controls",
+    "schedules",
+    "shared_services",
+    "default_policy_id",
+    "assumptions",
+    "required_bindings"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "kind": {
+      "const": "program"
+    },
+    "export_mode": {
+      "enum": [
+        "raw",
+        "defaulted"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "enum": [
+        "program",
+        "whole_dwelling"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "program_id",
+        "definition_release",
+        "building_type",
+        "template",
+        "evidence_view",
+        "evidence"
+      ],
+      "properties": {
+        "program_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition_release": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "template": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_view": {
+          "enum": [
+            "source",
+            "reviewed"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        }
+      }
+    },
+    "loads": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/load"
+      }
+    },
+    "controls": {
+      "$ref": "#/$defs/controls"
+    },
+    "schedules": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/schedule"
+      }
+    },
+    "shared_services": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/service"
+      }
+    },
+    "default_policy_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assumption"
+      }
+    },
+    "required_bindings": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "floor_area_m2",
+          "dwelling_unit_count",
+          "person_count",
+          "shared_service_host",
+          "calendar_year",
+          "holiday_calendar"
+        ]
+      },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "export_mode": {
+            "const": "defaulted"
+          }
+        },
+        "required": [
+          "export_mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "loads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ready_load"
+            }
+          },
+          "controls": {
+            "$ref": "#/$defs/ready_controls"
+          },
+          "shared_services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ready_service"
+            }
+          },
+          "default_policy_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "default_policy_id": {
+            "type": "null"
+          },
+          "assumptions": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_date",
+        "end_date",
+        "day_types",
+        "values"
+      ],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        },
+        "end_date": {
+          "type": "string",
+          "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        },
+        "day_types": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "Default",
+              "Wkdy",
+              "Wknd",
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri",
+              "Sat",
+              "Sun",
+              "Hol",
+              "WntrDsn",
+              "SmrDsn"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "values": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 24,
+              "maxItems": 24
+            }
+          ]
+        }
+      },
+      "description": "Dates are inclusive recurring MM-DD boundaries; start > end wraps New Year. One value is constant; 24 values describe hourly intervals [h,h+1). Array order is authoritative."
+    },
+    "ruleset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "unit",
+        "timestep_minutes",
+        "type",
+        "rule_selection",
+        "rules"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "1",
+            "degC",
+            "W/person"
+          ]
+        },
+        "timestep_minutes": {
+          "const": 60
+        },
+        "source_context": {
+          "type": "object",
+          "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns."
+        },
+        "type": {
+          "const": "ruleset"
+        },
+        "rule_selection": {
+          "const": "last_specific_match_else_last_default"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          },
+          "minItems": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "1"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "W/person"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "annual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "unit",
+        "timestep_minutes",
+        "type",
+        "year",
+        "clock",
+        "values"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "1",
+            "degC",
+            "W/person"
+          ]
+        },
+        "timestep_minutes": {
+          "const": 60
+        },
+        "source_context": {
+          "type": "object",
+          "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns."
+        },
+        "type": {
+          "const": "annual"
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
+        "clock": {
+          "const": "local_standard_time"
+        },
+        "values": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 8760,
+              "maxItems": 8760
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 8784,
+              "maxItems": 8784
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "1"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "unit": {
+                "const": "W/person"
+              }
+            },
+            "required": [
+              "unit"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rules": {
+                "items": {
+                  "properties": {
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "Chronological hourly intervals from Jan 1 00:00; length must equal hours in the recorded year, with no DST. Never remap to another year."
+    },
+    "schedule": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ruleset"
+        },
+        {
+          "$ref": "#/$defs/annual"
+        }
+      ]
+    },
+    "heat_fractions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "radiant",
+        "latent",
+        "lost",
+        "visible",
+        "return_air"
+      ],
+      "properties": {
+        "radiant": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latent": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lost": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "visible": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "return_air": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "For power loads only. Convective fraction = 1 - sum(all five fields). The sum must not exceed 1; known fractions are never overwritten."
+    },
+    "ready_heat_fractions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "radiant",
+        "latent",
+        "lost",
+        "visible",
+        "return_air"
+      ],
+      "properties": {
+        "radiant": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "latent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "visible": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "return_air": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "load": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "demand_id",
+        "type",
+        "end_use",
+        "value",
+        "unit",
+        "basis",
+        "schedule_id"
+      ],
+      "properties": {
+        "demand_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "occupancy",
+            "lighting",
+            "electric_equipment",
+            "gas_equipment",
+            "hot_water"
+          ]
+        },
+        "end_use": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "enum": [
+            "person/m2",
+            "person/dwelling",
+            "person",
+            "W/m2",
+            "W/dwelling",
+            "W/person",
+            "W",
+            "m3/s/m2",
+            "m3/s/dwelling",
+            "m3/s/person",
+            "m3/s"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "floor_area",
+            "dwelling_unit",
+            "person",
+            "absolute"
+          ]
+        },
+        "schedule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "heat_fractions": {
+          "$ref": "#/$defs/heat_fractions"
+        },
+        "target_temperature_schedule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inlet_temperature_schedule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "occupancy"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "person/m2",
+                  "person/dwelling",
+                  "person"
+                ]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "heat_fractions"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_temperature_schedule_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "inlet_temperature_schedule_id"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "lighting"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "W/m2",
+                  "W/dwelling",
+                  "W/person",
+                  "W"
+                ]
+              }
+            },
+            "required": [
+              "heat_fractions"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "target_temperature_schedule_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "inlet_temperature_schedule_id"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "electric_equipment"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "W/m2",
+                  "W/dwelling",
+                  "W/person",
+                  "W"
+                ]
+              }
+            },
+            "required": [
+              "heat_fractions"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "target_temperature_schedule_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "inlet_temperature_schedule_id"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "gas_equipment"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "W/m2",
+                  "W/dwelling",
+                  "W/person",
+                  "W"
+                ]
+              }
+            },
+            "required": [
+              "heat_fractions"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "target_temperature_schedule_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "inlet_temperature_schedule_id"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "hot_water"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "m3/s/m2",
+                  "m3/s/dwelling",
+                  "m3/s/person",
+                  "m3/s"
+                ]
+              }
+            },
+            "required": [
+              "target_temperature_schedule_id",
+              "inlet_temperature_schedule_id"
+            ],
+            "not": {
+              "required": [
+                "heat_fractions"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "floor_area"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "person/m2",
+                  "W/m2",
+                  "m3/s/m2"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "dwelling_unit"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "person/dwelling",
+                  "W/dwelling",
+                  "m3/s/dwelling"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "person"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "W/person",
+                  "m3/s/person"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "absolute"
+              }
+            },
+            "required": [
+              "basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "enum": [
+                  "person",
+                  "W",
+                  "m3/s"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ready_load": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/load"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0
+            },
+            "schedule_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "heat_fractions": {
+              "$ref": "#/$defs/ready_heat_fractions"
+            },
+            "target_temperature_schedule_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inlet_temperature_schedule_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heating_enabled",
+        "cooling_enabled",
+        "heating_setpoint_schedule_id",
+        "cooling_setpoint_schedule_id",
+        "activity_schedule_id",
+        "people_radiant_fraction",
+        "people_sensible_fraction"
+      ],
+      "properties": {
+        "heating_enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cooling_enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "heating_setpoint_schedule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cooling_setpoint_schedule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activity_schedule_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "people_radiant_fraction": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "people_sensible_fraction": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "const": "autocalculate"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ready_controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heating_enabled",
+        "cooling_enabled",
+        "heating_setpoint_schedule_id",
+        "cooling_setpoint_schedule_id",
+        "activity_schedule_id",
+        "people_radiant_fraction",
+        "people_sensible_fraction"
+      ],
+      "properties": {
+        "heating_enabled": {
+          "type": "boolean"
+        },
+        "cooling_enabled": {
+          "type": "boolean"
+        },
+        "heating_setpoint_schedule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cooling_setpoint_schedule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activity_schedule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "people_radiant_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "people_sensible_fraction": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "const": "autocalculate"
+            }
+          ]
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "ownership",
+        "host_assignment",
+        "loads"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ownership": {
+          "const": "instantiate_once"
+        },
+        "host_assignment": {
+          "const": "consumer_selected_zone"
+        },
+        "loads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/load"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "ready_service": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/service"
+        },
+        {
+          "properties": {
+            "loads": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ready_load"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "rule_id",
+        "original_value",
+        "replacement_value",
+        "reason"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "rule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_value": {},
+        "replacement_value": {},
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_file_id",
+        "locator",
+        "original_value",
+        "original_unit",
+        "transformation",
+        "extraction_date",
+        "interpretation"
+      ],
+      "properties": {
+        "source_file_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "locator": {
+          "type": "string"
+        },
+        "original_value": {},
+        "original_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transformation": {
+          "type": "string"
+        },
+        "extraction_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "interpretation": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

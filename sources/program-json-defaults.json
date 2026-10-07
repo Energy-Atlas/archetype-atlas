@@ -1,0 +1,79 @@
+{
+  "id": "atlas-program-defaults-1.0.0",
+  "status": "experimental assumptions authorized by user on 2026-10-07",
+  "rules": [
+    {
+      "id": "unknown-load",
+      "value": 0,
+      "applies_to": "unknown additive load magnitude, in its declared unit; preserve every known load"
+    },
+    {
+      "id": "unknown-load-schedule",
+      "value": "constant 0 for zero magnitude; constant 1 for positive magnitude",
+      "applies_to": "missing fractional load schedule only"
+    },
+    {
+      "id": "unknown-schedule-coverage",
+      "value": "prepend a lowest-priority Default rule: 0 for fractions, 120 W/person for activity, or the compatible control-temperature fallback",
+      "applies_to": "uncovered calendar/day-selector intervals only; preserve every source rule and create a new exported schedule identity"
+    },
+    {
+      "id": "unknown-heat-fraction",
+      "value": 0,
+      "applies_to": "missing power-load nonconvective fractions; convective share is the residual; preserve known fractions and reject sums > 1"
+    },
+    {
+      "id": "unknown-heating-setpoint",
+      "value": 20,
+      "unit": "degC",
+      "applies_to": "missing heating schedule; if cooling is known, use min(20, minimum cooling - 2)"
+    },
+    {
+      "id": "unknown-cooling-setpoint",
+      "value": 26,
+      "unit": "degC",
+      "applies_to": "missing cooling schedule; if heating is known, use max(26, maximum heating + 2)"
+    },
+    {
+      "id": "unknown-conditioning",
+      "value": true,
+      "applies_to": "unknown heating_enabled or cooling_enabled only; preserve known false, including plenums"
+    },
+    {
+      "id": "unknown-activity",
+      "value": 120,
+      "unit": "W/person",
+      "applies_to": "missing people activity schedule"
+    },
+    {
+      "id": "unknown-people-radiant",
+      "value": 0.3,
+      "unit": "1",
+      "applies_to": "missing people radiant fraction of sensible heat"
+    },
+    {
+      "id": "unknown-people-sensible",
+      "value": "autocalculate",
+      "applies_to": "missing sensible fraction; delegate the temperature/activity split to the simulation engine, not numeric zero"
+    },
+    {
+      "id": "unknown-water-target",
+      "value": 60,
+      "unit": "degC",
+      "applies_to": "missing hot-water target temperature; if inlet is known choose max(60, maximum inlet)"
+    },
+    {
+      "id": "unknown-water-inlet",
+      "value": 10,
+      "unit": "degC",
+      "applies_to": "missing water inlet temperature; if target is known choose min(10, minimum target)"
+    }
+  ],
+  "notes": [
+    "These numbers are explicit experimental assumptions, not claimed measurements, regulatory defaults or reconstructed source values.",
+    "Never default original source evidence, applicability metadata, geometry, HVAC sizing, known physical values, or the calendar of an annual realization.",
+    "Apply defaults to source leaves before recomputing mixtures; never zero an unknown aggregate and thereby erase known component contributions.",
+    "An importable program definition is not a complete building simulation. The consumer binds geometry, service hosts and the model calendar.",
+    "This is a contract artifact; the website exporter and popup are not implemented yet."
+  ]
+}

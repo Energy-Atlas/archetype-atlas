@@ -1,0 +1,1590 @@
+{
+  "schema_version": "2.0.0",
+  "kind": "program",
+  "export_mode": "defaulted",
+  "id": "program-8c35a40eb0181596e0bfcac4:defaulted:atlas-program-defaults-1.0.0",
+  "name": "WholeBuilding - Md Office_MediumOffice",
+  "scope": "program",
+  "source": {
+    "program_id": "program-8c35a40eb0181596e0bfcac4",
+    "definition_release": "v0.1.1",
+    "building_type": "MediumOffice",
+    "template": "90.1-2019",
+    "evidence_view": "reviewed",
+    "evidence": [
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/occupancy_per_area",
+        "original_value": 5.0,
+        "original_unit": "people/1000 ft2",
+        "transformation": "convert people/1000 ft2 to person/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/lighting_per_area",
+        "original_value": 0.64,
+        "original_unit": "W/ft2",
+        "transformation": "convert W/ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/additional_lighting_per_area",
+        "original_value": null,
+        "original_unit": "W/ft2",
+        "transformation": "convert W/ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/electric_equipment_per_area",
+        "original_value": 0.75,
+        "original_unit": "W/ft2",
+        "transformation": "convert W/ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/gas_equipment_per_area",
+        "original_value": null,
+        "original_unit": "Btu/h-ft2",
+        "transformation": "convert Btu/h-ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/heating_setpoint_schedule",
+        "original_value": "OfficeMedium HTGSETP_SCH_YES_OPTIMUM",
+        "original_unit": "schedule name",
+        "transformation": "resolve schedule ID with role temperature",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/cooling_setpoint_schedule",
+        "original_value": "OfficeMedium CLGSETP_SCH_YES_OPTIMUM",
+        "original_unit": "schedule name",
+        "transformation": "resolve schedule ID with role temperature",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/152/occupancy_activity_schedule",
+        "original_value": "OfficeMedium ACTIVITY_SCH",
+        "original_unit": "schedule name",
+        "transformation": "resolve schedule ID with role activity",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": null,
+        "locator": "resolution/resolution-f328fb77070f58e4837e",
+        "original_value": {
+          "calendar_independent": true,
+          "constant_value": 0
+        },
+        "original_unit": "dimensionless",
+        "transformation": "explicit frozen reviewed overlay",
+        "extraction_date": "2026-10-07",
+        "interpretation": "User-approved program gas-equipment absence in the clean standards space-type recipe; constant zero schedule and density. Does not classify the building as all-electric or zero gas heating/water heating; direct/custom loads require a separate variant."
+      },
+      {
+        "source_file_id": null,
+        "locator": "resolution/resolution-5e98a573553d337079ea",
+        "original_value": 0,
+        "original_unit": "W/m2",
+        "transformation": "explicit frozen reviewed overlay",
+        "extraction_date": "2026-10-07",
+        "interpretation": "User-approved program gas-equipment absence in the clean standards space-type recipe; constant zero schedule and density. Does not classify the building as all-electric or zero gas heating/water heating; direct/custom loads require a separate variant."
+      }
+    ]
+  },
+  "loads": [
+    {
+      "demand_id": "demand-5254a2e28cc4e42f185529b9",
+      "type": "occupancy",
+      "end_use": "occupancy",
+      "value": 0.05381955208354861,
+      "unit": "person/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-db120b43964b8b666cd8"
+    },
+    {
+      "demand_id": "demand-f8890758200798e093fe47cf",
+      "type": "lighting",
+      "end_use": "lighting",
+      "value": 6.888902666694222,
+      "unit": "W/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0",
+      "heat_fractions": {
+        "radiant": 0.7,
+        "latent": 0,
+        "lost": 0,
+        "visible": 0.2,
+        "return_air": 0.0
+      }
+    },
+    {
+      "demand_id": "demand-ba11749a3942dd7ed6e23b8f",
+      "type": "lighting",
+      "end_use": "additional_lighting",
+      "value": 0,
+      "unit": "W/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0",
+      "heat_fractions": {
+        "radiant": 0.7,
+        "latent": 0,
+        "lost": 0,
+        "visible": 0.2,
+        "return_air": 0.0
+      }
+    },
+    {
+      "demand_id": "demand-391725305263252ce8eebec5",
+      "type": "electric_equipment",
+      "end_use": "electric_equipment",
+      "value": 8.072932812532292,
+      "unit": "W/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-4082e09c5f9727640add:defaulted:atlas-program-defaults-1.0.0",
+      "heat_fractions": {
+        "radiant": 0.5,
+        "latent": 0.0,
+        "lost": 0.0,
+        "visible": 0,
+        "return_air": 0
+      }
+    },
+    {
+      "demand_id": "demand-99d07f2777efa9291add636e",
+      "type": "gas_equipment",
+      "end_use": "gas_equipment",
+      "value": 0,
+      "unit": "W/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-b65986f47eee10b2fdd77ff5",
+      "heat_fractions": {
+        "radiant": 0,
+        "latent": 0,
+        "lost": 0,
+        "visible": 0,
+        "return_air": 0
+      }
+    },
+    {
+      "demand_id": "service-c3c6391ba8113b59e498e363",
+      "type": "hot_water",
+      "end_use": "hot_water_volume",
+      "value": 1.0763642852524885e-08,
+      "unit": "m3/s/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-1a7eda5cfd8f681cc7d7",
+      "target_temperature_schedule_id": "dto-water-target-service-c3c6391ba8113b59e498e363",
+      "inlet_temperature_schedule_id": "default-water-inlet-10degC"
+    }
+  ],
+  "controls": {
+    "heating_enabled": true,
+    "cooling_enabled": true,
+    "heating_setpoint_schedule_id": "schedule-7c3bd1014eed8de1237a",
+    "cooling_setpoint_schedule_id": "schedule-e1ba079905225f741119",
+    "activity_schedule_id": "schedule-904d44133907f0dbfbbe",
+    "people_radiant_fraction": 0.3,
+    "people_sensible_fraction": "autocalculate"
+  },
+  "schedules": {
+    "dto-water-target-service-c3c6391ba8113b59e498e363": {
+      "id": "dto-water-target-service-c3c6391ba8113b59e498e363",
+      "name": "Source fixture target temperature",
+      "unit": "degC",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            60.0
+          ]
+        }
+      ]
+    },
+    "schedule-1a7eda5cfd8f681cc7d7": {
+      "id": "schedule-1a7eda5cfd8f681cc7d7",
+      "name": "OfficeMedium BLDG_SWH_SCH",
+      "unit": "1",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.04,
+            0.04,
+            0.04,
+            0.04,
+            0.04,
+            0.06,
+            0.06,
+            0.09,
+            0.06,
+            0.04,
+            0.04,
+            0.04,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn",
+            "Wkdy"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.07,
+            0.19,
+            0.35,
+            0.38,
+            0.39,
+            0.47,
+            0.57,
+            0.54,
+            0.34,
+            0.33,
+            0.44,
+            0.26,
+            0.21,
+            0.15,
+            0.17,
+            0.08,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn",
+            "Sat"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.07,
+            0.11,
+            0.15,
+            0.21,
+            0.19,
+            0.23,
+            0.2,
+            0.19,
+            0.15,
+            0.13,
+            0.14,
+            0.07,
+            0.07,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-1a7eda5cfd8f681cc7d7",
+        "interpolation": "none",
+        "provenance_id": "provenance-29c328e2ff4ad764e365",
+        "schedule_type": "fraction",
+        "source_name": "OfficeMedium BLDG_SWH_SCH",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Service Water Heating",
+            "source_index": 12649,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn|Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Service Water Heating",
+            "source_index": 12650,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn|Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Service Water Heating",
+            "source_index": 12651,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          }
+        ]
+      }
+    },
+    "schedule-7c3bd1014eed8de1237a": {
+      "id": "schedule-7c3bd1014eed8de1237a",
+      "name": "OfficeMedium HTGSETP_SCH_YES_OPTIMUM",
+      "unit": "degC",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default",
+            "SmrDsn"
+          ],
+          "values": [
+            15.6
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            17.8,
+            20.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            17.8,
+            20.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            15.6,
+            15.6
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            17.6,
+            19.6,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            15.6,
+            15.6
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-7c3bd1014eed8de1237a",
+        "interpolation": "none",
+        "provenance_id": "provenance-35971b0d3199a34196e3",
+        "schedule_type": "temperature",
+        "source_name": "OfficeMedium HTGSETP_SCH_YES_OPTIMUM",
+        "time_resolution_minutes": 60,
+        "units": "C",
+        "rule_metadata": [
+          {
+            "day_types": "Default|SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12725,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12726,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12727,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12728,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          }
+        ]
+      }
+    },
+    "schedule-904d44133907f0dbfbbe": {
+      "id": "schedule-904d44133907f0dbfbbe",
+      "name": "OfficeMedium ACTIVITY_SCH",
+      "unit": "W/person",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default",
+            "WntrDsn",
+            "SmrDsn"
+          ],
+          "values": [
+            120.0
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-904d44133907f0dbfbbe",
+        "interpolation": "none",
+        "provenance_id": "provenance-5c8c40a3d6cd26bd803f",
+        "schedule_type": "activity",
+        "source_name": "OfficeMedium ACTIVITY_SCH",
+        "time_resolution_minutes": 60,
+        "units": "W/person",
+        "rule_metadata": [
+          {
+            "day_types": "Default|WntrDsn|SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Activity",
+            "source_index": 12605,
+            "source_units": "W",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      }
+    },
+    "schedule-b65986f47eee10b2fdd77ff5": {
+      "id": "schedule-b65986f47eee10b2fdd77ff5",
+      "name": "resolution-f328fb77070f58e4837e",
+      "unit": "1",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0
+          ]
+        }
+      ],
+      "source_context": {
+        "calendar_independent": true,
+        "evidence_ids": [
+          "evidence-48132cfce7f6461c930c89d4"
+        ],
+        "id": "schedule-b65986f47eee10b2fdd77ff5",
+        "schedule_type": "fraction",
+        "source_name": "resolution-f328fb77070f58e4837e",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2000-12-31",
+            "source_index": 0,
+            "start_date": "2000-01-01"
+          }
+        ]
+      }
+    },
+    "schedule-db120b43964b8b666cd8": {
+      "id": "schedule-db120b43964b8b666cd8",
+      "name": "OfficeMedium BLDG_OCC_SCH",
+      "unit": "1",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.1,
+            0.1,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.05,
+            0.05,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.1,
+            0.2,
+            0.95,
+            0.95,
+            0.95,
+            0.95,
+            0.5,
+            0.95,
+            0.95,
+            0.95,
+            0.95,
+            0.3,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-db120b43964b8b666cd8",
+        "interpolation": "none",
+        "provenance_id": "provenance-eed46923f761fec94f9c",
+        "schedule_type": "fraction",
+        "source_name": "OfficeMedium BLDG_OCC_SCH",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12644,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12645,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12646,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12647,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12648,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      }
+    },
+    "schedule-e1ba079905225f741119": {
+      "id": "schedule-e1ba079905225f741119",
+      "name": "OfficeMedium CLGSETP_SCH_YES_OPTIMUM",
+      "unit": "degC",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default",
+            "WntrDsn"
+          ],
+          "values": [
+            26.7
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            25.7,
+            25.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            25.7,
+            25.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            26.7,
+            26.7
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            25.6,
+            25.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            26.7,
+            26.7
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-e1ba079905225f741119",
+        "interpolation": "none",
+        "provenance_id": "provenance-e9cca35d7145328b99f0",
+        "schedule_type": "temperature",
+        "source_name": "OfficeMedium CLGSETP_SCH_YES_OPTIMUM",
+        "time_resolution_minutes": 60,
+        "units": "C",
+        "rule_metadata": [
+          {
+            "day_types": "Default|WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12670,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12671,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12672,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12673,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          }
+        ]
+      }
+    },
+    "default-water-inlet-10degC": {
+      "id": "default-water-inlet-10degC",
+      "name": "Experimental default water inlet 10 degC",
+      "unit": "degC",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            10
+          ]
+        }
+      ]
+    },
+    "schedule-4082e09c5f9727640add:defaulted:atlas-program-defaults-1.0.0": {
+      "id": "schedule-4082e09c5f9727640add:defaulted:atlas-program-defaults-1.0.0",
+      "name": "OfficeMedium BLDG_EQUIP_SCH_2013",
+      "unit": "1",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.381234796,
+            0.381234796,
+            0.476543495,
+            0.476543495,
+            0.476543495,
+            0.476543495,
+            0.3335804465,
+            0.3335804465,
+            0.3335804465,
+            0.3335804465,
+            0.3335804465,
+            0.285926097,
+            0.285926097,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sun"
+          ],
+          "values": [
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.288107175,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806,
+            0.2307553806
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            0.3076738408,
+            0.3076738408,
+            0.3076738408,
+            0.3076738408,
+            0.3076738408,
+            0.3076738408,
+            0.381234796,
+            0.381234796,
+            0.857778291,
+            0.857778291,
+            0.857778291,
+            0.857778291,
+            0.762469592,
+            0.857778291,
+            0.857778291,
+            0.857778291,
+            0.857778291,
+            0.476543495,
+            0.381234796,
+            0.381234796,
+            0.381234796,
+            0.381234796,
+            0.381234796,
+            0.381234796
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-4082e09c5f9727640add",
+        "interpolation": "none",
+        "provenance_id": "provenance-7ff8104842be25ac0638",
+        "schedule_type": "fraction",
+        "source_name": "OfficeMedium BLDG_EQUIP_SCH_2013",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12624,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12625,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Sun",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12626,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12627,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12628,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      }
+    },
+    "schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0": {
+      "id": "schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0",
+      "name": "OfficeMedium BLDG_LIGHT_SCH_2013",
+      "unit": "1",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.08623256,
+            0.08623256,
+            0.25869768,
+            0.25869768,
+            0.25869768,
+            0.25869768,
+            0.12934884,
+            0.12934884,
+            0.12934884,
+            0.12934884,
+            0.12934884,
+            0.04311628,
+            0.04311628,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sun"
+          ],
+          "values": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.04311628,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.1,
+            0.08623256,
+            0.25869768,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.77609304,
+            0.4311628,
+            0.25869768,
+            0.25869768,
+            0.17246512,
+            0.17246512,
+            0.08623256,
+            0.04311628
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ],
+      "source_context": {
+        "id": "schedule-4f028eec18f19916e7d2",
+        "interpolation": "none",
+        "provenance_id": "provenance-75a084b8f371da46efdd",
+        "schedule_type": "fraction",
+        "source_name": "OfficeMedium BLDG_LIGHT_SCH_2013",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12639,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12640,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Sun",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12641,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12642,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12643,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      }
+    }
+  },
+  "shared_services": [],
+  "default_policy_id": "atlas-program-defaults-1.0.0",
+  "assumptions": [
+    {
+      "path": "/loads/1/heat_fractions/latent",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/1/heat_fractions/lost",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/2/value",
+      "rule_id": "unknown-load",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/2/heat_fractions/latent",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/2/heat_fractions/lost",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/3/heat_fractions/visible",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/3/heat_fractions/return_air",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/4/heat_fractions/radiant",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/4/heat_fractions/latent",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/4/heat_fractions/lost",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/4/heat_fractions/visible",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/4/heat_fractions/return_air",
+      "rule_id": "unknown-heat-fraction",
+      "original_value": null,
+      "replacement_value": 0,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/loads/5/inlet_temperature_schedule_id",
+      "rule_id": "unknown-water-inlet",
+      "original_value": null,
+      "replacement_value": "default-water-inlet-10degC",
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/controls/heating_enabled",
+      "rule_id": "unknown-conditioning",
+      "original_value": null,
+      "replacement_value": true,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/controls/cooling_enabled",
+      "rule_id": "unknown-conditioning",
+      "original_value": null,
+      "replacement_value": true,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/controls/people_radiant_fraction",
+      "rule_id": "unknown-people-radiant",
+      "original_value": null,
+      "replacement_value": 0.3,
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/controls/people_sensible_fraction",
+      "rule_id": "unknown-people-sensible",
+      "original_value": null,
+      "replacement_value": "autocalculate",
+      "reason": "Explicit experimental policy atlas-program-defaults-1.0.0"
+    },
+    {
+      "path": "/schedules/schedule-4082e09c5f9727640add:defaulted:atlas-program-defaults-1.0.0/rules/0",
+      "rule_id": "unknown-schedule-coverage",
+      "original_value": null,
+      "replacement_value": {
+        "start_date": "01-01",
+        "end_date": "12-31",
+        "day_types": [
+          "Default"
+        ],
+        "values": [
+          0
+        ]
+      },
+      "reason": "Lowest-priority fallback for missing calendar/day-selector coverage; all original rules retained"
+    },
+    {
+      "path": "/loads/3/schedule_id",
+      "rule_id": "unknown-schedule-coverage",
+      "original_value": "schedule-4082e09c5f9727640add",
+      "replacement_value": "schedule-4082e09c5f9727640add:defaulted:atlas-program-defaults-1.0.0",
+      "reason": "Reference the explicit coverage-completed schedule variant"
+    },
+    {
+      "path": "/schedules/schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0/rules/0",
+      "rule_id": "unknown-schedule-coverage",
+      "original_value": null,
+      "replacement_value": {
+        "start_date": "01-01",
+        "end_date": "12-31",
+        "day_types": [
+          "Default"
+        ],
+        "values": [
+          0
+        ]
+      },
+      "reason": "Lowest-priority fallback for missing calendar/day-selector coverage; all original rules retained"
+    },
+    {
+      "path": "/loads/1/schedule_id",
+      "rule_id": "unknown-schedule-coverage",
+      "original_value": "schedule-4f028eec18f19916e7d2",
+      "replacement_value": "schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0",
+      "reason": "Reference the explicit coverage-completed schedule variant"
+    },
+    {
+      "path": "/loads/2/schedule_id",
+      "rule_id": "unknown-schedule-coverage",
+      "original_value": "schedule-4f028eec18f19916e7d2",
+      "replacement_value": "schedule-4f028eec18f19916e7d2:defaulted:atlas-program-defaults-1.0.0",
+      "reason": "Reference the explicit coverage-completed schedule variant"
+    }
+  ],
+  "required_bindings": [
+    "floor_area_m2",
+    "calendar_year",
+    "holiday_calendar"
+  ]
+}
