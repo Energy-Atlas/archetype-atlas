@@ -36,11 +36,7 @@ def generate_active_site(bundle, target, publish=True):
             generate_delivery(bundle, stage / 'delivery/v2')
         result = generate_objects(bundle, stage)
         result['counts'] = {table: len(bundle[table]) for table in TABLES}
-        write(stage, 'index.md', '# Energy Archetype Atlas\n\nDeterministic energy definitions for zoning experiments.\n\n'
-              '[Open the catalogue →](catalogue.md)\n\nChoose Residential or Non Residential, then Programs, Constructions or HVAC systems. '
-              'Inspect linked schedules, materials and components, and copy complete JSON.\n\n'
-              f'**{len(bundle["programs"]):,} programs · {len(bundle["constructions"]):,} constructions · {len(bundle["hvac_systems"]):,} HVAC systems**\n\n'
-              '[Selection and copying](guides/selection.md) · [Schedule inspection](guides/schedules.md) · [Sources and notices](sources.md)\n')
+        write(stage, 'index.md', landing(bundle))
         write(stage, 'guides/selection.md', '# Select, inspect and copy\n\nChoose a building family and object kind in the [catalogue](../catalogue.md). '
               'Filter by building type, vintage, climate where relevant, and program detail or system type.\n\n'
               'Follow a load schedule, construction material or system component to its dedicated page. '
@@ -80,12 +76,50 @@ def generate_active_site(bundle, target, publish=True):
               'Code/prototype and existing-stock contexts remain distinct. '
               'Object JSON retains source IDs, field locators, original values and transformations. '
               'Experimental defaults are labelled separately.\n\n' + '\n\n'.join(links) + '\n\n'
-              '[Plotly MIT license](assets/vendor/plotly-LICENSE.txt)\n\nOriginal work is unlicensed by user choice; upstream notices continue to apply.\n')
+              '[Plotly MIT license](assets/vendor/plotly-LICENSE.txt)\n\n'
+              'Site fonts, SIL Open Font License 1.1: [Geist](assets/fonts/OFL-Geist.txt) · [Geist Mono](assets/fonts/OFL-GeistMono.txt) · '
+              '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal work is unlicensed by user choice; upstream notices continue to apply.\n')
         write(stage, 'site-manifest.json', canonical(result).decode())
         if target.exists(): shutil.rmtree(target)
         from scripts.site import rename_generated
         rename_generated(stage,target)
     return result
+
+
+def landing(bundle):
+    """Landing page: a hero, then numbered strips over shared-border grids (design/ui-design-spec.md, section 0.7)."""
+    counts = (f'{len(bundle["programs"]):,} programs · {len(bundle["constructions"]):,} constructions · '
+              f'{len(bundle["hvac_systems"]):,} HVAC systems')
+    return ('---\nhide:\n  - navigation\n  - toc\n---\n\n'
+            '<div class="ea-hero" markdown>\n\n'
+            '# Deterministic energy definitions<br>*for zoning experiments.* { #energy-archetype-atlas }\n\n'
+            'Choose Residential or Non Residential, then Programs, Constructions or HVAC systems. '
+            'Inspect linked schedules, materials and components, and copy complete JSON.\n\n'
+            f'{counts}\n{{ .ea-hero__meta }}\n\n'
+            '[Open the catalogue](catalogue.md){ .md-button .md-button--primary }\n\n'
+            '</div>\n\n'
+            '## Catalogue { .ea-strip data-index="01" data-note="Two building families" }\n\n'
+            '<div class="grid cards" markdown>\n\n'
+            '-   [Residential](catalogue/residential/index.md)\n\n'
+            '    Browse programs, constructions and HVAC systems.\n\n'
+            '-   [Non Residential](catalogue/nonresidential/index.md)\n\n'
+            '    Browse programs, constructions and HVAC systems.\n\n'
+            '</div>\n\n'
+            '## How to use { .ea-strip data-index="02" data-note="Four guides" }\n\n'
+            '<div class="grid cards compact" markdown>\n\n'
+            '1.  [Selection and copying](guides/selection.md)\n\n'
+            '    Choose a family and object kind, filter, inspect linked objects, and copy JSON.\n\n'
+            '2.  [Schedule inspection](guides/schedules.md)\n\n'
+            '    Unique day profiles, an annual day × hour heatmap, and exact tables.\n\n'
+            '3.  [Program JSON contract](guides/program-json.md)\n\n'
+            '    The self-contained raw and default-filled program form.\n\n'
+            '4.  [Library definitions](guides/definitions.md)\n\n'
+            '    What programs, constructions and HVAC definitions supply.\n\n'
+            '</div>\n\n'
+            '## Sources { .ea-strip data-index="03" data-note="Notices" }\n\n'
+            'The library derives from checksum-locked OpenStudio Standards, DOE/PNNL, ComStock and ResStock evidence. '
+            'Upstream notices continue to apply.\n\n'
+            '[Sources and notices](sources.md){ .md-button }\n')
 
 
 def main():
