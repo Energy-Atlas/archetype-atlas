@@ -25,3 +25,9 @@ Task 1: complete. Six contract tests failed on the missing module, then passed.
 Locked 15 additional source files at the existing Standards revision; all four
 frozen input manifests and their file hashes verified. Initial full-suite baseline
 is still running in the background; no failures reported yet.
+
+Task 2: complete. Four program tests RED/GREEN; fixed source/reviewed overlays
+keep original fields intact. Water extraction uses the frozen helper branch,
+not simultaneous per-area and alternate absolute values. Services retain one-time
+ownership and distinct physical heat assignment. Medium Office source scope:
+10 programs, 5 services, 17 original schedule references before reviewed overlays.
