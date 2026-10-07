@@ -29,6 +29,9 @@ def on_post_build(config):
     for catalogue in (Path(config['docs_dir'])/'releases').glob('*/catalogue.json'):
         packet=json.loads(catalogue.read_text(encoding='utf-8'))
         record_titles.update({entry['path'].removesuffix('.md')+'/':entry['name'] for entry in packet['entries']})
+    for finder in (Path(config['docs_dir'])/'catalogue').glob('*/*/entries.json'):
+        for entry in json.loads(finder.read_text(encoding='utf-8')):
+            record_titles['definitions/'+entry['id']+'/']=entry['name']
     index=json.loads(path.read_text(encoding='utf-8'))
     result=compact_records(index,record_titles)
     indexed={entry['location'].split('#',1)[0] for entry in result['docs']}

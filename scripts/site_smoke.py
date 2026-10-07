@@ -74,7 +74,7 @@ def definition_smoke(browser,base,screenshot_dir=None):
     expect(page.locator('.definition-status')).to_contain_text('matching entries')
     page.goto(base+'catalogue/nonresidential/program/?vintage=')
     expect(page.locator('[data-filter="vintage"]')).to_have_value('')
-    page.locator('button[type="reset"]').click()
+    page.locator('.definition-finder button[type="reset"]').click()
     expect(page.locator('[data-filter="vintage"]')).to_have_value('90.1-2019')
     page.set_viewport_size({'width':390,'height':844})
     page.goto(base+'catalogue/')

@@ -130,3 +130,24 @@ Tasks 9-10 complete. Cost if wrong: an unverified public artifact could be serve
 Final: Ruling: explicit unknown inputs do not establish simulation readiness.
 Keep them queryable with required inputs; consumer capability checks determine
 usability. Cost if wrong: consumers that ignore unknowns can produce invalid models.
+
+Final local verification: 201 Python tests passed in 824.614 seconds; all 14
+Node tests passed. All six Important review findings are fixed by regressions
+that first failed, then passed; the whole suite is green. Corrected v0.1.1
+verifies and canonical bytes reproduce. Historical atlas/resolution/completion/
+water verifiers pass; the base source tables rebuild byte-identically.
+All 3,798 construction and 1,046 HVAC record IDs and physical performance IDs
+are unchanged by the correction. Source and reviewed composition views each
+contain 189 recipes with identical source membership, area and weights.
+
+Publication budget finding: the first full build exceeded the selected 1 GB
+ceiling (local 1,039,083,778 bytes; CI 1,002,844,145 bytes). Deployment was
+correctly skipped. Local v1 history also contains an additional never-published
+runtime-specific snapshot, explaining the larger local artifact. No historical
+snapshot was removed. RED/GREEN regressions cover compact axis/building shells,
+unchanged rendered literal text with safe attributes/scripts, and title-only
+search indexing of definitions. Presentation compaction reduced the complete
+local artifact to 994,919,102 bytes. Sixteen focused presentation tests pass.
+All local browser checks pass, including the new gates/facets/defaults, resource
+verification/errors, mobile and no-JS, and all legacy profiles/charts/CSV checks.
+An ambiguous reset-button smoke-test selector was narrowed to its finder form.
