@@ -111,3 +111,54 @@ Ruling: Include exact unique source-day tables in schedule HTML so values remain
 inspectable without Plotly or JavaScript. All annual dates are associated with
 their exact source profiles. Cost if wrong: larger HTML output; the unchanged
 publication ceiling and mobile overflow checks remain mandatory.
+
+## Fresh whole-branch review and one fix pass
+
+A fresh read-only reviewer inspected `c1538e3..c6b7908`, the fixed contracts,
+specification, plan and rulings, and independently passed 14 contract/export and
+eight schedule-core tests. No Critical findings or declined judgments. All three
+Important findings retain that grade by actual consumer impact:
+
+1. Existing fractional schedule gaps incorrectly inherited the positive-load
+   missing-reference fallback 1. The regression for the Large Office Data Center
+   first failed with `[1]` instead of `[0]`; uncovered existing schedules now use
+   policy zero while a wholly missing positive-load schedule still uses one.
+2. Raw Surgery/Outpatient mixtures repeated constituent local water services as
+   shared demands. The regression first found all five duplicated services;
+   represented demand identities are now collected recursively from source
+   components before deduplication.
+3. Mixture assumptions used metadata at `/loads` rather than its actual array.
+   The regression first failed the exact pointer/value comparison. Leaf paths
+   now use final indices and weighted values; array recomposition records the
+   actual before/after arrays. Composed controls record their resulting schedules,
+   unused leaf control records are excluded and semantic validation rejects
+   orphan/mismatched assumption pointers. All 17 contract/export tests pass.
+
+The pre-fix full suite passed 229/229; all 22 Node tests and all 4,410 schedule
+calendar/profile inspections passed. There are 503 recorded annual schedules and
+6,264 uncovered raw hours in the audit's leap-year rule preview. The post-fix full
+suite passed 232/232 in 631.8 s; fresh generation again produced all 65,597 objects
+and 1,900 raw/defaulted program pairs with zero failures. Final HTML checks are
+running. There is no
+second review; the regressions and green full suite verify this single fix pass.
+
+Final: fixed existing positive fractional schedule gaps —
+`test_existing_positive_schedule_gap_uses_zero_not_missing_schedule_one`
+RED→GREEN, whole suite 232/232.
+
+Final: fixed duplicated raw mixture water services —
+`test_raw_mixture_does_not_repeat_constituent_water_as_shared_services`
+RED→GREEN, whole suite 232/232.
+
+Final: fixed mixture assumption pointers and actual replacement records —
+`test_mixture_assumptions_resolve_to_exact_exported_values`
+RED→GREEN, whole suite 232/232.
+
+Ruling: Run the one fresh review while lengthy full-site verification was in
+flight, then verify its fixes with regressions, the complete post-fix suite and
+the final built artifact. Cost if wrong: the reviewer cannot rely on final HTML
+results; the author's final acceptance checks must cover that evidence.
+
+Final: minor (deferred): the default policy's final note and ADR 0015's status
+still describe website integration as pending. Their numeric policy/contract is
+unchanged; current build docs and this execution log state the implementation.

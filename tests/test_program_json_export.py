@@ -95,6 +95,44 @@ class ProgramExportTests(unittest.TestCase):
         out['schedules'][out['loads'][0]['schedule_id']]['unit'] = 'degC'
         self.assertTrue(exporter.validate(out))
 
+    def test_existing_positive_schedule_gap_uses_zero_not_missing_schedule_one(self):
+        exporter = self.exporter()
+        out = exporter.export('program-0d0d5461f1cee89d04d148eb', 'defaulted')
+        equipment = next(l for l in out['loads'] if l['end_use'] == 'electric_equipment')
+        self.assertGreater(equipment['value'], 200)
+        schedule = out['schedules'][equipment['schedule_id']]
+        self.assertEqual(schedule['rules'][0]['day_types'], ['Default'])
+        self.assertEqual(schedule['rules'][0]['values'], [0])
+        missing = copy.deepcopy(self.office);missing['id'] = 'positive-missing-schedule'
+        missing['loads'] = [dict(missing['loads'][0], value=10, schedule_id=None)]
+        bundle = dict(self.bundle, programs=self.bundle['programs'] + [missing])
+        other = self.exporter(bundle).export(missing['id'], 'defaulted')
+        self.assertEqual(other['schedules'][other['loads'][0]['schedule_id']]['rules'][0]['values'], [1])
+
+    def test_raw_mixture_does_not_repeat_constituent_water_as_shared_services(self):
+        identity = 'program-1edef15460d778bd5c7741c8'
+        source = next(r for r in self.bundle['programs'] if r['id'] == identity)
+        represented = {component['load']['demand_id'] for load in source['loads']
+                       for component in load.get('source_components', [])}
+        self.assertTrue(represented.intersection(source['service_ids']))
+        out = self.exporter().export(identity, 'raw')
+        self.assertTrue(any(l['type'] == 'hot_water' and l['value'] > 0 for l in out['loads']))
+        self.assertFalse(represented.intersection(s['id'] for s in out['shared_services']))
+
+    def test_mixture_assumptions_resolve_to_exact_exported_values(self):
+        exporter = self.exporter()
+        out = exporter.export('program-00781e0b526174a15665721b', 'defaulted')
+        def pointer(value, path):
+            for token in path.split('/')[1:]:
+                key = token.replace('~1', '/').replace('~0', '~')
+                value = value[int(key)] if isinstance(value, list) else value[key]
+            return value
+        self.assertTrue(out['assumptions'])
+        for assumption in out['assumptions']:
+            self.assertEqual(pointer(out, assumption['path']), assumption['replacement_value'], assumption['path'])
+        loads = next(a for a in out['assumptions'] if a['path'] == '/loads')
+        self.assertEqual(loads['original_value'], exporter.export('program-00781e0b526174a15665721b', 'raw')['loads'])
+
 
 if __name__ == '__main__':
     unittest.main()

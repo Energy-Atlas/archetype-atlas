@@ -6,13 +6,26 @@ import math
 from jsonschema import Draft202012Validator
 
 from scripts.common import ROOT, load_json
-from scripts.definition_contract import stable_id
+from scripts.definition_contract import stable_id, canonical
 from scripts.schedule_json import (POLICY, DAYS, normalize_schedule, constant_schedule,
                                    complete_schedule, date_mask, extrema)
 from scripts.semantics import profile
 
 FRACTIONS = ['radiant', 'latent', 'lost', 'visible', 'return_air']
 POWER = {'lighting', 'electric_equipment', 'gas_equipment'}
+
+
+def pointer(value, path):
+    for token in path.split('/')[1:]:
+        key = token.replace('~1', '/').replace('~0', '~')
+        value = value[int(key)] if isinstance(value, list) else value[key]
+    return value
+
+
+def represented_demands(load):
+    yield load['demand_id']
+    for component in load.get('source_components', []):
+        yield from represented_demands(component['load'])
 
 
 def load_type(quantity):
@@ -79,8 +92,9 @@ class ProgramExporter:
                 result = self._normalized[identity]
                 if result['unit'] != unit: raise ValueError('Unexpected schedule unit for ' + identity)
                 if ready:
-                    key = identity, fallback
-                    if key not in self._completed: self._completed[key] = complete_schedule(result, fallback)
+                    coverage_fallback = 0 if unit == '1' else fallback
+                    key = identity, coverage_fallback
+                    if key not in self._completed: self._completed[key] = complete_schedule(result, coverage_fallback)
                     completed, changed = self._completed[key]
                     if changed:
                         assumption(path, identity, completed['id'], 'unknown-schedule-coverage')
@@ -127,14 +141,16 @@ class ProgramExporter:
             return result
 
         composition = self.compositions.get(source.get('composition_id')) if ready else None
-        local_service_ids = set()
+        local_service_ids = {demand for original in source.get('loads', []) for demand in represented_demands(original)}
         service_ids = set(source.get('service_ids', []))
         member_exports = []
+        member_schedule_assumptions = []
         if composition:
             for member in composition['members']:
                 leaf = self.export(member['program_id'], 'defaulted')
                 member_exports.append((member['weight'], leaf))
                 out['schedules'].update(leaf['schedules'])
+                offset = len(out['loads'])
                 for item in leaf['loads']:
                     result = copy.deepcopy(item)
                     if result['basis'] != 'floor_area': raise ValueError('Mixture has incompatible scaling basis')
@@ -143,9 +159,19 @@ class ProgramExporter:
                     result['value'] *= member['weight']
                     out['loads'].append(result)
                 service_ids.update(s['id'] for s in leaf['shared_services'])
-                assumption('/loads', None, {'program_id': member['program_id'], 'weight': member['weight'],
-                    'leaf_assumptions': leaf['assumptions']}, 'unknown-load',
-                    'Defaults applied to source leaf before weighted trajectory; known positive contributions retained')
+                for applied in leaf['assumptions']:
+                    applied = copy.deepcopy(applied)
+                    applied['reason'] = f'Leaf {member["program_id"]}, area weight {member["weight"]}: ' + applied['reason']
+                    if applied['path'].startswith('/loads/'):
+                        tokens = applied['path'].split('/')
+                        tokens[2] = str(offset + int(tokens[2]));applied['path'] = '/'.join(tokens)
+                        applied['replacement_value'] = copy.deepcopy(pointer(out, applied['path']))
+                        out['assumptions'].append(applied)
+                    elif applied['path'].startswith('/schedules/'):
+                        member_schedule_assumptions.append(applied)
+            assumption('/loads', self.export(source['id'], 'raw')['loads'], out['loads'], 'unknown-load',
+                'Recompose separate weighted trajectories after leaf defaults; members: ' +
+                ', '.join(f'{m["program_id"]} × {m["weight"]}' for m in composition['members']))
         else:
             for original in source.get('loads', []):
                 local_service_ids.add(original['demand_id'])
@@ -170,6 +196,11 @@ class ProgramExporter:
                 out['schedules'][result['id']] = result
                 out['controls'][name] = result['id']
                 assumption('/controls/' + name, None, result['id'], rule, 'Pointwise composition after leaf defaults')
+                assumption('/schedules/' + result['id'], None, result, rule,
+                    'Pointwise composition after leaf defaults: ' + '; '.join(
+                        f'{leaf["source"]["program_id"]} × {weight}, source reference ' +
+                        repr(self.programs[leaf['source']['program_id']].get('parameters', {}).get(name, {}).get('value'))
+                        for weight, leaf in member_exports))
                 continue
             if ready and original is None and name in {'heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id'}:
                 other = 'cooling_setpoint_schedule_id' if name.startswith('heating') else 'heating_setpoint_schedule_id'
@@ -197,12 +228,23 @@ class ProgramExporter:
         for item in out['loads'] + [l for s in out['shared_services'] for l in s['loads']]:
             used |= {item.get(k) for k in ('schedule_id', 'target_temperature_schedule_id', 'inlet_temperature_schedule_id')}
         out['schedules'] = {k: v for k, v in out['schedules'].items() if k in used}
+        recorded_paths = {a['path'] for a in out['assumptions']}
+        for applied in member_schedule_assumptions:
+            if applied['path'] in recorded_paths: continue
+            try: applied['replacement_value'] = copy.deepcopy(pointer(out, applied['path']))
+            except KeyError: continue  # Leaf control schedules were not used by this export.
+            out['assumptions'].append(applied);recorded_paths.add(applied['path'])
         return out
 
     def validate(self, out):
         errors = [e.message for e in self.validator.iter_errors(out)]
         if errors: return errors
         schedules = out['schedules']
+        for applied in out['assumptions']:
+            try:
+                if canonical(pointer(out, applied['path'])) != canonical(applied['replacement_value']):
+                    errors.append('Assumption replacement differs from exported field ' + applied['path'])
+            except (KeyError, IndexError, TypeError, ValueError): errors.append('Orphan assumption path ' + applied['path'])
         years = set()
         for sid, s in schedules.items():
             if sid != s['id']: errors.append('Schedule key differs from identity')
