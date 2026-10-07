@@ -39,3 +39,9 @@ Generic fallbacks reuse pinned typical assemblies only when source assignment
 cannot resolve the role. Material record IDs retain assembly provenance while
 physical comparison ignores provenance-only identifiers. A regression test
 caught and fixed conflicting evidence on shared physical material identities.
+
+Task 4: complete. Three HVAC tests and three comparison tests pass. Source
+component roles and conditional capacity/date/rating rules are preserved.
+Finding: current descriptors do not establish fan pressure, complete topology,
+curve assignments or a resolved COP. These remain explicit rather than inferred
+from the system label. Ancillary refrigeration/exhaust records are distinguished.
