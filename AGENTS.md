@@ -26,3 +26,8 @@ human. Exact runtime model details unavailable to an agent must be recorded as
 unavailable rather than invented. Commit logical reversible units freely.
 Routine choices are autonomous under the brief; escalate only material science,
 licensing, public feasibility, or architecture ambiguities.
+
+Website UI and visual styling changes follow `design/ui-design-spec.md`; its
+section 0 wins over the rest. `design/` is not published. Vendored fonts in
+`website/assets/fonts/` keep their OFL notices; templates live in
+`website/overrides/`. Style generated pages through CSS and generators only.

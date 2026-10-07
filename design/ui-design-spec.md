@@ -1,8 +1,160 @@
-# EnergyAtlas Wiki — UI Design Specification
+# Energy Archetype Atlas website — UI Design Specification
+
+This specification restyles the Energy Archetype Atlas website into the visual family of the EnergyAtlas Wiki. It began as the EnergyAtlas Wiki UI design specification; section 0 records the decisions taken for the atlas. **Where section 0 and a later section disagree, section 0 wins.**
+
+This folder is not part of the website. The site's Markdown is generated (`scripts/active_site.py`, `scripts/definition_site.py`, `scripts/object_site.py`) into the ignored `build/site-docs/`; styling lives in `website/assets/`, templates in `website/overrides/`.
+
+---
+
+## 0. Atlas Implementation Decisions
+
+Decided on 2026-10-07 by the implementing agent, working autonomously at the owner's instruction ("autonomous task, no human supervision"). Each decision takes the EnergyAtlas family default that the sister BEMGen documentation site's owner settled on the same day, unless the atlas's own structure required otherwise; those departures are marked **Atlas**. The owner may revise any of them; revisions are recorded here. These are implementation rules, not one-off clarifications.
+
+### 0.1 Brand
+
+- The site stays **Energy Archetype Atlas**. This is a visual-family alignment with EnergyAtlas, not a rename.
+- Keep the site title and identity, and Material's default logo and favicon (the atlas has no logo of its own). Do not add "EnergyAtlas" branding to the header, title, footer, or pages.
+- The family resemblance comes from typography, palette, and UI structure. The atlas's former teal and deep-orange palette is retired.
+
+### 0.2 Sources of truth
+
+- **Reference UI:** the ArtCraft website screenshot of the EnergyAtlas family specification. The image is not available to this repository and is not kept in it; section 0.11 describes it, as recorded for the family.
+- **Palette:** the live EnergyAtlas Wiki implementation, `assets/css/main.css` of <https://chengxuan-li.github.io/EnergyAtlasWiki/>. If it diverges from the hex values in this document, the wiki's CSS is authoritative, except where section 0.6 adjusts a value for contrast. The values here were checked against the wiki on 2026-10-07, including its Plotly tokens (section 0.15).
+
+### 0.3 Theme behaviour
+
+- The default theme follows the system preference (`prefers-color-scheme`), and a light/dark toggle is added to the header. Before this change the site was light only.
+- Never force dark mode. A visitor whose system prefers light gets light first.
+- Dark mode receives the strongest version of the reference visual language; light mode keeps the same grid, typography, and framing.
+- **Atlas:** record pages (section 0.14) have no Material runtime and no toggle. A small script in their `<head>` applies the scheme the visitor chose on a full page (Material's stored palette choice), else the system preference; without JavaScript they render light.
+
+### 0.4 Fonts
+
+- Families: **Geist** (primary sans), **Geist Mono** (technical and monospace UI), **Cormorant Garamond** (sparse editorial serif accent, italic 500).
+- Self-hosted. The browser contacts no font host when the site is viewed, and builds need no network.
+- The Latin and Latin Extended WOFF2 subsets (variable Geist and Geist Mono, Cormorant Garamond italic 500) are byte-identical copies of the family's vendored Google Fonts files, kept with their SIL Open Font License 1.1 texts in `website/assets/fonts/` and declared in `website/assets/fonts.css`. The generator copies `website/assets/` to the site's `assets/`. `theme.font` stays `false`.
+- `website/overrides/main.html` preloads `geist-latin.woff2` and `geist-mono-latin.woff2`.
+
+### 0.5 Colour roles
+
+| Role | Dark | Light | Use |
+| --- | --- | --- | --- |
+| Info / interactive accent | `#4da3ff` | `#125dae` | links, navigation, information, active and selected states, focus |
+| Success | `#28a745` | `#188038` | success states |
+| Warning | `#ffc107` | `#9a6700` | warnings and provisional status labels |
+| Error | `#f44336` | `#c5221f` | errors, destructive actions, failures |
+| Primary (brand) | `#003978` | `#003978` | deep branded **fill or background** only |
+
+- Red is restricted to error, destructive, and failure states. Do not use red (`#f1392a`, `#c92d22`) as a decorative secondary brand accent anywhere in the site.
+- Amber/yellow means warning, green means success, blue means links, navigation, information, and active/selected states.
+- `#003978` is never text or a meaningful border on a dark background (1.86:1 on black). Text on a `#003978` fill is white or `#e5e5e5`.
+- Admonition mapping: `note`, `info`, `abstract`, `tip`, `question` use the info blue; `success` green; `warning` amber; `danger`, `failure`, `bug`, `error` red; `example`, `quote` muted.
+- **Atlas:** an unknown or not-reported value is a data state, not an error: it stays in the ordinary text colour. Nothing in the atlas styles "Unknown" red.
+
+### 0.6 Contrast
+
+Targets (WCAG 2.2 AA):
+
+- text below 24px (or 18.66px bold), including all 10–12px mono labels: at least 4.5:1 against every surface it sits on;
+- large text: at least 3:1;
+- borders and edges that convey state or mark an interactive control (inputs, selects, buttons, focus, the active item): at least 3:1;
+- decorative grid rules that convey no state may stay lighter.
+
+Adjusted and added tokens:
+
+| Token | Theme | Spec value | Used value | Contrast of used value |
+| --- | --- | --- | --- | --- |
+| `--ea-text-muted` | dark | `#808080` (4.41:1 on `#1a1a1a`) | `#999999` | 7.37 on `#000000`, 6.11 on `#1a1a1a`, 5.04 on `#2a2a2a` |
+| `--ea-text-muted` | light | `#6f7a89` (4.36:1 on white) | `#5f6b7a` (the wiki's own Plotly subtitle colour) | 5.43 on `#ffffff`, 5.19 on `#f8fafc`, 5.05 on `#f4f7fb`, 4.61 on `#e7edf5` |
+| `--ea-border-subtle` | dark | `#404040` | `#404040` | decorative grid rules only |
+| `--ea-border-subtle` | light | `#cfd8e5` | `#cfd8e5` | decorative grid rules only |
+| `--ea-border-interactive` | dark | — | `#6b6b6b` | 3.94 on `#000000`, 3.27 on `#1a1a1a` |
+| `--ea-border-interactive` | light | — | `#768599` | 3.76 on `#ffffff`, 3.59 on `#f8fafc`, 3.50 on `#f4f7fb`, 3.19 on `#e7edf5` |
+
+- `--ea-border` in later sections means `--ea-border-subtle` for grid framing, strips, cells, tables, and code blocks, and `--ea-border-interactive` for inputs, selects, buttons, and other controls.
+- Focus and active states use the accent colour, which passes everywhere (dark 4.33 or more, light 5.57 or more).
+- Do not set muted text on dark `#3a3a3a` (3.99:1), or small state-coloured text on light `#e7edf5` (success 4.26, warning 4.13).
+
+### 0.7 Landing page
+
+A real but restrained hero, followed immediately by the shared-border grid. Not a marketing page.
+
+- The landing page is generated by `scripts/active_site.py`; change it there, never in `build/site-docs/`.
+- Headline, on two lines, from the site's existing tagline:
+
+  ```text
+  Deterministic energy definitions
+  for zoning experiments.
+  ```
+
+  `Deterministic energy definitions` in Geist; `for zoning experiments.` in Cormorant Garamond italic.
+- Supporting copy is the existing one-sentence description, followed by the release counts as one mono metadata line and one primary button, *Open the catalogue*.
+- Below the hero, numbered strips with shared-border grids: the two building families of the catalogue, then the four guides, then sources and notices. The existing text and links stay; only their arrangement changes.
+- The landing page hides both sidebars but keeps their widths as empty margins, without their vertical rules, so its text starts where the text of every other page starts. Strips and the top and bottom rules of grids still run from frame to frame.
+- The hero headline is sized to the hero's width (container query units), so `Deterministic energy definitions` stays on one line on desktop.
+- No oversized CTAs, imagery, or animation.
+
+### 0.8 Numbered section strips
+
+Section strips (`01 / CATALOGUE`, section 7) appear only on the landing page and other deliberately designed overview pages. Do not number `##` headings automatically on ordinary pages. The catalogue's choice pages keep their headings; their choices become shared-border cells (section 0.13).
+
+### 0.9 Content width
+
+- The page frame is 76rem wide, the family's width (the atlas used 88rem).
+- The prose measure (section 11) caps long-form paragraphs, lists, and admonitions only. Tables, code, JSON, finders, charts, and grids use the full column.
+- Wide tables sit in a bounded horizontal-scrolling container; the viewport itself must never overflow horizontally, at 390px wide included.
+
+### 0.10 Breadcrumbs
+
+- Breadcrumbs are on (`navigation.path`).
+- Restrained technical style: small Geist Mono, muted, `/` separators in the same colour, no bar, background, or border.
+
+### 0.11 The reference screenshot, described
+
+What the family takes from the ArtCraft reference:
+
+- **Surface:** near-black page background; content in off-white, secondary text in mid-grey.
+- **Page frame:** the content column is bounded by two full-height vertical rules, with empty margins outside them. Horizontal rules run between sections and meet the frame, like a drawing sheet.
+- **Header:** low, one line, thin bottom rule. Logo at the left; nav labels in small uppercase, widely tracked monospace. The active item is a small inverted block (light fill, dark text) inside a thin blue rectangular outline.
+- **Section strip:** about 48px high between two horizontal rules: `02 / OWNERSHIP` at the left and a right-aligned annotation at the right, both small, uppercase, tracked mono, muted.
+- **Hero cell:** generous padding and empty space; a large, very bold sans headline with tight leading over two lines, one phrase set in a serif italic inline; one short supporting paragraph in grey, roughly 60 characters wide.
+- **Feature row:** equal cells sharing their borders with each other and with the hero above. Each cell: a one-letter mono index (`A`, `B`, `C`) at the top left in muted grey, a bold title, two lines of grey description, and optionally a small square outlined button with a mono uppercase label.
+- **Not adopted:** the right-hand scroll ruler with tick numbers and percentage, the oversized outline section names in the right margin, and `+` registration marks. They are page-specific decoration and conflict with section 19.
+
+### 0.12 Stable page changes
+
+- **Atlas:** `navigation.instant` is **off**, unlike the family default. About 59,000 record pages use a compact shell without Material's page components or runtime, which instant navigation cannot swap in, and the catalogue finders, JSON panels, and schedule plots initialise their scripts on page load.
+- `html` reserves the scrollbar's width (`scrollbar-gutter: stable`), so short and long pages have the same content width.
+- Fonts are preloaded (section 0.4); a hosted site caches them, so page loads after the first draw without a font swap.
+
+### 0.13 Grid cells
+
+- A cell whose title is a link is clickable as a whole and goes to the title's address; hovering it shifts the surface and turns the title blue. Other links in the cell (its button, a link in its description) keep their own targets.
+- A cell's text is padded by the same gutter as the prose, so cell text, strip labels, and paragraphs share one left edge.
+- Every cell is closed on all four sides. Where an empty sidebar margin (section 0.7) moves a grid in from the frame, the grid draws its own outer left and right rules at the margin.
+- **Atlas:** the catalogue's generated choice links (`.definition-gate`, `.definition-kind`) are styled as the same shared-border cells, through CSS only, with letter indices.
+
+### 0.14 Record pages (compact shell)
+
+**Atlas.** Program, construction, HVAC, schedule, material, component, and evidence pages are rendered by `website/hooks/html_delivery.py` as a compact shell: a one-line header and the article, without Material's navigation markup. They follow the same system:
+
+- the header is the family header in miniature: the site name, then mono uppercase links, on the base surface with a thin bottom rule;
+- the document column is framed by the two vertical rules, at the record pages' existing width;
+- tables are technical data sheets (section 12); JSON panels, reference lists, and evidence details are square bordered panels; copy and load buttons follow section 10; the copy dialog is a square panel with an interactive border;
+- the theme follows section 0.3.
+
+### 0.15 Interactive controls and charts
+
+**Atlas.**
+
+- Filters, selects, inputs, and buttons are square, bordered with `--ea-border-interactive`, with mono uppercase labels; focus is a 2px accent outline. Existing minimum control heights stay.
+- Schedule charts (Plotly) take the wiki's Plotly tokens at render time: transparent paper and plot, text `#e5e5e5` / `#18202c`, grid `rgba(255,255,255,0.12)` / `rgba(24,32,44,0.14)`, zero lines `rgba(255,255,255,0.2)` / `rgba(24,32,44,0.24)`, Geist text, accent line traces. The heatmap keeps its perceptually uniform Viridis scale, which reads on both themes.
+
+---
 
 ## 1. Design Intent
 
-Restyle the MkDocs website using the provided reference UI as the primary visual reference for:
+Restyle the MkDocs website using the reference UI (section 0.2) as the primary visual reference for:
 
 - grid structure
 - border framing
@@ -183,14 +335,14 @@ Prefer the Google Fonts version when available.
 
 Use it only for selective phrases in large display headings.
 
-Example:
+Example (the atlas landing headline, section 0.7):
 
 ```text
-Build energy models
-at urban scale.
+Deterministic energy definitions
+for zoning experiments.
 ```
 
-The phrase *urban scale* may use Cormorant italic while the rest remains Geist.
+The phrase *for zoning experiments.* uses Cormorant italic while the rest remains Geist.
 
 Do not use Cormorant for:
 
@@ -207,25 +359,29 @@ It should function as a restrained editorial accent.
 
 # 4. Color System
 
-Use the existing EnergyAtlas palette as the source of truth.
+Use the existing EnergyAtlas palette as the source of truth: the wiki's `assets/css/main.css` (section 0.2), with the contrast adjustments of section 0.6. The blocks below already include those adjustments.
 
 ## 4.1 Dark Theme
 
 ```css
---ea-primary:        #003978;
---ea-secondary:      #f1392a;
---ea-accent:         #4da3ff;
+--ea-primary:            #003978;  /* deep branded fill only */
+--ea-accent:             #4da3ff;
 
---ea-text-primary:   #e5e5e5;
---ea-text-secondary: #b0b0b0;
---ea-text-muted:     #808080;
+--ea-text-primary:       #e5e5e5;
+--ea-text-secondary:     #b0b0b0;
+--ea-text-muted:         #999999;  /* wiki: #808080; adjusted, section 0.6 */
 
---ea-bg-base:        #000000;
---ea-bg-surface-1:   #1a1a1a;
---ea-bg-surface-2:   #2a2a2a;
---ea-bg-surface-3:   #3a3a3a;
+--ea-bg-base:            #000000;
+--ea-bg-surface-1:       #1a1a1a;
+--ea-bg-surface-2:       #2a2a2a;
+--ea-bg-surface-3:       #3a3a3a;
 
---ea-border:         #404040;
+--ea-border-subtle:      #404040;  /* decorative grid rules */
+--ea-border-interactive: #6b6b6b;  /* controls; added, section 0.6 */
+
+--ea-success:            #28a745;
+--ea-warning:            #ffc107;
+--ea-error:              #f44336;  /* wiki --secondary-color #f1392a is not used as an accent */
 ```
 
 ### Dark theme usage
@@ -236,11 +392,11 @@ Use the existing EnergyAtlas palette as the source of truth.
 - Higher-emphasis surfaces: `#3a3a3a`
 - Main text: `#e5e5e5`
 - Secondary text: `#b0b0b0`
-- Metadata: `#808080`
-- Borders: `#404040`
+- Metadata: `#999999`
+- Grid borders: `#404040`; control borders: `#6b6b6b`
 - Main interaction accent: `#4da3ff`
-- Stronger branded state: `#003978`
-- Secondary accent: `#f1392a`
+- Deep branded fill: `#003978` (never text on dark)
+- Red only for error, destructive, and failure states (section 0.5)
 
 The interface should remain predominantly monochromatic. Accent colors should be used sparingly.
 
@@ -249,21 +405,27 @@ The interface should remain predominantly monochromatic. Accent colors should be
 ## 4.2 Light Theme
 
 ```css
---ea-primary:        #003978;
---ea-secondary:      #c92d22;
---ea-accent:         #125dae;
+--ea-primary:            #003978;  /* deep branded fill only */
+--ea-accent:             #125dae;
 
---ea-text-primary:   #18202c;
---ea-text-secondary: #3f4b5b;
---ea-text-muted:     #6f7a89;
+--ea-text-primary:       #18202c;
+--ea-text-secondary:     #3f4b5b;
+--ea-text-muted:         #5f6b7a;  /* wiki: #6f7a89; adjusted, section 0.6 */
 
---ea-bg-base:        #ffffff;
---ea-bg-subtle:      #f8fafc;
---ea-bg-surface:     #f4f7fb;
---ea-bg-emphasis:    #e7edf5;
+--ea-bg-base:            #ffffff;
+--ea-bg-surface-1:       #f8fafc;  /* wiki --bg-gradient-dark ("subtle") */
+--ea-bg-surface-2:       #f4f7fb;  /* wiki --bg-light ("surface") */
+--ea-bg-surface-3:       #e7edf5;  /* wiki --bg-dark-surface ("emphasis") */
 
---ea-border:         #cfd8e5;
+--ea-border-subtle:      #cfd8e5;  /* decorative grid rules */
+--ea-border-interactive: #768599;  /* controls; added, section 0.6 */
+
+--ea-success:            #188038;
+--ea-warning:            #9a6700;
+--ea-error:              #c5221f;  /* wiki --secondary-color #c92d22 is not used as an accent */
 ```
+
+The light surfaces use the same token names as the dark ones, in the same order of emphasis, so components never branch on the theme.
 
 The light theme should preserve the same grid structure, typography hierarchy, and flat framing as the dark theme.
 
@@ -338,7 +500,7 @@ The grid should create continuity across the page.
 
 # 7. Section Headers
 
-Use thin section-index strips for major content areas.
+Use thin section-index strips for major content areas, on the pages listed in section 0.8 only.
 
 Example:
 
@@ -507,7 +669,7 @@ Recommended base:
 
 ```css
 background: transparent;
-border: 1px solid var(--ea-border);
+border: 1px solid var(--ea-border-interactive);
 border-radius: 0;
 box-shadow: none;
 ```
@@ -541,6 +703,8 @@ Recommended article width:
 ```css
 max-width: 760px 900px;
 ```
+
+This width is for long-form prose only. Reference pages, large diagrams, data matrices, and wide tables are exempt, and wide tables scroll inside a bounded container (section 0.9).
 
 Use generous vertical rhythm.
 
@@ -652,7 +816,7 @@ Search should match the same technical language.
 Use:
 
 - square input geometry
-- thin borders
+- thin borders in `--ea-border-interactive`
 - near-black or white surface depending on theme
 - Geist text
 - Geist Mono for metadata or keyboard hints
@@ -714,19 +878,19 @@ letter-spacing: -0.03em;
 
 Use Cormorant italic selectively within the heading if editorial emphasis is desirable.
 
-Example:
+The atlas headline (section 0.7):
 
 ```text
-Urban energy modeling
-for complex cities.
+Deterministic energy definitions
+for zoning experiments.
 ```
 
-Possible treatment:
+Treatment:
 
-- `Urban energy modeling` — Geist
-- `for complex cities.` — Cormorant italic
+- `Deterministic energy definitions` — Geist
+- `for zoning experiments.` — Cormorant Garamond italic
 
-Use sparingly.
+Use sparingly. The hero stays restrained and is followed immediately by the shared-border grid.
 
 ---
 
@@ -847,23 +1011,27 @@ Recommended CSS token structure:
 ```css
 :root {
   --font-sans: "Geist", "Inter", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Geist Mono", Consolas, monospace;
+  --font-mono: "Geist Mono", "IBM Plex Mono", Consolas, monospace;
   --font-serif: "Cormorant Garamond", "Cormorant", Georgia, serif;
 
   --ea-primary: #003978;
-  --ea-secondary: #f1392a;
   --ea-accent: #4da3ff;
 
   --ea-text-primary: #e5e5e5;
   --ea-text-secondary: #b0b0b0;
-  --ea-text-muted: #808080;
+  --ea-text-muted: #999999;
 
   --ea-bg-base: #000000;
   --ea-bg-surface-1: #1a1a1a;
   --ea-bg-surface-2: #2a2a2a;
   --ea-bg-surface-3: #3a3a3a;
 
-  --ea-border: #404040;
+  --ea-border-subtle: #404040;
+  --ea-border-interactive: #6b6b6b;
+
+  --ea-success: #28a745;
+  --ea-warning: #ffc107;
+  --ea-error: #f44336;
 
   --space-xs: 4px;
   --space-sm: 8px;
@@ -878,7 +1046,7 @@ Recommended CSS token structure:
 }
 ```
 
-For light mode, swap the color tokens while preserving structure.
+For light mode, swap the color tokens (section 4.2) while preserving structure. Which set applies follows the active Material scheme (`slate` for dark, `default` for light), chosen by the system preference and the toggle (section 0.3); dark is not the default.
 
 ---
 
