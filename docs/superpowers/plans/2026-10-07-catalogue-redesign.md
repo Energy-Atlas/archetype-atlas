@@ -163,20 +163,20 @@ above; create `tests/test_definition_contract.py`.
 `validate_record(kind: str, record: dict) -> None` and
 `stable_id(namespace: str, payload: dict) -> str` in `definition_contract.py`.
 
-- [ ] Write schema tests: only three primary kinds; null cannot mean zero;
+- [x] Write schema tests: only three primary kinds; null cannot mean zero;
   evidence view is independent of derivation; every non-null physical field
   requires locator, original value/unit, transformation, extraction date and note.
-- [ ] Run `python -m unittest tests.test_definition_contract -v`; confirm new
+- [x] Run `python -m unittest tests.test_definition_contract -v`; confirm new
   contract assertions fail before implementation.
-- [ ] Implement the types, schema and locks. Pin material/assembly/set files,
+- [x] Implement the types, schema and locks. Pin material/assembly/set files,
   source routines, rating date and policy revision. Verify retrieved bytes against
   SHA-256, including archives already in ignored caches; no implicit cache trust.
-- [ ] Record current release manifests, counts and public v1 snapshot as the
+- [x] Record current release manifests, counts and public v1 snapshot as the
   compatibility baseline. Define library performance identity separately from
   applicability, display name, package membership and downstream instance size.
   Pin the extraction date in the build context and reuse it for reproduction;
   fresh wall-clock timestamps must not change a reproduced release.
-- [ ] Re-run the contract tests; expect all pass, including hash mismatch and
+- [x] Re-run the contract tests; expect all pass, including hash mismatch and
   duplicate-ID rejection. Commit `feat(definitions): establish versioned contract`.
 
 ### Task 2: Normalize Medium Office programs and load ownership
@@ -189,22 +189,22 @@ above; create `tests/test_definition_contract.py`.
 `program_definitions.py`. It returns programs, services, schedule references and
 evidence, scoped to Medium Office until the pilot gate passes.
 
-- [ ] Write fixtures asserting a source-supported 10 W/m² load with fractional
+- [x] Write fixtures asserting a source-supported 10 W/m² load with fractional
   schedule 0.5 evaluates to 5 W/m², while null magnitude stays unknown. A single
   water demand expressed in two equivalent bases remains one demand; units such
   as m³/(s·m²), m³/s, W/m² and W retain quantity and normalization semantics.
-- [ ] Add a shared-service fixture: two references to one 500 W device contribute
+- [x] Add a shared-service fixture: two references to one 500 W device contribute
   500 W once, with separately sourced zone heat fraction. Reporting allocation
   is not another physical device. Add a fixture whose area-based density requires
   downstream area rather than receiving a made-up floor area.
-- [ ] Run `python -m unittest tests.test_program_definitions -v`; confirm failures.
-- [ ] Implement source/reviewed load normalization and evidence, schedule/setpoint
+- [x] Run `python -m unittest tests.test_program_definitions -v`; confirm failures.
+- [x] Implement source/reviewed load normalization and evidence, schedule/setpoint
   references, occupancy and explicit physical effects. Resolve the original
   per-area/absolute hot-water branch before selecting or converting a basis;
   require temperature/efficiency inputs for water-volume-to-power conversion.
-- [ ] Preserve original program air requirements as evidence/constraints for
+- [x] Preserve original program air requirements as evidence/constraints for
   Task 3 without exposing a competing infiltration setting in Programs.
-- [ ] Re-run tests; expect pass and no generator arguments in delivered Programs.
+- [x] Re-run tests; expect pass and no generator arguments in delivered Programs.
   Commit `feat(programs): normalize deterministic loads and shared services`.
 
 ### Task 3: Resolve Medium Office construction elements and air exchange
@@ -222,26 +222,26 @@ required consumer geometry, with all identities based on actual parameters.
 tolerances: dict | None = None) -> dict` returns `identity`, `matches`,
 `differences`, `unknowns` and the comparison's property/tolerance basis.
 
-- [ ] Write fixtures for duplicate names with different layers, equal-U assemblies
+- [x] Write fixtures for duplicate names with different layers, equal-U assemblies
   with different mass, ordered layers and IP-to-SI conversions. Assert ambiguous
   joins fail explicitly; no last-row-wins dictionary or U-only identity.
-- [ ] Test element comparison reports differing mass at equal U, missing fields
+- [x] Test element comparison reports differing mass at equal U, missing fields
   as insufficient evidence, and caller-specified tolerances as qualified
   similarity rather than identity. Default to exact normalized-property comparison;
   do not invent a universal scientific similarity score or tolerance.
-- [ ] Test insulation adjustment against the source routine, generated
+- [x] Test insulation adjustment against the source routine, generated
   SimpleGlazing, invalid source targets, and F/C-factor definitions requiring
   geometry. Test 6 ACH total supply stays total supply, with infiltration null.
-- [ ] Run `python -m unittest tests.test_construction_definitions tests.test_definition_compare -v`;
+- [x] Run `python -m unittest tests.test_construction_definitions tests.test_definition_compare -v`;
   confirm failures.
-- [ ] Extract source construction sets and resolve exact context/conditioning
+- [x] Extract source construction sets and resolve exact context/conditioning
   rules; retain U targets, films, layer adjustments and material properties.
   Model generated glazing faithfully and label source-code defaults as such.
-- [ ] Resolve internal/ground definitions first. When impossible, choose and cite
+- [x] Resolve internal/ground definitions first. When impossible, choose and cite
   defensible generic assumptions with stable IDs, SI values or a declared physical
   model, applicability and geometry dependencies. Keep source and fallback views
   distinct. Do not supply generic infiltration or other unauthorized defaults.
-- [ ] Re-run tests; expect pass, with unsupported values still explicit. Commit
+- [x] Re-run tests; expect pass, with unsupported values still explicit. Commit
   `feat(constructions): resolve assemblies and scoped air requirements`.
 
 ### Task 4: Extract fixed Medium Office HVAC performance definitions
@@ -254,23 +254,23 @@ roles, rating bases and complete curve definitions.
 in `hvac_definitions.py`: HVAC packages, components, connection/serving roles,
 performance definitions, curves, control references and applicability evidence.
 
-- [ ] Write fixtures: same system label with different fan/COP/curve values has
+- [x] Write fixtures: same system label with different fan/COP/curve values has
   different performance identity; identical parameters with different package
   names can share identity; missing values prevent a full-identity claim.
   Compare corresponding component roles explicitly; package-level labels or
   whole-building aggregate performance cannot stand in for element comparison.
-- [ ] Test a capacity-band/date-dependent rule stays conditional unless its rating
+- [x] Test a capacity-band/date-dependent rule stays conditional unless its rating
   context is source-supported. Alter the machine date and assert identical output.
   Reject an arbitrary capacity used to manufacture COP; preserve metric and fan
   inclusion distinctions, curve domains and source-supported rating conversions.
-- [ ] Run `python -m unittest tests.test_hvac_definitions tests.test_definition_compare -v`;
+- [x] Run `python -m unittest tests.test_hvac_definitions tests.test_definition_compare -v`;
   confirm failures.
-- [ ] Extract component/performance rules from locked source tables and routines.
+- [x] Extract component/performance rules from locked source tables and routines.
   Expose fixed resolved variants only where supported; otherwise return the
   original conditional performance definition and explicit unresolved inputs.
   Do not infer fuel from a display name, autosize, simulate a consumer model or
   introduce reference-model/LOD experiment modes into the atlas.
-- [ ] Re-run tests; expect pass and no unexplained scalar efficiency. Commit
+- [x] Re-run tests; expect pass and no unexplained scalar efficiency. Commit
   `feat(hvac): expose fixed component performance definitions`.
 
 ### Task 5: Validate and deliver the complete Medium Office pilot
@@ -289,23 +289,23 @@ transport without changing their default v1 contract.
 `query(kind: str, filters: dict, fields: list[str], view: str = 'source') -> dict` and
 `resource(resource_id: str) -> dict`. V2 selects its own schema explicitly.
 
-- [ ] Write pilot integration tests exercising programs, constructions and HVAC,
+- [x] Write pilot integration tests exercising programs, constructions and HVAC,
   referential integrity, evidence and lazy schedules. Assert invalid basis,
   missing evidence, orphan IDs and impossible physical values block freezing.
-- [ ] Add v2 tests for exact scalar AND filters, projection and unknown fields;
+- [x] Add v2 tests for exact scalar AND filters, projection and unknown fields;
   zero/multiple matches; corrupted/missing packets; bounded decompression; stable
   manifest pins. Assert v1 DTO/schema, packet identities and client defaults are
   unchanged. Primary query kinds exclude all supporting resource types.
-- [ ] Run `python -m unittest tests.test_definition_contract tests.test_program_definitions tests.test_construction_definitions tests.test_definition_compare tests.test_hvac_definitions tests.test_definitions tests.test_definition_validate tests.test_definition_release tests.test_query_v2 tests.test_query_client tests.test_query_delivery -v`;
+- [x] Run `python -m unittest tests.test_definition_contract tests.test_program_definitions tests.test_construction_definitions tests.test_definition_compare tests.test_hvac_definitions tests.test_definitions tests.test_definition_validate tests.test_definition_release tests.test_query_v2 tests.test_query_client tests.test_query_delivery -v`;
   confirm failures are limited to new functionality.
-- [ ] Implement deterministic sorting/serialization and the CLIs:
+- [x] Implement deterministic sorting/serialization and the CLIs:
   `python -m scripts.definitions --scope pilot --output build/definitions-pilot`,
   `python -m scripts.definition_validate --input build/definitions-pilot`, and
   `python -m scripts.query_v2 --input build/definitions-pilot --output build/delivery-v2-pilot`.
-- [ ] Retain natural-context gzip packets at most 131,072 decoded bytes, hashed
+- [x] Retain natural-context gzip packets at most 131,072 decoded bytes, hashed
   before bounded decoding. Fetch indexes/selected packets only; evidence and
   profiles remain lazy. Pin `latest` once per session; no backend/full-library fetch.
-- [ ] Rebuild the pilot twice from locked inputs and compare canonical bytes;
+- [x] Rebuild the pilot twice from locked inputs and compare canonical bytes;
   verify a source-backed Medium Office field from each primary kind. Run schema,
   physical, referential, schedules, provenance and reproducibility checks.
   Expected: zero validation errors and byte-identical outputs. Record the pilot
@@ -327,24 +327,24 @@ programs: DefinitionBundle) -> DefinitionBundle`. Consume exact source/reviewed
 leaf definitions; output immutable leaf references, recipes, mixed fields and
 derived schedules. Do not import a review script with fetch/write side effects.
 
-- [ ] Write a conservation fixture: weights 0.25/0.75 and densities 10/20 yield
+- [x] Write a conservation fixture: weights 0.25/0.75 and densities 10/20 yield
   mixed density 17.5 and trajectory `2.5*s1(t)+15*s2(t)`, not a separately averaged
   shape. Test pointwise setpoints, per-person/absolute conversion dependencies,
   load-weighted thermal effects and unknown-member propagation.
-- [ ] Test seasonal/overlapping source rules, source order, weekday/weekend,
+- [x] Test seasonal/overlapping source rules, source order, weekday/weekend,
   holidays, design days and leap day. Require explicit compatibility for annual
   realizations; never transplant an 8760 array silently to another year.
-- [ ] Write matrix-driven assertions for all 17 families/83 exact contexts:
+- [x] Write matrix-driven assertions for all 17 families/83 exact contexts:
   basement/attic variants excluded from every denominator; school auditorium
   inclusion; hospital/outpatient department memberships and broad exclusions;
   SmallHotel vertical inclusion/corridor separation; StripMall 25/25/50; separate
   restaurant dining/kitchen; apartment top-floor optional; unsupported modes absent.
-- [ ] Run `python -m unittest tests.test_program_composition -v`; confirm failures.
-- [ ] Implement unrounded represented-area extraction, applying multipliers once;
+- [x] Run `python -m unittest tests.test_program_composition -v`; confirm failures.
+- [x] Implement unrounded represented-area extraction, applying multipliers once;
   explicit group policy must match the approved matrix rather than name heuristics.
   Derive aligned schedules conserving `sum(w_i*d_i*s_i(t))`; preserve originals
   and derivation provenance. Resolve weights against locked geometry evidence.
-- [ ] Re-run tests and compare every recipe/member/weight with the approved
+- [x] Re-run tests and compare every recipe/member/weight with the approved
   evidence. Expected: exact memberships, weights sum to one within documented
   numeric tolerance and no known-only averaging. Commit
   `feat(programs): implement approved family compositions`.
@@ -360,25 +360,25 @@ ResStock fixture lineage and preserve determined profile references. Return
 source-supported residential constructions and HVAC definitions through the
 same element contracts, not a separate fourth residential object kind.
 
-- [ ] Write fixtures asserting an available aggregate apartment is selectable
+- [x] Write fixtures asserting an available aggregate apartment is selectable
   without room areas; per-dwelling loads require unit count, area-based loads
   declare represented-area input, and missing magnitude remains unknown despite
   a complete profile. Hotel/hospital source residential flags do not move their
   building families into the Residential gate.
-- [ ] Test unmatched selected options stay unresolved, original annual metadata
+- [x] Test unmatched selected options stay unresolved, original annual metadata
   is retained, stock variants are never averaged and no generator API is exposed.
   Test ACH50 retains its reference pressure and is not presented as natural
   infiltration; an AFUE or SEER2 rating retains its metric rather than being
   silently converted to COP. Missing assembly layers remain missing even if an
   insulation option supplies a nominal R-value.
-- [ ] Run `python -m unittest tests.test_residential_definitions -v`; confirm failures.
-- [ ] Extract source-supported magnitudes and required operands from exact fixture
+- [x] Run `python -m unittest tests.test_residential_definitions -v`; confirm failures.
+- [x] Extract source-supported magnitudes and required operands from exact fixture
   options/routines. Do not replace unmatched options from a different snapshot,
   assume floor area from a bin, or reconstruct arbitrary houses to fill gaps.
   Extract available envelope, pressure-test infiltration and HVAC rating evidence
   into Tasks 3–4 contracts, retaining unresolved transformations and controls.
   Record fixture-specific readiness and explicit missing-input reasons.
-- [ ] Re-run tests and check all 41 fixtures for evidence/profile referential
+- [x] Re-run tests and check all 41 fixtures for evidence/profile referential
   integrity. Expected: whole-dwelling support without invented complete loads.
   Commit `feat(residential): expose whole-dwelling program definitions`.
 
@@ -392,20 +392,20 @@ same element contracts, not a separate fourth residential object kind.
 `definition_release.freeze/verify`; CLI adds `--scope full`,
 `--verify --target PATH`, and `--reproduce --target PATH` in the release module.
 
-- [ ] Add regression cases outside Medium Office: hospital total-air requirements,
+- [x] Add regression cases outside Medium Office: hospital total-air requirements,
   hotel PTAC, restaurant shared water, apartment conditioning categories and
   ground/internal roles. Test every source row is either represented or carries
   an explicit exclusion/unsupported reason in coverage.
-- [ ] Run expanded definition tests before implementation; confirm new cases fail.
-- [ ] Expand exact construction-set and HVAC applicability joins across supported
+- [x] Run expanded definition tests before implementation; confirm new cases fail.
+- [x] Expand exact construction-set and HVAC applicability joins across supported
   families/templates/climates without Cartesian duplication. Distinguish ancillary
   source equipment such as refrigeration/exhaust from a complete HVAC package;
   retain supporting records rather than presenting misleading complete systems.
-- [ ] Generate full scope only after the recorded pilot gate. Freeze the canonical
+- [x] Generate full scope only after the recorded pilot gate. Freeze the canonical
   bundle, schema, locks, notices, manifest, coverage and generated CSV inspection
   exports. Coverage separately reports known parameters, required consumer inputs,
   unresolved source gaps, assumptions, supported composition modes and resources.
-- [ ] Verify/reproduce the frozen release from locked sources. Expected: identical
+- [x] Verify/reproduce the frozen release from locked sources. Expected: identical
   canonical hashes, all required checks pass; unresolved research inputs are
   allowed only when correctly labelled and cannot masquerade as ready capabilities.
   Commit `data(definitions): freeze element definition library`.
@@ -422,21 +422,21 @@ target: Path) -> None`; `site.generate_site` consumes a verified definition-rele
 path through an explicit optional argument, preserving legacy fixture builds.
 Browser filtering consumes generated result/facet metadata, not hard-coded options.
 
-- [ ] Write route/filter tests: exactly Residential and Non Residential at entry;
+- [x] Write route/filter tests: exactly Residential and Non Residential at entry;
   exactly three kinds within each; reset dependent filters when context changes;
   hide climate for climate-independent programs; unsupported combinations show an
   explicit empty state and never fall back to another vintage. Test shared IDs.
-- [ ] Run Python site tests and `node --test tests/site_core.test.js tests/site_parity.test.js`;
+- [x] Run Python site tests and `node --test tests/site_core.test.js tests/site_parity.test.js`;
   confirm the new gate/filter assertions fail before implementation.
-- [ ] Implement Programs search/building type/detail/vintage/conditional climate;
+- [x] Implement Programs search/building type/detail/vintage/conditional climate;
   HVAC search/conditional building type/vintage/climate/system type; Constructions
   search/building type/vintage/climate. Detail labels map to SourcePrograms,
   DepartmentMixes and GeneralMix; only actual modes appear. Vintage appears once.
-- [ ] Detail pages expose element roles/parameters, load basis and scope,
+- [x] Detail pages expose element roles/parameters, load basis and scope,
   assumptions/gaps, source/reviewed and composition lineage, required consumer
   inputs and lazy evidence/schedules. Keep historical URLs reachable without
   promoting old raw record kinds to the new first-class catalogue.
-- [ ] Test keyboard access, mobile layout, no-JavaScript navigation, deep links,
+- [x] Test keyboard access, mobile layout, no-JavaScript navigation, deep links,
   copyable IDs, stale filters and lazy-resource errors using Playwright. Run
   `python -m scripts.site`, `python -m mkdocs build --strict`,
   `python -m scripts.site_check` and `python -m scripts.site_smoke --screenshots build/screenshots`.
@@ -453,24 +453,24 @@ Browser filtering consumes generated result/facet metadata, not hard-coded optio
 retention restores and republishes each delivery major independently, maintaining
 all previously advertised immutable manifests/resources and v1 client behavior.
 
-- [ ] Add tests for v1/v2 coexistence, retained historical snapshots, missing
+- [x] Add tests for v1/v2 coexistence, retained historical snapshots, missing
   established history failing publication, first-v2 bootstrap only, and storage
   budgets. Fail oversized artifacts before deployment; never delete referenced
   snapshots to make the build fit.
-- [ ] Run history/query tests; confirm the new retention assertions fail.
-- [ ] Extend retention and CI path filters/locked retrieval. Publish complete
+- [x] Run history/query tests; confirm the new retention assertions fail.
+- [x] Extend retention and CI path filters/locked retrieval. Publish complete
   request/response schemas, units/bases, statuses, IDs, fixed HVAC performance
   semantics, applicability, required inputs, composition rules and examples.
   Include field-projection/lazy-fetch examples sufficient for independent clients.
-- [ ] Run `python -m unittest discover -s tests`, both Node suites, all frozen
+- [x] Run `python -m unittest discover -s tests`, both Node suites, all frozen
   release verifiers/reproducers, strict MkDocs/link/browser checks and security
   audit. Run CI's existing Ubuntu/Windows matrix; inspect generated coverage and
   actual page screenshots. Expect all required checks pass before publication.
-- [ ] Commit `feat(release): publish versioned catalogue definitions and delivery`;
+- [x] Commit `feat(release): publish versioned catalogue definitions and delivery`;
   push `feature/query-dto` and use the existing authorized deployment workflow
   with its supported explicit dispatch. Do not merge main, weaken environment
   protection, create credentials or mutate old snapshots.
-- [ ] Verify live gate, representative filters/detail pages, guides and both
+- [x] Verify live gate, representative filters/detail pages, guides and both
   delivery majors. Retrieve representative v2 responses with manifest hashes
   checked; pin the public snapshot in the completion report. Roll back a failed
   deployment to the prior verified artifact while preserving immutable history.

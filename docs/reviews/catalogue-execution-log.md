@@ -151,3 +151,41 @@ local artifact to 994,919,102 bytes. Sixteen focused presentation tests pass.
 All local browser checks pass, including the new gates/facets/defaults, resource
 verification/errors, mobile and no-JS, and all legacy profiles/charts/CSV checks.
 An ambiguous reset-button smoke-test selector was narrowed to its finder form.
+
+## Completion evidence — Tasks 1–10
+
+Tasks 9 and 10: complete. Deployed code commit `60cae46`; publication workflow
+[37590850575](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37590850575)
+passed strict MkDocs, every internal link/fragment/asset, the unchanged 1 GB
+ceiling, all browser checks, and deployment. Final matrix
+[37590837880](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/37590837880)
+passed on Ubuntu/Python 3.11 and Windows/Python 3.14: **204 tests per platform**,
+reproducibility, all supported historical release verifiers and security audit.
+All 14 Node checks passed. The post-presentation local run passed 203 tests
+(the later search-index regression passed separately); focused presentation
+verification passed 16 tests. No second reviewer was dispatched.
+
+Live catalogue: https://energy-atlas.github.io/archetype-atlas/catalogue/.
+Live guide: https://energy-atlas.github.io/archetype-atlas/guides/definitions/.
+Verified v2 snapshot:
+`4373a63744fbd1358dcdde6f5dc971c50e5f573ac67afe4e5b689c169a01f048`.
+Its manifest SHA-256 is
+`bc3b1d19036ca8c24d6c8bbe5742c76b3f44dfa50e0920fb94b104ec0c327a81`.
+The machine receipt is `catalogue-publication-verification.json` beside this log.
+
+Public source-program, shared-construction, HVAC and whole-dwelling queries all
+passed with verified manifests/resources. Medium Office/2019 Finest returned 2
+source entries; Full Service Restaurant/2019/ClimateZone 7 returned 10
+construction entries; Small Hotel/2019/PTAC retained 39 source variants rather
+than collapsing them. A whole-dwelling exact-ID query returned its unit basis.
+The previous public v1 snapshot `0d9d626a39635b37c54f0aa14acaf412e91bc435f4a3442763b13db15916e8d8`
+remains public with byte-identical manifest SHA-256
+`a2b50c1aaf10321bfaccdc54d56706c1c9736ab4ea8218ece1719bb0c93c67e0`.
+Live gate/defaults/filters/permalinks, copy-ID presence, verified lazy evidence,
+explicit missing-resource errors, mobile and no-JS navigation passed; actual
+public screenshots were inspected. Source unknowns remain unknown.
+
+The approved feature checkout remains on `feature/query-dto`, unmerged.
+Task 11 was left untouched: no downstream chat or BEMGen work was dispatched.
+The temporary execution ledger is redundant with committed findings and receipts;
+only this plan's scratch workspace is removed after its final commit.
