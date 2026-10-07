@@ -1,8 +1,10 @@
-# Local DTO catalogue status — 2026-10-07
+# DTO catalogue status — 2026-10-07
 
-`feature/dto-json-v2` is a local implementation only. No push, workflow dispatch,
-merge or deployment is authorized in this work. See the
-[execution log](reviews/dto-json-v2-execution-log.md) for current verification.
+`feature/dto-json-v2` was implemented and verified locally (see the
+[execution log](reviews/dto-json-v2-execution-log.md)). On 2026-10-07 the owner
+authorized merging it to the default branch together with the EnergyAtlas UI
+redesign of `feature/ui-design`; that push deploys it through the catalogue
+workflow's [release gate](site-build.md#release-gate).
 
 The next active build removes superseded routes and downloads entirely; historical
 URLs are not retained. Canonical research snapshots remain immutable repository
