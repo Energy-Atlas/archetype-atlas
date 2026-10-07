@@ -69,3 +69,15 @@ the existing MIT notice remains required.
 Ruling: Run browser plot integration in Task 4 because it consumes that task's
 verified object loader. Pure schedule and asset checks run now. Cost if wrong:
 integration problems appear in Task 4 rather than this task's first test cycle.
+
+## Task 4
+
+The first browser test failed because the copy popup did not exist. The shared
+loader now verifies the bounded compressed resource, SHA-256 and decoded size
+before inspection, plotting or copying. All 23 focused Python/browser tests and
+all 22 Node tests pass. Chromium exercised raw/defaulted full DTO copying before
+expansion, native modal focus/Escape, clipboard rejection with complete selectable
+text, checksum rejection without changing the clipboard, linked step/heatmap
+plots, leap-year updates, recorded annual calendar locking and component JSON.
+A repeated-copy test exposed stale success text; opening a new choice clears it
+so consumers cannot mistake an earlier copy for the current operation.
