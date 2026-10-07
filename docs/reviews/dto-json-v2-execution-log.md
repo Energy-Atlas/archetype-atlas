@@ -27,3 +27,13 @@ default contracts would need a later extension.
 Ruling: Use the available PowerShell/Python tooling for progress records on
 Windows; this committed log supplements the plan's isolated scratch ledger.
 Cost if wrong: execution records would be less complete than the helper format.
+
+## Task 1
+
+Seven exporter tests first failed because the exporter was absent. The adapter
+and defaults then passed all fourteen contract/export tests. The full-library
+audit exported 1,900 raw and 1,900 defaulted programs with no failures in 119.9 s;
+largest decoded payload was 673,497 bytes. A further RED/GREEN check ensures
+source-known water targets are not labelled as experimental defaults. Annual
+2007 calendars, count-based residential loads and positive mixture leaves remain
+intact. Source definitions and the handed-over schemas are unchanged.
