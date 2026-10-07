@@ -69,3 +69,11 @@ Task 6 finding: aggregate weekday selectors must precede explicit weekdays in
 derived rules. A seasonal/wrap-year regression caught and verifies the correction.
 The OpenStudio 2.2.1 counted-area default is checked against its locked source.
 Baseline full suite: 141 tests passed (1326 seconds).
+
+Task 7: four residential tests pass. All 41 source fixtures are separate whole-
+dwelling programs, enclosure definitions and HVAC packages. Exact matched
+arguments supply occupancy, ACH50 and nominal ratings; unresolved arguments,
+assemblies and load magnitudes stay explicit. All existing determined annual
+channels retain year/seed/weather and nominal-control limitations. Three vacant
+fixtures export occupancy only; absent end-use channels are unknown, not zero.
+No HPXML defaults, capacity sizing or generators are executed.
