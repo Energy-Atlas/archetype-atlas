@@ -10,6 +10,8 @@ Hot-water counts include local and shared-service loads. Shared references are n
 
 Write in each **Your annotations / proposed approach** area and keep its markers intact. Regeneration preserves annotations and refuses to discard orphaned blocks. The stated defaults describe existing behavior; they are not new decisions.
 
+The [annotation investigation and proposed solutions](program-json-annotation-responses.md) answers the reviewed fields together with related unannotated fields. Each entry links to its investigation group. Proposals remain open for discussion; your annotation text is preserved.
+
 ```powershell
 .venv/Scripts/python.exe -m scripts.program_json_field_review --refresh
 .venv/Scripts/python.exe -m scripts.program_json_field_review --check
@@ -29,8 +31,10 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** Constant 120 W/person.
 
+**Investigation / proposal:** [people activity](program-json-annotation-responses.md#people-activity).
+
 <!-- annotation:controls:activity_schedule_id:begin -->
-**Your annotations / proposed approach:**
+**Your annotations / proposed approach:** in a real ResStock workflow - how are these activity schedules generated? are they generated from the stochastic schedule generators?
 
 
 **Agreed decision:**
@@ -51,9 +55,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** true when unknown; preserve known false.
 
+**Investigation / proposal:** [conditioning](program-json-annotation-responses.md#conditioning).
+
 <!-- annotation:controls:cooling_enabled:begin -->
 **Your annotations / proposed approach:**
-
+We may not need this attribute here. We can now conceive that construction and HVAC system definitions are added after the program mix, independently. This is a design choice. We as usual should have set point etc. in the program definitions, but not system presence.
 
 **Agreed decision:**
 
@@ -73,8 +79,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** 26 degC nominal; if heating is known, use max(26, maximum heating + 2).
 
+**Investigation / proposal:** [conditioning](program-json-annotation-responses.md#conditioning).
+
 <!-- annotation:controls:cooling_setpoint_schedule_id:begin -->
 **Your annotations / proposed approach:**
+I do not understand - why are there missing cooling setpoint schedules here? ResStock and ComStock should generate complete definitions for these schedules regardless of program, right? Unless there is no cooling equipment. Check that.
 
 
 **Agreed decision:**
@@ -95,9 +104,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** true when unknown; preserve known false.
 
+**Investigation / proposal:** [conditioning](program-json-annotation-responses.md#conditioning).
+
 <!-- annotation:controls:heating_enabled:begin -->
 **Your annotations / proposed approach:**
-
+Same question as above
 
 **Agreed decision:**
 
@@ -117,9 +128,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** 20 degC nominal; if cooling is known, use min(20, minimum cooling - 2).
 
+**Investigation / proposal:** [conditioning](program-json-annotation-responses.md#conditioning).
+
 <!-- annotation:controls:heating_setpoint_schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+Same question as above
 
 **Agreed decision:**
 
@@ -139,9 +152,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** 0.3 of people sensible heat.
 
+**Investigation / proposal:** [people heat](program-json-annotation-responses.md#people-heat).
+
 <!-- annotation:controls:people_radiant_fraction:begin -->
 **Your annotations / proposed approach:**
-
+If they are never supplied, we should not ship it in the attributes. Are they set by default in energy plus?
 
 **Agreed decision:**
 
@@ -161,9 +176,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** autocalculate: simulation engine determines sensible/latent split.
 
+**Investigation / proposal:** [people heat](program-json-annotation-responses.md#people-heat).
+
 <!-- annotation:controls:people_sensible_fraction:begin -->
 **Your annotations / proposed approach:**
-
+Same as above - if they are never supplied then do not ship them. Are there default values in energy plus?
 
 **Agreed decision:**
 
@@ -185,11 +202,14 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (426); clothes_dryer (41); clothes_washer (41); cooking_range (41); plug_loads_other (41); plug_loads_tv (41).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:electric_equipment:heat_fractions.latent:begin -->
 **Your annotations / proposed approach:**
 
 
 **Agreed decision:**
+What values are used in the ResStock derived energy plus models if they are missing here? Are they using some default values?
 
 
 **Status:** Open
@@ -209,8 +229,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (426); clothes_dryer (41); clothes_washer (41); cooking_range (41); plug_loads_other (41); plug_loads_tv (41).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:electric_equipment:heat_fractions.lost:begin -->
 **Your annotations / proposed approach:**
+Same as above
 
 
 **Agreed decision:**
@@ -233,9 +256,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (426); clothes_dryer (41); clothes_washer (41); cooking_range (41); plug_loads_other (41); plug_loads_tv (41).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:electric_equipment:heat_fractions.radiant:begin -->
 **Your annotations / proposed approach:**
-
+Save as above
 
 **Agreed decision:**
 
@@ -257,9 +282,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (1859); clothes_dryer (41); clothes_washer (41); cooking_range (41); plug_loads_other (41); plug_loads_tv (41).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:electric_equipment:heat_fractions.return_air:begin -->
 **Your annotations / proposed approach:**
-
+Same as above - and if non is specified why do we even have them as an attribute. If EnergyPlus ships defaults why not just stick to them?
 
 **Agreed decision:**
 
@@ -281,9 +308,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (1859); clothes_dryer (41); clothes_washer (41); cooking_range (41); plug_loads_other (41); plug_loads_tv (41).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:electric_equipment:heat_fractions.visible:begin -->
 **Your annotations / proposed approach:**
-
+Same as above.
 
 **Agreed decision:**
 
@@ -305,9 +334,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (72); clothes_dryer (8); clothes_washer (8); cooking_range (4); plug_loads_other (3); plug_loads_tv (3).
 
+**Investigation / proposal:** [load coverage](program-json-annotation-responses.md#load-coverage).
+
 <!-- annotation:electric_equipment:schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+I understand if residential units (dwellings) can not get the schedules for now due to stochastic generator limits etc. but why are hotel, office, ... included? Why are some offices included here and some not (who have complete data in this attribute)? explain
 
 **Agreed decision:**
 
@@ -329,9 +360,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** electric_equipment (90); clothes_dryer (41); clothes_washer (41); cooking_range (41); plug_loads_other (41); plug_loads_tv (41).
 
+**Investigation / proposal:** [load coverage](program-json-annotation-responses.md#load-coverage).
+
 <!-- annotation:electric_equipment:value:begin -->
 **Your annotations / proposed approach:**
-
+Same comment as previous
 
 **Agreed decision:**
 
@@ -353,9 +386,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (1794).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:gas_equipment:heat_fractions.latent:begin -->
 **Your annotations / proposed approach:**
-
+If most do not have this attribute and if this does not change very much the simulation (which i suppose to be the case) and if energyplus has a default value i believe we may drop this. or we may treat it as an optional field (and do not ship this field if unavailable and let energy plus fall back if possible.)
 
 **Agreed decision:**
 
@@ -377,9 +412,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (1794).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:gas_equipment:heat_fractions.lost:begin -->
 **Your annotations / proposed approach:**
-
+Same as above
 
 **Agreed decision:**
 
@@ -401,9 +438,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (1794).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:gas_equipment:heat_fractions.radiant:begin -->
 **Your annotations / proposed approach:**
-
+Same as above
 
 **Agreed decision:**
 
@@ -425,9 +464,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (1859).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:gas_equipment:heat_fractions.return_air:begin -->
 **Your annotations / proposed approach:**
-
+Same as above. if no one has it we may not need to ship it and have energy plus determine by default if possible.
 
 **Agreed decision:**
 
@@ -449,9 +490,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (1859).
 
+**Investigation / proposal:** [equipment heat](program-json-annotation-responses.md#equipment-heat).
+
 <!-- annotation:gas_equipment:heat_fractions.visible:begin -->
 **Your annotations / proposed approach:**
-
+Same as above
 
 **Agreed decision:**
 
@@ -473,9 +516,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (902).
 
+**Investigation / proposal:** [gas presence](program-json-annotation-responses.md#gas-presence).
+
 <!-- annotation:gas_equipment:schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+If there is no gas schedule (missing) what makes you think there is actually gas usage for equipment and we do not know about them? Explain.
 
 **Agreed decision:**
 
@@ -497,9 +542,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** gas_equipment (902).
 
+**Investigation / proposal:** [gas presence](program-json-annotation-responses.md#gas-presence).
+
 <!-- annotation:gas_equipment:value:begin -->
 **Your annotations / proposed approach:**
-
+Save as above
 
 **Agreed decision:**
 
@@ -523,9 +570,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by scope:** shared_services[].loads[] (358); loads[] (342).
 
+**Investigation / proposal:** [water inlet](program-json-annotation-responses.md#water-inlet).
+
 <!-- annotation:hot_water:inlet_temperature_schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+Maybe we should determine this from weather / climate zone or have the user input it as it is quite weather dependent. We may not ship this even.
 
 **Agreed decision:**
 
@@ -549,9 +598,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by scope:** loads[] (11).
 
+**Investigation / proposal:** [water demands](program-json-annotation-responses.md#water-demands).
+
 <!-- annotation:hot_water:schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+How come some single family detached has this attribute and some does not? explain the causes.
 
 **Agreed decision:**
 
@@ -575,9 +626,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by scope:** loads[] (108).
 
+**Investigation / proposal:** [water demands](program-json-annotation-responses.md#water-demands).
+
 <!-- annotation:hot_water:target_temperature_schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+Same question as above
 
 **Agreed decision:**
 
@@ -601,9 +654,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by scope:** loads[] (82).
 
+**Investigation / proposal:** [water demands](program-json-annotation-responses.md#water-demands).
+
 <!-- annotation:hot_water:value:begin -->
 **Your annotations / proposed approach:**
-
+Same question as above
 
 **Agreed decision:**
 
@@ -625,9 +680,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** additional_lighting (1859); lighting (1859); lighting_interior (41).
 
+**Investigation / proposal:** [lighting heat](program-json-annotation-responses.md#lighting-heat).
+
 <!-- annotation:lighting:heat_fractions.latent:begin -->
 **Your annotations / proposed approach:**
-
+Same question as the relevant previous cases - why should we even have this
 
 **Agreed decision:**
 
@@ -649,9 +706,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** additional_lighting (1859); lighting (1859); lighting_interior (41).
 
+**Investigation / proposal:** [lighting heat](program-json-annotation-responses.md#lighting-heat).
+
 <!-- annotation:lighting:heat_fractions.lost:begin -->
 **Your annotations / proposed approach:**
-
+Same question as the relevant previous cases - why should we even have this
 
 **Agreed decision:**
 
@@ -673,9 +732,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** additional_lighting (434); lighting (434); lighting_interior (41).
 
+**Investigation / proposal:** [lighting heat](program-json-annotation-responses.md#lighting-heat).
+
 <!-- annotation:lighting:heat_fractions.radiant:begin -->
 **Your annotations / proposed approach:**
-
+Same question as the relevant previous cases - why should we even have this
 
 **Agreed decision:**
 
@@ -697,9 +758,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** additional_lighting (434); lighting (434); lighting_interior (41).
 
+**Investigation / proposal:** [lighting heat](program-json-annotation-responses.md#lighting-heat).
+
 <!-- annotation:lighting:heat_fractions.return_air:begin -->
 **Your annotations / proposed approach:**
-
+Same question as the relevant previous cases - why should we even have this
 
 **Agreed decision:**
 
@@ -721,9 +784,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** additional_lighting (434); lighting (434); lighting_interior (41).
 
+**Investigation / proposal:** [lighting heat](program-json-annotation-responses.md#lighting-heat).
+
 <!-- annotation:lighting:heat_fractions.visible:begin -->
 **Your annotations / proposed approach:**
-
+Same question as the relevant previous cases - why should we even have this
 
 **Agreed decision:**
 
@@ -745,9 +810,11 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** additional_lighting (400); lighting (28); lighting_interior (3).
 
+**Investigation / proposal:** [load coverage](program-json-annotation-responses.md#load-coverage).
+
 <!-- annotation:lighting:schedule_id:begin -->
 **Your annotations / proposed approach:**
-
+Similar questions as previous
 
 **Agreed decision:**
 
@@ -768,6 +835,8 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 **Current handling:** 0 in the declared unit for an unknown source-leaf magnitude; rebuild mixtures from leaves and preserve known contributions.
 
 **Missing occurrences by end use:** additional_lighting (1799); lighting_interior (41); lighting (20).
+
+**Investigation / proposal:** [load coverage](program-json-annotation-responses.md#load-coverage).
 
 <!-- annotation:lighting:value:begin -->
 **Your annotations / proposed approach:**
@@ -793,6 +862,8 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** occupancy (45).
 
+**Investigation / proposal:** [load coverage](program-json-annotation-responses.md#load-coverage).
+
 <!-- annotation:occupancy:schedule_id:begin -->
 **Your annotations / proposed approach:**
 
@@ -817,6 +888,8 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Missing occurrences by end use:** occupancy (60).
 
+**Investigation / proposal:** [load coverage](program-json-annotation-responses.md#load-coverage).
+
 <!-- annotation:occupancy:value:begin -->
 **Your annotations / proposed approach:**
 
@@ -838,6 +911,8 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 **Affected building types:** LargeOffice (12); MediumOffice (6).
 
 **Current handling:** Prepend a lowest-priority Default rule: 0 for fractions, 120 W/person for activity, or a compatible temperature fallback; preserve all source rules.
+
+**Investigation / proposal:** [schedule coverage](program-json-annotation-responses.md#schedule-coverage).
 
 <!-- annotation:schedules:rules coverage:begin -->
 **Your annotations / proposed approach:**
@@ -861,6 +936,8 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 
 **Current handling:** Preserve null; no experimental defaults apply to evidence.
 
+**Investigation / proposal:** [provenance](program-json-annotation-responses.md#provenance).
+
 <!-- annotation:source.evidence:original_value:begin -->
 **Your annotations / proposed approach:**
 
@@ -882,6 +959,8 @@ Write in each **Your annotations / proposed approach** area and keep its markers
 **Affected building types:** Outpatient (207); SmallHotel (159); Hospital (146); LargeHotel (143); SuperMarket (90); SecondarySchool (85); PrimarySchool (72); RetailStandalone (42); RetailStripmall (25); Warehouse (25); MidriseApartment (24); HighriseApartment (18); LargeOffice (18); MediumOffice (10); FullServiceRestaurant (9); QuickServiceRestaurant (9); SmallOffice (9).
 
 **Current handling:** Preserve null; no experimental defaults apply to evidence.
+
+**Investigation / proposal:** [provenance](program-json-annotation-responses.md#provenance).
 
 <!-- annotation:source.evidence:source_file_id:begin -->
 **Your annotations / proposed approach:**
@@ -911,6 +990,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No program-JSON fallback. Preserve source bases and distinguish ventilation from infiltration.
 
+**Investigation / proposal:** [air requirements](program-json-annotation-responses.md#air-requirements).
+
 <!-- annotation:omitted:ventilation_m3_s_m2:begin -->
 **Your annotations / proposed approach:**
 
@@ -934,6 +1015,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Example source space types with nulls:** Plenum, WholeBuilding - Sm Office, Mechanical, ElevatorCore4, ICU_Open, Stair.
 
 **Current handling:** No program-JSON fallback. Preserve source bases and distinguish ventilation from infiltration.
+
+**Investigation / proposal:** [air requirements](program-json-annotation-responses.md#air-requirements).
 
 <!-- annotation:omitted:ventilation_m3_s_person:begin -->
 **Your annotations / proposed approach:**
@@ -959,6 +1042,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No program-JSON fallback. Preserve source bases and distinguish ventilation from infiltration.
 
+**Investigation / proposal:** [air requirements](program-json-annotation-responses.md#air-requirements).
+
 <!-- annotation:omitted:ventilation_ach:begin -->
 **Your annotations / proposed approach:**
 
@@ -982,6 +1067,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Example source space types with nulls:** Plenum, WholeBuilding - Sm Office, Basement, OR, PACU, Mechanical.
 
 **Current handling:** No program-JSON fallback. Preserve source bases and distinguish ventilation from infiltration.
+
+**Investigation / proposal:** [air requirements](program-json-annotation-responses.md#air-requirements).
 
 <!-- annotation:omitted:infiltration_m3_s_m2:begin -->
 **Your annotations / proposed approach:**
@@ -1007,6 +1094,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No program-JSON fallback. Preserve source bases and distinguish ventilation from infiltration.
 
+**Investigation / proposal:** [air requirements](program-json-annotation-responses.md#air-requirements).
+
 <!-- annotation:omitted:infiltration_basis:begin -->
 **Your annotations / proposed approach:**
 
@@ -1024,6 +1113,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Pattern:** Whole-dwelling records; the fixed exporter channel list omits this end use. A retained profile does not establish its missing magnitude.
 
 **Current handling:** No load created and no magnitude fallback applied to this omitted channel.
+
+**Investigation / proposal:** [residential channels](program-json-annotation-responses.md#residential-channels).
 
 <!-- annotation:omitted:ceiling_fan:begin -->
 **Your annotations / proposed approach:**
@@ -1043,6 +1134,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No load created and no magnitude fallback applied to this omitted channel.
 
+**Investigation / proposal:** [residential channels](program-json-annotation-responses.md#residential-channels).
+
 <!-- annotation:omitted:dishwasher:begin -->
 **Your annotations / proposed approach:**
 
@@ -1060,6 +1153,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Pattern:** Whole-dwelling records; the fixed exporter channel list omits this end use. A retained profile does not establish its missing magnitude.
 
 **Current handling:** No load created and no magnitude fallback applied to this omitted channel.
+
+**Investigation / proposal:** [residential channels](program-json-annotation-responses.md#residential-channels).
 
 <!-- annotation:omitted:hot_water_dishwasher:begin -->
 **Your annotations / proposed approach:**
@@ -1079,6 +1174,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No load created and no magnitude fallback applied to this omitted channel.
 
+**Investigation / proposal:** [residential channels](program-json-annotation-responses.md#residential-channels).
+
 <!-- annotation:omitted:lighting_garage:begin -->
 **Your annotations / proposed approach:**
 
@@ -1096,6 +1193,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Pattern:** Residential cooking range; source-option counts: Electric Resistance (22); Gas (14); Propane (3); Electric Induction (1); None (1).
 
 **Current handling:** Category is inferred from the channel name rather than source fuel; magnitudes remain unknown. No correction applied by this review.
+
+**Investigation / proposal:** [residential channels](program-json-annotation-responses.md#residential-channels).
 
 <!-- annotation:classification:cooking_range:begin -->
 **Your annotations / proposed approach:**
@@ -1115,6 +1214,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** Category is inferred from the channel name rather than source fuel; magnitudes remain unknown. No correction applied by this review.
 
+**Investigation / proposal:** [residential channels](program-json-annotation-responses.md#residential-channels).
+
 <!-- annotation:classification:clothes_dryer:begin -->
 **Your annotations / proposed approach:**
 
@@ -1133,6 +1234,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** Shared services and reporting allocations do not prove local fixture placement. Keep source unknowns distinct from the 206 reviewed no-modeled-draw cases.
 
+**Investigation / proposal:** [water allocation](program-json-annotation-responses.md#water-allocation).
+
 <!-- annotation:omitted:water_allocation:begin -->
 **Your annotations / proposed approach:**
 
@@ -1148,6 +1251,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Pattern / missing information:** All 41 dwelling DTOs omit these operands. Separate enclosure definitions retain unresolved natural infiltration/outdoor air; pressure-test leakage such as ACH50 requires a conversion model, geometry and weather.
 
 **Current handling:** No new fields or defaults added by this review.
+
+**Investigation / proposal:** [air requirements](program-json-annotation-responses.md#air-requirements).
 
 <!-- annotation:omitted:residential_air:begin -->
 **Your annotations / proposed approach:**
@@ -1165,6 +1270,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No new fields or defaults added by this review.
 
+**Investigation / proposal:** [context](program-json-annotation-responses.md#context).
+
 <!-- annotation:omitted:source_climate:begin -->
 **Your annotations / proposed approach:**
 
@@ -1180,6 +1287,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Pattern / missing information:** Residential stock vintage exists upstream but has no dedicated DTO field. Keep existing-stock vintages distinct from code/prototype templates.
 
 **Current handling:** No new fields or defaults added by this review.
+
+**Investigation / proposal:** [context](program-json-annotation-responses.md#context).
 
 <!-- annotation:omitted:source_vintage:begin -->
 **Your annotations / proposed approach:**
@@ -1197,6 +1306,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 
 **Current handling:** No new fields or defaults added by this review.
 
+**Investigation / proposal:** [composition](program-json-annotation-responses.md#composition).
+
 <!-- annotation:omitted:composition:begin -->
 **Your annotations / proposed approach:**
 
@@ -1212,6 +1323,8 @@ These are contract/export gaps, kept separate from null operands in existing fie
 **Pattern / missing information:** All programs retain program-level evidence, but lack a complete self-contained operand-to-evidence map and upstream revision/checksum descriptors. The repository retains pinned source evidence; this is an export representation gap.
 
 **Current handling:** No new fields or defaults added by this review.
+
+**Investigation / proposal:** [provenance](program-json-annotation-responses.md#provenance).
 
 <!-- annotation:omitted:provenance:begin -->
 **Your annotations / proposed approach:**

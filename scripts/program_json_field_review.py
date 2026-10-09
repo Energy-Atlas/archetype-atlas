@@ -180,6 +180,7 @@ def handling(section, field):
 
 
 def render(audit, saved):
+    from scripts.program_field_investigation import investigation_group
     lines = ['# Program JSON field review', '', f'Audit date: {audit["date"]}. Program JSON schema: **2.0.0**. Definitions: **v0.1.1**.', '',
              'This working document has **one review entry per JSON field and load type**, aggregated across all program definitions. '
              'It contains no individual program-record entries. Each field has its own annotation area.', '',
@@ -191,6 +192,8 @@ def render(audit, saved):
              'Null means unknown/unreported, not zero. Passing the current schema does not establish complete program semantics.', '',
              'Write in each **Your annotations / proposed approach** area and keep its markers intact. '
              'Regeneration preserves annotations and refuses to discard orphaned blocks. The stated defaults describe existing behavior; they are not new decisions.', '',
+             'The [annotation investigation and proposed solutions](program-json-annotation-responses.md) answers the reviewed fields together with related unannotated fields. '
+             'Each entry links to its investigation group. Proposals remain open for discussion; your annotation text is preserved.', '',
              '```powershell', '.venv/Scripts/python.exe -m scripts.program_json_field_review --refresh',
              '.venv/Scripts/python.exe -m scripts.program_json_field_review --check', '```', '',
              '## Load and control fields with missing data', '']
@@ -198,7 +201,10 @@ def render(audit, saved):
 
     def entry(key, title, body):
         keys.add(key)
-        lines.extend(['### ' + title, '', *body, '', f'<!-- annotation:{key}:begin -->',
+        group = investigation_group(key)
+        lines.extend(['### ' + title, '', *body, '',
+                      f'**Investigation / proposal:** [{group.replace("-", " ")}](program-json-annotation-responses.md#{group}).', '',
+                      f'<!-- annotation:{key}:begin -->',
                       saved.get(key, '**Your annotations / proposed approach:**\n\n\n**Agreed decision:**\n\n\n**Status:** Open'),
                       f'<!-- annotation:{key}:end -->', ''])
 
