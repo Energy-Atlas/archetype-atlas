@@ -2,7 +2,7 @@
 
 Inspection dates: 2026-10-09 and 2026-10-11. Decision record and investigation against definition release v0.1.1 and program JSON schema 2.0.0.
 
-Your annotations are retained in the [field review](program-json-field-review.md) and verbatim below. Every one of its 54 entries links to a response group here, including the later unannotated entries. **The dated follow-ups below supersede the earlier proposals where your comments settle a choice.** Accepted policy is recorded in [ADR 0016](../adr/0016-program-completion-policy.md). This update changes the investigation and decision record; the JSON/schema/export migration has not been implemented. Schedule gap completions remain proposals for discussion.
+Your annotations are retained in the [field review](program-json-field-review.md) and verbatim below. Every one of its 54 entries links to a response group here, including the later unannotated entries. **The dated follow-ups below supersede the earlier proposals where your comments settle a choice.** Accepted policy is recorded in [ADR 0016](../adr/0016-program-completion-policy.md). This update changes the investigation and decision record; the JSON/schema/export migration has not been implemented. Both schedule gap completions were accepted by the user on 2026-10-11; application to exports remains pending.
 
 The most useful change is to distinguish four cases: a reported value; a source recipe that deliberately creates no demand; an engine-supported optional input; and information that our extraction has not resolved. These cases currently appear together as nulls. A clean program JSON should preserve that distinction, retain source overrides, and expose unresolved inputs when they affect the requested experiment.
 
@@ -212,7 +212,7 @@ The audit found five distinct incomplete referenced rulesets affecting 18 progra
 **Your response / decision:**
 Inspect and report and discuss. it is impossible to respond to what you have presented here due to lack of further info.
 
-**Agent follow-up — 2026-10-11 (investigated; proposed completions):** ordinary weekdays and weekends are covered. The exact gaps are four missing **holiday selectors** and one missing **February 29**. Counts below include source and reviewed definitions; Medium Office equipment and lights occur in the same definitions, so the rows overlap. There are **18 unique affected definitions**.
+**Agent follow-up — 2026-10-11 (investigated; completions subsequently accepted):** ordinary weekdays and weekends are covered. The exact gaps are four missing **holiday selectors** and one missing **February 29**. Counts below include source and reviewed definitions; Medium Office equipment and lights occur in the same definitions, so the rows overlap. There are **18 unique affected definitions**.
 
 | Schedule (ID suffix) | Affected definitions | Actual gap | Proposed completion |
 | --- | --- | --- | --- |
@@ -230,7 +230,9 @@ The investigation script constructs these changes **in memory only**, verifies c
 
 **Your follow-up on these two completions:**
 
-<!-- Accept or revise the holiday-to-Sunday and February-29-to-February proposals here. -->
+> yes the 2 assumptions are acceptable
+
+**Decision recorded — 2026-10-11:** accepted. Use each affected Medium Office schedule's Sunday profile for holidays, and extend the data-center schedule's February profiles through February 29, including its existing design-day values. Preserve all previously covered values and source rule order. These assumptions are approved for the upcoming migration; frozen source schedules and current export defaults have not been changed by this decision record.
 
 ## Air requirements
 
@@ -283,7 +285,7 @@ The DTO exports weighted demand trajectories but does not carry a dedicated mixt
 We should not have any unknowns for now after this round of remap/
 Exported DTO should be complete and ready for simulation without the need to specifically specify defaults / to bridge gaps
 
-**Agent follow-up — 2026-10-11 (accepted target):** the ready DTO must contain every active program operand and embedded schedule, or an executable engine instruction such as sensible autocalculation or weather-derived mains temperature. Apply the accepted defaults during resolution/export; do not require the user to choose them or query another atlas manifest during import. Rebuild mixtures after leaf resolution and retain their recipe in metadata. Inactive/unsupported fields need no fabricated value. Geometry, simulation weather/calendar and assigned HVAC remain ordinary model context, not missing program defaults. Raw evidence can retain nulls. This is the acceptance criterion for the migration, **not a claim that the current exporter already meets it**. Source recovery, the ER_Triage exception and the schedule choices above remain outstanding work.
+**Agent follow-up — 2026-10-11 (accepted target):** the ready DTO must contain every active program operand and embedded schedule, or an executable engine instruction such as sensible autocalculation or weather-derived mains temperature. Apply the accepted defaults during resolution/export; do not require the user to choose them or query another atlas manifest during import. Rebuild mixtures after leaf resolution and retain their recipe in metadata. Inactive/unsupported fields need no fabricated value. Geometry, simulation weather/calendar and assigned HVAC remain ordinary model context, not missing program defaults. Raw evidence can retain nulls. This is the acceptance criterion for the migration, **not a claim that the current exporter already meets it**. Source recovery, the ER_Triage exception and implementation of the accepted schedule completions remain outstanding work.
 
 ## Provenance
 
@@ -300,7 +302,7 @@ ok - but i feel provenance should be decorative/comment style fields
 
 ## Proposed order of work
 
-1. Resolve the two specific schedule-completion choices above. The other accepted choices are recorded in ADR 0016 and do not need another round of approval.
+1. Apply the accepted schedule-completion choices during migration. These and the other accepted choices are recorded in ADR 0016 and do not need another round of approval.
 2. Recover residential magnitudes, heat splits, fuel components and frozen schedule resolutions; investigate the single Hospital ER_Triage equipment magnitude outside the support-space pattern. Preserve immutable original source execution and distinguish reviewed assumptions.
 3. Implement the typed ready-DTO contract, automatic default-policy revision, explicit conditioning state, weather-derived mains instruction and descriptive metadata. Apply resolved leaf values before aggregating hourly demand and annual-energy-weighted heat fractions. Preserve physical shared services and fuel/host distinctions.
 4. Validate the Medium Office pilot, residential examples and mixture energy conservation before regenerating a release. Verify schema, physical, referential, schedule, provenance and reproducibility checks. This investigation makes no release-completeness or full-simulation claim.

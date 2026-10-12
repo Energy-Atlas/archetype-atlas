@@ -152,7 +152,7 @@ def inspect_schedule_gaps(definitions):
                        'missing_selectors': {day: {'date_count': len(dates), 'first': dates[0], 'last': dates[-1]}
                                              for day, dates in gaps.items()},
                        'proposal': proposal, 'proposed_values': values,
-                       'proposal_status': 'discussion pending; not applied to releases or export defaults',
+                       'proposal_status': 'accepted by user 2026-10-11; not applied to releases or export defaults',
                        'proposal_has_full_coverage': True, 'covered_date_selectors_preserved': checked})
     return result
 

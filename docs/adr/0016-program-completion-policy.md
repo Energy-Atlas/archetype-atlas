@@ -1,7 +1,7 @@
 # ADR 0016: source recovery and automatic program completion
 
 Date: 2026-10-11.
-Status: policy accepted through the user's field-review comments; implementation pending. The two schedule-completion proposals remain open.
+Status: policy accepted through the user's field-review comments; implementation pending. Both schedule-completion assumptions were also accepted by the user on 2026-10-11.
 
 ## Context
 
@@ -73,11 +73,13 @@ rather than disguising them as unresolved nulls.
 ## Open items and validation
 
 Five source rulesets have specific gaps. Four Medium Office schedules lack
-holiday selectors; the proposed completion copies each schedule's Sunday
-profile. One data-center schedule lacks February 29; the proposed completion
-extends the February values to that day. These are **not yet accepted**. Exact
-IDs, profiles and affected definitions are in the response document. The
-investigation verifies these hypothetical repairs without changing releases.
+holiday selectors; the accepted completion copies each schedule's Sunday
+profile. One data-center schedule lacks February 29; the accepted completion
+extends the February values to that day, including the existing design-day
+values. The user accepted both assumptions on 2026-10-11. Exact IDs, profiles
+and affected definitions are in the response document. Preserve covered values
+and source rule order. The investigation verifies the repairs in memory;
+application to releases and export defaults remains pending.
 
 Residential magnitude/fuel recovery and the Hospital ER_Triage exception still
 need work; acceptance of defaults is not evidence of complete extraction.
