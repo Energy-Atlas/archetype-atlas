@@ -11,11 +11,13 @@ publication. Discussion items remain open design topics, not accepted designs.
 The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-json-completion.md)
 details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
 construction and system field reviews with coverage patterns and annotation space.
+Those reviews and independent source-recovery pilots are now recorded; final
+consumer exports and publication remain open.
 
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
-| 2 | Include constructions and systems, with separate JSON exports and pages | Detailed plan recorded; field reviews next |
+| 2 | Include constructions and systems, with separate JSON exports and pages | Field reviews/source pilots recorded; consumer contracts next |
 | 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
 | 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
@@ -48,7 +50,7 @@ Medium Office and residential pages. The program-consistency branch was retired.
 
 ## 2. Constructions and systems: separate JSONs and pages
 
-- [ ] Inventory current construction/material and system/component exports,
+- [x] Inventory current construction/material and system/component exports,
   their physical inputs, applicability, source gaps and model bindings.
 - [ ] Define separate versioned construction and system export contracts;
   keep their objects and pages separate from program JSON.

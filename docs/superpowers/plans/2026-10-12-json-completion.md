@@ -59,13 +59,13 @@ These counts describe the existing bundle, not a completed consumer contract or 
 
 **Files:** Read `scripts/construction_definitions.py`, `scripts/residential_definitions.py`, `scripts/definition_contract.py`, `sources/definition-policy.json` and the frozen bundle. Create `docs/reviews/construction-json-field-review.md` and a machine-readable census alongside it.
 
-- [ ] Build an applicability matrix by representation, construction role and material model. Use applicable-record denominators instead of treating every absent parameter as missing.
-- [ ] Write one review entry per JSON field/property, summarizing affected counts, common source/model types, patterns, representative IDs, recovery options and remaining uncertainty. Include a **User comments / decision** area in every entry; do not write one entry per catalogue record.
-- [ ] Classify each affected case as source-recoverable, unresolved source data, already assumed, not applicable, or a consumer geometry/boundary input. Trace existing assumptions to their policy and evidence.
-- [ ] Investigate the 12 ambiguous glazing rows, the 41 residential enclosures without resolved assemblies, and the four existing assumed construction rows. Resolve duplicate physical definitions through source selectors rather than first/last-match selection.
-- [ ] Audit F/C ground models and their area/perimeter/height requirements separately from U-value constructions. Review source film resistance, adjusted layers, glazing optical properties and infiltration basis.
-- [ ] Identify recoverable residential layers and selected source options. Preserve ACH50/reference pressure; do not reinterpret pressure-test leakage as natural infiltration.
-- [ ] Reconcile census totals with the frozen manifest and record source/code identities. Present genuine missing inputs and concrete proposals for any new assumptions.
+- [x] Build an applicability matrix by representation, construction role and material model. Use applicable-record denominators instead of treating every absent parameter as missing.
+- [x] Write one review entry per JSON field/property, summarizing affected counts, common source/model types, patterns, representative IDs, recovery options and remaining uncertainty. Include a **User comments / decision** area in every entry; do not write one entry per catalogue record.
+- [x] Classify each affected case as source-recoverable, unresolved source data, already assumed, not applicable, or a consumer geometry/boundary input. Trace existing assumptions to their policy and evidence.
+- [x] Investigate the 12 ambiguous glazing rows, the 41 residential enclosures without resolved assemblies, and the four existing assumed construction rows. Resolve duplicate physical definitions through source selectors rather than first/last-match selection.
+- [x] Audit F/C ground models and their area/perimeter/height requirements separately from U-value constructions. Review source film resistance, adjusted layers, glazing optical properties and infiltration basis.
+- [x] Identify recoverable residential layers and selected source options. Preserve ACH50/reference pressure; do not reinterpret pressure-test leakage as natural infiltration.
+- [x] Reconcile census totals with the frozen manifest and record source/code identities. Present genuine missing inputs and concrete proposals for any new assumptions.
 
 **Exit:** Every applicable construction field has a documented disposition and annotation space. Unresolved physical data and required consumer operands are separately enumerable.
 
@@ -77,14 +77,14 @@ These counts describe the existing bundle, not a completed consumer contract or 
 
 **Files:** Read `scripts/hvac_definitions.py`, `scripts/residential_definitions.py`, the service/component tables, and the pinned residential recovery inputs under `data/program-inputs/`. Create `docs/reviews/system-json-field-review.md` and its machine-readable census.
 
-- [ ] Review equipment family, fuel, heating/cooling components, fans, terminals, ventilation, controls, schedules, efficiency/rating metrics, performance curves and source topology/recipes.
-- [ ] Use the same field-based review format as 2A, with affected counts/types, evidence, proposed recovery and a user annotation area. Apply comments to all equivalent source/model cases, including unannotated ones.
-- [ ] Investigate all 1,046 empty connection lists and the 94 systems with empty component lists. Distinguish nominal recipes, deliberately absent equipment and extraction gaps; do not infer absence of equipment from an empty list alone.
-- [ ] Inspect the 707 conditional performance-rule components and 726 curve components. Identify source equipment assignments, capacity bands, rating dates, metrics, domains and controls instead of selecting an arbitrary efficiency.
-- [ ] Recover residential equipment selections through pinned source routines where required. Reuse retrieval/runtime locks where valid and extend them explicitly for additional source resources.
-- [ ] Inventory commercial and residential DHW heaters, storage, fuels, efficiency models, standby losses, recirculation and solar equipment where reported. Identify missing source fields and geometry/weather/temperature/assignment operands by equipment type.
-- [ ] Map physical DHW equipment to existing local/shared water demands without duplicating demand. Preserve instantiate-once service ownership and distinguish heater losses from fixture-related room gains.
-- [ ] Present unresolved source physics with concrete options; do not invent COP, fan pressure, plant configuration, heater efficiency or solar performance to make an export pass.
+- [x] Review equipment family, fuel, heating/cooling components, fans, terminals, ventilation, controls, schedules, efficiency/rating metrics, performance curves and source topology/recipes.
+- [x] Use the same field-based review format as 2A, with affected counts/types, evidence, proposed recovery and a user annotation area. Apply comments to all equivalent source/model cases, including unannotated ones.
+- [x] Investigate all 1,046 empty connection lists and the 94 systems with empty component lists. Distinguish nominal recipes, deliberately absent equipment and extraction gaps; do not infer absence of equipment from an empty list alone.
+- [x] Inspect the 707 conditional performance-rule components and 726 curve components. Identify source equipment assignments, capacity bands, rating dates, metrics, domains and controls instead of selecting an arbitrary efficiency.
+- [x] Recover residential equipment selections through pinned source routines where required. Reuse retrieval/runtime locks where valid and extend them explicitly for additional source resources.
+- [x] Inventory commercial and residential DHW heaters, storage, fuels, efficiency models, standby losses, recirculation and solar equipment where reported. Identify missing source fields and geometry/weather/temperature/assignment operands by equipment type.
+- [x] Map physical DHW equipment to existing local/shared water demands without duplicating demand. Preserve instantiate-once service ownership and distinguish heater losses from fixture-related room gains.
+- [x] Present unresolved source physics with concrete options; do not invent COP, fan pressure, plant configuration, heater efficiency or solar performance to make an export pass.
 
 **Exit:** HVAC and DHW have model-specific field requirements, source recovery paths and explicit remaining scientific/architectural questions.
 
@@ -209,6 +209,6 @@ These are proposals, not accepted schema decisions. The accepted HVAC+DHW scope 
 
 <!-- Write here. -->
 
-## Immediate next deliverable
+## Current execution status
 
-Complete 2A and 2B: the two field-review documents and reproducible coverage censuses. Bring back only genuine remaining physics/architecture choices, with concrete source-backed proposals. Use those reviews to finalize the construction and system contracts; this planning document does not authorize silent assumptions for missing data.
+Tasks 2A and 2B are complete: the field-review documents and reproducible census are recorded. Source recovery and four independent Medium Office/residential input pilots are available under `docs/examples/energy-recovery/`; see `docs/reviews/json-completion-work-record.md`. Remaining physics stays blocked under the accepted source-only assumption policy. Final consumer contracts/exporters, expansion to ready JSON and site publication (2C-2E) remain open; these source pilots do not complete those tasks.
