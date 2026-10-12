@@ -3,6 +3,10 @@
 Date: 2026-10-12. Status: accepted execution boundaries; recovery implemented.
 Consumer export interfaces and publication remain subsequent work.
 
+The later [draw-only program water-heating decision](0018-draw-only-program-water-heating-energy.md)
+refines the proposed DHW consumer delivery. Detailed equipment and losses remain
+source evidence; the simplified program representation excludes standby losses.
+
 ## Decision
 
 The user authorized autonomous field reviews and source recovery, with focused

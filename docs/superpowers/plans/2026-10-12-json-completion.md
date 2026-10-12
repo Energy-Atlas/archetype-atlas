@@ -212,3 +212,9 @@ These are proposals, not accepted schema decisions. The accepted HVAC+DHW scope 
 ## Current execution status
 
 Tasks 2A and 2B are complete: the field-review documents and reproducible census are recorded. Source recovery and four independent Medium Office/residential input pilots are available under `docs/examples/energy-recovery/`; see `docs/reviews/json-completion-work-record.md`. Remaining physics stays blocked under the accepted source-only assumption policy. Final consumer contracts/exporters, expansion to ready JSON and site publication (2C-2E) remain open; these source pilots do not complete those tasks.
+
+The user subsequently selected simplified program-level water-heating energy,
+covering draw heating only and explicitly excluding standby losses. See
+[ADR 0018](../../adr/0018-draw-only-program-water-heating-energy.md). Its consumer
+schema, conversion recovery and implementation remain pending; detailed DHW
+equipment/loss data stays available as independent source evidence.
