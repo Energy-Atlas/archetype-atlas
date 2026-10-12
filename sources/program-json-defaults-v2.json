@@ -1,0 +1,31 @@
+{
+  "id": "atlas-program-defaults-2.0.0",
+  "schema_version": "1.0.0",
+  "decision": "ADR 0016",
+  "decision_date": "2026-10-11",
+  "status": "approved scoped completion policy; source recovery precedes assumptions",
+  "rules": [
+    {"id": "source-recovery", "value": "recover pinned source operands and frozen resolutions before defaults", "applies_to": "all missing active physical operands; preserve known positive values and distinct stock/code variants"},
+    {"id": "accepted-absence", "value": 0, "applies_to": "missing additional lighting and reviewed support-space lighting/equipment/occupancy; unoccupied reviewed data-center occupancy; unresolved gas equipment only after source/fuel recovery", "excludes": "occupied clinical ER_Triage magnitude and unrelated occupied-program load unknowns"},
+    {"id": "omit-absent-demands", "value": "omit zero demands from executable loads; retain source and resolution in metadata.absent_demands", "applies_to": "reported zero and accepted absence"},
+    {"id": "accepted-activity-fallback", "value": 120, "unit": "W/person", "applies_to": "active occupancy whose activity remains unresolved after source recovery"},
+    {"id": "people-heat-defaults", "value": {"radiant_fraction": 0.3, "sensible_fraction": "autocalculate"}, "applies_to": "supported unresolved People fields after source overrides", "engine": "EnergyPlus", "engine_version": "25.1.0"},
+    {"id": "native-power-heat-defaults", "value": 0, "applies_to": "supported unresolved native nonconvective heat fields only; preserve source overrides; convection is residual", "fields": {"lighting": ["radiant", "visible", "return_air"], "electric_equipment": ["radiant", "latent", "lost"], "gas_equipment": ["radiant", "latent", "lost"]}, "engine": "EnergyPlus", "engine_version": "25.1.0"},
+    {"id": "explicit-conditioning", "value": "represent neither, heating only, cooling only, or both; omit inactive setpoint references", "applies_to": "source/reviewed service flags and accepted missing-control support recipes; retain known heating when cooling is inactive"},
+    {"id": "accepted-water-target-60C", "value": 60, "unit": "degC", "applies_to": "active demand target unresolved after source target and service inheritance recovery"},
+    {"id": "weather-derived-mains", "value": {"method": "CorrelationFromWeatherFile", "engine": "EnergyPlus", "engine_version": "25.1.0"}, "applies_to": "active hot-water inlet instruction with simulation weather file"},
+    {"id": "accepted-holiday-sunday", "value": "copy the same schedule's Sunday profile to the missing holiday selector", "applies_to": ["OfficeMedium BLDG_EQUIP_SCH_2004", "OfficeMedium BLDG_EQUIP_SCH_2013", "OfficeMedium BLDG_LIGHT_SCH_2004", "OfficeMedium BLDG_LIGHT_SCH_2013"]},
+    {"id": "accepted-leap-day-february", "value": "extend the existing February rules through February 29, including design-day selectors", "applies_to": "DataCenter_EQUIP_SCH"},
+    {"id": "equipment-aggregation", "value": "sum component power trajectories within compatible fuel/host/basis groups; use annual component energy weights for constant heat fractions", "applies_to": "resolved electrical and fuel equipment; preserve components and integration calendar in metadata"}
+  ],
+  "notes": [
+    "An unresolved active operand outside these scoped rules prevents a ready export. There is no universal unknown-load zero or generic missing-schedule completion.",
+    "Retain raw source nulls, locators, original units/values, transformation, extraction date and interpretation in simulation-ignored metadata.",
+    "Preserve fuel identity and physical hosts; instantiate each shared service once. Reporting allocations do not duplicate physical water demand.",
+    "Resolve leaves before mixtures. Constant aggregated heat fractions preserve annual partition on the recorded integration calendar and can approximate hourly partition.",
+    "The user accepted the ruleset-only heat-weight integration calendar, 2007 with no designated holidays, on 2026-10-11; annual source realizations keep their recorded year.",
+    "The user explicitly left residential general-water-use signed thermal gains and distribution-water effects outside program scope on 2026-10-11; they are not assumed zero. Water-heater losses and detailed solar equipment remain system responsibilities.",
+    "Geometry, simulation weather/calendar and HVAC assignment remain model context. Ventilation and infiltration are excluded from this migration, not assumed zero.",
+    "Historical atlas-program-defaults-1.0.0 and version 2 program artifacts remain unchanged. They are not the current ready-export policy."
+  ]
+}

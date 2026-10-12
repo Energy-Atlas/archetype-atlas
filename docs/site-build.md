@@ -43,7 +43,7 @@ The catalogue has two family gates and three object kinds. Programs, constructio
 and HVAC systems link to designated schedules, materials, components and evidence.
 Every object has lazy, bounded, checksum-verified JSON inspection and copying.
 Programs offer raw or default-filled self-contained DTOs under the
-[fixed connector contract](program-json-v2-contract.md). Other library objects
+[v3 connector contract](program-json-v3-contract.md). Other library objects
 retain explicit unknowns; program defaults do not manufacture HVAC performance.
 
 Schedules show unique daily step profiles, an annual day × hour heatmap, exact
@@ -62,7 +62,8 @@ frozen input releases remain available for scientific verification.
 
 - `scripts/active_site.py`: fresh active build, called by `python -m scripts.site`.
 - `scripts/object_site.py`: object pages and content-addressed JSON resources.
-- `scripts/program_json.py`, `scripts/schedule_json.py`: program DTO conversion.
+- `scripts/program_json_v3.py`, `scripts/schedule_json.py`: current program DTO conversion.
+- `scripts/program_completeness.py`: reproduce the complete v3 export receipt.
 - `website/assets/object.js`: verified disclosure and accessible copy choices.
 - `website/assets/schedule_core.js`, `schedule.js`: calendar semantics and plots.
 - `website/assets.lock.json`: asset version, size and SHA-256 locks.
@@ -89,9 +90,18 @@ Every run of the catalogue workflow's build job verifies the presentation
 contracts (delivery, query, program JSON, active-site and browser tests, Node
 tests), generates the catalogue, builds it with `mkdocs build --strict`,
 and passes `site_check` and the Chromium smoke test before it uploads the Pages
-artifact. Deployment still needs that build, and still runs only for a push to
-the default branch or a designated publisher branch, or a manual dispatch with
-`deploy` set.
+artifact. The same pipeline calls the reusable `validate.yml` research matrix.
+Deployment requires both the build and research validation to succeed for the
+same commit. It runs only on `main`, automatically for pushes or after a manual
+dispatch with `deploy` set. The production environment also permits `main` only.
+See [branch and publication policy](branch-policy.md).
+
+Automatic runs cover every pull request targeting `main` and every push to
+`main`. There are no path filters on these required checks, avoiding missing
+checks on documentation changes and stale filters when a schema version changes.
+Working-branch pushes do not start CI; use `gh workflow run catalogue-site.yml
+--ref BRANCH` for a manual validation run. Its default `deploy=false` does not
+publish; even `deploy=true` cannot publish from a working branch.
 
 The frozen-release checks (evidence fetches, definition release verification
 and byte reproduction, atlas, resolution, completion, water and water-reporting
@@ -109,6 +119,8 @@ or since a pull request's base, is presentation-only:
 
 Any other change (data, schemas, sources, requirements, other scripts or tests,
 or the workflow itself), a new branch whose comparison with the default branch
-cannot be made, and every manual dispatch run the full checks. Independently of
-deployment, `validate.yml` fetches the sources and verifies every frozen release
-on every push and pull request.
+cannot be made, and every manual dispatch run the full build-side checks.
+Independently of that optimization, the reusable `validate.yml` research matrix
+fetches the sources, verifies every frozen release, reproduces the v3 program
+completeness receipt and runs the full Python suite on every pipeline run.
+Artifact generation remains part of site CI pending roadmap item 5's discussion.

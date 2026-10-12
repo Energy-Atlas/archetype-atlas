@@ -1,83 +1,16 @@
 name: Catalogue site
 
+# One pipeline per pull request or main push; working branches can be checked manually.
+# Do not path-filter required checks: even a docs-only PR must report its gates.
 on:
   push:
-    paths:
-      - 'website/**'
-      - 'scripts/active*.py'
-      - 'scripts/object_site.py'
-      - 'scripts/program_json.py'
-      - 'scripts/schedule_json.py'
-      - 'tests/test_active_site.py'
-      - 'tests/test_object_browser.py'
-      - 'tests/test_program_json*.py'
-      - 'tests/schedule_core.test.js'
-      - 'schemas/*-json-v2.schema.json'
-      - 'sources/program-json-defaults.json'
-      - 'docs/program-json-v2-contract.md'
-      - 'scripts/definition*.py'
-      - 'scripts/program_definitions.py'
-      - 'scripts/program_composition.py'
-      - 'scripts/construction_definitions.py'
-      - 'scripts/hvac_definitions.py'
-      - 'scripts/residential_definitions.py'
-      - 'tests/test_definition*.py'
-      - 'sources/definition*.json'
-      - 'sources/program-composition-policy.json'
-      - 'data/definition-releases/**'
-      - 'schemas/definitions.schema.json'
-      - 'docs/definition-contract.md'
-      - 'scripts/site*.py'
-      - 'scripts/query*.py'
-      - 'tests/test_query*.py'
-      - 'schemas/query-*.schema.json'
-      - 'tests/site*.js'
-      - 'tests/test_site*.py'
-      - 'tests/test_water_reporting*.py'
-      - 'schemas/water-reporting.schema.json'
-      - 'data/releases/**'
-      - 'data/resolution-releases/**'
-      - 'data/water-releases/**'
-      - 'data/completion-releases/**'
-      - 'data/water-reporting-releases/**'
-      - 'scripts/water_reporting.py'
-      - 'scripts/catalogue_names.py'
-      - 'scripts/commercial*.py'
-      - 'sources/completion-evidence-lock.json'
-      - 'scripts/water_equivalent.py'
-      - 'scripts/schedule_coverage.py'
-      - 'sources/water-evidence-lock.json'
-      - 'sources/schedule-release-scope.json'
-      - 'scripts/resolve.py'
-      - 'requirements*.txt'
-      - 'mkdocs.yml'
-      - '.github/workflows/catalogue-site.yml'
+    branches: [main]
   pull_request:
-    paths:
-      - 'website/**'
-      - 'data/definition-releases/**'
-      - 'schemas/definitions.schema.json'
-      - 'schemas/query-v2.schema.json'
-      - 'schemas/*-json-v2.schema.json'
-      - 'sources/program-json-defaults.json'
-      - 'docs/program-json-v2-contract.md'
-      - 'sources/definition*.json'
-      - 'sources/program-composition-policy.json'
-      - 'docs/definition-contract.md'
-      - 'scripts/**'
-      - 'tests/**'
-      - 'data/releases/**'
-      - 'data/resolution-releases/**'
-      - 'data/water-releases/**'
-      - 'data/completion-releases/**'
-      - 'requirements*.txt'
-      - 'data/water-reporting-releases/**'
-      - 'mkdocs.yml'
-      - '.github/workflows/catalogue-site.yml'
+    branches: [main]
   workflow_dispatch:
     inputs:
       deploy:
-        description: Publish the verified artifact to GitHub Pages
+        description: Publish to GitHub Pages (main only, after all validation)
         type: boolean
         default: false
 
@@ -85,10 +18,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: catalogue-${{ github.ref }}
-  cancel-in-progress: true
+  # A validation-only manual run must not displace a queued main publisher.
+  group: catalogue-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' && !inputs.deploy && 'validation' || 'publication' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  research:
+    uses: ./.github/workflows/validate.yml
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -114,7 +51,8 @@ jobs:
         run: |
           # Release verification is skipped only when every changed path is presentation-only
           # (docs/site-build.md, "Release gate"). Anything else, an unknown base, or a manual
-          # dispatch verifies the frozen releases. validate.yml verifies them on every push regardless.
+          # dispatch verifies the frozen releases. The reusable research job independently
+          # verifies all frozen releases on every run of this pipeline.
           presentation='^(website/|design/|docs/|mkdocs\.yml$|(README|CHANGELOG|AGENTS|CLAUDE)\.md$|scripts/(active_site|active_smoke|object_site|definition_site|site_check|site_smoke|site_assets)\.py$|tests/(test_active_site|test_object_browser|test_html_delivery|test_site_delivery|test_search_index|test_definition_site)\.py$|tests/[^/]+\.test\.js$)'
           base=""
           case "$EVENT" in
@@ -165,7 +103,7 @@ jobs:
           python -m unittest tests.test_definition_site -q
           python -m unittest tests.test_site_delivery tests.test_html_delivery -q
           python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
-          python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_active_site tests.test_object_browser -q
+          python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_completion tests.test_program_recovery tests.test_program_completeness tests.test_er_triage tests.test_active_site tests.test_object_browser -q
           node --test tests/*.test.js
       - name: Generate the current definition catalogue and build
         run: |
@@ -188,11 +126,11 @@ jobs:
           path: build/site
 
   deploy:
-    needs: build
+    needs: [research, build]
     if: >-
-      (github.event_name == 'push' && (github.ref_name == github.event.repository.default_branch
-      || github.ref_name == 'feat/catalogue-site' || github.ref_name == 'feat/schedule-resolution'))
-      || (github.event_name == 'workflow_dispatch' && inputs.deploy)
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && inputs.deploy))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:

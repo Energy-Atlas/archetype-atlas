@@ -27,6 +27,15 @@ unavailable rather than invented. Commit logical reversible units freely.
 Routine choices are autonomous under the brief; escalate only material science,
 licensing, public feasibility, or architecture ambiguities.
 
+Branch and publication policy: `main` is the sole production publisher and must
+be changed through a pull request with all required checks passing and review
+conversations resolved. Do not bypass its protection. Work on short-lived branches
+(new agent branches use `codex/`); delete them after merging. Automatic CI runs on
+PRs targeting `main` and pushes to `main`; manually dispatch Catalogue site to
+validate an unmerged branch. Production deployment, including manual deployment,
+requires `main`, successful research validation and the verified site artifact.
+The `github-pages` environment permits `main` only. See `docs/branch-policy.md`.
+
 Website UI and visual styling changes follow `design/ui-design-spec.md`; its
 section 0 wins over the rest. `design/` is not published. Vendored fonts in
 `website/assets/fonts/` keep their OFL notices; templates live in

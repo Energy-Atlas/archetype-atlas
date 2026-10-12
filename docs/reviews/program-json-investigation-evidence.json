@@ -1,0 +1,1128 @@
+{
+  "inspection_date": "2026-10-11",
+  "scope": "field/type aggregates; no individual program entries",
+  "input_sha256": {
+    "data/definition-releases/v0.1.1/manifest.json": "5787c554fd7ee554b45742b6a3bb7df04ea25219f7903d14f43603793e6fcd4e",
+    "data/definition-releases/v0.1.1/programs.json": "98d8fc21073fb7f47a286bcc708aca5468d0cc5abef43e80525f0c5a3ce71d60",
+    "data/definition-releases/v0.1.1/schedules.json": "2036622cc1918b9f4811e001290fba6e861013282fb408753e3bea4c51469b3f",
+    "data/definition-releases/v0.1.1/services.json": "da74ee593a86aa4388f8640661de16522be57a5997649b2f0f1847194f51660f",
+    "data/definition-releases/v0.1.1/compositions.json": "cfdbde1066da73909e2bab6d9cf8de0111613a58105de0269b05f5b1a6eae183",
+    "data/definition-releases/v0.1.1/provenance.json": "48be5d51fd0cfc08673c709f1a8c2e6961c6f939a920f07778277ed474fff378",
+    "data/definition-releases/v0.1.1/metadata.json": "1fa26be4a27eed2733b6086e7dfff8cb2b90fa98dbbeef10082ee61df02ad5e8",
+    "data/releases/v0.2.0/programs.json": "71076176fda99b940873fafce8a4bc89a4a72dad903b780b887e3d7d57173d92",
+    "data/releases/v0.2.0/residential_archetypes.json": "8ad3be46b2e8631088c096c1e86f57cc6f4c2afa5201bfbc12c68ad4a5e6eecb",
+    "schemas/program-json-v2.schema.json": "6319981a2a193e09adec4e0f507b09a3d16dd8369a9a228626006286e1fac863",
+    "sources/program-json-defaults.json": "ddcd188e47badab1ca915c16b3c432a94d393742713c8a5bc6856f90495573b0",
+    "scripts/program_json.py": "570b4317b99939cd6eda11d37b20fc7345fd0ea7c5494ee902b24c4d49636de5",
+    "scripts/schedule_json.py": "570b8c86c0d5a03d4c6046fd885a2ae9968a75b0cd5e287b6eaca968de9a0ffc",
+    "data/completion-releases/v0.1.0/commercial-completion.json": "16a9d28d4080815cddb1f37c41eddbc4004b25d7aebf619aef386f547b5fed30",
+    "data/resolution-releases/v0.4.0/manifest.json": "129a5a4939e333e7fc541b610da4d2e6d58b53029188a553a5f5c6c1c229be61",
+    "data/resolution-releases/v0.4.0/resolutions.json": "57e4bdc5ed4f2468a128c1d60b8637e5100ce9670db6562a934b3c78088b7043",
+    "data/resolution-releases/v0.4.0/profile-index.json": "341c8b953a635b0610ab690bccc474e019c6df86c67a9f3347c462d102a024a0",
+    "scripts/residential_definitions.py": "0f224b21f0dd51f23c77c3b5fabf666cbb153857178306642d5bd66ed9c89fb9",
+    "scripts/program_definitions.py": "30327bb565d0f0bb2d1589f7a2a245be0a10f8dcf400e85ff3ef10829b36c53d",
+    "scripts/program_composition.py": "df3ff96a0b2141d04cfb8f9a8db990f564b43c264d25f6298e49081d56ced90d",
+    "scripts/program_field_investigation.py": "c2fabfa4a2b1df587d21951eb3f05f322317d1a4faff0b15ac72e31813addf45",
+    "scripts/run_residential_profiles.rb": "67ae24b5891e70da406c51f6d7d33fc067490c6cff2f429b6172e6559bb30048",
+    "sources/runtime-lock.json": "b1a967e261cfd5f128606665604c23c92f1bdf1ca384e6085355a75b5f921312",
+    "sources/commercial-runtime-lock.json": "5922e7a68ffaa271f5c6f9ae6fe9c2b89f3b4e19939ec335a8345c915aa929eb",
+    "docs/reviews/program-json-followup-source-lock.json": "e3892659c470824d2109e8ff64d89e02c884068cbbda2792f21d1c8d7709d735"
+  },
+  "field_groups": {
+    "controls:activity_schedule_id": "people-activity",
+    "controls:cooling_enabled": "conditioning",
+    "controls:cooling_setpoint_schedule_id": "conditioning",
+    "controls:heating_enabled": "conditioning",
+    "controls:heating_setpoint_schedule_id": "conditioning",
+    "controls:people_radiant_fraction": "people-heat",
+    "controls:people_sensible_fraction": "people-heat",
+    "electric_equipment:heat_fractions.latent": "equipment-heat",
+    "electric_equipment:heat_fractions.lost": "equipment-heat",
+    "electric_equipment:heat_fractions.radiant": "equipment-heat",
+    "electric_equipment:heat_fractions.return_air": "equipment-heat",
+    "electric_equipment:heat_fractions.visible": "equipment-heat",
+    "electric_equipment:schedule_id": "load-coverage",
+    "electric_equipment:value": "load-coverage",
+    "gas_equipment:heat_fractions.latent": "equipment-heat",
+    "gas_equipment:heat_fractions.lost": "equipment-heat",
+    "gas_equipment:heat_fractions.radiant": "equipment-heat",
+    "gas_equipment:heat_fractions.return_air": "equipment-heat",
+    "gas_equipment:heat_fractions.visible": "equipment-heat",
+    "gas_equipment:schedule_id": "gas-presence",
+    "gas_equipment:value": "gas-presence",
+    "hot_water:inlet_temperature_schedule_id": "water-inlet",
+    "hot_water:schedule_id": "water-demands",
+    "hot_water:target_temperature_schedule_id": "water-demands",
+    "hot_water:value": "water-demands",
+    "lighting:heat_fractions.latent": "lighting-heat",
+    "lighting:heat_fractions.lost": "lighting-heat",
+    "lighting:heat_fractions.radiant": "lighting-heat",
+    "lighting:heat_fractions.return_air": "lighting-heat",
+    "lighting:heat_fractions.visible": "lighting-heat",
+    "lighting:schedule_id": "load-coverage",
+    "lighting:value": "load-coverage",
+    "occupancy:schedule_id": "load-coverage",
+    "occupancy:value": "load-coverage",
+    "schedules:rules coverage": "schedule-coverage",
+    "source.evidence:original_value": "provenance",
+    "source.evidence:source_file_id": "provenance",
+    "omitted:ventilation_m3_s_m2": "air-requirements",
+    "omitted:ventilation_m3_s_person": "air-requirements",
+    "omitted:ventilation_ach": "air-requirements",
+    "omitted:infiltration_m3_s_m2": "air-requirements",
+    "omitted:infiltration_basis": "air-requirements",
+    "omitted:ceiling_fan": "residential-channels",
+    "omitted:dishwasher": "residential-channels",
+    "omitted:hot_water_dishwasher": "residential-channels",
+    "omitted:lighting_garage": "residential-channels",
+    "classification:cooking_range": "residential-channels",
+    "classification:clothes_dryer": "residential-channels",
+    "omitted:water_allocation": "water-allocation",
+    "omitted:residential_air": "air-requirements",
+    "omitted:source_climate": "context",
+    "omitted:source_vintage": "context",
+    "omitted:composition": "composition",
+    "omitted:provenance": "provenance"
+  },
+  "commercial_source_leaves": {
+    "heating_setpoint_schedule_id": {
+      "eligible": 768,
+      "missing": 43,
+      "space_types": {
+        "Attic": 14,
+        "Corridor": 3,
+        "Corridor_topfloor": 3,
+        "Elec/MechRoom": 5,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "Plenum": 10
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "eligible": 768,
+      "missing": 43,
+      "space_types": {
+        "Attic": 14,
+        "Corridor": 3,
+        "Corridor_topfloor": 3,
+        "Elec/MechRoom": 5,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "Plenum": 10
+      }
+    },
+    "activity_schedule_id": {
+      "eligible": 768,
+      "missing": 57,
+      "space_types": {
+        "Attic": 14,
+        "Corridor": 8,
+        "Corridor_topfloor": 6,
+        "Elec/MechRoom": 5,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "OfficeLarge Data Center": 3,
+        "OfficeLarge Main Data Center": 3,
+        "Plenum": 10
+      }
+    },
+    "people_per_m2": {
+      "eligible": 768,
+      "missing": 30,
+      "space_types": {
+        "Attic": 14,
+        "OfficeLarge Data Center": 3,
+        "OfficeLarge Main Data Center": 3,
+        "Plenum": 10
+      }
+    },
+    "occupancy_schedule_id": {
+      "eligible": 768,
+      "missing": 45,
+      "space_types": {
+        "Attic": 14,
+        "Corridor": 2,
+        "Elec/MechRoom": 5,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "OfficeLarge Data Center": 3,
+        "OfficeLarge Main Data Center": 3,
+        "Plenum": 10
+      },
+      "missing_schedule_magnitudes": {
+        "unknown": 30,
+        "zero": 15
+      }
+    },
+    "lighting_W_m2": {
+      "eligible": 768,
+      "missing": 10,
+      "space_types": {
+        "Plenum": 10
+      }
+    },
+    "additional_lighting_W_m2": {
+      "eligible": 768,
+      "missing": 741,
+      "space_types": {
+        "Anesthesia": 5,
+        "Apartment": 2,
+        "Attic": 14,
+        "Auditorium": 5,
+        "Back_Space": 5,
+        "Bakery": 5,
+        "Banquet": 5,
+        "Basement": 10,
+        "BioHazard": 5,
+        "Bulk": 5,
+        "Cafe": 10,
+        "Cafeteria": 10,
+        "Classroom": 10,
+        "CleanWork": 5,
+        "ComputerRoom": 6,
+        "Conference": 5,
+        "Core_Retail": 2,
+        "Corridor": 38,
+        "Corridor2": 5,
+        "Corridor4": 3,
+        "Corridor_topfloor": 6,
+        "Deli": 5,
+        "Dining": 20,
+        "DressingRoom": 5,
+        "DryStorage": 5,
+        "ER_Exam": 5,
+        "ER_NurseStn": 5,
+        "ER_Trauma": 5,
+        "ER_Triage": 5,
+        "Elec/MechRoom": 15,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "ElevatorPumpRoom": 5,
+        "Entry": 5,
+        "Exam": 5,
+        "Exercise": 5,
+        "Fine": 5,
+        "Front_Retail": 2,
+        "GuestLounge": 5,
+        "GuestRoom": 7,
+        "GuestRoom123Occ": 3,
+        "GuestRoom123Vac": 3,
+        "GuestRoom2": 5,
+        "GuestRoom3": 5,
+        "GuestRoom4": 5,
+        "GuestRoom4Occ": 3,
+        "GuestRoom4Vac": 3,
+        "GuestRoom8": 3,
+        "Gym": 10,
+        "Gym - audience": 2,
+        "Hall": 5,
+        "Hall_infil": 5,
+        "HospitalOfficeFlr1": 2,
+        "HospitalOfficeFlr5": 2,
+        "ICU_NurseStn": 5,
+        "ICU_Open": 5,
+        "ICU_PatRm": 5,
+        "IT_Room": 5,
+        "Janitor": 5,
+        "Kitchen": 30,
+        "Lab": 5,
+        "Laundry": 10,
+        "Library": 8,
+        "Lobby": 25,
+        "LockerRoom": 5,
+        "Lounge": 5,
+        "MRI": 5,
+        "MRI_Control": 5,
+        "Mechanical": 20,
+        "MedGas": 5,
+        "Meeting": 10,
+        "NurseStation": 5,
+        "NurseStn": 5,
+        "OR": 10,
+        "Office": 41,
+        "OfficeLarge Data Center": 3,
+        "OfficeLarge Main Data Center": 3,
+        "OutpatientFloor2Work": 2,
+        "PACU": 5,
+        "PatRoom": 5,
+        "PhysTherapy": 5,
+        "PhysicalTherapy": 5,
+        "Plenum": 10,
+        "Point_of_Sale": 5,
+        "PreOp": 5,
+        "ProcedureRoom": 5,
+        "Produce": 5,
+        "PublicRestroom": 5,
+        "Radiology": 5,
+        "Reception": 5,
+        "Restroom": 15,
+        "Retail": 8,
+        "Retail2": 5,
+        "Sales": 5,
+        "Soil Work": 5,
+        "StaffLounge": 5,
+        "Stair": 10,
+        "Stair4": 3,
+        "Storage": 10,
+        "Storage4Front": 3,
+        "Storage4Rear": 3,
+        "Strip mall - type 1": 2,
+        "Strip mall - type 2": 2,
+        "Strip mall - type 3": 2,
+        "Toilet": 5,
+        "Undeveloped": 5,
+        "Vestibule": 5,
+        "WholeBuilding - Lg Office": 3,
+        "WholeBuilding - Lg Office-basement": 2,
+        "WholeBuilding - Lg Office-others": 2,
+        "WholeBuilding - Md Office": 5,
+        "WholeBuilding - Sm Office": 5,
+        "Xray": 5
+      }
+    },
+    "lighting_schedule_id": {
+      "eligible": 768,
+      "missing": 28,
+      "space_types": {
+        "Attic": 14,
+        "Elec/MechRoom": 2,
+        "ElevatorCore": 2,
+        "Plenum": 10
+      },
+      "missing_schedule_magnitudes": {
+        "unknown": 10,
+        "zero": 18
+      }
+    },
+    "electric_equipment_W_m2": {
+      "eligible": 768,
+      "missing": 33,
+      "space_types": {
+        "Attic": 14,
+        "ER_Triage": 1,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "Plenum": 10
+      }
+    },
+    "electric_equipment_schedule_id": {
+      "eligible": 768,
+      "missing": 24,
+      "space_types": {
+        "Attic": 14,
+        "Plenum": 10
+      },
+      "missing_schedule_magnitudes": {
+        "unknown": 24
+      }
+    },
+    "gas_equipment_W_m2": {
+      "eligible": 768,
+      "missing": 713,
+      "space_types": {
+        "Anesthesia": 5,
+        "Apartment": 8,
+        "Apartment_topfloor_NS": 6,
+        "Apartment_topfloor_WE": 6,
+        "Attic": 14,
+        "Auditorium": 5,
+        "Back_Space": 5,
+        "Banquet": 5,
+        "Basement": 10,
+        "BioHazard": 5,
+        "Bulk": 5,
+        "Cafe": 10,
+        "Cafeteria": 10,
+        "Classroom": 10,
+        "CleanWork": 5,
+        "ComputerRoom": 6,
+        "Conference": 5,
+        "Core_Retail": 2,
+        "Corridor": 38,
+        "Corridor2": 5,
+        "Corridor4": 3,
+        "Corridor_topfloor": 6,
+        "Dining": 20,
+        "DressingRoom": 5,
+        "DryStorage": 5,
+        "ER_Exam": 5,
+        "ER_NurseStn": 5,
+        "ER_Trauma": 5,
+        "ER_Triage": 5,
+        "Elec/MechRoom": 15,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "ElevatorPumpRoom": 5,
+        "Entry": 5,
+        "Exam": 5,
+        "Exercise": 5,
+        "Fine": 5,
+        "Front_Retail": 2,
+        "GuestLounge": 5,
+        "GuestRoom": 7,
+        "GuestRoom123Occ": 3,
+        "GuestRoom123Vac": 3,
+        "GuestRoom2": 5,
+        "GuestRoom3": 5,
+        "GuestRoom4": 5,
+        "GuestRoom4Occ": 3,
+        "GuestRoom4Vac": 3,
+        "GuestRoom8": 3,
+        "Gym": 10,
+        "Gym - audience": 2,
+        "Hall": 5,
+        "Hall_infil": 5,
+        "HospitalOfficeFlr1": 2,
+        "HospitalOfficeFlr5": 2,
+        "ICU_NurseStn": 5,
+        "ICU_Open": 5,
+        "ICU_PatRm": 5,
+        "IT_Room": 5,
+        "Janitor": 5,
+        "Lab": 5,
+        "Library": 8,
+        "Lobby": 25,
+        "LockerRoom": 5,
+        "Lounge": 5,
+        "MRI": 5,
+        "MRI_Control": 5,
+        "Mechanical": 20,
+        "MedGas": 5,
+        "Meeting": 10,
+        "NurseStation": 5,
+        "NurseStn": 5,
+        "OR": 5,
+        "Office": 41,
+        "OfficeLarge Data Center": 3,
+        "OfficeLarge Main Data Center": 3,
+        "OutpatientFloor2Work": 2,
+        "PACU": 5,
+        "PatRoom": 5,
+        "PhysTherapy": 5,
+        "PhysicalTherapy": 5,
+        "Plenum": 10,
+        "Point_of_Sale": 5,
+        "PreOp": 5,
+        "ProcedureRoom": 5,
+        "Produce": 5,
+        "PublicRestroom": 5,
+        "Radiology": 5,
+        "Reception": 5,
+        "Restroom": 15,
+        "Retail": 8,
+        "Retail2": 5,
+        "Sales": 5,
+        "Soil Work": 5,
+        "StaffLounge": 5,
+        "Stair": 10,
+        "Stair4": 3,
+        "Storage": 10,
+        "Storage4Front": 3,
+        "Storage4Rear": 3,
+        "Strip mall - type 1": 5,
+        "Strip mall - type 2": 5,
+        "Strip mall - type 3": 5,
+        "Toilet": 5,
+        "Undeveloped": 5,
+        "Vestibule": 5,
+        "WholeBuilding - Lg Office": 3,
+        "WholeBuilding - Lg Office-basement": 2,
+        "WholeBuilding - Lg Office-others": 2,
+        "WholeBuilding - Md Office": 5,
+        "WholeBuilding - Sm Office": 5,
+        "Xray": 5
+      }
+    },
+    "gas_equipment_schedule_id": {
+      "eligible": 768,
+      "missing": 713,
+      "space_types": {
+        "Anesthesia": 5,
+        "Apartment": 8,
+        "Apartment_topfloor_NS": 6,
+        "Apartment_topfloor_WE": 6,
+        "Attic": 14,
+        "Auditorium": 5,
+        "Back_Space": 5,
+        "Banquet": 5,
+        "Basement": 10,
+        "BioHazard": 5,
+        "Bulk": 5,
+        "Cafe": 10,
+        "Cafeteria": 10,
+        "Classroom": 10,
+        "CleanWork": 5,
+        "ComputerRoom": 6,
+        "Conference": 5,
+        "Core_Retail": 2,
+        "Corridor": 38,
+        "Corridor2": 5,
+        "Corridor4": 3,
+        "Corridor_topfloor": 6,
+        "Dining": 20,
+        "DressingRoom": 5,
+        "DryStorage": 5,
+        "ER_Exam": 5,
+        "ER_NurseStn": 5,
+        "ER_Trauma": 5,
+        "ER_Triage": 5,
+        "Elec/MechRoom": 15,
+        "ElevatorCore": 5,
+        "ElevatorCore4": 3,
+        "ElevatorPumpRoom": 5,
+        "Entry": 5,
+        "Exam": 5,
+        "Exercise": 5,
+        "Fine": 5,
+        "Front_Retail": 2,
+        "GuestLounge": 5,
+        "GuestRoom": 7,
+        "GuestRoom123Occ": 3,
+        "GuestRoom123Vac": 3,
+        "GuestRoom2": 5,
+        "GuestRoom3": 5,
+        "GuestRoom4": 5,
+        "GuestRoom4Occ": 3,
+        "GuestRoom4Vac": 3,
+        "GuestRoom8": 3,
+        "Gym": 10,
+        "Gym - audience": 2,
+        "Hall": 5,
+        "Hall_infil": 5,
+        "HospitalOfficeFlr1": 2,
+        "HospitalOfficeFlr5": 2,
+        "ICU_NurseStn": 5,
+        "ICU_Open": 5,
+        "ICU_PatRm": 5,
+        "IT_Room": 5,
+        "Janitor": 5,
+        "Lab": 5,
+        "Library": 8,
+        "Lobby": 25,
+        "LockerRoom": 5,
+        "Lounge": 5,
+        "MRI": 5,
+        "MRI_Control": 5,
+        "Mechanical": 20,
+        "MedGas": 5,
+        "Meeting": 10,
+        "NurseStation": 5,
+        "NurseStn": 5,
+        "OR": 5,
+        "Office": 41,
+        "OfficeLarge Data Center": 3,
+        "OfficeLarge Main Data Center": 3,
+        "OutpatientFloor2Work": 2,
+        "PACU": 5,
+        "PatRoom": 5,
+        "PhysTherapy": 5,
+        "PhysicalTherapy": 5,
+        "Plenum": 10,
+        "Point_of_Sale": 5,
+        "PreOp": 5,
+        "ProcedureRoom": 5,
+        "Produce": 5,
+        "PublicRestroom": 5,
+        "Radiology": 5,
+        "Reception": 5,
+        "Restroom": 15,
+        "Retail": 8,
+        "Retail2": 5,
+        "Sales": 5,
+        "Soil Work": 5,
+        "StaffLounge": 5,
+        "Stair": 10,
+        "Stair4": 3,
+        "Storage": 10,
+        "Storage4Front": 3,
+        "Storage4Rear": 3,
+        "Strip mall - type 1": 5,
+        "Strip mall - type 2": 5,
+        "Strip mall - type 3": 5,
+        "Toilet": 5,
+        "Undeveloped": 5,
+        "Vestibule": 5,
+        "WholeBuilding - Lg Office": 3,
+        "WholeBuilding - Lg Office-basement": 2,
+        "WholeBuilding - Lg Office-others": 2,
+        "WholeBuilding - Md Office": 5,
+        "WholeBuilding - Sm Office": 5,
+        "Xray": 5
+      },
+      "missing_schedule_magnitudes": {
+        "unknown": 713
+      }
+    }
+  },
+  "residential_source_profiles": {
+    "plug_loads_other": {
+      "eligible": 41,
+      "missing_original_profile": 3,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 3
+      }
+    },
+    "plug_loads_tv": {
+      "eligible": 41,
+      "missing_original_profile": 3,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 3
+      }
+    },
+    "lighting_interior": {
+      "eligible": 41,
+      "missing_original_profile": 3,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 3
+      }
+    },
+    "clothes_washer": {
+      "eligible": 41,
+      "missing_original_profile": 8,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 2,
+        "selected_absent_end_use": 6
+      }
+    },
+    "clothes_dryer": {
+      "eligible": 41,
+      "missing_original_profile": 8,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 2,
+        "selected_absent_end_use": 6
+      }
+    },
+    "hot_water_clothes_washer": {
+      "eligible": 41,
+      "missing_original_profile": 8,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 2,
+        "selected_absent_end_use": 6
+      }
+    },
+    "cooking_range": {
+      "eligible": 41,
+      "missing_original_profile": 4,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 3,
+        "selected_absent_end_use": 1
+      }
+    },
+    "hot_water_fixtures": {
+      "eligible": 41,
+      "missing_original_profile": 3,
+      "zero_occupants": 3,
+      "frozen_resolution_rules": {
+        "reviewed_vacancy_zero": 3
+      }
+    }
+  },
+  "commercial_load_schedule_gaps": {
+    "additional_lighting": {
+      "missing": 400,
+      "by_derivation_and_view": {
+        "composed/reviewed": 186,
+        "composed/source": 186,
+        "normalized/source": 28
+      },
+      "composed_unknown_magnitudes": 372
+    },
+    "lighting": {
+      "missing": 28,
+      "by_derivation_and_view": {
+        "normalized/source": 28
+      },
+      "composed_unknown_magnitudes": 0
+    },
+    "electric_equipment": {
+      "missing": 72,
+      "by_derivation_and_view": {
+        "composed/reviewed": 12,
+        "composed/source": 12,
+        "normalized/reviewed": 24,
+        "normalized/source": 24
+      },
+      "composed_unknown_magnitudes": 24
+    },
+    "gas_equipment": {
+      "missing": 902,
+      "by_derivation_and_view": {
+        "composed/source": 189,
+        "normalized/source": 713
+      },
+      "composed_unknown_magnitudes": 189
+    }
+  },
+  "commercial_water_target_aggregation": {
+    "missing_aggregate_targets": 26,
+    "derivations": {
+      "composed": 26
+    },
+    "building_types": {
+      "Outpatient": 10,
+      "SmallHotel": 6,
+      "LargeHotel": 10
+    },
+    "all_component_targets_known": true,
+    "component_target_values_degC": [
+      60.0
+    ]
+  },
+  "commercial_missing_activity_occupancy": {
+    "unknown": 30,
+    "zero": 27
+  },
+  "schedule_coverage_followup": [
+    {
+      "schedule_id": "schedule-202c9398290fc3e56f8f",
+      "source_name": "DataCenter_EQUIP_SCH",
+      "unit": "1",
+      "provenance_id": "provenance-745dfbfa2f105554de28",
+      "affected_programs": 12,
+      "building_types": {
+        "LargeOffice": 12
+      },
+      "templates": [
+        "90.1-2007",
+        "90.1-2013",
+        "90.1-2019"
+      ],
+      "missing_selectors": {
+        "Mon": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Tue": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Wed": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Thu": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Fri": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Sat": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Sun": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Hol": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "WntrDsn": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "SmrDsn": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        }
+      },
+      "proposal": "Extend each February rule through February 29; preserve selector-specific values",
+      "proposed_values": {
+        "SmrDsn": [
+          1.0
+        ],
+        "Wknd|Wkdy|Hol": [
+          0.5
+        ],
+        "WntrDsn": [
+          0.25
+        ]
+      },
+      "proposal_status": "accepted by user 2026-10-11; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3650
+    },
+    {
+      "schedule_id": "schedule-24cc945309d37fb31db6",
+      "source_name": "OfficeMedium BLDG_EQUIP_SCH_2004",
+      "unit": "1",
+      "provenance_id": "provenance-5f2c6c13d38a70c28c87",
+      "affected_programs": 2,
+      "building_types": {
+        "MediumOffice": 2
+      },
+      "templates": [
+        "90.1-2007"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.3
+      ],
+      "proposal_status": "accepted by user 2026-10-11; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    },
+    {
+      "schedule_id": "schedule-4082e09c5f9727640add",
+      "source_name": "OfficeMedium BLDG_EQUIP_SCH_2013",
+      "unit": "1",
+      "provenance_id": "provenance-7ff8104842be25ac0638",
+      "affected_programs": 4,
+      "building_types": {
+        "MediumOffice": 4
+      },
+      "templates": [
+        "90.1-2013",
+        "90.1-2019"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806
+      ],
+      "proposal_status": "accepted by user 2026-10-11; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    },
+    {
+      "schedule_id": "schedule-4f028eec18f19916e7d2",
+      "source_name": "OfficeMedium BLDG_LIGHT_SCH_2013",
+      "unit": "1",
+      "provenance_id": "provenance-75a084b8f371da46efdd",
+      "affected_programs": 4,
+      "building_types": {
+        "MediumOffice": 4
+      },
+      "templates": [
+        "90.1-2013",
+        "90.1-2019"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "proposal_status": "accepted by user 2026-10-11; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    },
+    {
+      "schedule_id": "schedule-994cd1f711d51f30a4f0",
+      "source_name": "OfficeMedium BLDG_LIGHT_SCH_2004",
+      "unit": "1",
+      "provenance_id": "provenance-2309721296e23cd30fa2",
+      "affected_programs": 2,
+      "building_types": {
+        "MediumOffice": 2
+      },
+      "templates": [
+        "90.1-2007"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.05
+      ],
+      "proposal_status": "accepted by user 2026-10-11; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    }
+  ],
+  "followup_documentation_lock": {
+    "lock_version": 1,
+    "retrieval_date": "2026-10-11",
+    "version": "EnergyPlus 25.1.0",
+    "purpose": "Read-only verification of return-air routing and weather-derived mains temperature; upstream license retained in locked retrieval",
+    "files": [
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/input-output-reference/src/overview/group-internal-gains-people-lights-other.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/input-output-reference/src/overview/group-internal-gains-people-lights-other.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "2bbd159a3c2161b398cad54d9947f1cc5a991e450d70541418cdebe716f6506d",
+        "size_bytes": 271598
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/input-output-reference/src/overview/group-location-climate-weather-file-access.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/input-output-reference/src/overview/group-location-climate-weather-file-access.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "ce785ca3c9b6f1b91250bd8f8ee84d4c21a730ecd98762b860e8258e5484181e",
+        "size_bytes": 146966
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/engineering-reference/src/simulation-models-encyclopedic-reference-003/zone-internal-gains.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/engineering-reference/src/simulation-models-encyclopedic-reference-003/zone-internal-gains.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "d7c1070dd2c53feb644c51a5f4ac8889d33e446aef3d8eeb7edb87741af469a1",
+        "size_bytes": 24737
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "LICENSE.txt",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/LICENSE.txt",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "722f94f361ce8636a722472155d82ba6da84a435e0d527d70918a467b275f15d",
+        "size_bytes": 3167
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/engineering-reference/src/simulation-models-encyclopedic-reference-005/water-systems.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/engineering-reference/src/simulation-models-encyclopedic-reference-005/water-systems.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "2320581a5b2915a99aed73221f23b4e49d94784c3fd9d6b27073425b831b5a5a",
+        "size_bytes": 26354
+      }
+    ]
+  },
+  "inspected_sources": [
+    {
+      "project": "OpenStudio",
+      "revision": "3.10.0+86d7e215a1",
+      "path": "EnergyPlus/Energy+.idd",
+      "sha256": "2fcdc6554412164c26252f7f9029471ad6004b04896dfac4c32c3710ea84ee55",
+      "url": "https://github.com/NatLabRockies/OpenStudio/releases/download/v3.10.0/OpenStudio-3.10.0%2B86d7e215a1-Windows.tar.gz",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "4652dae9086a2ad3716dd2a00227c36cb5ed3d2198d0b438f2c0cdd08900e8ba",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/internal_gains.rb",
+      "sha256": "2f2d058233eaefcb9fcf1d99276267344462653f8a91ed21dc9cb248ed870e55",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/internal_gains.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+      "sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+      "sha256": "2114c4ff07d1c474a8542f93cd355aa0fa5e0e6d3998cc2effd5c2659cc3461f",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb",
+      "sha256": "41207d8d24fdec7529eeba847433de1dcbbf1935d4bdff19eaffdcaa0b50a4fa",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/lighting.rb",
+      "sha256": "7a43f98324e344009e8b6ae1c723acc174d82384906a0d76deaf3579301a1464",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/lighting.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb",
+      "sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/schedules.rb",
+      "sha256": "cfc3a26c281cf5a89db455ab99356f4ac501569651efc2dc2379fbfa0243eab4",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/schedules.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/unit_conversions.rb",
+      "sha256": "f8d47059a0bed4e10ccce8d410e5ba56633235801f2c142ee449da72ed0734f8",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/unit_conversions.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "resstock",
+      "revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "path": "resources/hpxml-measures/BuildResidentialScheduleFile/measure.rb",
+      "sha256": "e7593f9a457fad0e8c71ff5618cc4943ff81a660b81979ed27dde34cc4636711",
+      "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/BuildResidentialScheduleFile/measure.rb",
+      "archive_lock": "sources/runtime-lock.json",
+      "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "openstudio-standards",
+      "revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "path": "lib/openstudio-standards/standards/Standards.SpaceType.rb",
+      "sha256": "9e3e644df0e28388a0930b00fc20ad3c2621b892304f5f0e4acf21ea964d6027",
+      "url": "https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/Standards.SpaceType.rb",
+      "archive_lock": "sources/commercial-runtime-lock.json",
+      "archive_sha256": "7d8201180f145303ee04d22b16d182b1744c106cb3ca4fb563c904d5a0d42ad4",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "openstudio-standards",
+      "revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "path": "lib/openstudio-standards/standards/Standards.People.rb",
+      "sha256": "817f69fa816f173818dda68e40e1a158240b9ee7dce5d4b49398523d6121e2ae",
+      "url": "https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/Standards.People.rb",
+      "archive_lock": "sources/commercial-runtime-lock.json",
+      "archive_sha256": "7d8201180f145303ee04d22b16d182b1744c106cb3ca4fb563c904d5a0d42ad4",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "openstudio-standards",
+      "revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "path": "lib/openstudio-standards/standards/Standards.Model.rb",
+      "sha256": "c88dada83a0e1a25db534917912766dcb2c451da8a0402befff1a16b3497f145",
+      "url": "https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/Standards.Model.rb",
+      "archive_lock": "sources/commercial-runtime-lock.json",
+      "archive_sha256": "7d8201180f145303ee04d22b16d182b1744c106cb3ca4fb563c904d5a0d42ad4",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    }
+  ]
+}

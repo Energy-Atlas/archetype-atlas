@@ -477,6 +477,13 @@ all previously advertised immutable manifests/resources and v1 client behavior.
 
 ### Task 11: Dispatch the downstream BEMGen stage after publication
 
+**2026-10-12 roadmap update:** the user's
+[revised remaining tasks](../../roadmap.md) place construction/system exports
+and a schedule-generator discussion before the BEMGen handoff. The handoff now
+covers JSON schema updates and missing typology plan generators. The checklist
+below retains the earlier plan's history; use the revised roadmap for scope and
+ordering.
+
 **Files:** No BEMGen edits in this checkout. The handoff is the user-requested
 new BEMGen chat, using the published documentation and pinned snapshot.
 

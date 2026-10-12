@@ -1,5 +1,6 @@
 name: Validate archetype atlas
-on: [push, pull_request]
+on:
+  workflow_call:
 permissions:
   contents: read
 jobs:
@@ -41,5 +42,6 @@ jobs:
       - run: python -m scripts.water_reporting --verify
       - run: python -m scripts.definition_release --verify
       - run: python -m scripts.definition_release --reproduce
+      - run: python -m scripts.program_completeness --check
       - run: python -m scripts.schedule_coverage --report build/schedule-coverage.json
       - run: python -m scripts.audit

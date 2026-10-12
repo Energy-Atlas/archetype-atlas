@@ -55,7 +55,8 @@ class ObjectBrowserTests(unittest.TestCase):
         self.program();page=self.page
         page.locator('.object-copy').click()
         page.locator('.object-default-info summary').click()
-        expect(page.locator('.object-dialog')).to_contain_text('atlas-program-defaults-1.0.0')
+        expect(page.locator('.object-dialog')).to_contain_text('atlas-program-defaults-2.0.0')
+        expect(page.locator('.object-default-info pre')).to_contain_text('resolutions')
         expect(page.locator('.object-default-info pre')).to_contain_text('required_bindings')
         page.get_by_role('button', name='Copy raw', exact=True).click()
         expect(page.locator('.object-status')).to_contain_text('copied')
@@ -65,8 +66,10 @@ class ObjectBrowserTests(unittest.TestCase):
         page.locator('.object-copy').click();page.get_by_role('button',name='Copy with defaults',exact=True).click()
         expect(page.locator('.object-status')).to_contain_text('copied')
         ready=json.loads(page.evaluate('navigator.clipboard.readText()'))
-        self.assertEqual(ready['export_mode'],'defaulted');self.assertEqual(ready['loads'][0]['value'],0)
-        self.assertTrue(ready['assumptions']);self.assertEqual(self.errors,[])
+        self.assertEqual(ready['export_mode'],'defaulted');self.assertEqual(ready['schema_version'],'3.0.0')
+        self.assertEqual(ready['loads'],[])
+        self.assertTrue(ready['metadata']['resolutions']);self.assertTrue(ready['metadata']['absent_demands'])
+        self.assertEqual(self.errors,[])
 
     def test_escape_restores_focus_without_copying(self):
         self.program();page=self.page
