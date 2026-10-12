@@ -56,20 +56,24 @@ design discussion in [roadmap item 5](roadmap.md#5-discuss-a-lighter-site-and-de
 The pre-change production commit was `c54b428`. All branches below were verified
 as ancestors of that commit and had no unique work to merge:
 
-| Completed branch | Head | Disposition |
+| Completed branch | Head | Applied disposition |
 | --- | --- | --- |
-| `feat/catalogue-site` | `aff4d3f` | Remove production access; delete branch |
-| `feat/schedule-resolution` | `403ea28` | Remove production access; retain existing `v0.3.0` tag; delete branch |
-| `feature/dto-json-v2` | `bac6145` | Delete branch |
-| `feature/query-dto` | `c1538e3` | Remove production access; delete branch |
-| `feature/ui-design` | `c54b428` | Remove production access; retire clean checkout; delete branch |
-| `research/first-release` | `b421f41` | Remove production access; preserve archive tag; delete branch |
-| `research/full-typology-coverage` | `2f3f7a9` | Preserve archive tag; delete branch |
-| `gh-pages` | `b421f41` | Remove obsolete source setting; delete branch |
+| `feat/catalogue-site` | `aff4d3f` | Production access removed; branch deleted |
+| `feat/schedule-resolution` | `403ea28` | Production access removed; existing `v0.3.0` tag retained; branch deleted |
+| `feature/dto-json-v2` | `bac6145` | Branch deleted |
+| `feature/query-dto` | `c1538e3` | Production access removed; branch deleted |
+| `feature/ui-design` | `c54b428` | Production access removed; clean checkout retired; branch deleted |
+| `research/first-release` | `b421f41` | Production access removed; archive tag preserved; branch deleted |
+| `research/full-typology-coverage` | `2f3f7a9` | Archive tag preserved; branch deleted |
+| `gh-pages` | `b421f41` | Obsolete source setting replaced; branch deleted |
 
 `fix/program-consistency` was nine commits ahead of `main` at `be942ec`, with no
-divergence. It carries Program JSON v3 and its evidence. Add the policy/workflow
-changes here, verify through a pull request, merge, then retire this branch too.
+divergence. Its Program JSON v3, evidence and policy/workflow changes were
+integrated through [PR #4](https://github.com/Energy-Atlas/archetype-atlas/pull/4)
+after all three required checks passed. Merge commit
+`d3c1b3bca09aae9e185b17dc4c61f8e50bb19bf4` is on `main`; the working branch was
+automatically deleted remotely and retired locally. Only `main` remained remotely
+after that merge. New documentation work follows the same short-lived PR policy.
 Deletion does not remove immutable research release directories or retained
 commit history. Preserve needed local ignored files before retiring a checkout.
 

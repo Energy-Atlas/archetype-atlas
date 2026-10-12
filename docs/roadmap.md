@@ -10,7 +10,7 @@ publication. Discussion items remain open design topics, not accepted designs.
 
 | Order | Task | Status |
 | --- | --- | --- |
-| 1 | Publish Program JSON v3 | Pending publication |
+| 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
 | 2 | Include constructions and systems, with separate JSON exports and pages | Pending contract/completeness work |
 | 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
@@ -18,20 +18,25 @@ publication. Discussion items remain open design topics, not accepted designs.
 
 ## 1. Publish Program JSON v3
 
-- [ ] Review and integrate `fix/program-consistency` into the publication path.
-- [ ] Update workflow path filters and selected checks for the v3 exporter,
-  schema, recovery inputs, policy and examples. Some current paths still name
-  the historical v2 files.
-- [ ] Build the full catalogue, validate its resources and links, and verify
+- [x] Review and integrate `fix/program-consistency` into the publication path.
+- [x] Replace workflow path filters with required checks for every PR/main push,
+  including the v3 exporter, schema, recovery inputs, policy and examples.
+- [x] Build the full catalogue, validate its resources and links, and verify
   representative raw/ready copying and schedules before deployment.
-- [ ] Publish and verify live Medium Office and residential v3 exports,
+- [x] Publish and verify live Medium Office and residential v3 exports,
   contract documentation, source/default distinctions and required bindings.
-- [ ] Record the deployed commit and verification evidence.
+- [x] Record the deployed commit and verification evidence.
 
 Starting point: program implementation `15be6bb`, source recovery `6038df7`,
 and the [completeness receipt](reviews/program-json-completeness.json).
-There are 1,900 completed program exports within the agreed scope. The branch
-was pushed; that does not establish that the deployed site serves v3.
+There are 1,900 completed program exports within the agreed scope. Protected
+[PR #4](https://github.com/Energy-Atlas/archetype-atlas/pull/4) integrated them into
+`main`. Commit `d3c1b3bca09aae9e185b17dc4c61f8e50bb19bf4` was successfully
+published by [main run 38214474243](https://github.com/Energy-Atlas/archetype-atlas/actions/runs/38214474243).
+The [publication record](reviews/program-v3-publication.md) and
+[live verification receipt](reviews/program-v3-live.json) confirm v3 schema,
+resource checksums, exact reviewed examples and required bindings on the deployed
+Medium Office and residential pages. The program-consistency branch was retired.
 
 **Comments / decisions:**
 
