@@ -37,6 +37,20 @@ passed. The actionlint archive was verified against the official SHA-256
 Independent deployment review found that a manual validation-only run could
 displace a pending main publisher. Its concurrency group is now separate from
 publication runs; workflow lint was repeated after this fix.
+The pre-fix full local suite passed 272 tests. The first protected PR run
+(`38208867948`) then exposed a cross-runtime reproducibility error: Python 3.11's
+builtin floating sum changed the active-member area normalization and resulting
+control schedule hashes relative to newer Python. A real Python 3.11 regression
+failed on ten `0.1` member weights, then passed after using `math.fsum`, consistent
+with the other mixture calculations. The 21 focused control/completeness/aggregation
+tests also passed. The regenerated Python 3.14 receipt still reports 1,900/1,900
+ready, zero failures and the identical export-set SHA-256
+`a81b45dc7e53ce98bf45fab2852634e591b6bc0789b656d121b29b9d168218c8`.
+Only the exporter input checksum changed. Python 3.11 reproduced that exact receipt
+with `program_completeness --check`. The full local suite after the fix passed all
+273 tests in 683.867 seconds. Independent review found no Important or Critical
+issues in the fix. The hosted gates are checked after this fix; the failed run
+did not publish. Source values and accepted assumptions are unchanged.
 Pull-request results, the successful deployed commit and live
 Medium Office/residential checks remain subject to their observed results. A build or pushed branch alone
 does not establish publication. GitHub's immutable workflow/deployment records

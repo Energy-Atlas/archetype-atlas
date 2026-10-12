@@ -94,6 +94,21 @@ class CompletionTests(unittest.TestCase):
             values = [v for r in out['schedules'][sid]['rules'] for v in r['values']]
             self.assertEqual(set(values), {132.0})
 
+    def test_mixture_control_normalization_has_no_float_accumulation_drift(self):
+        from scripts.program_json_v3 import constant
+        temperature = constant(20.0, 'degC', 'reproducibility-test-temperature')
+        leaf = {'controls': {'heating_enabled': True, 'cooling_enabled': False,
+                            'heating_setpoint_schedule_id': temperature['id']},
+                'schedules': {temperature['id']: temperature}}
+        out = {'controls': {}, 'schedules': {}, 'loads': [],
+               'metadata': {'resolutions': []}}
+        self.exporter()._controls(out, self.office, [(0.1, leaf)] * 10)
+        resolution = next(r for r in out['metadata']['resolutions']
+                          if r['field'] == 'heating_setpoint_schedule_id')
+        self.assertEqual(resolution['active_area_fraction'], 1.0)
+        schedule = out['schedules'][out['controls']['heating_setpoint_schedule_id']]
+        self.assertEqual({v for r in schedule['rules'] for v in r['values']}, {20.0})
+
 
 if __name__ == '__main__':
     unittest.main()

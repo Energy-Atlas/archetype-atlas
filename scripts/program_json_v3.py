@@ -263,7 +263,7 @@ class ProgramExporter(HistoricalExporter):
                 enabled = bool(applicable)
                 if enabled:
                     from scripts.program_composition import mix_schedule
-                    total = sum(w for w, _ in applicable)
+                    total = math.fsum(w for w, _ in applicable)
                     canonical = [{'units': s['unit'], 'schedule_type': 'temperature',
                         'rules': [{'start_date': '2000-' + r['start_date'], 'end_date': '2000-' + r['end_date'],
                                   'day_types': '|'.join(r['day_types']), 'values': r['values']} for r in s['rules']]} for _, s in applicable]
