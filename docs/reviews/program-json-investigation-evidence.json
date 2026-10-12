@@ -1,5 +1,5 @@
 {
-  "inspection_date": "2026-10-09",
+  "inspection_date": "2026-10-11",
   "scope": "field/type aggregates; no individual program entries",
   "input_sha256": {
     "data/definition-releases/v0.1.1/manifest.json": "5787c554fd7ee554b45742b6a3bb7df04ea25219f7903d14f43603793e6fcd4e",
@@ -22,10 +22,11 @@
     "scripts/residential_definitions.py": "0f224b21f0dd51f23c77c3b5fabf666cbb153857178306642d5bd66ed9c89fb9",
     "scripts/program_definitions.py": "30327bb565d0f0bb2d1589f7a2a245be0a10f8dcf400e85ff3ef10829b36c53d",
     "scripts/program_composition.py": "df3ff96a0b2141d04cfb8f9a8db990f564b43c264d25f6298e49081d56ced90d",
-    "scripts/program_field_investigation.py": "6cefa628c13e1f2d27f91beee801a856d0c04ca433d8fbfe7901aa4e0048f832",
+    "scripts/program_field_investigation.py": "a7b6b3a5f3b47c48e2a8ad751b29edc8a553d3d8a6cd5134980999a1be759829",
     "scripts/run_residential_profiles.rb": "67ae24b5891e70da406c51f6d7d33fc067490c6cff2f429b6172e6559bb30048",
     "sources/runtime-lock.json": "b1a967e261cfd5f128606665604c23c92f1bdf1ca384e6085355a75b5f921312",
-    "sources/commercial-runtime-lock.json": "5922e7a68ffaa271f5c6f9ae6fe9c2b89f3b4e19939ec335a8345c915aa929eb"
+    "sources/commercial-runtime-lock.json": "5922e7a68ffaa271f5c6f9ae6fe9c2b89f3b4e19939ec335a8345c915aa929eb",
+    "docs/reviews/program-json-followup-source-lock.json": "e3892659c470824d2109e8ff64d89e02c884068cbbda2792f21d1c8d7709d735"
   },
   "field_groups": {
     "controls:activity_schedule_id": "people-activity",
@@ -674,6 +675,298 @@
       60.0
     ]
   },
+  "commercial_missing_activity_occupancy": {
+    "unknown": 30,
+    "zero": 27
+  },
+  "schedule_coverage_followup": [
+    {
+      "schedule_id": "schedule-202c9398290fc3e56f8f",
+      "source_name": "DataCenter_EQUIP_SCH",
+      "unit": "1",
+      "provenance_id": "provenance-745dfbfa2f105554de28",
+      "affected_programs": 12,
+      "building_types": {
+        "LargeOffice": 12
+      },
+      "templates": [
+        "90.1-2007",
+        "90.1-2013",
+        "90.1-2019"
+      ],
+      "missing_selectors": {
+        "Mon": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Tue": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Wed": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Thu": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Fri": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Sat": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Sun": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "Hol": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "WntrDsn": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        },
+        "SmrDsn": {
+          "date_count": 1,
+          "first": "02-29",
+          "last": "02-29"
+        }
+      },
+      "proposal": "Extend each February rule through February 29; preserve selector-specific values",
+      "proposed_values": {
+        "SmrDsn": [
+          1.0
+        ],
+        "Wknd|Wkdy|Hol": [
+          0.5
+        ],
+        "WntrDsn": [
+          0.25
+        ]
+      },
+      "proposal_status": "discussion pending; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3650
+    },
+    {
+      "schedule_id": "schedule-24cc945309d37fb31db6",
+      "source_name": "OfficeMedium BLDG_EQUIP_SCH_2004",
+      "unit": "1",
+      "provenance_id": "provenance-5f2c6c13d38a70c28c87",
+      "affected_programs": 2,
+      "building_types": {
+        "MediumOffice": 2
+      },
+      "templates": [
+        "90.1-2007"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.3
+      ],
+      "proposal_status": "discussion pending; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    },
+    {
+      "schedule_id": "schedule-4082e09c5f9727640add",
+      "source_name": "OfficeMedium BLDG_EQUIP_SCH_2013",
+      "unit": "1",
+      "provenance_id": "provenance-7ff8104842be25ac0638",
+      "affected_programs": 4,
+      "building_types": {
+        "MediumOffice": 4
+      },
+      "templates": [
+        "90.1-2013",
+        "90.1-2019"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.288107175,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806,
+        0.2307553806
+      ],
+      "proposal_status": "discussion pending; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    },
+    {
+      "schedule_id": "schedule-4f028eec18f19916e7d2",
+      "source_name": "OfficeMedium BLDG_LIGHT_SCH_2013",
+      "unit": "1",
+      "provenance_id": "provenance-75a084b8f371da46efdd",
+      "affected_programs": 4,
+      "building_types": {
+        "MediumOffice": 4
+      },
+      "templates": [
+        "90.1-2013",
+        "90.1-2019"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.04311628,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "proposal_status": "discussion pending; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    },
+    {
+      "schedule_id": "schedule-994cd1f711d51f30a4f0",
+      "source_name": "OfficeMedium BLDG_LIGHT_SCH_2004",
+      "unit": "1",
+      "provenance_id": "provenance-2309721296e23cd30fa2",
+      "affected_programs": 2,
+      "building_types": {
+        "MediumOffice": 2
+      },
+      "templates": [
+        "90.1-2007"
+      ],
+      "missing_selectors": {
+        "Hol": {
+          "date_count": 366,
+          "first": "01-01",
+          "last": "12-31"
+        }
+      },
+      "proposal": "Copy this schedule's Sunday profile to the missing holiday selector only",
+      "proposed_values": [
+        0.05
+      ],
+      "proposal_status": "discussion pending; not applied to releases or export defaults",
+      "proposal_has_full_coverage": true,
+      "covered_date_selectors_preserved": 3294
+    }
+  ],
+  "followup_documentation_lock": {
+    "lock_version": 1,
+    "retrieval_date": "2026-10-11",
+    "version": "EnergyPlus 25.1.0",
+    "purpose": "Read-only verification of return-air routing and weather-derived mains temperature; upstream license retained in locked retrieval",
+    "files": [
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/input-output-reference/src/overview/group-internal-gains-people-lights-other.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/input-output-reference/src/overview/group-internal-gains-people-lights-other.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "2bbd159a3c2161b398cad54d9947f1cc5a991e450d70541418cdebe716f6506d",
+        "size_bytes": 271598
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/input-output-reference/src/overview/group-location-climate-weather-file-access.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/input-output-reference/src/overview/group-location-climate-weather-file-access.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "ce785ca3c9b6f1b91250bd8f8ee84d4c21a730ecd98762b860e8258e5484181e",
+        "size_bytes": 146966
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/engineering-reference/src/simulation-models-encyclopedic-reference-003/zone-internal-gains.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/engineering-reference/src/simulation-models-encyclopedic-reference-003/zone-internal-gains.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "d7c1070dd2c53feb644c51a5f4ac8889d33e446aef3d8eeb7edb87741af469a1",
+        "size_bytes": 24737
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "LICENSE.txt",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/LICENSE.txt",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "722f94f361ce8636a722472155d82ba6da84a435e0d527d70918a467b275f15d",
+        "size_bytes": 3167
+      },
+      {
+        "source_id": "energyplus-25-1",
+        "path": "doc/engineering-reference/src/simulation-models-encyclopedic-reference-005/water-systems.tex",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/EnergyPlus/68a4a7c7744c380886913a92e061aba3d4a3fc54/doc/engineering-reference/src/simulation-models-encyclopedic-reference-005/water-systems.tex",
+        "source_revision": "68a4a7c7744c380886913a92e061aba3d4a3fc54",
+        "sha256": "2320581a5b2915a99aed73221f23b4e49d94784c3fd9d6b27073425b831b5a5a",
+        "size_bytes": 26354
+      }
+    ]
+  },
   "inspected_sources": [
     {
       "project": "OpenStudio",
@@ -683,7 +976,7 @@
       "url": "https://github.com/NatLabRockies/OpenStudio/releases/download/v3.10.0/OpenStudio-3.10.0%2B86d7e215a1-Windows.tar.gz",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "4652dae9086a2ad3716dd2a00227c36cb5ed3d2198d0b438f2c0cdd08900e8ba",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -695,7 +988,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/internal_gains.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -707,7 +1000,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -719,7 +1012,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -731,7 +1024,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -743,7 +1036,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/lighting.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -755,7 +1048,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -767,7 +1060,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/schedules.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -779,7 +1072,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/HPXMLtoOpenStudio/resources/unit_conversions.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -791,7 +1084,7 @@
       "url": "https://github.com/NatLabRockies/resstock/blob/dd25369f41a83a0767aefeeac0b6f8a0b0edd649/resources/hpxml-measures/BuildResidentialScheduleFile/measure.rb",
       "archive_lock": "sources/runtime-lock.json",
       "archive_sha256": "c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -803,7 +1096,7 @@
       "url": "https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/Standards.SpaceType.rb",
       "archive_lock": "sources/commercial-runtime-lock.json",
       "archive_sha256": "7d8201180f145303ee04d22b16d182b1744c106cb3ca4fb563c904d5a0d42ad4",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     },
@@ -815,7 +1108,19 @@
       "url": "https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/Standards.People.rb",
       "archive_lock": "sources/commercial-runtime-lock.json",
       "archive_sha256": "7d8201180f145303ee04d22b16d182b1744c106cb3ca4fb563c904d5a0d42ad4",
-      "inspection_date": "2026-10-09",
+      "inspection_date": "2026-10-11",
+      "transformation": "read-only source inspection; byte comparison to locked archive",
+      "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
+    },
+    {
+      "project": "openstudio-standards",
+      "revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "path": "lib/openstudio-standards/standards/Standards.Model.rb",
+      "sha256": "c88dada83a0e1a25db534917912766dcb2c451da8a0402befff1a16b3497f145",
+      "url": "https://github.com/NatLabRockies/openstudio-standards/blob/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/Standards.Model.rb",
+      "archive_lock": "sources/commercial-runtime-lock.json",
+      "archive_sha256": "7d8201180f145303ee04d22b16d182b1744c106cb3ca4fb563c904d5a0d42ad4",
+      "inspection_date": "2026-10-11",
       "transformation": "read-only source inspection; byte comparison to locked archive",
       "interpretation": "Generator rules/engine defaults, not observed dwelling measurements"
     }

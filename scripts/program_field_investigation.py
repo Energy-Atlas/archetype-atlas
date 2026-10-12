@@ -5,12 +5,14 @@ The local runtime and standards archives must already have been retrieved.
 """
 import argparse
 from collections import Counter
+import datetime as dt
 import hashlib
 import tarfile
 
 from scripts.common import ROOT, dump_json, load_json
 
 OUTPUT = ROOT / 'docs/reviews/program-json-investigation-evidence.json'
+INSPECTION_DATE = '2026-10-11'
 
 
 def investigation_group(key):
@@ -58,7 +60,7 @@ def source_inventory():
                 repo, revision = 'resstock', item['version']
             elif item['name'] == 'standards-controls':
                 paths = ['lib/openstudio-standards/standards/Standards.' + n + '.rb'
-                         for n in ('SpaceType', 'People')]
+                         for n in ('SpaceType', 'People', 'Model')]
                 repo, revision = 'openstudio-standards', item['source_revision']
             else:
                 paths = ['EnergyPlus/Energy+.idd']
@@ -73,9 +75,85 @@ def source_inventory():
                            if repo != 'OpenStudio' else item['url'])
                     result.append({'project': repo, 'revision': revision, 'path': path,
                                    'sha256': digest(base / path), 'url': url, 'archive_lock': lock_name,
-                                   'archive_sha256': item['sha256'], 'inspection_date': '2026-10-09',
+                                   'archive_sha256': item['sha256'], 'inspection_date': INSPECTION_DATE,
                                    'transformation': 'read-only source inspection; byte comparison to locked archive',
                                    'interpretation': 'Generator rules/engine defaults, not observed dwelling measurements'})
+    return result
+
+
+def inspect_schedule_gaps(definitions):
+    """Report missing date/day selectors and evaluate the proposed explicit completion."""
+    import copy
+    from scripts.schedule_json import DAYS, date_mask, has_full_coverage, normalize_schedule
+    schedules = load_json(ROOT / 'data/definition-releases/v0.1.1/schedules.json')
+    first = dt.date(2000, 1, 1)
+    result = []
+    for source in schedules:
+        schedule = normalize_schedule(source)
+        if has_full_coverage(schedule):
+            continue
+        users = [p for p in definitions if any(l.get('schedule_id') == source['id'] for l in p['loads'])
+                 or any(v.get('value') == source['id'] for v in p.get('parameters', {}).values())]
+        if not users:
+            continue
+        coverage = {d: 0 for d in DAYS}
+        for rule in schedule['rules']:
+            tokens = set(rule['day_types'])
+            for day in DAYS:
+                if ('Default' in tokens or day in tokens or day in DAYS[:5] and 'Wkdy' in tokens
+                        or day in {'Sat', 'Sun'} and 'Wknd' in tokens):
+                    coverage[day] |= date_mask(rule['start_date'], rule['end_date'])
+        gaps = {day: [(first + dt.timedelta(days=i)).strftime('%m-%d') for i in range(366)
+                      if not (mask >> i) & 1] for day, mask in coverage.items()}
+        gaps = {day: dates for day, dates in gaps.items() if dates}
+        proposed = copy.deepcopy(schedule)
+        if set(gaps) == {'Hol'}:
+            sunday = next(r for r in schedule['rules'] if r['day_types'] == ['Sun'])
+            proposed['rules'].append({**copy.deepcopy(sunday), 'day_types': ['Hol']})
+            proposal = 'Copy this schedule\'s Sunday profile to the missing holiday selector only'
+            values = sunday['values']
+        elif all(dates == ['02-29'] for dates in gaps.values()):
+            values = {}
+            for rule in proposed['rules']:
+                if rule['start_date'] == '02-01' and rule['end_date'] == '02-28':
+                    rule['end_date'] = '02-29'
+                    values['|'.join(rule['day_types'])] = rule['values']
+            proposal = 'Extend each February rule through February 29; preserve selector-specific values'
+        else:
+            raise ValueError('New schedule gap needs investigation: ' + source['id'])
+        if not has_full_coverage(proposed):
+            raise ValueError('Proposed schedule completion is incomplete')
+        # Independently evaluate every covered date/selector to show no existing value changes.
+        def at(s, day, date):
+            default = specific = None
+            bit = 1 << (date - first).days
+            for r in s['rules']:
+                if not date_mask(r['start_date'], r['end_date']) & bit:
+                    continue
+                t = set(r['day_types'])
+                if 'Default' in t:
+                    default = r['values']
+                if day in t or day in DAYS[:5] and 'Wkdy' in t or day in {'Sat', 'Sun'} and 'Wknd' in t:
+                    specific = r['values']
+            return specific if specific is not None else default
+        checked = 0
+        for day in DAYS:
+            for i in range(366):
+                date = first + dt.timedelta(days=i)
+                before = at(schedule, day, date)
+                if before is not None:
+                    if before != at(proposed, day, date):
+                        raise ValueError('Proposal changes a covered source interval')
+                    checked += 1
+        result.append({'schedule_id': source['id'], 'source_name': schedule['name'], 'unit': schedule['unit'],
+                       'provenance_id': source.get('provenance_id'), 'affected_programs': len(users),
+                       'building_types': dict(Counter(p['building_type'] for p in users)),
+                       'templates': sorted({p['template'] for p in users}),
+                       'missing_selectors': {day: {'date_count': len(dates), 'first': dates[0], 'last': dates[-1]}
+                                             for day, dates in gaps.items()},
+                       'proposal': proposal, 'proposed_values': values,
+                       'proposal_status': 'discussion pending; not applied to releases or export defaults',
+                       'proposal_has_full_coverage': True, 'covered_date_selectors_preserved': checked})
     return result
 
 
@@ -122,7 +200,7 @@ def collect():
                   'scripts/residential_definitions.py', 'scripts/program_definitions.py',
                   'scripts/program_composition.py', 'scripts/program_field_investigation.py',
                   'scripts/run_residential_profiles.rb', 'sources/runtime-lock.json',
-                  'sources/commercial-runtime-lock.json']
+                  'sources/commercial-runtime-lock.json', 'docs/reviews/program-json-followup-source-lock.json']
     definitions = load_json(ROOT / 'data/definition-releases/v0.1.1/programs.json')
     schedule_gaps = {}
     for quantity in ('additional_lighting', 'lighting', 'electric_equipment', 'gas_equipment'):
@@ -143,12 +221,21 @@ def collect():
                        for _, l in water),
                    'component_target_values_degC': sorted({c['load']['target_temperature_degC']
                        for _, l in water for c in l.get('source_components', [])})}
-    return {'inspection_date': '2026-10-09', 'scope': 'field/type aggregates; no individual program entries',
+    from scripts.fetch import fetch_file
+    followup_lock = load_json(ROOT / 'docs/reviews/program-json-followup-source-lock.json')
+    for descriptor in followup_lock['files']:
+        fetch_file(descriptor, ROOT / 'build/reviews/program-comments-2026-10-11')
+    activity_missing = [r for r in rows if r['activity_schedule_id'] is None]
+    return {'inspection_date': INSPECTION_DATE, 'scope': 'field/type aggregates; no individual program entries',
             'input_sha256': {**hashes(), **{p: digest(ROOT / p) for p in additional}},
             'field_groups': {k: investigation_group(k) for k in saved},
             'commercial_source_leaves': commercial, 'residential_source_profiles': residential,
             'commercial_load_schedule_gaps': schedule_gaps,
             'commercial_water_target_aggregation': water_stats,
+            'commercial_missing_activity_occupancy': dict(Counter('unknown' if r['people_per_m2'] is None
+                else 'zero' if r['people_per_m2'] == 0 else 'positive' for r in activity_missing)),
+            'schedule_coverage_followup': inspect_schedule_gaps(definitions),
+            'followup_documentation_lock': followup_lock,
             'inspected_sources': source_inventory()}
 
 
