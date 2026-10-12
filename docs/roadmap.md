@@ -8,10 +8,14 @@ is complete and remains the implementation record. The order and scope below
 supersede the earlier proposal to hand off to BEMGen immediately after program
 publication. Discussion items remain open design topics, not accepted designs.
 
+The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-json-completion.md)
+details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
+construction and system field reviews with coverage patterns and annotation space.
+
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
-| 2 | Include constructions and systems, with separate JSON exports and pages | Pending contract/completeness work |
+| 2 | Include constructions and systems, with separate JSON exports and pages | Detailed plan recorded; field reviews next |
 | 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
 | 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
@@ -60,6 +64,11 @@ pages, linked materials/components, and raw JSON. The remaining work concerns
 the export contracts and completeness, rather than creating those kinds from
 scratch. Program defaults do not implicitly apply to construction or system
 unknowns. Geometry, assignment and sizing remain consumer responsibilities.
+
+Accepted on 2026-10-12: system completion covers HVAC and domestic hot-water
+equipment together, including heater losses and solar. The water-use room gains
+and distribution-waste water draws excluded from program JSON remain outside
+that program contract. New contract/default decisions follow the field reviews.
 
 **Comments / decisions:**
 
