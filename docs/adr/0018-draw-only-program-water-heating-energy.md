@@ -17,6 +17,19 @@ this representation. Standby losses are an explicit scope exclusion, not a
 source observation of zero. No tank ambient-temperature assumption is needed
 for the excluded standby calculation.
 
+The user also explicitly selected exclusion of heater auxiliaries. Heater
+pump/control electricity and pilot consumption are outside the simplified
+energy representation; retain them in detailed source data. These exclusions
+do not remove unrelated program appliance or pump loads.
+
+The user instructed: "skip the solar case." Exclude the solar-equipped fixture
+`source_building_402849` from this simplified DHW energy rollout:
+source `residential_archetype-71cf018572bd7e3b4938`, program
+`program-1a9bafb870d938bc1ff6a0ee`. Retain its existing program, volumetric water
+demand and detailed solar/heater records. Report this case as out of scope for
+the new representation, rather than exporting zero energy or substituting an
+uncredited conventional heater.
+
 The original volumetric demand and detailed equipment evidence remain available.
 The simplified energy representation and explicit equipment heating must be
 alternatives for the same demand; they must not both consume heating energy.
@@ -39,11 +52,12 @@ source evidence and can support future detailed consumers.
 - Preserve main/booster thermal staging so already heated water is not heated
   from mains twice. Demand ownership and inlet-temperature semantics must remain
   explicit where source services are coupled.
-- Resolve treatment of heater electrical auxiliaries, heat-pump conversion and
-  the solar fixture in the subsequent design. Do not silently assume these
-  effects are zero or claim detailed-equipment equivalence.
+- Specify heat-pump conversion if such heaters enter the supported inventory;
+  do not replace a heat-pump model with burner efficiency. Heater auxiliaries
+  and the one solar fixture now have explicit scope decisions above.
 - Validate weather sensitivity, unit/basis scaling, fuel identity, shared-service
   deduplication and energy conservation for the included draw-heating scope.
+  Enumerate the skipped solar fixture separately from unresolved performance.
 
 This decision records the selected scope only. No schema, program artifact,
 site or simulation implementation is changed by this ADR.

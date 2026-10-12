@@ -218,3 +218,6 @@ covering draw heating only and explicitly excluding standby losses. See
 [ADR 0018](../../adr/0018-draw-only-program-water-heating-energy.md). Its consumer
 schema, conversion recovery and implementation remain pending; detailed DHW
 equipment/loss data stays available as independent source evidence.
+Heater auxiliaries are also explicitly excluded. The solar-equipped fixture
+`source_building_402849` is skipped for the new simplified DHW representation;
+its existing program, water draw and detailed solar data remain available.
