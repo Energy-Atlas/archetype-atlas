@@ -1,5 +1,9 @@
 # Program completion implementation plan
 
+All implementation tasks below are complete. The user's revised remaining work
+and its order are recorded in the [current roadmap](../../roadmap.md), updated
+2026-10-12.
+
 > **For agentic workers:** Use superpowers:executing-plans to implement this plan inline, task by task.
 
 **Goal:** Implement the approved program completion policy, recover available residential inputs, and expose any genuinely unresolved assumptions precisely.
