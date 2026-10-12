@@ -322,3 +322,27 @@ All inspected ResStock methods use revision `dd25369f41a83a0767aefeeac0b6f8a0b0e
 Locked local archives are prerequisites for reproducing source inspection; no upstream code or EnergyPlus simulation is executed by the investigation script. Your original per-field annotation blocks remain the decision record; the group response areas here can hold follow-up discussion.
 
 The follow-up also retrieves official EnergyPlus 25.1 documentation at revision `68a4a7c7744c380886913a92e061aba3d4a3fc54`, with SHA-256, byte length and the upstream license pinned in [program-json-followup-source-lock.json](program-json-followup-source-lock.json). The script verifies these bytes, reports the five exact coverage gaps and evaluates the proposed repairs without modifying source schedules. This source inspection is not a full engine run.
+
+## Implementation follow-up — 2026-10-11
+
+The accepted rules are implemented in Program JSON 3.0.0 and the catalogue
+exporter. Historical version 2 and frozen releases remain unchanged. Both
+approved schedule repairs, native heat fields, explicit conditioning,
+weather-derived mains, source targets, recovered fuel auxiliaries and equipment
+aggregation are applied before export. Mixtures retain their occupied members'
+known activity instead of falling back because a support member has no People.
+
+All 41 residential fixtures now have recovered included demand operands.
+ER_Triage's 21.5278 W/m² equipment density is recovered from the matching DOE
+post-1980 Hospital scorecard. See [residential recovery](residential-recovery.md),
+[ER_Triage evidence](er-triage-recovery.md), and the reproducible
+[completeness receipt](program-json-completeness.json).
+
+The source inspection exposed additional residential water-use thermal gains
+and distribution-water effects. These are flagged in export metadata and
+discussed per field, alongside the heat-weighting calendar, in
+[remaining decisions](program-json-remaining-decisions.md). Each field has a
+comment area. The user subsequently accepted the 2007/no-holidays calendar
+and directed that both water effects remain outside program scope. No material
+decision remains unanswered. No full EnergyPlus simulation or new frozen release is
+claimed by this implementation.

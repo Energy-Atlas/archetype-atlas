@@ -41,10 +41,10 @@ def generate_active_site(bundle, target, publish=True):
               'Filter by building type, vintage, climate where relevant, and program detail or system type.\n\n'
               'Follow a load schedule, construction material or system component to its dedicated page. '
               'Expand **JSON** to inspect the complete object. **Copy JSON** opens the copy choices.\n\n'
-              'Programs offer raw JSON or JSON with explicit experimental defaults, including every referenced schedule. '
+              'Programs offer raw JSON and, when all active inputs resolve, ready JSON with source recovery and approved defaults, including every referenced schedule. '
               'Source unknowns remain visible as Unknown. Geometry, model sizing and service host assignment remain consumer responsibilities. '
               'Other library objects expose their exact raw JSON; unresolved physical inputs stay explicit.\n\n'
-              '[Program connector contract](program-json.md) · [Default policy](../contracts/program-json-defaults.json)\n')
+              '[Program connector contract](program-json.md) · [Default policy](../contracts/program-json-defaults-v2.json)\n')
         write(stage, 'guides/schedules.md', '# Inspect schedules\n\nOpen a schedule from a program, construction or system reference. '
               'Load its interactive plots to see unique day profiles and a day-of-year × hour-of-day heatmap. '
               'Hover for exact values and click a heatmap day to inspect its step profile.\n\n'
@@ -55,18 +55,18 @@ def generate_active_site(bundle, target, publish=True):
               'No stochastic schedule generation or calendar transplantation occurs. '
               'Tables remain available if chart rendering fails.\n\n'
               'Plots use locally served [Plotly cartesian 3.1.0](https://github.com/plotly/plotly.js/blob/v3.1.0/dist/README.md#plotlyjs-cartesian).\n')
-        contract = (ROOT / 'docs/program-json-v2-contract.md').read_text(encoding='utf-8')
-        contract = contract.replace('../schemas/', '../contracts/').replace('../sources/', '../contracts/').replace('examples/program-json-v2/', '../examples/')
-        contract = contract.replace('Prepared on `feature/dto-json-v2`; not yet emitted by the website.', 'The catalogue emits this self-contained program contract.')
-        contract = contract.replace('The atlas exporter will apply the policy before producing this form.', 'The atlas exporter applies the policy before producing this form.')
+        contract = (ROOT / 'docs/program-json-v3-contract.md').read_text(encoding='utf-8')
+        contract = contract.replace('../schemas/', '../contracts/').replace('../sources/', '../contracts/').replace('examples/program-json-v3/', '../examples/')
+        contract = contract.replace('reviews/program-json-remaining-decisions.md', 'program-json-remaining-decisions.md')
         write(stage, 'guides/program-json.md', contract)
+        write(stage, 'guides/program-json-remaining-decisions.md', (ROOT / 'docs/reviews/program-json-remaining-decisions.md').read_text(encoding='utf-8'))
         write(stage, 'guides/definitions.md', '# Library definitions\n\nPrograms supply loads and determined schedules. Constructions supply element properties and separately scoped air exchange. '
               'HVAC definitions supply fixed component performance and explicit conditional requirements. '
               'Compare corresponding elements; unknown inputs do not establish identity.\n\n'
               '[Program JSON contract](program-json.md) · [Sources](../sources.md)\n')
-        for src in (ROOT / 'schemas/program-json-v2.schema.json', ROOT / 'schemas/schedule-json-v2.schema.json', ROOT / 'sources/program-json-defaults.json'):
+        for src in (ROOT / 'schemas/program-json-v3.schema.json', ROOT / 'schemas/schedule-json-v2.schema.json', ROOT / 'sources/program-json-defaults-v2.json'):
             (stage / 'contracts').mkdir(exist_ok=True);shutil.copyfile(src, stage / 'contracts' / src.name)
-        shutil.copytree(ROOT / 'docs/examples/program-json-v2', stage / 'examples')
+        shutil.copytree(ROOT / 'docs/examples/program-json-v3', stage / 'examples')
         notices = stage / 'notices';notices.mkdir()
         shutil.copyfile(ROOT / 'LICENSE', notices / 'original-work.txt')
         links = ['[Original-work notice](notices/original-work.txt)']
@@ -76,6 +76,12 @@ def generate_active_site(bundle, target, publish=True):
               'Code/prototype and existing-stock contexts remain distinct. '
               'Object JSON retains source IDs, field locators, original values and transformations. '
               'Experimental defaults are labelled separately.\n\n' + '\n\n'.join(links) + '\n\n'
+              'Hospital ER_Triage equipment recovery also uses Deru, Michael, et al., '
+              '*Commercial Reference Building: Hospital*, National Renewable Energy Laboratory, 25 November 2014, '
+              '[OEDI submission 157](https://data.openei.org/submissions/157), '
+              'under [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). '
+              'The post-1980 v1.3_5.0 SI scorecard supplies the recovered magnitude; the pinned standards schedule '
+              'and heat fractions are retained. The copied program metadata records the exact cell, checksum and transformation.\n\n'
               '[Plotly MIT license](assets/vendor/plotly-LICENSE.txt)\n\n'
               'Site fonts, SIL Open Font License 1.1: [Geist](assets/fonts/OFL-Geist.txt) · [Geist Mono](assets/fonts/OFL-GeistMono.txt) · '
               '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal work is unlicensed by user choice; upstream notices continue to apply.\n')

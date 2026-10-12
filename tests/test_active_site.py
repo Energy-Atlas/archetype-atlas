@@ -1,5 +1,8 @@
 import importlib
+import gzip
+import html
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,8 +13,9 @@ def pilot_bundle():
     source = {'id': 'source', 'building_type': 'MediumOffice', 'template': '90.1-2019', 'source_family': 'code_prototype_rules'}
     program = record('program', source, 'Office')
     program.update(id='program-pilot', detail='SourcePrograms', available_details=['SourcePrograms'],
-                   loads=[{'demand_id': 'lighting-pilot', 'quantity': 'lighting', 'unit': 'W/m2', 'basis': 'floor_area',
+                   loads=[{'demand_id': 'lighting-pilot', 'quantity': 'additional_lighting', 'unit': 'W/m2', 'basis': 'floor_area',
                            'value': None, 'schedule_id': 'schedule-pilot', 'thermal_effects': {}, 'scope': 'program'}])
+    program['parameters']['conditioning'] = parameter({'heating_enabled': False, 'cooling_enabled': False}, '1', None)
     construction = record('construction', source, 'Wall')
     construction.update(id='construction-pilot', layers=[{'material_id': 'material-pilot', 'properties': {'name': 'Brick'}}])
     system = record('hvac_system', source, 'Fan system')
@@ -89,9 +93,39 @@ class ActiveSiteTests(unittest.TestCase):
             page = (root / 'definitions/program-pilot.md').read_text()
             self.assertIn('data-defaulted=', page)
             self.assertIn('Unknown', page)
-            self.assertIn('default: 0', page)
+            self.assertNotIn('default: 0', page)
+            self.assertIn('Source Unknown', page)
             manifest = json.loads((root / 'object-index.json').read_text())
             self.assertIn('schedule-pilot', manifest)
+
+    def test_copy_descriptor_contains_v3_ready_program(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            result = self.generator()(pilot_bundle(), root, publish=False)
+            self.assertEqual(result['default_export_failures'], [])
+            page = (root / 'definitions/program-pilot.md').read_text()
+            descriptor = json.loads(html.unescape(re.search(r'data-defaulted="([^"]+)"', page)[1]))
+            ready = json.loads(gzip.decompress((root / descriptor['href']).read_bytes()))
+            self.assertEqual(ready['schema_version'], '3.0.0')
+            self.assertEqual(ready['default_policy_id'], 'atlas-program-defaults-2.0.0')
+            self.assertEqual(ready['loads'], [])
+            self.assertTrue(ready['metadata']['absent_demands'])
+            self.assertTrue(ready['metadata']['resolutions'])
+            self.assertEqual(ready['controls']['conditioning_state'], 'unconditioned')
+            self.assertNotIn('heating_setpoint_schedule_id', ready['controls'])
+
+    def test_unapproved_active_unknown_remains_a_publication_failure(self):
+        bundle = pilot_bundle()
+        bundle['programs'][0]['loads'][0]['quantity'] = 'lighting'
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            result = self.generator()(bundle, root, publish=False)
+            self.assertEqual(len(result['default_export_failures']), 1)
+            self.assertIn('unresolved lighting magnitude', result['default_export_failures'][0]['reason'])
+            page = (root / 'definitions/program-pilot.md').read_text()
+            self.assertIn('data-raw=', page)
+            self.assertNotIn('data-defaulted=', page)
+            self.assertIn('ready export is unavailable', page)
 
 
 if __name__ == '__main__': unittest.main()

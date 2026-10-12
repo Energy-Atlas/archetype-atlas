@@ -10,7 +10,7 @@ from pathlib import Path
 
 from scripts.definition_contract import PRIMARY, TABLES, canonical
 from scripts.definition_site import write
-from scripts.program_json import ProgramExporter
+from scripts.program_json_v3 import ProgramExporter
 
 PREFIX = '/archetype-atlas/'
 PHYSICAL = set(PRIMARY.values()) | {'materials', 'components', 'services', 'compositions', 'schedules'}
@@ -115,7 +115,7 @@ def generate_objects(bundle, root):
         if table == 'programs':
             raw = exporter.export(identity, 'raw')
             try:
-                ready = exporter.export(identity, 'defaulted'); defaulted = store.put(ready); count = len(ready['assumptions'])
+                ready = exporter.export(identity, 'defaulted'); defaulted = store.put(ready); count = len(ready['metadata']['resolutions'])
             except ValueError as error:
                 reason = 'Default-filled export unavailable: ' + str(error)
                 failures.append({'id': identity, 'reason': str(error)})
@@ -144,7 +144,7 @@ def generate_objects(bundle, root):
             for load in row['loads']:
                 sid = load.get('schedule_id')
                 schedule = f'[{esc(registry[sid]["name"])}]({link(sid)})' if sid in registry else 'Unknown'
-                value = esc(load['value']) if load['value'] is not None else 'Unknown (default: 0)'
+                value = esc(load['value']) if load['value'] is not None else 'Source Unknown'
                 text += f'| {esc(load["quantity"])} | {value} | {esc(load["unit"])} | {esc(load["basis"])} | {schedule} |\n'
             text += '\n'
         if is_markdown and row.get('layers'):
@@ -153,7 +153,10 @@ def generate_objects(bundle, root):
                 mid = layer['material_id'];label = registry[mid]['name'] if mid in registry else 'Unknown'
                 text += f'| {i+1} | [{esc(label)}]({link(mid)}) |\n' if mid in registry else f'| {i+1} | Unknown |\n'
             text += '\n'
-        if table == 'programs': text += 'Unknown source values stay **Unknown**. Copy with defaults applies labelled experimental assumptions.\n\n'
+        if table == 'programs':
+            text += 'Unknown source values stay **Unknown** in these source tables and raw JSON. '
+            text += ('A ready export is available through **Copy with defaults**, with source recoveries and approved resolutions recorded in metadata.\n\n'
+                     if defaulted else 'A ready export is unavailable because active inputs remain unresolved.\n\n')
         text += json_markup(descriptor, defaulted, count, reason) + '\n\n'
         if table == 'schedules': text += schedule_markup() + '\n\n' + static_schedule(row) + '\n\n'
         refs = sorted(references(row, registry), key=lambda r: (registry[r]['table'], registry[r]['name']))

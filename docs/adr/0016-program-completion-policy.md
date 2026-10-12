@@ -1,7 +1,7 @@
 # ADR 0016: source recovery and automatic program completion
 
 Date: 2026-10-11.
-Status: policy accepted through the user's field-review comments; implementation pending. Both schedule-completion assumptions were also accepted by the user on 2026-10-11.
+Status: accepted policy implemented in Program JSON 3.0.0. The user accepted both schedule repairs, the 2007/no-holidays heat-weighting calendar, and exclusion of the two additional water effects on 2026-10-11.
 
 ## Context
 
@@ -11,8 +11,8 @@ unsupported object fields and missing source metadata. The user reviewed the
 for a complete simulation-ready program DTO with automatic defaults, compact
 equipment schedules and provenance that the simulation consumer may ignore.
 Their comments are preserved there. This decision refines ADRs 0012 and 0015;
-it does not rewrite frozen source records or claim that the current exporter
-already implements the policy.
+it does not rewrite frozen source records. The version 3 exporter implements
+this policy; version 2 remains historical.
 
 ## Decision
 
@@ -70,7 +70,7 @@ Geometry, weather/calendar and HVAC assignment remain normal model context.
 Version the migrated schema and default policy; represent modes explicitly
 rather than disguising them as unresolved nulls.
 
-## Open items and validation
+## Implementation and remaining decisions
 
 Five source rulesets have specific gaps. Four Medium Office schedules lack
 holiday selectors; the accepted completion copies each schedule's Sunday
@@ -78,11 +78,32 @@ profile. One data-center schedule lacks February 29; the accepted completion
 extends the February values to that day, including the existing design-day
 values. The user accepted both assumptions on 2026-10-11. Exact IDs, profiles
 and affected definitions are in the response document. Preserve covered values
-and source rule order. The investigation verifies the repairs in memory;
-application to releases and export defaults remains pending.
+and source rule order. The version 3 exporter applies these repairs after
+source recovery. Frozen releases retain their original bytes.
 
-Residential magnitude/fuel recovery and the Hospital ER_Triage exception still
-need work; acceptance of defaults is not evidence of complete extraction.
+Residential recovery now covers all 41 fixtures' included demand operands,
+including selected fuel auxiliaries, refrigeration, pools/spas and well pumps.
+ER_Triage equipment density is recovered as 21.5278 W/m² from the matching
+DOE post-1980 Hospital scorecard, retaining the standards schedule and heat
+fractions. The [recovery note](../reviews/residential-recovery.md) and
+[ER_Triage investigation](../reviews/er-triage-recovery.md) preserve the evidence.
+
+Mixtures resolve leaves first, preserve per-load occupancy activity, and average
+thermostat schedules over members with the corresponding service active.
+The active area fraction is recorded; inactive members do not contribute fake
+setpoint temperatures. This extends the existing area-weighted representative
+control rule, not a claim to reproduce separate zone thermostat behavior.
+
+The [remaining-decision record](../reviews/program-json-remaining-decisions.md)
+records the accepted 2007/no-holidays ruleset heat-weighting calendar and the
+two additional residential water effects found in the translator. General-water
+signed heat gains and distribution draws are recoverable; the user explicitly
+left both outside program scope. The DTO and completeness receipt retain these
+scope exclusions rather than assuming zero.
+Version 3 therefore has resolved included operands, not full residential
+translator equivalence. Source-derived annual schedules keep their recorded
+calendar. Aggregation retains component schedules for later reweighting.
+
 Do not freeze a new complete release with unresolved active operands. Bring
 any remaining material assumption outside this policy back with specific
 affected programs and a concrete proposed value or method.
@@ -93,4 +114,6 @@ partition, fuel identity, schedule/reference closure, calendar and design-day
 coverage, service deduplication and unchanged known source values. Run the
 repository's schema, physical, referential, schedule, provenance and
 reproducibility checks before release. No full simulation has been run for
-this documentation decision.
+this implementation. Reproduce the full-library operand receipt and examples
+with `python -m scripts.program_completeness --examples`, then verify it with
+`python -m scripts.program_completeness --check`.

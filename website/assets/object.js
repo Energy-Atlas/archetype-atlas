@@ -60,7 +60,7 @@
         if (!info.open) return;
         try {
           const value = await load(section, 'defaulted');
-          content.textContent = JSON.stringify({default_policy_id: value.default_policy_id, assumptions: value.assumptions, required_bindings: value.required_bindings}, null, 2);
+          content.textContent = JSON.stringify({default_policy_id: value.default_policy_id, resolutions: value.metadata?.resolutions || value.assumptions, required_bindings: value.required_bindings}, null, 2);
         } catch (error) { content.textContent = error.message; }
       });
     }
