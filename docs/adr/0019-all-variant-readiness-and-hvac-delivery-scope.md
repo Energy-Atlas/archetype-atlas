@@ -2,6 +2,12 @@
 
 Date: 2026-10-12. Status: accepted user decisions; implementation remains open.
 
+Later [ADR 0020](0020-above-ground-construction-first-release.md) separates a
+combined foundation/ground axis from above-ground construction and makes 100%
+above-ground construction the first independently publishable milestone.
+Foundation/ground and systems are deferred; this ADR's broader all-kind release
+gate is historical and does not hold up that construction milestone.
+
 ## Decisions
 
 The user answered the release-readiness question: "Every variant must be

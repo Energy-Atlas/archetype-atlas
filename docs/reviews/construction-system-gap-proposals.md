@@ -12,11 +12,18 @@ translation. Each entry states the gap, its reason, a concrete proposal and the
 check that would close it. The affected-ID inventories remain in the linked
 machine-readable census; this is not a separate entry for every catalogue row.
 
-**Current phase: constructions only (C entries).** The user has not reviewed
+**Current phase: above-ground constructions only.** The combined foundation,
+ground and basement axis (including its assemblies) is deferred. Foundation-
+dependent floor-over-foundation and rim-joist assemblies are deferred with it.
+Infiltration stays in construction; mechanical outdoor/total-air requirements
+are deferred. Constant ACH is selected, but its reference conditions remain open.
+See [ADR 0020](../adr/0020-above-ground-construction-first-release.md).
+The user has not reviewed
 H or X entries; all system work is deferred and blank H/X comments do not mean
 agreement. For the original reviewed C proposals, the earlier blank-comment
 agreement rule remains applicable unless a comment raises a question or changes
-the proposal. C08's ground-axis separation question is open. New architecture
+the proposal. C02/C08 ground work is now deferred and the user selected the second
+boundary: below-grade assemblies belong to combined foundation/ground. New architecture
 proposals are discussion items until decided, not accepted through an empty box.
 Write corrections, alternatives or constraints in the relevant **Your comments**
 area. Comments override the proposal for that entry and equivalent cases. Empty
@@ -30,11 +37,12 @@ Construction annotations received on 2026-10-13:
 - C05: ASHRAE climate zones/groups are the intended catalogue resolution. Do not
   distinguish or record EPW locations in construction applicability. Simulation
   weather inputs remain external to the catalogue.
-- C07: the ultimate delivered infiltration output should be ACH. Retain ACH50
-  and its pressure reference as source evidence; its translation to natural ACH
-  still follows the pinned source model and explicit applicable inputs.
-- C08: discuss separation of ground/basement configuration from construction,
-  system and program axes before selecting that architecture.
+- C07: the ultimate delivered infiltration output should be constant ACH.
+  Retain ACH50 and its pressure reference as source evidence; the reference
+  conditions for conversion are still being discussed.
+- C08: the second boundary is selected. Above-ground construction is separate
+  from combined foundation/ground/basement, which owns below-grade and
+  foundation-dependent interface assemblies. Ground work is deferred.
 
 Existing decisions remain binding: every construction and HVAC variant must be
 simulation-ready before step 2 closes; detailed DHW models are not required;
@@ -81,6 +89,10 @@ low-rise multifamily, three 2–4-unit multifamily, one midrise and one high-ris
 Affected fields include `layers`, `assembly_layers_and_thermal_mass` and
 `geometry_dependent_enclosure_translation`.
 
+**Narrowed milestone:** Recover their above-ground walls, roofs/ceilings, doors,
+windows and ordinary floor/partition assemblies. Foundation walls, slabs,
+floor-over-foundation and rim-joist details are deferred with the ground axis.
+
 **Reason:** An insulation R-value or assembly U-value does not determine layer
 order, framing paths, thickness, density or heat capacity. ResStock expands
 selected options first and translates them into engine constructions later,
@@ -107,6 +119,9 @@ order, units, finite physical values and every required geometry operand. All
 <!-- comments:C01:end -->
 
 ## C02 — The 59 misclassified or unresolved ground cases
+
+**Current status:** Deferred with all ground/foundation work. These cases do not
+block the above-ground construction milestone.
 
 **Gap description and pattern:** Every one of the 59 `ground_factor_target`
 cases is named **`Adiabatic GroundContactFloor`**. Their frozen rows are labeled
@@ -238,6 +253,10 @@ we can think climate group (if represeneted as ashrae cz) is the resolution we a
 
 ## C06 — Unknown scoped infiltration and air-exchange entries
 
+**Narrowed milestone:** Keep infiltration only: 906 unknown commercial package
+occurrences. The 3,624 outdoor/total-air occurrences are deferred with systems,
+with their original evidence retained and no zero assumption.
+
 **Gap description and pattern:** The frozen package table contains 4,530 air
 entries; 3,081 are `unknown`, across 133 packages and 768 distinct source program
 IDs. Unknown occurrences comprise 906 infiltration-per-area entries, 864 outdoor
@@ -273,6 +292,11 @@ instantiation. Active air requirements must be complete before package readiness
 
 ## C07 — Residential pressure-test leakage to natural infiltration
 
+**Current decision:** Constant natural ACH is required, not ACH(t). Reference
+geometry and climate-factor conditions remain open. The pinned source's
+annual-average scalar helper is a candidate conversion; this entry's earlier
+weather-dependent model proposal does not constitute acceptance of hourly output.
+
 **Gap description and pattern:** All 41 residential enclosure records preserve
 their pressure-test leakage, including the 50 Pa reference. A usable infiltration
 model also needs the source pressure/weather/geometry transformation.
@@ -299,6 +323,9 @@ ok. the ultimate goal is to ship ach
 <!-- comments:C07:end -->
 
 ## C08 — Ground and surface geometry bindings
+
+**Current status:** Ground bindings and foundation-dependent interface assemblies
+are deferred. Above-ground construction must ship independently at 100% coverage.
 
 **Gap description and pattern:** 716 construction records currently require
 consumer operands without an identified source blocker. The field census lists
@@ -330,8 +357,9 @@ question - what value / clarity would it bring if we think of ground / basement 
 
 ### C08 discussion — Separating foundation and ground conditions
 
-Status: discussion proposal, not an accepted schema change. Systems and H/X
-entries remain deferred.
+Status: historical discussion. The user subsequently selected the second
+boundary: construction covers above-ground fabric and combined foundation/ground
+owns below-grade assemblies. See ADR 0020. Ground and systems are deferred.
 
 **Recommendation:** Treat foundation/ground conditions as a separately selectable
 axis, while keeping the compatible assembly and calculation method explicit.
@@ -378,6 +406,38 @@ algorithm or simulation forcing explicit instead of inventing a zone-wide consta
 preserving source-specific layered-ground/F/C/Kiva methods, or retain all these
 fields within each construction. The separate-profile approach is recommended;
 a universal ground solver is not proposed or assumed here.
+
+## C09 — Missing above-ground source selector dependencies
+
+**Gap description and pattern:** The 183 frozen packages retain additional source
+selectors that the existing package exporter does not link into `elements`:
+exterior doors and overhead doors (161 package occurrences each), glass doors
+(143), skylights (109), operable windows (161), and interior doors/fixed/operable
+windows (161 each). These counts overlap and are not new element totals.
+
+**Reason:** The current `build_constructions` package loop covers walls, roofs,
+floors, fixed exterior windows and ground-contact roles, plus interior walls,
+floors and ceilings. The other source selectors survive in `source_set` but do
+not have a completed dependency closure. The old 2,982 above-ground/interior
+element count therefore cannot by itself establish complete source coverage.
+
+**Proposal to fix:** Trace every populated above-ground selector to its exact
+source construction/property row and ordered materials. Recover supporting
+elements with stable source-derived IDs, climate/template applicability and full
+evidence; distinguish applicability/absence from missing extraction. Expand the
+above-ground package closure and validate every selector. Reconcile additional
+IDs before freezing the first release denominator, without merging stock variants.
+
+**Closure check:** Every populated above-ground source selector has a valid ready
+dependency or a source-proven inapplicability disposition. Tests reproduce omitted
+door/skylight/operable-window branches and reject dangling/ambiguous selections.
+The final completeness receipt includes all newly recovered eligible elements.
+
+**Your comments:**
+
+<!-- comments:C09:begin -->
+
+<!-- comments:C09:end -->
 
 ## H01 — Commercial component recipes and internal topology
 
@@ -742,12 +802,14 @@ energy to the same demand.
 
 ## Current construction-only work order
 
-1. Discuss C08's axis separation and settle the construction/ground boundary.
-2. Trace and correct C02's ground classification using the actual source branches.
-3. Validate the Medium Office construction closure, applying C03–C06 and the
-   agreed model-specific C08 bindings.
-4. Recover C01/C07 residential assemblies and natural-infiltration output; preserve
-   C04's alternative glazing representations and C05's climate-zone resolution.
+1. Freeze the above-ground boundary under ADR 0020 and reconcile all source
+   selectors, including C09's missing above-ground dependencies.
+2. Validate Medium Office's above-ground closure through C03–C06, with infiltration
+   only. Ground, foundation-dependent assemblies and mechanical air are deferred.
+3. Recover C01's residential above-ground assemblies and settle C07's constant-ACH
+   reference conditions; preserve C04/C05 glazing and climate-zone decisions.
+4. Implement the independent above-ground consumer contract, validate every
+   eligible variant, and publish the 100%-ready construction milestone.
 
 H and X entries remain unreviewed. No acceptance of the earlier HVAC or shared
 contract/publication proposals is inferred from their blank comments.

@@ -164,3 +164,24 @@ delivered ACH while preserving pressure-test evidence and source conversion.
 C08 requests discussion of an independent ground/basement axis; that architectural
 choice remains open. No construction schema, physics or system implementation
 is changed by recording these annotations.
+
+## Above-ground construction milestone (2026-10-13)
+
+The user chooses the second axis boundary: above-ground construction is separate
+from combined ground/foundation/basement, including below-grade and
+foundation-dependent interface assemblies. Ship above-ground construction at
+100% first; ground and all systems are deferred. Infiltration stays in this
+construction scope; mechanical outdoor/total-air requirements are deferred.
+Constant ACH is selected, with reference conditions still under discussion.
+See [ADR 0020](../adr/0020-above-ground-construction-first-release.md).
+
+The narrowed baseline has 2,982 source-resolved above-ground/interior elements,
+183 mixed packages and 41 residential enclosures to project; 592 explicitly
+ground-contact elements are deferred. Source package selectors reveal missing
+door, skylight and additional window dependencies in the existing exporter.
+Therefore 3,206 projected existing identities are only a preliminary population,
+not the full ready-release denominator. Expand and reconcile source dependency
+closure before claiming 100% coverage. The commercial package infiltration
+population is 906 unknown occurrences; its 3,624 mechanical-air occurrences are
+outside this milestone. No physics/exporter changes or catalogue/site generation
+were performed in this scope/coverage audit.

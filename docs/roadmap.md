@@ -1,6 +1,6 @@
 # Remaining atlas tasks
 
-Updated: 2026-10-12, following the user's revised task list.
+Updated: 2026-10-13, following the user's construction-first boundary decision.
 
 This is the current roadmap for remaining work. The
 [Program JSON completion plan](superpowers/plans/2026-10-11-program-completion.md)
@@ -17,7 +17,7 @@ consumer exports and publication remain open.
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
-| 2 | Include constructions and systems, with separate JSON exports and pages | Every construction/HVAC variant must be ready; consumer contracts/recovery open |
+| 2 | Include constructions and systems, with separate JSON exports and pages | First ship 100% above-ground construction; combined ground/foundation and systems deferred |
 | 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
 | 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
@@ -49,6 +49,19 @@ Medium Office and residential pages. The program-consistency branch was retired.
 <!-- Write here. -->
 
 ## 2. Constructions and systems: separate JSONs and pages
+
+Current milestone: publish above-ground construction at 100% coverage, independently
+of deferred ground/foundation and systems. Foundation/basement owns its below-grade
+and foundation-dependent interface assemblies. Construction includes infiltration;
+mechanical outdoor/total-air requirements are deferred. Constant ACH is selected;
+its reference conditions remain open. [ADR 0020](adr/0020-above-ground-construction-first-release.md)
+supersedes the earlier all-kind publication gate for this first milestone.
+
+The initial above-ground/interior inventory contains 2,982 elements, plus 183
+mixed packages and 41 residential enclosures to project. Missing source selectors
+for doors/skylights/additional windows require dependency expansion before the
+final eligible inventory and 100% receipt are frozen. The original 3,798 rows
+remain immutable evidence, including 592 deferred ground-contact elements.
 
 - [x] Inventory current construction/material and system/component exports,
   their physical inputs, applicability, source gaps and model bindings.

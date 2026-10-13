@@ -4,9 +4,15 @@
 
 **Goal:** Complete construction and system JSON delivery, then resolve schedule-generator packaging, hand off to BEMGen, and decide how to lighten publication.
 
+**Current milestone (2026-10-13):** First ship above-ground construction at 100%
+coverage. Combined ground/foundation/basement, its below-grade/interface assemblies,
+and all systems are deferred. Construction includes infiltration only; constant
+ACH reference conditions remain open. Follow [ADR 0020](../../adr/0020-above-ground-construction-first-release.md)
+for the revised publication gate and source selector/dependency audit.
+
 **Architecture:** Extend the existing separate catalogue objects and pages with versioned consumer contracts. Recover source semantics before applying reviewed defaults; distinguish unknown physics from geometry, assignment and sizing supplied by the simulation consumer. Keep the later generator and publication choices open until their evidence and alternatives have been reviewed.
 
-**Gap proposals and user annotations:** [Construction/HVAC gap review](../../reviews/construction-system-gap-proposals.md). Current phase (2026-10-13): constructions only. H and X entries are unreviewed; all system work is deferred and their blank comments do not signify agreement. Apply the reviewed C annotations, retain comment areas, and discuss C08's ground-axis separation before adopting that architecture.
+**Gap proposals and user annotations:** [Construction/HVAC gap review](../../reviews/construction-system-gap-proposals.md). Current phase: above-ground construction only. Ground-dependent C work and all H work are deferred; H and X entries remain unreviewed and their blanks do not signify agreement. The user selected the second axis boundary under ADR 0020. Apply C annotations and audit C09's omitted source selectors; retain comment areas.
 
 **Tech stack:** Python, JSON Schema, pinned upstream source/runtime calculations where necessary, unittest, MkDocs and the existing content-addressed JSON delivery.
 
@@ -43,6 +49,7 @@ These counts describe the existing bundle, not a completed consumer contract or 
 - Preserve ordered layers, thermal mass, film conventions, source adjustments, schedule selectors/dates/design days and rule order.
 - Geometry, spatial assignment and sizing remain consumer responsibilities. Missing source physics must not be disguised as a routine consumer binding.
 - Full eligible inventory is the baseline 3,798 constructions and 1,046 HVAC variants. Preserve IDs; do not reduce the denominator or introduce unapproved defaults to claim readiness. Detailed DHW source evidence is outside this ready-export inventory.
+- For the current construction milestone, ADR 0020 explicitly partitions that baseline: defer 592 ground-contact elements, project the 183 mixed packages and 41 residential enclosures, and retain all eligible above-ground identities. Recover missing source-defined above-ground dependencies before freezing the final denominator. Earlier ground/HVAC tasks and all-kind gates below are future-phase requirements, not prerequisites for this publication.
 - Program defaults do not apply to constructions or systems. Existing generic construction assumptions remain limited to their reviewed internal/ground-contact scope.
 - Keep frozen releases and raw downloads immutable. New inputs require locked retrieval, retained notices and a new release when canonical definitions change.
 - Validate a Medium Office pilot before catalogue expansion. Release checks cover schema, physical, referential, schedule, provenance and reproducibility behavior.
