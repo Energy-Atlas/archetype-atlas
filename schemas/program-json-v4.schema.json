@@ -1970,6 +1970,9 @@
         },
         "alternative_to": {
           "const": "explicit_equipment_heating_for_same_demand"
+        },
+        "delivery_policy": {
+          "$ref": "#/$defs/water_delivery_policy"
         }
       },
       "allOf": [
@@ -1998,6 +2001,18 @@
           }
         }
       ]
+    },
+    "water_delivery_policy": {
+      "description": "Explicit user-approved source outlet cap. Preserve requested target schedules and report unmet target separately from delivered heat/fuel.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "report_unmet_target", "decision", "evidence"],
+      "properties": {
+        "method": {"const": "cap_at_source_outlet"},
+        "report_unmet_target": {"const": true},
+        "decision": {"const": "ADR 0018; user approved 2026-10-12"},
+        "evidence": {"$ref": "#/$defs/water_stage/properties/temperature_evidence"}
+      }
     }
   }
 }

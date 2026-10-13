@@ -30,7 +30,9 @@ new Atlas constant defaults. For comparisons with EnergyPlus, use the engine's
 water-property convention consistently across reference and simplified models.
 
 For one stage, instantaneous fuel input is
-`rho * cp * scaled_flow * max(target - mains, 0) / efficiency`, in W.
+`rho * cp * scaled_flow * max(delivery_target - mains, 0) / efficiency`, in W.
+Normally `delivery_target = target`; the explicit approved policy below uses
+`min(target, final_source_outlet)` instead.
 For a booster draw, the main stage heats from mains to the lesser of the draw
 target and main outlet; the booster supplies the remaining lift. Each stage
 uses its own fuel and conversion efficiency. A fixture mixed below the tank
@@ -42,6 +44,13 @@ weather; the JSON does not claim a fixed annual kWh value.
 [the exporter](../scripts/program_water_heating.py) provide focused reference
 calculations. `evaluate_recipe` consumes evaluated schedule values and the
 required geometry/fluid bindings; it does not replace an EPW or schedule engine.
+The result includes `requested_temperature_degC`, `delivered_temperature_degC`,
+`unmet_target_K` and `unmet_heat_W`, alongside `delivered_heat_W` and
+`fuel_input_W`. Unmet heat is a diagnostic thermal demand, never charged to fuel.
+Modeled delivery is `max(mains, delivery_target)`; this model supplies no cooling.
+Unmet temperature is `max(requested - modeled_delivery, 0)`, and unmet heat is
+`rho * cp * scaled_flow * unmet_temperature`. At zero flow both heat outputs are
+zero; temperature outputs describe potential delivery, not a measured draw.
 
 `ownership: instantiate_once` and `service_id` preserve a shared demand's
 identity. Other recipes are applied per program instance. A consumer must dedupe
@@ -86,26 +95,29 @@ All **41 residential heaters** retain their source burner/input conversion;
 census, not a claim that all 1,900 v4 exports have been generated or released.
 
 The census checks 217 commercial service joins, 234 positive commercial leaf
-draws and 95 included residential draw temperatures. **214 service recipes**
-pass temperature feasibility; three SmallHotel service targets remain blocked,
-as do their three leaf programs and potentially 12 mixtures containing them.
-There are no additional unresolved joins in this census. Four complete export
+draws and 95 included residential draw temperatures. **217 service recipes**
+pass, including three SmallHotel service targets with the approved delivery cap.
+All three affected leaf programs and 12 dependent mixtures pass full export
+validation. There are no unresolved joins or temperature cases in this census.
+Six complete export
 pilots cover [Medium Office](examples/program-json-v4/medium-office.json),
 [residential](examples/program-json-v4/residential.json),
 [shared Large Office](examples/program-json-v4/shared-large-office.json) and
-[mixed hotel](examples/program-json-v4/mixed-hotel.json).
+[mixed hotel](examples/program-json-v4/mixed-hotel.json),
+[SmallHotel laundry](examples/program-json-v4/small-hotel-laundry-2019.json) and
+[its support mixture](examples/program-json-v4/small-hotel-support-2019.json).
 Tests also cover staging, conservation, weather sensitivity, scaling, rejected
 unknown performance, wrong heater assignment and duplicate demands.
 
 [The coverage report](reviews/program-water-heating-coverage.json) enumerates
-the blocked cases and **59 source services without an existing program
+the approved capped cases and **59 source services without an existing program
 attachment** (31 main, 17 booster, 11 laundry). Their fuel/performance is recovered.
 They remain independently owned source services; do not copy them into each
 program or infer beneficiaries from heater location. Their eventual delivery
 needs explicit consumer service assignment, or separately reviewed allocation.
 This rollout preserves the existing program demand inventory.
 
-## Remaining modeling decision: SmallHotel laundry
+## Approved delivery policy: SmallHotel laundry
 
 The 90.1-2007, 2013 and 2019 `Laundry_SmallHotel` main-loop space-type draws
 request **82.222°C**, while their source main heater supplies **60°C**. The source
@@ -117,16 +129,30 @@ move that draw or replace/add the independent laundry demand.
 EnergyPlus itself uses all hot flow when the requested target exceeds supply,
 and its actual mixed temperature remains at the available hot temperature;
 it warns about the unmet target. See the pinned
-[WaterUse.cc implementation](https://github.com/NREL/EnergyPlus/blob/68a4a7c7744c380886913a92e061aba3d4a3fc54/src/EnergyPlus/WaterUse.cc#L942).
+[WaterUse.cc implementation](https://github.com/NREL/EnergyPlus/blob/68a4a7c7744c380886913a92e061aba3d4a3fc54/src/EnergyPlus/WaterUse.cc#L1041).
 Its source checksum is recorded in the DHW evidence lock.
 
-**Proposal:** add an explicit, source-bounded delivery policy for these three
-cases: preserve the requested 82.222°C schedule, cap simplified delivered water
-at the source main outlet of 60°C, and report unmet target temperature. This
-preserves the source loop assignment. Reassigning to the laundry heater would
-be a model correction with an additional demand-overlap review. Neither choice
-is applied here; the three cases stay blocked pending the user's science decision.
+**Accepted on 2026-10-12:** preserve the requested 82.222°C schedule, cap simplified
+delivery at the source main outlet of 60°C, and report unmet target. Each of the
+three affected recipes, including its occurrence in dependent mixtures, carries
+`delivery_policy.method: cap_at_source_outlet`, `report_unmet_target: true`,
+the ADR/user decision and pinned EnergyPlus evidence. This preserves source loop
+assignment; it does not copy the independent laundry draw or invent a booster.
+
+At mains temperature 10°C and consumer inputs of flow 0.001 m³/s, density
+1000 kg/m³ and specific heat 4180 J/(kg·K), delivered heat is 209,000 W and
+unmet heat is 92,888.889 W (22.222 K shortfall). Fuel input is delivered heat
+divided by the recovered main-heater efficiency. These are illustrative consumer
+inputs, not Atlas defaults. At mains above 60°C no heating or cooling is charged;
+actual modeled delivery follows mains and the shortfall is computed accordingly.
+
+The exporter assigns this policy only to the three approved source demands.
+Validation rejects removal, alteration or assignment to unrelated demands.
+Unapproved excessive targets still block export. This additive field completes
+the unreleased opt-in 4.0.0 draft; published v3 is unaffected.
 
 **User comments / decision:**
 
-<!-- Annotate the delivery policy or request the alternative assignment here. -->
+Accepted: "Cap delivery at 60°C and report unmet target (Recommended)".
+
+<!-- Add further comments about consumer reporting here. -->

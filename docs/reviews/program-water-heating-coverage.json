@@ -4,119 +4,172 @@
   "residential_heaters_with_source_conversion": 41,
   "included_residential_fixtures": 40,
   "skipped_solar_program": "program-1a9bafb870d938bc1ff6a0ee",
-  "commercial_service_recipes_checked": 214,
+  "commercial_service_recipes_checked": 217,
   "commercial_leaf_draw_joins_checked": 234,
   "residential_draw_temperature_checks": 95,
-  "known_blocked_temperature_cases": [
+  "known_blocked_temperature_cases": [],
+  "potentially_blocked_programs": [],
+  "capped_temperature_cases": [
     {
       "kind": "service",
       "id": "service-0b40d91aad2dfcc14415d797",
-      "issue": "Draw target exceeds source heater outlet; unresolved temperature semantics"
+      "demand_id": "service-0b40d91aad2dfcc14415d797",
+      "requested_temperature_degC": 82.22222222222221,
+      "source_outlet_temperature_degC": 60.0,
+      "unmet_target_K_at_or_below_source_outlet": 22.222222222222214,
+      "policy": "cap_at_source_outlet"
     },
     {
       "kind": "service",
       "id": "service-1ddcebc06abc0a3b5240f918",
-      "issue": "Draw target exceeds source heater outlet; unresolved temperature semantics"
+      "demand_id": "service-1ddcebc06abc0a3b5240f918",
+      "requested_temperature_degC": 82.22222222222221,
+      "source_outlet_temperature_degC": 60.0,
+      "unmet_target_K_at_or_below_source_outlet": 22.222222222222214,
+      "policy": "cap_at_source_outlet"
     },
     {
       "kind": "service",
       "id": "service-d3d5674fbfeb86395d91631d",
-      "issue": "Draw target exceeds source heater outlet; unresolved temperature semantics"
+      "demand_id": "service-d3d5674fbfeb86395d91631d",
+      "requested_temperature_degC": 82.22222222222221,
+      "source_outlet_temperature_degC": 60.0,
+      "unmet_target_K_at_or_below_source_outlet": 22.222222222222214,
+      "policy": "cap_at_source_outlet"
     },
     {
       "kind": "commercial_demand",
       "id": "program-4693cf50f9561a3d33c1823a",
       "demand_id": "service-d3d5674fbfeb86395d91631d",
-      "issue": "Draw target exceeds source heater outlet; unresolved temperature semantics"
+      "requested_temperature_degC": 82.22222222222221,
+      "source_outlet_temperature_degC": 60.0,
+      "unmet_target_K_at_or_below_source_outlet": 22.222222222222214,
+      "policy": "cap_at_source_outlet"
     },
     {
       "kind": "commercial_demand",
       "id": "program-48033f4bc7ec6fc7b024e233",
       "demand_id": "service-0b40d91aad2dfcc14415d797",
-      "issue": "Draw target exceeds source heater outlet; unresolved temperature semantics"
+      "requested_temperature_degC": 82.22222222222221,
+      "source_outlet_temperature_degC": 60.0,
+      "unmet_target_K_at_or_below_source_outlet": 22.222222222222214,
+      "policy": "cap_at_source_outlet"
     },
     {
       "kind": "commercial_demand",
       "id": "program-ddd1850c0fa5cbf5282f50c0",
       "demand_id": "service-1ddcebc06abc0a3b5240f918",
-      "issue": "Draw target exceeds source heater outlet; unresolved temperature semantics"
+      "requested_temperature_degC": 82.22222222222221,
+      "source_outlet_temperature_degC": 60.0,
+      "unmet_target_K_at_or_below_source_outlet": 22.222222222222214,
+      "policy": "cap_at_source_outlet"
     }
   ],
-  "potentially_blocked_programs": [
+  "validated_capped_programs": [
     {
       "id": "program-131bcfba407138256934455a",
       "name": "General_Mixed_SmallHotel",
-      "template": "90.1-2013"
+      "template": "90.1-2013",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-25c0b29ba11b1aa1f5681fc4",
       "name": "General_Mixed_SmallHotel",
-      "template": "90.1-2013"
+      "template": "90.1-2013",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-41d7c15eaedaab29da77780b",
       "name": "Support_Mixed_SmallHotel",
-      "template": "90.1-2019"
+      "template": "90.1-2019",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-4693cf50f9561a3d33c1823a",
       "name": "Laundry_SmallHotel",
-      "template": "90.1-2019"
+      "template": "90.1-2019",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-48033f4bc7ec6fc7b024e233",
       "name": "Laundry_SmallHotel",
-      "template": "90.1-2007"
+      "template": "90.1-2007",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-54aa9da996ad549d27b0cedf",
       "name": "General_Mixed_SmallHotel",
-      "template": "90.1-2007"
+      "template": "90.1-2007",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-54cc947ee16edbf6cc2b3189",
       "name": "General_Mixed_SmallHotel",
-      "template": "90.1-2019"
+      "template": "90.1-2019",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-56262a9ad7552e5284079e8a",
       "name": "Support_Mixed_SmallHotel",
-      "template": "90.1-2007"
+      "template": "90.1-2007",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-5ad7a80a15053e984f994307",
       "name": "General_Mixed_SmallHotel",
-      "template": "90.1-2007"
+      "template": "90.1-2007",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-5ed5d77d02f128cf1040c54c",
       "name": "General_Mixed_SmallHotel",
-      "template": "90.1-2019"
+      "template": "90.1-2019",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-92bc7cb9951207d81f1b39be",
       "name": "Support_Mixed_SmallHotel",
-      "template": "90.1-2007"
+      "template": "90.1-2007",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-9511dbb57cd4ad40c05401a4",
       "name": "Support_Mixed_SmallHotel",
-      "template": "90.1-2013"
+      "template": "90.1-2013",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-a8a311d4d13e95676f12d3bc",
       "name": "Support_Mixed_SmallHotel",
-      "template": "90.1-2019"
+      "template": "90.1-2019",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-d055cdde78efc12f8cbb1e38",
       "name": "Support_Mixed_SmallHotel",
-      "template": "90.1-2013"
+      "template": "90.1-2013",
+      "capped_recipes": 1,
+      "validation": "passed"
     },
     {
       "id": "program-ddd1850c0fa5cbf5282f50c0",
       "name": "Laundry_SmallHotel",
-      "template": "90.1-2013"
+      "template": "90.1-2013",
+      "capped_recipes": 1,
+      "validation": "passed"
     }
   ],
   "unexpected_unresolved": [],
@@ -476,7 +529,7 @@
       "channel": "booster"
     }
   ],
-  "validation_scope": "All heater conversion/source joins and source draw temperatures; four complete program pilots. No full v3/v4 library regeneration, simulation or site build.",
+  "validation_scope": "All heater conversion/source joins and source draw temperatures; six complete program pilots and all 15 approved capped leaf/mixture exports. No full v3/v4 library regeneration, simulation or site build.",
   "pilots": {
     "medium-office": {
       "program_id": "program-8c35a40eb0181596e0bfcac4",
@@ -496,6 +549,16 @@
     "mixed-hotel": {
       "program_id": "program-2497c6a2f0f3d35066d45e8c",
       "water_heating_recipes": 4,
+      "validation": "passed"
+    },
+    "small-hotel-laundry-2019": {
+      "program_id": "program-4693cf50f9561a3d33c1823a",
+      "water_heating_recipes": 1,
+      "validation": "passed"
+    },
+    "small-hotel-support-2019": {
+      "program_id": "program-41d7c15eaedaab29da77780b",
+      "water_heating_recipes": 1,
       "validation": "passed"
     }
   }

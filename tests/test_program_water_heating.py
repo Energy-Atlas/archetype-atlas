@@ -45,6 +45,25 @@ class DrawPhysicsTests(unittest.TestCase):
         with self.assertRaises(KeyError):
             evaluate_recipe(recipe, .5, 40, 10, {'floor_area_m2': 200})
 
+    def test_approved_cap_reports_unmet_heat_without_charging_it_to_fuel(self):
+        recipe = {'draw': {'value': .00001, 'basis': 'floor_area'}, 'stages': [
+            {'fuel': 'natural gas', 'conversion_efficiency': .8, 'outlet_temperature_degC': 60}],
+            'delivery_policy': {'method': 'cap_at_source_outlet', 'report_unmet_target': True}}
+        bindings = {'floor_area_m2': 200, 'water_density_kg_m3': 1000, 'water_specific_heat_J_kg_K': 4180}
+        result = evaluate_recipe(recipe, .5, 82, 10, bindings)
+        self.assertAlmostEqual(result['delivered_heat_W'], 209000)
+        self.assertAlmostEqual(result['fuel_input_W']['natural gas'], 261250)
+        self.assertEqual(result['requested_temperature_degC'], 82)
+        self.assertEqual(result['delivered_temperature_degC'], 60)
+        self.assertEqual(result['unmet_target_K'], 22)
+        self.assertAlmostEqual(result['unmet_heat_W'], 91960)
+        idle = evaluate_recipe(recipe, 0, 82, 10, bindings)
+        self.assertEqual(idle['unmet_heat_W'], 0)
+        warm = evaluate_recipe(recipe, .5, 82, 70, bindings)
+        self.assertEqual(warm['delivered_heat_W'], 0)
+        self.assertEqual(warm['delivered_temperature_degC'], 70)
+        self.assertEqual(warm['unmet_target_K'], 12)
+
 
 class ExportTests(unittest.TestCase):
     @classmethod
@@ -145,16 +164,60 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(migrated, water)
         self.assertEqual(out['schedules'], original['schedules'])
 
-    def test_small_hotel_high_temperature_main_draw_stays_blocked(self):
-        with self.assertRaisesRegex(ValueError, 'target exceeds source heater outlet'):
-            self.exporter.export('program-4693cf50f9561a3d33c1823a')
+    def test_small_hotel_caps_only_delivery_and_preserves_requested_schedule(self):
+        for pid in ('program-48033f4bc7ec6fc7b024e233', 'program-ddd1850c0fa5cbf5282f50c0',
+                    'program-4693cf50f9561a3d33c1823a'):
+            with self.subTest(program=pid):
+                original = self.exporter.base.export(pid, 'defaulted')
+                out = self.exporter.export(pid)
+                self.assertEqual(out['schedules'], original['schedules'])
+                recipe = out['water_heating'][0]
+                self.assertEqual(recipe['draw'], next(l for l in original['loads'] if l['type']=='hot_water'))
+                target = out['schedules'][recipe['draw']['target_temperature_schedule_id']]
+                self.assertAlmostEqual(target['rules'][0]['values'][0], 82.2222222222)
+                self.assertEqual(recipe['stages'][0]['outlet_temperature_degC'], 60)
+                self.assertEqual(recipe['delivery_policy']['method'], 'cap_at_source_outlet')
+                self.assertTrue(recipe['delivery_policy']['report_unmet_target'])
+                self.assertEqual(self.exporter.validate(out), [])
+                del recipe['delivery_policy']
+                self.assertTrue(self.exporter.validate(out))
 
-    def test_census_leaves_only_documented_temperature_conflicts(self):
+    def test_cap_propagates_to_all_affected_mixtures_without_altering_demands(self):
+        affected = ('program-131bcfba407138256934455a', 'program-25c0b29ba11b1aa1f5681fc4',
+                    'program-41d7c15eaedaab29da77780b', 'program-54aa9da996ad549d27b0cedf',
+                    'program-54cc947ee16edbf6cc2b3189', 'program-56262a9ad7552e5284079e8a',
+                    'program-5ad7a80a15053e984f994307', 'program-5ed5d77d02f128cf1040c54c',
+                    'program-92bc7cb9951207d81f1b39be', 'program-9511dbb57cd4ad40c05401a4',
+                    'program-a8a311d4d13e95676f12d3bc', 'program-d055cdde78efc12f8cbb1e38')
+        for pid in affected:
+            with self.subTest(program=pid):
+                original = self.exporter.base.export(pid, 'defaulted')
+                out = self.exporter.export(pid)
+                self.assertEqual(out['schedules'], original['schedules'])
+                self.assertEqual([r['draw'] for r in out['water_heating'] if r['service_id'] is None],
+                                 [l for l in original['loads'] if l['type']=='hot_water'])
+                capped = [r for r in out['water_heating'] if r.get('delivery_policy')]
+                self.assertEqual(len(capped), 1)
+                target = out['schedules'][capped[0]['draw']['target_temperature_schedule_id']]
+                self.assertAlmostEqual(target['rules'][0]['values'][0], 82.2222222222)
+                self.assertEqual(capped[0]['stages'][0]['outlet_temperature_degC'], 60)
+                self.assertEqual(self.exporter.validate(out), [])
+
+    def test_delivery_cap_cannot_be_assigned_to_an_unapproved_demand(self):
+        capped = self.exporter.export('program-4693cf50f9561a3d33c1823a')['water_heating'][0]
+        out = self.exporter.export('program-8c35a40eb0181596e0bfcac4')
+        self.assertNotIn('delivery_policy', out['water_heating'][0])
+        out['water_heating'][0]['delivery_policy'] = copy.deepcopy(capped['delivery_policy'])
+        self.assertTrue(self.exporter.validate(out))
+
+    def test_census_resolves_approved_temperature_conflicts(self):
         from scripts.validate_program_water_heating import census
         report = census(self.exporter)
         self.assertEqual(report['unexpected_unresolved'], [])
-        self.assertEqual(len(report['known_blocked_temperature_cases']),6)
-        self.assertEqual(report['commercial_service_recipes_checked'],214)
+        self.assertEqual(report['known_blocked_temperature_cases'], [])
+        self.assertEqual(report['commercial_service_recipes_checked'],217)
+        self.assertEqual(len(report['capped_temperature_cases']),6)
+        self.assertEqual(len(report['validated_capped_programs']),15)
 
 
 if __name__ == '__main__':

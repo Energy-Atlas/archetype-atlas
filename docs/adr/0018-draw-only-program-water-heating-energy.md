@@ -1,7 +1,7 @@
 # ADR 0018: Draw-only program water-heating energy
 
 Date: 2026-10-12. Status: accepted modeling boundary; opt-in Program JSON 4
-implemented, with three source temperature conflicts explicitly blocked.
+implemented, including the user-approved SmallHotel delivery cap below.
 
 ## Decision
 
@@ -41,7 +41,27 @@ data or the completed recovery work in [ADR 0017](0017-independent-energy-source
 Detailed DHW/solar definitions and recovered loss coefficients remain separate
 source evidence and can support future detailed consumers.
 
-## Implementation and remaining decisions
+## Source-bounded delivery decision (2026-10-12)
+
+The user approved: "Cap delivery at 60°C and report unmet target." Apply an
+explicit `cap_at_source_outlet` policy only to the 90.1-2007/2013/2019 SmallHotel
+main-loop laundry demands and mixtures containing those demands. Preserve the
+requested 82.222°C target schedule, source main-loop assignment, source fuel and
+conversion efficiency. The main heater's source outlet is 60°C; no additional
+booster or independent laundry demand is introduced.
+
+Report requested temperature, modeled delivered temperature, unmet temperature
+in K and unmet thermal demand in W. Charge fuel only for delivered draw heat.
+This is an ideal source-outlet bound, not a dynamic tank or capacity simulation.
+The pinned EnergyPlus WaterUse implementation and checksum support the policy;
+each affected recipe embeds that evidence and the user's decision date. Other
+unapproved target/supply conflicts still fail validation.
+
+The additive policy completes the unreleased opt-in 4.0.0 draft; it does not
+revise a published/frozen schema or change existing v3 definitions. Future
+released contract changes require their own version decision.
+
+## Implementation and remaining work
 
 - [Program JSON 4.0.0](../program-json-v4-contract.md) supplies the opt-in ready
   recipe. Program v3 and frozen/public artifacts remain unchanged. The simulation
@@ -53,19 +73,18 @@ source evidence and can support future detailed consumers.
   export; no fallback efficiency or fuel is introduced.
 - Main/booster temperature lifts, separate fuels, shared ownership and alternative
   detailed-equipment accounting are implemented and checked with focused tests.
-- Three SmallHotel main-loop laundry targets exceed their source main heater
-  outlet. They and mixtures containing them remain blocked. The contract records
-  a concrete source-bounded delivery proposal for discussion, without reassigning
-  the source loop or silently lowering the requested target.
+- Three SmallHotel main-loop laundry target/supply conflicts use the approved
+  delivery policy above. All three leaf programs and 12 dependent mixtures pass
+  complete export validation, with original draw magnitudes and schedules intact.
 - Specify heat-pump conversion if such heaters enter the supported inventory;
   do not replace a heat-pump model with burner efficiency. Heater auxiliaries
   and the one solar fixture now have explicit scope decisions above.
 - Focused tests check weather sensitivity, scaling, fuel identity, shared-service
   deduplication, staging and heat conservation. The coverage census enumerates
-  the skipped solar case separately from the source temperature conflicts and
+  the skipped solar case separately from the approved capped temperature cases and
   services requiring consumer attachment. The full v4 catalogue is not generated
   or published by this implementation.
 
-The opt-in schema/exporter and four pilots implement this decision. Site builds,
+The opt-in schema/exporter and six pilots implement this decision. Site builds,
 simulations and regeneration of the unchanged full program library are excluded
 from this focused pass.

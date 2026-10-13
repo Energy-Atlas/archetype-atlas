@@ -52,3 +52,20 @@ Execution ledger:
 - Final verification: 31 focused/regression tests passed;
   `recover_dhw_conversion --check` and `validate_program_water_heating --check`
   both passed after the review fix.
+
+Approved delivery-cap follow-up (2026-10-12):
+
+- User accepted capping delivery at the 60°C main outlet and reporting unmet
+  target for the three SmallHotel laundry draws. Preserve requested 82.222°C
+  schedules and source loop assignments; extend policy by demand origin to all
+  12 dependent mixtures. No blanket cap or default performance is introduced.
+- Initial new tests reproduced the original target/supply rejection in all three
+  leaf cases and the six unresolved census entries. Added explicit delivery
+  policy and diagnostic temperature/unmet-heat outputs; fuel includes delivered
+  heat only. Full export checks cover all 15 affected programs.
+- Keep the additive policy in the unreleased opt-in 4.0.0 draft. Add laundry and
+  support-mixture examples and refresh only the focused coverage report.
+- Verification: 34 focused/regression tests passed; six-pilot/report reproduction
+  and complete validation of all 15 affected programs passed. The WaterUse source
+  checksum matches the existing lock; its actual behavior locator is corrected
+  to lines 1041-1136. No full catalogue/site generation or lengthy CI was run.

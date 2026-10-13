@@ -17,6 +17,10 @@ from scripts.definition_release import read_bundle
 from scripts.program_json_v3 import ProgramExporter as V3Exporter
 
 SOLAR = 'program-1a9bafb870d938bc1ff6a0ee'
+CAPPED_SERVICES = frozenset({'service-0b40d91aad2dfcc14415d797', 'service-1ddcebc06abc0a3b5240f918',
+                             'service-d3d5674fbfeb86395d91631d'})
+CAPPED_PROGRAMS = frozenset({'program-48033f4bc7ec6fc7b024e233', 'program-ddd1850c0fa5cbf5282f50c0',
+                             'program-4693cf50f9561a3d33c1823a'})
 EXCLUSIONS = ['standby_losses', 'heater_auxiliaries', 'pilot_consumption', 'solar_credit']
 FUEL = {'electricity': 'electricity', 'natural gas': 'natural gas', 'propane': 'propane',
         'fuel oil': 'fuel oil', 'wood': 'wood', 'coal': 'coal'}
@@ -28,7 +32,8 @@ def positive(value, label, zero=False):
     return value
 
 
-def draw_heating_power(flow_m3_s, target_degC, mains_degC, stages, *, density_kg_m3, specific_heat_J_kg_K):
+def draw_heating_power(flow_m3_s, target_degC, mains_degC, stages, *, density_kg_m3, specific_heat_J_kg_K,
+                       delivery_policy=None):
     """Instantaneous absolute W after consumer scaling and schedule evaluation.
 
     For mixed draws below the heater outlet, hot-water mixing cancels the extra
@@ -51,18 +56,25 @@ def draw_heating_power(flow_m3_s, target_degC, mains_degC, stages, *, density_kg
         if not isinstance(outlet, (int, float)) or not math.isfinite(outlet) or outlet <= previous_outlet:
             raise ValueError('Invalid stage temperature order')
         previous_outlet = outlet
-    if target_degC > previous_outlet + 1e-8:
+    if delivery_policy is not None and (delivery_policy.get('method') != 'cap_at_source_outlet'
+                                       or delivery_policy.get('report_unmet_target') is not True):
+        raise ValueError('Unsupported water delivery policy')
+    if target_degC > previous_outlet + 1e-8 and delivery_policy is None:
         raise ValueError('Draw target exceeds source heater outlet; unresolved temperature semantics')
+    delivery_target = min(target_degC, previous_outlet) if delivery_policy else target_degC
     capacity_rate = flow_m3_s*density_kg_m3*specific_heat_J_kg_K
     inlet = mains_degC
     fuel_input = {}
     for stage in stages:
-        outlet = max(inlet, min(target_degC, stage['outlet_temperature_degC']))
+        outlet = max(inlet, min(delivery_target, stage['outlet_temperature_degC']))
         heat = capacity_rate*(outlet-inlet)
         fuel = stage['fuel']
         fuel_input[fuel] = fuel_input.get(fuel, 0)+heat/stage['conversion_efficiency']
         inlet = outlet
-    return {'delivered_heat_W': capacity_rate*max(target_degC-mains_degC, 0), 'fuel_input_W': fuel_input}
+    unmet = max(target_degC-inlet, 0)
+    return {'delivered_heat_W': capacity_rate*max(delivery_target-mains_degC, 0), 'fuel_input_W': fuel_input,
+            'requested_temperature_degC': target_degC, 'delivered_temperature_degC': inlet,
+            'unmet_target_K': unmet, 'unmet_heat_W': capacity_rate*unmet}
 
 
 def evaluate_recipe(recipe, flow_fraction, target_degC, mains_degC, bindings):
@@ -76,7 +88,7 @@ def evaluate_recipe(recipe, flow_fraction, target_degC, mains_degC, bindings):
     scale = positive(bindings[binding], 'draw scale', zero=True) if binding else 1
     return draw_heating_power(draw['value']*flow_fraction*scale, target_degC, mains_degC,
         recipe['stages'], density_kg_m3=bindings['water_density_kg_m3'],
-        specific_heat_J_kg_K=bindings['water_specific_heat_J_kg_K'])
+        specific_heat_J_kg_K=bindings['water_specific_heat_J_kg_K'], delivery_policy=recipe.get('delivery_policy'))
 
 
 class ProgramExporter:
@@ -104,6 +116,18 @@ class ProgramExporter:
                     raise ValueError('Ambiguous residential heater '+sid)
                 self.residential[sid] = key
         self._origins = {}
+        lock = load_json(ROOT/'sources/dhw-conversion-evidence-lock.json')
+        water_use = next(f for f in lock['files'] if f['path']=='src/EnergyPlus/WaterUse.cc')
+        self.delivery_policy = {'method': 'cap_at_source_outlet', 'report_unmet_target': True,
+            'decision': 'ADR 0018; user approved 2026-10-12',
+            'evidence': {'source_project': 'EnergyPlus', 'source_revision': water_use['source_revision'],
+                'source_locator': 'src/EnergyPlus/WaterUse.cc: CalcEquipmentFlowRates, lines 1041-1136',
+                'source_file_sha256': water_use['sha256'],
+                'original_value': 'TargetTemp >= HotTemp: all hot flow; actual mixed temperature and unmet-target warning',
+                'original_unit': 'degC', 'transformation': 'Limit ideal draw delivery to final source outlet; retain requested target',
+                'extraction_date': lock['retrieval_date'],
+                'interpretation_note': 'Approved only for three SmallHotel main-loop laundry demands and their mixtures. '
+                    'Source outlet is an ideal available supply; dynamic tank/capacity effects remain excluded.'}}
 
     def origins(self, program_id):
         """Join mixture identities without regenerating all v3 exports."""
@@ -148,6 +172,7 @@ class ProgramExporter:
             'fuel_evidence': copy.deepcopy(fields['fuel_type']['evidence'])}
 
     def recipe(self, source, draw, service_id=None):
+        capped = False
         if source.get('scope') == 'whole_dwelling':
             stages = [self.stage(self.residential[source['source_id']])]
         else:
@@ -155,6 +180,10 @@ class ProgramExporter:
             origin = service or self.origins(source['id']).get(draw['demand_id'])
             if origin is None:
                 raise ValueError('Unresolved water demand origin: '+draw['demand_id'])
+            capped = (service['id'] in CAPPED_SERVICES if service else
+                      origin['id'] in CAPPED_PROGRAMS and
+                      any(l['demand_id'] in CAPPED_SERVICES for l in origin['loads']
+                          if l['quantity'].startswith('hot_water')))
             channel = service['end_use'] if service else 'main'
             channels = ['main', 'booster'] if channel == 'booster' else [channel]
             stages = []
@@ -163,10 +192,13 @@ class ProgramExporter:
                 if selector not in self.commercial:
                     raise ValueError('Unresolved source heater selector: '+repr(selector))
                 stages.append(self.stage(self.commercial[selector]))
-        return {'demand_id': draw['demand_id'], 'method': 'draw_only', 'draw': copy.deepcopy(draw),
+        recipe = {'demand_id': draw['demand_id'], 'method': 'draw_only', 'draw': copy.deepcopy(draw),
             'stages': stages, 'output_unit': 'W', 'zone_heat_gains': 'excluded',
             'exclusions': EXCLUSIONS[:], 'ownership': 'instantiate_once' if service_id else 'per_program_instance',
             'service_id': service_id, 'alternative_to': 'explicit_equipment_heating_for_same_demand'}
+        if capped:
+            recipe['delivery_policy'] = copy.deepcopy(self.delivery_policy)
+        return recipe
 
     def export(self, program_id):
         if program_id == SOLAR:
@@ -260,7 +292,8 @@ class ProgramExporter:
                 values = target.get('values', []) if target['type']=='annual' else [v for r in target['rules'] for v in r['values']]
                 try:
                     for value in set(values):
-                        draw_heating_power(0, value, 0, recipe['stages'], density_kg_m3=1, specific_heat_J_kg_K=1)
+                        draw_heating_power(0, value, 0, recipe['stages'], density_kg_m3=1, specific_heat_J_kg_K=1,
+                                           delivery_policy=recipe.get('delivery_policy'))
                 except ValueError as exc:
                     errors.append(str(exc))
             sid = recipe['service_id']

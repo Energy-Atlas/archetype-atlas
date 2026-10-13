@@ -66,7 +66,7 @@ unchanged program generation/validation. Use focused checks of changed behavior.
 The [ADR](../adr/0017-independent-energy-source-recovery.md) records concrete
 remaining source actions. No new scientific fallback assumption was adopted.
 
-## Draw-only program DHW follow-up (2026-10-12)
+## Initial draw-only program DHW follow-up (2026-10-12)
 
 The user's authorized follow-up implements [ADR 0018](../adr/0018-draw-only-program-water-heating-energy.md)
 as opt-in [Program JSON 4](../program-json-v4-contract.md). It does not make the
@@ -80,7 +80,7 @@ detailed equipment/system contracts ready or complete remaining task 2 work.
   mixture demand migration. The source census verifies all heater joins and
   source water targets without rebuilding the full v3 program library.
 - Three SmallHotel source targets exceed main supply temperature and remain
-  blocked, including their dependent mixtures. The contract contains an annotated
+  blocked at this initial checkpoint, including their dependent mixtures. The contract contains an annotated
   proposal to cap actual delivery while preserving the requested target and unmet
   temperature. No such policy is applied pending the user's decision.
 - The coverage artifact separately lists 59 independent source services without
@@ -97,3 +97,25 @@ detailed equipment/system contracts ready or complete remaining task 2 work.
 - Standby losses, heater auxiliaries and pilot consumption stay excluded. No
   density, specific heat, fuel or efficiency default is introduced. Full release,
   site generation and lengthy CI remain outside this pass.
+
+## Approved SmallHotel delivery cap (2026-10-12)
+
+The user accepted the source outlet cap and unmet-target reporting. The three
+main-loop laundry draws preserve their 82.222°C requested schedules, original
+volume and source fuel/conversion; simplified supply uses the 60°C main outlet.
+An explicit policy with pinned EnergyPlus evidence follows each demand into
+its 12 dependent mixtures. Unmet thermal demand is reported separately and adds
+no fuel consumption. Standby, auxiliaries, pilot consumption and solar stay
+outside scope. No source-loop reassignment or independent laundry-demand copying.
+
+Focused coverage now checks all 217 commercial service recipes, all 15 affected
+complete exports and six tracked pilots. The 59 unattached independent source
+services still require consumer assignment. Detailed construction/HVAC readiness
+and catalogue publication remain separate work.
+
+Verification: 34 focused water/aggregation/completeness tests passed. Six-pilot
+and 15-affected-export reproduction passed `validate_program_water_heating
+--check`; the local pinned WaterUse source SHA-256 matches the evidence lock.
+No full catalogue/site build, EnergyPlus simulation or lengthy CI was run.
+Independent read-only review found no remaining issues; it reproduced the focused
+artifacts, verified all 10 locked source files and checked 48 physical edge cases.
