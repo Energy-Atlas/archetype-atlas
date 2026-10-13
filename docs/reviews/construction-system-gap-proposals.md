@@ -293,9 +293,9 @@ instantiation. Active air requirements must be complete before package readiness
 ## C07 — Residential pressure-test leakage to natural infiltration
 
 **Current decision:** Fixed catalogue natural ACH per construction and climate
-zone is required, independent of consumer geometry and zoning. Reference
-geometry and climate-factor conditions remain open. See ADR 0020's proposed
-common reference enclosure, which requires an explicit answer. The pinned source's
+zone is required, independent of consumer geometry and zoning. Use source
+archetype reference geometry for derivation, as accepted under ADR 0020;
+climate factors and conversion details remain open. The pinned source's
 annual-average scalar helper is a candidate conversion; this entry's earlier
 weather-dependent model proposal does not constitute acceptance of hourly output.
 

@@ -7,8 +7,9 @@
 **Current milestone (2026-10-13):** First ship above-ground construction at 100%
 coverage. Combined ground/foundation/basement, its below-grade/interface assemblies,
 and all systems are deferred. Construction includes infiltration only; fixed
-catalogue ACH per construction and climate zone is selected, with reference
-conditions still open. Follow [ADR 0020](../../adr/0020-above-ground-construction-first-release.md)
+catalogue ACH per construction and climate zone is selected, derived using source
+archetype reference geometry. Climate factors and conversion details remain open.
+Follow [ADR 0020](../../adr/0020-above-ground-construction-first-release.md)
 for the revised publication gate and source selector/dependency audit.
 
 **Architecture:** Extend the existing separate catalogue objects and pages with versioned consumer contracts. Recover source semantics before applying reviewed defaults; distinguish unknown physics from geometry, assignment and sizing supplied by the simulation consumer. Keep the later generator and publication choices open until their evidence and alternatives have been reviewed.

@@ -54,7 +54,8 @@ Current milestone: publish above-ground construction at 100% coverage, independe
 of deferred ground/foundation and systems. Foundation/basement owns its below-grade
 and foundation-dependent interface assemblies. Construction includes infiltration;
 mechanical outdoor/total-air requirements are deferred. Fixed catalogue ACH per
-construction and climate zone is selected; reference conditions remain open.
+construction and climate zone is selected, derived using source archetype
+reference geometry. Climate factors and conversion details remain open.
 [ADR 0020](adr/0020-above-ground-construction-first-release.md)
 supersedes the earlier all-kind publication gate for this first milestone.
 

@@ -1,6 +1,7 @@
 # ADR 0020: Above-ground construction first, with foundation/ground deferred
 
-Date: 2026-10-13. Status: accepted scope; constant-ACH reference conditions open.
+Date: 2026-10-13. Status: accepted scope and source reference geometry;
+constant-ACH climate/conversion conditions open.
 
 ## Decisions
 
@@ -27,8 +28,10 @@ The user selected fixed catalogue natural ACH per construction and climate zone,
 rather than ACH(t) or a scalar resolved from the consumer's actual geometry.
 Store this enclosure-level value on a package/enclosure, not on an individual
 wall/window material. The same selected catalogue value is reused across building
-geometry and zoning variants. No reference height, weather factor, universal
-pressure-test conversion or averaging policy is accepted yet. Pressure-test
+geometry and zoning variants. The user selects source archetype reference
+geometry for deriving that fixed value. Recover its operands and source defaults
+with provenance; do not substitute the proposed common enclosure. Climate
+factors, conversion details and averaging policy remain open. Pressure-test
 ACH50 and its reference pressure remain source evidence.
 
 Earlier decisions remain: ASHRAE climate-zone/group resolution with no EPW-location
@@ -80,36 +83,55 @@ is a candidate source-backed scalar method, not an executed recovery in this pas
 or proof of parity with dynamic AIM-2 infiltration. It must not be applied to
 commercial leakage without a separately supported commercial conversion.
 
-The fixed catalogue choice is settled. Before choosing final scalar values,
-specify its reference enclosure and the climate-zone factor/reference forcing
-and reproducible derivation. Retain the source method's reference
+The fixed catalogue and source archetype geometry choices are settled. Before
+choosing final scalar values, recover the source reference enclosure and specify
+the climate-zone factor/reference forcing and reproducible derivation. Retain the source method's reference
 conditions explicitly; do not invent an ACH50 divisor or assign a unique weather
 factor from climate-zone membership alone. Normalized outputs should not carry
 EPW-location applicability axes.
 
-### Proposed reference enclosure (not yet accepted)
+### Accepted source archetype reference geometry
 
-Use one common one-storey reference enclosure for catalogue normalization,
-independent of the source program or consumer geometry. Proposed reference:
-185 m² conditioned floor area, square plan, 2.5 m conditioned/infiltration height
-and 462.5 m³ conditioned volume. The area and height are taken from the pinned
-weather helper's reference calculation; square plan and applying this geometry
-to all construction packages are new atlas assumptions. They are not source
-measurements of the selected construction variants. This isolates construction
-leakage differences rather than incorporating source building-form differences.
+Use the pinned source archetype's reference geometry to derive the catalogue
+constant, then reuse that value without recalculating it for consumer geometry.
+Record the reference geometry identity and operands in derivation evidence.
+Reference geometry is part of the value's derivation, not a required consumer
+geometry input or a program-JSON dependency. Assemblies remain reusable.
+
+The earlier alternative of one common 185 m² square, 2.5 m-high, 462.5 m³
+enclosure is superseded by the user's source-archetype choice. The residential
+weather helper's own fixed reference conditions still belong to that helper's
+provenance; they do not replace each archetype's leakage geometry.
+
+Read-only audit of `data/program-inputs/residential-v1.json#/records` finds
+source CFA defaults for all 41 fixtures (322–5,587 ft²), plus ceiling height
+(8.0 ft in all 41), above-grade floor count (1, 2, 3, 4 or 15) and aspect ratio
+in all 41 expanded argument sets. These are starting operands, not a recovered
+infiltration geometry certificate. Source height/volume methods, unit position
+and exposure still need evaluation; total building floor count must not simply
+be used as an apartment's leakage height.
+
+The 183 commercial packages include 10 `Any` and five `Office` packages in
+`data/definition-releases/v0.1.1/constructions.json`. Such selectors do not
+identify a unique reference form. Trace applicable pinned source models and
+retain reference variants where their conversions differ; do not silently pick
+Medium Office for a generic selector, average forms or collapse different ACH
+derivations. Reconcile the final reference mapping before freezing the catalogue.
 
 Recover each source's leakage basis before using the reference geometry:
 commercial floor-area and exterior-area rates require different conversions;
 residential unit-total tests must retain their distinction from exterior-only
 leakage. Attached-unit exterior fractions must not silently become one. These
 conversion details and one reproducible factor per ASHRAE climate zone remain
-open; a common reference enclosure alone does not resolve them. No scalar values
-have been generated or approved through this proposal.
+open. Source geometry selection does not authorize a universal conversion or
+discard foundation-associated leakage from a whole-enclosure pressure test.
+Ground/foundation delivery remains deferred. No scalar values have been generated
+or validated through this decision record.
 
-**Your comments on the proposed reference enclosure (explicit answer required):**
+**Your comments on reference geometry:**
 
 <!-- comments:constant-ach-reference:begin -->
-
+Source archetype reference geometry
 <!-- comments:constant-ach-reference:end -->
 
 Source evidence: ResStock revision `dd25369f41a83a0767aefeeac0b6f8a0b0edd649`,

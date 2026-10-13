@@ -193,8 +193,25 @@ consumer does not recalculate it from actual building geometry. Store leakage
 at package/enclosure level and reuse the selected value across geometry/zoning
 variants. ADR 0020 records a proposed common reference enclosure separately from
 this accepted decision; its geometry and climate factors are not approved yet.
-Residential source fixtures retain different floor counts/ceiling heights and
+Residential source fixtures retain different floor counts and
 source CFA defaults, so using their geometry would incorporate building-form
 differences into the catalogue constants. Source leakage bases, attached-unit
 exterior fractions and commercial conversion still need recovery. No numeric
 ACH, JSON change, source regeneration or site/CI build accompanies this record.
+
+## Source archetype ACH reference geometry (2026-10-13)
+
+The user chooses source archetype reference geometry, superseding the proposed
+common one-storey reference enclosure. The catalogue constant remains fixed for
+the consumer's geometry/zoning variants. Reference geometry and source defaults
+are derivation evidence, not a dependency on program JSON or consumer geometry.
+
+The existing residential recovery provides source CFA defaults, ceiling height,
+floor count and aspect ratio for all 41 fixtures. Ceiling height is uniformly
+8.0 ft; the preceding entry's original suggestion of varying ceiling heights was
+incorrect and is corrected above. Infiltration height/volume and exposure still
+require source-rule recovery. Ten `Any` and five `Office` commercial packages
+require tracing reference-model mappings rather than choosing an arbitrary form.
+Preserve distinct reference variants when their derived constants differ.
+Climate factors and conversion details remain open. No scalar ACH generation,
+JSON regeneration, system/ground implementation or site/CI build was performed.
