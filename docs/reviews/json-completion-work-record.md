@@ -185,3 +185,16 @@ closure before claiming 100% coverage. The commercial package infiltration
 population is 906 unknown occurrences; its 3,624 mechanical-air occurrences are
 outside this milestone. No physics/exporter changes or catalogue/site generation
 were performed in this scope/coverage audit.
+
+## Fixed catalogue ACH decision (2026-10-13)
+
+The user selects fixed catalogue ACH per construction and climate zone. The
+consumer does not recalculate it from actual building geometry. Store leakage
+at package/enclosure level and reuse the selected value across geometry/zoning
+variants. ADR 0020 records a proposed common reference enclosure separately from
+this accepted decision; its geometry and climate factors are not approved yet.
+Residential source fixtures retain different floor counts/ceiling heights and
+source CFA defaults, so using their geometry would incorporate building-form
+differences into the catalogue constants. Source leakage bases, attached-unit
+exterior fractions and commercial conversion still need recovery. No numeric
+ACH, JSON change, source regeneration or site/CI build accompanies this record.

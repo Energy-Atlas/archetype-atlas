@@ -23,10 +23,13 @@ release. Mechanical outdoor-air and minimum total-supply requirements are
 deferred with systems. Preserve their raw source evidence; do not count them as
 zero or treat their unresolved values as active construction export blockers.
 
-The user selected constant ACH rather than ACH(t), and requested discussion of
-reference conditions. Constant output is accepted; no reference height, weather
-factor, universal pressure-test conversion or averaging policy is accepted yet.
-Pressure-test ACH50 and its reference pressure remain source evidence.
+The user selected fixed catalogue natural ACH per construction and climate zone,
+rather than ACH(t) or a scalar resolved from the consumer's actual geometry.
+Store this enclosure-level value on a package/enclosure, not on an individual
+wall/window material. The same selected catalogue value is reused across building
+geometry and zoning variants. No reference height, weather factor, universal
+pressure-test conversion or averaging policy is accepted yet. Pressure-test
+ACH50 and its reference pressure remain source evidence.
 
 Earlier decisions remain: ASHRAE climate-zone/group resolution with no EPW-location
 records in construction applicability; simple/detailed glazing alternatives for
@@ -77,13 +80,37 @@ is a candidate source-backed scalar method, not an executed recovery in this pas
 or proof of parity with dynamic AIM-2 infiltration. It must not be applied to
 commercial leakage without a separately supported commercial conversion.
 
-Before choosing final scalar values, settle whether the constant is a catalogue
-reference value or is resolved once for an actual physical building and reused
-across its zoning variants. Also specify the climate-zone factor/reference
-forcing and its reproducible derivation. Retain the source method's reference
+The fixed catalogue choice is settled. Before choosing final scalar values,
+specify its reference enclosure and the climate-zone factor/reference forcing
+and reproducible derivation. Retain the source method's reference
 conditions explicitly; do not invent an ACH50 divisor or assign a unique weather
 factor from climate-zone membership alone. Normalized outputs should not carry
 EPW-location applicability axes.
+
+### Proposed reference enclosure (not yet accepted)
+
+Use one common one-storey reference enclosure for catalogue normalization,
+independent of the source program or consumer geometry. Proposed reference:
+185 m² conditioned floor area, square plan, 2.5 m conditioned/infiltration height
+and 462.5 m³ conditioned volume. The area and height are taken from the pinned
+weather helper's reference calculation; square plan and applying this geometry
+to all construction packages are new atlas assumptions. They are not source
+measurements of the selected construction variants. This isolates construction
+leakage differences rather than incorporating source building-form differences.
+
+Recover each source's leakage basis before using the reference geometry:
+commercial floor-area and exterior-area rates require different conversions;
+residential unit-total tests must retain their distinction from exterior-only
+leakage. Attached-unit exterior fractions must not silently become one. These
+conversion details and one reproducible factor per ASHRAE climate zone remain
+open; a common reference enclosure alone does not resolve them. No scalar values
+have been generated or approved through this proposal.
+
+**Your comments on the proposed reference enclosure (explicit answer required):**
+
+<!-- comments:constant-ach-reference:begin -->
+
+<!-- comments:constant-ach-reference:end -->
 
 Source evidence: ResStock revision `dd25369f41a83a0767aefeeac0b6f8a0b0edd649`,
 `resources/hpxml-measures/HPXMLtoOpenStudio/resources/airflow.rb`,

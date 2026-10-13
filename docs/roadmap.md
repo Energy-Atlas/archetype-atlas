@@ -53,8 +53,9 @@ Medium Office and residential pages. The program-consistency branch was retired.
 Current milestone: publish above-ground construction at 100% coverage, independently
 of deferred ground/foundation and systems. Foundation/basement owns its below-grade
 and foundation-dependent interface assemblies. Construction includes infiltration;
-mechanical outdoor/total-air requirements are deferred. Constant ACH is selected;
-its reference conditions remain open. [ADR 0020](adr/0020-above-ground-construction-first-release.md)
+mechanical outdoor/total-air requirements are deferred. Fixed catalogue ACH per
+construction and climate zone is selected; reference conditions remain open.
+[ADR 0020](adr/0020-above-ground-construction-first-release.md)
 supersedes the earlier all-kind publication gate for this first milestone.
 
 The initial above-ground/interior inventory contains 2,982 elements, plus 183
