@@ -1,7 +1,7 @@
 # ADR 0018: Draw-only program water-heating energy
 
-Date: 2026-10-12. Status: accepted modeling boundary; consumer schema and
-implementation pending.
+Date: 2026-10-12. Status: accepted modeling boundary; opt-in Program JSON 4
+implemented, with three source temperature conflicts explicitly blocked.
 
 ## Decision
 
@@ -41,23 +41,31 @@ data or the completed recovery work in [ADR 0017](0017-independent-energy-source
 Detailed DHW/solar definitions and recovered loss coefficients remain separate
 source evidence and can support future detailed consumers.
 
-## Remaining contract work
+## Implementation and remaining decisions
 
-- Specify a versioned program representation and the selection of its alternative
-  to explicit equipment heating. Program JSON 3.0.0 currently exports water draw;
-  it does not yet implement this energy representation.
-- Recover and identify conversion performance. EF/UEF ratings are not automatically
-  interchangeable with burner conversion efficiency. Missing performance stays
-  unknown; this decision introduces no fallback efficiency or fuel.
-- Preserve main/booster thermal staging so already heated water is not heated
-  from mains twice. Demand ownership and inlet-temperature semantics must remain
-  explicit where source services are coupled.
+- [Program JSON 4.0.0](../program-json-v4-contract.md) supplies the opt-in ready
+  recipe. Program v3 and frozen/public artifacts remain unchanged. The simulation
+  supplies fluid properties explicitly, alongside weather/calendar and scaling;
+  this does not introduce an Atlas density or specific-heat assumption.
+- All 154 commercial channels execute the pinned source factory/efficiency rule;
+  the 41 residential heater conversions come from the preceding pinned recovery.
+  EF/UEF are not exported as burner efficiency. Missing performance still fails
+  export; no fallback efficiency or fuel is introduced.
+- Main/booster temperature lifts, separate fuels, shared ownership and alternative
+  detailed-equipment accounting are implemented and checked with focused tests.
+- Three SmallHotel main-loop laundry targets exceed their source main heater
+  outlet. They and mixtures containing them remain blocked. The contract records
+  a concrete source-bounded delivery proposal for discussion, without reassigning
+  the source loop or silently lowering the requested target.
 - Specify heat-pump conversion if such heaters enter the supported inventory;
   do not replace a heat-pump model with burner efficiency. Heater auxiliaries
   and the one solar fixture now have explicit scope decisions above.
-- Validate weather sensitivity, unit/basis scaling, fuel identity, shared-service
-  deduplication and energy conservation for the included draw-heating scope.
-  Enumerate the skipped solar fixture separately from unresolved performance.
+- Focused tests check weather sensitivity, scaling, fuel identity, shared-service
+  deduplication, staging and heat conservation. The coverage census enumerates
+  the skipped solar case separately from the source temperature conflicts and
+  services requiring consumer attachment. The full v4 catalogue is not generated
+  or published by this implementation.
 
-This decision records the selected scope only. No schema, program artifact,
-site or simulation implementation is changed by this ADR.
+The opt-in schema/exporter and four pilots implement this decision. Site builds,
+simulations and regeneration of the unchanged full program library are excluded
+from this focused pass.

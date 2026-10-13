@@ -1,0 +1,1814 @@
+{
+  "schema_version": "4.0.0",
+  "kind": "program",
+  "export_mode": "defaulted",
+  "id": "program-0c7698c80e7049e6280f5373:defaulted:atlas-program-defaults-2.0.0:draw-only-v1",
+  "name": "WholeBuilding - Lg Office-others_LargeOffice",
+  "scope": "program",
+  "source": {
+    "program_id": "program-0c7698c80e7049e6280f5373",
+    "definition_release": "v0.1.1",
+    "building_type": "LargeOffice",
+    "template": "90.1-2019",
+    "evidence_view": "reviewed",
+    "evidence": [
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/occupancy_per_area",
+        "original_value": 5.0,
+        "original_unit": "people/1000 ft2",
+        "transformation": "convert people/1000 ft2 to person/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/lighting_per_area",
+        "original_value": 0.64,
+        "original_unit": "W/ft2",
+        "transformation": "convert W/ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/additional_lighting_per_area",
+        "original_value": null,
+        "original_unit": "W/ft2",
+        "transformation": "convert W/ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/electric_equipment_per_area",
+        "original_value": 0.75,
+        "original_unit": "W/ft2",
+        "transformation": "convert W/ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/gas_equipment_per_area",
+        "original_value": null,
+        "original_unit": "Btu/h-ft2",
+        "transformation": "convert Btu/h-ft2 to W/m2; null stays null",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/heating_setpoint_schedule",
+        "original_value": "OfficeLarge HTGSETP_SCH_YES_OPTIMUM",
+        "original_unit": "schedule name",
+        "transformation": "resolve schedule ID with role temperature",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/cooling_setpoint_schedule",
+        "original_value": "OfficeLarge CLGSETP_SCH_NO_SETBACK",
+        "original_unit": "schedule name",
+        "transformation": "resolve schedule ID with role temperature",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": "sourcefile-9ff206ef97eb739f22a8",
+        "locator": "/space_types/151/occupancy_activity_schedule",
+        "original_value": "OfficeLarge ACTIVITY_SCH",
+        "original_unit": "schedule name",
+        "transformation": "resolve schedule ID with role activity",
+        "extraction_date": "2026-10-07",
+        "interpretation": "Pre-control standards inputs; additional lighting remains separate. Infiltration is not reported in this space-type table. Other source fields retained as evidence with upstream units, not silently applied."
+      },
+      {
+        "source_file_id": null,
+        "locator": "resolution/resolution-4e4629d7817ac1456bb4",
+        "original_value": {
+          "calendar_independent": true,
+          "constant_value": 0
+        },
+        "original_unit": "dimensionless",
+        "transformation": "explicit frozen reviewed overlay",
+        "extraction_date": "2026-10-07",
+        "interpretation": "User-approved program gas-equipment absence in the clean standards space-type recipe; constant zero schedule and density. Does not classify the building as all-electric or zero gas heating/water heating; direct/custom loads require a separate variant."
+      },
+      {
+        "source_file_id": null,
+        "locator": "resolution/resolution-781297d87af758085350",
+        "original_value": 0,
+        "original_unit": "W/m2",
+        "transformation": "explicit frozen reviewed overlay",
+        "extraction_date": "2026-10-07",
+        "interpretation": "User-approved program gas-equipment absence in the clean standards space-type recipe; constant zero schedule and density. Does not classify the building as all-electric or zero gas heating/water heating; direct/custom loads require a separate variant."
+      }
+    ],
+    "source_family": "code_prototype_rules",
+    "climate": {
+      "status": "shared",
+      "basis": "Selected standards program recipe has no climate selector"
+    },
+    "vintage": {
+      "status": "exact",
+      "value": "90.1-2019",
+      "kind": "source_template"
+    }
+  },
+  "loads": [
+    {
+      "demand_id": "demand-47b138f5be1675104f453d17",
+      "type": "occupancy",
+      "end_use": "occupancy",
+      "value": 0.05381955208354861,
+      "unit": "person/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-8313de3d2a5dd03848d1",
+      "host": "assigned_zone"
+    },
+    {
+      "demand_id": "demand-562fec51ca7f82246b451977",
+      "type": "lighting",
+      "end_use": "lighting",
+      "value": 6.888902666694222,
+      "unit": "W/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-5d15bceca03f659e1a83",
+      "heat_fractions": {
+        "radiant": 0.7,
+        "visible": 0.2,
+        "return_air": 0.0
+      },
+      "host": "assigned_zone"
+    },
+    {
+      "demand_id": "demand-942d3ac19280f3c35e5959ca",
+      "type": "electric_equipment",
+      "end_use": "electric_equipment",
+      "value": 8.072932812532292,
+      "unit": "W/m2",
+      "basis": "floor_area",
+      "schedule_id": "schedule-d574ce7b91b61e34ebf4",
+      "heat_fractions": {
+        "radiant": 0.5,
+        "latent": 0.0,
+        "lost": 0.0
+      },
+      "host": "assigned_zone",
+      "fuel": "electricity"
+    }
+  ],
+  "controls": {
+    "heating_enabled": true,
+    "cooling_enabled": true,
+    "heating_setpoint_schedule_id": "schedule-ef494b2589fa46d7628c",
+    "cooling_setpoint_schedule_id": "schedule-cdf875cd28d1fa7f52c4",
+    "activity_schedule_id": "schedule-0334c501aaecc665d6ae",
+    "people_radiant_fraction": 0.3,
+    "people_sensible_fraction": "autocalculate",
+    "conditioning_state": "heating_and_cooling"
+  },
+  "schedules": {
+    "schedule-8313de3d2a5dd03848d1": {
+      "id": "schedule-8313de3d2a5dd03848d1",
+      "name": "OfficeLarge BLDG_OCC_SCH",
+      "unit": "1",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-8313de3d2a5dd03848d1",
+        "interpolation": "none",
+        "provenance_id": "provenance-ef7dbf0d8d033e7af618",
+        "schedule_type": "fraction",
+        "source_name": "OfficeLarge BLDG_OCC_SCH",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12487,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12488,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12489,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12490,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Occupancy",
+            "source_index": 12491,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.1,
+            0.1,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.05,
+            0.05,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.1,
+            0.2,
+            0.95,
+            0.95,
+            0.95,
+            0.95,
+            0.5,
+            0.95,
+            0.95,
+            0.95,
+            0.95,
+            0.3,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ]
+    },
+    "schedule-5d15bceca03f659e1a83": {
+      "id": "schedule-5d15bceca03f659e1a83",
+      "name": "OfficeLarge BLDG_LIGHT_SCH_2013",
+      "unit": "1",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-5d15bceca03f659e1a83",
+        "interpolation": "none",
+        "provenance_id": "provenance-7a0f18c995e349cb4e36",
+        "schedule_type": "fraction",
+        "source_name": "OfficeLarge BLDG_LIGHT_SCH_2013",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12482,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12483,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12484,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12485,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Lighting",
+            "source_index": 12486,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.045280057,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.090560114,
+            0.090560114,
+            0.271680342,
+            0.271680342,
+            0.271680342,
+            0.271680342,
+            0.135840171,
+            0.135840171,
+            0.135840171,
+            0.135840171,
+            0.135840171,
+            0.045280057,
+            0.045280057,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+            0.1,
+            0.090560114,
+            0.271680342,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.815041026,
+            0.45280057,
+            0.271680342,
+            0.271680342,
+            0.181120228,
+            0.181120228,
+            0.090560114,
+            0.045280057
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ]
+    },
+    "schedule-d574ce7b91b61e34ebf4": {
+      "id": "schedule-d574ce7b91b61e34ebf4",
+      "name": "OfficeLarge BLDG_EQUIP_SCH_2013",
+      "unit": "1",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-d574ce7b91b61e34ebf4",
+        "interpolation": "none",
+        "provenance_id": "provenance-269e6a3d92e9fae2432c",
+        "schedule_type": "fraction",
+        "source_name": "OfficeLarge BLDG_EQUIP_SCH_2013",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12467,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12468,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12469,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12470,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Equipment",
+            "source_index": 12471,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2847429789,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.3796573052,
+            0.3796573052,
+            0.4745716315,
+            0.4745716315,
+            0.4745716315,
+            0.4745716315,
+            0.33220014205,
+            0.33220014205,
+            0.33220014205,
+            0.33220014205,
+            0.33220014205,
+            0.2847429789,
+            0.2847429789,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264,
+            0.2210823264
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            1.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            0.2947764352,
+            0.2947764352,
+            0.2947764352,
+            0.2947764352,
+            0.2947764352,
+            0.2947764352,
+            0.3796573052,
+            0.3796573052,
+            0.8542289367,
+            0.8542289367,
+            0.8542289367,
+            0.8542289367,
+            0.7593146104,
+            0.8542289367,
+            0.8542289367,
+            0.8542289367,
+            0.8542289367,
+            0.4745716315,
+            0.3796573052,
+            0.3796573052,
+            0.3796573052,
+            0.3796573052,
+            0.3796573052,
+            0.3796573052
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            0.0
+          ]
+        }
+      ]
+    },
+    "schedule-ef494b2589fa46d7628c": {
+      "id": "schedule-ef494b2589fa46d7628c",
+      "name": "OfficeLarge HTGSETP_SCH_YES_OPTIMUM",
+      "unit": "degC",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-ef494b2589fa46d7628c",
+        "interpolation": "none",
+        "provenance_id": "provenance-14d6d180a207193307a9",
+        "schedule_type": "temperature",
+        "source_name": "OfficeLarge HTGSETP_SCH_YES_OPTIMUM",
+        "time_resolution_minutes": 60,
+        "units": "C",
+        "rule_metadata": [
+          {
+            "day_types": "Default|SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12558,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12559,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12560,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12561,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default",
+            "SmrDsn"
+          ],
+          "values": [
+            15.6
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Sat"
+          ],
+          "values": [
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            17.8,
+            20.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Wkdy"
+          ],
+          "values": [
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            17.8,
+            20.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            15.6,
+            15.6
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn"
+          ],
+          "values": [
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            15.6,
+            17.6,
+            19.6,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            15.6,
+            15.6
+          ]
+        }
+      ]
+    },
+    "schedule-cdf875cd28d1fa7f52c4": {
+      "id": "schedule-cdf875cd28d1fa7f52c4",
+      "name": "OfficeLarge CLGSETP_SCH_NO_SETBACK",
+      "unit": "degC",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-cdf875cd28d1fa7f52c4",
+        "interpolation": "none",
+        "provenance_id": "provenance-dc3f09bc471420eeded2",
+        "schedule_type": "temperature",
+        "source_name": "OfficeLarge CLGSETP_SCH_NO_SETBACK",
+        "time_resolution_minutes": 60,
+        "units": "C",
+        "rule_metadata": [
+          {
+            "day_types": "Default|WntrDsn|Sat|Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12505,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          },
+          {
+            "day_types": "SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Thermostat Setpoint",
+            "source_index": 12506,
+            "source_units": "C",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default",
+            "WntrDsn",
+            "Sat",
+            "Wkdy"
+          ],
+          "values": [
+            24.0
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn"
+          ],
+          "values": [
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            26.7,
+            25.7,
+            25.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            24.0,
+            26.7,
+            26.7
+          ]
+        }
+      ]
+    },
+    "schedule-0334c501aaecc665d6ae": {
+      "id": "schedule-0334c501aaecc665d6ae",
+      "name": "OfficeLarge ACTIVITY_SCH",
+      "unit": "W/person",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-0334c501aaecc665d6ae",
+        "interpolation": "none",
+        "provenance_id": "provenance-f620dd838c82b66ba366",
+        "schedule_type": "activity",
+        "source_name": "OfficeLarge ACTIVITY_SCH",
+        "time_resolution_minutes": 60,
+        "units": "W/person",
+        "rule_metadata": [
+          {
+            "day_types": "Default|WntrDsn|SmrDsn",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Activity",
+            "source_index": 12450,
+            "source_units": "W",
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Constant"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default",
+            "WntrDsn",
+            "SmrDsn"
+          ],
+          "values": [
+            120.0
+          ]
+        }
+      ]
+    },
+    "schedule-545118424083fc6f6420": {
+      "id": "schedule-545118424083fc6f6420",
+      "name": "OfficeLarge BLDG_SWH_SCH",
+      "unit": "1",
+      "timestep_minutes": 60,
+      "source_context": {
+        "id": "schedule-545118424083fc6f6420",
+        "interpolation": "none",
+        "provenance_id": "provenance-e6b3f963c80316be372a",
+        "schedule_type": "fraction",
+        "source_name": "OfficeLarge BLDG_SWH_SCH",
+        "time_resolution_minutes": 60,
+        "units": "dimensionless",
+        "rule_metadata": [
+          {
+            "day_types": "Default",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Service Water Heating",
+            "source_index": 12492,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "SmrDsn|Wkdy",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Service Water Heating",
+            "source_index": 12493,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          },
+          {
+            "day_types": "WntrDsn|Sat",
+            "end_date": "2014-12-31T00:00:00+00:00",
+            "source_category": "Service Water Heating",
+            "source_index": 12494,
+            "source_units": null,
+            "start_date": "2014-01-01T00:00:00+00:00",
+            "type": "Hourly"
+          }
+        ]
+      },
+      "type": "ruleset",
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.07,
+            0.04,
+            0.04,
+            0.04,
+            0.04,
+            0.06,
+            0.06,
+            0.09,
+            0.06,
+            0.04,
+            0.04,
+            0.04,
+            0.04,
+            0.04,
+            0.04,
+            0.07,
+            0.04,
+            0.04
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "SmrDsn",
+            "Wkdy"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.07,
+            0.19,
+            0.35,
+            0.38,
+            0.39,
+            0.47,
+            0.57,
+            0.54,
+            0.34,
+            0.33,
+            0.44,
+            0.26,
+            0.21,
+            0.15,
+            0.17,
+            0.08,
+            0.05,
+            0.05
+          ]
+        },
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "WntrDsn",
+            "Sat"
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.07,
+            0.11,
+            0.15,
+            0.21,
+            0.19,
+            0.23,
+            0.2,
+            0.19,
+            0.15,
+            0.13,
+            0.14,
+            0.07,
+            0.07,
+            0.07,
+            0.07,
+            0.09,
+            0.05,
+            0.05
+          ]
+        }
+      ]
+    },
+    "source-water-target-43cc970a26ba7a4062073379": {
+      "id": "source-water-target-43cc970a26ba7a4062073379",
+      "name": "Source fixture target temperature",
+      "unit": "degC",
+      "type": "ruleset",
+      "timestep_minutes": 60,
+      "rule_selection": "last_specific_match_else_last_default",
+      "rules": [
+        {
+          "start_date": "01-01",
+          "end_date": "12-31",
+          "day_types": [
+            "Default"
+          ],
+          "values": [
+            60.0
+          ]
+        }
+      ]
+    }
+  },
+  "shared_services": [],
+  "default_policy_id": "atlas-program-defaults-2.0.0",
+  "required_bindings": [
+    "floor_area_m2",
+    "shared_service_host",
+    "weather_file",
+    "calendar_year",
+    "holiday_calendar",
+    "water_density_kg_m3",
+    "water_specific_heat_J_kg_K"
+  ],
+  "metadata": {
+    "absent_demands": [
+      {
+        "demand_id": "demand-8bc75d79e59444eff754a3eb",
+        "type": "lighting",
+        "end_use": "additional_lighting",
+        "value": 0,
+        "unit": "W/m2",
+        "basis": "floor_area",
+        "schedule_id": "schedule-5d15bceca03f659e1a83",
+        "heat_fractions": {
+          "radiant": 0.7,
+          "visible": 0.2,
+          "return_air": 0.0
+        },
+        "host": "assigned_zone"
+      },
+      {
+        "demand_id": "demand-575e84466307616ee7b77f95",
+        "type": "gas_equipment",
+        "end_use": "gas_equipment",
+        "value": 0,
+        "unit": "W/m2",
+        "basis": "floor_area",
+        "schedule_id": "schedule-c24e9ef3346820eb49c88a3b",
+        "heat_fractions": {
+          "radiant": null,
+          "latent": null,
+          "lost": null
+        },
+        "host": "assigned_zone",
+        "fuel": "natural gas"
+      }
+    ],
+    "resolutions": [
+      {
+        "demand_id": "demand-8bc75d79e59444eff754a3eb",
+        "field": "value",
+        "original_value": null,
+        "replacement_value": 0,
+        "rule": "accepted-absence",
+        "decision": "ADR 0016"
+      }
+    ],
+    "excluded_scope": [
+      "ventilation",
+      "infiltration"
+    ],
+    "source_operands": {
+      "loads": [
+        {
+          "basis": "floor_area",
+          "demand_id": "demand-47b138f5be1675104f453d17",
+          "evidence_id": "evidence-b385fc14e4ca88e545c73293",
+          "quantity": "occupancy",
+          "required_inputs": [
+            "floor_area"
+          ],
+          "schedule_id": "schedule-8313de3d2a5dd03848d1",
+          "scope": "program",
+          "status": "known",
+          "thermal_effects": {},
+          "unit": "person/m2",
+          "value": 0.05381955208354861
+        },
+        {
+          "basis": "floor_area",
+          "demand_id": "demand-562fec51ca7f82246b451977",
+          "evidence_id": "evidence-ebad8fab9726405c6d39ff45",
+          "quantity": "lighting",
+          "required_inputs": [
+            "floor_area"
+          ],
+          "schedule_id": "schedule-5d15bceca03f659e1a83",
+          "scope": "program",
+          "status": "known",
+          "thermal_effects": {
+            "radiant": {
+              "evidence_id": "evidence-984c6d41086ab266dcd3e30a",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.7
+            },
+            "to_return_air": {
+              "evidence_id": "evidence-b196a48facda4ec53b35bb17",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.0
+            },
+            "visible": {
+              "evidence_id": "evidence-62c522a987036dc35a1f8072",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.2
+            }
+          },
+          "unit": "W/m2",
+          "value": 6.888902666694222
+        },
+        {
+          "basis": "floor_area",
+          "demand_id": "demand-8bc75d79e59444eff754a3eb",
+          "evidence_id": "evidence-f0f238f8a2038ba97f6a1134",
+          "quantity": "additional_lighting",
+          "required_inputs": [
+            "floor_area"
+          ],
+          "schedule_id": "schedule-5d15bceca03f659e1a83",
+          "scope": "program",
+          "status": "unknown",
+          "thermal_effects": {
+            "radiant": {
+              "evidence_id": "evidence-984c6d41086ab266dcd3e30a",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.7
+            },
+            "to_return_air": {
+              "evidence_id": "evidence-b196a48facda4ec53b35bb17",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.0
+            },
+            "visible": {
+              "evidence_id": "evidence-62c522a987036dc35a1f8072",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.2
+            }
+          },
+          "unit": "W/m2",
+          "value": null
+        },
+        {
+          "basis": "floor_area",
+          "demand_id": "demand-942d3ac19280f3c35e5959ca",
+          "evidence_id": "evidence-8268deae31a78b9fff0100bd",
+          "quantity": "electric_equipment",
+          "required_inputs": [
+            "floor_area"
+          ],
+          "schedule_id": "schedule-d574ce7b91b61e34ebf4",
+          "scope": "program",
+          "status": "known",
+          "thermal_effects": {
+            "latent": {
+              "evidence_id": "evidence-0bdd197311f72d8b1764fafd",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.0
+            },
+            "lost": {
+              "evidence_id": "evidence-c124e19a91a41f354beb2dc5",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.0
+            },
+            "radiant": {
+              "evidence_id": "evidence-03e4114e35c9ff54e2399dca",
+              "required_inputs": [],
+              "status": "known",
+              "unit": "1",
+              "value": 0.5
+            }
+          },
+          "unit": "W/m2",
+          "value": 8.072932812532292
+        },
+        {
+          "basis": "floor_area",
+          "demand_id": "demand-575e84466307616ee7b77f95",
+          "evidence_id": "evidence-bf9cbb68ba065426fef5b1f7",
+          "quantity": "gas_equipment",
+          "required_inputs": [
+            "floor_area"
+          ],
+          "schedule_id": "schedule-c24e9ef3346820eb49c88a3b",
+          "scope": "program",
+          "status": "known",
+          "thermal_effects": {
+            "latent": {
+              "evidence_id": "evidence-02b194e99f12c6fd32a45615",
+              "required_inputs": [],
+              "status": "unknown",
+              "unit": "1",
+              "value": null
+            },
+            "lost": {
+              "evidence_id": "evidence-5e495fa7a5c17146dbaf56c3",
+              "required_inputs": [],
+              "status": "unknown",
+              "unit": "1",
+              "value": null
+            },
+            "radiant": {
+              "evidence_id": "evidence-822b71f2f224f37236f9da48",
+              "required_inputs": [],
+              "status": "unknown",
+              "unit": "1",
+              "value": null
+            }
+          },
+          "unit": "W/m2",
+          "value": 0
+        }
+      ],
+      "parameters": {
+        "activity_schedule_id": {
+          "evidence_id": "evidence-fd8121dfc67517ec421df555",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "schedule reference",
+          "value": "schedule-0334c501aaecc665d6ae"
+        },
+        "cooling_setpoint_schedule_id": {
+          "evidence_id": "evidence-cbe299fb198d08d3bf959ab6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "schedule reference",
+          "value": "schedule-cdf875cd28d1fa7f52c4"
+        },
+        "heating_setpoint_schedule_id": {
+          "evidence_id": "evidence-2bae4d95aaed388a5f3a4645",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "schedule reference",
+          "value": "schedule-ef494b2589fa46d7628c"
+        }
+      }
+    },
+    "aggregation": {
+      "calendar": {
+        "year": 2007,
+        "holidays": [],
+        "clock": "local_standard_time",
+        "timestep_minutes": 60,
+        "annual_samples": "Retained as recorded; holidays select ruleset profiles only."
+      },
+      "method": "Sum design-power trajectories; annual-energy-weighted constant heat fractions.",
+      "heat_partition": "Annual heat partition conserved; hourly partition is an approximation.",
+      "groups": [
+        {
+          "components": [
+            {
+              "load": {
+                "demand_id": "demand-942d3ac19280f3c35e5959ca",
+                "type": "electric_equipment",
+                "end_use": "electric_equipment",
+                "value": 8.072932812532292,
+                "unit": "W/m2",
+                "basis": "floor_area",
+                "schedule_id": "schedule-d574ce7b91b61e34ebf4",
+                "heat_fractions": {
+                  "radiant": 0.5,
+                  "latent": 0.0,
+                  "lost": 0.0
+                },
+                "host": "assigned_zone",
+                "fuel": "electricity"
+              },
+              "annual_energy": 32746.183495064048,
+              "annual_energy_weight": 1.0
+            }
+          ],
+          "annual_energy": 32746.183495064048,
+          "annual_energy_unit": "W/m2*h",
+          "status": "retained",
+          "demand_id": "demand-942d3ac19280f3c35e5959ca"
+        }
+      ],
+      "component_schedules": {
+        "schedule-d574ce7b91b61e34ebf4": {
+          "id": "schedule-d574ce7b91b61e34ebf4",
+          "name": "OfficeLarge BLDG_EQUIP_SCH_2013",
+          "unit": "1",
+          "timestep_minutes": 60,
+          "source_context": {
+            "id": "schedule-d574ce7b91b61e34ebf4",
+            "interpolation": "none",
+            "provenance_id": "provenance-269e6a3d92e9fae2432c",
+            "schedule_type": "fraction",
+            "source_name": "OfficeLarge BLDG_EQUIP_SCH_2013",
+            "time_resolution_minutes": 60,
+            "units": "dimensionless",
+            "rule_metadata": [
+              {
+                "day_types": "Default",
+                "end_date": "2014-12-31T00:00:00+00:00",
+                "source_category": "Equipment",
+                "source_index": 12467,
+                "source_units": null,
+                "start_date": "2014-01-01T00:00:00+00:00",
+                "type": "Hourly"
+              },
+              {
+                "day_types": "Sat",
+                "end_date": "2014-12-31T00:00:00+00:00",
+                "source_category": "Equipment",
+                "source_index": 12468,
+                "source_units": null,
+                "start_date": "2014-01-01T00:00:00+00:00",
+                "type": "Hourly"
+              },
+              {
+                "day_types": "SmrDsn",
+                "end_date": "2014-12-31T00:00:00+00:00",
+                "source_category": "Equipment",
+                "source_index": 12469,
+                "source_units": null,
+                "start_date": "2014-01-01T00:00:00+00:00",
+                "type": "Constant"
+              },
+              {
+                "day_types": "Wkdy",
+                "end_date": "2014-12-31T00:00:00+00:00",
+                "source_category": "Equipment",
+                "source_index": 12470,
+                "source_units": null,
+                "start_date": "2014-01-01T00:00:00+00:00",
+                "type": "Hourly"
+              },
+              {
+                "day_types": "WntrDsn",
+                "end_date": "2014-12-31T00:00:00+00:00",
+                "source_category": "Equipment",
+                "source_index": 12471,
+                "source_units": null,
+                "start_date": "2014-01-01T00:00:00+00:00",
+                "type": "Constant"
+              }
+            ]
+          },
+          "type": "ruleset",
+          "rule_selection": "last_specific_match_else_last_default",
+          "rules": [
+            {
+              "start_date": "01-01",
+              "end_date": "12-31",
+              "day_types": [
+                "Default"
+              ],
+              "values": [
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2847429789,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264
+              ]
+            },
+            {
+              "start_date": "01-01",
+              "end_date": "12-31",
+              "day_types": [
+                "Sat"
+              ],
+              "values": [
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.3796573052,
+                0.3796573052,
+                0.4745716315,
+                0.4745716315,
+                0.4745716315,
+                0.4745716315,
+                0.33220014205,
+                0.33220014205,
+                0.33220014205,
+                0.33220014205,
+                0.33220014205,
+                0.2847429789,
+                0.2847429789,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264,
+                0.2210823264
+              ]
+            },
+            {
+              "start_date": "01-01",
+              "end_date": "12-31",
+              "day_types": [
+                "SmrDsn"
+              ],
+              "values": [
+                1.0
+              ]
+            },
+            {
+              "start_date": "01-01",
+              "end_date": "12-31",
+              "day_types": [
+                "Wkdy"
+              ],
+              "values": [
+                0.2947764352,
+                0.2947764352,
+                0.2947764352,
+                0.2947764352,
+                0.2947764352,
+                0.2947764352,
+                0.3796573052,
+                0.3796573052,
+                0.8542289367,
+                0.8542289367,
+                0.8542289367,
+                0.8542289367,
+                0.7593146104,
+                0.8542289367,
+                0.8542289367,
+                0.8542289367,
+                0.8542289367,
+                0.4745716315,
+                0.3796573052,
+                0.3796573052,
+                0.3796573052,
+                0.3796573052,
+                0.3796573052,
+                0.3796573052
+              ]
+            },
+            {
+              "start_date": "01-01",
+              "end_date": "12-31",
+              "day_types": [
+                "WntrDsn"
+              ],
+              "values": [
+                0.0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "accepted_decisions": [],
+    "pending_decisions": [],
+    "scope_status": "complete_within_agreed_program_scope",
+    "water_heating": {
+      "decision": "ADR 0018",
+      "method": "draw_only",
+      "conversion_input": "data/program-inputs/dhw-conversion-v1.json",
+      "conversion_input_sha256": "55eaa803d81e06cd43979c7d3aa29a96dea0afaf91c0d08a6d569d2e1922ed83",
+      "system_input_sha256": "5fe18770ffe5c81c6219776bb77b0aea84f0e9441015f849f16f988ce83c2a25",
+      "solar_fixture": "skipped; v3 and detailed source evidence retained",
+      "fluid_properties": "consumer inputs; no Atlas constant defaults",
+      "double_counting": "Use these fuel recipes OR explicit heater equipment for the same demand, never both."
+    }
+  },
+  "water_heating": [
+    {
+      "demand_id": "service-a38508389268657fcf7c6256",
+      "method": "draw_only",
+      "draw": {
+        "demand_id": "service-a38508389268657fcf7c6256",
+        "type": "hot_water",
+        "end_use": "hot_water_volume",
+        "value": 3.6592313912e-05,
+        "unit": "m3/s",
+        "basis": "absolute",
+        "schedule_id": "schedule-545118424083fc6f6420",
+        "target_temperature_schedule_id": "source-water-target-43cc970a26ba7a4062073379",
+        "inlet_temperature": {
+          "method": "CorrelationFromWeatherFile",
+          "engine": "EnergyPlus",
+          "engine_version": "25.1.0"
+        },
+        "host": "assigned_zone"
+      },
+      "stages": [
+        {
+          "heater_id": "source-water-heater-0695ccce6e8153171a6a6c85",
+          "fuel": "natural gas",
+          "conversion_efficiency": 0.803984183466667,
+          "outlet_temperature_degC": 60.0,
+          "conversion_evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "extraction_date": "2026-10-12",
+            "source_locator": "lib/openstudio-standards/standards/Standards.WaterHeaterMixed.rb#water_heater_mixed_apply_efficiency",
+            "source_file_sha256": "1291b2d7b93641b2ce7ce2d31942e5eb55692ade9496f21a635d143953ddd0d6",
+            "supporting_source_locators": [
+              "lib/openstudio-standards/standards/Standards.Model.rb#model_find_objects",
+              "lib/openstudio-standards/service_water_heating/create_water_heater.rb#create_water_heater",
+              "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.water_heaters.json#water_heaters/36"
+            ],
+            "original_value": {
+              "equipment_type": "Storage Water Heaters",
+              "fuel_type": "NaturalGas",
+              "minimum_capacity": 105000.01,
+              "maximum_capacity": 99999999,
+              "minimum_storage": null,
+              "maximum_storage": null,
+              "minimum_capacity_per_storage": 0,
+              "maximum_capacity_per_storage": 3999.99,
+              "draw_profile": null,
+              "start_date": "1919-09-09T00:00:00+00:00",
+              "end_date": "2999-09-09T00:00:00+00:00",
+              "energy_factor_base": null,
+              "energy_factor_volume_derate": null,
+              "standby_loss_base": null,
+              "standby_loss_capacity_allowance": 800,
+              "standby_loss_volume_allowance": null,
+              "standby_loss_square_root_volume_allowance": 110,
+              "hourly_loss_base": null,
+              "hourly_loss_volume_allowance": null,
+              "thermal_efficiency": 0.8,
+              "uniform_energy_factor": null,
+              "uniform_energy_factor_base": null,
+              "uniform_energy_factor_volume_allowance": null,
+              "cop": null,
+              "r_value": null,
+              "first_hour_rating": null,
+              "solar_energy_factor": null
+            },
+            "original_unit": "source performance rating fields",
+            "transformation": "Execute pinned factory, template lookup and heater thermal-efficiency setter; EF/UEF are not exported as conversion efficiency.",
+            "interpretation_note": "Nominal prototype capacity/volume select performance; not consumer sizing. Failed source lookups remain unknown; factory efficiency is diagnostic only."
+          },
+          "temperature_evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/9/main_service_water_temperature",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 140.0,
+            "original_unit": "degF",
+            "transformation": "(value - 32) * 5/9"
+          },
+          "fuel_evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/9/main_water_heater_fuel",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": "Natural Gas",
+            "original_unit": "source fuel",
+            "transformation": "identity; retain source category"
+          }
+        }
+      ],
+      "output_unit": "W",
+      "zone_heat_gains": "excluded",
+      "exclusions": [
+        "standby_losses",
+        "heater_auxiliaries",
+        "pilot_consumption",
+        "solar_credit"
+      ],
+      "ownership": "instantiate_once",
+      "service_id": "service-a38508389268657fcf7c6256",
+      "alternative_to": "explicit_equipment_heating_for_same_demand"
+    }
+  ]
+}

@@ -65,3 +65,35 @@ unchanged program generation/validation. Use focused checks of changed behavior.
 
 The [ADR](../adr/0017-independent-energy-source-recovery.md) records concrete
 remaining source actions. No new scientific fallback assumption was adopted.
+
+## Draw-only program DHW follow-up (2026-10-12)
+
+The user's authorized follow-up implements [ADR 0018](../adr/0018-draw-only-program-water-heating-energy.md)
+as opt-in [Program JSON 4](../program-json-v4-contract.md). It does not make the
+detailed equipment/system contracts ready or complete remaining task 2 work.
+
+- All 154 commercial main/booster/laundry channels recover numeric conversion
+  efficiency by executing pinned source factory/lookup methods. All 41 existing
+  residential heater conversions remain available; 40 fixtures enter the new
+  representation after the explicit solar skip.
+- Four complete program pilots validate local, residential, shared-service and
+  mixture demand migration. The source census verifies all heater joins and
+  source water targets without rebuilding the full v3 program library.
+- Three SmallHotel source targets exceed main supply temperature and remain
+  blocked, including their dependent mixtures. The contract contains an annotated
+  proposal to cap actual delivery while preserving the requested target and unmet
+  temperature. No such policy is applied pending the user's decision.
+- The coverage artifact separately lists 59 independent source services without
+  an existing program attachment. Their conversion data is recovered; allocation
+  is not guessed or copied to every program.
+- The final reviewer reproduced an Important ownership gap. Three failing
+  regressions established that invented duplicate shared demands, unrelated
+  service reassignment and omitted water demands were accepted. Validation now
+  verifies the complete original v3 water inventory, ownership, assignments and
+  schedules. Those regressions pass after the fix.
+- Final verification: 31 focused/regression tests passed, source conversion
+  reexecution passed `--check`, and four-pilot/coverage reproduction passed
+  `--check`. No unexpected unresolved source join was found.
+- Standby losses, heater auxiliaries and pilot consumption stay excluded. No
+  density, specific heat, fuel or efficiency default is introduced. Full release,
+  site generation and lengthy CI remain outside this pass.
