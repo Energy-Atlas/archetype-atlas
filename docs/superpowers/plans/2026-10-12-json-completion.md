@@ -6,7 +6,7 @@
 
 **Architecture:** Extend the existing separate catalogue objects and pages with versioned consumer contracts. Recover source semantics before applying reviewed defaults; distinguish unknown physics from geometry, assignment and sizing supplied by the simulation consumer. Keep the later generator and publication choices open until their evidence and alternatives have been reviewed.
 
-**Gap proposals and user annotations:** [Construction/HVAC gap review](../../reviews/construction-system-gap-proposals.md). It groups the remaining gap types with concrete fixes and closure checks. The user's review rule is that no comment means agreement with that entry's written proposal; retain its comment areas and apply comments to equivalent cases.
+**Gap proposals and user annotations:** [Construction/HVAC gap review](../../reviews/construction-system-gap-proposals.md). Current phase (2026-10-13): constructions only. H and X entries are unreviewed; all system work is deferred and their blank comments do not signify agreement. Apply the reviewed C annotations, retain comment areas, and discuss C08's ground-axis separation before adopting that architecture.
 
 **Tech stack:** Python, JSON Schema, pinned upstream source/runtime calculations where necessary, unittest, MkDocs and the existing content-addressed JSON delivery.
 

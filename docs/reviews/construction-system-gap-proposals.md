@@ -1,6 +1,6 @@
 # Construction and HVAC gaps: descriptions and proposals
 
-Date: 2026-10-12. Branch: `feature/json-completion`.
+Date: 2026-10-12. Review scope updated: 2026-10-13. Branch: `feature/json-completion`.
 Evidence snapshot: commit `b131a20`, frozen definitions `v0.1.1`, and the
 construction/system recovery inputs. This document proposes fixes; it does not
 claim they have been implemented.
@@ -12,11 +12,29 @@ translation. Each entry states the gap, its reason, a concrete proposal and the
 check that would close it. The affected-ID inventories remain in the linked
 machine-readable census; this is not a separate entry for every catalogue row.
 
-**Your rule: no comment means agreement with that entry's proposal.** Write
-corrections, alternatives or constraints in its **Your comments** area. Comments
-override the proposal for that entry and equivalent cases. Empty comment areas
-do not authorize numerical fallbacks or scope changes that are not written here.
-Keep these comment areas intact when updating the document.
+**Current phase: constructions only (C entries).** The user has not reviewed
+H or X entries; all system work is deferred and blank H/X comments do not mean
+agreement. For the original reviewed C proposals, the earlier blank-comment
+agreement rule remains applicable unless a comment raises a question or changes
+the proposal. C08's ground-axis separation question is open. New architecture
+proposals are discussion items until decided, not accepted through an empty box.
+Write corrections, alternatives or constraints in the relevant **Your comments**
+area. Comments override the proposal for that entry and equivalent cases. Empty
+areas never authorize unwritten numerical fallbacks or scope changes. Preserve
+the user's comment text when updating this document.
+
+Construction annotations received on 2026-10-13:
+
+- C04: both simple and detailed glazing representations may be supplied for one
+  construction if needed; they are alternatives, not two additive assignments.
+- C05: ASHRAE climate zones/groups are the intended catalogue resolution. Do not
+  distinguish or record EPW locations in construction applicability. Simulation
+  weather inputs remain external to the catalogue.
+- C07: the ultimate delivered infiltration output should be ACH. Retain ACH50
+  and its pressure reference as source evidence; its translation to natural ACH
+  still follows the pinned source model and explicit applicable inputs.
+- C08: discuss separation of ground/basement configuration from construction,
+  system and program axes before selecting that architecture.
 
 Existing decisions remain binding: every construction and HVAC variant must be
 simulation-ready before step 2 closes; detailed DHW models are not required;
@@ -187,7 +205,7 @@ physical matches, distinct source contexts and gas/optical property applicabilit
 **Your comments (blank = agreement):**
 
 <!-- comments:C04:begin -->
-
+yes and we may have both glazing versions for 1 construction if needed
 <!-- comments:C04:end -->
 
 ## C05 — Construction packages and climate/element selection
@@ -215,7 +233,7 @@ selection rule with no missing referenced source physics.
 **Your comments (blank = agreement):**
 
 <!-- comments:C05:begin -->
-
+we can think climate group (if represeneted as ashrae cz) is the resolution we aim to get. epw locations are understood as proxies of these climates. if we see e.g. 2 epw locations within the same climate, we regard both being the same climate zone and pay no attention to the epw locations. in fact, we should not pay attention to or record epw locations.
 <!-- comments:C05:end -->
 
 ## C06 — Unknown scoped infiltration and air-exchange entries
@@ -277,7 +295,7 @@ and required inputs; apply the complete source model to all 41 fixtures.
 **Your comments (blank = agreement):**
 
 <!-- comments:C07:begin -->
-
+ok. the ultimate goal is to ship ach
 <!-- comments:C07:end -->
 
 ## C08 — Ground and surface geometry bindings
@@ -307,8 +325,59 @@ reclassification. Explicit consumer geometry must not count as missing Atlas dat
 **Your comments (blank = agreement):**
 
 <!-- comments:C08:begin -->
-
+question - what value / clarity would it bring if we think of ground / basement as a separate axes from construction, systems, programs (loads & schedules)?
 <!-- comments:C08:end -->
+
+### C08 discussion — Separating foundation and ground conditions
+
+Status: discussion proposal, not an accepted schema change. Systems and H/X
+entries remain deferred.
+
+**Recommendation:** Treat foundation/ground conditions as a separately selectable
+axis, while keeping the compatible assembly and calculation method explicit.
+Start with a supporting ground/foundation profile referenced alongside the
+construction. A new primary catalogue kind/page is not needed to discuss or
+establish this separation.
+
+| Part | Owns | What remains external |
+| --- | --- | --- |
+| Construction assembly | Ordered slab/wall materials, insulation, thermal mass; source F/C performance where applicable | Actual surface assignment |
+| Foundation configuration | Slab-on-grade, basement or crawlspace arrangement; applicable contact/insulation-placement rules | Actual area, perimeter, burial depth, exposed wall portions and adjacency from geometry |
+| Ground boundary profile | Heat-transfer method, soil operands where the method uses them, ground-temperature/deep-boundary policy | Required simulation forcing and actual geometry |
+| Basement zone conditioning | Whether a modeled basement is heated/cooled and its zone controls | Program and eventual system assignment; outside this ground-profile discussion |
+
+**Value:** We can distinguish a change in insulation/materials from a change in
+soil coupling or foundation layout. Ground defaults no longer hide inside each
+construction, and the same compatible assembly can be reused without duplicating
+its materials for every soil profile. The 59 misleading C-factor labels become
+three separately checked questions: what is the assembly, which surface role
+applies, and what is the actual boundary/calculation method?
+
+**Basement caution:** An unconditioned basement is a thermal space, not a soil
+property. A floor over that basement has an interzone connection; the basement
+slab and relevant walls have ground connections. Omitting the basement and
+applying a direct ground boundary to the floor above changes the model. Any such
+simplification needs its own declared assumption.
+
+**Limits:** The axes are separable for selection, but not freely interchangeable.
+F-factor is perimeter-based floor performance; C-factor is wall conductance that
+excludes soil and air films. Their source method/geometry must remain attached.
+Kiva instead couples surface constructions with a foundation/soil model. We must
+not add independent soil effects to an F/C approximation as if those methods were
+equivalent, or combine a factor-defined surface with arbitrary detailed layers.
+See the EnergyPlus 25.1
+[F/C construction reference](https://bigladdersoftware.com/epx/docs/25-1/input-output-reference/group-surface-construction-elements.html#constructions---modeling-underground-walls-and-ground-floors-defined-with-c-and-f-factors-for-building-energy-code-compliance)
+and [Kiva foundation reference](https://bigladdersoftware.com/epx/docs/25-1/input-output-reference/group-advanced-surface-concepts.html#foundationkiva).
+
+**Climate treatment:** Use ASHRAE climate zones/groups as agreed and do not record
+EPW locations. Climate-zone membership does not by itself supply soil thermal
+properties or a unique ground-temperature history. Keep the required source
+algorithm or simulation forcing explicit instead of inventing a zone-wide constant.
+
+**Open architectural choice:** Adopt the separate supporting profile while
+preserving source-specific layered-ground/F/C/Kiva methods, or retain all these
+fields within each construction. The separate-profile approach is recommended;
+a universal ground solver is not proposed or assumed here.
 
 ## H01 — Commercial component recipes and internal topology
 
@@ -336,7 +405,7 @@ pinned source model and expand by distinct factory branch. Test absent equipment
 multiple serving zones, duplicate branches and orphan connections. Preserve all
 source system IDs rather than merging equivalent-looking stock variants.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H01:begin -->
 
@@ -364,7 +433,7 @@ topology unless the executed source establishes a different branch.
 the source factory output, then verify all 12 rows. Do not claim readiness from
 the already recovered helper-name recipe alone.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H02:begin -->
 
@@ -395,7 +464,7 @@ into constant burner efficiency/COP by renaming the number.
 or overlapping rules and fuel preservation. Compare source-selected model inputs
 at representative points in each rule branch. Missing rules still block readiness.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H03:begin -->
 
@@ -423,7 +492,7 @@ nearest-name match is proposed.
 and domain boundaries; test assignments, unit conversion, stage/speed identity
 and out-of-domain behavior. Reject missing or dangling active curve references.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H04:begin -->
 
@@ -451,7 +520,7 @@ once, with their source-defined heat-to-air/zone behavior.
 calculations and test motor heat, variable/constant fan branches, SI conversion
 and rating/fan double-counting. Sizing flow remains a consumer operand.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H05:begin -->
 
@@ -482,7 +551,7 @@ air requirements from C06 without creating a second outdoor-air demand.
 and night-cycle branches, economizer/DCV predicates and backup heating as applicable.
 Verify all schedule references/units and source selectors before ready export.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H06:begin -->
 
@@ -512,7 +581,7 @@ calculations for a residential pilot, then every supported equipment branch
 and fixture. Include secondary heaters and all four HVAC heat-pump records;
 the simplified solar DHW skip does not remove that fixture's HVAC.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H07:begin -->
 
@@ -541,7 +610,7 @@ from supply/return loss hosts, and do not assign every loss to the conditioned z
 supply/return distinction, hosted losses and unit conversions. Confirm omitted
 distribution means source-proven inapplicability rather than unknown-as-zero.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H08:begin -->
 
@@ -573,7 +642,7 @@ identity without implementing cross-contract compatibility resolution.
 capacity-rule selection and one/multiple-zone assignment. An export may require
 consumer sizing, but must contain every source rule needed to use that sizing.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:H09:begin -->
 
@@ -603,7 +672,7 @@ dependency closure, schedule semantics and complete source provenance. Copying
 one ready object must not require undisclosed Atlas manifest lookups or defaults.
 Neither construction nor HVAC exports may require detailed DHW models.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:X01:begin -->
 
@@ -634,7 +703,7 @@ variant is dropped or replaced to reach coverage. Release checks cover schema,
 physical, referential, schedule, provenance and reproducibility requirements.
 Live schema versions, JSON hashes and copy behavior match the release receipt.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:X02:begin -->
 
@@ -665,13 +734,25 @@ no detailed DHW dependency appears in a ready system export. Published scope and
 consumer accounting prevent applying both simplified energy and explicit heater
 energy to the same demand.
 
-**Your comments (blank = agreement):**
+**Your comments (unreviewed; blank does not mean agreement):**
 
 <!-- comments:X03:begin -->
 
 <!-- comments:X03:end -->
 
-## Proposed work order
+## Current construction-only work order
+
+1. Discuss C08's axis separation and settle the construction/ground boundary.
+2. Trace and correct C02's ground classification using the actual source branches.
+3. Validate the Medium Office construction closure, applying C03–C06 and the
+   agreed model-specific C08 bindings.
+4. Recover C01/C07 residential assemblies and natural-infiltration output; preserve
+   C04's alternative glazing representations and C05's climate-zone resolution.
+
+H and X entries remain unreviewed. No acceptance of the earlier HVAC or shared
+contract/publication proposals is inferred from their blank comments.
+
+## Earlier combined work-order proposal (deferred)
 
 1. Close C02's specific source-classification issue and validate the Medium Office
    construction closure, including C03–C06 and applicable C08 bindings.

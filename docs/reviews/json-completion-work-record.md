@@ -150,3 +150,17 @@ shows all 59 ground-target blockers are `Adiabatic GroundContactFloor` rows, and
 133 packages contain 3,081 unknown scoped air-entry occurrences requiring
 applicability/source review. These findings refine the proposals without changing
 the frozen data or existing recovery disposition counts.
+
+## Construction annotations and deferred systems (2026-10-13)
+
+The user narrows the current phase to constructions. H and X entries have not
+been reviewed; blank responses on those entries do not mean agreement. All
+system work is deferred. This changes current execution order, not the ultimate
+all-variant readiness target. The grouped review and plan now record that scope.
+
+C04 permits simple/detailed glazing alternatives for one construction. C05 sets
+ASHRAE climate-zone/group resolution without EPW-location records. C07 targets
+delivered ACH while preserving pressure-test evidence and source conversion.
+C08 requests discussion of an independent ground/basement axis; that architectural
+choice remains open. No construction schema, physics or system implementation
+is changed by recording these annotations.
