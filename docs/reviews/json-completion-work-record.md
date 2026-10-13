@@ -9,6 +9,8 @@ Implement the field reviews and source recovery, with Medium Office and
 residential pilot validation. Construction, system and program contracts remain
 independent; cross-contract mixing/assignment is a consumer concern and is not
 implemented here. Systems include HVAC and DHW equipment, heater losses and solar.
+That describes the completed recovery pass; the latest delivery scope and
+all-variant readiness requirement are recorded below in ADR 0019.
 
 Use source-defined defaults and previously approved assumptions only. Remaining
 physical unknowns stay explicit and block readiness. Do not stop for human
@@ -119,3 +121,21 @@ and 15-affected-export reproduction passed `validate_program_water_heating
 No full catalogue/site build, EnergyPlus simulation or lengthy CI was run.
 Independent read-only review found no remaining issues; it reproduced the focused
 artifacts, verified all 10 locked source files and checked 48 physical edge cases.
+
+## All-variant readiness and final system scope (2026-10-12)
+
+The user requires "Every variant must be simulation-ready" and states "no need
+of detailed dhw." [ADR 0019](../adr/0019-all-variant-readiness-and-hvac-delivery-scope.md)
+records the revised acceptance gate: all 3,798 construction and 1,046 HVAC
+variants need ready consumer exports. Ready pilots are intermediate gates;
+blocked/raw variants cannot satisfy the completed release. No variants may be
+dropped or unknown physics silently defaulted to claim completion.
+
+Detailed DHW/solar evidence is retained, but ready detailed DHW models are no
+longer a step 2 deliverable. Simplified draw-only energy remains in Program v4.
+The prior counts of 196 blocked detailed DHW/solar source translations are
+historical evidence coverage, not remaining step 2 release blockers. Construction
+and HVAC readiness has not changed through this scope clarification; all source
+and consumer-contract work identified above remains open. No implementation,
+simulation, catalogue regeneration or site/CI run accompanies this documentation
+update.

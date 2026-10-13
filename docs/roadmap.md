@@ -17,7 +17,7 @@ consumer exports and publication remain open.
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
-| 2 | Include constructions and systems, with separate JSON exports and pages | Field reviews/source pilots recorded; consumer contracts next |
+| 2 | Include constructions and systems, with separate JSON exports and pages | Every construction/HVAC variant must be ready; consumer contracts/recovery open |
 | 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
 | 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
@@ -56,6 +56,8 @@ Medium Office and residential pages. The program-consistency branch was retired.
   keep their objects and pages separate from program JSON.
 - [ ] Establish the completeness requirements for each kind. Recover source
   values first and discuss material unresolved assumptions with the user.
+- [ ] Verify ready exports for every construction and HVAC variant; pilots or
+  published blocked/raw variants do not satisfy the completion gate.
 - [ ] Provide representative construction and system examples that identify
   source values, accepted defaults, dependencies and simulation inputs.
 - [ ] Validate the contracts and publish the corresponding JSONs, pages and
@@ -67,10 +69,14 @@ the export contracts and completeness, rather than creating those kinds from
 scratch. Program defaults do not implicitly apply to construction or system
 unknowns. Geometry, assignment and sizing remain consumer responsibilities.
 
-Accepted on 2026-10-12: system completion covers HVAC and domestic hot-water
-equipment together, including heater losses and solar. The water-use room gains
-and distribution-waste water draws excluded from program JSON remain outside
-that program contract. New contract/default decisions follow the field reviews.
+Updated user decisions on 2026-10-12: every construction and HVAC variant must
+be simulation-ready before step 2 closes. Detailed DHW consumer models are not
+required; retain heater/loss/solar source evidence separately. Simplified draw-only
+water-heating energy remains in program JSON with its accepted exclusions and
+solar skip. The skip does not exempt the fixture's construction/HVAC variants.
+See [ADR 0019](adr/0019-all-variant-readiness-and-hvac-delivery-scope.md).
+This supersedes the earlier requirement for ready detailed DHW delivery. The
+water-use room gains and distribution-waste draws remain outside program scope.
 
 **Comments / decisions:**
 

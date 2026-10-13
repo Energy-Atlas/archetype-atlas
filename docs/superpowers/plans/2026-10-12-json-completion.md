@@ -8,14 +8,15 @@
 
 **Tech stack:** Python, JSON Schema, pinned upstream source/runtime calculations where necessary, unittest, MkDocs and the existing content-addressed JSON delivery.
 
-**Spec:** [Current roadmap](../../roadmap.md), [research brief](../../AGENT_RESEARCH_BRIEF.md), [element definitions ADR](../../adr/0013-element-definition-catalogue.md), [program completion ADR](../../adr/0016-program-completion-policy.md), and [schedule mechanisms ADR](../../adr/0005-parametric-schedule-generators.md).
+**Spec:** [Current roadmap](../../roadmap.md), [research brief](../../AGENT_RESEARCH_BRIEF.md), [element definitions ADR](../../adr/0013-element-definition-catalogue.md), [program completion ADR](../../adr/0016-program-completion-policy.md), [all-variant readiness ADR](../../adr/0019-all-variant-readiness-and-hvac-delivery-scope.md), and [schedule mechanisms ADR](../../adr/0005-parametric-schedule-generators.md).
 
 ## Starting state and agreed scope
 
 - Planning branch: `feature/json-completion`, created from `main` at `c2dd1fd53481f50f0853fa81f9f3cee1155b3cd1`.
 - Program JSON v3 is published and live verified. Its [publication record](../../reviews/program-v3-publication.md) closes roadmap task 1.
 - Construction and HVAC objects already have separate pages and raw JSON. They need consumer contracts and a completeness review, not replacement of the catalogue.
-- Accepted on 2026-10-12: cover **HVAC and domestic hot-water equipment together**, including heater losses and solar equipment.
+- Initial source-recovery scope covered HVAC and domestic hot-water equipment together, including heater losses and solar equipment. Latest delivery decision: **no ready detailed DHW models are required**; retain their source evidence separately and keep simplified draw-only heating in program JSON.
+- Latest readiness decision: **every construction and HVAC variant must be simulation-ready** before the completed step 2 release. Ready pilots and raw/blocked variants do not satisfy that gate. ADR 0019 records both decisions.
 - Signed water-use room gains and distribution-waste water draws remain outside the agreed program contract. Equipment scope does not silently reintroduce them as program loads; discuss any proposed extension to their treatment explicitly.
 - Roadmap order remains constructions/systems, schedule-generator discussion, BEMGen handoff, then lighter-site discussion. Record performance measurements along the way without prematurely adopting a new publication architecture.
 
@@ -39,6 +40,7 @@ These counts describe the existing bundle, not a completed consumer contract or 
 - Preserve existing-stock versus code/prototype contexts, climate/vintage variants and source identities. Similar names are not evidence of physical identity.
 - Preserve ordered layers, thermal mass, film conventions, source adjustments, schedule selectors/dates/design days and rule order.
 - Geometry, spatial assignment and sizing remain consumer responsibilities. Missing source physics must not be disguised as a routine consumer binding.
+- Full eligible inventory is the baseline 3,798 constructions and 1,046 HVAC variants. Preserve IDs; do not reduce the denominator or introduce unapproved defaults to claim readiness. Detailed DHW source evidence is outside this ready-export inventory.
 - Program defaults do not apply to constructions or systems. Existing generic construction assumptions remain limited to their reviewed internal/ground-contact scope.
 - Keep frozen releases and raw downloads immutable. New inputs require locked retrieval, retained notices and a new release when canonical definitions change.
 - Validate a Medium Office pilot before catalogue expansion. Release checks cover schema, physical, referential, schedule, provenance and reproducibility behavior.
@@ -53,7 +55,7 @@ These counts describe the existing bundle, not a completed consumer contract or 
 | Duplicate glazing names or U-only assembly identity | Resolve through source context; retain layers/mass, reject ambiguous selection | 2A / 2C |
 | Descriptor labels presented as executable HVAC physics | Recover source recipes, controls and performance; expose actual unresolved inputs | 2B / 2D |
 | Conditional efficiency collapsed to a guessed COP | Preserve rating metric, capacity/date predicates, curves and operating conditions | 2B / 2D |
-| DHW demand or losses counted more than once | Separate demand from equipment energy; preserve service ownership and loss hosts | 2B / 2D |
+| DHW demand or losses counted more than once | Keep simplified energy in program JSON and detailed evidence separate; preserve service ownership | 2B / 2E |
 
 ## 2A. Construction field review
 
@@ -109,19 +111,19 @@ These counts describe the existing bundle, not a completed consumer contract or 
 
 <!-- Write here. -->
 
-## 2D. System contract and HVAC/DHW pilots
+## 2D. System contract and HVAC pilots
 
 **Planned files:** `schemas/system-json-v1.schema.json`, `scripts/system_json.py`, `tests/test_system_json.py`, `docs/system-json-contract.md`, and examples under `docs/examples/system-json-v1/`. Extend source recovery scripts/inputs only where needed; document catalogue-kind changes in an ADR.
 
-- [ ] Settle system representation, DHW catalogue placement and readiness semantics from 2B evidence. Specify the schema/exporter interface and migration behavior before coding.
-- [ ] Describe HVAC and DHW families separately within the system contract, preserving existing HVAC IDs and source context. Keep delivered water demand in the program/service contract and equipment conversion/losses in the system contract.
-- [ ] Recover the Medium Office HVAC and DHW source recipes and supporting components. Validate compatible source bindings; identify any absent source equipment definition rather than supplying an assumed plant.
-- [ ] Add a residential pilot that exercises recovered HVAC and hot-water equipment, plus targeted heat-pump and solar cases where the sources support them. Preserve distinct fixtures and variants.
+- [ ] Settle HVAC system representation and readiness semantics from 2B evidence. Specify the schema/exporter interface and migration behavior before coding; detailed DHW is source evidence only under ADR 0019.
+- [ ] Describe HVAC families in the system contract, preserving existing HVAC IDs and source context. Keep water demand and simplified draw-only energy in the independent program/service contract.
+- [ ] Recover the Medium Office HVAC source recipes and supporting components. Validate compatible source bindings; identify any absent source equipment definition rather than supplying an assumed plant.
+- [ ] Add a residential HVAC pilot and targeted HVAC heat-pump cases where supported. Preserve every fixture/variant, including the HVAC of the fixture skipped for simplified solar DHW.
 - [ ] Pin tests for conditional rating selection boundaries/dates, efficiency metric units, component/curve assignments and domains, controls/schedules, and explicit serving/sizing operands. Seasonal ratings must not become instantaneous COP values.
-- [ ] Pin tests for heater-loss hosts, solar/auxiliary equipment, water temperature inputs and shared demand ownership; reject duplicate physical service instantiation and unresolved active equipment physics.
+- [ ] Pin tests that reject unresolved active HVAC physics and duplicate serving/component instantiation. Verify HVAC consumer exports do not add simplified DHW energy or detailed heater/loss/solar models as required dependencies.
 - [ ] Compare available source calculations or translated model inputs, preserving provenance and runtime hashes. Distinguish executed model translation from an actual energy simulation.
 
-**Exit:** HVAC and DHW pilot exports satisfy their declared contracts, with no guessed topology/performance and explicit consumer assignments/sizing.
+**Exit:** HVAC pilot exports satisfy the system contract, with no guessed topology/performance and explicit consumer assignments/sizing. Pilots are intermediate gates; all-variant readiness remains required in 2E.
 
 **Comments / decisions:**
 
@@ -133,11 +135,11 @@ These counts describe the existing bundle, not a completed consumer contract or 
 | --- | --- | --- |
 | Construction identity | Separate element/package forms; ordered source materials and mass, with U/F/C as model-specific properties | Source assembly recovery and treatment of residential enclosure packages |
 | HVAC topology | Export the recoverable source recipe/components/controls, with consumer serving and sizing bindings | Which source relations can be recovered; whether a recipe is sufficient or a fuller graph is needed |
-| DHW catalogue placement | HVAC/DHW variants in a versioned system contract, preserving current HVAC identities | New primary kind versus supporting system resources/pages; migration from the existing three-kind catalogue |
+| DHW delivery boundary | Decided: simplified draw-only energy in program JSON; detailed equipment/solar retained as source evidence | ADRs 0018/0019; no ready detailed DHW export or new primary catalogue kind required |
 | Copyable dependencies | Self-contained single-object exports, including required materials/components/curves/schedules | Closure size, cycles, reference semantics and consistency with bulk delivery |
 | Remaining defaults | Recover first; propose narrow type/source-specific rules with evidence and scope | User decisions on material unresolved assumptions; no general fallback efficiencies/layers |
 
-These are proposals, not accepted schema decisions. The accepted HVAC+DHW scope does not decide catalogue placement, topology representation or new default values.
+The DHW boundary and all-variant readiness gate are accepted decisions. Other rows remain consumer-interface proposals; no new default values are approved.
 
 **Comments / decisions:**
 
@@ -147,15 +149,15 @@ These are proposals, not accepted schema decisions. The accepted HVAC+DHW scope 
 
 **Files:** Extend the new exporters/tests and recovery inputs from 2C/2D; integrate with `scripts/object_site.py`, `scripts/active_site.py` and their tests. Add reproducible completeness receipts under `docs/reviews/`; retain historical bundles/schemas.
 
-- [ ] Apply validated recovery/export logic to every applicable commercial and residential source variant, preserving source identities. Reconcile every catalogue object with a ready, blocked or explicitly out-of-contract disposition.
-- [ ] Produce receipts with input/source/policy/code identities, export hashes, model-specific coverage and remaining bindings. Report blocked physical inputs separately; do not call a partially resolved catalogue complete.
+- [ ] Apply validated recovery/export logic to every construction and HVAC source variant, preserving source identities. Resolve every eligible blocked variant; a raw/blocked disposition does not satisfy the release gate.
+- [ ] Produce receipts with input/source/policy/code identities, export hashes, model-specific coverage and remaining bindings. Require ready counts to equal the complete eligible construction/HVAC inventory, zero failed exports and zero unresolved source-physics blockers. Detailed DHW evidence is outside that denominator.
 - [ ] Provide construction and system pages with schema links, raw/ready copying as defined by the contracts, and Medium Office/residential examples. Keep program, construction and system payloads distinct.
 - [ ] Test schema, physical constraints, dependency closure/orphans/cycles, schedule semantics, provenance and reproducibility. Verify deterministic bytes on the supported Python/platform matrix and run relevant existing definition/site tests.
 - [ ] If canonical definitions change, freeze a new version and document migration instead of editing `v0.1.1`. Validate source license notices and locked retrieval for any new inputs.
 - [ ] Build and inspect the full site, representative object copying and required simulation bindings. Open a protected-main PR after staged review/security audit; require build and both research matrix checks before integration.
 - [ ] After publication, verify live schema versions, payload identities/checksums, example content and consumer bindings; record the deployed commit and receipt.
 
-**Exit:** Roadmap task 2 is complete only when agreed in-scope exports and pages are published and live verified, with any genuinely unresolved scope explicitly documented.
+**Exit:** Roadmap task 2 is complete only when every eligible construction and HVAC variant is ready, separate exports/pages are published and live verified, and required release checks pass. Any eligible blocked export keeps this step open. Detailed DHW model translation is not a release requirement.
 
 **Comments / decisions:**
 
@@ -222,3 +224,8 @@ equipment/loss data stays available as independent source evidence.
 Heater auxiliaries are also explicitly excluded. The solar-equipped fixture
 `source_building_402849` is skipped for the new simplified DHW representation;
 its existing program, water draw and detailed solar data remain available.
+
+Latest user decisions are captured in ADR 0019: all construction/HVAC variants
+must be ready, and ready detailed DHW models are not needed. The current blocked
+construction/HVAC counts still require source recovery and final consumer export
+work. The 196 detailed DHW/solar translation blockers no longer block step 2.

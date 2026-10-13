@@ -40,6 +40,10 @@ This changes the proposed consumer delivery boundary, not the immutable source
 data or the completed recovery work in [ADR 0017](0017-independent-energy-source-recovery.md).
 Detailed DHW/solar definitions and recovered loss coefficients remain separate
 source evidence and can support future detailed consumers.
+The user subsequently confirmed "no need of detailed dhw" for step 2; see
+[ADR 0019](0019-all-variant-readiness-and-hvac-delivery-scope.md). Ready detailed
+DHW models are outside that release, while this simplified program contract and
+its exclusions remain unchanged.
 
 ## Source-bounded delivery decision (2026-10-12)
 

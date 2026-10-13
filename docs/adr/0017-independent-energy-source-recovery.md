@@ -3,6 +3,12 @@
 Date: 2026-10-12. Status: accepted execution boundaries; recovery implemented.
 Consumer export interfaces and publication remain subsequent work.
 
+The later [ADR 0019](0019-all-variant-readiness-and-hvac-delivery-scope.md) requires
+ready consumer exports for every construction/HVAC variant and removes detailed
+DHW models from step 2 delivery. This ADR's HVAC/DHW recovery scope and detailed
+translation gaps remain historical evidence; detailed DHW readiness is no longer
+a release blocker.
+
 The later [draw-only program water-heating decision](0018-draw-only-program-water-heating-energy.md)
 refines the proposed DHW consumer delivery. Detailed equipment and losses remain
 source evidence; the simplified program representation excludes standby losses.
