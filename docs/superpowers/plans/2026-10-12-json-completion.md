@@ -6,6 +6,8 @@
 
 **Architecture:** Extend the existing separate catalogue objects and pages with versioned consumer contracts. Recover source semantics before applying reviewed defaults; distinguish unknown physics from geometry, assignment and sizing supplied by the simulation consumer. Keep the later generator and publication choices open until their evidence and alternatives have been reviewed.
 
+**Gap proposals and user annotations:** [Construction/HVAC gap review](../../reviews/construction-system-gap-proposals.md). It groups the remaining gap types with concrete fixes and closure checks. The user's review rule is that no comment means agreement with that entry's written proposal; retain its comment areas and apply comments to equivalent cases.
+
 **Tech stack:** Python, JSON Schema, pinned upstream source/runtime calculations where necessary, unittest, MkDocs and the existing content-addressed JSON delivery.
 
 **Spec:** [Current roadmap](../../roadmap.md), [research brief](../../AGENT_RESEARCH_BRIEF.md), [element definitions ADR](../../adr/0013-element-definition-catalogue.md), [program completion ADR](../../adr/0016-program-completion-policy.md), [all-variant readiness ADR](../../adr/0019-all-variant-readiness-and-hvac-delivery-scope.md), and [schedule mechanisms ADR](../../adr/0005-parametric-schedule-generators.md).

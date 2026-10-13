@@ -139,3 +139,14 @@ and HVAC readiness has not changed through this scope clarification; all source
 and consumer-contract work identified above remains open. No implementation,
 simulation, catalogue regeneration or site/CI run accompanies this documentation
 update.
+
+## Gap descriptions and annotation proposals (2026-10-12)
+
+[The grouped gap review](construction-system-gap-proposals.md) provides detailed
+descriptions, reasons, proposed fixes, closure checks and a comment area per gap
+type. Per the user's instruction, no comment means agreement with that entry's
+written proposal. It does not report fixes as implemented. Closer inspection
+shows all 59 ground-target blockers are `Adiabatic GroundContactFloor` rows, and
+133 packages contain 3,081 unknown scoped air-entry occurrences requiring
+applicability/source review. These findings refine the proposals without changing
+the frozen data or existing recovery disposition counts.
