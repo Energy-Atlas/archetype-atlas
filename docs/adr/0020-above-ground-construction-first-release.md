@@ -1,7 +1,7 @@
 # ADR 0020: Above-ground construction first, with foundation/ground deferred
 
-Date: 2026-10-13. Status: accepted scope and source reference geometry;
-constant-ACH climate/conversion conditions open.
+Date: 2026-10-13. Updated: 2026-10-14. Status: accepted scope, source reference
+geometry and constant-ACH climate/conversion conditions; implementation ongoing.
 
 ## Decisions
 
@@ -31,7 +31,8 @@ wall/window material. The same selected catalogue value is reused across buildin
 geometry and zoning variants. The user selects source archetype reference
 geometry for deriving that fixed value. Recover its operands and source defaults
 with provenance; do not substitute the proposed common enclosure. Climate
-factors, conversion details and averaging policy remain open. Pressure-test
+factors and conversion conditions are settled in the accepted implementation
+conditions below. Pressure-test
 ACH50 and its reference pressure remain source evidence.
 
 Earlier decisions remain: ASHRAE climate-zone/group resolution with no EPW-location
@@ -79,12 +80,12 @@ ACH helper, `get_infiltration_ACH_from_SLA`, and a pressure-test-to-specific-lea
 conversion. Its inputs include leakage, infiltration height and a weather and
 shielding factor. The weather helper supplies that factor through its source
 lookup or calculation, which itself uses specified reference conditions. This
-is a candidate source-backed scalar method, not an executed recovery in this pass
-or proof of parity with dynamic AIM-2 infiltration. It must not be applied to
+is the accepted source-backed scalar method, now executed in the derivation
+sidecar; it is not proof of parity with dynamic AIM-2 infiltration. It must not be applied to
 commercial leakage without a separately supported commercial conversion.
 
-The fixed catalogue and source archetype geometry choices are settled. Before
-choosing final scalar values, recover the source reference enclosure and specify
+The fixed catalogue and source archetype geometry choices are settled. The
+reference enclosure recovery and accepted conditions below specify
 the climate-zone factor/reference forcing and reproducible derivation. Retain the source method's reference
 conditions explicitly; do not invent an ACH50 divisor or assign a unique weather
 factor from climate-zone membership alone. Normalized outputs should not carry
@@ -120,21 +121,23 @@ apartment fixture has one conditioned dwelling storey and an 8 ft leakage height
 
 All ten `Any` and five `Office` packages now have source reference matches.
 `Any` scopes are attic/plenum sets; each Office package retains six compatibility
-forms, distinct from actual building defaults. The receipt resolves 182/183
+forms, distinct from actual building defaults. The original receipt resolves 182/183
 package reference matches. SmallHotel 2019's generic GuestRoom source set is not
 instantiated in its model and is explicitly recorded with an unassigned whole-
-building candidate. No form is averaged, merged or arbitrarily chosen.
+building candidate. The accepted G1 overlay assigns the whole SmallHotel
+benchmark while retaining the absent room scope. No form is averaged or merged.
 
 Recover each source's leakage basis before using the reference geometry:
 commercial floor-area and exterior-area rates require different conversions;
 residential unit-total tests must retain their distinction from exterior-only
 leakage. Attached-unit exterior fractions must not silently become one. These
-conversion details and one reproducible factor per ASHRAE climate zone remain
-open. Source geometry selection does not authorize a universal conversion or
+conversion details are resolved by the accepted source methods below.
+Source geometry selection does not authorize a universal conversion or
 discard foundation-associated leakage from a whole-enclosure pressure test.
-Ground/foundation delivery remains deferred. Candidate residential sensitivities
-and 42 climate-reference calculations are separate proposal evidence, not
-approved/released scalar natural ACH values. See the
+Ground/foundation delivery remains deferred. The original residential sensitivities
+and 42 climate-reference calculations remain immutable proposal evidence. The
+adopted 2013 factors and fixed constants are a separate derivation sidecar; final
+consumer release remains pending. See the
 [reference and climate proposals](../reviews/construction-ach-reference-proposals.md)
 for source findings, measured factor differences and explicit answer areas.
 
@@ -155,9 +158,48 @@ The existing construction recovery records both files and their pinned hashes.
 
 ## Completion gate
 
+### Accepted fixed-ACH conditions (2026-10-14)
+
+The user explicitly accepted F1–F3 and G1 in the reference review:
+
+- Use the pinned ASHRAE 169-2013 reference map for every vintage, retaining full
+  climate labels and sharing identical assemblies. Reference EPW hashes are
+  provenance, not a location applicability axis.
+- Residential constants use the pinned source annual-average helper, recovered
+  pressure-boundary geometry and exterior fraction, and the selected climate WSF.
+  Standardized helper shielding is accepted; dynamic AIM-2 parity is not claimed.
+- Commercial constants use the source system-off correlations all year with
+  22°C indoor temperature, source geometry and terrain. Mechanical
+  pressurization and operating door additions are excluded.
+- The generic SmallHotel 2019 GuestRoom package uses the whole SmallHotel
+  enclosure benchmark. Preserve its absent room scope and distinct assembly ID;
+  no invented GuestRoom area, volume or program assignment.
+
+The commercial source path supplies no-air-barrier NIST defaults of 13.8
+m³/h/m² at 75 Pa with five-sided normalization and a 0.65 pressure exponent.
+Retain the source's inferred/surrogate correlation type, climate-0-to-1 fallback
+and missing-off-field-to-on-field fallback. Sum source volume flow with space
+multipliers and divide by whole source enclosed air volume, including plenums
+and interior spaces. This is an enclosure benchmark, not conditioned volume.
+Average nonnegative source correlation flow over equal-weight hourly EPW samples
+using source zone-centroid wind/temperature corrections and pinned EnergyPlus
+weather-station defaults. No timestep-interpolated or annual-energy parity is
+claimed. These implementation conventions are recorded with the derivation;
+they do not introduce consumer geometry inputs.
+
+Source residential labels 7AK/8AK are retained; identical source-map 7A/7B and
+8A/8B forcing aliases allow conversion without inventing a moisture class.
+Distinct commercial geometry forms remain separate benchmark references.
+
+The final independent above-ground contract, assembly/dependency closure and
+ready-export receipt remain unfinished. These accepted conditions and derivation
+evidence do not themselves publish that contract.
+
+### Required release work
+
 Recover residential above-ground assemblies and all missing above-ground source
 selector dependencies; apply commercial source layers/defaults and material-model
-requirements. Resolve infiltration and constant-ACH reference policy. Implement
+requirements. Integrate the accepted fixed-ACH derivation. Implement
 the independent versioned above-ground construction schema/exporter, pilot it on
 Medium Office, then residential, then all eligible variants. Produce a complete
 eligible-ID/readiness receipt with zero active source-physics failures and

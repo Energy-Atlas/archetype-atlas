@@ -250,3 +250,50 @@ digits; literal source-table parameters remain unchanged. Focused replays cover
 all 41 residential cases, five commercial pilots and all 42 climate candidates.
 Frozen program, construction and system
 releases remain unchanged; no catalogue/site generation or full CI was run.
+
+## Adopted construction fixed-ACH implementation (2026-10-14)
+
+The user explicitly accepted F1, F2, F3 and G1: one pinned 2013 climate reference
+map across vintages, residential source annual-average helper, commercial
+system-off passive-envelope reference at 22°C, and the whole-SmallHotel leakage
+benchmark for its uninstantiated generic GuestRoom construction set. ADR 0020
+and the field review now record those answers. All H/X system work and ground
+delivery remain deferred; blank annotations there remain unanswered.
+
+Implemented a focused Python derivation builder and native commercial geometry
+supplement, retaining source default airtightness/pressure, native area
+normalization, terrain, source multipliers and whole enclosed volume. Commercial
+constants average clipped hourly reference volume flow after centroid-height
+wind/temperature corrections. The source enclosed volume includes interior and
+plenum spaces and is not labelled conditioned volume. Preserve all reference
+forms and source coefficient/surrogate fallbacks, not an average across forms.
+
+The Medium Office / 90.1-2019 / 4A pilot yields 0.1396961316 ACH;
+`source_building_101526` / 5A yields 0.671608067 ACH; the 15-storey-building
+apartment fixture / 4C yields 0.1049942718 ACH using its dwelling-scale source
+pressure boundary. Residential source labels 7AK/8AK retain their identity and
+record both identical source-map forcing aliases, without inventing a moisture
+class or new assembly applicability.
+
+Independent review found missing runtime EPW checksum enforcement and a missing
+Python dependency in the native supplement. Both were repaired and regression
+tests observed failing first and then passing. A full native pass exposed two
+LargeOffice basement inferred-volume replay differences of 0.00113%. Their
+precise cause is unverified. The accepted geometry-v1 reference operands remain
+unchanged, with a 0.002% replay tolerance that rejects larger disagreements.
+The complete raw surface census has no nonhorizontal 5+ vertex surfaces;
+future such inputs fail pending translated-engine centroid recovery.
+
+This implementation does not deliver or publish the final above-ground
+construction consumer contract. Residential assembly translation, omitted
+door/skylight/window selector dependencies, the exporter/schema and the complete
+readiness receipt remain. Program, ground, systems, frozen releases and site/CI
+generation remain outside this focused work.
+
+Validation completed: 19 focused unit tests; full 129-case native recovery;
+four commercial native replays; all 41 residential direct-helper comparisons;
+deterministic `python -m scripts.derive_construction_ach --check`; independent
+review of final census/units/physical consistency and unchanged original inputs.
+The output contains 41 residential constants, 2,709 commercial reference/climate
+benchmarks and 183 resolved package mappings. Original geometry/climate candidate
+receipts and frozen construction definitions remain unchanged.

@@ -55,15 +55,18 @@ of deferred ground/foundation and systems. Foundation/basement owns its below-gr
 and foundation-dependent interface assemblies. Construction includes infiltration;
 mechanical outdoor/total-air requirements are deferred. Fixed catalogue ACH per
 construction and climate zone is selected, derived using source archetype
-reference geometry. Climate factors and conversion details remain open.
+reference geometry. The 2013 climate map, residential source annual-average
+helper and commercial passive-envelope reference are accepted.
 [ADR 0020](adr/0020-above-ground-construction-first-release.md)
 supersedes the earlier all-kind publication gate for this first milestone.
 
 Source reference geometry/exposure is recovered for 41 residential and 129
 commercial cases. All 15 generic packages have reference matches; the full
-package receipt has 182 matches and one explicitly uninstantiated SmallHotel
-space scope. [Climate/reference proposals](reviews/construction-ach-reference-proposals.md)
-record the pending conversion and climate choices. This is evidence recovery,
+original package receipt has 182 matches and one explicitly uninstantiated
+SmallHotel space scope. The accepted overlay uses the whole SmallHotel benchmark
+for that scope, keeping its distinct ID and absent-room flag. The
+[climate/reference review](reviews/construction-ach-reference-proposals.md)
+records the accepted conditions and pilot constants. This is derivation evidence,
 not the completed above-ground release.
 
 The initial above-ground/interior inventory contains 2,982 elements, plus 183
