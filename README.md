@@ -63,13 +63,15 @@ adds all 18 Small Office records, for 79 cases and 906 channels. Its
 [coverage](docs/validation/schedule-generator-coverage-small-office.json) include
 an actual residential/Medium Office/Small Office mixture in one resource set.
 
-The cumulative [generator v0.5.0](data/generator-releases/v0.5.0/manifest.json)
+The cumulative [generator v0.5.1](data/generator-releases/v0.5.1/manifest.json)
 adds all 40 Warehouse records and their 10 actual compositions, for 119 requested
 programmes and 1,076 declared channels. Its [guide](docs/schedule-generator-warehouse.md)
 and [coverage](docs/validation/schedule-generator-coverage-warehouse.json) explain
 the actual ordered member generation, explicit reference/caller area modes and
 generated four-family mixture. The complete request indexes 1,146 schedules,
 including the actual members inside source parents. Full extraction remains open.
+Patch v0.5.1 corrects nested reference ownership when publicly composing
+separately generated source-parent bundles; v0.5.0 remains immutable.
 
 | Canonical table | Records |
 | --- | ---: |

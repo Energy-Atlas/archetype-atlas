@@ -251,6 +251,44 @@ def validate_bundle(bundle: dict) -> None:
         raise GeneratorError('invalid_reference', '/constituents', 'Every binding must be owned')
     if referenced != set(schedules):
         raise GeneratorError('invalid_reference', '/schedules', 'Every schedule must be referenced')
+    _validate_generated_binding_references(bundle)
+
+
+def _validate_generated_binding_references(bundle):
+    """Close explicit generated component/service references against actual owners.
+
+    An in-range integer alone does not prove ownership after bundle merging.
+    Original source fields without a generated binding index are unaffected.
+    """
+    bindings=bundle['bindings']
+    def binding(index,path):
+        if type(index) is not int or not 0<=index<len(bindings):
+            raise GeneratorError('invalid_reference',path,'Generated binding reference has no actual binding')
+        return bindings[index]
+    def walk(value,path):
+        if isinstance(value,dict):
+            if value.get('method')=='actual_generated_bound_trajectory_sum':
+                components=value.get('components')
+                required={'binding_index','instance_key','schedule_id','demand_id'}
+                if (not isinstance(components,list) or not components or
+                        any(not isinstance(c,dict) or not required<=set(c) for c in components)):
+                    raise GeneratorError('invalid_reference',path+'/components',
+                                         'Actual generated trajectory components require complete binding ownership')
+            if 'binding_index' in value:
+                actual=binding(value['binding_index'],path+'/binding_index')
+                for field in ('instance_key','schedule_id','demand_id'):
+                    if field in value and value[field]!=actual.get(field):
+                        raise GeneratorError('invalid_reference',path+'/'+field,
+                                             'Generated component reference belongs to another owner, schedule or demand')
+            if 'binding_indices' in value:
+                indices=value['binding_indices']
+                if not isinstance(indices,list):
+                    raise GeneratorError('invalid_reference',path+'/binding_indices','Generated binding list required')
+                for i,index in enumerate(indices):binding(index,path+'/binding_indices/'+str(i))
+            for key,child in value.items():walk(child,path+'/'+key)
+        elif isinstance(value,list):
+            for i,child in enumerate(value):walk(child,path+'/'+str(i))
+    for field in ('bindings','constituents','generation'):walk(bundle[field],'/'+field)
 
 
 def finalize_channels(generated: dict) -> dict:

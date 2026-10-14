@@ -74,3 +74,10 @@ configuration/member IDs, resource keys and hashes. Per-channel resource pointer
 and receipt hashes close against the artifact's own resources. Runtime is offline
 Python standard library only. Frozen hashes verify integrity; fresh generated-byte
 equality is not a science gate. Different resource identities cannot be composed.
+
+Use patch v0.5.1 for public composition of separately generated bundles. It
+rebases complete nested binding references when appending each incoming bundle
+and checks actual component owner/schedule/demand identity. Immutable v0.5.0
+retains a defect in those receipts when a source-parent bundle follows another
+bundle; its single-request source arrays and declared scope remain separate
+evidence. The patch preserves source operands, numerical methods and tolerances.

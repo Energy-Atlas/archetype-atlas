@@ -65,3 +65,13 @@ scientific differences, identical owner/binding/root receipts and no metadata
 restructuring, with generation92.737s. Fresh final references and own-runtime
 reproduction still qualify the new immutable artifact; earlier full-suite results
 predate this bounded change.
+
+C4 review P1 also applies the strict inverse-map rule to public composition of
+multiple independently generated bundles. Every copied incoming explicit
+binding reference, including nested component/target/magnitude/service and
+retained generation receipts, must be rebased before it is appended. Validation
+requires actual generated trajectory components to identify their binding,
+owner, schedule and demand; an existing integer alone does not close ownership.
+Immutable v0.5.0 retains the former public-helper defect when a source-parent
+bundle follows another bundle. Patch v0.5.1 supersedes that helper while preserving
+its source scope, operands, native evidence, RNG allocation and numerical methods.

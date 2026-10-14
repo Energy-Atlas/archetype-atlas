@@ -43,3 +43,13 @@ before execution. Compact driver/output/receipt are in
 `build/task-10/python311-c4-check/` and `check-log.json`. Actual3.11.9 grammar also
 accepted all158 current runtime/script/test Python files. These bounded Windows
 checks establish no full3.11 or Linux suite result.
+
+## C4 public-helper patch source check
+
+Actual official Windows CPython3.11.9 with `-I -S` compiled the two changed
+runtime modules and the archived-reference regression file, then passed all five
+public composer/ownership regression tests in16.526s. The tests use immutable
+v0.5.0 archived arrays and current fixed API without temporal regeneration.
+Evidence: `build/task-10/c4-fix1-python311-api-green-20261014-01.log`. This is a
+bounded current-source syntax/API check, not a new frozen patch mixed run or a
+full3.11/Linux suite claim.

@@ -89,6 +89,12 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
             raise GeneratorError('invalid_calendar','/calendar','Constituent calendar differs from mixture')
         if any(c['generation'].get('method')=='conserved_constituent_mixture' for c in incoming['constituents']):
             raise GeneratorError('invalid_mixture','/constituents','Nested mixed results need an explicit new physical allocation')
+        # Complete source-parent bundles contain references below demands,
+        # targets, magnitudes, services and generation receipts as well as owners.
+        from .source_compositions import remap_binding_references
+        incoming=copy.deepcopy(incoming)
+        offset=len(bundle['bindings']) if bundle is not None else 0
+        remap_binding_references(incoming,{i:i+offset for i in range(len(incoming['bindings']))})
         input_receipts.append(copy.deepcopy(incoming['generation']))
         for group,receipt in incoming['generation'].get('operating_groups',{}).items():
             normalized=copy.deepcopy(receipt)
@@ -98,18 +104,16 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
                                      'Precomputed group names have conflicting actual source/sample receipts')
             operating_groups[group]=normalized
         if bundle is None:
-            bundle = copy.deepcopy(incoming)
+            bundle = incoming
             continue
         if (bundle['metadata']['resource_set_id'] != incoming['metadata']['resource_set_id'] or
                 bundle['algorithm_version'] != incoming['algorithm_version']):
             raise GeneratorError('invalid_mixture','/constituents','Conflicting source resource/algorithm identities')
         if set(bundle['schedules']) & set(incoming['schedules']):
             raise GeneratorError('duplicate_instance','/constituents','Constituent schedule identities overlap')
-        offset = len(bundle['bindings'])
         bundle['schedules'].update(copy.deepcopy(incoming['schedules']))
         bundle['bindings'].extend(copy.deepcopy(incoming['bindings']))
         for c in copy.deepcopy(incoming['constituents']):
-            c['binding_indices'] = [index+offset for index in c['binding_indices']]
             bundle['constituents'].append(c)
     if len(input_receipts)>1:
         bundle['generation']={'method':'precomputed_bundle_composition_v1',
