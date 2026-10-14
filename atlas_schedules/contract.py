@@ -8,6 +8,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from .budgets import ANNUAL_UNITS
 from .canonical import schedule_id
 from .errors import GeneratorError
 
@@ -92,7 +93,10 @@ def validate_bundle(bundle: dict) -> None:
                     target['basis'] != magnitude['basis'] or target['magnitude_unit'] != magnitude['unit'] or
                     target['method'] != binding['budget_method'] or receipt['unit'] != target['unit']):
                 raise GeneratorError('invalid_binding', path, 'Load target semantics differ from binding')
-            multiplier = 3600 if magnitude['unit'].startswith('m3/s') else 1
+            unit_pair = ANNUAL_UNITS.get(magnitude['unit'])
+            if unit_pair is None or unit_pair[0] != target['unit']:
+                raise GeneratorError('invalid_binding', path, 'Magnitude unit cannot produce annual target unit')
+            multiplier = unit_pair[1]
             emitted_integral = math.fsum(schedules[sid]['values'])
             if not math.isclose(receipt['generated_integral'], emitted_integral,
                                 rel_tol=1e-12, abs_tol=1e-12):
@@ -110,8 +114,21 @@ def validate_bundle(bundle: dict) -> None:
     referenced = {binding['schedule_id'] for binding in bundle['bindings']}
     for i, constituent in enumerate(bundle['constituents']):
         path = f'/constituents/{i}'
+        slots = {item['slot']: item for item in constituent['slots']}
+        demands = {item['demand_id']: item for item in constituent['demands']}
+        controls = {item['slot']: item for item in constituent['controls']}
+        if (len(slots) != len(constituent['slots']) or
+                len(demands) != len(constituent['demands']) or
+                len(controls) != len(constituent['controls'])):
+            raise GeneratorError('invalid_reference', path, 'Duplicate resolved slot, demand or control')
+        for slot, descriptor in slots.items():
+            sid = constituent['schedule_ids'].get(slot)
+            if sid != schedule_id(constituent['instance_key'], slot) or sid not in schedules:
+                raise GeneratorError('invalid_reference', f'{path}/schedule_ids/{slot}', 'Declared slot has no scoped schedule')
+            if schedules[sid]['unit'] != descriptor['unit']:
+                raise GeneratorError('invalid_binding', f'{path}/slots/{slot}', 'Resolved slot unit differs from schedule')
         for slot, sid in constituent['schedule_ids'].items():
-            if slot not in constituent['slots'] or sid not in schedules or sid != schedule_id(constituent['instance_key'], slot):
+            if slot not in slots or sid not in schedules or sid != schedule_id(constituent['instance_key'], slot):
                 raise GeneratorError('invalid_reference', f'{path}/schedule_ids/{slot}', 'Invalid constituent schedule reference')
             referenced.add(sid)
         for index in constituent['binding_indices']:
@@ -120,6 +137,22 @@ def validate_bundle(bundle: dict) -> None:
             binding = bundle['bindings'][index]
             if binding['instance_key'] != constituent['instance_key'] or binding['program_id'] != constituent['program_id']:
                 raise GeneratorError('invalid_reference', f'{path}/binding_indices', 'Binding belongs to another constituent')
+            slot = binding['slot']
+            if slot not in slots or constituent['schedule_ids'].get(slot) != binding['schedule_id']:
+                raise GeneratorError('invalid_reference', f'{path}/binding_indices/{index}', 'Binding slot or schedule not declared by owner')
+            if binding['kind'] == 'load':
+                demand = demands.get(binding['demand_id'])
+                if demand is None or demand['slot'] != slot or slots[slot]['kind'] != 'load':
+                    raise GeneratorError('invalid_reference', f'{path}/binding_indices/{index}', 'Load demand not declared by owner')
+                target = binding['reference_target']
+                if any(target[field] != demand[field] for field in ('quantity', 'basis', 'fuel', 'host')) or target['magnitude_unit'] != demand['unit']:
+                    raise GeneratorError('invalid_binding', f'{path}/binding_indices/{index}', 'Bound load differs from resolved source demand')
+            else:
+                control = controls.get(slot)
+                if (control is None or slots[slot]['kind'] not in {'control', 'resident_count'} or
+                        binding['control_quantity'] != control['quantity'] or
+                        schedules[binding['schedule_id']]['unit'] != control['unit']):
+                    raise GeneratorError('invalid_reference', f'{path}/binding_indices/{index}', 'Control not declared by owner')
             if index in owned:
                 raise GeneratorError('invalid_reference', f'{path}/binding_indices', 'Binding has multiple owners')
             owned.add(index)

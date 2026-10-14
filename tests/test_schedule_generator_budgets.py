@@ -39,14 +39,17 @@ class BudgetTests(unittest.TestCase):
         self.assertEqual(target['total'], 4321)
         self.assertEqual(target['method'], 'direct_annual')
         self.assertEqual(target['evidence']['locator'], 'annual source')
-        self.assertEqual(bind_budget(target, [1.0] * 1000)['effective_magnitude']['value'], 4.321)
+        self.assertEqual(bind_budget(target, [1.0] * 1000 + [0.0] * 7760)['effective_magnitude']['value'], 4.321)
+        self.assertEqual(reference_budget(item, [1.0, 0.0])['total'], 4321)
 
     def test_volume_seconds_conversion(self):
         item = demand()
         item.update(quantity='hot_water', value=0.001, unit='m3/s/dwelling', basis='dwelling_unit', fuel='water')
-        target = reference_budget(item, [1.0] * 2000)
+        item['evidence'] = {'locator': 'water source cell', 'original_value': 0.001,
+                            'original_unit': 'm3/s/dwelling'}
+        target = reference_budget(item, [1.0] * 2000 + [0.0] * 6760)
         self.assertEqual((target['total'], target['unit']), (7200, 'm3/dwelling'))
-        bound = bind_budget(target, [1.0] * 1000)
+        bound = bind_budget(target, [1.0] * 1000 + [0.0] * 7760)
         self.assertEqual(bound['effective_magnitude']['value'], 0.002)
         self.assertEqual(bound['scaling_receipt']['seconds_per_sample'], 3600)
 
@@ -54,11 +57,16 @@ class BudgetTests(unittest.TestCase):
         from atlas_schedules.contract import validate_bundle
         from tests.test_schedule_generator_contract import bundle
         b = bundle(); binding = b['bindings'][0]
-        target = reference_budget({**demand(), 'quantity': 'hot_water', 'value': 1e-10,
-                                   'unit': 'm3/s/dwelling', 'basis': 'dwelling_unit',
-                                   'fuel': 'water'}, [1.0] * 2000)
+        water = {**demand(), 'quantity': 'hot_water', 'value': 1e-10,
+                 'unit': 'm3/s/dwelling', 'basis': 'dwelling_unit', 'fuel': 'water',
+                 'evidence': {'locator': 'water source cell', 'original_value': 1e-10,
+                              'original_unit': 'm3/s/dwelling'}}
+        target = reference_budget(water, [1.0] * 2000 + [0.0] * 6760)
         bound = bind_budget(target, b['schedules'][binding['schedule_id']]['values'])
         binding.update(fuel='water', budget_method=target['method'], **bound)
+        b['constituents'][0]['demands'][0].update(quantity='hot_water', value=1e-10,
+                                                  unit='m3/s/dwelling', basis='dwelling_unit',
+                                                  fuel='water', evidence=water['evidence'])
         validate_bundle(b)
         binding['reference_target']['total'] += 1e-9
         with self.assertRaises(GeneratorError): validate_bundle(b)
@@ -77,14 +85,26 @@ class BudgetTests(unittest.TestCase):
 
     def test_normalization_amplitude_is_not_nameplate(self):
         item = demand(); item['installed_rating'] = {'value': 10, 'unit': 'W/m2'}
-        target = reference_budget(item, [1.0] * 2000)
-        self.assertEqual(bind_budget(target, [1.0] * 1600)['effective_magnitude']['value'], 12.5)
+        target = reference_budget(item, [1.0] * 2000 + [0.0] * 6760)
+        self.assertEqual(bind_budget(target, [1.0] * 1600 + [0.0] * 7160)['effective_magnitude']['value'], 12.5)
         constrained = copy.deepcopy(target)
         constrained['capacity_constraint'] = {'maximum': 10, 'unit': 'W/m2',
                                               'evidence': {'locator': 'requested constraint'}}
         with self.assertRaises(GeneratorError) as caught:
-            bind_budget(constrained, [1.0] * 1600)
+            bind_budget(constrained, [1.0] * 1600 + [0.0] * 7160)
         self.assertEqual(caught.exception.code, 'infeasible_intensity')
+
+    def test_reference_and_emitted_integrals_require_full_year(self):
+        for length in (0, 2, 8759, 8761):
+            with self.subTest(length=length):
+                values = [1.0] * length
+                with self.assertRaises(GeneratorError) as caught:
+                    reference_budget(demand(), values)
+                self.assertEqual(caught.exception.code, 'invalid_schedule')
+                target = reference_budget(demand(), [1.0] * 8760)
+                with self.assertRaises(GeneratorError) as caught:
+                    bind_budget(target, values)
+                self.assertEqual(caught.exception.code, 'invalid_schedule')
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ import math
 from .errors import GeneratorError
 
 
-_UNITS = {
+ANNUAL_UNITS = {
     'W': ('Wh', 1), 'W/m2': ('Wh/m2', 1), 'W/dwelling': ('Wh/dwelling', 1),
     'W/person': ('Wh/person', 1),
     'm3/s': ('m3', 3600), 'm3/s/dwelling': ('m3/dwelling', 3600),
@@ -21,8 +21,8 @@ def _number(value, path, *, nonnegative=True):
 
 
 def _integral(values, path):
-    if not isinstance(values, list) or not values:
-        raise GeneratorError('invalid_schedule', path, 'Expected nonempty hourly fractions')
+    if not isinstance(values, list) or len(values) != 8760:
+        raise GeneratorError('invalid_schedule', path, 'Expected 8760 hourly fractions')
     for i, value in enumerate(values):
         _number(value, f'{path}/{i}')
         if value > 1:
@@ -35,9 +35,9 @@ def reference_budget(demand: dict, reference_values: list[float]) -> dict:
     if not isinstance(demand, dict):
         raise GeneratorError('invalid_demand', '/demand', 'Expected demand object')
     unit = demand.get('unit')
-    if unit not in _UNITS:
+    if unit not in ANNUAL_UNITS:
         raise GeneratorError('invalid_unit', '/demand/unit', 'Unsupported load magnitude unit')
-    annual_unit, seconds = _UNITS[unit]
+    annual_unit, seconds = ANNUAL_UNITS[unit]
     for field in ('quantity', 'basis', 'fuel', 'host', 'evidence'):
         if field not in demand or demand[field] is None:
             raise GeneratorError('invalid_demand', f'/demand/{field}', 'Required source semantic is missing')
@@ -75,7 +75,7 @@ def bind_budget(target: dict, values: list[float]) -> dict:
     for field in ('quantity', 'basis', 'method', 'magnitude_unit', 'unit', 'fuel', 'host', 'evidence'):
         if field not in target:
             raise GeneratorError('invalid_target', f'/target/{field}', 'Missing target field')
-    if target['magnitude_unit'] not in _UNITS or _UNITS[target['magnitude_unit']][0] != target['unit']:
+    if target['magnitude_unit'] not in ANNUAL_UNITS or ANNUAL_UNITS[target['magnitude_unit']][0] != target['unit']:
         raise GeneratorError('invalid_unit', '/target/unit', 'Incompatible annual and magnitude units')
     total = target.get('total')
     if total is None:
@@ -84,7 +84,7 @@ def bind_budget(target: dict, values: list[float]) -> dict:
     integral = _integral(values, '/values')
     if integral == 0 and total > 0:
         raise GeneratorError('zero_generated_integral', '/values', 'Positive target cannot bind zero schedule')
-    seconds = _UNITS[target['magnitude_unit']][1]
+    seconds = ANNUAL_UNITS[target['magnitude_unit']][1]
     amplitude = total / (integral * seconds) if integral else 0
     if not math.isfinite(amplitude):
         raise GeneratorError('invalid_magnitude', '/target/total', 'Effective magnitude overflow')

@@ -8828,10 +8828,29 @@
         "weather": null
       },
       "slots": [
-        "lighting"
+        {
+          "slot": "lighting",
+          "source_schedule_id": "source-lighting",
+          "unit": "fraction",
+          "kind": "load"
+        }
       ],
       "demands": [
-        "demand-lighting"
+        {
+          "demand_id": "demand-lighting",
+          "slot": "lighting",
+          "quantity": "lighting",
+          "value": 10,
+          "unit": "W/m2",
+          "basis": "floor_area",
+          "fuel": "electricity",
+          "host": "space",
+          "evidence": {
+            "locator": "fixture cell",
+            "original_value": 10,
+            "original_unit": "W/m2"
+          }
+        }
       ],
       "controls": [],
       "shared_services": [],

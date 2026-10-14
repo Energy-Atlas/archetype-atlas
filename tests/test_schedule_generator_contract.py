@@ -45,7 +45,14 @@ def bundle():
                                          'source_id': 'program-fixture', 'template': 'fixture',
                                          'vintage': None, 'evidence_view': 'reviewed',
                                          'weather': None},
-                              'slots': ['lighting'], 'demands': ['demand-lighting'],
+                              'slots': [{'slot': 'lighting', 'source_schedule_id': 'source-lighting',
+                                         'unit': 'fraction', 'kind': 'load'}],
+                              'demands': [{'demand_id': 'demand-lighting', 'slot': 'lighting',
+                                           'quantity': 'lighting', 'value': 10, 'unit': 'W/m2',
+                                           'basis': 'floor_area', 'fuel': 'electricity',
+                                           'host': 'space', 'evidence': {'locator': 'fixture cell',
+                                                                        'original_value': 10,
+                                                                        'original_unit': 'W/m2'}}],
                               'controls': [], 'shared_services': [], 'evidence': [],
                               'schedule_ids': {'lighting': sid}, 'binding_indices': [0],
                               'generation': {'seed': 1, 'decisions': {'day': 'weekday'}}}],
@@ -84,8 +91,12 @@ class ContractTests(unittest.TestCase):
         b['bindings'].append({'kind': 'control', 'instance_key': 'a/b',
                               'program_id': 'program-fixture', 'slot': 'heating_setpoint',
                               'schedule_id': sid, 'control_quantity': 'temperature'})
-        b['constituents'][0]['slots'].append('heating_setpoint')
-        b['constituents'][0]['controls'].append('heating_setpoint')
+        b['constituents'][0]['slots'].append({'slot': 'heating_setpoint',
+                                             'source_schedule_id': 'source-heat',
+                                             'unit': 'C', 'kind': 'control'})
+        b['constituents'][0]['controls'].append({'slot': 'heating_setpoint',
+                                                'quantity': 'temperature', 'unit': 'C',
+                                                'evidence': {'locator': 'fixture control'}})
         b['constituents'][0]['schedule_ids']['heating_setpoint'] = sid
         b['constituents'][0]['binding_indices'].append(1)
         validate_bundle(b)
@@ -112,12 +123,72 @@ class ContractTests(unittest.TestCase):
         impossible = request(); impossible['calendar']['holidays'] = ['2007-02-29']
         with self.assertRaises(GeneratorError): validate_request(impossible, 1)
 
+    def test_heterogeneous_mixture_names_result_without_changing_members(self):
+        params = request()
+        second = copy.deepcopy(params['instances'][0])
+        second['key'] = 'other'
+        second['program_id'] = 'different-source-program'
+        params['instances'].append(second)
+        params['mixture'] = {'program_id': 'composed-program', 'composition_id': None,
+                             'members': [{'instance_key': 'a/b', 'weight': 0.4},
+                                         {'instance_key': 'other', 'weight': 0.6}]}
+        validate_request(params, 1)
+
     def test_unowned_schedule_and_duplicate_binding_owner_rejected(self):
         b = bundle(); extra_id = schedule_id('a/b', 'extra')
         b['schedules'][extra_id] = {**copy.deepcopy(next(iter(b['schedules'].values()))), 'id': extra_id}
         with self.assertRaises(GeneratorError): validate_bundle(b)
         b = bundle(); b['constituents'].append(copy.deepcopy(b['constituents'][0]))
         with self.assertRaises(GeneratorError): validate_bundle(b)
+
+    def test_binding_requires_owner_slot_demand_and_schedule_mapping(self):
+        for mutation in ('missing_mapping', 'undeclared_demand', 'undeclared_slot'):
+            with self.subTest(mutation=mutation):
+                b = bundle(); constituent = b['constituents'][0]
+                if mutation == 'missing_mapping':
+                    constituent['schedule_ids'].clear()
+                elif mutation == 'undeclared_demand':
+                    b['bindings'][0]['demand_id'] = 'missing-demand'
+                else:
+                    sid = schedule_id('a/b', 'rogue')
+                    b['schedules'][sid] = {**copy.deepcopy(next(iter(b['schedules'].values()))), 'id': sid}
+                    b['bindings'][0]['slot'] = 'rogue'
+                    b['bindings'][0]['schedule_id'] = sid
+                with self.assertRaises(GeneratorError) as caught:
+                    validate_bundle(b)
+                self.assertEqual(caught.exception.code, 'invalid_reference')
+
+    def test_declared_slot_requires_scoped_schedule_and_control(self):
+        b = bundle()
+        b['constituents'][0]['slots'].append({'slot': 'heating_setpoint',
+                                              'source_schedule_id': 'source-heat',
+                                              'unit': 'C', 'kind': 'control'})
+        b['constituents'][0]['controls'].append({'slot': 'heating_setpoint',
+                                                 'quantity': 'temperature', 'unit': 'C',
+                                                 'evidence': {'locator': 'fixture control'}})
+        with self.assertRaises(GeneratorError) as caught:
+            validate_bundle(b)
+        self.assertEqual(caught.exception.code, 'invalid_reference')
+
+    def test_binding_unit_quantity_and_basis_match_resolved_demand(self):
+        for mutation in ('cross_unit', 'quantity', 'basis', 'fuel', 'host'):
+            with self.subTest(mutation=mutation):
+                b = bundle(); binding = b['bindings'][0]
+                target, amplitude = binding['reference_target'], binding['effective_magnitude']
+                if mutation == 'cross_unit':
+                    target['magnitude_unit'] = amplitude['unit'] = 'm3/s/dwelling'
+                    amplitude['value'] = 20000 / (1600 * 3600)
+                elif mutation == 'quantity':
+                    target['quantity'] = 'hot_water'
+                elif mutation == 'basis':
+                    target['basis'] = amplitude['basis'] = 'dwelling_unit'
+                elif mutation == 'fuel':
+                    target['fuel'] = binding['fuel'] = 'gas'
+                else:
+                    target['host'] = binding['host'] = 'shared_service'
+                with self.assertRaises(GeneratorError) as caught:
+                    validate_bundle(b)
+                self.assertEqual(caught.exception.code, 'invalid_binding')
 
     def test_equivalent_values_ignore_serialization_and_ids(self):
         expected = bundle(); actual = copy.deepcopy(expected)
@@ -151,13 +222,24 @@ class ContractTests(unittest.TestCase):
             'maximum': 12.5, 'unit': 'W/m2', 'evidence': {'locator': 'condition'}}
         self.assertTrue(compare_bundles(actual, expected, policy))
 
+    def test_comparison_detects_changed_resolved_source_descriptors(self):
+        policy = json.loads((ROOT/'sources/schedule-generator-policy.json').read_text())
+        expected = bundle(); actual = copy.deepcopy(expected)
+        actual['constituents'][0]['slots'][0]['source_schedule_id'] = 'another-source'
+        self.assertTrue(compare_bundles(actual, expected, policy))
+        actual = copy.deepcopy(expected)
+        actual['constituents'][0]['demands'][0]['evidence']['original_value'] = 11
+        self.assertTrue(compare_bundles(actual, expected, policy))
+
     def test_comparison_covers_constituent_schedule_without_load_binding(self):
         policy = json.loads((ROOT/'sources/schedule-generator-policy.json').read_text())
         expected = bundle(); sid = schedule_id('a/b', 'resident_count')
         expected['schedules'][sid] = {'id': sid, 'unit': 'person', 'year': 2007,
                                       'clock': 'local_standard_time', 'timestep_minutes': 60,
                                       'values': [2] * 8760}
-        expected['constituents'][0]['slots'].append('resident_count')
+        expected['constituents'][0]['slots'].append({'slot': 'resident_count',
+                                                     'source_schedule_id': 'source-residents',
+                                                     'unit': 'person', 'kind': 'resident_count'})
         expected['constituents'][0]['schedule_ids']['resident_count'] = sid
         actual = copy.deepcopy(expected)
         actual['schedules'][sid]['values'][0] = 3
@@ -185,6 +267,14 @@ class ContractTests(unittest.TestCase):
         schema = json.loads((ROOT/'schemas/schedule-generator-bundle-v1.schema.json').read_text())
         example = bundle(); example['constituents'][0].pop('source')
         self.assertTrue(list(Draft202012Validator(schema).iter_errors(example)))
+
+    def test_bundle_schema_retains_resolved_slot_and_demand_objects(self):
+        schema = json.loads((ROOT/'schemas/schedule-generator-bundle-v1.schema.json').read_text())
+        Draft202012Validator(schema).validate(bundle())
+        reduced = bundle(); reduced['constituents'][0]['slots'] = ['lighting']
+        self.assertTrue(list(Draft202012Validator(schema).iter_errors(reduced)))
+        reduced = bundle(); reduced['constituents'][0]['demands'] = ['demand-lighting']
+        self.assertTrue(list(Draft202012Validator(schema).iter_errors(reduced)))
 
 
 if __name__ == '__main__':

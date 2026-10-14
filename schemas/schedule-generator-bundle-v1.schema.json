@@ -129,24 +129,15 @@
           "slots": {
             "type": "array",
             "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
+            "items": {"$ref": "#/$defs/resolved_slot"}
           },
           "demands": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
+            "items": {"$ref": "#/$defs/resolved_demand"}
           },
           "controls": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
+            "items": {"$ref": "#/$defs/resolved_control"}
           },
           "shared_services": {
             "type": "array"
@@ -219,6 +210,162 @@
     }
   },
   "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "annual_target": {
+      "type": "object",
+      "required": [
+        "total",
+        "unit",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "$ref": "#/$defs/id"
+        },
+        "evidence": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
+    },
+    "resolved_slot": {
+      "type": "object",
+      "required": [
+        "slot",
+        "source_schedule_id",
+        "unit",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {
+          "$ref": "#/$defs/id"
+        },
+        "source_schedule_id": {
+          "$ref": "#/$defs/id"
+        },
+        "unit": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "load",
+            "control",
+            "resident_count"
+          ]
+        }
+      }
+    },
+    "resolved_demand": {
+      "type": "object",
+      "required": [
+        "demand_id",
+        "slot",
+        "quantity",
+        "value",
+        "unit",
+        "basis",
+        "fuel",
+        "host",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "demand_id": {
+          "$ref": "#/$defs/id"
+        },
+        "slot": {
+          "$ref": "#/$defs/id"
+        },
+        "quantity": {
+          "$ref": "#/$defs/id"
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unit": {
+          "$ref": "#/$defs/id"
+        },
+        "basis": {
+          "$ref": "#/$defs/id"
+        },
+        "fuel": {
+          "$ref": "#/$defs/id"
+        },
+        "host": {
+          "$ref": "#/$defs/id"
+        },
+        "evidence": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "annual_target": {
+          "$ref": "#/$defs/annual_target"
+        },
+        "installed_rating": {
+          "type": "object"
+        },
+        "capacity_constraint": {
+          "type": "object",
+          "required": [
+            "maximum",
+            "unit",
+            "evidence"
+          ],
+          "properties": {
+            "maximum": {
+              "type": "number",
+              "minimum": 0
+            },
+            "unit": {
+              "$ref": "#/$defs/id"
+            },
+            "evidence": {
+              "type": "object",
+              "minProperties": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "resolved_control": {
+      "type": "object",
+      "required": [
+        "slot",
+        "quantity",
+        "unit",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {
+          "$ref": "#/$defs/id"
+        },
+        "quantity": {
+          "$ref": "#/$defs/id"
+        },
+        "unit": {
+          "$ref": "#/$defs/id"
+        },
+        "evidence": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
+    },
     "evidence": {
       "type": "object",
       "minProperties": 1
