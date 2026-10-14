@@ -16,7 +16,7 @@ machine-readable census; this is not a separate entry for every catalogue row.
 ground and basement axis (including its assemblies) is deferred. Foundation-
 dependent floor-over-foundation and rim-joist assemblies are deferred with it.
 Infiltration stays in construction; mechanical outdoor/total-air requirements
-are deferred. Constant ACH is selected, but its reference conditions remain open.
+are deferred. Constant ACH and its reference conditions are accepted under ADR 0020.
 See [ADR 0020](../adr/0020-above-ground-construction-first-release.md).
 The user has not reviewed
 H or X entries; all system work is deferred and blank H/X comments do not mean
@@ -834,3 +834,17 @@ contract/publication proposals is inferred from their blank comments.
    and close remaining applicability/binding cases in C05/C08/H09.
 5. Apply X02's all-variant release gate and X03's scope labels. Run full publication
    checks only at that stage. No fallback physical constants are proposed here.
+
+## Above-ground closure update (2026-10-14)
+
+C01 and C03–C07/C09 are implemented within the accepted above-ground boundary.
+Native recovery supplies all residential assembly recipes, all commercial
+selector dependencies, actual layers/defaults and accepted fixed ACH. The
+independent construction v1.0.0 receipt reports 5,092/5,092 ready identities,
+zero missing IDs and zero active blockers. Source target/attained distinctions,
+unsupported DOE climate-0 contexts and geometry/pitch/solar assignment conditions
+are explicit in the [contract](../construction-json-v1-contract.md).
+
+C02/C08 ground work and all H/X implementation remain deferred and unreviewed
+where previously recorded. Original annotations above are preserved. Site
+publication remains a separate protected-main task.

@@ -1,6 +1,6 @@
 # Remaining atlas tasks
 
-Updated: 2026-10-13, following the user's construction-first boundary decision.
+Updated: 2026-10-14, following the user's construction-first boundary decision.
 
 This is the current roadmap for remaining work. The
 [Program JSON completion plan](superpowers/plans/2026-10-11-program-completion.md)
@@ -11,13 +11,14 @@ publication. Discussion items remain open design topics, not accepted designs.
 The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-json-completion.md)
 details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
 construction and system field reviews with coverage patterns and annotation space.
-Those reviews and independent source-recovery pilots are now recorded; final
-consumer exports and publication remain open.
+The independent above-ground construction consumer export is frozen at 100%
+source coverage. Construction site publication remains open; ground and systems
+are deferred.
 
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
-| 2 | Include constructions and systems, with separate JSON exports and pages | First ship 100% above-ground construction; combined ground/foundation and systems deferred |
+| 2 | Include constructions and systems, with separate JSON exports and pages | Above-ground JSON frozen at 100%; publication pending; ground/foundation and systems deferred |
 | 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
 | 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
@@ -66,14 +67,25 @@ original package receipt has 182 matches and one explicitly uninstantiated
 SmallHotel space scope. The accepted overlay uses the whole SmallHotel benchmark
 for that scope, keeping its distinct ID and absent-room flag. The
 [climate/reference review](reviews/construction-ach-reference-proposals.md)
-records the accepted conditions and pilot constants. This is derivation evidence,
-not the completed above-ground release.
+records the accepted conditions and pilot constants. The independent
+[construction contract](construction-json-v1-contract.md) now integrates them
+with recovered assemblies and complete selector dependencies.
 
-The initial above-ground/interior inventory contains 2,982 elements, plus 183
-mixed packages and 41 residential enclosures to project. Missing source selectors
-for doors/skylights/additional windows require dependency expansion before the
-final eligible inventory and 100% receipt are frozen. The original 3,798 rows
-remain immutable evidence, including 592 deferred ground-contact elements.
+The final consumer inventory contains 4,868 assemblies, 183 packages and 41
+residential enclosures: 5,092/5,092 ready identities, including all 3,206 eligible
+baseline IDs, 1,456 recovered selector dependencies and 430 residential assembly
+children. Schema, examples, licenses, checksum manifest and completeness receipt
+are frozen in `data/construction-releases/v1.0.0`. The original 3,798 rows remain
+immutable evidence, including 592 deferred ground-contact elements.
+
+- [x] Recover all above-ground native source assemblies and selector closure.
+- [x] Freeze the independent above-ground schema, JSON, examples and 100% receipt.
+- [ ] Integrate this construction contract into site pages and publish through
+  protected-main checks. No site build or CI ran during construction completion.
+- [ ] Resume ground/system work only when its deferred scope is reopened.
+
+The combined step-2 checklist below stays open where systems or publication are
+still required.
 
 - [x] Inventory current construction/material and system/component exports,
   their physical inputs, applicability, source gaps and model bindings.

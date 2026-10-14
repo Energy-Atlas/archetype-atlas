@@ -297,3 +297,36 @@ review of final census/units/physical consistency and unchanged original inputs.
 The output contains 41 residential constants, 2,709 commercial reference/climate
 benchmarks and 183 resolved package mappings. Original geometry/climate candidate
 receipts and frozen construction definitions remain unchanged.
+
+## Complete above-ground construction consumer export (2026-10-14)
+
+Recovered all 183 pinned commercial source sets and all 41 residential fixtures
+using construction-only native execution. Commercial closure retains 2,982 old
+elements and adds 1,456 omitted dependencies. Residential recovery yields 430
+recipes (283 opaque, 147 simple glazing), retaining 839 native occurrences and
+857 source assignments. Its 210 foundation/ground elements remain deferred; no
+systems or ground solver phases were run.
+
+The independent construction v1.0.0 schema/exporter freezes 4,868 assemblies,
+183 packages and 41 enclosures: 5,092/5,092 ready IDs with all 3,206 eligible
+baseline IDs preserved. Central tables contain 858 material and 7,972 evidence
+resources. Medium Office and residential standalone examples validate before
+the full catalogue; all 4,751 declared package/climate/reference contexts
+resolve. The 592 frozen ground IDs and all commercial ground selectors are
+explicitly deferred. Older DOE source thermal rows do not cover 0A/0B in 56
+packages; unsupported contexts stay explicit instead of receiving guessed data.
+
+Independent review identified incomplete readiness-reference checks and empty
+misleading default labels. Seven malformed-pilot mutation cases were observed
+failing their rejection tests, then fixed through census/order/context/evidence
+validation. Default labels were removed; per-property source null/default
+evidence remains. Follow-up review found no remaining actionable issues.
+
+Both fresh native recovery checks passed; 52 focused unit tests and exact-byte
+export reproducibility checks pass. The release contains schema, two examples,
+completeness receipt, checksum manifest and upstream license notices. ADR 0021
+and the contract document source-native target/setter limitations, roof pitch,
+internal-mass scaling and constant curtain incident-solar multipliers. This
+freezes ready inputs on the feature branch; it does not claim full simulation
+result parity or site publication. Program, frozen definitions, ground, systems
+and site/CI generation remain unchanged.

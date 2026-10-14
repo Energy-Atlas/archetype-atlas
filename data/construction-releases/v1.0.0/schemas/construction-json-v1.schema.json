@@ -1,0 +1,726 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:above-ground-construction:1.0.0",
+  "title": "Independent source-ready above-ground construction catalogue",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "kind": {
+      "const": "above_ground_construction_catalogue"
+    },
+    "export_mode": {
+      "const": "source_ready"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "construction": {
+          "const": "above_ground"
+        },
+        "foundation_ground": {
+          "const": "deferred"
+        },
+        "systems": {
+          "const": "deferred"
+        }
+      },
+      "required": [
+        "construction",
+        "foundation_ground",
+        "systems"
+      ],
+      "additionalProperties": false
+    },
+    "assemblies": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/assembly"
+      }
+    },
+    "materials": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/material"
+      }
+    },
+    "packages": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/package"
+      }
+    },
+    "enclosures": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/enclosure"
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "source_files": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "sha256",
+          "source_revision"
+        ],
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_revision": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "input_sha256": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "required": [
+        "eligible_ids",
+        "deferred_ground_ids",
+        "baseline_above_ground_ids"
+      ]
+    },
+    "consumer_notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "climate_zone_sets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "climate_zones"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "climate_zones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "export_mode",
+    "scope",
+    "assemblies",
+    "materials",
+    "packages",
+    "enclosures",
+    "evidence",
+    "source_files",
+    "input_sha256",
+    "inventory",
+    "consumer_notes",
+    "climate_zone_sets"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_project": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_file_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          ]
+        },
+        "original_value": {},
+        "original_unit": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "transformation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extraction_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "interpretation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "source_project",
+        "source_revision",
+        "source_locator",
+        "source_file_sha256",
+        "original_value",
+        "original_unit",
+        "transformation",
+        "extraction_date",
+        "interpretation_note"
+      ],
+      "additionalProperties": true
+    },
+    "material": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap",
+            "Gas",
+            "StandardGlazing",
+            "SimpleGlazing"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "property_evidence": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "model",
+        "properties",
+        "property_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "assembly": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "enum": [
+            "opaque_layers",
+            "simple_glazing",
+            "detailed_glazing"
+          ]
+        },
+        "status": {
+          "const": "ready"
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "climate_group": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "order": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "material_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "order",
+              "material_id"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "layer_orientation": {
+          "const": "exterior_to_interior"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "required_bindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "applicability": {
+          "type": "object"
+        },
+        "source_attributes": {
+          "type": "object"
+        },
+        "source_surface_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "source_adjacency": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "source_parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/parameter"
+          }
+        },
+        "target_adjustment": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "solar_modifiers": {
+          "type": "object"
+        },
+        "source_fixture_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "role",
+        "model",
+        "status",
+        "source_family",
+        "template",
+        "climate_group",
+        "layers",
+        "layer_orientation",
+        "evidence_ids",
+        "required_bindings",
+        "applicability",
+        "source_attributes",
+        "source_surface_ids",
+        "source_adjacency",
+        "metrics",
+        "source_parameters",
+        "target_adjustment"
+      ],
+      "additionalProperties": false
+    },
+    "parameter": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "evidence_id"
+      ],
+      "additionalProperties": false
+    },
+    "ach": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "const": "1/s"
+        },
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "evidence_id"
+      ],
+      "additionalProperties": false
+    },
+    "selector": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_selector": {
+          "type": "string",
+          "minLength": 1
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "disposition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "role",
+        "source_selector",
+        "elements",
+        "disposition",
+        "evidence_id"
+      ],
+      "additionalProperties": true
+    },
+    "package": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "ready"
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "space_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "selectors": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "#/$defs/selector"
+          }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "infiltration": {
+          "type": "object",
+          "required": [
+            "method",
+            "reference_variants"
+          ],
+          "properties": {
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reference_variants": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "reference_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "climates": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": {
+                      "$ref": "#/$defs/ach"
+                    }
+                  }
+                },
+                "required": [
+                  "reference_id",
+                  "climates"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "deferred_selectors": {
+          "type": "object"
+        },
+        "required_bindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "legacy_infiltration_disposition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supported_climates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsupported_climates": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status",
+        "source_family",
+        "template",
+        "building_type",
+        "space_type",
+        "selectors",
+        "evidence_ids",
+        "infiltration",
+        "deferred_selectors",
+        "required_bindings",
+        "legacy_infiltration_disposition",
+        "supported_climates",
+        "unsupported_climates"
+      ],
+      "additionalProperties": false
+    },
+    "enclosure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "ready"
+        },
+        "source_family": {
+          "const": "existing_stock_source_fixture"
+        },
+        "source_fixture_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_climate_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assembly_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "infiltration": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reference_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "climates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "$ref": "#/$defs/ach"
+              }
+            }
+          },
+          "required": [
+            "method",
+            "reference_id",
+            "climates"
+          ],
+          "additionalProperties": false
+        },
+        "deferred_elements": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "source_context": {
+          "type": "object"
+        },
+        "required_bindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status",
+        "source_family",
+        "source_fixture_id",
+        "source_climate_label",
+        "assembly_ids",
+        "infiltration",
+        "deferred_elements",
+        "source_context",
+        "required_bindings"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

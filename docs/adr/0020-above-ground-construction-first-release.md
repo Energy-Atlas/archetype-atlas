@@ -1,7 +1,8 @@
 # ADR 0020: Above-ground construction first, with foundation/ground deferred
 
 Date: 2026-10-13. Updated: 2026-10-14. Status: accepted scope, source reference
-geometry and constant-ACH climate/conversion conditions; implementation ongoing.
+geometry and constant-ACH climate/conversion conditions; consumer implementation
+frozen under ADR 0021; publication pending.
 
 ## Decisions
 
@@ -206,3 +207,13 @@ eligible-ID/readiness receipt with zero active source-physics failures and
 deterministic output hashes. Publish and verify this milestone independently of
 the deferred ground/system kinds, through protected-main release checks. Keep
 development checks focused and defer lengthy site/CI work until publication.
+
+## Completed consumer implementation (2026-10-14)
+
+The historical gaps above are closed for above-ground construction in the
+independent v1.0.0 consumer release: 5,092/5,092 eligible identities are ready.
+Residential assemblies and all omitted commercial selector dependencies are
+recovered with native source physics; the schema/exporter integrates fixed ACH
+and full provenance. See [ADR 0021](0021-source-ready-above-ground-construction-contract.md)
+and the [contract](../construction-json-v1-contract.md). Protected-main site
+publication remains pending; ground and systems remain deferred.
