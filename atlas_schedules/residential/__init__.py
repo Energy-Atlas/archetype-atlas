@@ -11,7 +11,8 @@ def generate_residential(inputs: dict, unit_seed: int, resources) -> dict:
     return {'channels': {**shapes['channels'], **events['channels']},
             'source_context': {'activity': {key: activities[key] for key in
                                ('status', 'year', 'residents_input', 'simulated_residents', 'unit_seed', 'occupant_types',
-                                'unit_offset_minutes', 'enduse_seeds', 'resource_set_id')},
+                                'unit_offset_minutes', 'enduse_seeds', 'resource_set_id',
+                                'resident_states', 'decisions', 'main_state')},
                                'shapes': shapes['source_context'], 'events': events['source_context'],
                                'export_precision': 'raw_source_float'}}
 

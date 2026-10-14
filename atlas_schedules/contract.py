@@ -5,30 +5,113 @@ from datetime import date
 import json
 import math
 from pathlib import Path
-
-from jsonschema import Draft202012Validator
+import re
+from functools import lru_cache
 
 from .budgets import ANNUAL_UNITS
 from .canonical import schedule_id
 from .errors import GeneratorError
 
-_ROOT = Path(__file__).resolve().parents[1]
+_ROOT = Path(__file__).resolve().parent
+_SCHEMA_KEYWORDS = {'$schema', '$id', '$defs', '$ref', 'type', 'const', 'enum', 'oneOf',
+                   'properties', 'required', 'additionalProperties', 'items', 'uniqueItems',
+                   'minProperties', 'minItems', 'maxItems', 'minLength', 'pattern', 'minimum', 'maximum'}
 
 
 def _schema_errors(value, name):
+    schema = _load_schema(name)
+    _check_schema(value, schema, schema, '')
+
+
+@lru_cache(maxsize=3)
+def _load_schema(name):
     schema = json.loads((_ROOT/f'schemas/schedule-generator-{name}-v1.schema.json').read_text(encoding='utf-8'))
-    errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda e: list(map(str, e.path)))
-    if errors:
-        error = errors[0]
-        path = '/' + '/'.join(map(str, error.absolute_path))
-        raise GeneratorError('invalid_contract', path, error.message)
+    def vocabulary(node):
+        # Check every schema branch, including unselected/optional fields.
+        unknown=set(node)-_SCHEMA_KEYWORDS
+        if unknown:
+            raise GeneratorError('unsupported_schema','/','Unsupported keyword: '+sorted(unknown)[0])
+        for key in ('properties','$defs'):
+            for child in node.get(key,{}).values(): vocabulary(child)
+        for key in ('items','additionalProperties'):
+            if isinstance(node.get(key),dict): vocabulary(node[key])
+        for branch in node.get('oneOf',[]): vocabulary(branch)
+    vocabulary(schema)
+    return schema
+
+
+def _check_schema(value, schema, root, path):
+    """Only the explicitly enumerated local v1 schema vocabulary, offline stdlib.
+
+    New schema keywords fail closed rather than silently weaken the contract.
+    Development tests compare this bounded checker with the JSON Schema oracle.
+    """
+    unknown = set(schema)-_SCHEMA_KEYWORDS
+    if unknown:
+        raise GeneratorError('unsupported_schema', path or '/', 'Unsupported keyword: '+sorted(unknown)[0])
+    def fail(message):
+        raise GeneratorError('invalid_contract', path or '/', message)
+    if '$ref' in schema:
+        ref = schema['$ref']
+        if not ref.startswith('#/$defs/') or ref.count('/') != 2:
+            raise GeneratorError('unsupported_schema', path or '/', 'Only local named definitions supported')
+        _check_schema(value, root['$defs'][ref.rsplit('/',1)[1]], root, path)
+    if 'oneOf' in schema:
+        matches = 0
+        for branch in schema['oneOf']:
+            try: _check_schema(value, branch, root, path)
+            except GeneratorError as error:
+                if error.code != 'invalid_contract': raise
+            else: matches += 1
+        if matches != 1: fail('Expected exactly one contract alternative')
+    types = schema.get('type', [])
+    types = [types] if isinstance(types,str) else types
+    def finite_number():
+        if type(value) not in (int,float): return False
+        try: return math.isfinite(value)
+        except OverflowError: return False
+    predicates = {'object':lambda: isinstance(value,dict), 'array':lambda: isinstance(value,list),
+                  'string':lambda: isinstance(value,str), 'null':lambda: value is None,
+                  'number':finite_number,
+                  'integer':lambda: finite_number() and value == int(value),
+                  'boolean':lambda: type(value) is bool}
+    if any(t not in predicates for t in types):
+        raise GeneratorError('unsupported_schema',path or '/','Unknown schema type')
+    if types and not any(predicates[t]() for t in types): fail('Incorrect value type')
+    def equal(a,b):
+        return type(a) is type(b) and a == b if isinstance(a,bool) or isinstance(b,bool) else a == b
+    if 'const' in schema and not equal(value,schema['const']): fail('Incorrect constant')
+    if 'enum' in schema and not any(equal(value,v) for v in schema['enum']): fail('Unknown enumeration value')
+    if isinstance(value,dict):
+        missing = set(schema.get('required',[]))-set(value)
+        if missing: fail('Missing required field: '+sorted(missing)[0])
+        if len(value)<schema.get('minProperties',0): fail('Too few object properties')
+        for key,child in value.items():
+            if not isinstance(key,str): fail('JSON object keys must be strings')
+            definition = schema.get('properties',{}).get(key,schema.get('additionalProperties',True))
+            if definition is False: fail('Unknown field: '+key)
+            if isinstance(definition,dict): _check_schema(child,definition,root,path+'/'+key)
+    elif isinstance(value,list):
+        if not schema.get('minItems',0)<=len(value)<=schema.get('maxItems',math.inf): fail('Incorrect array length')
+        if schema.get('uniqueItems') and any(value[i] in value[:i] for i in range(len(value))): fail('Duplicate array item')
+        for i,child in enumerate(value):
+            if 'items' in schema: _check_schema(child,schema['items'],root,path+'/'+str(i))
+    elif isinstance(value,str):
+        if len(value)<schema.get('minLength',0): fail('String too short')
+        if 'pattern' in schema and re.search(schema['pattern'],value) is None: fail('String pattern mismatch')
+    elif type(value) in (int,float):
+        if not schema.get('minimum',-math.inf)<=value<=schema.get('maximum',math.inf): fail('Number outside contract bounds')
 
 
 def _finite(value, path=''):
+    if value is not None and type(value) not in (str,bool,int,float,dict,list):
+        raise GeneratorError('invalid_json',path or '/','Value is not a JSON primitive/object/array')
     if isinstance(value, float) and not math.isfinite(value):
         raise GeneratorError('invalid_json', path or '/', 'Nonfinite number')
     if isinstance(value, dict):
         for key, child in value.items():
+            if not isinstance(key,str):
+                raise GeneratorError('invalid_json',path or '/','JSON object keys must be strings')
             _finite(child, f'{path}/{key}')
     elif isinstance(value, list):
         for i, child in enumerate(value):
@@ -114,6 +197,9 @@ def validate_bundle(bundle: dict) -> None:
     referenced = {binding['schedule_id'] for binding in bundle['bindings']}
     for i, constituent in enumerate(bundle['constituents']):
         path = f'/constituents/{i}'
+        if not constituent['slots'] and (constituent['demands'] or constituent['controls'] or
+                not any(e.get('accepted_absence') is True for e in constituent['evidence'])):
+            raise GeneratorError('invalid_reference',path,'Empty recipe requires explicit accepted-inactive source receipts')
         slots = {item['slot']: item for item in constituent['slots']}
         demands = {item['demand_id']: item for item in constituent['demands']}
         controls = {item['slot']: item for item in constituent['controls']}
@@ -156,6 +242,11 @@ def validate_bundle(bundle: dict) -> None:
             if index in owned:
                 raise GeneratorError('invalid_reference', f'{path}/binding_indices', 'Binding has multiple owners')
             owned.add(index)
+        owner_bindings = [bundle['bindings'][index] for index in constituent['binding_indices']]
+        if (len(owner_bindings) != len(demands)+len(controls) or
+                {b['demand_id'] for b in owner_bindings if b['kind']=='load'} != set(demands) or
+                {b['slot'] for b in owner_bindings if b['kind']=='control'} != set(controls)):
+            raise GeneratorError('invalid_reference',path,'Every active demand/control needs exactly one owned binding')
     if owned != set(range(len(bundle['bindings']))):
         raise GeneratorError('invalid_reference', '/constituents', 'Every binding must be owned')
     if referenced != set(schedules):

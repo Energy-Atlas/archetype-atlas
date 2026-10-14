@@ -22,7 +22,6 @@
     },
     "schedules": {
       "type": "object",
-      "minProperties": 1,
       "additionalProperties": {
         "type": "object",
         "required": [
@@ -112,15 +111,47 @@
           },
           "source": {
             "type": "object",
-            "required": ["source_family", "source_id", "template", "vintage", "evidence_view", "weather"],
+            "required": [
+              "source_family",
+              "source_id",
+              "template",
+              "vintage",
+              "evidence_view",
+              "weather"
+            ],
             "additionalProperties": true,
             "properties": {
-              "source_family": {"type": "string", "minLength": 1},
-              "source_id": {"type": "string", "minLength": 1},
-              "template": {"type": ["string", "null"]},
-              "vintage": {"type": ["string", "null"]},
-              "evidence_view": {"type": "string", "minLength": 1},
-              "weather": {"type": ["string", "object", "null"]}
+              "source_family": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "template": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vintage": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "evidence_view": {
+                "type": "string",
+                "minLength": 1
+              },
+              "weather": {
+                "type": [
+                  "string",
+                  "object",
+                  "null"
+                ]
+              }
             }
           },
           "inputs": {
@@ -129,15 +160,21 @@
           "slots": {
             "type": "array",
             "uniqueItems": true,
-            "items": {"$ref": "#/$defs/resolved_slot"}
+            "items": {
+              "$ref": "#/$defs/resolved_slot"
+            }
           },
           "demands": {
             "type": "array",
-            "items": {"$ref": "#/$defs/resolved_demand"}
+            "items": {
+              "$ref": "#/$defs/resolved_demand"
+            }
           },
           "controls": {
             "type": "array",
-            "items": {"$ref": "#/$defs/resolved_control"}
+            "items": {
+              "$ref": "#/$defs/resolved_control"
+            }
           },
           "shared_services": {
             "type": "array"
@@ -160,6 +197,9 @@
             }
           },
           "generation": {
+            "type": "object"
+          },
+          "basis_bindings": {
             "type": "object"
           }
         }
@@ -338,6 +378,12 @@
             }
           },
           "additionalProperties": false
+        },
+        "heat_fractions": {
+          "type": [
+            "object",
+            "null"
+          ]
         }
       }
     },

@@ -10,6 +10,7 @@ ANNUAL_UNITS = {
     'W/person': ('Wh/person', 1),
     'm3/s': ('m3', 3600), 'm3/s/dwelling': ('m3/dwelling', 3600),
     'm3/s/m2': ('m3/m2', 3600),
+    'm3/s/person': ('m3/person', 3600),
 }
 
 

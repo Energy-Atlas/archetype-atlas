@@ -24,6 +24,10 @@
     "annual_volume_m3": {
       "rel_tol": 1e-08,
       "abs_tol": 1e-12
+    },
+    "source_arithmetic": {
+      "rel_tol": 1e-08,
+      "abs_tol": 1e-08
     }
   },
   "exported_reference_precision": {
@@ -42,7 +46,8 @@
     "destination",
     "cache paths",
     "retrieval timestamps",
-    "JSON key order"
+    "JSON key order",
+    "rng.python_version"
   ],
   "canonical_resource_encoding": "UTF-8 LF sorted JSON keys; strict finite JSON; SHA-256 immutable bytes",
   "numerical_bundle_identity": "Source/numerical equivalence; no floating-array SHA equality requirement",
@@ -55,5 +60,12 @@
     "shared_services": "one_physical_identity_preserving_host_fuel_basis",
     "companions": "actual_selected_source_fixed_defaults_and_nominal_translated_thermostats",
     "outside_M1": "indexed_unsupported_binding_without_physical_resource_extraction"
+  },
+  "continuous_receipt_policy": {
+    "source_arithmetic": "Generated hours-of-operation/daily point abscissae and native minute powers/flows; exact event timing, source inputs and RNG draws are excluded",
+    "fractions": "Generated fractional daily profiles and fixture component integrals",
+    "temperature_C": "Generated thermostat daily points",
+    "activity_W_person": "Generated activity daily points",
+    "exact": "Source evidence/operands, states, draws, option selection, event start/length and discrete source decisions"
   }
 }

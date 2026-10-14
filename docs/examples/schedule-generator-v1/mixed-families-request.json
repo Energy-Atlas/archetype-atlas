@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0.0",
+  "params": {
+    "resource_set_id": "resources-266a8e15dedd5cb95a200ac7a30321e72b4672dcd6358598e8a73ffdd946e68e",
+    "calendar": {
+      "year": 2007,
+      "clock": "local_standard_time",
+      "holidays": []
+    },
+    "instances": [
+      {
+        "key": "office",
+        "program_id": "program-0e670d8dc556f7f5bdd7f1a9",
+        "inputs": {
+          "carrier_policy": "explicit_single_nonresidential_reference_carrier",
+          "configuration_id": "medium_office_90_1_2013"
+        },
+        "basis_bindings": {
+          "extents": {
+            "floor_area": {
+              "value": 100,
+              "unit": "m2",
+              "evidence": {
+                "caller": "Explicit pilot experiment extent; no inferred unit area"
+              }
+            }
+          }
+        },
+        "operating_group": "medium-office-building"
+      },
+      {
+        "key": "apartment",
+        "program_id": "program-03fe19ed8968e605f4be3b8d",
+        "inputs": {
+          "bedrooms": 1,
+          "installed": {
+            "ceiling_fan": true,
+            "clothes_dryer": true,
+            "clothes_washer": true,
+            "cooking_range": true,
+            "dishwasher": true,
+            "garage": false,
+            "plug_loads_other": true,
+            "plug_loads_tv": true
+          },
+          "latitude": 61.2169,
+          "longitude": -149.868,
+          "residents": 2.0,
+          "state": "AK",
+          "thermostat_arguments": {
+            "hvac_control_cooling_season_period": "Jan 1 - Dec 31",
+            "hvac_control_cooling_weekday_setpoint_offset_magnitude": "0",
+            "hvac_control_cooling_weekday_setpoint_schedule": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+            "hvac_control_cooling_weekday_setpoint_temp": "70",
+            "hvac_control_cooling_weekend_setpoint_offset_magnitude": "0",
+            "hvac_control_cooling_weekend_setpoint_schedule": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+            "hvac_control_cooling_weekend_setpoint_temp": "70",
+            "hvac_control_heating_season_period": "Jan 1 - Dec 31",
+            "hvac_control_heating_weekday_setpoint_offset_magnitude": "0",
+            "hvac_control_heating_weekday_setpoint_schedule": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+            "hvac_control_heating_weekday_setpoint_temp": "70",
+            "hvac_control_heating_weekend_setpoint_offset_magnitude": "0",
+            "hvac_control_heating_weekend_setpoint_schedule": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+            "hvac_control_heating_weekend_setpoint_temp": "70"
+          },
+          "time_zone_utc_offset": -9.0,
+          "weather_id": "USA_AK_Anchorage-Merrill.Field.702735_TMY3"
+        },
+        "basis_bindings": {
+          "extents": {
+            "dwelling_unit": {
+              "value": 1,
+              "unit": "dwelling",
+              "evidence": {
+                "caller": "Explicit pilot experiment extent; no inferred unit area"
+              }
+            }
+          }
+        },
+        "operating_group": null
+      }
+    ],
+    "mixture": {
+      "program_id": "pilot-mixture",
+      "composition_id": null,
+      "members": [
+        {
+          "instance_key": "office",
+          "weight": 0.5
+        },
+        {
+          "instance_key": "apartment",
+          "weight": 0.5
+        }
+      ],
+      "result_basis": "floor_area",
+      "denominator": {
+        "value": 100,
+        "unit": "m2",
+        "evidence": {
+          "caller": "Explicit experimental normalization area; not inferred building geometry"
+        }
+      }
+    }
+  },
+  "seed": 42
+}
