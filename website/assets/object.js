@@ -35,7 +35,7 @@
     } finally { clearTimeout(timer); }
   }
   function load(section, mode = 'raw') {
-    if (!section || !['raw', 'defaulted'].includes(mode)) return Promise.reject(new Error('Unknown JSON export mode.'));
+    if (!section || !['raw', 'defaulted', 'construction'].includes(mode)) return Promise.reject(new Error('Unknown JSON export mode.'));
     if (!cache.has(section)) cache.set(section, new Map());
     const modes = cache.get(section);
     if (!modes.has(mode)) modes.set(mode, fetchObject(section, mode).catch(error => { modes.delete(mode); throw error; }));
@@ -88,6 +88,7 @@
   }
   function init() {
     document.querySelectorAll('.object-json').forEach(section => {
+      if (section.dataset.construction) { window.AtlasConstruction.init(section); return; }
       const details = section.querySelector('.object-source'), status = section.querySelector('.object-status');
       details.addEventListener('toggle', async () => {
         if (!details.open) return; status.textContent = 'Loading verified JSON…';

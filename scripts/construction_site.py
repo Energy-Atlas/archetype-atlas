@@ -1,0 +1,329 @@
+"""Present immutable construction v2 as selectable sets and linked resources."""
+import copy
+import hashlib
+import html
+import json
+import re
+from pathlib import Path
+from scripts.common import ROOT,load_json
+from scripts.definition_contract import canonical
+from scripts.definition_site import generate,write
+from scripts.catalogue_names import building_label
+from scripts.object_site import JSONStore,json_markup,PREFIX
+from scripts.construction_set_release import load_release,OUTPUT
+from scripts.construction_set_export import dependency_closure
+
+
+def esc(value):return html.escape(str(value),quote=True)
+
+
+def context_choices(profile,contexts):
+    return [{'id':c['id'],'climate':c['climate_zone'],'reference':c['reference_id'],
+             'building':building_label(c['reference_id'].split('/',1)[-1]) if profile['scope']!='whole_dwelling' else building_label(profile['source']['building_type'])} for c in contexts.values()]
+
+
+def packet_for(release,identity,contexts):
+    configs={c['configuration_id']:release['component_configurations'][c['configuration_id']] for c in contexts.values()}
+    receipts={c['selector_receipt_id']:release['selector_receipts'][c['selector_receipt_id']] for c in contexts.values()}
+    combined={'all':{'assignments':[a for config in configs.values() for comp in config['components'].values() for a in comp['assignments']]}}
+    eids={i for c in contexts.values() for i in c['source_evidence_ids']}
+    assemblies,materials,evidence=dependency_closure(release,combined,{'evidence':[release['evidence'][i] for i in eids]},
+        [c['infiltration'] for c in contexts.values()],[d for rows in receipts.values() for d in rows])
+    metadata={k:v for k,v in release['metadata'].items() if k!='source_table_only_assembly_ids'}
+    return {'schema_version':'1.0.0','kind':'construction_site_packet','profile':release['construction_sets'][identity],
+        'contexts':contexts,'component_configurations':configs,'selector_receipts':receipts,
+        'assemblies':assemblies,'materials':materials,'evidence':evidence,'metadata':metadata}
+
+
+def projection(release,bundle):
+    originals={r['id']:r for r in bundle['constructions']};rows=[]
+    for identity,p in release['construction_sets'].items():
+        source=p['source'];contexts=[c for c in release['contexts'].values() if c['construction_set_id']==identity]
+        row=copy.deepcopy(originals.get(identity,{}))
+        row.update(id=identity,name=p['name'],building_type=source['building_type'],template=source['template'],
+            source_family=source['source_family'],evidence_view=source['evidence_view'],construction_schema='2.0.0',
+            vintage=source['vintage']['value'],scope=p['scope'],derivation='source-ready construction set',
+            gate=originals.get(identity,{}).get('gate') or ['residential' if p['scope']=='whole_dwelling' else 'nonresidential'],
+            applicability=[{'building_type':c['reference_id'].split('/',1)[-1] if p['scope']!='whole_dwelling' else source['building_type'],
+                            'climate':c['climate_zone']} for c in contexts])
+        rows.append(row)
+    return {**bundle,'constructions':rows}
+
+
+def resource_path(table,identity):return f'construction/{table}/{identity}/index.html'
+
+
+def static_page(name,body):
+    return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+        f'<title>{esc(name)}</title><link rel="stylesheet" href="{PREFIX}assets/fonts.css"><link rel="stylesheet" href="{PREFIX}assets/site.css">'
+        f'<script src="{PREFIX}assets/theme.js"></script></head><body><header class="definition-header"><a href="{PREFIX}">Energy Archetype Atlas</a> · '
+        f'<a href="{PREFIX}catalogue/">Catalogue</a> · <a href="{PREFIX}sources/">Sources</a></header><main class="definition-document">'
+        f'<h1>{esc(name)}</h1>{body}</main><script src="{PREFIX}assets/object.js"></script></body></html>')
+
+
+def generate_constructions(release,bundle,root):
+    root=Path(root);store=JSONStore(root);projected=projection(release,bundle)
+    generate(projected,root,publish=False,pages=False,only_kinds={'construction'})
+    registry=load_json(root/'object-index.json') if (root/'object-index.json').exists() else {}
+    originals={r['id']:r for r in bundle['constructions']}
+    report={'schema_version':'1.0.0','construction_schema':'2.0.0','definitions':len(release['construction_sets']),
+        'contexts':len(release['contexts']),'packets':{},'resources':{k:{} for k in ('assemblies','materials','evidence')}}
+    for identity,profile in release['construction_sets'].items():
+        if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*',identity):raise ValueError('Unsafe construction identity')
+        contexts={i:c for i,c in release['contexts'].items() if c['construction_set_id']==identity}
+        packet=packet_for(release,identity,contexts);descriptor=store.put(packet);report['packets'][identity]=descriptor
+        raw=store.put(originals.get(identity,profile));source=profile['source']
+        choices=context_choices(profile,contexts)
+        controls='<div class="definition-filters construction-controls"><label>Climate<select class="construction-climate"><option value="">Choose climate</option>'
+        controls+=''.join(f'<option value="{esc(v)}">{esc(v)}</option>' for v in sorted({c['climate_zone'] for c in contexts.values()}))
+        controls+='</select></label><label>Source reference<select class="construction-reference"><option value="">Choose source reference</option></select></label></div>'
+        markup=json_markup(raw).replace('data-raw=',f'data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-raw=',1)
+        markup=markup.replace('<button type="button" class="object-copy">',controls+'<button type="button" class="object-copy">',1)
+        page=f'# {esc(profile["name"])}\n\n[Construction catalogue](../catalogue/{"residential" if profile["scope"]=="whole_dwelling" else "nonresidential"}/construction/index.md) · [Construction JSON contract](../guides/construction-json.md)\n\n'
+        page+=f'`{identity}` · Construction set · {esc(profile["scope"])} · {esc(source["template"])} · {esc(source["source_family"])}\n\n'
+        page+='One set contains its source-supported exterior and interior components. Select a climate and source reference to inspect or copy complete **construction JSON v2**. Source conditions and fixed reference ACH remain explicit. BEMGen supplies actual model geometry.\n\n'
+        if profile['scope']=='space_type':page+='This is a partial source space set; it is not a complete building set.\n\n'
+        page+=markup+'\n\n## Component resources\n\n'
+        page+='| Component type | Available assembly resources |\n|---|---|\n'
+        roles={}
+        for config in packet['component_configurations'].values():
+            for role,component in config['components'].items():roles.setdefault(role,set()).update(a['assembly_id'] for a in component['assignments'])
+        for role,ids in roles.items():
+            links=' · '.join(f'[{esc(release["assemblies"][i]["name"])}]({PREFIX}{resource_path("assemblies",i)})' for i in sorted(ids)) or 'Absent at this source scope; applicable source defaults inherit by the declared hierarchy'
+            page+=f'| {esc(role)} | {links} |\n'
+        page+='\n[All assembly resources](../construction/assemblies/index.md) · [Frozen source coverage](../construction/coverage.json)\n'
+        write(root,f'definitions/{identity}.md',page)
+        registry[identity]={'table':'constructions','name':profile['name'],'path':f'definitions/{identity}.md'}
+    for table in report['resources']:
+        for identity,item in release[table].items():
+            if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*',identity):raise ValueError('Unsafe construction resource identity')
+            name=item.get('name') or item.get('source_locator') or identity;descriptor=store.put(item);path=resource_path(table,identity)
+            report['resources'][table][identity]={'path':path,'json':descriptor}
+            registry[identity]={'table':'construction_'+table,'name':name,'path':path}
+            body=f'<p><code>{esc(identity)}</code> · Construction {esc(table)}</p><p><a href="{PREFIX}catalogue/">Catalogue</a> · <a href="{PREFIX}construction/assemblies/">All assembly resources</a></p>'
+            if table=='assemblies':
+                body+='<p>Source-ready assembly resource. A construction set groups applicable components; this individual assembly is not a whole-building set.</p>'
+                if identity in release['metadata'].get('source_table_only_assembly_ids',[]):body+='<p>Independent source-table recipe: complete physics and provenance; no recovered prototype mapping.</p>'
+                body+=f'<p>Role: {esc(item["role"])} · Model: {esc(item["model"])} · Source climate group: {esc(item.get("climate_group"))}</p><table><tr><th>Layer (outside → inside)</th><th>Material</th></tr>'
+                for layer in item['layers']:
+                    mid=layer['material_id'];body+=f'<tr><td>{layer["order"]+1}</td><td><a href="{PREFIX}{resource_path("materials",mid)}">{esc(release["materials"][mid]["name"])}</a></td></tr>'
+                body+='</table>'
+            elif table=='materials':
+                body+=f'<p>Model: {esc(item["model"])}</p><table><tr><th>SI property / model option</th><th>Value</th><th>Source evidence</th></tr>'
+                for key,value in item['properties'].items():
+                    eid=item['property_evidence'][key]
+                    body+=f'<tr><th>{esc(key)}</th><td>{esc(value if value is not None else "Unknown")}</td><td><a href="{PREFIX}{resource_path("evidence",eid)}">Source</a></td></tr>'
+                body+='</table>'
+            else:
+                body+='<dl>'+''.join(f'<dt>{esc(key)}</dt><dd>{esc(item[key])}</dd>' for key in ('source_project','source_revision','source_locator','original_unit','transformation','extraction_date','interpretation_note'))+'</dl>'
+            body+=json_markup(descriptor,reason='Source-recovered construction resource; program defaults do not apply.',relative_root='../../../')
+            if item.get('evidence_ids'):
+                body+='<details class="object-references"><summary>Source evidence</summary><ul>'+''.join(f'<li><a href="{PREFIX}{resource_path("evidence",i)}">{esc(i)}</a></li>' for i in item['evidence_ids'])+'</ul></details>'
+            write(root,path,static_page(name,body))
+    rows=report['resources']['assemblies']
+    page='# Assembly resources\n\nThese are individual source-ready recipes, separate from whole construction sets. Independent source-table recipes retain explicit missing prototype applicability.\n\n<details class="definition-static"><summary>All assembly resources — accessible without JavaScript</summary><ul>'
+    page+=''.join(f'<li><a href="{PREFIX}{entry["path"]}">{esc(release["assemblies"][i]["name"])} · {esc(release["assemblies"][i]["role"])} · {esc(i)}</a></li>' for i,entry in rows.items())+'</ul></details>\n'
+    write(root,'construction/assemblies/index.md',page)
+    write(root,'construction/coverage.json',canonical({'definitions':report['definitions'],'contexts':report['contexts'],
+        'assemblies':len(rows),'source_table_only_assembly_ids':release['metadata'].get('source_table_only_assembly_ids',[])}).decode())
+    write(root,'object-index.json',canonical(registry).decode());write(root,'construction-site.json',canonical(report).decode())
+    return report
+
+
+def update_existing(bundle,root,release=None):
+    root=Path(root).resolve()
+    if not (root/'site-manifest.json').is_file() or not (root/'object-index.json').is_file():raise ValueError('A marked generated tree with a site manifest is required')
+    if not root.is_relative_to((ROOT/'build').resolve()) or root==(ROOT/'build').resolve():raise ValueError('Existing output must be inside a workspace build directory')
+    report=generate_constructions(release or load_release(),bundle,root)
+    manifest=load_json(root/'site-manifest.json');registry=load_json(root/'object-index.json')
+    manifest['objects']=len(registry);manifest['counts']['constructions']=report['definitions']
+    manifest['construction_v2']={k:report[k] for k in ('construction_schema','definitions','contexts')}
+    write(root,'site-manifest.json',canonical(manifest).decode())
+    return report
+
+
+def install_contract(root,include_resources=True):
+    root=Path(root)
+    guide='''# Construction JSON for simulation import
+
+Contract **2.0.0**. One construction set supplies all source-supported above-ground
+component types, fixed reference infiltration, materials and provenance.
+
+- [Construction-set schema](../contracts/construction-json-v2.schema.json)
+- [Normalized catalogue schema](../contracts/construction-catalogue-v2.schema.json)
+- [Complete Medium Office example](../examples/construction/medium-office.json)
+- [Complete residential example](../examples/construction/residential.json)
+- [Source coverage](../construction/coverage.json)
+- [All assembly resources](../construction/assemblies/index.md)
+- [Pinned source retrieval](../construction/source-lock.json)
+
+## Select and copy
+
+Choose Residential or Non Residential, then Constructions. Filters select the
+source construction set and full climate label. The record page preserves the
+filter selection; choose a source reference where more than one is supported.
+No climate or ambiguous reference is guessed. A uniquely supported choice is
+resolved automatically. Partial space sets retain their explicit scope.
+
+Expand **JSON** or select **Copy JSON → Copy construction JSON** for the complete
+self-contained source-ready set. **Copy source JSON** retains the original
+source definition. Construction copying does not apply program defaults.
+
+## Components and geometry
+
+Exterior and interior walls are components in the same set. The schema controls
+component targets, conditions, source scope precedence and geometry conventions.
+Source space/story overrides and alternative recipe identities remain explicit.
+BEMGen owns matching to actual BEM components and IDF translation, including
+areas, paired surfaces, roof pitch, adjacency and internal-mass scaling.
+An unmatched or ambiguous consumer component must fail explicitly.
+
+Fixed natural ACH uses the accepted source-reference geometry and 2013 climate
+map; it is preserved across zoning changes. Layer/material physics, source
+targets versus attained properties, source defaults and evidence are unchanged
+from the frozen recovery. Metadata follows Program JSON source conventions.
+There is no generic required_bindings or deferred_scope in this consumer JSON.
+
+## Coverage and boundaries
+
+The complete freeze covers 224 source definitions, 4,798 supported contexts and
+4,868 ready assemblies. Of those assemblies, 1,439 independent source-table
+recipes have complete physics/provenance but no recovered prototype mapping.
+They remain accessible and explicitly identified; their applicability is not
+invented. Unsupported source climates remain unsupported.
+
+Foundation-dependent assemblies, ground and systems remain separate deferred
+work. Program JSON stays independent. This local integration does not constitute
+production publication. Preserve source license notices when reusing artifacts.
+'''
+    if not include_resources:
+        guide=guide.replace('- [Source coverage](../construction/coverage.json)\n','').replace('- [All assembly resources](../construction/assemblies/index.md)\n','')
+        guide+='\nThis small presentation pilot does not include the frozen construction catalogue.\n'
+    write(root,'guides/construction-json.md',guide)
+    for name in ('construction-json-v2.schema.json','construction-catalogue-v2.schema.json'):
+        write(root,'contracts/'+name,(OUTPUT/'schemas'/name).read_text(encoding='utf-8'))
+    for name in ('medium-office.json','residential.json'):
+        write(root,'examples/construction/'+name,(OUTPUT/'examples'/name).read_text(encoding='utf-8'))
+    write(root,'construction/source-lock.json',(OUTPUT/'sources/construction-v2-source-lock.json').read_text(encoding='utf-8'))
+    for path in (OUTPUT/'sources/licenses').glob('*.txt'):
+        write(root,'notices/construction/'+path.name,path.read_text(encoding='utf-8'))
+
+
+def program_presentation_inputs(bundle):
+    paths=['scripts/program_json_v3.py','scripts/program_json.py','scripts/schedule_json.py',
+           'scripts/program_json_aggregation.py','scripts/program_composition.py','scripts/semantics.py',
+           'scripts/common.py','scripts/definition_contract.py','scripts/object_site.py',
+           'schemas/program-json-v3.schema.json','schemas/program-json-v2.schema.json','schemas/schedule-json-v2.schema.json',
+           'sources/program-json-defaults-v2.json','data/releases/v0.2.0/programs.json',
+           'data/program-inputs/residential-v1.json','data/program-inputs/er-triage-v1.json']
+    return {'files':{p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths},
+            'bundle':hashlib.sha256(canonical(bundle)).hexdigest()}
+
+
+def integrate_existing(bundle,root):
+    """Local opt-in overlay; retain unrelated pages and verified program outputs."""
+    import shutil
+    from scripts.object_site import generate_objects
+    root=Path(root).resolve()
+    if not root.is_relative_to((ROOT/'build').resolve()) or not (root/'site-manifest.json').is_file():raise ValueError('A marked workspace generated tree is required')
+    registry=load_json(root/'object-index.json');expected={r['id'] for table in bundle.values() if isinstance(table,list) for r in table if isinstance(r,dict) and 'id' in r}
+    if not expected<=set(registry):raise ValueError('Cached site uses different source definitions')
+    manifest=load_json(root/'site-manifest.json');fingerprint=program_presentation_inputs(bundle)
+    if manifest.get('program_presentation_inputs')!=fingerprint:
+        print('Refreshing stale local program presentation to the current v3 contract (no research recovery)',flush=True)
+        result=generate_objects(bundle,root,only_tables={'programs'})
+        if result['default_export_failures']:raise ValueError('Program presentation has unresolved exports')
+        manifest.update(default_export_failures=result['default_export_failures'],program_presentation_inputs=fingerprint)
+        write(root,'site-manifest.json',canonical(manifest).decode())
+    else:print('Reusing unchanged verified v3 program presentation',flush=True)
+    for source in (ROOT/'website/assets').iterdir():
+        if source.is_file():shutil.copyfile(source,root/'assets'/source.name)
+    install_contract(root)
+    # Current program documentation and examples accompany the cached v3 payloads.
+    contract=(ROOT/'docs/program-json-v3-contract.md').read_text(encoding='utf-8')
+    contract=contract.replace('../schemas/','../contracts/').replace('../sources/','../contracts/').replace('examples/program-json-v3/','../examples/').replace('reviews/program-json-remaining-decisions.md','program-json-remaining-decisions.md')
+    write(root,'guides/program-json.md',contract)
+    write(root,'guides/program-json-remaining-decisions.md',(ROOT/'docs/reviews/program-json-remaining-decisions.md').read_text(encoding='utf-8'))
+    for source in (ROOT/'docs/examples/program-json-v3').glob('*.json'):shutil.copyfile(source,root/'examples'/source.name)
+    for name in ('program-json-v3.schema.json','schedule-json-v2.schema.json'):shutil.copyfile(ROOT/'schemas'/name,root/'contracts'/name)
+    shutil.copyfile(ROOT/'sources/program-json-defaults-v2.json',root/'contracts/program-json-defaults-v2.json')
+    report=update_existing(bundle,root)
+    from scripts.active_site import landing
+    projected=projection(load_release(),bundle);write(root,'index.md',landing(projected))
+    selection=(root/'guides/selection.md').read_text(encoding='utf-8')
+    selection=selection.replace('Other library objects expose their exact raw JSON; unresolved physical inputs stay explicit.',
+        'Constructions offer source-ready JSON v2 after climate/reference selection, with complete component and material/provenance closure. [Construction contract](construction-json.md). HVAC objects retain exact source JSON and explicit unresolved inputs.')
+    write(root,'guides/selection.md',selection)
+    write(root,'guides/definitions.md',library_guide())
+    sources=(root/'sources.md').read_text(encoding='utf-8')
+    if 'https://data.openei.org/submissions/157' not in sources:
+        sources+='\n\nHospital ER_Triage equipment recovery uses Deru, Michael, et al., *Commercial Reference Building: Hospital*, National Renewable Energy Laboratory, 25 November 2014, [OEDI submission 157](https://data.openei.org/submissions/157), under [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). The post-1980 v1.3_5.0 SI scorecard supplies the recovered magnitude; copied program metadata retains the exact cell, checksum and transformation.\n'
+    write(root,'sources.md',sources)
+    return report
+
+
+def library_guide():
+    return ('# Library definitions\n\nPrograms supply loads and determined schedules. '
+            'A construction set groups its source-supported above-ground components, materials, fixed reference infiltration and provenance. '
+            'Choose its climate and source reference, then copy self-contained Construction JSON v2. '
+            'Partial space sets and independent assembly resources retain their explicit source scope. '
+            'BEMGen owns component matching and translation using actual model geometry. '
+            'Ground and systems completion remain deferred; existing HVAC pages retain source evidence.\n\n'
+            '[Construction JSON contract](construction-json.md) · [Program JSON contract](program-json.md) · [Sources](../sources.md)\n')
+
+
+def verify_delivery(root,release=None):
+    """Compare every presentation packet/resource to the checksum-locked freeze."""
+    import gzip
+    from html.parser import HTMLParser
+    root=Path(root)
+    if not (root/'construction-site.json').exists():return []
+    release=release or load_release();report=load_json(root/'construction-site.json');errors=[];loaded={}
+    class Section(HTMLParser):
+        def __init__(self):super().__init__();self.sections=[]
+        def handle_starttag(self,tag,attrs):
+            attrs=dict(attrs)
+            if 'object-json' in attrs.get('class','').split():self.sections.append(attrs)
+    def page_attributes(path):
+        parser=Section();parser.feed(path.read_text(encoding='utf-8'))
+        if len(parser.sections)!=1:raise ValueError('Missing or ambiguous construction JSON section')
+        return parser.sections[0]
+    def read(descriptor):
+        key=canonical(descriptor)
+        if key in loaded:return loaded[key]
+        if not re.fullmatch(r'json/[a-f0-9]{64}\.json\.gz',descriptor['href']) or descriptor['encoding']!='gzip':raise ValueError('Invalid construction resource path/encoding')
+        if not 0<descriptor['decoded_size_bytes']<=16_000_000:raise ValueError('Invalid decoded construction bound')
+        encoded=(root/descriptor['href']).read_bytes()
+        if len(encoded)!=descriptor['size_bytes'] or hashlib.sha256(encoded).hexdigest()!=descriptor['sha256']:raise ValueError('Construction resource checksum/size mismatch')
+        with gzip.open(root/descriptor['href'],'rb') as stream:decoded=stream.read(descriptor['decoded_size_bytes']+1)
+        if len(decoded)!=descriptor['decoded_size_bytes']:raise ValueError('Construction decoded size mismatch')
+        value=json.loads(decoded)
+        # Profile packets repeat shared proofs; retaining every packet wastes memory.
+        if value.get('kind')!='construction_site_packet':loaded[key]=value
+        return value
+    if set(report['packets'])!=set(release['construction_sets']):errors.append('Construction set census mismatch')
+    contexts=set()
+    for identity,descriptor in report['packets'].items():
+        try:
+            packet=read(descriptor)
+            expected={i:c for i,c in release['contexts'].items() if c['construction_set_id']==identity}
+            if packet!=packet_for(release,identity,expected):raise ValueError('Construction packet differs from complete frozen dependency closure')
+            page=root/f'definitions/{identity}/index.html'
+            if not page.exists():page=root/f'definitions/{identity}.md'
+            attrs=page_attributes(page)
+            if json.loads(attrs['data-construction'])!=descriptor:raise ValueError('Construction page packet binding mismatch')
+            if json.loads(attrs['data-contexts'])!=context_choices(release['construction_sets'][identity],expected):raise ValueError('Construction page context binding mismatch')
+            if attrs['data-root']!='../../':raise ValueError('Construction page resource root mismatch')
+            contexts.update(expected)
+        except (KeyError,ValueError,OSError) as error:errors.append(identity+': '+str(error))
+    if contexts!=set(release['contexts']):errors.append('Construction context census mismatch')
+    for table,entries in report['resources'].items():
+        if set(entries)!=set(release[table]):errors.append('Construction '+table+' census mismatch')
+        for identity,entry in entries.items():
+            try:
+                if read(entry['json'])!=release[table][identity]:raise ValueError('Frozen construction resource changed')
+                if entry['path']!=resource_path(table,identity):raise ValueError('Construction resource route mismatch')
+                attrs=page_attributes(root/entry['path'])
+                if json.loads(attrs['data-raw'])!=entry['json'] or attrs['data-root']!='../../../':raise ValueError('Construction resource page JSON binding mismatch')
+            except (KeyError,ValueError,OSError) as error:errors.append(identity+': '+str(error))
+    return errors

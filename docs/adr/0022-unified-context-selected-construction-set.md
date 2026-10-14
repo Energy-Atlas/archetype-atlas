@@ -66,3 +66,21 @@ the feature-branch freeze and its licenses, schemas, index, examples and manifes
 Site/CI, publication, translator, ground and system work remain deferred. See
 [the contract](../construction-json-v2-contract.md) and
 [review entry](../reviews/construction-set-v2-review.md).
+
+## Local site projection
+
+The user subsequently authorized local site integration only. Construction
+finders now select source construction sets and carry full climate/building
+filters into a record page. Exact source references remain explicit where
+ambiguous. The page loads a checksum-verified per-definition transport packet
+containing all supported contexts and shared dependencies; browser hydration
+produces the frozen self-contained consumer JSON 2.0.0. The transport's private
+schema 1.0.0 is not an alternate simulation contract. All assembly/material/proof
+resources are separately accessible, including source-table-only assemblies
+without invented prototype mappings. Partial space scopes retain their identity.
+
+No construction science, consumer schema, source geometry or BEMGen translation
+changes. A local cache path fingerprints program presentation dependencies and
+reuses unchanged v3 pages; raw definition JSON remains separately available.
+Production publication, ground and system completion remain deferred. See the
+[local implementation record](../superpowers/plans/2026-10-14-construction-site-integration.md).

@@ -408,3 +408,37 @@ all release artifacts. The frozen Medium Office CLI export/check also passed.
 Staged outputs and generation inputs match the manifest, and all upstream notices
 match v1 bytes. Staged diff inspection and the security audit pass before the
 local freeze commit. Site integration and protected-main publication remain open.
+
+## Construction v2 local site integration — 2026-10-14
+
+At the user's instruction, integrated the frozen v2 release into the existing
+site on `feature/json-completion`, based on `23c5f1d`. The construction finder now
+contains 224 source sets and 4,798 supported climate/reference contexts. Pages
+copy self-contained selected JSON v2 and preserve raw source JSON separately.
+All 4,868 assembly, 858 material and 8,014 evidence resources have linked pages;
+the 1,439 source-table-only recipes retain explicit unreported prototype mapping.
+Contract, schemas, examples, source lock and license notices accompany delivery.
+BEMGen translation, ground and system completion remain deferred.
+
+The existing local generated tree contained Program JSON v2. Refreshed its program
+presentation from unchanged v3 inputs, without native/research recovery or program
+artifact generation. Local reuse now fingerprints every exporter operand and
+shared semantic dependency. Independent review exposed missing cache operands
+and inadequate page/evidence binding checks; failing regressions preceded repairs.
+Delivery verification compares complete packet closures with the locked freeze
+and binds actual page JSON/context controls and resource routes to the report.
+Verification avoids retaining all repeated profile packets in memory.
+
+Validation: 30 focused Python presentation/delivery tests, seven existing object
+browser tests and two Node selection tests pass. All generated construction
+packets/resources match the freeze. The strict local MkDocs build and full site
+checker pass links, fragments, assets, size limits, retirement, program exports
+and frozen construction delivery. Eight real-browser construction checks cover
+exact Medium Office/residential copies, explicit selection errors, corrupted and
+missing resources, clipboard fallback, mobile light/dark and no-JavaScript lists.
+Screenshots were inspected; receipts and output stay under ignored `build/`.
+
+The source JSON, frozen releases and schemas remain unchanged. Staged inspection
+and security audit precede a reversible local commit. No push, GitHub workflow,
+PR, Pages deployment or production publication is part of this task. See the
+[local integration plan](../superpowers/plans/2026-10-14-construction-site-integration.md).

@@ -37,6 +37,8 @@ def on_post_build(config):
         for row in json.loads(objects.read_text(encoding='utf-8')).values():
             if row['path'].endswith('.md'):
                 record_titles[row['path'].removesuffix('.md')+'/']=row['name']
+            elif row['table'] in {'construction_assemblies','construction_materials'}:
+                record_titles[row['path'].removesuffix('index.html')]=row['name']
     index=json.loads(path.read_text(encoding='utf-8'))
     result=compact_records(index,record_titles)
     indexed={entry['location'].split('#',1)[0] for entry in result['docs']}

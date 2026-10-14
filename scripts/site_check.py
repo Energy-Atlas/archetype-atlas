@@ -27,7 +27,7 @@ class Links(HTMLParser):
         for key in ['href', 'src']:
             if attrs.get(key):
                 self.links.append(attrs[key])
-        for key in ['data-raw', 'data-defaulted']:
+        for key in ['data-raw', 'data-defaulted', 'data-construction']:
             if attrs.get(key):
                 descriptor = json.loads(attrs[key])
                 self.links.append('/archetype-atlas/' + descriptor['href'])
@@ -128,10 +128,11 @@ def main():
     p.add_argument('--site', type=Path, default=ROOT/'build/site')
     p.add_argument('--prefix', default='/archetype-atlas/')
     args = p.parse_args()
-    errors = check_links(args.site, args.prefix)+check_size(args.site)+check_active(args.site)
+    from scripts.construction_site import verify_delivery
+    errors = check_links(args.site, args.prefix)+check_size(args.site)+check_active(args.site)+verify_delivery(args.site)
     if errors:
         raise SystemExit('\n'.join(errors[:50]) + f'\n{len(errors)} broken references')
-    print('All built links, fragments, assets, publication size, retirement and complete program exports passed')
+    print('All built links, fragments, assets, publication size, retirement, program exports and frozen construction delivery passed')
 
 
 if __name__ == '__main__':

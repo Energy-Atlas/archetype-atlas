@@ -43,7 +43,8 @@ def generate_active_site(bundle, target, publish=True):
               'Expand **JSON** to inspect the complete object. **Copy JSON** opens the copy choices.\n\n'
               'Programs offer raw JSON and, when all active inputs resolve, ready JSON with source recovery and approved defaults, including every referenced schedule. '
               'Source unknowns remain visible as Unknown. Geometry, model sizing and service host assignment remain consumer responsibilities. '
-              'Other library objects expose their exact raw JSON; unresolved physical inputs stay explicit.\n\n'
+              'Constructions offer source-ready JSON v2 after climate/reference selection, with complete component and material/provenance closure. '
+              '[Construction contract](construction-json.md). HVAC objects retain exact source JSON and explicit unresolved inputs.\n\n'
               '[Program connector contract](program-json.md) · [Default policy](../contracts/program-json-defaults-v2.json)\n')
         write(stage, 'guides/schedules.md', '# Inspect schedules\n\nOpen a schedule from a program, construction or system reference. '
               'Load its interactive plots to see unique day profiles and a day-of-year × hour-of-day heatmap. '
@@ -60,14 +61,25 @@ def generate_active_site(bundle, target, publish=True):
         contract = contract.replace('reviews/program-json-remaining-decisions.md', 'program-json-remaining-decisions.md')
         write(stage, 'guides/program-json.md', contract)
         write(stage, 'guides/program-json-remaining-decisions.md', (ROOT / 'docs/reviews/program-json-remaining-decisions.md').read_text(encoding='utf-8'))
-        write(stage, 'guides/definitions.md', '# Library definitions\n\nPrograms supply loads and determined schedules. Constructions supply element properties and separately scoped air exchange. '
-              'HVAC definitions supply fixed component performance and explicit conditional requirements. '
-              'Compare corresponding elements; unknown inputs do not establish identity.\n\n'
-              '[Program JSON contract](program-json.md) · [Sources](../sources.md)\n')
+        from scripts.construction_site import library_guide,program_presentation_inputs
+        write(stage, 'guides/definitions.md', library_guide())
+        result['program_presentation_inputs']=program_presentation_inputs(bundle)
         for src in (ROOT / 'schemas/program-json-v3.schema.json', ROOT / 'schemas/schedule-json-v2.schema.json', ROOT / 'sources/program-json-defaults-v2.json'):
             (stage / 'contracts').mkdir(exist_ok=True);shutil.copyfile(src, stage / 'contracts' / src.name)
         shutil.copytree(ROOT / 'docs/examples/program-json-v3', stage / 'examples')
-        notices = stage / 'notices';notices.mkdir()
+        from scripts.construction_site import generate_constructions,install_contract,projection
+        from scripts.construction_set_release import load_release
+        construction_ids=set(load_json(ROOT/'data/construction-releases/v2.0.0/index.json')['construction_sets'])
+        has_constructions=construction_ids <= {r['id'] for r in bundle['constructions']}
+        if has_constructions:
+            frozen_constructions=load_release()
+            construction=generate_constructions(frozen_constructions,bundle,stage)
+            result['objects']=len(load_json(stage/'object-index.json'))
+            result['counts']['constructions']=construction['definitions']
+            result['construction_v2']={k:construction[k] for k in ('construction_schema','definitions','contexts')}
+            write(stage,'index.md',landing(projection(frozen_constructions,bundle)))
+        install_contract(stage,include_resources=has_constructions)
+        notices = stage / 'notices';notices.mkdir(exist_ok=True)
         shutil.copyfile(ROOT / 'LICENSE', notices / 'original-work.txt')
         links = ['[Original-work notice](notices/original-work.txt)']
         for source in (ROOT / 'data/definition-releases/v0.1.1/sources/licenses').glob('*.txt'):
@@ -132,10 +144,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--definitions', type=Path, default=ROOT / 'data/definition-releases/v0.1.1')
     parser.add_argument('--output', type=Path, default=ROOT / 'build/site-docs')
+    parser.add_argument('--reuse-existing',action='store_true',help='Local construction overlay on a marked generated tree; refresh only stale program presentation')
     args = parser.parse_args()
     report = verify(args.definitions)
     if report.errors: raise SystemExit('; '.join(report.errors[:5]))
-    print(canonical(generate_active_site(read_bundle(args.definitions), args.output)).decode())
+    bundle=read_bundle(args.definitions)
+    if args.reuse_existing:
+        from scripts.construction_site import integrate_existing
+        report=integrate_existing(bundle,args.output)
+        print(f"Construction site: {report['definitions']} sets, {report['contexts']} contexts, {len(report['resources']['assemblies'])} assemblies")
+    else:print(canonical(generate_active_site(bundle, args.output)).decode())
 
 
 if __name__ == '__main__': main()

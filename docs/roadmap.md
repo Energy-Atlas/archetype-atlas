@@ -12,7 +12,8 @@ The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-j
 details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
 construction and system field reviews with coverage patterns and annotation space.
 The independent above-ground construction consumer export is frozen at 100%
-source coverage. Construction site publication remains open; ground and systems
+source coverage. Local construction site integration is implemented; production
+publication remains open. Ground and systems
 are deferred.
 
 | Order | Task | Status |
@@ -80,15 +81,19 @@ immutable evidence, including 592 deferred ground-contact elements.
 
 - [x] Recover all above-ground native source assemblies and selector closure.
 - [x] Freeze the independent above-ground schema, JSON, examples and 100% receipt.
-- [ ] Integrate this construction contract into site pages and publish through
-  protected-main checks. No site build or CI ran during construction completion.
+- [x] Integrate the construction v2 contract into local site pages, filters,
+  complete JSON copying and linked resource pages.
+- [ ] Publish through protected-main checks after review. The current task
+  authorizes local building only; no push, GitHub workflow or Pages deployment.
 - [ ] Resume ground/system work only when its deferred scope is reopened.
 
 A unified construction-set v2 schema/exporter and both accepted examples are
 now frozen in `data/construction-releases/v2.0.0/`, with all 224 definitions,
 4,798 supported contexts and 4,868 assemblies retained and validated. The
 [review entry](reviews/construction-set-v2-review.md) records acceptance and
-the complete migration; site integration and publication have not started.
+the complete migration. The [local site integration record](superpowers/plans/2026-10-14-construction-site-integration.md)
+tracks step 4 of the construction-set delivery sequence; production publication
+remains pending.
 BEMGen owns the future translator. The combined step-2 checklist below stays open where systems or
 publication are still required.
 

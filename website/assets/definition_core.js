@@ -35,5 +35,11 @@
     }
     return next;
   }
-  return {filter, change, defaults};
+  function href(row, filters) {
+    if (!row.construction_schema) return row.path;
+    const query = new URLSearchParams();
+    for (const key of ['climate', 'building']) if (filters[key]) query.set(key, filters[key]);
+    return row.path + (query.size ? '?' + query : '');
+  }
+  return {filter, change, defaults, href};
 });
