@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 
 from scripts.common import ROOT,load_json
 from scripts.construction_set_release import hydrate_context
-from scripts.construction_hotel_applicability import load_current_release as load_release
+from scripts.construction_distribution import load_current_release as load_release
 from scripts.site_smoke import serve
 
 
@@ -25,6 +25,8 @@ def smoke(root,screenshots):
                 medium='construction-93cb2afe2fe44c8e084b9b99';residential='construction-0079ce7b163bdb1bd0154dbe'
                 page.goto(base+'catalogue/nonresidential/construction/?'+urlencode({'building':'Medium Office','climate':'4A','vintage':'90.1-2019','evidence_view':'source'}))
                 expect(page.locator('.definition-status')).to_contain_text('matching entries')
+                expect(page.locator('[data-filter="scope"], [data-filter="evidence_view"]')).to_have_count(0)
+                assert 'evidence_view' not in page.url
                 link=page.locator('.definition-result a[href*="'+medium+'"]')
                 expect(link).to_have_count(1);link.click()
                 expect(page.locator('.construction-climate')).to_have_value('4A')
@@ -61,20 +63,21 @@ def smoke(root,screenshots):
                     page.screenshot(path=str(screenshots/(identity+'-hotel-mobile.png')))
                     page.set_viewport_size({'width':1280,'height':900})
                 checks.append('Hotel generic attachment/inheritance: exact copied JSON, Atlas provenance and working policy downloads')
-                # Reference ambiguity and partial source scope are retained.
-                multiple=next(p for p in release['construction_sets'].values() if len({c['reference_id'] for c in release['contexts'].values() if c['construction_set_id']==p['id'] and c['climate_zone']=='4A'})>1)
-                page.goto(base+'definitions/'+multiple['id']+'/?climate=4A')
-                expect(page.locator('.construction-reference')).to_have_value('')
-                page.locator('.object-copy').click();expect(page.get_by_role('button',name='Copy construction JSON',exact=True)).to_be_disabled()
-                page.keyboard.press('Escape');expect(page.locator('.object-copy')).to_be_focused()
-                chosen=next(c['reference_id'] for c in release['contexts'].values() if c['construction_set_id']==multiple['id'] and c['climate_zone']=='4A')
-                page.locator('.construction-reference').select_option(chosen);expect(page.locator('.object-status')).to_contain_text('Source-ready')
-                partial=next(p for p in release['construction_sets'].values() if p['scope']=='space_type')
-                page.goto(base+'definitions/'+partial['id']+'/');expect(page.locator('main')).to_contain_text('partial source space set')
+                # No standalone partial sets, including old direct routes or current query results.
+                assert len(release['construction_sets'])==177 and len(release['contexts'])==3320
+                for gate in ('residential','nonresidential'):
+                    entries=page.request.get(base+'catalogue/'+gate+'/construction/entries.json').json()
+                    assert all(r['scope']!='space_type' for r in entries)
+                assert page.request.get(base+'definitions/construction-1d0774872c8801caa0afdd44/').status==404
+                archive=page.request.get(base+'construction/distribution/source-evidence.json').json()
+                assert archive['consumer_selectable'] is False and len(archive['contexts'])==8
+                from scripts.query_v2 import QueryClient
+                query=QueryClient(root/'delivery/v2').query('construction',{},['scope'])
+                assert query['match_count']==177 and all(r['fields']['scope']!='space_type' for r in query['records'])
                 page.goto(base+'definitions/'+medium+'/?climate=99Z')
                 expect(page.locator('.object-status')).to_contain_text('Unsupported construction climate')
                 page.locator('.object-copy').click();expect(page.get_by_role('button',name='Copy construction JSON',exact=True)).to_be_disabled();page.keyboard.press('Escape')
-                checks.append('Ambiguous source references, partial scopes and unsupported climates stay explicit')
+                checks.append('177 complete sets; standalone routes retired; eight evidence contexts retained; current query has no partial sets; unsupported climates rejected')
                 # Packet corruption / missing resource cannot reach the clipboard.
                 for status,body,message in ((200,b'x'*report['packets'][medium]['size_bytes'],'checksum'),(404,b'missing','404')):
                     page.goto(base+'definitions/'+medium+'/?climate=4A')

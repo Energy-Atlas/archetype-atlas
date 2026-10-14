@@ -53,6 +53,15 @@ class ConstructionRefreshTests(unittest.TestCase):
             self.assertTrue(check_links(root,paths=[page]))
             (root/'policy.json').write_text('{}');self.assertEqual(check_links(root,paths=[page]),[])
 
+    def test_catalogue_directory_routes_and_frontmatter_render(self):
+        module=self.implementation()
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);(root/'definitions').mkdir();(root/'definitions/example.md').write_text('# Example')
+            result=module.render_page('---\nhide:\n  - toc\n---\n\n[Set](../../../definitions/example/)',
+                '<html><article>old</article></html>','catalogue/nonresidential/construction/index.md',root)
+            self.assertIn('/archetype-atlas/definitions/example/',result)
+            self.assertNotIn('hide:',result)
+
     def test_refresh_updates_packets_and_preserves_program_pages(self):
         module=self.implementation();base=load_release();builder=ReleaseBuilder()
         c=next(c for c in base['contexts'].values() if c['construction_set_id']=='construction-93cb2afe2fe44c8e084b9b99')
@@ -63,16 +72,44 @@ class ConstructionRefreshTests(unittest.TestCase):
             docs=Path(d)/'docs';site=Path(d)/'site';docs.mkdir()
             generate_constructions(release,bundle,docs)
             (docs/'site-manifest.json').write_text(json.dumps({'objects':0,'counts':{},'default_export_failures':[]}))
+            # Seed a previously shipped partial set, including its cached blob,
+            # finder entry, registry and rendered route, to exercise retirement.
+            from scripts.object_site import JSONStore
+            from scripts.construction_site import packet_for
+            retired='construction-1d0774872c8801caa0afdd44'
+            old_packet=packet_for(release,p['id'],{c['id']:c});old_packet['profile']=dict(old_packet['profile'],id=retired,scope='space_type')
+            descriptor=JSONStore(docs).put(old_packet)
+            report=load_json(docs/'construction-site.json');report['packets'][retired]=descriptor
+            (docs/'construction-site.json').write_text(json.dumps(report))
+            registry=load_json(docs/'object-index.json');registry[retired]={'table':'constructions','path':f'definitions/{retired}.md'}
+            (docs/'object-index.json').write_text(json.dumps(registry))
+            import html
+            retired_shell='<html><article><section data-construction="'+html.escape(json.dumps(descriptor),quote=True)+'">retired</section></article></html>'
+            (docs/f'definitions/{retired}.md').write_text(retired_shell)
             # The contract's linked resources are installed by refresh().
             from scripts.construction_site import install_contract
             install_contract(docs);shutil.copytree(docs,site)
             target=site/f'definitions/{p["id"]}/index.html';target.parent.mkdir(parents=True)
             target.write_text('<html><head>same</head><body><article>'+ (docs/f'definitions/{p["id"]}.md').read_text(encoding='utf-8')+'</article></body></html>',encoding='utf-8')
+            retired_target=site/f'definitions/{retired}/index.html';retired_target.parent.mkdir(parents=True);retired_target.write_text(retired_shell)
+            finder=site/'catalogue/nonresidential/construction/index.html';finder.write_text('<html><article>old filters</article></html>')
+            (site/'search').mkdir();(site/'search/search_index.json').write_text(json.dumps({'docs':[{'location':f'definitions/{retired}/'},{'location':'program-sentinel/'}]}))
             guide=site/'guides/construction-json/index.html';guide.parent.mkdir(parents=True);guide.write_text('<html><article>old</article></html>')
             sentinel=site/'program-sentinel.html';sentinel.write_bytes(b'unchanged program')
             revised=copy.deepcopy(release);revised['metadata']['source_files']['test']={'sha256':'a'*64,'source_revision':'test'}
+            resource=next(iter(load_json(docs/'construction-site.json')['resources']['assemblies'].values()))['path']
+            for tree in (docs,site):
+                path=tree/resource;path.write_text(path.read_text(encoding='utf-8')+'<!-- verified cached resource -->',encoding='utf-8')
             result=module.refresh(docs,site,release=revised,bundle=bundle)
             self.assertEqual(result['construction_pages'],1);self.assertEqual(sentinel.read_bytes(),b'unchanged program')
+            self.assertEqual(result['retired_space_type_pages'],1)
+            self.assertFalse(retired_target.exists());self.assertFalse((docs/f'definitions/{retired}.md').exists())
+            self.assertFalse(retired_target.parent.exists())
+            self.assertFalse((site/descriptor['href']).exists());self.assertNotIn(retired,load_json(site/'object-index.json'))
+            self.assertEqual(len(load_json(site/'search/search_index.json')['docs']),1)
+            self.assertNotIn('data-filter="scope"',finder.read_text());self.assertNotIn('data-filter="evidence_view"',finder.read_text())
+            self.assertEqual([e['id'] for e in load_json(site/'catalogue/nonresidential/construction/entries.json')],[p['id']])
+            self.assertIn('verified cached resource',(docs/resource).read_text(encoding='utf-8'))
             self.assertIn('test',json.loads(__import__('gzip').decompress((site/load_json(site/'construction-site.json')['packets'][p['id']]['href']).read_bytes()))['metadata']['source_files'])
 
 

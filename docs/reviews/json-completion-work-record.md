@@ -471,3 +471,37 @@ Markdown rendering and existing theme shells, with zero program-page generation.
 No full site/native/program build, remote push, CI/CD or deployment. Original
 v1/v2 frozen data/schemas, source exporters, program inputs and workflows are
 unchanged. Staged review and audit precede a reversible local feature commit.
+
+## Complete construction distribution and finder simplification — 2026-10-14
+
+User-approved scope: retire standalone space-type construction products; preserve
+embedded rules and the eight unsupported contexts as source evidence; remove
+construction scope/evidence-view filters; keep climate. Local validation only.
+
+- Distribution: 177 complete sets / 3,320 contexts. A deterministic containment
+  check covers all 1,470 supported source space contexts, including assignment
+  identity/conditions and selector alternatives. Eight legacy office plenum
+  contexts are retained with complete source resource/proof closure.
+- Historical freezes, construction physics/ACH, programs, ground and systems
+  remain unchanged. ADR 0024 records the current selection API and boundaries.
+- Current construction routes, search/registry and selective query metadata are
+  refreshed without program export or full site build. Existing program/system
+  query descriptors and supporting artifacts are reused.
+- Validation: 55 focused Python tests, five Node tests, deterministic release
+  reproduction, all 177 presentation packets / 3,320 contexts and shared
+  resource/proof bindings, nine browser scenario groups, and 1,233 focused
+  rendered-page link checks passed. Mobile light/dark screenshots inspected.
+- Review corrections: repaired 2,657 inbound references on 1,051 retained source
+  pages, reconciled construction-only query refresh with the current-only site
+  snapshot rule, and retired original partial raw blobs in fresh generation as
+  well as cached refresh. Each correction has a regression observed failing
+  before its fix. Empty retired directories are removed to prevent directory
+  listings at old URLs. Focused refresh reuses unchanged resource pages.
+- Ruling: retain immutable research releases while pruning superseded generated
+  query snapshots — the repository's current-only site validator requires one
+  active snapshot. Current program/system descriptors and supporting artifacts
+  remain unchanged; old explicit generated snapshot URLs cease to be served.
+- Review boundaries: browser appearance handled by local acceptance; upstream
+  research claims were preserved rather than re-researched; full/native/program
+  builds and network/CI/publication remain excluded as the user requested.
+  No unresolved review findings or deferred minors.

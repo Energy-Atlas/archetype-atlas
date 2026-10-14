@@ -3,12 +3,23 @@
 Status: both examples accepted 2026-10-14; v2.0.0 frozen on the feature branch.
 Local site integration is complete; protected-main publication remains pending.
 
+Current consumer distribution **v2.2.0** ships **177 complete construction sets**
+and **3,320 contexts**. Use `scripts.construction_distribution.load_current_release()`
+and the existing `hydrate_context()`, or its `--context-id` / `--output` CLI.
+It preserves all embedded space/story rules, including hotel GuestRoom variants.
+The 47 standalone partial space-type sets remain in historical source releases.
+The eight legacy office plenum contexts without supported 0A/0B building contexts
+are retained in `data/construction-releases/v2.2.0/source-evidence.json` as
+nonselectable source evidence. See [ADR 0024](adr/0024-complete-construction-set-distribution.md).
+Run `python -m scripts.construction_distribution --check` to reproduce the
+selection, embedding proof, evidence archive and checksum manifest.
+
 The current v2.1.0 data delta adds [Atlas hotel GuestRoom applicability](adr/0023-atlas-hotel-guestroom-applicability.md)
 over the immutable v2.0.0 freeze. Consumer schema remains 2.0.0. The typed
 `atlas_added_applicability` selector-receipt extension records attachment of the
 native SmallHotel 2019 generic recipe or inheritance through older SmallHotel
 building/story rules. All four specific variants, source physics and infiltration
-remain unchanged. Load current data with
+remain unchanged. Load the historical applicability data with
 `scripts.construction_hotel_applicability.load_current_release()`, then use the
 existing `hydrate_context()` API. The original frozen loader remains unchanged.
 
@@ -53,7 +64,8 @@ building default; original story IDs remain explicit, without guessed floor
 indices. The pinned OpenStudio 3.10 documentation and its checksum are retained
 in the source lock and evidence. Absent space overrides inherit the next
 applicable source default. Partial source
-space sets retain `scope: space_type`; they are not mislabeled complete buildings.
+space sets retain `scope: space_type` in frozen source releases; current consumer
+selection exposes their rules within complete building sets.
 Component target constants explicitly identify BEM surface type and boundary
 conditions, or internal-mass/shading object type. The source Attic floor selector
 may reference a preserved legacy roof-role recipe; this specific source override

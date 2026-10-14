@@ -1,5 +1,6 @@
 """Present immutable construction v2 as selectable sets and linked resources."""
 import copy
+import gzip
 import hashlib
 import html
 import json
@@ -11,11 +12,67 @@ from scripts.definition_site import generate,write
 from scripts.catalogue_names import building_label
 from scripts.object_site import JSONStore,json_markup,PREFIX
 from scripts.construction_set_release import OUTPUT
-from scripts.construction_hotel_applicability import load_current_release as load_release
+from scripts.construction_distribution import load_current_release as load_release
 from scripts.construction_set_export import dependency_closure
 
 
 def esc(value):return html.escape(str(value),quote=True)
+
+
+def remove_empty_retired_routes(root,identities):
+    root=Path(root).resolve()
+    for identity in identities:
+        if not re.fullmatch(r'construction-[a-f0-9]{24}',identity):raise ValueError('Unsafe retired construction identity')
+        leaf=(root/f'definitions/{identity}').resolve()
+        if not leaf.is_relative_to(root):raise ValueError('Retired route escapes generated tree')
+        if leaf.is_dir() and not any(leaf.iterdir()):leaf.rmdir()
+
+
+def rewrite_retired_links(text,parents,profiles):
+    def replace(match):
+        identity=match[1]
+        if identity not in parents:return match[0]
+        links='; '.join(f'<a href="{PREFIX}definitions/{p}/">{esc(profiles[p]["name"])}</a>' for p in parents[identity])
+        return f'<span>Source space recipe <code>{identity}</code> · Embedded in {links}</span>'
+    return re.sub(r'<a\b[^>]*href="'+re.escape(PREFIX)+r'definitions/(construction-[a-f0-9]{24})/"[^>]*>.*?</a>',replace,text,flags=re.S)
+
+
+def repair_retired_references(root,bundle,release):
+    from scripts.construction_distribution import OUTPUT as distribution
+    from scripts.object_site import references
+    parents=load_json(distribution/'selection.json')['embedded_parent_sets'];root=Path(root).resolve();changed=[]
+    for row in bundle['constructions']:
+        if row['id'] in parents or not references(row,parents):continue
+        if not re.fullmatch(r'construction-[a-f0-9]{24}',row['id']):raise ValueError('Unsafe source construction identity')
+        for path in (root/f'definitions/{row["id"]}.md',root/f'definitions/{row["id"]}/index.html'):
+            if not path.resolve().is_relative_to(root):raise ValueError('Source reference route escapes generated tree')
+            if not path.is_file():continue
+            text=path.read_text(encoding='utf-8');revised=rewrite_retired_links(text,parents,release['construction_sets'])
+            if revised!=text:path.write_text(revised,encoding='utf-8',newline='\n');changed.append(path.relative_to(root).as_posix())
+    return changed
+
+
+def prune_construction_history(root):
+    """Current site carries one query snapshot; immutable research freezes stay."""
+    from scripts.query_v2 import QueryClient
+    from scripts.query_delivery import descriptor,safe_path
+    root=Path(root).resolve();current=QueryClient(root)
+    selected=current.fetch(current.manifest['record_types']['construction']['index'])
+    keep={current.manifest['record_types']['construction']['index']['href']}
+    keep.update(d['href'] for route in selected['routes'] for d in route['packets'])
+    obsolete=[];resources=set()
+    for path in (root/'snapshots').glob('*/manifest.json'):
+        if path.relative_to(root).as_posix()==current.manifest_ref['href']:continue
+        if not re.fullmatch(r'[a-f0-9]{64}',path.parent.name):raise ValueError('Unexpected historical snapshot path')
+        previous=QueryClient(root,manifest_ref=descriptor(path.relative_to(root).as_posix(),path.read_bytes()))
+        old=previous.manifest['record_types']['construction']['index'];index=previous.fetch(old)
+        retired=[old]+[d for route in index['routes'] for d in route['packets']]
+        resources.update(d['href'] for d in retired if d['href'] not in keep)
+        if not path.resolve().is_relative_to(root):raise ValueError('Snapshot escapes current delivery')
+        obsolete.append(path)
+    for href in resources:safe_path(root,href).unlink(missing_ok=True)
+    for path in obsolete:
+        path.unlink();path.parent.rmdir()
 
 
 def context_choices(profile,contexts):
@@ -62,10 +119,31 @@ def static_page(name,body):
         f'<h1>{esc(name)}</h1>{body}</main><script src="{PREFIX}assets/object.js"></script></body></html>')
 
 
-def generate_constructions(release,bundle,root):
+def generate_constructions(release,bundle,root,reuse_resources=False):
+    if any(p['scope']=='space_type' for p in release['construction_sets'].values()):raise ValueError('Partial space-type sets belong to frozen source evidence, not current consumer delivery')
     root=Path(root);store=JSONStore(root);projected=projection(release,bundle)
+    previous=load_json(root/'construction-site.json') if reuse_resources and (root/'construction-site.json').is_file() else {}
     generate(projected,root,publish=False,pages=False,only_kinds={'construction'})
     registry=load_json(root/'object-index.json') if (root/'object-index.json').exists() else {}
+    from scripts.construction_distribution import OUTPUT as distribution
+    retired=load_json(distribution/'selection.json')['retired_space_type_ids']
+    for identity in retired:
+        if not re.fullmatch(r'construction-[a-f0-9]{24}',identity):raise ValueError('Unsafe retired construction identity')
+        registry.pop(identity,None)
+        for path in (root/f'definitions/{identity}.md',root/f'definitions/{identity}/index.html'):
+            if not path.resolve().is_relative_to(root.resolve()):raise ValueError('Retired route escapes generated tree')
+            if path.is_file():
+                raw=re.search(r'\bdata-raw="([^"]+)"',path.read_text(encoding='utf-8'))
+                if raw:
+                    d=json.loads(html.unescape(raw[1]))
+                    if not re.fullmatch(r'json/[a-f0-9]{64}\.json\.gz',d['href']):raise ValueError('Unsafe retired source JSON path')
+                    blob=root/d['href']
+                    if blob.exists():
+                        value=json.loads(gzip.decompress(blob.read_bytes()))
+                        if value.get('id')!=identity:raise ValueError('Retired source JSON identity mismatch')
+                        blob.unlink()
+            path.unlink(missing_ok=True)
+    remove_empty_retired_routes(root,retired)
     originals={r['id']:r for r in bundle['constructions']}
     report={'schema_version':'1.0.0','construction_schema':'2.0.0','definitions':len(release['construction_sets']),
         'contexts':len(release['contexts']),'packets':{},'resources':{k:{} for k in ('assemblies','materials','evidence')}}
@@ -103,6 +181,12 @@ def generate_constructions(release,bundle,root):
     for table in report['resources']:
         for identity,item in release[table].items():
             if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*',identity):raise ValueError('Unsafe construction resource identity')
+            cached=previous.get('resources',{}).get(table,{}).get(identity)
+            if cached and cached['path']==resource_path(table,identity) and (root/cached['path']).is_file() and re.fullmatch(r'json/[a-f0-9]{64}\.json\.gz',cached['json']['href']) and (root/cached['json']['href']).is_file():
+                # Focused refresh reuses unchanged immutable source resources;
+                # verify_delivery subsequently checks their bytes and bindings.
+                report['resources'][table][identity]=cached
+                continue
             name=item.get('name') or item.get('source_locator') or identity;descriptor=store.put(item);path=resource_path(table,identity)
             report['resources'][table][identity]={'path':path,'json':descriptor}
             registry[identity]={'table':'construction_'+table,'name':name,'path':path}
@@ -133,6 +217,11 @@ def generate_constructions(release,bundle,root):
     write(root,'construction/coverage.json',canonical({'definitions':report['definitions'],'contexts':report['contexts'],
         'assemblies':len(rows),'source_table_only_assembly_ids':release['metadata'].get('source_table_only_assembly_ids',[])}).decode())
     write(root,'object-index.json',canonical(registry).decode());write(root,'construction-site.json',canonical(report).decode())
+    repair_retired_references(root,bundle,release)
+    if (root/'delivery/v2/latest.json').is_file():
+        from scripts.query_v2 import generate_delivery
+        generate_delivery(projected,root/'delivery/v2',only_kind='construction')
+        prune_construction_history(root/'delivery/v2')
     return report
 
 
@@ -140,7 +229,7 @@ def update_existing(bundle,root,release=None):
     root=Path(root).resolve()
     if not (root/'site-manifest.json').is_file() or not (root/'object-index.json').is_file():raise ValueError('A marked generated tree with a site manifest is required')
     if not root.is_relative_to((ROOT/'build').resolve()) or root==(ROOT/'build').resolve():raise ValueError('Existing output must be inside a workspace build directory')
-    report=generate_constructions(release or load_release(),bundle,root)
+    report=generate_constructions(release or load_release(),bundle,root,reuse_resources=True)
     manifest=load_json(root/'site-manifest.json');registry=load_json(root/'object-index.json')
     manifest['objects']=len(registry);manifest['counts']['constructions']=report['definitions']
     manifest['construction_v2']={k:report[k] for k in ('construction_schema','definitions','contexts')}
@@ -154,6 +243,12 @@ def install_contract(root,include_resources=True):
 
 Contract **2.0.0**. One construction set supplies all source-supported above-ground
 component types, fixed reference infiltration, materials and provenance.
+
+Current distribution **v2.2.0** ships 177 complete building/dwelling sets and
+3,320 supported contexts. Room-specific rules are embedded in building sets.
+Standalone space-type sets are retained in frozen source releases rather than
+offered as independent consumer choices. Eight legacy office plenum contexts
+without a supported 0A/0B building context are preserved as nonselectable evidence.
 
 Applicability release **v2.1.0** adds explicit generic hotel GuestRoom support.
 SmallHotel 2019 attaches its native generic recipe and retains all four specific
@@ -171,6 +266,8 @@ No program loads, physics or infiltration values are changed.
 - [Pinned source retrieval](../construction/source-lock.json)
 - [Atlas hotel applicability policy](../construction/applicability/policy.json)
 - [Applicability receipt extension schema](../contracts/construction-applicability-v1.schema.json)
+- [Current distribution and embedding coverage](../construction/distribution/selection.json)
+- [Eight unsupported source contexts](../construction/distribution/source-evidence.json)
 
 ## Select and copy
 
@@ -178,7 +275,9 @@ Choose Residential or Non Residential, then Constructions. Filters select the
 source construction set and full climate label. The record page preserves the
 filter selection; choose a source reference where more than one is supported.
 No climate or ambiguous reference is guessed. A uniquely supported choice is
-resolved automatically. Partial space sets retain their explicit scope.
+resolved automatically. Climate controls both supported applicability and the
+selected construction/reference ACH. Scope and source evidence remain metadata;
+they are not separate construction catalogue filters.
 
 Expand **JSON** or select **Copy JSON → Copy construction JSON** for the complete
 self-contained source-ready set. **Copy source JSON** retains the original
@@ -235,6 +334,9 @@ production publication. Preserve source license notices when reusing artifacts.
         'interpretation_note':'Static delivery of the immutable applicability delta; README.md is served byte-identically as README.txt. The extension schema is also served under contracts/.',
         'files':delivered}
     write(root,'construction/applicability/manifest.json',canonical(delivery).decode())
+    from scripts.construction_distribution import OUTPUT as distribution
+    for name in ('manifest.json','selection.json','source-evidence.json','README.txt'):
+        write(root,'construction/distribution/'+name,(distribution/name).read_text(encoding='utf-8'))
 
 
 def program_presentation_inputs(bundle):
@@ -294,7 +396,7 @@ def library_guide():
     return ('# Library definitions\n\nPrograms supply loads and determined schedules. '
             'A construction set groups its source-supported above-ground components, materials, fixed reference infiltration and provenance. '
             'Choose its climate and source reference, then copy self-contained Construction JSON v2. '
-            'Partial space sets and independent assembly resources retain their explicit source scope. '
+            'Room-specific construction rules are embedded in complete building sets. Independent assembly resources and unsupported contexts retain their source evidence. '
             'BEMGen owns component matching and translation using actual model geometry. '
             'Ground and systems completion remain deferred; existing HVAC pages retain source evidence.\n\n'
             '[Construction JSON contract](construction-json.md) · [Program JSON contract](program-json.md) · [Sources](../sources.md)\n')

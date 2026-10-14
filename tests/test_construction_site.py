@@ -15,6 +15,42 @@ from scripts.definition_contract import DefinitionBundle,record
 
 
 class ConstructionSiteTests(unittest.TestCase):
+    def test_retired_space_recipe_links_point_to_complete_parents(self):
+        from scripts import construction_site
+        self.assertTrue(hasattr(construction_site,'rewrite_retired_links'))
+        retired='construction-1d0774872c8801caa0afdd44'
+        parent='construction-c6985aaff2845cac856a73ab'
+        original='<li><a href="/archetype-atlas/definitions/'+retired+'/">Partial room</a></li><a href="/program/">Unchanged</a>'
+        result=construction_site.rewrite_retired_links(original,{retired:[parent]},{parent:{'name':'Hotel building'}})
+        self.assertNotIn('definitions/'+retired+'/',result)
+        self.assertIn(retired,result);self.assertIn('definitions/'+parent+'/',result)
+        self.assertIn('Hotel building',result);self.assertIn('<a href="/program/">Unchanged</a>',result)
+
+    def test_fresh_generation_retires_partial_raw_blobs(self):
+        from scripts.object_site import JSONStore,json_markup
+        retired='construction-1d0774872c8801caa0afdd44'
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);(root/'definitions').mkdir()
+            raw=JSONStore(root).put({'id':retired,'scope':'space_type'})
+            (root/f'definitions/{retired}.md').write_text(json_markup(raw),encoding='utf-8')
+            self.generate(root)
+            self.assertFalse((root/raw['href']).exists())
+
+    def test_current_site_retains_only_current_construction_query_snapshot(self):
+        from scripts import construction_site
+        self.assertTrue(hasattr(construction_site,'prune_construction_history'))
+        from scripts.query_v2 import generate_delivery,QueryClient
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);bundle=self.bundle
+            before=generate_delivery(bundle,root);program=before['record_types']['program']
+            bundle=dict(bundle,constructions=bundle['constructions'][:1])
+            after=generate_delivery(bundle,root,only_kind='construction')
+            self.assertEqual(len(list((root/'snapshots').glob('*/manifest.json'))),2)
+            construction_site.prune_construction_history(root)
+            self.assertEqual(len(list((root/'snapshots').glob('*/manifest.json'))),1)
+            self.assertEqual(QueryClient(root).manifest['record_types']['program'],program)
+            self.assertTrue((root/after['record_types']['construction']['index']['href']).is_file())
+
     @classmethod
     def setUpClass(cls):
         full=load_release();builder=ReleaseBuilder();cls.expected={}
@@ -48,6 +84,11 @@ class ConstructionSiteTests(unittest.TestCase):
             page=(root/'definitions'/('construction-93cb2afe2fe44c8e084b9b99.md')).read_text(encoding='utf-8')
             self.assertIn('data-construction=',page);self.assertIn('construction-climate',page)
             self.assertNotIn('Copy with defaults',page)
+            for gate in ('residential','nonresidential'):
+                finder=(root/f'catalogue/{gate}/construction/index.md').read_text(encoding='utf-8')
+                self.assertNotIn('data-filter="scope"',finder)
+                self.assertNotIn('data-filter="evidence_view"',finder)
+                self.assertIn('data-filter="climate"',finder)
 
     def test_browser_hydration_preserves_complete_frozen_pilot_documents(self):
         with tempfile.TemporaryDirectory() as d:

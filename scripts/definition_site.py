@@ -58,8 +58,8 @@ def generate(bundle,target,publish=True,history=None,pages=True,only_kinds=None)
             fields.append(('vintage','Vintage / standard / source'))
             if kind!='program' or any(r.get('climate') for r in rows):fields.append(('climate','Climate'))
             if kind=='hvac_system':fields.append(('system_type','System type'))
-            if kind=='construction':fields.append(('scope','Set scope') if any(r.get('construction_schema') for r in rows) else ('role','Element role'))
-            fields.append(('evidence_view','Evidence view'))
+            if kind=='construction' and not any(r.get('construction_schema') for r in rows):fields.append(('role','Element role'))
+            if kind!='construction':fields.append(('evidence_view','Evidence view'))
             page=f'# {gate_label} / {KINDS[kind]}\n\n[Change kind](../index.md) · [Change building family](../../../catalogue.md)\n\n'
             page+='<section class="definition-finder" data-index="entries.json"><form class="definition-filters">'
             for key,label in fields:

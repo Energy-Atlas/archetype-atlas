@@ -21,6 +21,7 @@ class DefinitionSiteTests(unittest.TestCase):
                 self.assertEqual(page.count('class="definition-kind"'),3)
             programs=(root/'catalogue/nonresidential/program/index.md').read_text(encoding='utf-8')
             self.assertIn('Program detail',programs)
+            self.assertIn('data-filter="evidence_view"',programs)
             self.assertNotIn('data-filter="climate"',programs)
             self.assertIn('Office',programs)
             self.assertTrue((root/f'definitions/{p["id"]}.md').exists())
