@@ -1,6 +1,6 @@
 # Remaining atlas tasks
 
-Updated: 2026-10-12, following the user's revised task list.
+Updated: 2026-10-14, following delivery of the schedule generator's M1 scope.
 
 This is the current roadmap for remaining work. The
 [Program JSON completion plan](superpowers/plans/2026-10-11-program-completion.md)
@@ -12,7 +12,7 @@ publication. Discussion items remain open design topics, not accepted designs.
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
 | 2 | Include constructions and systems, with separate JSON exports and pages | Pending contract/completeness work |
-| 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
+| 3 | Schedule generators: exact M1 milestone shipped; broad catalogue coverage open | M1 delivered |
 | 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
 | 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
 
@@ -67,21 +67,31 @@ unknowns. Geometry, assignment and sizing remain consumer responsibilities.
 
 ## 3. Discuss shipping schedule generators
 
-- [ ] Compare a versioned executable generator with a compact parametric recipe
+The [independent v0.1.0 generator](../data/generator-releases/v0.1.0/manifest.json)
+delivers the exact ten cases in the [versioned M1 scope](../sources/schedule-generator-m1-scope.json):
+six residential fixtures, two active Medium Office source/reviewed cases and two
+source-backed inactive Plenum source/reviewed cases. The [contract](schedule-generator.md)
+and [coverage report](validation/schedule-generator-coverage.json) record its
+source-certified channels, reproduction policy and unsupported catalogue records.
+Expanding remaining families, templates and weather bindings remains open and
+requires new immutable releases. Site design and production publication remain
+separate work.
+
+- [x] Compare a versioned executable generator with a compact parametric recipe
   and the current fixed realization. Identify which schedule families each
   approach can faithfully reproduce.
-- [ ] Discuss the consumer interface: parameters, seed, calendar, weather,
+- [x] Discuss the consumer interface: parameters, seed, calendar, weather,
   runtime/dependencies, units, rule precedence, special days and output schema.
-- [ ] Define reproducibility and reference-realization checks, including which
+- [x] Define reproducibility and reference-realization checks, including which
   source-fixed schedules should remain fixed.
-- [ ] Agree on packaging, supported variants and migration behavior; record the
+- [x] Agree on packaging, supported variants and migration behavior; record the
   design in an ADR before implementing it.
 
-Retain deterministic reference cases for comparison. Shipping a generator must
-not silently transplant the recorded annual calendar or discard source holiday,
-design-day, date-selector or ordering semantics. This task revisits the earlier
-deferral of schedule generators; it does not assume a particular package or
-runtime has already been selected.
+The frozen M1 ZIP retains its exact calendar, source rule/date-selector/design-day
+semantics, source order and complete deterministic reference examples. The
+decisions are recorded in [ADR 0023](adr/0023-generated-constituents-and-physical-mixtures.md)
+and the shipment contract linked above. Later catalogue families need separate
+source bindings and versioned releases.
 
 **Comments / decisions:**
 

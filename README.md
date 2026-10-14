@@ -34,7 +34,12 @@ defines its semantics and excludes sampled HVAC unavailability from the schedule
 release. [Schedule coverage](docs/validation/schedule-coverage.json) inventories
 523 active commercial schedule gaps and 101 residential gaps across 14 assessed
 columns; EV/exterior lighting and specialized uses are listed separately.
-Near-full deterministic coverage remains the prerequisite to generator delivery.
+The independent [offline schedule generator v0.1.0](data/generator-releases/v0.1.0/manifest.json)
+ships the exact ten-case source-certified M1 milestone. Its [consumer contract and
+invocation guide](docs/schedule-generator.md) explains the request, seed, annual
+normalization, physical bindings and hybrid source interpretation. The [M1
+coverage report](docs/validation/schedule-generator-coverage.json) lists every
+outside-scope catalogue identity; broad coverage remains open.
 
 | Canonical table | Records |
 | --- | ---: |
