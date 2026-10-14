@@ -56,6 +56,38 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
             if state == 'excluded':
                 status = 'unsupported'
             absence = None
+            if status=='requires_binding' and recipe and not residential:
+                selected=recipe['resolved']['evidence'][0]
+                resolutions=selected['resolutions']
+                proofs=[]
+                for i,resolution in enumerate(resolutions):
+                    if (identity is not None and resolution.get('demand_id')==identity
+                            and resolution.get('field')=='value' and resolution.get('original_value') is None
+                            and resolution.get('replacement_value')==0 and resolution.get('rule')=='accepted-absence'
+                            and resolution.get('decision')=='ADR 0016'
+                            and any(d['demand_id']==identity and d['end_use']==slot and d['value']==0 for d in selected['absent_demands'])):
+                        proofs.append(('/recipe/resolved/evidence/0/resolutions/'+str(i),resolution))
+                    disabled={'heating_setpoint':'heating_enabled','cooling_setpoint':'cooling_enabled'}.get(slot)
+                    if (disabled and selected['accepted_absence'] and resolution.get('field')==disabled
+                            and resolution.get('value') is False and resolution.get('rule')=='accepted-support-space-inactive-conditioning'):
+                        proofs.append(('/recipe/resolved/evidence/0/resolutions/'+str(i),resolution))
+                if slot=='activity' and selected['accepted_absence']:
+                    for i,demand in enumerate(selected['absent_demands']):
+                        if demand['end_use']=='occupancy' and demand['value']==0:
+                            proofs.append(('/recipe/resolved/evidence/0/absent_demands/'+str(i),demand))
+                conditioning=definition['parameters'].get('conditioning',{})
+                disabled={'heating_setpoint':'heating_enabled','cooling_setpoint':'cooling_enabled'}.get(slot)
+                if (disabled and conditioning.get('status')=='known'
+                        and isinstance(conditioning.get('value'),dict)
+                        and conditioning['value'].get(disabled) is False):
+                    proofs.append(('/definition/parameters/conditioning',conditioning))
+                if proofs:
+                    entry=next(e for e in resources.manifest['resources'] if e['kind']=='program' and e['key']==pid)
+                    absence={'programme_id':pid,'evidence_view':definition['evidence_view'],
+                        'interpretation':'Exact previously approved scoped absence/disabled-control receipt; original unknown/null retained, no magnitude inserted',
+                        'resolution_receipts':[{'resource_kind':'program','resource_key':pid,'resource_sha256':entry['sha256'],
+                            'pointer':pointer,'receipt':receipt,'receipt_sha256':hashlib.sha256(canonical(receipt)).hexdigest()} for pointer,receipt in proofs]}
+                    status='absent'
             if status == 'requires_binding' and recipe and original:
                 zero = [l for l in original['loads'] if l['end_use']==slot and l['value']==0]
                 presence = {'hot_water_clothes_washer':'clothes_washer',
@@ -140,7 +172,8 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
         programs.append({k: definition.get(k) for k in ('id','name','building_type','template','climate','source_family','evidence_view','scope')} |
             {'scope': definition.get('scope', 'program'), 'dependencies': dependencies, 'channels': channels,
              'absence_evidence': recipe['resolved']['evidence'] if recipe and not certified else None,
-             'runtime_status': compiled.get(pid), 'full_record_complete': bool(recipe)})
+             'runtime_status': compiled.get(pid), 'declared_recipe_complete':bool(recipe),
+             'full_record_complete':bool(recipe) and all(c['complete'] for c in channels)})
     by_id = {p['id']: p for p in programs}
     composition_inventory = [{k: copy_value for k, copy_value in c.items()} |
         {'member_coverage': [{'program_id': m['program_id'], 'complete': by_id[m['program_id']]['full_record_complete']}

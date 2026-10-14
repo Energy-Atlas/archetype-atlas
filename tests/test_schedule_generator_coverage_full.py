@@ -84,3 +84,22 @@ class FullCoverageTests(unittest.TestCase):
         original_unknown = [c for c in vacant['channels'] if c['source_state']=='unknown']
         self.assertTrue(original_unknown)
         self.assertTrue(all(c['status']=='absent' and c['resolved_absence_evidence'] for c in original_unknown))
+
+    def test_declared_recipe_is_distinct_from_all_channel_completeness(self):
+        inventory=self.inventory()
+        for program in inventory['programs']:
+            self.assertEqual(program['declared_recipe_complete'],program['runtime_status'] in {'compiled','accepted_inactive'})
+            if any(not c['complete'] for c in program['channels']): self.assertFalse(program['full_record_complete'])
+
+    def test_approved_inactive_unknowns_retain_exact_resolution_receipts(self):
+        inventory={p['id']:p for p in self.inventory()['programs']}
+        plenum=inventory['program-f41ee055c01c510fa42096ae']
+        unknown=[c for c in plenum['channels'] if c['source_state']=='unknown' and c['slot'] not in {'heating_setpoint','cooling_setpoint'}]
+        self.assertTrue(unknown)
+        self.assertTrue(all(c['status']=='absent' and c['original_value'] is None and c['resolved_absence_evidence'] for c in unknown))
+        missing=[c for c in plenum['channels'] if c['slot'] in {'heating_setpoint','cooling_setpoint'}]
+        self.assertTrue(all(c['status']=='absent' and c['resolved_absence_evidence'] for c in missing))
+        for row in unknown+missing:
+            proof=row['resolved_absence_evidence']['resolution_receipts']
+            self.assertTrue(proof)
+            self.assertTrue(all(p['resource_key']==plenum['id'] and p['pointer'].startswith(('/recipe/resolved/evidence/0/','/definition/parameters/conditioning')) and len(p['resource_sha256'])==64 for p in proof))

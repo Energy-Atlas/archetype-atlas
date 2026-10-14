@@ -286,14 +286,15 @@ def compile_recipes(records, scope):
                 add_control(slot, ready['controls'][slot+'_schedule_id'], 'C', 'temperature', thermostat_evidence)
                 companions[slot] = {'method': 'translated_thermostat', 'evidence': thermostat_evidence}
         else:
-            bound = {'configuration_id': 'medium_office_90_1_2013',
+            bound = {'configuration_id': case['configuration']['sampling_configuration_id'],
                      'carrier_policy': 'explicit_single_nonresidential_reference_carrier'}
             carrier_case = next(c for c in scope['cases'] if c['building_type'] == 'MediumOffice'
-                                and 'Office_MediumOffice' in c['name'] and c['evidence_view'] == case['evidence_view'])
+                                and 'Office_MediumOffice' in c['name'] and c['evidence_view'] == case['evidence_view']
+                                and c['template'] == case['template'])
             carrier = definitions[carrier_case['program_id']]
             carrier_load = next(l for l in carrier['loads'] if l['quantity'] == 'occupancy')
             carrier_source = schedules[carrier_load['schedule_id']]
-            context.update(configuration_id='medium_office_90_1_2013', standards_version='0.8.6', steps_per_hour=6,
+            context.update(configuration_id=bound['configuration_id'], standards_version='0.8.6', steps_per_hour=6,
                 slot_sources={}, slot_modes={}, occupancy_aggregation={'policy': bound['carrier_policy'],
                 'constituents': [{'schedule': carrier_source, 'nominal_people': 1.0, 'residential': False,
                                   'evidence': field_evidence(carrier_load['evidence_id'], receipt)}],
@@ -303,6 +304,16 @@ def compile_recipes(records, scope):
                 'interpretation': 'Locked common lookup value only; no HVAC sizing inference'},
                 source_clock={'TZ': 'UTC', 'variant': 'controlled_no_DST_local_standard_calendar'},
                 carrier_program_id=carrier_case['program_id'], configuration_association=case['configuration'])
+            if scope['milestone_id'] != 'M1':
+                context['source_discard_method_evidence'] = {slot:records['reference',key]['provenance'] for slot,key in {
+                    'lighting':'comstock__resources__measures__set_interior_lighting_bpr__measure_rb',
+                    'electric_equipment':'comstock__resources__measures__set_electric_equipment_bpr__measure_rb'}.items()}
+                context['source_rounding_method_evidence'] = records['reference','ruby-float-numeric-c']['provenance']
+                context['adaptation'] = {'method':'prototype_budget_preserving_commercial_hybrid',
+                    'source_template':case['template'], 'evidence_view':case['evidence_view'],
+                    'sampling_selector':case['configuration']['conditioning_inputs'],
+                    'sampling_reference_audit_configuration':'medium_office_90_1_2013',
+                    'interpretation':'Actual template/view schedules and targets transformed using pinned Standards 0.8.6 and audited ComStock v33 selector closure; no stock population equivalence'}
             original_loads = {l['demand_id']: l for l in definition['loads']}
             for load in ready['loads']:
                 slot = load['end_use']
@@ -358,14 +369,14 @@ def compile_recipes(records, scope):
     expanded = scope['milestone_id'] != 'M1'
     index = {'schema_version': '1.0.0', 'programs': [{'id': p['id'], 'status': statuses.get(p['id'], 'requires_binding' if expanded else 'unsupported_binding'),
              'source_family': p['source_family'], 'evidence_view': p['evidence_view'],
-             'reason': None if p['id'] in statuses else ('outside_R1; source carrier/aggregation and transform certification remain' if expanded else
+             'reason': None if p['id'] in statuses else ('outside_'+scope['milestone_id']+'; source carrier/aggregation and transform certification remain' if expanded else
                  'outside_exact_M1; no extracted source-backed binding certified')}
              for p in bundle['programs']], 'compositions': [{'id': c['id'], 'status': c['status']} for c in compositions],
              'provenance': _receipt('data/definition-releases/v0.1.1/programs.json', '/', 'Compact identity/status index only; no synthetic Cartesian dependencies')}
     coverage = {'schema_version': '1.0.0', 'milestone': scope['milestone_id'], 'cases': [{'case_id': c['case_id'],
                 'program_id': c['program_id'], 'status': statuses[c['program_id']]} for c in scope['cases']],
                 'catalogue_program_count': len(bundle['programs']), 'catalogue_composition_count': len(compositions),
-                'physical_resource_scope': 'exact ten M1 cases' if not expanded else 'exact 41 recovered residential fixtures', 'population_weighting': False}
+                'physical_resource_scope': 'exact ten M1 cases' if not expanded else 'exact declared '+str(len(scope['cases']))+' source cases', 'population_weighting': False}
     records['reference', 'catalogue-index'] = index
     records['reference', 'recipe-coverage'] = coverage
     return {'programs': policies, 'compositions': {'schema_version': '1.0.0', 'compositions': compositions,
@@ -374,10 +385,10 @@ def compile_recipes(records, scope):
 
 
 def build_resources(destination: Path, scope: str, tables_destination: Path | None = None) -> dict:
-    if scope not in {'pilot', 'residential'}:
+    if scope not in {'pilot', 'residential', 'medium-office'}:
         raise GeneratorError('unsupported_scope', '/scope', 'Only exact M1 pilot is source-gated')
-    lock_file = 'sources/schedule-generator-lock.json' if scope == 'pilot' else 'sources/schedule-generator-residential-lock.json'
-    scope_file = 'sources/schedule-generator-m1-scope.json' if scope == 'pilot' else 'sources/schedule-generator-residential-scope.json'
+    lock_file = {'pilot':'sources/schedule-generator-lock.json','residential':'sources/schedule-generator-residential-lock.json','medium-office':'sources/schedule-generator-medium-office-lock.json'}[scope]
+    scope_file = {'pilot':'sources/schedule-generator-m1-scope.json','residential':'sources/schedule-generator-residential-scope.json','medium-office':'sources/schedule-generator-medium-office-scope.json'}[scope]
     lock = _read(ROOT/lock_file)
     manifest_scope = _read(ROOT/scope_file)
     validate_scope(manifest_scope, lock)
@@ -392,6 +403,13 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
         sources = ResourceSet(Path(temporary)/'resources', source_manifest['resource_set_id'])
         records = {(e['kind'], e['key']): sources.get(e['kind'], e['key']) for e in source_manifest['resources']}
     records['commercial', 'sampling-audit'] = audit
+    if scope == 'medium-office':
+        receipt = _read(ROOT/'sources/schedule-generator-ruby-float-lock.json')['sources'][0]
+        content = (ROOT/receipt['source_path']).read_bytes()
+        if hashlib.sha256(content).hexdigest()!=receipt['sha256'] or len(content)!=receipt['size_bytes']:
+            raise GeneratorError('source_integrity',receipt['source_path'],'Pinned Ruby Float method differs')
+        records['reference','ruby-float-numeric-c'] = {'text':content.decode('utf-8'),'provenance':receipt}
+        records['reference','notice-ruby-float'] = {'text':(ROOT/receipt['license_notice']).read_text(encoding='utf-8'),'source_path':receipt['license_notice']}
     records['residential', 'event-constants'] = event_constants(records['residential', 'constants_rb'])
     records['reference', 'm1-scope'] = manifest_scope
     records['reference', 'comparison-policy'] = _read(ROOT/'sources/schedule-generator-policy.json')
@@ -457,7 +475,7 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             records['reference', source_file['id']] = {'definition': source_file, 'provenance': _receipt(file, '/'+str(index), 'Exact upstream source revision and byte checksum')}
     file = 'data/resolution-releases/v0.4.0/fixed-background-schedules.json'
     records['residential', 'fixed-background-schedules'] = {'definition': _read(ROOT/file), 'provenance': _receipt(file, '/', 'Exact frozen source default variants')}
-    if scope == 'residential':
+    if scope in {'residential','medium-office'}:
         recovery = _read(ROOT/'data/program-inputs/residential-v1.json')
         fixed = records['residential', 'fixed-background-schedules']['definition']
         for shape in recovery['schedules'].values():
@@ -496,6 +514,19 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             if hashlib.sha256(vectors).hexdigest() != native['vectors']['sha256'] or len(vectors) != native['vectors']['size_bytes']:
                 raise GeneratorError('source_integrity', str(native_lock), 'Independent family native reference differs')
             records['reference','family-native-lock'] = native
+    if scope == 'medium-office':
+        certificate = ROOT/'data/schedule-generator/families/medium-office/certification.json'
+        if certificate.exists(): records['reference','family-certification'] = _read(certificate)
+        for key,file in {'family-native-lock':'sources/schedule-generator-medium-office-cumulative-reference-lock.json',
+                         'residential-native-lock':'sources/schedule-generator-residential-family-reference-lock.json',
+                         'commercial-native-lock':'sources/schedule-generator-medium-office-family-reference-lock.json'}.items():
+            native = _read(ROOT/file)
+            vectors = (ROOT/native['vectors']['source_path']).read_bytes()
+            if hashlib.sha256(vectors).hexdigest()!=native['vectors']['sha256'] or len(vectors)!=native['vectors']['size_bytes']:
+                raise GeneratorError('source_integrity',file,'Independent native component differs')
+            records['reference',key] = native
+    if scope == 'medium-office':
+        records['reference','family-native-join'] = _read(ROOT/'data/schedule-generator/medium-office-cumulative-native.json')
     if tables_destination is not None:
         tables_destination.mkdir(parents=True, exist_ok=True)
         for name, table in tables.items():

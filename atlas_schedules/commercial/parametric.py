@@ -7,7 +7,6 @@ selected native methods, including their zero/full-day decisions.
 """
 import copy
 from datetime import date, timedelta
-from decimal import Decimal, ROUND_HALF_UP
 import math
 
 from ..calendar import evaluate_rules
@@ -25,7 +24,18 @@ def _number(value, path, minimum=0, maximum=math.inf):
 
 
 def _round(value, places):
-    return float(Decimal(str(value)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP))
+    # Ruby3.2.2 numeric.c:round_half_up/flo_round, selected source digit counts.
+    # Decimal(str(value)) loses the native scaled-double tie boundary.
+    if not math.isfinite(value) or places not in {0,2,5,6}:
+        _error('rounding','Finite bounded selected native rounding operation required')
+    scale=10.0**places
+    scaled=value*scale
+    integer=math.floor(scaled) if scaled>0 else math.ceil(scaled)
+    rounded=integer+(scaled-integer>=.5) if scaled>0 else integer-(integer-scaled>=.5)
+    if scale!=1:
+        if value>0 and (rounded+.5)/scale<=value: rounded+=1
+        elif value<=0 and (rounded-.5)/scale>=value: rounded-=1
+    return float(rounded/scale)
 
 
 def _stored(value):
@@ -220,11 +230,23 @@ def _apply(formula, start, end, floor, ceiling, frequency):
     return [[time,value] for time,value in sorted(result.items())]
 
 
-def _bpr(points, ratio, weekday_base=None):
+def _bpr(points, ratio, weekday_base=None, native_equal_profile=False):
     # Actual ComStock set_sch_bpr; constant profiles return sentinel base1.
+    _number(ratio,'base_peak_ratio/ratio',0,1)
+    if weekday_base is not None: _number(weekday_base,'base_peak_ratio/weekday_base',-math.inf)
+    if not points: _error('base_peak_ratio','Source profile is empty')
+    for time,value in points:
+        _number(time,'base_peak_ratio/time',0,24)
+        _number(value,'base_peak_ratio/value',-math.inf)
     if len(points)==1: return points,1.0
     peak=max(v for _,v in points); base=min(v for _,v in points)
-    if peak==base: _error('base_peak_ratio','Native nonconstant equal-valued profile has undefined scale')
+    if peak==base:
+        if not native_equal_profile:
+            _error('base_peak_ratio','Unverified nonconstant equal-valued profile has undefined scale')
+        # Source sf is nonfinite; (peak-val)*sf is NaN for every point.
+        # Native clearValues restores [[24,0]], and addValue rejects NaN.
+        # Verified against actual DOE/2007 Sunday profiles and public group draws.
+        return [[24.0,0.0]],0.0
     new_base=ratio*peak
     if weekday_base is not None and weekday_base<new_base: new_base=weekday_base
     scale=(new_base-base)/(peak-base)
@@ -245,7 +267,9 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
     if not isinstance(context,dict): _error('source_context','Explicit source context object required')
     for key in required:
         if key not in context: _error('source_context/'+key,'Required dependency binding missing')
-    if context['configuration_id']!='medium_office_90_1_2013' or context['standards_version']!='0.8.6':
+    configurations = {'medium_office_90_1_2007','medium_office_90_1_2013','medium_office_90_1_2019',
+                      'medium_office_doe_ref_1980_2004','medium_office_doe_ref_pre_1980'}
+    if context['configuration_id'] not in configurations or context['standards_version']!='0.8.6':
         _error('configuration_id','Only audited Medium Office/Standards0.8.6 binding supported')
     if context['steps_per_hour']!=6 or isinstance(context['steps_per_hour'],bool):
         _error('steps_per_hour','Native validated timestep6 representation required')
@@ -307,6 +331,7 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
             daily.append(copy.deepcopy(cache[key]))
         if slot=='occupancy': daily=[[[t,_stored(v*.231)] for t,v in points] for points in daily]
         prefix={'lighting':'ltg_sch','additional_lighting':'ltg_sch','electric_equipment':'plugload_sch'}.get(slot)
+        source_discards=[]
         if prefix:
             ratios={}
             for kind in ('weekday','weekend'):
@@ -323,7 +348,21 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                 if not bases: _error('operating/ratio','Native weekend BPR requires bound weekday base')
                 for day in range(365):
                     if (date(context['year'],1,1)+timedelta(days=day)).weekday()>=5:
-                        daily[day],_=_bpr(daily[day],ratios['weekend'],min(bases))
+                        points=daily[day]
+                        verified=(context['configuration_id'] in {'medium_office_doe_ref_1980_2004','medium_office_doe_ref_pre_1980','medium_office_90_1_2007'}
+                                  and slot in {'lighting','electric_equipment'}
+                                  and (date(context['year'],1,1)+timedelta(days=day)).weekday()==6
+                                  and len(points)>1 and max(v for _,v in points)==min(v for _,v in points)>0)
+                        if verified:
+                            source_discards.append({'day_of_year':day+1,'slot':slot,
+                                'status':'native_nonfinite_values_rejected',
+                                'source_locator':'ComStock:set_sch_bpr; OpenStudio ScheduleDay.clearValues/addValue',
+                                'source_profile':copy.deepcopy(points),'rejected_value_count':len(points),
+                                'source_method_evidence':copy.deepcopy(context.get('source_discard_method_evidence',{}).get(slot,{})),
+                                'arithmetic':{'scale':'nonfinite','new_values':'NaN','encoding':'explicit_status_no_nonfinite_JSON_numbers'},
+                                'native_default_profile':[[24.0,0.0]],
+                                'interpretation':'Exact verified multi-point equal-positive Sunday native storage result; original annual target retained'})
+                        daily[day],_=_bpr(points,ratios['weekend'],min(bases),native_equal_profile=verified)
         hourly_cache={}; annual=[]
         for points in daily:
             key=tuple(map(tuple,points))
@@ -336,6 +375,8 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
             specials[key]=_points(candidates[-1]['values']) if candidates else []
         special[slot]=specials
         transforms[slot]={'daily_profiles':daily,'mode':mode,'source_rule_order':copy.deepcopy(source['rules'])}
+        if source_discards:
+            transforms[slot]['source_discard_receipts']=source_discards
     context.update(inference=inference,operations=operations,special_profiles=special,transforms=transforms,
         operating_receipt=copy.deepcopy(operating),population_realization_equivalent=False,
         source_methods=['space.rb:spaces_get_occupancy_schedule/space_hours_of_operation',

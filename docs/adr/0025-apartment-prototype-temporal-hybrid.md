@@ -1,0 +1,13 @@
+# ADR 0025: Apartment prototype temporal hybrid
+
+Status: accepted architecture boundary for progressive Task 10; implementation and native certification remain pending.
+
+The controller approved the source proposal documented in `.superpowers/sdd/2026-10-13-schedule-generator/apartment-method-audit.md` on 2026-10-14. The exact 84 HighriseApartment/MidriseApartment records remain separate by room, template and source/reviewed view. There are 40 dwelling records, 28 corridors and 16 support offices. No source-defined apartment composition or ComStock v33 apartment selector exists in the pinned evidence.
+
+For a caller-bound dwelling unit, the pinned ResStock individual-unit HMM may supply occupancy timing with a separately explicit integer resident count. Preserve the prototype design density and activity separately from chain residents; do not infer residents from area or copy fixture occupants. Solar/active-at-home lighting may supply unit lighting timing, preserving each original main/additional annual budget separately. Require state, location, physical UTC offset, exact weather and the original unit/event operands; no fixture weather or default appliance installation is implied.
+
+Equipment and water event allocations require explicit caller installed-end-use operands and nonnegative annual allocations whose sum does not exceed the original source aggregate target. Preserve the remaining budget on its exact prototype source rules as `source_fixed_aggregate_residual`; undecomposed appliances remain unknown. Corridor and apartment support-office schedules use their own exact fixed source methods. Neither corridor HMM nor generic medium_office sampling is authorized. Source-null gas/additional lighting, reviewed zero and absent loads remain distinct.
+
+Water-service ownership remains instantiate-once, with the exact physical service path, original whole-service extent and unresolved zone-heat assignment retained. Source/reviewed views of a service never create duplicate water draws. Whole-building composition requires caller member areas, multiplicities and explicit physical-service identities because the source catalogue provides none here.
+
+The cost is an explicit adaptation contract and caller allocation/binding validation, separate cohort/design-count receipts, residual/fixed method classification, unit-level native RNG/branch captures and conservation tests. The audit establishes source applicability, not prototype-to-HMM native equivalence. Missing operands are `requires_binding`; no native certification or complete apartment support is claimed by this ADR alone. Original Program JSON v3 and historical frozen releases stay immutable.

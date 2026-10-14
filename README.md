@@ -48,8 +48,14 @@ The separate [residential generator v0.2.0](data/generator-releases/v0.2.0/manif
 covers all 41 source fixtures and 37 locked station proxies, with 766 source-backed
 channels. Its [guide](docs/schedule-generator-residential.md) and
 [coverage](docs/validation/schedule-generator-coverage-residential.json) describe
-this intermediate family milestone. A cumulative mixed-family generator remains
-open; these independently scoped ZIPs do not advertise cross-release mixtures.
+this intermediate family milestone.
+
+The cumulative [generator v0.3.0](data/generator-releases/v0.3.0/manifest.json)
+combines these 41 fixtures with all 20 Medium Office records across five templates,
+covering 846 channels. Its [guide](docs/schedule-generator-medium-office.md) and
+[coverage](docs/validation/schedule-generator-coverage-medium-office.json) include
+a runnable generated residential/DOE Office mixture within one resource identity.
+Other catalogue families remain open; different releases cannot be composed.
 
 | Canonical table | Records |
 | --- | ---: |

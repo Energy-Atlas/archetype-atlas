@@ -159,7 +159,7 @@ def capture_residential(runtime_archive, resstock_archive, destination, events=F
             calendar_environment={'TZ':'UTC','variant':'controlled_no_DST_local_standard_calendar',
                 'affected_source_calculations':['generate_dishwasher_power_schedule.month','generate_clothes_washer_dryer_power_schedules.month','generate_cooking_power_schedule.month'],
                 'interpretation':'Child-process computational calendar control only. Physical lighting/weather timezone inputs unchanged. Uncontrolled host-DST Windows arrays can differ near month edges; old frozen profiles/annual targets unchanged.'},
-            interpretation_note='Actual native full-year event methods before budget binding in controlled-no-DST environment. Six exact frozen configuration inputs plus explicit component/presence probes. Controlled component traces replace only returned one-hot states after genuine activity draws; no-event normalization is undefined upstream and is explicitly rejected by Python. EV output excluded with native allocator slot retained. Calibration never substitutes annual magnitudes.')
+            interpretation_note=f'Actual native full-year event methods before budget binding in controlled-no-DST environment. {sum(1 for item in inputs if 'program_id' in item)} exact frozen configuration inputs plus explicit component/presence probes. Controlled component traces replace only returned one-hot states after genuine activity draws; no-event normalization is undefined upstream and is explicitly rejected by Python. EV output excluded with native allocator slot retained. Calibration never substitutes annual magnitudes.')
         for item,case in zip(inputs,result['cases']):
             for key in ('program_id','configuration_provenance','component_states'):
                 if key in item:case[key]=item[key]
@@ -243,7 +243,36 @@ def commercial_capture_inputs(resources):
     return result
 
 
-def capture_commercial(runtime_archive, destination):
+def commercial_family_capture_inputs(resources):
+    """Exact actual template/view carriers, including associated inactive spaces."""
+    from atlas_schedules.seeds import commercial_group_seed
+    import copy
+    from atlas_schedules.commercial.sampling import sample_operating_parameters
+    result = []
+    for case in resources.manifest['cases']:
+        if case['building_type'] != 'MediumOffice':
+            continue
+        recipe = resources.get('program',case['program_id'])['recipe']
+        carrier = resources.get('program',recipe['source_context']['carrier_program_id'])['recipe']
+        context = copy.deepcopy(carrier['source_context'])
+        context.update(year=2007,holidays=[])
+        item={'case_id':case['case_id'],'source_context':context,
+            'schedules':copy.deepcopy(context['slot_sources']),
+            'operating':sample_operating_parameters({'building_type':'medium_office'},42,resources),
+            'source_case':copy.deepcopy(case),
+            'interpretation':'Actual template/view Office carrier; inactive Plenum associated explicitly, never an occupancy claim for Plenum'}
+        result.append(item)
+        for group_kind,group in [('instance',case['case_id']),('full_request',case['configuration_id'])]:
+            for seed in (42,51):
+                probe=copy.deepcopy(item)
+                probe['case_id'] += '@'+group_kind+'-'+str(seed)
+                probe['operating']=sample_operating_parameters({'building_type':'medium_office'},commercial_group_seed(seed,group),resources)
+                probe['source_seed_receipt']={'master_seed':seed,'operating_group':group,'policy':'SHA256-derived commercial group seed'}
+                result.append(probe)
+    return result
+
+
+def capture_commercial(runtime_archive, destination, resources=None):
     """Locked native source-method probes, independent of Python transform."""
     import ast
     import copy
@@ -273,8 +302,10 @@ def capture_commercial(runtime_archive, destination):
                 name = Path(receipt['path']).name
                 target = source/('schedules/'+name if '/schedules/' in receipt['path'] else name)
                 target.parent.mkdir(exist_ok=True); target.write_bytes(data)
-    manifest = _read(ROOT/'atlas_schedules/data/manifest.json')
-    resources = ResourceSet.load(manifest['resource_set_id'])
+    if resources is None:
+        manifest = _read(ROOT/'atlas_schedules/data/manifest.json')
+        resources = ResourceSet.load(manifest['resource_set_id'])
+    manifest = resources.manifest
     receipts = []
     for entry in manifest['resources']:
         if entry['kind'] != 'reference' or not entry['key'].startswith('comstock__resources__measures'): continue
@@ -287,7 +318,7 @@ def capture_commercial(runtime_archive, destination):
     old_standard = next(r for r in _read(_LOCK)['algorithm_sources'] if r['source_id']=='openstudio-standards')
     frozen_source = ROOT/'data/raw/openstudio-standards/lib/openstudio-standards/standards/Standards.Model.rb'
     (source/'Standards.Model.rb').write_bytes(_verify(frozen_source,old_standard))
-    inputs = commercial_capture_inputs(resources)
+    inputs = commercial_capture_inputs(resources) if manifest['milestone_id']=='M1' else commercial_family_capture_inputs(resources)
     input_path = destination/'input.json'; input_path.write_bytes(canonical(inputs))
     harness = ROOT/'scripts/reference_commercial.rb'; output = destination/'native-output.json'
     completed = subprocess.run([str(executable.resolve()),str(harness),str(source.resolve()),str(input_path.resolve()),str(output.resolve())],
@@ -447,7 +478,11 @@ def main():
         else:
             if args.runtime_archive is None or args.destination is None:
                 parser.error('Commercial capture requires runtime archive and a new destination')
-            capture_commercial(args.runtime_archive,args.destination)
+            resources = None
+            if args.resources_root is not None:
+                manifest = _read(args.resources_root/'manifest.json')
+                resources = ResourceSet(args.resources_root,manifest['resource_set_id'])
+            capture_commercial(args.runtime_archive,args.destination,resources)
         return
     if args.family in ('residential','events'):
         if args.verify_only:

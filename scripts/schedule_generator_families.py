@@ -85,5 +85,53 @@ def main():
     print(f"Prepared {len(scope['cases'])} exact residential fixtures; {len(next(a for a in lock['archives'] if a['source_id']=='tmy3-station-proxy')['members'])} station members")
 
 
+def prepare_medium_office_family():
+    """Cumulative exact residential/MediumOffice scope, never a climate cross-product."""
+    read = lambda name: json.loads((ROOT/name).read_text(encoding='utf-8'))
+    original = read('sources/schedule-generator-m1-scope.json')
+    residential = read('sources/schedule-generator-residential-scope.json')
+    lock = read('sources/schedule-generator-residential-lock.json')
+    cases = copy.deepcopy(original['cases'])
+    seen = {c['program_id'] for c in cases}
+    cases.extend(copy.deepcopy(c) for c in residential['cases'] if c['program_id'] not in seen)
+    seen = {c['program_id'] for c in cases}
+    prototype = next(c for c in original['cases'] if c['building_type'] == 'MediumOffice')
+    for index, program in enumerate(read('data/definition-releases/v0.1.1/programs.json')):
+        if program['building_type'] != 'MediumOffice' or program['id'] in seen:
+            continue
+        case = copy.deepcopy(prototype)
+        case.update(case_id='C2-'+program['id'], program_id=program['id'], name=program['name'],
+                    template=program['template'], evidence_view=program['evidence_view'])
+        config = 'medium_office_'+program['template'].lower().replace('.', '_').replace('-', '_').replace(' ', '_')
+        case['configuration_id'] = config+'-'+program['evidence_view']+'-'+program['source_id']
+        case['program_definition']['json_pointer'] = '/'+str(index)
+        case['configuration'].update(program_definition_pointer='/'+str(index), sampling_configuration_id=config,
+            interpretation='Explicit prototype-budget-preserving hybrid: actual template/view schedules and annual targets; ComStock v33 medium_office operating closure; Standards 0.8.6 transforms, not a stock population realization')
+        case['weather']['interpretation'] = 'Location-independent selected interior transforms and exact medium_office conditional closure; no inferred EPW'
+        case['source_gate_status'] = 'requires_native_certification'
+        cases.append(case)
+    native_file = ROOT/'sources/schedule-generator-medium-office-family-reference-lock.json'
+    if native_file.exists():
+        native = json.loads(native_file.read_text(encoding='utf-8'))
+        content = (ROOT/native['vectors']['source_path']).read_bytes()
+        if hashlib.sha256(content).hexdigest() != native['vectors']['sha256']:
+            raise ValueError('MediumOffice native source reference differs')
+        if native.get('source_gate_status') == 'passed':
+            for case in cases:
+                case['source_gate_status'] = 'passed'
+    scope = dict(residential, milestone_id='C2', cases=cases,
+                 source_order_policy='Original ten M1 cases unchanged, then remaining R1 residential cases, then remaining actual MediumOffice definition order; existing requests retain their order; distinct ordered requests retain separate seed receipts')
+    name = 'sources/schedule-generator-medium-office-scope.json'
+    content = canonical(scope)
+    (ROOT/name).write_bytes(content)
+    lock['scope_cases'] = cases
+    lock['milestone_id'] = 'C2'
+    lock['frozen_files'][name] = {'sha256':hashlib.sha256(content).hexdigest(),'size_bytes':len(content)}
+    lock['blocked_families'] = [{'family':'outside_C2','status':'requires_binding',
+        'reason':'Exact source selector/carrier/aggregation and required original annual decomposition need their own certification'}]
+    (ROOT/'sources/schedule-generator-medium-office-lock.json').write_bytes(canonical(lock))
+    return scope, lock
+
+
 if __name__ == '__main__':
     main()

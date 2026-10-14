@@ -18,6 +18,17 @@ def main():
         raise SystemExit('\n'.join(differences[:30]))
     print(f"Source/discrete and numerical reproduction passed: {len(actual['constituents'])} cases, "
           f"{len(actual['schedules'])} schedules")
+    mixed_request=root/'references/mixed-family-request.json'
+    mixed_reference=root/'references/mixed-family-bundle.json.gz'
+    if mixed_request.exists()!=mixed_reference.exists():
+        raise SystemExit('Incomplete mixed-family reference pair')
+    if mixed_request.exists():
+        request=strict_json(mixed_request.read_bytes(),'mixed-family request')
+        expected=strict_json(gzip.decompress(mixed_reference.read_bytes()),'mixed-family reference')
+        actual=generate(request['params'],request['seed'])
+        differences=compare_bundles(actual,expected,expected['metadata']['comparison_policy'])
+        if differences: raise SystemExit('\n'.join(differences[:30]))
+        print(f"Mixed-family own-runtime reproduction passed: {len(actual['constituents'])} constituents, {len(actual['schedules'])} schedules")
 
 
 if __name__ == '__main__':
