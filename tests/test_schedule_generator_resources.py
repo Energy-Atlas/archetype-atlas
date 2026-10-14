@@ -149,6 +149,37 @@ class ResourceTests(unittest.TestCase):
         with self.assertRaises(self.error):
             canonical({'a': float('nan')})
 
+    def test_strict_json_rejects_nested_exponent_overflow(self):
+        from atlas_schedules.resources import strict_json
+        for content in (b'{"value":1e999}', b'{"value":-1e999}',
+                        b'{"outer":[{"value":1e999}]}', b'{"outer":[{"value":-1e999}]}'):
+            with self.subTest(content=content):
+                with self.assertRaises(self.error) as e:
+                    strict_json(content, 'fixture.json')
+                self.assertEqual(e.exception.code, 'resource_integrity')
+                self.assertEqual(e.exception.path, 'fixture.json')
+        self.assertEqual(strict_json(b'{"outer":[1e308,-1e308]}', 'fixture.json'),
+                         {'outer': [1e308, -1e308]})
+
+    def test_resource_loader_rejects_byte_verified_exponent_overflow(self):
+        from atlas_schedules.canonical import canonical
+        from atlas_schedules.resources import ResourceSet, manifest_identity
+        for content in (b'{"value":1e999}\n', b'{"value":-1e999}\n',
+                        b'{"outer":[{"value":1e999}]}\n', b'{"outer":[{"value":-1e999}]}\n'):
+            with self.subTest(content=content), tempfile.TemporaryDirectory() as d:
+                root = Path(d)
+                (root/'reference').mkdir()
+                (root/'reference/x.json').write_bytes(content)
+                manifest = {'schema_version': '1.0.0', 'resources': [{
+                    'kind': 'reference', 'key': 'x', 'path': 'reference/x.json',
+                    'size_bytes': len(content), 'sha256': hashlib.sha256(content).hexdigest()}]}
+                manifest['resource_set_id'] = manifest_identity(manifest)
+                (root/'manifest.json').write_bytes(canonical(manifest))
+                with self.assertRaises(self.error) as e:
+                    ResourceSet(root, manifest['resource_set_id'])
+                self.assertEqual(e.exception.code, 'resource_integrity')
+                self.assertEqual(e.exception.path, 'reference/x.json')
+
     def test_source_hours_are_normalized_to_si_with_original_options(self):
         from atlas_schedules.resources import ResourceSet
         with tempfile.TemporaryDirectory() as d:

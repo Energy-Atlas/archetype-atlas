@@ -1,6 +1,7 @@
 """Validate immutable resource directories before exposing records."""
 import hashlib
 import json
+import math
 from pathlib import Path, PurePosixPath
 
 from .canonical import canonical
@@ -20,6 +21,12 @@ def safe_path(name: str) -> PurePosixPath:
 
 
 def strict_json(content: bytes, path: str):
+    def finite_float(token):
+        value = float(token)
+        if not math.isfinite(value):
+            raise ValueError('Nonfinite JSON number')
+        return value
+
     def pairs(items):
         result = {}
         for key, value in items:
@@ -28,7 +35,7 @@ def strict_json(content: bytes, path: str):
             result[key] = value
         return result
     try:
-        return json.loads(content, object_pairs_hook=pairs,
+        return json.loads(content, object_pairs_hook=pairs, parse_float=finite_float,
                           parse_constant=lambda x: (_ for _ in ()).throw(ValueError(x)))
     except (ValueError, UnicodeError) as error:
         raise GeneratorError('resource_integrity', path, str(error)) from error
