@@ -1,6 +1,6 @@
 # Pure Python schedule generator implementation plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans or superpowers:subagent-driven-development to implement this plan task by task. Steps use checkbox syntax for tracking. The user has accepted this revised plan for implementation. Execute natively in the isolated worktree; use the required independent final review, without dispatching implementation agents.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans or superpowers:subagent-driven-development to implement this plan task by task. Steps use checkbox syntax for tracking. The user has accepted this revised plan for implementation. Execute with subagent-driven development in the isolated worktree, as requested on 2026-10-14. Use GPT-6.1 Sol or lighter models, fresh task implementers and task-scoped reviews, then an independent final review.
 
 **Goal:** Progressively ship a source-faithful pure Python generator and referenced program contract, with seeded temporal variation and conserved known annual residential/commercial targets.
 
@@ -305,6 +305,6 @@ Before any commit use explicit logical file staging, `git diff --cached --check`
 
 All implementation checkboxes remain unchecked. The current clean-cache baseline completed 267 existing tests with one skip; this is a baseline, not validation of code that has not been written.
 
-Review this plan and select native execution or subagent-driven execution before implementation. Native execution is recommended here because the source ports, RNG behavior, target/amplitude bindings and family gates depend tightly on one another. Source golden/numerical comparisons provide per-task checks; request an independent final branch review and resolve findings before integration. Delegation is permitted only through the user's selected method or an applicable skill instruction.
+The user selected subagent-driven implementation on 2026-10-14, with a model ceiling of GPT-6.1 Sol. Dispatch one fresh implementer per task followed by task-scoped spec/quality review, keeping implementation writers sequential because these tasks share interfaces. Use lighter models for isolated mechanical changes and GPT-6.1 Sol with higher reasoning effort for source semantics, numerical ports, integration and final scientific review. Source golden/numerical comparisons provide per-task checks; resolve independent review findings before integration.
 
 Complete an independent review of the resulting branch and its scientific/source receipts before creating a PR. If a PR is created, attach it to this chat. Do not change `main` directly or publish from this branch. Keep the worktree available for review and do not merge or archive it merely because the implementation plan has been written.
