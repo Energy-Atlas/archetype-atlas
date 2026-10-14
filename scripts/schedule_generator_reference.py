@@ -45,7 +45,51 @@ def load_residential_reference():
         raise GeneratorError('source_integrity','residential-reference','Capture provenance mismatch')
     return result
 
-def capture_residential(runtime_archive, resstock_archive, destination):
+
+def event_capture_inputs(resources):
+    import copy
+    probes=residential_capture_inputs(resources)
+    result=[item for item in probes if item['case_id'] in ('one','multiple','sparse','zero')]
+    for slot in ('dishwasher','clothes_washer','clothes_dryer','cooking_range'):
+        item=copy.deepcopy(result[0]);item['case_id']='without_'+slot
+        item['inputs']['installed'][slot]=False;result.append(item)
+    for case in resources.get('reference','m1-scope')['cases']:
+        program=resources.get('program',case['program_id'])
+        if 'configuration' not in program:continue
+        cfg=program['configuration'];arguments=cfg['arguments']
+        # Exact schedule-only HPXML construction in run_residential_profiles.rb.
+        # Output omission on a zero-resident skip does not imply appliance absence.
+        installed={slot:arguments[argument]!='None' for slot,argument in
+                   [('dishwasher','appliance_dishwasher'),('clothes_washer','appliance_clothes_washer'),
+                    ('clothes_dryer','appliance_clothes_dryer'),('cooking_range','appliance_cooking_range_oven'),
+                    ('ceiling_fan','ceiling_fans')]}
+        installed.update({slot:float(arguments[argument])>0 for slot,argument in
+                          [('plug_loads_other','misc_plug_loads_other_usage_multiplier'),
+                           ('plug_loads_tv','misc_plug_loads_television_usage_multiplier')]})
+        installed['garage']=cfg['selected_options']['Geometry Garage']!='None'
+        weather_id=cfg['weather']['station_filename'].removesuffix('.epw')
+        inputs={'year':2007,'residents':cfg['occupants'],'bedrooms':cfg['bedrooms'],
+                'state':cfg['state'],'latitude':cfg['latitude'],'longitude':cfg['longitude'],
+                'time_zone_utc_offset':cfg['time_zone_utc_offset'],'weather_id':weather_id,'installed':installed}
+        result.append({'case_id':case['configuration_id'],'program_id':case['program_id'],
+                       'configuration_provenance':program['configuration_provenance'],
+                       'unit_seed':cfg['seed'],'inputs':inputs,
+                       'drybulb_C':resources.get('weather',weather_id)['drybulb_C']})
+    for key,runs in [('component_no_events',[[35040,6]]),
+                     ('component_boundary',[[1,1],[1,2],[1,3],[1,4],[35031,6],[1,1],[1,2],[1,3],[1,4],[1,6]]),
+                     ('component_all_absent',[[35040,5]])]:
+        item=copy.deepcopy(result[0]);item['case_id']=key;item['component_states']=[runs];result.append(item)
+    return result
+
+
+def load_event_reference():
+    lock=_read(ROOT/'sources/schedule-generator-event-reference-lock.json')
+    result=strict_json(_verify(ROOT/lock['vectors']['source_path'],lock['vectors']),'event-reference')
+    if result['provenance']!=lock['capture_provenance']:
+        raise GeneratorError('source_integrity','event-reference','Capture provenance mismatch')
+    return result
+
+def capture_residential(runtime_archive, resstock_archive, destination, events=False):
     lock=_read(ROOT/'sources/runtime-lock.json')['archives'];destination=Path(destination)
     if destination.exists():raise GeneratorError('source_integrity',str(destination),'Capture destination must be new')
     _verify(runtime_archive,lock[0]);_verify(resstock_archive,lock[1]);destination.mkdir(parents=True)
@@ -80,11 +124,13 @@ def capture_residential(runtime_archive, resstock_archive, destination):
         path=source/receipt['source_path'].split('/',1)[1]
         if hashlib.sha256(_long_path(path).read_bytes()).hexdigest()!=receipt['source_sha256']:
             raise GeneratorError('source_integrity',str(path),'Executed resource mismatch')
-    inputs=residential_capture_inputs(resources);input_path=(destination/'input.json').resolve()
+    inputs=event_capture_inputs(resources) if events else residential_capture_inputs(resources)
+    input_path=(destination/'input.json').resolve()
     input_path.write_bytes(canonical(inputs));harness=ROOT/'scripts/reference_schedule_generator.rb'
     output=(destination/'ruby-output.json').resolve()
-    completed=subprocess.run([str(executable.resolve()),str(harness),'--residential',str(source.resolve()),str(input_path),str(output)],
-                             cwd=ROOT,capture_output=True,text=True,check=False)
+    completed=subprocess.run([str(executable.resolve()),str(harness),'--events' if events else '--residential',str(source.resolve()),str(input_path),str(output)],
+                             cwd=ROOT,capture_output=True,text=True,check=False,
+                             env=dict(os.environ,TZ='UTC') if events else None)
     (destination/'execution.log').write_text(completed.stdout+completed.stderr,encoding='utf-8')
     completed.check_returncode()
     capture=_read(output)
@@ -103,10 +149,34 @@ def capture_residential(runtime_archive, resstock_archive, destination):
         'extraction_date':'2026-10-14','interpretation_note':'Source execution stops at first sink event method, after activity/shape generation. The zero-resident source measure skips generation; its fixture explicitly adapts that skip to zero occupancy only, with no source-generated other loads. No sizing or EnergyPlus. No export rounding.',
         'comparison_policy':_read(ROOT/'sources/schedule-generator-policy.json')}
     result={'schema_version':'1.0.0','ruby_description':capture['ruby_description'],'provenance':provenance,'cases':capture['cases']}
-    data=canonical(result);(destination/'residential-vectors.json').write_bytes(data)
+    if events:
+        provenance.update(source_locator='schedules.rb:1076-1564; actual generate_* event methods and create_stochastic_schedules:171-197',
+            field_locator='cases[i].event_segments/event_draws/final_rng_states/channels; source native method results',
+            original_unit='minute-indexed calibration draws; dimensionless hourly fractions; native random draws',
+            transformation='Nonzero constant minute runs [start,length,value]; activity states RLE [length,state]; native rand limits represented as range size; source nonfinite normalization retained as null with explicit channel receipt',
+            calendar_environment={'TZ':'UTC','variant':'controlled_no_DST_local_standard_calendar',
+                'affected_source_calculations':['generate_dishwasher_power_schedule.month','generate_clothes_washer_dryer_power_schedules.month','generate_cooking_power_schedule.month'],
+                'interpretation':'Child-process computational calendar control only. Physical lighting/weather timezone inputs unchanged. Uncontrolled host-DST Windows arrays can differ near month edges; old frozen profiles/annual targets unchanged.'},
+            interpretation_note='Actual native full-year event methods before budget binding in controlled-no-DST environment. Six exact frozen configuration inputs plus explicit component/presence probes. Controlled component traces replace only returned one-hot states after genuine activity draws; no-event normalization is undefined upstream and is explicitly rejected by Python. EV output excluded with native allocator slot retained. Calibration never substitutes annual magnitudes.')
+        for item,case in zip(inputs,result['cases']):
+            for key in ('program_id','configuration_provenance','component_states'):
+                if key in item:case[key]=item[key]
+            packed=[]
+            for trace in case.pop('resident_states'):
+                runs=[]
+                for state in trace:
+                    if runs and runs[-1][1]==state:runs[-1][0]+=1
+                    else:runs.append([1,state])
+                packed.append(runs)
+            case['resident_state_runs']=packed
+            case.pop('decisions') # Full activity decisions are covered by separate Task 4 capture.
+        filename='event-vectors.json';lockname='event-reference-lock.json'
+    else:
+        filename='residential-vectors.json';lockname='residential-reference-lock.json'
+    data=canonical(result);(destination/filename).write_bytes(data)
     candidate={'schema_version':'1.0.0','capture_provenance':provenance,'vectors':{
-        'source_path':'data/schedule-generator/residential-vectors.json','sha256':hashlib.sha256(data).hexdigest(),'size_bytes':len(data)}}
-    (destination/'residential-reference-lock.json').write_bytes(canonical(candidate))
+        'source_path':'data/schedule-generator/'+filename,'sha256':hashlib.sha256(data).hexdigest(),'size_bytes':len(data)}}
+    (destination/lockname).write_bytes(canonical(candidate))
     print(completed.stdout.strip());return result
 
 def _read(path):
@@ -199,20 +269,20 @@ def capture_reference(runtime_archive: Path, resstock_archive: Path, standards_a
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-only',action='store_true')
-    parser.add_argument('--family',choices=['foundation','residential'],default='foundation')
+    parser.add_argument('--family',choices=['foundation','residential','events'],default='foundation')
     parser.add_argument('--runtime-archive',type=Path)
     parser.add_argument('--resstock-archive',type=Path)
     parser.add_argument('--standards-archive',type=Path)
     parser.add_argument('--ruby-source-cache',type=Path)
     parser.add_argument('--destination',type=Path)
     args=parser.parse_args()
-    if args.family=='residential':
+    if args.family in ('residential','events'):
         if args.verify_only:
-            print('Verified residential cases:',len(load_residential_reference()['cases']))
+            print('Verified '+args.family+' cases:',len((load_event_reference() if args.family=='events' else load_residential_reference())['cases']))
         else:
             if any(p is None for p in [args.runtime_archive,args.resstock_archive,args.destination]):
                 parser.error('Residential capture requires runtime/resstock archives and a new destination')
-            capture_residential(args.runtime_archive,args.resstock_archive,args.destination)
+            capture_residential(args.runtime_archive,args.resstock_archive,args.destination,events=args.family=='events')
         return
     if args.verify_only:
         result=load_reference_vectors();print('Verified independently captured vectors:',len(result['random_vectors']),len(result['rule_vectors']))

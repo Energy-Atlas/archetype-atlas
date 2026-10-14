@@ -66,6 +66,31 @@ def _receipt(file, pointer, note):
             'interpretation_note': 'Immutable source/reviewed views remain separate; null remains unknown'}
 
 
+def event_constants(record):
+    """Compile literal source constants without executing Ruby; retain each line."""
+    fields = {}
+    for line, text in enumerate(record['text'].splitlines(), 1):
+        match = re.fullmatch(r"\s+(\w+) = (.+)", text)
+        if match is None:
+            continue
+        key, original = match.groups()
+        value = ([float(v) for v in original.strip("'").split(',')]
+                 if original.startswith("'") else float(original))
+        if 'FlowRate' in key:
+            original_unit, si_unit, factor = 'US gal/min', 'm3/s', 0.003785411784/60
+        elif 'DurationMean' in key or 'DurationStd' in key or 'MinutesBetweenEventGap' in key:
+            original_unit, si_unit, factor = 'min', 's', 60
+        else:
+            original_unit, si_unit, factor = '1', '1', 1
+        si_value = [v*factor for v in value] if isinstance(value,list) else value*factor
+        fields[key] = {'value': value, 'unit': original_unit, 'si_value': si_value, 'si_unit': si_unit,
+            'provenance': dict(record['provenance'],
+            field_locator=f'constants.rb:{line}#{key}', original_value=original,
+            original_unit=original_unit,
+            transformation=f'Parse source literals; retain original calibration units; SI counterpart multiply by {factor!r}')}
+    return {'schema_version': '1.0.0', 'fields': fields, 'provenance': record['provenance']}
+
+
 def build_resources(destination: Path, scope: str) -> dict:
     if scope != 'pilot':
         raise GeneratorError('unsupported_scope', '/scope', 'Only exact M1 pilot is source-gated')
@@ -83,6 +108,7 @@ def build_resources(destination: Path, scope: str) -> dict:
         sources = ResourceSet(Path(temporary)/'resources', source_manifest['resource_set_id'])
         records = {(e['kind'], e['key']): sources.get(e['kind'], e['key']) for e in source_manifest['resources']}
     records['commercial', 'sampling-audit'] = audit
+    records['residential', 'event-constants'] = event_constants(records['residential', 'constants_rb'])
     records['reference', 'm1-scope'] = manifest_scope
     records['reference', 'comparison-policy'] = _read(ROOT/'sources/schedule-generator-policy.json')
     records['reference', 'source-random-rule-vectors'] = load_reference_vectors()

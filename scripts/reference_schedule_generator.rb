@@ -2,7 +2,7 @@
 # Opt-in reference capture only; never called during packaged Python generation.
 require 'json'
 require 'date'
-if ARGV[0] == '--residential'
+if ['--residential', '--events'].include?(ARGV[0])
   require 'ostruct'
   _, source, input_path, output_path = ARGV
   require File.join(source, 'resources/hpxml-measures/BuildResidentialScheduleFile/measure')
@@ -13,6 +13,11 @@ if ARGV[0] == '--residential'
       @capture_types = []
       @capture_decisions = []
       result = super
+      if @component_states
+        result = @component_states.map { |runs|
+          Matrix[*runs.flat_map { |length,state| Array.new(length) { Array.new(7) { |i| i == state ? 1 : 0 } } }]
+        }
+      end
       @capture_traces = result.map { |matrix| matrix.to_a.map { |row| row.index(1) } }
       @capturing_activity = false
       result
@@ -37,11 +42,76 @@ if ARGV[0] == '--residential'
           [key,{algorithm: 'ruby-3.2.2-mt19937-v1', seed: seed,
             state: 624.times.map { |i| (words >> (32 * i)) & 0xffffffff }, index: 625 - remaining}]
         }, channels: @schedules.dup}
+      return super if @capture_events
       throw :captured_shapes
     end
     attr_reader :capture_result
   end
   ScheduleGenerator.prepend(ActivityCapture)
+  module EventCapture
+    def capture_events!(component_states = nil)
+      @capture_events = true
+      @component_states = component_states
+      @event_draws = []
+      @event_segments = {}
+      @minute_lengths = {}
+    end
+    def event_rle(values)
+      runs = []
+      values.each_with_index do |value, index|
+        next if value == 0
+        if !runs.empty? && runs[-1][0] + runs[-1][1] == index && runs[-1][2] == value
+          runs[-1][1] += 1
+        else
+          runs << [index, 1, value]
+        end
+      end
+      runs
+    end
+    def event_rng_states
+      @prngs.to_h { |key,rng|
+        words, remaining, seed = rng.send(:marshal_dump)
+        [key,{algorithm: 'ruby-3.2.2-mt19937-v1', seed: seed,
+          state: 624.times.map { |i| (words >> (32 * i)) & 0xffffffff }, index: 625 - remaining}]
+      }
+    end
+    {'generate_sink_schedule' => ['sink'], 'generate_bath_shower_schedules' => ['shower','bath'],
+     'generate_dishwasher_schedule' => ['hot_water_dishwasher'],
+     'generate_dishwasher_power_schedule' => ['dishwasher'],
+     'generate_clothes_washer_schedule' => ['hot_water_clothes_washer'],
+     'generate_clothes_washer_dryer_power_schedules' => ['clothes_washer','clothes_dryer'],
+     'generate_cooking_power_schedule' => ['cooking_range']}.each do |method,slots|
+      define_method(method) do |traces|
+        if @capture_events && method == 'generate_sink_schedule'
+          log = @event_draws
+          @prngs.each do |key,rng|
+            rng.define_singleton_method(:rand) do |*args|
+              result = super(*args)
+              limit = args.empty? ? nil : (args[0].is_a?(Range) ? args[0].size : args[0])
+              log << [key, limit, result]
+              result
+            end
+          end
+        end
+        result = super(traces)
+        if @capture_events
+          arrays = slots.size == 1 ? [result] : result
+          slots.zip(arrays).each { |slot,array|
+            @event_segments[slot] = event_rle(array)
+            @minute_lengths[slot] = array.size
+          }
+        end
+        result
+      end
+    end
+    def finish_event_capture
+      @capture_result.merge(event_draws: @event_draws, event_segments: @event_segments,
+        minute_lengths: @minute_lengths,
+        final_rng_states: event_rng_states, channels: @schedules.dup,
+        power_rows: {consumption: @consumption_row, duration: @duration_row})
+    end
+  end
+  ScheduleGenerator.prepend(EventCapture)
   cases = JSON.parse(File.read(input_path)).map do |item|
     runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
     hpxml = HPXML.new
@@ -81,14 +151,39 @@ if ARGV[0] == '--residential'
       result = {resident_states: [], occupant_types: [], decisions: [], unit_offset_minutes: nil,
         main_state: nil, enduse_states: {}, channels: {'occupants' => [0.0] * 8760}, status: 'upstream_zero_residents_skip'}
     else
-      catch(:captured_shapes) { generator.create(args: args, weather: weather) }
-      result = generator.capture_result.merge(status: 'executed_source_through_coordinated_shapes')
+      if ARGV[0] == '--events'
+        generator.capture_events!(item['component_states'])
+        source_error = nil
+        begin
+          generator.create(args: args, weather: weather)
+        rescue ArgumentError => error
+          raise unless item['component_states'] && error.message.include?('NaN')
+          source_error = error.message
+        end
+        result = generator.finish_event_capture.merge(status: 'executed_source_through_events')
+        result[:source_error] = source_error
+        result[:source_undefined_channels] = result[:channels].select { |_,values| values.any? { |v| !v.to_f.finite? } }.keys
+        result[:channels] = result[:channels].transform_values { |values| values.map { |v| v.to_f.finite? ? v : nil } }
+      else
+        catch(:captured_shapes) { generator.create(args: args, weather: weather) }
+        result = generator.capture_result.merge(status: 'executed_source_through_coordinated_shapes')
+      end
+    end
+    if ARGV[0] == '--events'
+      start = Time.new(year,1,1)
+      result[:calendar_receipt] = [[3,11,1,30],[3,11,3,30],[3,31,23,15],[4,1,0,15],
+                                  [7,31,23,15],[8,1,0,15],[11,4,0,30],[11,4,2,30]].map do |month,day,hour,minute|
+        position = (Date.new(year,month,day)-Date.new(year,1,1)).to_i*1440 + hour*60 + minute
+        instant = start + position*60
+        {minute_index: position, civil_time: instant.strftime('%Y-%m-%d %H:%M'),
+         month: instant.month, utc_offset: instant.utc_offset, dst: instant.dst?}
+      end
     end
     result.merge(case_id: item.fetch('case_id'), inputs: inputs, unit_seed: item.fetch('unit_seed'),
       fan_months: monthly.map { |v| v > 63.0 ? 1 : 0 })
   end
   File.write(output_path, JSON.generate({ruby_description: RUBY_DESCRIPTION, cases: cases}) + "\n")
-  puts "Captured #{cases.size} independent residential activity/shape cases"
+  puts "Captured #{cases.size} independent residential #{ARGV[0] == '--events' ? 'event' : 'activity/shape'} cases"
   exit
 end
 input_path, standards_method, output_path = ARGV
