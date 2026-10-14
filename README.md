@@ -44,6 +44,13 @@ The immutable [v0.1.0 artifact](data/generator-releases/v0.1.0/manifest.json)
 remains available for historical integrity and own-runtime reproduction; its
 channel-coverage metadata is superseded by v0.1.1.
 
+The separate [residential generator v0.2.0](data/generator-releases/v0.2.0/manifest.json)
+covers all 41 source fixtures and 37 locked station proxies, with 766 source-backed
+channels. Its [guide](docs/schedule-generator-residential.md) and
+[coverage](docs/validation/schedule-generator-coverage-residential.json) describe
+this intermediate family milestone. A cumulative mixed-family generator remains
+open; these independently scoped ZIPs do not advertise cross-release mixtures.
+
 | Canonical table | Records |
 | --- | ---: |
 | programs | 768 |

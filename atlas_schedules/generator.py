@@ -50,7 +50,7 @@ def _heat_fractions(demand, resolved):
 
 
 def generate(params: dict, seed: int) -> dict:
-    """Generate the exact declared M1 cases with an explicit uint64 realization.
+    """Generate the packaged declared cases with an explicit uint64 realization.
 
     Caller inputs are source recipe operands, excluding calendar (owned by the
     request) and internal preparation buffers. The returned bundle indexes every
@@ -63,7 +63,7 @@ def generate(params: dict, seed: int) -> dict:
     resources = ResourceSet.load(params['resource_set_id'])
     scope = resources.get('reference','m1-scope')
     if (calendar['year'] != scope['calendar']['year'] or calendar['holidays']):
-        raise GeneratorError('unsupported_binding','/calendar','Outside the declared M1 calendar')
+        raise GeneratorError('unsupported_binding','/calendar','Outside the declared '+scope['milestone_id']+' calendar')
     resolved_instances = []
     basis_receipts={}
     declared_programs={case['program_id'] for case in scope['cases']}
@@ -72,7 +72,7 @@ def generate(params: dict, seed: int) -> dict:
             physical,receipts=normalize_basis_bindings(instance['basis_bindings'],instance['key'])
             instance['basis_bindings']=physical; basis_receipts[instance['key']]=receipts
             if instance['program_id'] not in declared_programs:
-                raise GeneratorError('unsupported_binding','/program_id','Program is outside the declared M1 case set')
+                raise GeneratorError('unsupported_binding','/program_id','Program is outside the declared '+scope['milestone_id']+' case set')
             if set(instance['inputs']) & ({'year','holidays'} | _PREPARED):
                 raise GeneratorError('unknown_input','/inputs','Calendar and preparation buffers are request/internal operands')
             inputs = dict(instance['inputs'],year=calendar['year'],holidays=calendar['holidays'])

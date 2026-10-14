@@ -1,0 +1,13 @@
+# ADR 0024: Progressive source family shipments
+
+Status: accepted for Task 10's explicit R1 residential milestone.
+
+The default M1 resource tree and immutable v0.1.0/v0.1.1 ZIPs remain independent reference cases. New source families compile from their own versioned scope and lock into a separate development resource root. The release builder accepts that explicit root and installs it as the ZIP's own `atlas_schedules/data`; the public interface stays `generate(params, seed)` and uses the packaged resource identity. No repository scripts or native runtime are required for generation.
+
+R1 contains the 41 actual ResStock source fixtures with their original recovered targets, inputs, stock/region identities and 37 checksum-locked station proxies. Source-fixed companions are computed from the actual weekday/weekend/month operands, including extra refrigeration, well pump, gas ancillary loads, pools and permanent spas. A frozen stochastic realization never establishes a fixed method. Zero occupants retain the native skip and explicit zero occupancy; installed positive fixed demands and nominal thermostat methods remain applicable.
+
+An expanded shipment requires a package-local certification record tied to the complete ordered scope and exact immutable dependency digest, a locked independent native reference covering every included fixture, source/discrete and numerical checks, and multiple-seed conservation/variation/fixed-channel checks. The certification digest excludes only the certification record itself to avoid a circular self-hash. Frozen generated output is reproduced numerically; its fresh JSON bytes are never a scientific equality gate.
+
+The new 41-case request retains the six original residential cases in their original order and appends remaining real definitions in source order. Existing M1 requests do not change. Source cumulative-factorial seed allocation applies to the new full request; it does not inherit the seeds of independent single-fixture tests. Native references preserve the original source fixture seeds separately.
+
+R1 is an intermediate residential family shipment. A subsequent cumulative resource set must unite compatible completed residential and commercial recipes before advertising mixed-family composition. Different resource identities remain incompatible. Exact active/absent/unknown/shared/excluded channel inventories cover all 1,900 definitions and 378 compositions, while full extraction remains open. Commercial selectors do not by themselves certify carriers, geometry, aggregation or source methods. DOE 3B coastal Los Angeles and inland Las Vegas remain separate unbound location identities; actual Sacramento/Riverside fixture proxies do not substitute for them.

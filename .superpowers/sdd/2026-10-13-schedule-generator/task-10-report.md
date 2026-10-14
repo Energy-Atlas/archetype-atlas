@@ -1,0 +1,148 @@
+# Task 10 report — incremental, R1 residential milestone
+
+Status: Task 10 remains active. R1 is concrete and verified; commercial expansion and cumulative mixed-family integration remain required. No full-extraction completion claim. Base d48cb12b864bcfeee887b8ee02f5651ad108564c, branch codex/stochastic-schedule-extraction, isolated worktree only. No push, main change, merge or publication. The controller supplies independent review; no child writer was spawned.
+
+## R1 outcome and identities
+
+R1/v1.0.0 covers every one of the 41 actual ResStock source fixtures (38 occupied, three native zero-occupant skips) and their 37 recorded station proxies. All 35 recoverable fixtures outside M1 are implemented. The 766 included channels are 415 generated and 351 source-fixed; all per-channel packaged resource/pointer/full-resource-hash/receipt-hash evidence resolves. Fixed companions cover all 12 real default source methods, including nine beyond the original three. Source/reviewed, stock/prototype, climate/region/weather and original physical host/fuel/basis remain distinct. No default fixture borrowing, population weighting or fabricated climate programme exists.
+
+R1 is a residential-only intermediate ZIP. Default repository M1 resources/examples remain unchanged; existing v0.1.0/v0.1.1 ZIPs and old Program JSON v3 remain immutable. Mixed-family composition is not advertised across separate resource IDs. The next cumulative resource set must unite compatible completed families and prove individually generated/bound residential and commercial constituents before composition.
+
+Release target: data/generator-releases/v0.2.0. ZIP 64522432 bytes, SHA256 1f1547afb49d138c84b0e72f57698a7f8690c22aceaf93535b96b3df07043889; release manifest SHA256 e8a5140298b4910997de08669d0fdb0d398592affb793a9cc0e3305ebad57034; 1177 members. Source scope SHA256 81125945336f1cfa5ee305703b5846898cbeab05e0a6c8c32c73f386a2831ee6. Resource identity resources-82019ccd24b679a968d35e5e7f2d7575dd3aa4ba99c69dd6e2b9b45b09b54612, 1126 records / 78088178 resource bytes. Freeze including standalone complete generation took 93.798381s. Independent audit-hook smoke took8.875 s for20schedules. Full complete request and gzip numerical reference are references/all-cases-request.json and references/all-cases-bundle.json.gz within the ZIP.
+
+The development builder takes --scope residential and a distinct --destination. Source capture takes --resources-root. freeze_generator(..., resources_root=...) / CLI --resources-root binds an approved full source scope, checks certification and installs that tree at the ZIP's own atlas_schedules/data. Public generate(params, seed) remains unchanged and reads only packaged stdlib/resources. The exact resource ID in the complete request matches the manifest. An unapproved family cannot bypass source authority; a restricted runtime may select only members of the fully certified source family and receives its own scoped identity/example.
+
+## Original operands, methods and conservation
+
+Every annual target comes from recovered loads[*].evidence.original_value, not fitted W/m3/s or frozen-profile integrals: annual_kwh*1000 -> Wh/dwelling, daily_gallons*365*0.003785411784 -> m3/dwelling. Electricity/gas demands sharing a temporal slot retain separate demand IDs, fuels, physical hosts and bases. Generated fractions stay within range; annual binding adjusts effective magnitude and does not claim a nameplate capacity. Counts/activity/nominal temperature controls retain their source semantics.
+
+All 41 physical records have no unresolved recovery operands. Exact selected options, expanded arguments, residents, bedrooms, installed source collections, state/ZIP coordinates/UTC offset, weather ID and nominal thermostat arguments are required explicit recipe operands. Three zero-occupant cases preserve the native skip and zero occupancy; positive fixed demands remain. Original unknown fields are retained alongside actual zero-target, zero-resident or absent-collection evidence; they are never substituted with an assumed zero. The late diagnostic matrix resolves40such original unknowns with source absence receipts. Every compiled runtime slot, including occupants, activity and water target temperatures, is enumerated.
+
+The extra nine fixed companions parse their actual weekday/weekend/month strings and locators from the locked physical recovery /schedules. The existing tested evaluator uses those actual operands and peak divisor, not a copied stochastic profile. All twelve annual arrays matched the recovered source defaults exactly. Nominal thermostats use each fixture's source base/offset/directions and full-year equal-season midpoint correction; all 41 profiles match the executed nominal reference at1e-4 C. EV and HVAC equipment-unavailability overlays remain excluded; no fan/setpoint availability overlay is invented.
+
+No numerical residential HMM/event/shape kernel or fixed-background evaluator changed. Changes are expanded source bindings/resources, genuine fixed-method operands, source/certification/packaging gates and scope-aware messages. New branches (dual/nonzero offsets, additional regions/weather/fan months, absent collections, zero skips and rare fixed ancillary end uses) were characterized through actual source evidence/native capture.
+
+## Native/source evidence, seeds and tolerances
+
+Runtime/ResStock archives were copied from the read-only public cache into own build/task-10/archives and verified before fresh extraction/execution. Runtime archive 4652dae9086a2ad3716dd2a00227c36cb5ed3d2198d0b438f2c0cdd08900e8ba; ResStock archive c96d115369672b12a034130a193707f26aeae3b3c39f6364492ded3824c91106 at dd25369f41a83a0767aefeeac0b6f8a0b0edd649. Native execution used only that fresh worktree extraction. Public cache was never written/executed. Weather archive a0d03eea64818280c740e0fda3f1bc4d8605c989facce169ded3d08fb53a135e; all 37 members is individually locked and verified. County EPWs remain unavailable HTTP 403: ZIP-mapped station proxies are explicitly declared.
+
+Native 52 cases include all 41 fixtures and existing component/presence probes. Capture was controlled TZ=UTC/no-DST; physical lighting/timezone inputs remain their exact original bindings. Uncontrolled historical-DST stochastic exports do not replace this raw reference. Original nominal thermostat profiles remain valid independently. Native activity state runs, occupant types, main checkpoints, offsets, event draws/final RNG states, power selections, minute lengths and event start/duration decisions are compared exactly; event amplitudes/hourly fractions use the policy tolerance. Native fan months match. Source no-event failure probes remain explicit source errors, not normalized/retried.
+
+Raw native reference 146,899,276 bytes; gzip 29,374,160 bytes, SHA256 84b7f4c71a2229019c338ac09bb22cf83a8a18283bdf3f0f17b2c652ab5cab19, payload SHA256 34adc8e361dd6ae192f72a17cfc889e3da033cb5e8bd3c4aafde9acf3954618d. Source lock retains exact executed executable/harness/input/resource hashes and capture provenance. Native fixture order and original source seeds are fully enumerated below/in sources/schedule-generator-residential-family-reference-lock.json.
+
+Single-fixture master seeds 42/51 prove unchanged annual energy/volume targets, conserved emitted integrals, occupied temporal variation and unchanged source-fixed channels for every fixture. These are separate from the complete ZIP request master 42. That new ordered 41-unit request retains the six original residential M1 cases in order and appends actual remaining definitions; native allocation is cumulative multiplication by one-based unit position. Its seeds are not claimed equal to original fixture seeds or independent single-fixture seeds. Actual complete order/allocated seeds are retained in the reference bundle's generation receipt.
+
+Continuous policies: dimensionless fractions rel 1e-6 / abs 1e-8; temperatures abs 1e-4 C; activity rel 1e-6 / abs 1e-6 W/person; annual energy integrals rel/abs 1e-8 in declared unit; volume rel 1e-8 / abs 1e-12 m3. Discrete decisions are exact. Frozen resources/native archives/manifests have strict SHA integrity. Fresh generated schedules are source/discrete/numerically reproduced, never accepted through generated-byte equality.
+
+## Verification chronology
+
+Focused RED/GREEN logs live under build/task-10, all unique. Initial inventory four absent-function assertion failures: inventory-red-20261014-01.log -> inventory-green-20261014-01.log four tests / 2.168 s. Residential missing-family RED -> residential-green-20261014-01.log three tests / 160.772 s. Explicit capture scope RED/GREEN: capture-scope-red/green-20261014-01.log. Expanded packaging root RED: package-family-red-20261014-01.log; actual packaging GREEN is in the seven-test residential-family-affected-20261014-01.log (336.804 s). Independent native file RED: native-family-red-20261014-01.log. Certification missing gate RED: certification-gate-red-20261014-01.log; guarded missing-certification test passed in full suite. Native capture: native-residential-20261014-01.log and native-residential-20261014-01/execution.log,52 cases.
+
+Full python -m unittest discover -s tests -v completed 422 tests in 1,440.490 s, OK, one skip in full-suite-r1-20261014-01.log. It includes all eight family tests with strengthened native event positions/durations/fan months. Late diagnostic-only fixes have their own observed RED/GREEN: inventory-slot-red/green-20261014-01.log and inventory-absence-red/green-20261014-01.log; latest six tests / 3.327 s. Full suite predates these two additional diagnostic tests; this is not represented as a fresh 424-test run. Controller recorded the narrow correction boundary; no duplicate legacy full run.
+
+Late source-root authority review exposed premature execution for an unapproved resource family (unknown-family-red-20261014-01.log). Approved M1/R1 authority now binds its locked source scope before package execution. Complete affected release suite release-guard-green-20261014-01.log: four tests / 43.078 s OK, including M1 immutable/partial scope and actual own-runtime numerical reproduction. This release-builder-only fix has no kernel/data-source or historical artifact change. R1 final freeze/standalone gates exercise that actual expanded authority.
+
+Certified rebuild: certified-rebuild-20261014-01.log exactly matches the certified resource identity; certificate source dependency digest excludes only its own self-record. Certification-green-20261014-01.log validates full source/seed closure. Staged source audit and diff check passed before freeze; staged-generated-inspection-20261014-01.json records bounded hashes/schema/counts and a decoded-JSON/gzip credential-pattern scan. Handwritten staged hunks were inspected in full, in bounded groups.
+
+R1 artifact gates: freeze-r1-20261014-01.log / freeze-r1-measurements-20261014-01.json; r1-coverage-check-20261014-01.log; r1-verify-20261014-01.log; r1-reproduce-20261014-01.log (41 cases / 766 schedules, own frozen runtime); r1-isolation-closure-20261014-01.log (all 41 / 766 packaged evidence pointers/hashes close, audited 20-schedule real isolated smoke from empty directory, external imports/socket/subprocess forbidden). Historical checks below are separate from new R1 artifact proof.
+
+All 30 required prerequisite commands below exited0; exact commands/timings/log hashes are gate-r1-results-20261014-01.json. Full suite and new-target artifact gates are separately recorded above.
+
+| Command | Exit | Log |
+| --- | --- | --- |
+| `python -m scripts.fetch` | 0 | `build/task-10/gate-r1-01-20261014-01.log` |
+| `python -m scripts.fetch --lock sources/schedule-evidence-lock.json` | 0 | `build/task-10/gate-r1-02-20261014-01.log` |
+| `python -m scripts.fetch --lock sources/water-evidence-lock.json` | 0 | `build/task-10/gate-r1-03-20261014-01.log` |
+| `python -m scripts.fetch --lock sources/completion-evidence-lock.json` | 0 | `build/task-10/gate-r1-04-20261014-01.log` |
+| `python -m scripts.fetch --lock sources/definition-evidence-lock.json` | 0 | `build/task-10/gate-r1-05-20261014-01.log` |
+| `python -m scripts.schedule_generator_sources --verify-only` | 0 | `build/task-10/gate-r1-06-20261014-01.log` |
+| `python -m scripts.schedule_generator_sources --verify-only --lock sources/schedule-generator-residential-lock.json` | 0 | `build/task-10/gate-r1-07-20261014-01.log` |
+| `python -m scripts.validate` | 0 | `build/task-10/gate-r1-08-20261014-01.log` |
+| `python -m scripts.reproduce` | 0 | `build/task-10/gate-r1-09-20261014-01.log` |
+| `python -m scripts.compare --report build/source-comparison.json` | 0 | `build/task-10/gate-r1-10-20261014-01.log` |
+| `python -m scripts.coverage --report build/coverage.json` | 0 | `build/task-10/gate-r1-11-20261014-01.log` |
+| `python -m scripts.release --verify` | 0 | `build/task-10/gate-r1-12-20261014-01.log` |
+| `python -m scripts.release --verify --target data/releases/v0.1.0` | 0 | `build/task-10/gate-r1-13-20261014-01.log` |
+| `python -m scripts.resolve --verify` | 0 | `build/task-10/gate-r1-14-20261014-01.log` |
+| `python -m scripts.resolve --verify --target data/resolution-releases/v0.1.0` | 0 | `build/task-10/gate-r1-15-20261014-01.log` |
+| `python -m scripts.resolve --verify --target data/resolution-releases/v0.2.0` | 0 | `build/task-10/gate-r1-16-20261014-01.log` |
+| `python -m scripts.resolve --verify --target data/resolution-releases/v0.3.0` | 0 | `build/task-10/gate-r1-17-20261014-01.log` |
+| `python -m scripts.commercial_completion --verify` | 0 | `build/task-10/gate-r1-18-20261014-01.log` |
+| `python -m scripts.water_equivalent --verify` | 0 | `build/task-10/gate-r1-19-20261014-01.log` |
+| `python -m scripts.water_reporting --verify` | 0 | `build/task-10/gate-r1-20-20261014-01.log` |
+| `python -m scripts.definition_release --verify` | 0 | `build/task-10/gate-r1-21-20261014-01.log` |
+| `python -m scripts.definition_release --reproduce` | 0 | `build/task-10/gate-r1-22-20261014-01.log` |
+| `python -m scripts.program_completeness --check` | 0 | `build/task-10/gate-r1-23-20261014-01.log` |
+| `python -m scripts.schedule_coverage --report build/schedule-coverage.json` | 0 | `build/task-10/gate-r1-24-20261014-01.log` |
+| `python -m scripts.schedule_generator_coverage --check --scope m1` | 0 | `build/task-10/gate-r1-25-20261014-01.log` |
+| `python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.0 --verify` | 0 | `build/task-10/gate-r1-26-20261014-01.log` |
+| `python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.0 --reproduce` | 0 | `build/task-10/gate-r1-27-20261014-01.log` |
+| `python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.1 --verify` | 0 | `build/task-10/gate-r1-28-20261014-01.log` |
+| `python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.1 --reproduce` | 0 | `build/task-10/gate-r1-29-20261014-01.log` |
+| `python -m scripts.audit` | 0 | `build/task-10/gate-r1-30-20261014-01.log` |
+
+## Exact shipped fixture matrix
+
+See the generated CSV inspection matrix for every channel/physical fuel-host-basis binding and packaged evidence pointer/hash. CSV is inspection only; JSON resources/scope remain canonical.
+
+| Program ID | Original fixture | Climate/vintage | Station | Native seed | Included channels |
+| --- | --- | --- | --- | ---: | ---: |
+| `program-03fe19ed8968e605f4be3b8d` | `residential_archetype-16b2dae7d144a14640bf` | 7AK / 1980s | USA_AK_Anchorage-Merrill.Field.702735_TMY3.epw | 143851 | 20 |
+| `program-23817038e763d549415ffe95` | `residential_archetype-579950323e90f744b1ad` | 4A / 1990s | USA_TN_Nashville.Intl.AP.723270_TMY3.epw | 428680 | 20 |
+| `program-60be4e02d683cc23f9e8a235` | `residential_archetype-86fae2427a5cc0916a50` | 3C / 1980s | USA_CA_San.Jose.Intl.AP.724945_TMY3.epw | 331250 | 19 |
+| `program-68719c3fb04c28ca96c72c5c` | `residential_archetype-0a534568a3277a749ab0` | 5B / 1980s | USA_UT_Salt.Lake.City.Intl.AP.725720_TMY3.epw | 2289 | 20 |
+| `program-e0993499165be6c7b5bf9efa` | `residential_archetype-28457c00121833f065f2` | 4A / 2010s | USA_VA_Staunton-Shenandoah.Valley.Rgnl.AP.724105_TMY3.epw | 494980 | 4 |
+| `program-ff8f2b50daa59b41d3fd879a` | `residential_archetype-74d83a7105b6797f301c` | 4A / 1970s | USA_NC_Hickory.Rgnl.AP.723145_TMY3.epw | 121706 | 16 |
+| `program-0079ce7b163bdb1bd0154dbe` | `residential_archetype-0157cd8578ba44bf8a77` | 5A / <1940 | USA_MA_Worcester.Rgnl.AP.725095_TMY3.epw | 101526 | 17 |
+| `program-0258b60b93c78f9469d64925` | `residential_archetype-afa636ba09caa9f9e65c` | 2A / 2000s | USA_TX_College.Station-Easterwood.Field.722445_TMY3.epw | 75531 | 24 |
+| `program-056c04fc295018c3e65c7411` | `residential_archetype-85e2fb9d853bb01b9a62` | 6A / 2000s | USA_VT_Burlington.Intl.AP.726170_TMY3.epw | 175364 | 22 |
+| `program-06c725f89d79ef8f6b6ba0d0` | `residential_archetype-1072d2739d4a01375b1d` | 7AK / 1980s | USA_AK_Anchorage-Merrill.Field.702735_TMY3.epw | 300265 | 20 |
+| `program-0a5cc65a9b42f458ca3b676f` | `residential_archetype-48b913daef16e4a0d395` | 5A / <1940 | USA_OH_Toledo.Express.AP.725360_TMY3.epw | 342177 | 17 |
+| `program-0aa2e44b70a6dfbbbb8c5f46` | `residential_archetype-ca56512c8a583227b5d4` | 3B / 1990s | USA_CA_Riverside.Muni.AP.722869_TMY3.epw | 350595 | 23 |
+| `program-166d68f81197cbb4b2825e1d` | `residential_archetype-3432edeeb8c2e19f2a8b` | 4C / <1940 | USA_OR_Portland.Intl.AP.726980_TMY3.epw | 177055 | 15 |
+| `program-186eea96d8b5af6a2b364a62` | `residential_archetype-ecfe7293c2d436ef552d` | 1A / 2010s | USA_HI_Honolulu.Intl.AP.911820_TMY3.epw | 349905 | 21 |
+| `program-1a9bafb870d938bc1ff6a0ee` | `residential_archetype-71cf018572bd7e3b4938` | 1A / 1950s | USA_HI_Honolulu.Intl.AP.911820_TMY3.epw | 402849 | 19 |
+| `program-1bb1f0601a9859fad8de2225` | `residential_archetype-37c6452a128338a2087d` | 6A / 1990s | USA_WI_Ephraim.AWOS.726626_TMY3.epw | 257217 | 23 |
+| `program-1f1bbc83d0fa233d047a0375` | `residential_archetype-08a27444abac71d3b335` | 6A / 1980s | USA_ME_Bar.Harbor.AWOS.726077_TMY3.epw | 165449 | 5 |
+| `program-29f7d131c1aab4e0a89b8d06` | `residential_archetype-0cdf5294fee8424d976f` | 7AK / 1970s | USA_AK_Sitka-Japonski.Island.AP.703710_TMY3.epw | 116109 | 13 |
+| `program-2af21516faf5b4bd1506db33` | `residential_archetype-1b992d1fcb6cc50776dc` | 2A / 1980s | USA_FL_Fort.Myers-Page.Field.722106_TMY3.epw | 269564 | 24 |
+| `program-2b863d60d47625c2335edaae` | `residential_archetype-768f9cf7b44f7669c314` | 1A / 1980s | USA_FL_Miami-Opa.Locka.AP.722024_TMY3.epw | 400161 | 21 |
+| `program-31843fd928fc94486e1d6560` | `residential_archetype-1ee4bb65a4b0e6186133` | 4A / 1970s | USA_DE_Wilmington-New.Castle.County.AP.724089_TMY3.epw | 311638 | 25 |
+| `program-41da4dc338b992d7b1d0b8e7` | `residential_archetype-b17e87485621f4cb1857` | 4A / 1960s | USA_NY_Republic.AP.744864_TMY3.epw | 298856 | 23 |
+| `program-48e4a865cfa101f44baea886` | `residential_archetype-874d109c8e9d3952afd2` | 4A / <1940 | USA_NY_New.York-Central.Park.725033_TMY3.epw | 509305 | 12 |
+| `program-4936adc8cbdaa57fe5cafa1c` | `residential_archetype-74b97cc51f5826a5c19b` | 1A / 2000s | USA_HI_Honolulu.Intl.AP.911820_TMY3.epw | 452273 | 22 |
+| `program-65f5fda4c14bc6d4997fa814` | `residential_archetype-aa1f864c610bf3d98e2e` | 7AK / 1980s | USA_AK_Annette.Island.AP.703980_TMY3.epw | 447245 | 5 |
+| `program-733bb9ac30bac1b24debb7fd` | `residential_archetype-5e56afc07bafb83e6944` | 3C / 1980s | USA_CA_Lompoc.AWOS.722895_TMY3.epw | 400013 | 19 |
+| `program-7492c5df88f0a42edf2750eb` | `residential_archetype-51683c54b7032669f881` | 3B / 1970s | USA_CA_Sacramento.Metro.AP.724839_TMY3.epw | 128082 | 24 |
+| `program-8949a7ba21960e2545df9301` | `residential_archetype-98217661e854820f9475` | 3A / <1940 | USA_SC_Greenville-Downtown.AP.723119_TMY3.epw | 491364 | 22 |
+| `program-90cd54380f57bc6883bf8a7a` | `residential_archetype-c8d3068d080573fb73c9` | 4A / 1940s | USA_PA_Philadelphia.Intl.AP.724080_TMY3.epw | 94420 | 21 |
+| `program-93362271aee799032de91eda` | `residential_archetype-b782a597642c3b89c217` | 5A / 1980s | USA_IL_Aurora.Muni.AP.744655_TMY3.epw | 290025 | 24 |
+| `program-9da7ed9e99f56ea2ff572a9c` | `residential_archetype-a3d3772f8a0380587cd9` | 8AK / 1980s | USA_AK_Fairbanks.Intl.AP.702610_TMY3.epw | 461465 | 21 |
+| `program-a7029c2fbcabdff630c6940e` | `residential_archetype-db43453d149b552e630b` | 2A / 1980s | USA_FL_Tampa.Intl.AP.722110_TMY3.epw | 217680 | 17 |
+| `program-b4b7d30e4681b5f4d52c474e` | `residential_archetype-06edaac3a928a261e3ca` | 5B / 2000s | USA_NV_Reno-Tahoe.Intl.AP.724880_TMY3.epw | 452189 | 21 |
+| `program-b683a6ce51d7c284507b1380` | `residential_archetype-edbfbf23a84d49be9ca6` | 4B / 2000s | USA_AZ_Prescott-Love.Field.723723_TMY3.epw | 542837 | 22 |
+| `program-ba2fc5e2dd6926f6042b92b5` | `residential_archetype-0edd1022990bf8c099ee` | 2B / 1970s | USA_CA_Blythe-Riverside.County.AP.747188_TMY3.epw | 181626 | 18 |
+| `program-c788a285d345f7339400f349` | `residential_archetype-c167523c69dac59ce636` | 5A / 1940s | USA_MI_Detroit.Metro.AP.725370_TMY3.epw | 149911 | 17 |
+| `program-cafa056e0fc4a7bbccd60429` | `residential_archetype-b63cc449a2fa34bf3bb0` | 7AK / 1980s | USA_AK_Palmer.Muni.AP.702740_TMY3.epw | 493473 | 21 |
+| `program-cf34214ed4ad9a4eeb6cfbec` | `residential_archetype-a6ba30fe6187ca0384a2` | 3A / 2000s | USA_AR_Little.Rock.AFB.723405_TMY3.epw | 53460 | 20 |
+| `program-d247367e22d512449c47304e` | `residential_archetype-6c882dbfcd92f9047b4b` | 4A / <1940 | USA_MO_Joplin.Muni.AP.723495_TMY3.epw | 66378 | 13 |
+| `program-e28161c7a884b60a744fb422` | `residential_archetype-6304c2e6e1f5a94661a4` | 3A / 2010s | USA_TX_Fort.Worth.NAS.722595_TMY3.epw | 449307 | 15 |
+| `program-faa60c9e3457036fb74fe73c` | `residential_archetype-7b43ef491bfd6a6d7b2a` | 3B / 2010s | USA_CA_Sacramento.Metro.AP.724839_TMY3.epw | 24892 | 21 |
+
+## Remaining work and source/architecture boundaries
+
+All 1,900 definitions and 378 exact compositions are inventoried with actual channel state, source family/view/template, state/weather, original unknown/zero, shared-service ownership/assignment/beneficiary IDs and required operands. Full extraction remains false. R1 still excludes 1,859 commercial identities / 378 compositions; these are requiring their own binding/certification, not declared genuinely source absent. The inventory retains exact IDs for every affected channel/member; templates are the five real commercial templates, with no fabricated climate cross product.
+
+The two DOE 3B location identities remain Los Angeles/coastal and Las Vegas/inland, with weather binding unknown and no invented climate-specific programmes. Source report Table 2 SHA 39520427c39c4a424d8b0d072c47d5bfdc248631632e880501866aae6b0d131a. Actual three ResStock 3B fixtures use Sacramento Metro or Riverside; none substitutes for either named DOE case. Exact DOE EPW member/hash evidence is required before binding those location experiments.
+
+Next recoverable commercial milestone: all 20 MediumOffice source/reviewed records across all five templates (ten actual positive whole-building Office carriers; ten source-backed unconditioned zero-local-load/no-shared-service Plenums). Native capture must use each actual template/view carrier and schedule; hybrid sampling configuration identity must preserve original budgets/templates. The normalized medium_office v33 conditional closure is reusable evidence, not an assertion that other templates are 2013 stock. Next SmallOffice uses its actual small_office selector and Office/Attic methods. Subsequent dining/kitchen/retail/school/hotel/supermarket families require actual source aggregation and service allocation with explicit caller operands where allowed. No generic Office carrier or hotel ResStock HMM is permitted.
+
+SuperMarket reachable zero-sum duration rows 1121 weekday and 1149/1151/1152 weekend are source-error domains with positive-probability parents. They must propagate contextual source error when reached; no probability normalization/retry/fill or blanket family rejection. The current medium_office-only compiled TSV resources do not yet advertise these selectors; their extension remains open.
+
+Apartment method architecture was separately investigated read-only by the controller's auditor. The controller authorized a prototype-budget-preserving hybrid boundary for the exact 84 records, with separately explicit integer residents, original density/activity, source HMM temporal units/solar-active-at-home lighting and original separate annual budgets; equipment/DHW allocations require explicit installed end uses/annual allocations and an exact-source aggregate residual. No fixture input borrowing, medium_office support-office selector or corridor HMM is permitted. Source/reviewed null/zero and whole water-service ownership remain distinct. Read apartment-method-audit.md before implementation and commit the ruling/its cost in ADR/docs; this source proposal is not native-equivalence certification. No apartment adapter has been implemented in R1.
+
+Deferred Task 2/8/9 minor findings remain final whole-branch triage unless touched. Local executions are Windows / Python 3.14; Linux 3.11 remains CI evidence pending execution. No new science/licensing approval was needed for source-backed residential recovery. Final source-code/artefact staging, commit ID and post-commit status will be appended below; Task10 remains active through further milestones.
+
+## R1 shipment receipt
+
+Immutable target `data/generator-releases/v0.2.0`: ZIP SHA256 `1f1547afb49d138c84b0e72f57698a7f8690c22aceaf93535b96b3df07043889`, 64,522,432 bytes, 1,177 members; manifest SHA256 `e8a5140298b4910997de08669d0fdb0d398592affb793a9cc0e3305ebad57034`. Its separate actual-target gates passed: `r1-coverage-check-20261014-01.log` (41 complete cases), `r1-verify-20261014-01.log` (integrity), `r1-reproduce-20261014-01.log` (own-runtime 41 cases / 766 schedules), `r1-isolation-closure-20261014-01.log` (all packaged evidence closed; isolated offline 20 schedules in 8.875 seconds). These gates supplement the 30 prerequisite/historical commands, not substitute for them. Final source/code staged diff was inspected; generated JSON/gzip inspection receipt and bounded ZIP member/hash inspection retain exact staged identities. `git diff --cached --check` and `python -m scripts.audit --staged` are required immediately before the logical R1 commit. Task 10 remains active for cumulative commercial expansion.

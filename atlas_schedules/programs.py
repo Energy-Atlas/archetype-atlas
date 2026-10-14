@@ -17,7 +17,7 @@ def _same_operand(value, bound):
 
 
 def resolve_program(program_id: str, inputs: dict, resources) -> dict:
-    """Bind an exact declared M1 experiment; unknown catalogue recipes fail closed.
+    """Bind an exact packaged experiment; unknown catalogue recipes fail closed.
 
     Kernel operands remain explicit. Source targets and original reference arrays
     are prepared here, before the caller samples any commercial operating group.
@@ -47,7 +47,7 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
     if not isinstance(calendar['holidays'], list):
         raise GeneratorError('invalid_calendar', '/inputs/holidays', 'Explicit holiday date list required')
     if calendar['holidays']:
-        raise GeneratorError('unsupported_binding', '/inputs/holidays', 'M1 source clock has no holiday overrides')
+        raise GeneratorError('unsupported_binding', '/inputs/holidays', 'Declared source clock has no holiday overrides')
     for key, bound in recipe['bound_inputs'].items():
         # Numeric equality alone must not accept True as one resident/coordinate.
         if not _same_operand(inputs[key], bound):

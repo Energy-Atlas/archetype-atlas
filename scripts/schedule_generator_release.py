@@ -12,6 +12,7 @@ import zipfile
 
 from atlas_schedules.canonical import canonical
 from atlas_schedules.resources import ResourceSet, manifest_identity, safe_path, strict_json
+from atlas_schedules.errors import GeneratorError
 from scripts.schedule_generator_coverage import build_coverage, coverage_errors
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,11 +37,51 @@ def _archive(files: dict[str, bytes]) -> bytes:
     return buffer.getvalue()
 
 
-def _members(scope: dict) -> tuple[dict[str, bytes], str]:
+def certification_dependency_hash(manifest: dict) -> str:
+    """Hash the tested immutable operands without a circular report self-hash."""
+    payload = {k: v for k, v in manifest.items() if k != 'resource_set_id'}
+    payload['resources'] = [e for e in manifest['resources']
+                            if (e['kind'],e['key']) != ('reference','family-certification')]
+    return hashlib.sha256(canonical(payload)).hexdigest()
+
+
+def validate_family_certification(resources: ResourceSet, scope: dict) -> None:
+    try:
+        certificate = resources.get('reference','family-certification')
+    except GeneratorError as error:
+        raise ValueError('Expanded family source certification is missing') from error
+    expected = [c['case_id'] for c in scope['cases']]
+    if (certificate.get('status') != 'passed' or certificate.get('case_ids') != expected or
+            certificate.get('scope_sha256') != hashlib.sha256(canonical(scope)).hexdigest() or
+            certificate.get('dependency_sha256') != certification_dependency_hash(resources.manifest) or
+            certificate.get('native_source_discrete_numerical_passed') is not True or
+            certificate.get('annual_target_invariance_passed') is not True or
+            certificate.get('temporal_variation_and_fixed_channels_passed') is not True or
+            len(set(certificate.get('master_seeds',[]))) < 2):
+        raise ValueError('Expanded family certification differs from complete tested scope/operands')
+    native = certificate.get('native_reference', {})
+    lock = resources.get('reference','family-native-lock')
+    if native != lock['vectors'] or set(lock['fixture_order']) != {c['configuration_id'] for c in scope['cases']}:
+        raise ValueError('Expanded family certification has incomplete native reference identity')
+
+
+def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str, bytes], str]:
     files = {'__main__.py': BOOTSTRAP}
     for path in sorted((ROOT / 'atlas_schedules').rglob('*')):
         if path.is_file() and path.suffix in {'.py', '.json'} and '__pycache__' not in path.parts:
+            if resources_root is not None and path.is_relative_to(ROOT/'atlas_schedules/data'):
+                continue
             files[path.relative_to(ROOT).as_posix()] = path.read_bytes()
+    if resources_root is not None:
+        for path in sorted(Path(resources_root).rglob('*.json')):
+            files['atlas_schedules/data/'+path.relative_to(resources_root).as_posix()] = path.read_bytes()
+        compiled_scope = strict_json(files['atlas_schedules/data/reference/m1-scope.json'],'source family scope')
+        if compiled_scope['milestone_id'] == 'R1':
+            for name in ('sources/schedule-generator-residential-scope.json',
+                         'sources/schedule-generator-residential-lock.json',
+                         'sources/schedule-generator-residential-family-reference-lock.json',
+                         'data/schedule-generator/residential-family-native.json.gz'):
+                files[name] = (ROOT/name).read_bytes()
     for relative in ('sources/schedule-generator-m1-scope.json',
                      'sources/schedule-generator-policy.json',
                      'sources/schedule-evidence-lock.json',
@@ -69,8 +110,9 @@ def _members(scope: dict) -> tuple[dict[str, bytes], str]:
         manifest['resource_set_id'] = manifest_identity(manifest)
         files['atlas_schedules/data/manifest.json'] = canonical(manifest)
         files['sources/schedule-generator-m1-scope.json'] = canonical(scope)
-        original_manifest = strict_json((ROOT / 'atlas_schedules/data/manifest.json').read_bytes(), 'resource manifest')
-        original_resources = ResourceSet.load(original_manifest['resource_set_id'])
+        original_root = Path(resources_root) if resources_root is not None else ROOT/'atlas_schedules/data'
+        original_manifest = strict_json((original_root/'manifest.json').read_bytes(), 'resource manifest')
+        original_resources = ResourceSet(original_root, original_manifest['resource_set_id'])
         partial_coverage = build_coverage(original_resources, scope)
         partial_coverage['resource_set_id'] = manifest['resource_set_id']
         files['docs/validation/schedule-generator-coverage.json'] = canonical(partial_coverage)
@@ -94,6 +136,29 @@ def _members(scope: dict) -> tuple[dict[str, bytes], str]:
                        "A request outside this declaration fails clearly."
                        if p.startswith('M1 advertises exactly') else p) for p in paragraphs]
         files['docs/schedule-generator.md'] = '\n\n'.join(paragraphs).encode('utf-8')
+        if resources_root is not None and compiled_scope['milestone_id'] == 'R1':
+            files['docs/schedule-generator.md'] = (
+                f"# Offline schedule generator — {scope['milestone_id']}\n\n"
+                f"This immutable residential milestone declares {len(scope['cases'])} exact source fixture cases. "
+                "The complete runnable request is `references/all-cases-request.json`; its numerical reference is "
+                "`references/all-cases-bundle.json.gz`. Extract those files from this ZIP and run "
+                "`python -I -S generator.zip --request REQUEST.json --output BUNDLE.json` from any directory. "
+                f"The public API remains `atlas_schedules.generate(params, seed)`; use resource identity `{manifest['resource_set_id']}`.\n\n"
+                "Each instance supplies its exact recipe operands shown in the request: residents, bedrooms, installed end uses, "
+                "state, coordinates, physical UTC offset, station weather ID and thermostat arguments. Calendar is 2007, "
+                "8760 local-standard hourly intervals, with no holidays or implicit DST. An explicit uint64 master seed is required. "
+                "Instance order is source-significant: residential unit seeds multiply cumulatively by one-based position. "
+                "The all-case request's seeds differ from independent single-fixture tests and original native fixture seeds.\n\n"
+                "Original annual energy and volume targets are preserved before generated-amplitude binding. People counts, "
+                "activity and controls retain their source semantics. Source-fixed schedules use actual day/month methods. "
+                "Zero residents retain the native stochastic skip and explicit zero occupancy. EV and HVAC equipment-unavailability "
+                "overlays remain excluded. Weather is the recorded ZIP-mapped station-proxy variant, not the unavailable county EPW.\n\n"
+                "This intermediate family ZIP does not advertise commercial programs or cross-release mixtures. The packaged coverage "
+                "report retains all outside-scope catalogue identities. A later cumulative resource set must prove generated and bound "
+                "mixed-family members before advertising them. Sources, notices, native reference lock and independent family certification "
+                "are packaged. Generation uses Python's standard library offline; native/source tools are development-only. "
+                "Frozen artifact/resource checksums are integrity gates; fresh schedules are compared by source/discrete and numerical equivalence.\n"
+            ).encode('utf-8')
     else:
         manifest = strict_json(files['atlas_schedules/data/manifest.json'], 'manifest.json')
     return files, manifest['resource_set_id']
@@ -126,22 +191,36 @@ def _execute_zip(blob: bytes, request: dict) -> bytes:
         return output.read_bytes()
 
 
-def freeze_generator(target: Path, version: str, scope: dict | None = None) -> dict:
+def freeze_generator(target: Path, version: str, scope: dict | None = None,
+                     resources_root: Path | None = None) -> dict:
     target = Path(target)
     if target.exists():
         raise ValueError('Immutable release target already exists; choose a new version')
-    authoritative = strict_json((ROOT / 'sources/schedule-generator-m1-scope.json').read_bytes(), 'M1 scope')
+    original_root = Path(resources_root) if resources_root is not None else ROOT/'atlas_schedules/data'
+    approved = {'M1':'sources/schedule-generator-m1-scope.json',
+                'R1':'sources/schedule-generator-residential-scope.json'}
+    compiled_scope = strict_json((original_root/'reference/m1-scope.json').read_bytes(),'compiled source scope')
+    family = compiled_scope.get('milestone_id')
+    if family not in approved:
+        raise ValueError('No approved source family for explicit resource root')
+    authoritative = strict_json((ROOT/approved[family]).read_bytes(), 'authoritative source scope')
+    if compiled_scope != authoritative:
+        raise ValueError('Compiled scope differs from the approved source family')
     scope = copy.deepcopy(scope if scope is not None else authoritative)
     if scope['milestone_id'] == 'M1' and scope != authoritative:
         raise ValueError('M1 declaration must equal the authoritative ten-case scope')
     if not scope['cases'] or len({case['case_id'] for case in scope['cases']}) != len(scope['cases']):
         raise ValueError('Declared scope must contain distinct cases')
-    manifest = strict_json((ROOT / 'atlas_schedules/data/manifest.json').read_bytes(), 'resource manifest')
-    resources = ResourceSet.load(manifest['resource_set_id'])
+    manifest = strict_json((original_root/'manifest.json').read_bytes(), 'resource manifest')
+    resources = ResourceSet(original_root, manifest['resource_set_id'])
     if resources.get('reference', 'm1-scope') != authoritative:
         raise ValueError('Compiled resource scope differs from authoritative M1')
     if any(case not in authoritative['cases'] for case in scope['cases']):
         raise ValueError('Unknown or modified source case in partial scope')
+    if resources_root is not None and authoritative['milestone_id'] == 'R1':
+        # Restricted runtimes select from the fully certified source family;
+        # source evidence and operands remain tied to its exact full scope.
+        validate_family_certification(resources, authoritative)
     audit = strict_json((ROOT / 'data/schedule-generator/comstock-sampling-audit.json').read_bytes(), 'commercial audit')
     if audit.get('gate_status') != 'passed' or audit.get('configuration_id') != authoritative['commercial_sampling_gate']['configuration_id']:
         raise ValueError('Commercial sampling gate not passed')
@@ -149,7 +228,7 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None) -> d
     errors = coverage_errors(coverage, resources)
     if errors:
         raise ValueError('Incomplete declared scope: ' + '; '.join(errors[:10]))
-    files, resource_set_id = _members(scope)
+    files, resource_set_id = _members(scope, resources_root)
     if scope['milestone_id'] == 'M1' and strict_json(
             files['docs/validation/schedule-generator-coverage.json'], 'frozen coverage') != coverage:
         raise ValueError('Current M1 coverage report differs from closed packaged evidence')
@@ -253,12 +332,13 @@ def main(argv=None):
     parser.add_argument('--verify', action='store_true')
     parser.add_argument('--reproduce', action='store_true')
     parser.add_argument('--scope', type=Path)
+    parser.add_argument('--resources-root', type=Path)
     args = parser.parse_args(argv)
     if sum((args.freeze, args.verify, args.reproduce)) != 1:
         parser.error('Choose exactly one of --freeze, --verify, --reproduce')
     if args.freeze:
         scope = strict_json(args.scope.read_bytes(), str(args.scope)) if args.scope else None
-        manifest = freeze_generator(args.target, args.target.name.removeprefix('v'), scope)
+        manifest = freeze_generator(args.target, args.target.name.removeprefix('v'), scope, args.resources_root)
         print(f"Frozen {manifest['scope']['case_count']} cases at {args.target}")
     else:
         errors = verify_generator(args.target) if args.verify else reproduce_generator(args.target)

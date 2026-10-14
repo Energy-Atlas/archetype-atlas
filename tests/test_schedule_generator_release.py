@@ -65,6 +65,23 @@ class GeneratorReleaseTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 freeze_generator(Path(directory) / 'bad', '0.1.0', scope=scope)
 
+    def test_unknown_resource_family_cannot_bypass_source_certification(self):
+        from atlas_schedules.resources import ResourceSet, write_resources
+        from scripts.schedule_generator_release import freeze_generator
+        manifest = json.loads((ROOT/'atlas_schedules/data/manifest.json').read_text())
+        resources = ResourceSet.load(manifest['resource_set_id'])
+        scope = resources.get('reference','m1-scope')
+        scope['milestone_id'] = 'uncharacterized-family'
+        scope['cases'] = [c for c in scope['cases'] if c['program_id']=='program-0e670d8dc556f7f5bdd7f1a9']
+        records = {('reference','m1-scope'):scope,
+                   ('reference','catalogue-index'):resources.get('reference','catalogue-index'),
+                   ('program',scope['cases'][0]['program_id']):resources.get('program',scope['cases'][0]['program_id'])}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)/'resources'
+            write_resources(root,records,{})
+            with self.assertRaisesRegex(ValueError,'approved source family'):
+                freeze_generator(Path(directory)/'bad','0.0.1',resources_root=root)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -22,8 +22,8 @@ def _read(path):
     return strict_json(Path(path).read_bytes(), str(path))
 
 
-def validate_scope(scope: dict) -> None:
-    lock = _read(ROOT/'sources/schedule-generator-lock.json')
+def validate_scope(scope: dict, lock: dict | None = None) -> None:
+    lock = lock if lock is not None else _read(ROOT/'sources/schedule-generator-lock.json')
     if scope.get('calendar') != lock['calendar'] or scope.get('cases') != lock['scope_cases']:
         raise GeneratorError('scope_mismatch', '/cases', 'M1 case/configuration/weather/template bindings differ from locked scope')
     for case in scope['cases']:
@@ -246,7 +246,7 @@ def compile_recipes(records, scope):
                           'evidence': ev, 'annual_target': {'total': total, 'unit': annual_unit,
                           'evidence': dict(ev, annual_target_transformation=transformation)}}
                 demands.append(demand)
-                if slot in ('refrigerator', 'freezer', 'lighting_exterior'):
+                if slot in records['residential', 'fixed-background-schedules']['definition']['schedules']:
                     fixed = records['residential', 'fixed-background-schedules']['definition']
                     companions[slot] = {'method': 'fixed_background', 'variant': fixed['variant'], 'source_slot': slot,
                                         'evidence': {'selected_definition': ev, 'shape': fixed['schedules'][slot]['evidence']}}
@@ -355,15 +355,17 @@ def compile_recipes(records, scope):
     compositions = [{'id': c['id'], 'status': 'compiled' if c['members'] and
                     all(m['program_id'] in statuses for m in c['members']) else 'unsupported_binding',
                     'members': c['members']} for c in bundle['compositions']]
-    index = {'schema_version': '1.0.0', 'programs': [{'id': p['id'], 'status': statuses.get(p['id'], 'unsupported_binding'),
+    expanded = scope['milestone_id'] != 'M1'
+    index = {'schema_version': '1.0.0', 'programs': [{'id': p['id'], 'status': statuses.get(p['id'], 'requires_binding' if expanded else 'unsupported_binding'),
              'source_family': p['source_family'], 'evidence_view': p['evidence_view'],
-             'reason': None if p['id'] in statuses else 'outside_exact_M1; no extracted source-backed binding certified'}
+             'reason': None if p['id'] in statuses else ('outside_R1; source carrier/aggregation and transform certification remain' if expanded else
+                 'outside_exact_M1; no extracted source-backed binding certified')}
              for p in bundle['programs']], 'compositions': [{'id': c['id'], 'status': c['status']} for c in compositions],
              'provenance': _receipt('data/definition-releases/v0.1.1/programs.json', '/', 'Compact identity/status index only; no synthetic Cartesian dependencies')}
-    coverage = {'schema_version': '1.0.0', 'milestone': 'M1', 'cases': [{'case_id': c['case_id'],
+    coverage = {'schema_version': '1.0.0', 'milestone': scope['milestone_id'], 'cases': [{'case_id': c['case_id'],
                 'program_id': c['program_id'], 'status': statuses[c['program_id']]} for c in scope['cases']],
                 'catalogue_program_count': len(bundle['programs']), 'catalogue_composition_count': len(compositions),
-                'physical_resource_scope': 'exact ten M1 cases', 'population_weighting': False}
+                'physical_resource_scope': 'exact ten M1 cases' if not expanded else 'exact 41 recovered residential fixtures', 'population_weighting': False}
     records['reference', 'catalogue-index'] = index
     records['reference', 'recipe-coverage'] = coverage
     return {'programs': policies, 'compositions': {'schema_version': '1.0.0', 'compositions': compositions,
@@ -372,11 +374,13 @@ def compile_recipes(records, scope):
 
 
 def build_resources(destination: Path, scope: str, tables_destination: Path | None = None) -> dict:
-    if scope != 'pilot':
+    if scope not in {'pilot', 'residential'}:
         raise GeneratorError('unsupported_scope', '/scope', 'Only exact M1 pilot is source-gated')
-    lock = _read(ROOT/'sources/schedule-generator-lock.json')
-    manifest_scope = _read(ROOT/'sources/schedule-generator-m1-scope.json')
-    validate_scope(manifest_scope)
+    lock_file = 'sources/schedule-generator-lock.json' if scope == 'pilot' else 'sources/schedule-generator-residential-lock.json'
+    scope_file = 'sources/schedule-generator-m1-scope.json' if scope == 'pilot' else 'sources/schedule-generator-residential-scope.json'
+    lock = _read(ROOT/lock_file)
+    manifest_scope = _read(ROOT/scope_file)
+    validate_scope(manifest_scope, lock)
     audit = _read(ROOT/'data/schedule-generator/comstock-sampling-audit.json')
     validate_sampling_audit(audit)
     for file, receipt in lock['frozen_files'].items():
@@ -453,16 +457,51 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             records['reference', source_file['id']] = {'definition': source_file, 'provenance': _receipt(file, '/'+str(index), 'Exact upstream source revision and byte checksum')}
     file = 'data/resolution-releases/v0.4.0/fixed-background-schedules.json'
     records['residential', 'fixed-background-schedules'] = {'definition': _read(ROOT/file), 'provenance': _receipt(file, '/', 'Exact frozen source default variants')}
+    if scope == 'residential':
+        recovery = _read(ROOT/'data/program-inputs/residential-v1.json')
+        fixed = records['residential', 'fixed-background-schedules']['definition']
+        for shape in recovery['schedules'].values():
+            name = shape['name']
+            if name in fixed['schedules']:
+                continue
+            if shape['source_context']['variant'] != fixed['variant']:
+                raise GeneratorError('source_integrity', name, 'Ancillary companion variant differs')
+            evidence = shape['source_context']['evidence']
+            operands = {}
+            for receipt in evidence:
+                field = receipt['source_locator'].rsplit('/', 1)[-1]
+                operand = {'WeekdayScheduleFractions': 'weekday_fractions',
+                           'WeekendScheduleFractions': 'weekend_fractions',
+                           'MonthlyScheduleMultipliers': 'monthly_multipliers'}.get(field)
+                if operand is None:
+                    raise GeneratorError('source_integrity', name, 'Missing actual fixed schedule method operand')
+                operands[operand] = [float(v) for v in receipt['original_value'].split(',')]
+            if set(operands) != {'weekday_fractions','weekend_fractions','monthly_multipliers'}:
+                raise GeneratorError('source_integrity', name, 'Incomplete fixed source shape')
+            peak = max(operands['weekday_fractions']+operands['weekend_fractions'])*max(operands['monthly_multipliers'])
+            fixed['schedules'][name] = dict(operands, id=name, unit='dimensionless', temperature_dependent=False,
+                                          peak_divisor=peak, evidence=evidence)
     for notice in lock['notices']:
         records['reference', 'notice-'+Path(notice).stem] = {'text': (ROOT/notice).read_text(encoding='utf-8'), 'source_path': notice}
     records['reference', 'notice-standards086'] = sources.get('reference', 'standards086__LICENSE_md')
     tables = compile_recipes(records, manifest_scope)
+    if scope == 'residential':
+        certificate = ROOT/'data/schedule-generator/families/residential/certification.json'
+        if certificate.exists():
+            records['reference','family-certification'] = _read(certificate)
+        native_lock = ROOT/'sources/schedule-generator-residential-family-reference-lock.json'
+        if native_lock.exists():
+            native = _read(native_lock)
+            vectors = (ROOT/native['vectors']['source_path']).read_bytes()
+            if hashlib.sha256(vectors).hexdigest() != native['vectors']['sha256'] or len(vectors) != native['vectors']['size_bytes']:
+                raise GeneratorError('source_integrity', str(native_lock), 'Independent family native reference differs')
+            records['reference','family-native-lock'] = native
     if tables_destination is not None:
         tables_destination.mkdir(parents=True, exist_ok=True)
         for name, table in tables.items():
             (tables_destination/(name+'.json')).write_bytes(canonical(table))
     # Inventory exposes every dependency; generation support is certified by later kernel gates.
-    return write_resources(destination, records, {'scope': 'pilot', 'milestone_id': 'M1',
+    return write_resources(destination, records, {'scope': scope, 'milestone_id': manifest_scope['milestone_id'],
                            'scope_version': manifest_scope['scope_version'], 'source_gate_status': 'passed',
                            'generator_support_status': 'not_shipped', 'cases': manifest_scope['cases'],
                            'dependency_inventory': lock['required_resources'], 'blocked_families': lock['blocked_families']})

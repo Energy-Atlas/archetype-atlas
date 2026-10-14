@@ -89,7 +89,7 @@ def load_event_reference():
         raise GeneratorError('source_integrity','event-reference','Capture provenance mismatch')
     return result
 
-def capture_residential(runtime_archive, resstock_archive, destination, events=False):
+def capture_residential(runtime_archive, resstock_archive, destination, events=False, resources=None):
     lock=_read(ROOT/'sources/runtime-lock.json')['archives'];destination=Path(destination)
     if destination.exists():raise GeneratorError('source_integrity',str(destination),'Capture destination must be new')
     _verify(runtime_archive,lock[0]);_verify(resstock_archive,lock[1]);destination.mkdir(parents=True)
@@ -113,13 +113,15 @@ def capture_residential(runtime_archive, resstock_archive, destination, events=F
             else:
                 _long_path(target.parent).mkdir(parents=True,exist_ok=True);_long_path(target).write_bytes(archive.extractfile(member).read())
     executable=runtime/lock[0]['root']/'bin/openstudio.exe'
-    manifest=_read(ROOT/'atlas_schedules/data/manifest.json');resources=ResourceSet.load(manifest['resource_set_id'])
+    if resources is None:
+        manifest=_read(ROOT/'atlas_schedules/data/manifest.json');resources=ResourceSet.load(manifest['resource_set_id'])
+    manifest=resources.manifest
     receipts=[dict(e,provenance=resources.get(e['kind'],e['key']).get('provenance')) for e in manifest['resources']
               if e['kind']=='residential' or e['kind']=='weather']
     # Verify executed Ruby resource files against the packaged locked source records.
     for e in receipts:
         if e['kind']!='residential':continue
-        receipt=e['provenance']
+        receipt=e['provenance'] or {}
         if receipt.get('source_id')!='resstock':continue
         path=source/receipt['source_path'].split('/',1)[1]
         if hashlib.sha256(_long_path(path).read_bytes()).hexdigest()!=receipt['source_sha256']:
@@ -437,6 +439,7 @@ def main():
     parser.add_argument('--standards-archive',type=Path)
     parser.add_argument('--ruby-source-cache',type=Path)
     parser.add_argument('--destination',type=Path)
+    parser.add_argument('--resources-root',type=Path)
     args=parser.parse_args()
     if args.family=='commercial':
         if args.verify_only:
@@ -452,7 +455,12 @@ def main():
         else:
             if any(p is None for p in [args.runtime_archive,args.resstock_archive,args.destination]):
                 parser.error('Residential capture requires runtime/resstock archives and a new destination')
-            capture_residential(args.runtime_archive,args.resstock_archive,args.destination,events=args.family=='events')
+            resources = None
+            if args.resources_root is not None:
+                manifest = _read(args.resources_root/'manifest.json')
+                resources = ResourceSet(args.resources_root, manifest['resource_set_id'])
+            capture_residential(args.runtime_archive,args.resstock_archive,args.destination,
+                                events=args.family=='events',resources=resources)
         return
     if args.verify_only:
         result=load_reference_vectors();print('Verified independently captured vectors:',len(result['random_vectors']),len(result['rule_vectors']))

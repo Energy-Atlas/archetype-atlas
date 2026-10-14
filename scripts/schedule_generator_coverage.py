@@ -9,6 +9,153 @@ from atlas_schedules.resources import ResourceSet
 
 ROOT = Path(__file__).resolve().parents[1]
 
+COMMERCIAL_SELECTORS = {
+    'FullServiceRestaurant': 'full_service_restaurant', 'Hospital': 'hospital',
+    'LargeHotel': 'large_hotel', 'LargeOffice': 'large_office', 'MediumOffice': 'medium_office',
+    'Outpatient': 'outpatient', 'PrimarySchool': 'primary_school',
+    'QuickServiceRestaurant': 'quick_service_restaurant', 'RetailStandalone': 'retail',
+    'RetailStripmall': 'strip_mall', 'SecondarySchool': 'secondary_school',
+    'SmallHotel': 'small_hotel', 'SmallOffice': 'small_office', 'SuperMarket': 'supermarket',
+    'Warehouse': 'warehouse',
+}
+
+
+def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
+    """Inventory actual source operands independently of a certified runtime scope.
+
+    A known frozen realization is evidence, not stochastic method certification.
+    Shared services retain allocation operands; exclusions never count as complete.
+    """
+    base = ROOT / 'data/definition-releases/v0.1.1'
+    read = lambda path: json.loads(Path(path).read_text(encoding='utf-8'))
+    definitions, compositions = read(base/'programs.json'), read(base/'compositions.json')
+    services = {s['id']: s for s in read(base/'services.json')}
+    recovery = read(ROOT/'data/program-inputs/residential-v1.json')
+    if resources is None:
+        manifest = read(ROOT/'atlas_schedules/data/manifest.json')
+        resources = ResourceSet.load(manifest['resource_set_id'])
+    compiled = {p['id']: p['status'] for p in resources.get('reference', 'catalogue-index')['programs']}
+    programs = []
+    for index, definition in enumerate(definitions):
+        pid = definition['id']
+        residential = definition.get('scope') == 'whole_dwelling'
+        original = recovery['records'].get(definition['source_id']) if residential else None
+        compiled_record = (resources.get('program', pid)
+                           if compiled.get(pid) in {'compiled', 'accepted_inactive'} else None)
+        recipe = compiled_record['recipe'] if compiled_record else None
+        certified = ({s['slot']: ('source_fixed' if s['slot'] in recipe['companion_rules'] else 'generated')
+                      for s in recipe['resolved']['slots']} if recipe else {})
+        channels = []
+        def channel(slot, value, state, pointer, evidence, required, identity=None, source_sid=None):
+            runtime_slot = slot if slot in certified else None
+            if recipe and runtime_slot is None and source_sid is not None:
+                matches = [s['slot'] for s in recipe['resolved']['slots'] if s['source_schedule_id'] == source_sid]
+                if len(matches) == 1:
+                    runtime_slot = matches[0]
+            status = certified.get(runtime_slot, 'absent' if state == 'absent' else 'requires_binding')
+            if state == 'excluded':
+                status = 'unsupported'
+            absence = None
+            if status == 'requires_binding' and recipe and original:
+                zero = [l for l in original['loads'] if l['end_use']==slot and l['value']==0]
+                presence = {'hot_water_clothes_washer':'clothes_washer',
+                            'hot_water_dishwasher':'dishwasher'}.get(slot,slot)
+                if zero:
+                    absence = {'original_zero_demands':zero}
+                elif recipe['bound_inputs']['residents']==0:
+                    absence = {'configuration':compiled_record['configuration_provenance'],
+                        'original_residents':0,'source_method':'BuildResidentialScheduleFile/measure.rb zero-occupant skip',
+                        'interpretation':'Original unknown is retained; the actual selected source branch omits stochastic channels'}
+                elif recipe['bound_inputs']['installed'].get(presence) is False:
+                    absence = {'configuration':compiled_record['configuration_provenance'],
+                        'installed_operand':presence,'original_value':False,
+                        'source_arguments':compiled_record['configuration']['arguments'],
+                        'source_method':'ScheduleGenerator.create_stochastic_schedules actual HPXML appliance presence',
+                        'interpretation':'Selected source absence; no unknown value was substituted with zero'}
+                if absence is not None:
+                    status = 'absent'
+            resolved_rows = ([r for kind in ('demands','controls') for r in recipe['resolved'][kind]
+                              if r['slot'] == runtime_slot] if recipe and runtime_slot is not None else [])
+            channels.append({'slot': slot, 'runtime_slot': runtime_slot, 'demand_id': identity, 'source_state': state,
+                'status': status, 'complete': status in {'generated','source_fixed','absent'} and state != 'excluded',
+                'original_value': value, 'source_locator': pointer, 'evidence': evidence,
+                'resolved_source_evidence': [r['evidence'] for r in resolved_rows],
+                'resolved_absence_evidence':absence,
+                'resolved_physical_targets': [{k: r.get(k) for k in
+                    ('demand_id','quantity','fuel','host','basis','annual_target')} for r in resolved_rows if 'demand_id' in r],
+                'required_inputs': required,
+                'reason': None if status in {'generated','source_fixed','absent'} else
+                    ('existing_scope_exclusion' if state == 'excluded' else
+                     'recoverable_exact_fixture_inputs_weather_and_source_branch_certification' if residential else
+                     'source_occupancy_carrier_aggregation_and_transform_applicability_not_yet_certified')})
+        for i, load in enumerate(definition['loads']):
+            state = 'unknown' if load['value'] is None else 'absent' if load['value'] == 0 else 'known'
+            channel(load['quantity'], load['value'], state, f'programs.json#/{index}/loads/{i}',
+                    load.get('evidence_id'), load.get('required_inputs', []), load['demand_id'], load.get('schedule_id'))
+        for name, parameter in definition['parameters'].items():
+            if parameter['unit'] != 'schedule reference':
+                continue
+            slot = name.removesuffix('_schedule_id')
+            channel(slot, parameter['value'], 'unknown' if parameter['value'] is None else 'known',
+                    f'programs.json#/{index}/parameters/{name}', parameter.get('evidence_id'),
+                    parameter.get('required_inputs', []), source_sid=parameter['value'])
+        for sid in definition['service_ids']:
+            service = services[sid]
+            channel(service['load']['quantity'], service['load']['value'], 'shared',
+                    'services.json#'+sid, service['evidence_ids'],
+                    service['load']['required_inputs'], sid)
+            channels[-1]['shared_service'] = {k: service.get(k) for k in
+                ('id','ownership','assignment','beneficiary_program_ids','path_id')}
+        if original:
+            original_slots = {c['slot'] for c in channels}
+            for i, load in enumerate(original['loads']):
+                if load['end_use'] not in original_slots:
+                    channel(load['end_use'], load['evidence']['original_value'],
+                            'absent' if load['value'] == 0 else 'known',
+                            f'residential-v1.json#/records/{definition["source_id"]}/loads/{i}',
+                            load['evidence'], [], load.get('demand_id'), load.get('schedule_id'))
+            for slot in [*original['metadata']['excluded_channels'], 'hvac_equipment_unavailability']:
+                channel(slot, None, 'excluded', 'binding-constraints.md#retained-exclusions',
+                        {'original_exclusions': original['metadata']['excluded_channels']}, [])
+        if recipe:
+            represented = {c['runtime_slot'] for c in channels if c['status'] in {'generated','source_fixed'}}
+            for resolved_slot in recipe['resolved']['slots']:
+                slot = resolved_slot['slot']
+                if slot not in represented:
+                    rows = [r for kind in ('demands','controls') for r in recipe['resolved'][kind] if r['slot'] == slot]
+                    rule = recipe['companion_rules'].get(slot,{})
+                    channel(slot,rule.get('value'),'known',f'packaged-program/{pid}#/recipe/resolved/slots',
+                            [r['evidence'] for r in rows],[],source_sid=resolved_slot['source_schedule_id'])
+        dependencies = {'template': definition['template'], 'evidence_view': definition['evidence_view'],
+                        'source_family': definition['source_family'], 'source_id': definition['source_id']}
+        if original:
+            dependencies.update(state=original['metadata']['original_selected_options']['State'],
+                weather=original['metadata']['weather'], configuration_id=definition['source_id'],
+                climate_policy='exact_fixture_station_proxy_and_original_region')
+        else:
+            dependencies.update(climate_policy='shared_source_rules_no_fabricated_climate_records',
+                comstock_selector=COMMERCIAL_SELECTORS.get(definition['building_type']),
+                carrier_requirement='same_building_template_source_view_occupancy_aggregate_or_verified_single_carrier',
+                clock='controlled_no_DST_local_standard_calendar')
+        programs.append({k: definition.get(k) for k in ('id','name','building_type','template','climate','source_family','evidence_view','scope')} |
+            {'scope': definition.get('scope', 'program'), 'dependencies': dependencies, 'channels': channels,
+             'absence_evidence': recipe['resolved']['evidence'] if recipe and not certified else None,
+             'runtime_status': compiled.get(pid), 'full_record_complete': bool(recipe)})
+    by_id = {p['id']: p for p in programs}
+    composition_inventory = [{k: copy_value for k, copy_value in c.items()} |
+        {'member_coverage': [{'program_id': m['program_id'], 'complete': by_id[m['program_id']]['full_record_complete']}
+                             for m in c['members']],
+         'complete': bool(c['members']) and all(by_id[m['program_id']]['full_record_complete'] for m in c['members'])}
+        for c in compositions]
+    return {'schema_version': '1.0.0', 'programs': programs, 'compositions': composition_inventory,
+        'full_extraction_complete': all(p['full_record_complete'] for p in programs),
+        'doe_locations': [{'climate_zone': '3B', 'location': location, 'variant': variant,
+            'weather_binding': None, 'program_ids': [], 'status': 'requires_binding',
+            'source_locator': 'DOE Commercial Reference Buildings report Table 2',
+            'source_sha256': '39520427c39c4a424d8b0d072c47d5bfdc248631632e880501866aae6b0d131a',
+            'missing_operand': 'exact named DOE EPW member and checksum; no catalogue climate-specific program exists'}
+            for location, variant in [('Los Angeles','coastal'), ('Las Vegas','inland')]]}
+
 
 def _pointer_value(record: dict, pointer: str):
     if not isinstance(pointer, str) or not pointer.startswith('/'):
@@ -193,18 +340,22 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--scope', default='m1')
+    parser.add_argument('--resources-root', type=Path)
+    parser.add_argument('--inventory', action='store_true')
     parser.add_argument('--report', type=Path, default=ROOT / 'docs/validation/schedule-generator-coverage.json')
     args = parser.parse_args(argv)
     if args.scope != 'm1':
-        scope = json.loads(Path(args.scope).read_text(encoding='utf-8'))
+        scope_path = ROOT/'sources/schedule-generator-residential-scope.json' if args.scope == 'residential' else Path(args.scope)
+        scope = json.loads(scope_path.read_text(encoding='utf-8'))
     else:
         scope = None
-    manifest = json.loads((ROOT / 'atlas_schedules/data/manifest.json').read_text(encoding='utf-8'))
-    resources = ResourceSet.load(manifest['resource_set_id'])
+    resource_root = args.resources_root if args.resources_root is not None else ROOT/'atlas_schedules/data'
+    manifest = json.loads((resource_root/'manifest.json').read_text(encoding='utf-8'))
+    resources = ResourceSet(resource_root, manifest['resource_set_id'])
     if args.scope == 'm1' and resources.get('reference', 'm1-scope') != json.loads((ROOT / 'sources/schedule-generator-m1-scope.json').read_text(encoding='utf-8')):
         raise SystemExit('Authoritative M1 scope differs from packaged resources')
-    report = build_coverage(resources, scope)
-    errors = coverage_errors(report, resources)
+    report = build_catalogue_inventory(resources) if args.inventory else build_coverage(resources, scope)
+    errors = [] if args.inventory else coverage_errors(report, resources)
     if args.check:
         frozen = json.loads(args.report.read_text(encoding='utf-8'))
         if frozen != report:
@@ -214,6 +365,9 @@ def main(argv=None):
         args.report.write_bytes(canonical(report))
     if errors:
         raise SystemExit('\n'.join(errors))
+    if args.inventory:
+        print(f"Inventoried {len(report['programs'])} programs and {len(report['compositions'])} compositions; full extraction complete={report['full_extraction_complete']}")
+        return
     print(f"{report['scope']['milestone_id']}: {len(report['cases'])} complete cases; "
           f"{report['outside_scope']['program_count']} outside-scope programs and "
           f"{report['outside_scope']['composition_count']} compositions")
