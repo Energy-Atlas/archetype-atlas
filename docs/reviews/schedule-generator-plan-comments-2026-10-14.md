@@ -1,6 +1,7 @@
 # Schedule generator plan review response
 
-Review date: 2026-10-14. All five requested revisions are incorporated in the
+Review date: 2026-10-14. All five original revisions and both final adjustments
+are incorporated in the
 [implementation plan](../superpowers/plans/2026-10-13-schedule-generator.md)
 and [design](../superpowers/specs/2026-10-13-schedule-generator-design.md).
 Annual-total conservation for both source families remains unchanged.
@@ -77,11 +78,20 @@ release checks remain untouched. Tasks 2 and 9 enforce these distinctions.
 
 ## Deliver complete families progressively
 
-Task 9 now ships M1 before Task 10 broadens coverage. M1 includes a representative
-ResStock multifamily dwelling family and a source-bound Medium Office case, all
-advertised active channels, repeated units, mixtures, source parity, conservation,
-bindings and independent offline operation. Its manifest states supported
-program/configuration/weather/template domains and the remaining coverage.
+Task 9 ships M1 before Task 10 broadens coverage. Its authoritative
+[`scope manifest`](../../sources/schedule-generator-m1-scope.json) enumerates
+six exact frozen ResStock low-rise multifamily configurations/weather bindings
+and four Medium Office 90.1-2013 Office/Plenum source/reviewed views. M1 is
+restricted to these configurations and year 2007, with variable seeds,
+explicit physical scaling, repeated instances and compatible mixtures.
+
+Complete M1 coverage means every listed case and included channel passes
+source parity, conservation, binding/mixture and independent offline checks.
+Tasks 1 and 9 validate the exact set; one missing/failed case or included
+channel blocks shipment. The shipped manifest preserves the case set and its
+version/hash, with resolved configuration/resource references and per-case
+evidence. A scope change requires an explicit versioned revision; successful
+cases cannot silently become the denominator.
 
 All 1,900 definitions/378 compositions and all 16 DOE reference locations are
 eventual coverage objectives, not prerequisites for M1. Later family additions
@@ -90,8 +100,30 @@ Unsupported channels inside an advertised milestone block that shipment;
 unsupported families outside it remain explicit and do not block an already
 usable milestone. Full catalogue completion is not claimed prematurely.
 
+## Final adjustment: commercial sampling preflight
+
+The [pinned-source assessment](comstock-sampling-semantics-2026-10-14.md)
+confirms that an upstream population row is not determined by one local seed.
+The pseudorandom path assigns NumPy global draws through grouped/bucketed
+matrices; Sobol adds Python random shifts and a pandas shuffle. Sample index,
+count, bucket layout, group/vector order, prior draws and precomputed allocation
+matter. Conditional option selection itself can be tested with an identical
+resolved row and uniform draw.
+
+Task 1 now requires the actual selected TSV/configuration per-parameter audit
+before Task 6's kernel. The selected archive and full parameter closure are
+still pending; the preliminary assessment is not a passed gate. The pure
+Python seeded wrapper is explicitly labeled `atlas_conditional_seeded_v1`,
+with recorded conditioning/RNG/draw policy and
+`population_realization_equivalent: false`. Wrapper reproduction, conditional
+selection parity and transformation parity are separate checks. Missing
+selectors or unavailable source tables keep the commercial gate closed.
+
 ## Current status
 
-Only planning/design documents were revised. No generator code was implemented,
+Only planning/design documents, a source assessment and the planned scope
+manifest were revised. No generator code was implemented,
 no source behavior was modified, and no release was shipped by this review.
-Implementation-plan review and execution-method selection remain pending.
+The user has accepted the revised direction for implementation. The two final
+adjustments are incorporated; native execution can proceed in the isolated
+worktree, starting with the unresolved source/configuration gates.

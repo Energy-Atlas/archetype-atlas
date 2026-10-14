@@ -100,6 +100,18 @@ record its selection rationale, and lock the archive and selected members before
 porting its sampling behavior. Do not choose a table version merely because its
 filename has the largest number.
 
+Before implementing the commercial kernel, complete a per-parameter audit of
+whether a resolved conditional row plus a local draw suffices, or whether exact
+upstream realization requires population/sample-matrix context: sample index
+and count, bucket layout, group dimensions/order, prior draws, precomputed
+allocation and pseudorandom versus Sobol mode. The pinned sampler has no seed
+argument; pseudorandom matrices use NumPy's global RNG, while Sobol also uses
+Python random shifts and a pandas shuffle. See the
+[sampling preflight](../../reviews/comstock-sampling-semantics-2026-10-14.md).
+Freeze the selected archive/configuration, dependency selectors and per-field
+decisions in `data/schedule-generator/comstock-sampling-audit.json`; unresolved
+entries keep the gate closed. Record any standalone adaptation explicitly.
+
 Existing locks pin the ResStock mechanism and selected Standards/ComStock files.
 `sources/schedule-generator-inspection-lock.json` additionally pins the inspected
 ComStock dependency declaration and sampler documentation/code. Retain upstream
@@ -241,8 +253,15 @@ merely because the space is named a room.
 
 Sample the required operating-hour fields using the selected public source
 tables, their dependency selectors, option order and conditional relationships.
-Use seeded pseudorandom sampling; full-stock Sobol sampling and prevalence-based
-building selection are outside the generator's purpose. Sampling the schedule
+Use the explicitly versioned `atlas_conditional_seeded_v1` standalone wrapper
+with resolved conditional inputs and a recorded RNG algorithm, seed derivation
+and draw order. Its receipts say `population_realization_equivalent: false`.
+Full-stock Sobol sampling and prevalence-based building selection are outside
+the generator's purpose. Validate option selection with identical stored
+row/draw pairs, the wrapper's seeded reproduction separately, and source
+transformations with identical sampled parameters. Do not imply exact ComStock
+stochastic equivalence from marginal distributions or a shared seed number.
+Sampling the schedule
 parameters does not resample program intensity, geometry, stock vintage or
 construction properties.
 
@@ -368,11 +387,24 @@ remains unlicensed under the repository's policy.
 
 ## Validation and completion
 
-Validate and ship a first milestone for a representative ResStock multifamily
-dwelling family and Medium Office before expanding. Each milestone declares
-supported programs, parameter/weather/template domains, active channels and
-remaining catalogue coverage. Completeness is required within the declared
-milestone, not across all 1,900 definitions/378 compositions before any shipment.
+Validate and ship exactly the ten cases in
+[`sources/schedule-generator-m1-scope.json`](../../../sources/schedule-generator-m1-scope.json)
+before expanding: six frozen `MultiFamily5PlusLowRise` configurations with
+their exact station-proxy weather and four Medium Office 90.1-2013
+Office/Plenum source/reviewed views. M1 fixes household/configuration inputs,
+weather/template bindings and calendar year 2007; seeds, explicit physical
+scaling, repeated instances and compatible mixtures remain variable. Additional
+household inputs, weather substitutions, templates or years are outside M1.
+
+The planned manifest is the authoritative target set, not a statement of
+implemented support. Task 1 must bind its named commercial configuration to
+exact source selectors/resources and pass the sampling/weather-dependency
+checks before porting the commercial kernel. Ship the same case set with its
+scope version/hash, resolved configuration references and per-case channel
+evidence. Missing cases or included active/default/fixed/control channels block
+shipment; do not silently remove them or count only successful cases. A scope
+change requires an explicit versioned revision. Broader coverage across all
+1,900 definitions/378 compositions remains a later objective.
 Repeat the end-to-end evidence and release checks for each added family. The
 test and evidence set must demonstrate:
 
