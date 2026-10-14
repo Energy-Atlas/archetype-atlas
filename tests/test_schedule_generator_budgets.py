@@ -53,6 +53,29 @@ class BudgetTests(unittest.TestCase):
         self.assertEqual(bound['effective_magnitude']['value'], 0.002)
         self.assertEqual(bound['scaling_receipt']['seconds_per_sample'], 3600)
 
+    def test_commercial_volume_density_conserves_original_target_and_bundle(self):
+        from atlas_schedules.contract import validate_bundle
+        from tests.test_schedule_generator_contract import bundle
+        water = dict(demand('comstock'), quantity='hot_water_volume', value=1e-8,
+                     unit='m3/s/m2', basis='floor_area', fuel='water')
+        water['evidence']={'locator':'declared volume-density conservation probe',
+                           'original_value':1e-8,'original_unit':'m3/s/m2'}
+        target = reference_budget(water, [1.0]*2000+[0.0]*6760)
+        self.assertAlmostEqual(target['total'], .072)
+        self.assertEqual(target['unit'], 'm3/m2')
+        b = bundle(); binding=b['bindings'][0]
+        for hours in (1000,4000):
+            values=[1.0]*hours+[0.0]*(8760-hours)
+            bound=bind_budget(target,values)
+            self.assertEqual(bound['reference_target'],target)
+            self.assertAlmostEqual(bound['effective_magnitude']['value'],1e-8*2000/hours)
+            b['schedules'][binding['schedule_id']]['values']=values
+            binding.update(fuel='water',budget_method=target['method'],**bound)
+            b['constituents'][0]['demands'][0].update(water)
+            validate_bundle(b)
+        binding['reference_target']['unit']='m3/dwelling'
+        with self.assertRaises(GeneratorError): validate_bundle(b)
+
     def test_volume_budget_rejects_material_rounding_drift(self):
         from atlas_schedules.contract import validate_bundle
         from tests.test_schedule_generator_contract import bundle

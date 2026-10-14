@@ -182,6 +182,168 @@ def capture_residential(runtime_archive, resstock_archive, destination, events=F
 def _read(path):
     return strict_json(Path(path).read_bytes(),str(path))
 
+
+def load_commercial_reference():
+    lock = _read(ROOT/'sources/schedule-generator-commercial-reference-lock.json')
+    result = strict_json(_verify(ROOT/lock['vectors']['source_path'], lock['vectors']), 'commercial-reference')
+    if result['provenance'] != lock['capture_provenance']:
+        raise GeneratorError('source_integrity', 'commercial-reference', 'Capture provenance mismatch')
+    return result
+
+
+def commercial_capture_inputs(resources):
+    """Controlled reference probes, never caller defaults or population records."""
+    import copy
+    from atlas_schedules.commercial.sampling import sample_operating_parameters
+    schedules = {slot: resources.get('reference', key)['definition'] for slot, key in {
+        'occupancy': 'schedule-db120b43964b8b666cd8', 'lighting': 'schedule-4f028eec18f19916e7d2',
+        'electric_equipment': 'schedule-4082e09c5f9727640add', 'activity': 'schedule-904d44133907f0dbfbbe',
+        'heating_setpoint': 'schedule-7c3bd1014eed8de1237a', 'cooling_setpoint': 'schedule-e1ba079905225f741119',
+        'hot_water_volume': 'schedule-1a7eda5cfd8f681cc7d7'}.items()}
+    context = {'year': 2007, 'holidays': [], 'steps_per_hour': 6,
+        'configuration_id': 'medium_office_90_1_2013', 'standards_version': '0.8.6',
+        'slot_modes': {slot: 'tstat' if slot.endswith('setpoint') else 'hours' for slot in schedules},
+        'occupancy_aggregation': {'policy': 'explicit_single_nonresidential_reference_carrier',
+            'constituents': [{'schedule': schedules['occupancy'], 'nominal_people': 1.0, 'residential': False,
+                              'evidence': resources.get('reference', 'schedule-db120b43964b8b666cd8')['provenance']}],
+            'interpretation': 'Normalized inference carrier, no area/geometry or actual building nominal count; weighted inputs rounded to six decimals before threshold'},
+        'occupancy_adjustment': {'peak_occ_frac': .231, 'source_key': 'comstock__resources__options_lookup_tsv',
+            'source_options': ['baseline_hvac_sizing=autosize', 'baseline_hvac_sizing=hardsize'],
+            'interpretation': 'Both inspected sizing options set this schedule multiplier; sizing is not executed or inferred'},
+        'source_clock': {'TZ': 'UTC', 'variant': 'controlled_no_DST_local_standard_calendar'}}
+    operation = sample_operating_parameters({'building_type': 'medium_office'}, 42, resources)
+    result = []
+    for key, start, duration, weekend_start, weekend_duration in [
+        ('native',8,10,8,4), ('short',9,6,10,2), ('long',5,18,6,14),
+        ('overnight',22,8,23,7), ('zero',8,0,8,0), ('full_day',0,24,0,24),
+        ('weekday_weekend',7.25,9.75,10.5,3.5)]:
+        item = {'case_id': key, 'source_context': copy.deepcopy(context), 'schedules': copy.deepcopy(schedules),
+                'operating': copy.deepcopy(operation)}
+        for parameter, hours in zip(('weekday_start_time','weekday_duration','weekend_start_time','weekend_duration'),
+                                    (start,duration,weekend_start,weekend_duration)):
+            item['operating']['effective_values'][parameter] = {'value': hours*3600, 'unit': 's', 'modify': True}
+        item['operating']['controlled_probe'] = {'interpretation': 'Explicit reference-only operating cases, not sampled population options',
+                                               'start_duration_hours': [start,duration,weekend_start,weekend_duration]}
+        result.append(item)
+    for weight in (.1,100):
+        item = copy.deepcopy(result[0]); item['case_id'] = 'carrier_weight_'+str(weight)
+        item['source_context']['occupancy_aggregation']['constituents'][0]['nominal_people'] = weight
+        result.append(item)
+    item = copy.deepcopy(result[0]); item['case_id'] = 'constant_ramp_design'
+    for slot, values in [('activity',[120.0]),('lighting',[.1]*6+[.2,.4,.6,.8,1,.8,.6,.4,.2]+[.1]*9)]:
+        source = item['schedules'][slot]
+        for rule in source['rules']:
+            if rule['day_types'] not in ('WntrDsn','SmrDsn'):
+                rule['values'] = values; rule['type'] = 'Constant' if len(values)==1 else 'Hourly'
+    result.append(item)
+    item = copy.deepcopy(result[0]); item['case_id'] = 'sampled_42'; item['operating'] = operation
+    result.append(item)
+    return result
+
+
+def capture_commercial(runtime_archive, destination):
+    """Locked native source-method probes, independent of Python transform."""
+    import ast
+    import copy
+    import io
+    import pandas as pd
+    from warnings import warn
+    destination = Path(destination)
+    if destination.exists():
+        raise GeneratorError('source_integrity', str(destination), 'Capture destination must be new')
+    runtime_lock = _read(ROOT/'sources/runtime-lock.json')['archives'][0]
+    _verify(runtime_archive, runtime_lock)
+    lock = _read(ROOT/'sources/schedule-generator-lock.json')
+    gem_receipt = next(a for a in lock['archives'] if a['format']=='gem')
+    gem = _verify(ROOT/'data/raw'/gem_receipt['cache_path'], gem_receipt)
+    destination.mkdir(parents=True)
+    selected = [runtime_lock['root']+'/'+p for p in ('bin/','Ruby/','lib/','LICENSE.md','copyright.txt')]
+    runtime = extract_verified(runtime_archive, runtime_lock['sha256'], destination/'runtime', include=selected)
+    executable = runtime/runtime_lock['root']/'bin/openstudio.exe'
+    source = destination/'source'; source.mkdir()
+    with tarfile.open(fileobj=io.BytesIO(gem)) as outer:
+        with tarfile.open(fileobj=io.BytesIO(outer.extractfile('data.tar.gz').read())) as archive:
+            for receipt in gem_receipt['members']:
+                if receipt['format'] != 'text' or not receipt['path'].endswith('.rb'): continue
+                data = archive.extractfile(receipt['path']).read()
+                if hashlib.sha256(data).hexdigest() != receipt['sha256']:
+                    raise GeneratorError('source_integrity',receipt['path'],'Gem member differs')
+                name = Path(receipt['path']).name
+                target = source/('schedules/'+name if '/schedules/' in receipt['path'] else name)
+                target.parent.mkdir(exist_ok=True); target.write_bytes(data)
+    manifest = _read(ROOT/'atlas_schedules/data/manifest.json')
+    resources = ResourceSet.load(manifest['resource_set_id'])
+    receipts = []
+    for entry in manifest['resources']:
+        if entry['kind'] != 'reference' or not entry['key'].startswith('comstock__resources__measures'): continue
+        record = resources.get('reference',entry['key'])
+        receipts.append(record['provenance'])
+        name = record['provenance']['source_path'].split('/')[-2]+'.rb'
+        (source/name).write_text(record['text'],encoding='utf-8',newline='')
+        if hashlib.sha256((source/name).read_bytes()).hexdigest()!=record['provenance']['source_sha256']:
+            raise GeneratorError('source_integrity',entry['key'],'Executed measure differs from locked text')
+    old_standard = next(r for r in _read(_LOCK)['algorithm_sources'] if r['source_id']=='openstudio-standards')
+    frozen_source = ROOT/'data/raw/openstudio-standards/lib/openstudio-standards/standards/Standards.Model.rb'
+    (source/'Standards.Model.rb').write_bytes(_verify(frozen_source,old_standard))
+    inputs = commercial_capture_inputs(resources)
+    input_path = destination/'input.json'; input_path.write_bytes(canonical(inputs))
+    harness = ROOT/'scripts/reference_commercial.rb'; output = destination/'native-output.json'
+    completed = subprocess.run([str(executable.resolve()),str(harness),str(source.resolve()),str(input_path.resolve()),str(output.resolve())],
+                               cwd=ROOT,capture_output=True,text=True,env=dict(os.environ,TZ='UTC'))
+    (destination/'execution.log').write_text(completed.stdout+completed.stderr,encoding='utf-8')
+    completed.check_returncode()
+    capture = _read(output)
+    # Execute only the actual pinned conditional method, with stored uniforms.
+    sampler = resources.get('reference','comstock__sampling__tsv_sampling_py')
+    tree = ast.parse(sampler['text'])
+    method = next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='_com_execute_samples')
+    method.decorator_list=[]
+    module = ast.Module(body=[method],type_ignores=[]); ast.fix_missing_locations(module)
+    namespace = {'deepcopy':copy.deepcopy,'warn':warn}
+    exec(compile(module,sampler['provenance']['source_path'],'exec'),namespace)
+    audit = resources.get('commercial','sampling-audit'); order = audit['selected_parameter_order']
+    tables = {}; dependencies = {}
+    import zipfile
+    tsv_receipt = lock['archives'][0]
+    tsv_content=_verify(ROOT/'data/raw'/tsv_receipt['cache_path'],tsv_receipt)
+    with zipfile.ZipFile(io.BytesIO(tsv_content)) as archive:
+        for parameter in order:
+            tables[parameter] = pd.read_csv(io.BytesIO(archive.read('tsvs-v33/'+parameter+'.tsv')),sep='\t',dtype=str,keep_default_na=False)
+            dependencies[parameter] = resources.get('commercial',parameter)['dependencies']
+    dependencies['building_type'] = []
+    draws = [.1,.7,.2,.8,.3,.4,.5,.6,.7,.8]
+    native = namespace['_com_execute_samples'](tables,dependencies,['building_type']+order,{0:draws},{0:{'building_type':'medium_office'}})[0]
+    rows = []; selectors={'building_type':'medium_office'}
+    for parameter,draw in zip(order,draws):
+        table=resources.get('commercial',parameter)
+        row=next(r for r in table['rows'] if all(r['selectors'][d]==selectors[d] for d in table['dependencies']))
+        rows.append({'parameter':parameter,'selectors':{d:selectors[d] for d in table['dependencies']},
+                     'uniform':draw,'source_row':row['source_row'],'selected_option':native[parameter]})
+        selectors[parameter]=native[parameter]
+    provenance = {'runtime_archive_sha256':runtime_lock['sha256'],'runtime_version':runtime_lock['version'],
+        'executed_openstudio_sha256':hashlib.sha256(executable.read_bytes()).hexdigest(),
+        'gem_sha256':gem_receipt['sha256'],'gem_version':'0.8.6','gem_members':gem_receipt['members'],
+        'measure_receipts':receipts,'frozen_definition_builder':old_standard,
+        'harness_sha256':hashlib.sha256(harness.read_bytes()).hexdigest(),'input_sha256':hashlib.sha256(input_path.read_bytes()).hexdigest(),
+        'sampler_method_receipt':sampler['provenance'],'pandas_version':pd.__version__,
+        'tsv_archive_receipt':{k:tsv_receipt[k] for k in ('source_id','source_revision','url','sha256','size_bytes')},
+        'source_locator':'parametric.rb:model_infer_hours_of_operation_building/schedule_ruleset_get_parametric_inputs/schedule_ruleset_apply_parametric_inputs; space.rb:spaces_get_occupancy_schedule/space_hours_of_operation; ComStock:set_sch_bpr/schedule_ruleset_simple_value_adjust; tsv_sampling.py:_com_execute_samples',
+        'field_locator':'cases[].inference/setup/pre_adjustment/final/channels/special_profiles; conditional_vectors[]',
+        'original_value':'Actual native profiles, formula strings, rule indices, legacy round5 hourly channels and source discrete options',
+        'original_unit':'source fractional schedules, degrees C, W/person, source hours and unnormalized probabilities',
+        'transformation':'Native output retained before annual-load budget binding; no Python commercial transformation used. Capture-only exact-content daily-getter memoization; native annual/inference/transform callers unchanged; cached vs uncached full8760 occupancy getter equality asserted.',
+        'extraction_date':'2026-10-14','calendar_environment':{'TZ':'UTC','variant':'controlled_no_DST_local_standard_calendar',
+            'interpretation':'No elapsed Time arithmetic in selected commercial numerical methods; Time.now only administrative properties omitted. Native Date uses explicit Gregorian year.'},
+        'interpretation_note':'Single normalized nonresidential occupancy carrier is an explicit experimental adaptation, not actual building geometry/population. Positive weights .1/1/100 tested only; source round6 prevents arbitrary cancellation. All original frozen schedules and annual targets unchanged. Native Standards0.8.6 methods distinct from frozen Standardsdevelop schedule definitions. Source model timestep6; lexical3.10.0<3.8.0 takes legacy minimum-interval queries and round5. getValue snaps queries forward to timestep endpoints; addValue IDF double storage15 significant digits captured independently, including occupancy multiplication and negative values. Original and changed/interpolated complete8760 cached/uncached getter equality asserted.',
+        'population_realization_equivalent':False}
+    result={'schema_version':'1.0.0','ruby_description':capture['ruby_description'],'provenance':provenance,
+            'conditional_vectors':rows,'cases':capture['cases']}
+    data=canonical(result); (destination/'commercial-vectors.json').write_bytes(data)
+    candidate={'schema_version':'1.0.0','capture_provenance':provenance,'vectors':{
+        'source_path':'data/schedule-generator/commercial-vectors.json','sha256':hashlib.sha256(data).hexdigest(),'size_bytes':len(data)}}
+    (destination/'commercial-reference-lock.json').write_bytes(canonical(candidate))
+    print(completed.stdout.strip()); return result
+
 def _verify(path,receipt):
     path=Path(path)
     if not path.is_file():raise GeneratorError('source_integrity',str(path),'Locked file missing')
@@ -269,13 +431,21 @@ def capture_reference(runtime_archive: Path, resstock_archive: Path, standards_a
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-only',action='store_true')
-    parser.add_argument('--family',choices=['foundation','residential','events'],default='foundation')
+    parser.add_argument('--family',choices=['foundation','residential','events','commercial'],default='foundation')
     parser.add_argument('--runtime-archive',type=Path)
     parser.add_argument('--resstock-archive',type=Path)
     parser.add_argument('--standards-archive',type=Path)
     parser.add_argument('--ruby-source-cache',type=Path)
     parser.add_argument('--destination',type=Path)
     args=parser.parse_args()
+    if args.family=='commercial':
+        if args.verify_only:
+            result=load_commercial_reference();print('Verified commercial cases:',len(result['cases']),len(result['conditional_vectors']))
+        else:
+            if args.runtime_archive is None or args.destination is None:
+                parser.error('Commercial capture requires runtime archive and a new destination')
+            capture_commercial(args.runtime_archive,args.destination)
+        return
     if args.family in ('residential','events'):
         if args.verify_only:
             print('Verified '+args.family+' cases:',len((load_event_reference() if args.family=='events' else load_residential_reference())['cases']))
