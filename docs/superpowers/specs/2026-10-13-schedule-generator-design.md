@@ -1,6 +1,6 @@
 # Pure Python program schedule generator design
 
-Date: 2026-10-13. Status: approved by the user on 2026-10-13, including annual-total conservation for both source families. Implementation has not started.
+Date: 2026-10-13. Status: direction approved on 2026-10-13; revised on 2026-10-14 following the user's plan review on source fidelity, numerical equivalence and staged delivery. Implementation has not started.
 Working branch: `codex/stochastic-schedule-extraction`, based on `c2dd1fd`.
 
 ## Intended result
@@ -38,9 +38,9 @@ remain immutable reference cases. Production integration follows the protected
   applicable commercial or fixed methods.
 - Commercial operating hours are sampled from the supplied seed, rather than
   required as caller-selected hours.
-- Residential constituents receive distinct derived seeds under one master
-  seed. Commercial constituents in the same coordinated operating group share
-  sampled operating parameters.
+- Residential constituents receive upstream-assigned unit seeds under one master
+  seed, preserving source order and any source-defined degeneracy. Commercial
+  constituents in the same coordinated operating group share sampled parameters.
 - Generate constituent schedules before computing mixture schedules. A mixture
   can contain any supported number of members, including repeated units.
 - Scale annual-energy and annual-volume magnitudes against the generated
@@ -49,6 +49,16 @@ remain immutable reference cases. Production integration follows the protected
   including commercial definitions originally expressed as design power or
   power density with a reference schedule. Sampled operating hours change the
   temporal distribution only.
+- Treat the aggregate/reference annual target as known or calibrated, and the
+  schedule-conditioned effective magnitude as realization-specific normalization.
+- Preserve upstream RNG draw order and coupling ahead of insertion/removal
+  invariance; identify deliberate departures explicitly as adaptations.
+- Expose source-required rule/special-profile semantics only. Do not invent a
+  generalized schedule language or extra ResStock holiday/design-day behavior.
+- Accept generated results by discrete/source and numerical equivalence, not
+  cross-machine JSON hashes. Keep immutable source/resource integrity locks.
+- Ship a usable residential/commercial family milestone before broad catalogue
+  expansion, with explicit supported scope and remaining coverage statuses.
 
 ## Existing repository and primary mechanisms
 
@@ -98,7 +108,7 @@ license notices with extracted data and translated code.
 ## Generator and program contracts
 
 The Python entry point is `generate(params, seed) -> bundle`. Provide a CLI that
-reads the same request as strict JSON and writes canonical JSON. Program and
+reads the same request as strict JSON and writes JSON. Program and
 bundle schema versions are explicit; introduce a separate generated-program
 contract instead of silently changing Program JSON v3.
 
@@ -112,8 +122,9 @@ The bundle contains:
 
 - `schedules`: an ID-indexed collection of dimensionless, temperature or activity
   schedules, each with 8,760 finite hourly values and an explicit unit;
-- `bindings`: program/constituent slot references, resolved schedule IDs and
-  effective demand magnitudes with their original physical basis and unit;
+- `bindings`: program/constituent slot references, resolved schedule IDs, known
+  aggregate/reference targets and schedule-conditioned effective magnitudes with
+  their physical basis and unit;
 - `constituents`: stable instance keys, generator method and derived seed receipts;
 - `generation`: algorithm version, complete effective arguments, master seed,
   calendar, operating-hour samples, weather/source resource identities and hashes;
@@ -127,10 +138,12 @@ only a schedule reference while retaining a reference-fitted wattage is invalid.
 Use an explicit non-leap Gregorian year; the initial default remains 2007 to match
 the atlas references. Reject leap years rather than dropping February 29.
 Hourly values describe `[hour, hour+1)` in local standard time. Apply no implicit
-DST, timezone conversion or holiday calendar. Commercial source holiday,
-design-day, date-selector and precedence semantics remain in separate metadata
-and explicit selectors, alongside the annual samples. A design day is not a
-substitute annual date. All constituent arrays share the same calendar.
+DST, timezone conversion or holiday calendar. Retain holiday, design-day,
+date-selector and precedence semantics where the selected source mechanism
+actually contains them. ResStock's activity chains use weekday/weekend selection;
+do not add a holiday or design-day layer to those chains. Public special profiles
+are optional and limited to source-required representations. All constituent
+arrays share the same calendar; no generalized rule language is introduced.
 
 Inputs include the program/recipe IDs, explicit household arguments, stable
 constituent keys, mixture weights and scaling bases, operating-group IDs,
@@ -147,6 +160,13 @@ streams, weekday/weekend behavior, state/month offsets, appliance presence,
 lighting location inputs and ceiling-fan weather dependence. Appliance power
 samples can influence a generated shape; they do not replace the program's
 annual load definition.
+
+In calibration/inverse modeling the aggregate/reference annual energy or volume
+is known, while behavior and its temporal allocation are latent. Keep this known
+target separate from the schedule-conditioned effective magnitude. The latter
+is a normalization amplitude for this realization, not necessarily an installed
+capacity or physical nameplate power density. Changing a seed changes the shape
+and this amplitude together while retaining the known target.
 
 For each residential or commercial time-allocated energy demand, let `g[h]` be
 the emitted normalized generated shape and `H_g = sum(g[h]) * 1 hour` its
@@ -193,8 +213,10 @@ A zero target yields an explicit zero demand. A positive target with a zero
 generated integral is an error with the affected channel and arguments; do not
 divide by zero, erase the demand or silently draw another seed. Missing targets
 remain unresolved and block a ready realization. There is no arbitrary cap that
-silently changes annual totals; reference physical nameplate limits, if supplied,
-must be checked and infeasible combinations reported.
+silently changes annual totals. Preserve reported nameplate values separately;
+do not automatically use them to cap or reject a normalization amplitude. An
+explicitly selected physical capacity constraint is a separate model condition
+and must be reported if incompatible with the calibrated target/shape.
 
 The integral adjustment applies to both source families' annual energy/volume
 allocations, including reference-derived commercial and apartment budgets.
@@ -256,24 +278,34 @@ retain their actual applicability and source family.
 ## Seed derivation and reproducibility
 
 Require an explicit unsigned 64-bit master seed; reject booleans and invalid
-numeric values. Derive streams from the master seed, stable constituent or
-operating-group key and a versioned purpose label using a documented digest
-encoding. Detect duplicate keys and derived-seed collisions before generation.
-Record every derived seed. Neither array position nor a process-global random
-state controls the realization.
+numeric values. Preserve the inspected source's seed initialization, random draw
+order and coupling. The pinned ResStock generator has a main occupancy/offset
+stream and ordered hygiene, dishwasher, clothes-washer, clothes-dryer, EV and
+cooking streams. Sink/shower/bath share hygiene draws; appliance power/water and
+washer/dryer routines retain their source dependencies. Keep the EV seed slot
+even when EV output is excluded. Do not introduce additional end-use substreams.
 
-Reordering constituents, generating a constituent independently with the same
-request identity, or adding an unrelated constituent must not alter existing
-streams. Preserve ResStock's internal end-use separation within each unit. A
-source-compatible random adapter and arithmetic order are required for direct
-same-input reference comparisons; any intentional adaptation is versioned and
-tested separately. Do not equate a shared MT19937 family name with identical
-Ruby/Python initialization, integer draws or floating-point draws.
+The official multifamily measure cumulatively multiplies the current seed by
+each unit's one-based position. Preserve that default unit-order behavior and
+record the resulting seeds, including source-defined zero-seed degeneracy.
+Native derived integers need not fit the master seed's 64-bit input range.
+Unique constituent keys resolve references, not a promise of reordering or
+insertion invariance. Test independence only where the source actually provides
+it. Any different allocation/grouping policy is a declared, versioned adaptation.
 
-Generation is offline and deterministic for the complete versioned request and
-locked data. No wall-clock timestamp, temporary path or machine-specific state
-participates in schedule identity. Use canonical serialization, content hashes
-and separately recorded administrative extraction dates.
+Generation is offline and deterministic for the complete versioned request,
+including source-significant order and locked inputs, within supported/common
+environments insofar as the source mechanism permits. Require exact discrete
+decisions and supported RNG draw vectors; compare continuous schedule values
+with stated source/precision-aware tolerances. Same-input reference comparisons
+retain source arithmetic and call order. Serialization differences do not alter
+scientific acceptance. Do not round values merely to force cross-machine hashes.
+
+SHA-256 verifies immutable source archives, packaged resources and frozen
+manifests. A frozen generated example may have an integrity hash, but a fresh
+equivalent realization need not reproduce that hash. Match generated outputs by
+slots, units, parameters, source decisions and numerical values. IDs are scoped
+references, not scientific equivalence tests; administrative metadata is separate.
 
 ## Mixtures and physical conservation
 
@@ -316,8 +348,10 @@ Residential occupant chains have no direct vintage selector. Equipment,
 thermostats and applicable default recipes can depend on vintage-selected inputs.
 State/month offsets, solar/location inputs and weather-dependent channels require
 more than a climate-zone label. Use the existing approved DOE 16-location set
-for reference weather cases and preserve both 3B locations. Lock exact EPWs and
-their geographical bindings before asserting that reference-location coverage.
+for reference weather cases and preserve both 3B locations. Acquire/bind these
+incrementally with supported families; the entire set is not a prerequisite for
+the first shipment. Lock exact EPWs and their geographical bindings before
+asserting that reference-location coverage.
 Keep earlier station-proxy fixtures labeled as their original variants.
 
 Retain the existing exclusions of residential EV and HVAC equipment-unavailability
@@ -334,16 +368,21 @@ remains unlicensed under the repository's policy.
 
 ## Validation and completion
 
-Validate a Medium Office commercial pilot and a repeated apartment-unit pilot
-before expanding. The test and evidence set must demonstrate:
+Validate and ship a first milestone for a representative ResStock multifamily
+dwelling family and Medium Office before expanding. Each milestone declares
+supported programs, parameter/weather/template domains, active channels and
+remaining catalogue coverage. Completeness is required within the declared
+milestone, not across all 1,900 definitions/378 compositions before any shipment.
+Repeat the end-to-end evidence and release checks for each added family. The
+test and evidence set must demonstrate:
 
 - seeded operating-hour selection against exact source probability rows;
 - ResStock activity/event and commercial transformation comparisons against
   pinned upstream reference fixtures, with disclosed numerical tolerances;
 - exactly 8,760 finite values, correct units, fraction bounds, reference closure,
   thermostat ordering and preserved date/design-day semantics;
-- same-request reproduction, changed-seed behavior, stable constituent keys,
-  stable substreams under reordering/insertion and coordinated commercial groups;
+- same-request source/numerical reproduction, changed-seed behavior, source RNG
+  order/coupling, unique constituent references and coordinated commercial groups;
 - annual energy and water-volume conservation for both residential and commercial
   loads across different seeds and sampled hours, correct new
   magnitudes when schedule sums change and emitted-value rounding consistency;
@@ -366,7 +405,9 @@ the final normalization separately for annual-total conservation. A normalized
 atlas output is not an unmodified upstream commercial realization.
 
 Run the repository's full schema, physical, referential, schedule, provenance,
-release-integrity and reproducibility checks before declaring delivery complete.
+release-integrity and numerical/source reproduction checks before declaring a
+milestone delivered. Exact hashes verify the frozen artifact and locked inputs;
+new generated numerical output is accepted by equivalence rather than byte hashes.
 Count coverage by supported channel/binding and applicable parameter family;
 catalogue class names alone do not establish generator completeness.
 
@@ -375,6 +416,7 @@ catalogue class names alone do not establish generator completeness.
 Review this written contract, then write a concrete implementation plan around
 the source inventory, Python ports, magnitude bindings, mixture adapter and
 coverage/reproduction gates. Record the approved schema/source-method decisions
-in an ADR. The initial implementations must be executable pilots rather than
-unvalidated whole-library migrations. Integrate only after required checks and
-review conversations are resolved; deployment remains a separate main-only step.
+in an ADR. The initial implementations must be usable, shipped family milestones
+rather than an all-or-nothing whole-library migration. Integrate only after
+required checks and review conversations are resolved; deployment remains a
+separate main-only step.
