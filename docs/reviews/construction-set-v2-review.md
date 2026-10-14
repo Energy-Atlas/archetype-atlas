@@ -1,8 +1,10 @@
 # Construction-set v2 review
 
-Steps 1–3 are implemented for review on `feature/json-completion`. The schema,
-exporter and complete examples are ready for comments; site integration and
-publication have not started. BEMGen owns the translator.
+Acceptance recorded 2026-10-14: the user reviewed both examples and said
+"both looks ok", then authorized full migration validation and the v2 freeze.
+The unified structure and examples are accepted. Site integration/publication
+have not started. BEMGen owns the translator. Original comment areas below remain
+available; blank areas do not authorize new scientific assumptions.
 
 ## Shared structure and source metadata
 
@@ -52,8 +54,8 @@ assignment evidence, not an instruction to reverse the selected recipe again.
 Source member IDs aid correspondence; BEMGen supplies actual geometry and uses
 an explicit assignment identity or a unique compatible rule.
 
-Medium Office contains 19 assemblies, 22 materials and 197 evidence resources;
-residential contains 12 assemblies, 16 materials and 32 evidence resources.
+Medium Office contains 19 assemblies, 22 materials and 198 evidence resources;
+residential contains 12 assemblies, 16 materials and 33 evidence resources.
 Selected fixed ACH remains 0.1396961316 and 0.671608067 ACH respectively. Frozen
 source physics, source conditions and target/attained distinctions are retained.
 The review manifest locks schema/input identities and example bytes.
@@ -63,3 +65,15 @@ The review manifest locks schema/input identities and example bytes.
 <!-- comments:construction-set-v2-geometry:begin -->
 
 <!-- comments:construction-set-v2-geometry:end -->
+
+## Accepted migration freeze
+
+All 224 definitions and 4,798 supported contexts are frozen in
+[construction v2.0.0](../../data/construction-releases/v2.0.0/README.md), with
+[completeness](../../data/construction-releases/v2.0.0/completeness.json) and
+[checksums](../../data/construction-releases/v2.0.0/manifest.json).
+All 4,868 assemblies are preserved and ready; 1,439 are complete independent
+source-table resources without a recovered prototype mapping, explicitly
+distinguished from supported selector alternatives. Fresh review repairs and
+validation are recorded in the work record. The next phase is site integration
+and publication; ground, systems and the BEMGen translator stay deferred.

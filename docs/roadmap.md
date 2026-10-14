@@ -84,11 +84,12 @@ immutable evidence, including 592 deferred ground-contact elements.
   protected-main checks. No site build or CI ran during construction completion.
 - [ ] Resume ground/system work only when its deferred scope is reopened.
 
-A unified construction-set v2 schema/exporter and Medium Office/residential
-examples now implement the accepted consumer interface. The
-[review entry](reviews/construction-set-v2-review.md) is the current stop point;
-site integration and publication have not started. BEMGen owns the future
-translator. The combined step-2 checklist below stays open where systems or
+A unified construction-set v2 schema/exporter and both accepted examples are
+now frozen in `data/construction-releases/v2.0.0/`, with all 224 definitions,
+4,798 supported contexts and 4,868 assemblies retained and validated. The
+[review entry](reviews/construction-set-v2-review.md) records acceptance and
+the complete migration; site integration and publication have not started.
+BEMGen owns the future translator. The combined step-2 checklist below stays open where systems or
 publication are still required.
 
 - [x] Inventory current construction/material and system/component exports,

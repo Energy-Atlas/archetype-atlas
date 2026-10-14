@@ -96,6 +96,24 @@
         "id": "construction-evidence-036729ee94f85615563c5ecf"
       },
       {
+        "source_project": "OpenStudio SDK",
+        "source_revision": "OpenStudio-3.10.0-documentation",
+        "source_file_sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+        "source_locator": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html#getDefaultConstructionWithSearchDistance",
+        "original_value": [
+          "space",
+          "space_type",
+          "building_story",
+          "building",
+          "building_space_type"
+        ],
+        "original_unit": "ordered categorical construction scopes",
+        "transformation": "Retain the source space-type, story and building hierarchy for recovered construction defaults.",
+        "extraction_date": "2026-10-14",
+        "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration.",
+        "id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24"
+      },
+      {
         "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_sets.json#/construction_sets/1",
         "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
         "extraction_date": "2026-10-14",
@@ -2632,6 +2650,24 @@
       "transformation": "Sum [native q4/exterior-area * space Outdoors gross area * multiplier * mean(max(0,a+b*abs(22C-height-adjusted EPW dry bulb)+d*height-adjusted wind^2))] / whole source enclosed volume with multipliers",
       "interpretation_note": "Equal-weight hourly EPW samples; schedule=1 for source off correlation, no pressurization/door operation. Includes all source enclosure spaces in denominator, not conditioned-volume claim. No simulation timestep/energy parity claimed.",
       "id": "construction-evidence-036729ee94f85615563c5ecf"
+    },
+    "construction-evidence-5a4e9b38cf3ad0ac972f0d24": {
+      "source_project": "OpenStudio SDK",
+      "source_revision": "OpenStudio-3.10.0-documentation",
+      "source_file_sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+      "source_locator": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html#getDefaultConstructionWithSearchDistance",
+      "original_value": [
+        "space",
+        "space_type",
+        "building_story",
+        "building",
+        "building_space_type"
+      ],
+      "original_unit": "ordered categorical construction scopes",
+      "transformation": "Retain the source space-type, story and building hierarchy for recovered construction defaults.",
+      "extraction_date": "2026-10-14",
+      "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration.",
+      "id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24"
     },
     "selector-evidence-007b901000d1b476d5349419": {
       "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=25mm Stucco/specific_heat",
@@ -8337,6 +8373,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-e806f375b49f87b4c7aaa023"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8353,6 +8392,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-54616b459dd2d45e52c4f89f"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8369,6 +8411,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-d8f21afdbb0bfabe93649bff"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8386,6 +8431,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-d5d79c8335632b03580c6a98"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8403,6 +8451,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-9a6e6cdf83d6259ebb0cb8f4"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8419,6 +8470,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-selector-4882c1662c19620c1568858f"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8435,6 +8489,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-selector-84def2925631bdbfa67f5edb"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8451,6 +8508,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-selector-d1e6ce3b3c2cc4a2ae98539b"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8467,6 +8527,9 @@
           "property_climate_group": "ClimateZone 4",
           "selection_rule": "source_first_match"
         },
+        "candidate_element_ids": [
+          "construction-selector-ee1777290028786fc90a0337"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8483,6 +8546,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-807ada70cc163b0fbf354a50"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8499,6 +8565,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-afc9b7a462f3a40c27953f11"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8515,6 +8584,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-e14a058abea8f1843b6930ef"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8531,6 +8603,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-selector-bff28b41c46c023dc8ea95f7"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8548,6 +8623,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-selector-a075f07df7efb94b59d1bd5d"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8565,6 +8643,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-selector-b85d6e4b24888d4a083b9248"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8581,6 +8662,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-selector-13508df8e6cc99824f7e120f"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8597,6 +8681,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-selector-e022ee1b29cff3c91fd175bd"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8613,6 +8700,9 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-selector-525ff62ff79105a74d034c86"
+        ],
         "evidence_id": "selector-evidence-f99d2a0baf61df5a5ccae37c"
       },
       {
@@ -8630,24 +8720,32 @@
           "property_climate_group": null,
           "selection_rule": "direct_source_recipe_or_absent"
         },
+        "candidate_element_ids": [
+          "construction-601ef703fa063804496fa83b"
+        ],
         "evidence_id": "selector-evidence-1248131e5127457a62d89d76"
       }
     ],
     "assignment_policy": {
-      "precedence": "space_type_then_building_default",
+      "precedence": "space_type_then_story_then_building_default",
+      "evidence_id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24",
       "variant_resolution": "explicit_assignment_id_or_unique_compatible_rule",
       "source_absent_override": "inherit_building_default",
       "unmatched_or_ambiguous": "error"
     },
+    "variant_selections": {},
     "input_sha256": {
       "data/construction-releases/v1.0.0/catalogue.json": "0e45b78fcb3f78142a80f62aa401a7725c9ba56a78fc0fc803a6cb40b6c2c6a4",
       "data/construction-releases/v1.0.0/manifest.json": "57c1e8f21a73ba182b1ef11b54cf2fa9087a66f82b7f4b51f0f33f2b85f99ec1",
       "data/construction-inputs/geometry-v1.json": "66274536119e312f296abc05c98223e69f296c8560fff4670589216b4a581bf0",
       "data/definition-releases/v0.1.1/constructions.json": "5b15d8a47b971a56024e2ad3d3c59829b964faabc647bf9581289896d0a3dab5",
-      "scripts/construction_set_export.py": "72cdcbd2014269cd8c0a81acbb6a45df8379941a0a7a4e0591be778211013311",
-      "scripts/construction_set_validation.py": "4e99b07e46de272e2b739d6046bec583b8fa4ad178cca5a50c94339e1b900819",
+      "scripts/construction_set_export.py": "95c4be0c99767db084e7adf8d6837b4c778224d7733447a86fc4f0401b08891c",
+      "scripts/construction_set_validation.py": "42b2ab6bed058461b0b4c446a80a77642b262b169cfb649289138b7642ebbfaf",
       "scripts/construction_set_geometry.py": "d82b0fc8d7fb7f835b5f541b862f94c11782a4975a0fd8840adb01b0dee6d2a4",
-      "schemas/construction-json-v2.schema.json": "32f415e2f604ada0de41e13d0c5a90fd1e0dc68974cbaf892f1cf7ed95e49817",
+      "scripts/construction_set_release.py": "64a33fa36b85fe87b2d0a15ffc0990ecd59d66a7c89f1a6311b0bedaaafb24a1",
+      "schemas/construction-catalogue-v2.schema.json": "6201c393afb924472e82f83da1cafd9554c4a6567ec5b296e556dd59a0dbde2c",
+      "schemas/construction-json-v2.schema.json": "81eb75e3d0dd4306078fe906cf23ddfb1dd1df23256c2af8e30cc0e9ae4b48f3",
+      "sources/construction-v2-source-lock.json": "52dd272415d624afea038795ba4fb2fa4d81486ee043588d3184ca78edd3ec7a",
       "scripts/construction_export.py": "27e8479c58f6736a73b80456e3f2d6cdcb5f874972bccd0733c60e750434b8fc",
       "scripts/construction_validation.py": "4b500c934bda363e235049f1d71beed34480a32984b503ef9d9eba70b2268917",
       "scripts/energy_json_review.py": "3951ac739823585b5eab74fef60b3fc7de31c86cb8519cd3c022341d1cdc56a8",
@@ -20730,13 +20828,22 @@
       "residential/EnergyPlus/Energy+.idd": {
         "sha256": "2fcdc6554412164c26252f7f9029471ad6004b04896dfac4c32c3710ea84ee55",
         "source_revision": "OpenStudio-3.10.0+86d7e215a1/EnergyPlus-25.1.0"
+      },
+      "openstudio-construction-inheritance": {
+        "url": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html",
+        "sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+        "source_revision": "OpenStudio-3.10.0-documentation",
+        "cache_path": "build/construction-set-v2/Space-3.10.0.html",
+        "source_locator": "Space#getDefaultConstructionWithSearchDistance",
+        "extraction_date": "2026-10-14",
+        "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration."
       }
     },
     "migration": {
       "source_contract": "construction-json/1.0.0",
       "physics": "unchanged",
       "translator_owner": "BEMGen",
-      "review_status": "pending_human_review"
+      "review_status": "design_accepted"
     }
   }
 }

@@ -150,6 +150,34 @@ class ConstructionSetTests(unittest.TestCase):
         p=self.export(self.residential,'5A');p['scope']='space_type';p['source']['space_type']='Plenum'
         with self.assertRaises(ValidationError):schema.validate(p)
 
+    def test_nondefault_source_variants_are_retained_and_selectable(self):
+        p=self.export('construction-065e2be2332c15d04a224fe3',reference='90.1-2007/LargeOffice')
+        choice=next(c for c in p['metadata']['selection_decisions'] if c['source_selector']=='exterior_skylight')
+        alternative='construction-selector-e9ffd851719218b6ad627759'
+        self.assertIn(alternative,choice['candidate_element_ids'])
+        self.assertIn(alternative,p['assemblies'])
+        module=importlib.import_module('scripts.construction_set_export')
+        key=choice['source_definition_id']+'/exterior_skylight'
+        p=module.export_set(self.catalogue,'construction-065e2be2332c15d04a224fe3','4A','90.1-2007/LargeOffice',variant_selections={key:alternative})
+        self.assertEqual(p['components']['Skylight']['assignments'][0]['assembly_id'],alternative)
+
+    def test_small_hotel_story_overrides_are_in_same_building_set(self):
+        identity=next(i for i,p in self.catalogue['packages'].items() if p['building_type']=='SmallHotel' and p['template']=='90.1-2007' and p['space_type'] is None and self.catalogue['evidence'][p['evidence_ids'][0]]['original_value']['is_residential']=='No')
+        p=self.export(identity,reference='90.1-2007/SmallHotel')
+        stories={r['when']['source_story_id'] for c in p['components'].values() for r in c['assignments'] if r['when']['scope']=='story'}
+        self.assertEqual(stories,{'BuildingStory2','BuildingStory3','BuildingStory4'})
+
+    def test_batch_cache_checks_distinct_content_and_matches_full_validation(self):
+        module=importlib.import_module('scripts.construction_set_validation')
+        cache=module.BatchValidationCache()
+        p=self.export()
+        self.assertEqual(module.validate_set(p),module.validate_set(p,cache=cache))
+        self.assertEqual(module.validate_set(p),module.validate_set(p,cache=cache))
+        p=copy.deepcopy(p)
+        m=next(m for m in p['materials'].values() if 'thickness_m' in m['properties'])
+        m['properties']['thickness_m']=-1
+        with self.assertRaises(ValueError):module.validate_set(p,cache=cache)
+
     def test_invalid_component_and_orphan_references_are_rejected(self):
         module=importlib.import_module('scripts.construction_set_validation')
         def missing_component(p):p['components'].pop('InteriorWall')

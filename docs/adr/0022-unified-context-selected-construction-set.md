@@ -1,6 +1,6 @@
 # ADR 0022: Unified context-selected construction sets
 
-Date: 2026-10-14. Status: design accepted in chat; steps 1–3 implemented for human review.
+Date: 2026-10-14. Status: both examples accepted; complete migration frozen as v2.0.0 on the feature branch.
 
 ## Decision
 
@@ -25,7 +25,8 @@ climate/reference contexts. Partial source space definitions remain explicitly
 scoped and available through the same API; they are not renamed complete building
 sets. Generic reference forms remain distinct. Source compatibility-only Office
 lookups are not promoted into building overrides. Source-absent space overrides
-inherit the building default, never an invented zero construction.
+use the next applicable source scope in the declared hierarchy, ultimately
+inheriting the building default; an absent override never implies a zero construction.
 
 The source Attic `interior_floors` selector legitimately uses the legacy
 `ExteriorRoof` property role with `Attic and Other` type. Validate this specific
@@ -42,9 +43,26 @@ library over climates. The schema is standalone; conditional scope checks and
 component target constants are included. Focused validation protects all source
 geometry conventions, material physics, references and provenance closure.
 
-Frozen v1.0.0 and Program JSON remain unchanged. The Medium Office and residential
-review examples preserve selected physics/ACH and exact UTF-8/LF reproducibility.
-These artifacts are for human review, not a newly published release. This phase
-does not perform all-context release validation, source regeneration, site/CI,
-publication, ground or system work. See [the contract](../construction-json-v2-contract.md)
-and [review entry](../reviews/construction-set-v2-review.md).
+Frozen v1.0.0 and Program JSON remain unchanged. Both examples were accepted,
+authorizing full migration checks and the feature-branch v2.0.0 freeze. The
+normalized catalogue retains 224 definitions, 4,798 supported contexts, all
+4,868 assemblies, 858 materials and 8,014 evidence records. All 17,564 distinct
+source-selector alternatives are exercised; story and space overrides retain
+source scope/order. Source hierarchy is backed by checksum-pinned OpenStudio
+3.10 documentation, not an Atlas-invented precedence.
+
+Shared tables avoid repeating full resource/provenance closures in every context.
+Frozen hydration reproduces each selected standalone document. Every resource
+receives schema, physical, layer/material and provenance checks, including the
+1,439 independent source-table recipes outside recovered prototype mappings.
+Those recipes are explicitly distinguished from context-selectable candidates;
+no prototype applicability is guessed. The 5,092-identity completeness
+denominator remains all source definitions plus all above-ground assemblies.
+
+Fresh technical review produced regressions for receipt/assignment consistency,
+direct/policy/repeated-story hydration and immutable v1 catalogue verification.
+Repairs preserve source semantics and ordering. Exact-byte regeneration protects
+the feature-branch freeze and its licenses, schemas, index, examples and manifest.
+Site/CI, publication, translator, ground and system work remain deferred. See
+[the contract](../construction-json-v2-contract.md) and
+[review entry](../reviews/construction-set-v2-review.md).

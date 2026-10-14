@@ -359,3 +359,52 @@ Focused final checks: 26 tests pass; all four review artifact bytes reproduce;
 review manifest verifies three artifact and eighteen input hashes. Frozen v1
 and program files have no changes. Artifacts are committed locally for review,
 with no site integration, CI, push or publication in this phase.
+
+## Accepted construction v2 migration and freeze (2026-10-14)
+
+The user accepted both unified examples and authorized acceptance recording,
+complete migration validation and the v2.0.0 freeze. Site integration/publication
+remains the next phase. The existing `feature/json-completion` checkout is used;
+frozen v1, program artifacts, native recovery, ground and systems are unchanged.
+
+The normalized release preserves 224 source definitions, all 4,751 commercial
+and 47 residential supported climate/reference contexts, 4,868 assemblies and
+858 materials. Evidence contains all 7,972 original records plus one pinned SDK
+inheritance proof and 41 explicit residential adjacency-context proofs. All
+17,564 distinct source-definition/selector/assembly candidate choices are checked.
+Space and all 15 recovered story override queries are preserved; original story
+IDs and source order remain explicit. The source hierarchy uses checksum-pinned
+OpenStudio 3.10 primary documentation rather than a guessed precedence.
+
+The completeness denominator is 5,092 source identities (definitions plus
+assemblies). Of the assemblies, 3,429 are context-supported candidates/recipes;
+1,439 independent source-table recipes are retained without invented prototype
+mapping. They receive physical, layer/material, provenance and schema checks as
+well as exact source equality. Their ready status describes complete assembly
+physics, not unreported building applicability.
+
+Fresh independent technical review found three important issues. Regression
+tests first reproduced receipt/assignment contradictions, direct and repeated-
+story variant hydration differences, and the missing v1 catalogue checksum gate.
+Repairs enforce correspondence, replace variants in source order, retain direct
+selector semantics, and verify immutable v1 bytes before choosing the baseline.
+Resource-graph checks now explicitly cover independent source-table recipes.
+
+Focused export/release tests, including the original v1 exporter checks: 37 pass.
+Full validation and exact-byte reproduction are recorded in the frozen
+[completeness receipt](../../data/construction-releases/v2.0.0/completeness.json)
+and [manifest](../../data/construction-releases/v2.0.0/manifest.json).
+The release includes shared tables, both schemas, index, complete examples,
+README, locked source retrieval and upstream license notices. Frozen v2 hydration
+reproduces each default standalone consumer document. No native/program/site/CI
+generation or production deployment is part of this freeze.
+
+The final reproduction input guard caught a working-tree schema reset to the
+exact older HEAD version. Staged/frozen schema bytes remained intact. Preserved
+the reset in the ignored build folder, restored the validated schema and repeated
+reproduction before committing. No stale schema was accepted into the freeze.
+The repeated full `--check` passed with stable inputs and exact-byte equality of
+all release artifacts. The frozen Medium Office CLI export/check also passed.
+Staged outputs and generation inputs match the manifest, and all upstream notices
+match v1 bytes. Staged diff inspection and the security audit pass before the
+local freeze commit. Site integration and protected-main publication remain open.

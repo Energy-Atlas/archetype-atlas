@@ -40,14 +40,18 @@ def source_inputs():
 
 
 def input_hashes():
+    manifest=load_json(LIBRARY/'manifest.json')
+    if digest(LIBRARY/'catalogue.json')!=manifest['files']['catalogue.json']['sha256']:
+        raise ValueError('Frozen construction catalogue checksum mismatch')
     paths=[LIBRARY/'catalogue.json',LIBRARY/'manifest.json',GEOMETRY,
            ROOT/'data/definition-releases/v0.1.1/constructions.json',
            ROOT/'scripts/construction_set_export.py',ROOT/'scripts/construction_set_validation.py',
            ROOT/'scripts/construction_set_geometry.py',
-           ROOT/'schemas/construction-json-v2.schema.json',ROOT/'scripts/construction_export.py',
+           ROOT/'scripts/construction_set_release.py',ROOT/'schemas/construction-catalogue-v2.schema.json',
+           ROOT/'schemas/construction-json-v2.schema.json',ROOT/'sources/construction-v2-source-lock.json',ROOT/'scripts/construction_export.py',
            ROOT/'scripts/construction_validation.py',ROOT/'scripts/energy_json_review.py',
            ROOT/'scripts/recover_construction_selectors.py',ROOT/'scripts/common.py',ROOT/'scripts/definition_contract.py']
-    source_hashes=load_json(LIBRARY/'manifest.json')['input_sha256']
+    source_hashes=manifest['input_sha256']
     for path,checksum in source_hashes.items():
         if digest(ROOT/path)!=checksum:raise ValueError('Frozen v1 input changed: '+path)
     paths.extend(ROOT/path for path in source_hashes)
@@ -70,9 +74,11 @@ def assembly_rule(catalogue,aid,definition_id,when,slot=None):
         'geometry':geometry_rule(a),'evidence_ids':copy.deepcopy(a['evidence_ids'])}
 
 
-def commercial_components(catalogue,primary,climate,reference):
+def commercial_components(catalogue,primary,climate,reference,variant_selections=None):
+    variant_selections=variant_selections or {};used_choices=set()
     selected=select_package(catalogue,primary['id'],climate,reference)
-    definitions=[(primary,None)]
+    initial={'scope':'space_type','space_type':primary['space_type']} if primary['space_type'] else {'scope':'building_default'}
+    definitions=[(primary,initial)]
     _,geometry=source_inputs()
     template,building=selected['reference_id'].split('/',1)
     references=[r for r in geometry['commercial'] if (r['template'],r['building_type'])==(template,building)]
@@ -82,15 +88,17 @@ def commercial_components(catalogue,primary,climate,reference):
     if primary['space_type'] is None:
         for query in references[0]['queries']:
             source=query.get('source_set')
-            if query['query']['context']!='space_type' or source is None:continue
+            query_scope=query['query']['context']
+            if query_scope not in {'space_type','story_override'} or source is None:continue
             matches=[p for p in catalogue['packages'].values() if
                 catalogue['evidence'][p['evidence_ids'][0]]['original_value']==source]
             if len(matches)!=1:raise ValueError('Missing/ambiguous source space construction definition')
-            if matches[0]['id']!=primary['id']:
-                definitions.append((matches[0],query['query']['space_type']))
+            if query_scope=='space_type':when={'scope':'space_type','space_type':query['query']['space_type']}
+            else:when={'scope':'story','source_story_id':query['query']['story']}
+            definitions.append((matches[0],when))
     components=empty_components()
     decisions=[]
-    for definition,space in definitions:
+    for definition,scope_when in definitions:
         # Space overrides retain the chosen building reference ACH; only assembly
         # selection is resolved here, not a second enclosure infiltration load.
         from scripts.recover_construction_selectors import resolve_source_selector
@@ -100,16 +108,21 @@ def commercial_components(catalogue,primary,climate,reference):
             component=SLOT_TYPES[slot]
             if not selector['elements']:continue
             resolved=resolve_source_selector(packet,definition['id'],slot,climate)
-            when={'scope':'space_type' if space or primary['space_type'] else 'building_default'}
-            if space or primary['space_type']:when['space_type']=space or primary['space_type']
+            policy=selector.get('selection_policy')
+            candidates=sorted({aid for row in policy['source_order'] if row['predicate']['climate_zone_set']==resolved['property_climate_group'] for aid in row['element_ids']}) if policy else list(selector['elements'])
+            key=definition['id']+'/'+slot
+            if key in variant_selections:
+                resolved=resolve_source_selector(packet,definition['id'],slot,climate,variant_selections[key]);used_choices.add(key)
+            when=copy.deepcopy(scope_when)
             if 'fixed_window' in slot:when['window_operation']='fixed'
             elif 'operable_window' in slot:when['window_operation']='operable'
             for aid in resolved['element_ids']:
                 components[component]['assignments'].append(assembly_rule(catalogue,aid,definition['id'],when,slot))
             components[component]['disposition']='provided'
             decisions.append({'source_definition_id':definition['id'],'source_selector':slot,
-                'scope':when,'resolved_climate_selection':resolved,'evidence_id':selector['evidence_id']})
-    return components,selected,[p['id'] for p,_ in definitions],decisions
+                'scope':when,'resolved_climate_selection':resolved,'candidate_element_ids':candidates,'evidence_id':selector['evidence_id']})
+    if used_choices!=set(variant_selections):raise ValueError('Unsupported source variant selector key')
+    return components,selected,list(dict.fromkeys(p['id'] for p,_ in definitions)),decisions
 
 
 def residential_components(catalogue,primary,context_evidence_id):
@@ -146,8 +159,9 @@ def residential_components(catalogue,primary,context_evidence_id):
 
 def dependency_closure(catalogue,components,source,infiltration,decisions):
     ids={r['assembly_id'] for c in components.values() for r in c['assignments']}
+    ids.update(aid for d in decisions for aid in d['candidate_element_ids'])
     assemblies={i:copy.deepcopy(catalogue['assemblies'][i]) for i in sorted(ids)}
-    for a in assemblies.values():a.pop('required_bindings')
+    for a in assemblies.values():a.pop('required_bindings',None)
     mids={l['material_id'] for a in assemblies.values() for l in a['layers']}
     materials={i:copy.deepcopy(catalogue['materials'][i]) for i in sorted(mids)}
     evidence_ids={e['id'] for e in source['evidence']}
@@ -170,15 +184,39 @@ def dependency_closure(catalogue,components,source,infiltration,decisions):
     return assemblies,materials,evidence
 
 
-def export_set(catalogue,construction_id,climate_zone,reference_id=None):
+def precedence_evidence(catalogue):
+    import urllib.request
+    descriptor=load_json(ROOT/'sources/construction-v2-source-lock.json')['sources']['openstudio-construction-inheritance']
+    path=ROOT/descriptor['cache_path']
+    if not path.exists():
+        content=urllib.request.urlopen(descriptor['url'],timeout=30).read()
+        if hashlib.sha256(content).hexdigest()!=descriptor['sha256']:raise ValueError('Source SDK documentation checksum mismatch')
+        path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(content)
+    if digest(path)!=descriptor['sha256']:raise ValueError('Source SDK documentation checksum mismatch')
+    catalogue=dict(catalogue,evidence=dict(catalogue['evidence']),source_files=dict(catalogue['source_files']))
+    catalogue['source_files']['openstudio-construction-inheritance']=dict(descriptor)
+    proof={'source_project':'OpenStudio SDK','source_revision':descriptor['source_revision'],
+        'source_file_sha256':descriptor['sha256'],'source_locator':descriptor['url']+'#getDefaultConstructionWithSearchDistance',
+        'original_value':['space','space_type','building_story','building','building_space_type'],
+        'original_unit':'ordered categorical construction scopes','transformation':'Retain the source space-type, story and building hierarchy for recovered construction defaults.',
+        'extraction_date':descriptor['extraction_date'],'interpretation_note':descriptor['interpretation_note']}
+    eid=stable_id('construction-evidence',proof);catalogue['evidence'][eid]=dict(proof,id=eid)
+    return catalogue,eid
+
+
+def export_set(catalogue,construction_id,climate_zone,reference_id=None,variant_selections=None,*,hashes=None,validation_cache=None):
+    catalogue,precedence_eid=precedence_evidence(catalogue)
     frozen,_=source_inputs()
+    if construction_id not in catalogue['packages'] and construction_id not in catalogue['enclosures']:
+        raise ValueError('Unknown construction-set source definition')
     row=frozen[construction_id]
     if construction_id in catalogue['packages']:
         primary=catalogue['packages'][construction_id]
-        components,selection,definition_ids,decisions=commercial_components(catalogue,primary,climate_zone,reference_id)
+        components,selection,definition_ids,decisions=commercial_components(catalogue,primary,climate_zone,reference_id,variant_selections)
         reference=selection['reference_id'];natural=selection['natural_ach']
         scope='space_type' if primary['space_type'] else 'building'
     elif construction_id in catalogue['enclosures']:
+        if variant_selections:raise ValueError('Residential variants are component rules, not commercial selector overrides')
         primary=catalogue['enclosures'][construction_id]
         reference=primary['infiltration']['reference_id']
         if reference_id not in {None,reference}:raise ValueError('Unsupported residential reference')
@@ -201,7 +239,7 @@ def export_set(catalogue,construction_id,climate_zone,reference_id=None):
         components=residential_components(catalogue,primary,context_eid)
         definition_ids=[construction_id];decisions=[];scope='whole_dwelling'
     else:raise ValueError('Unknown construction-set source definition')
-    eids=set(primary.get('evidence_ids',[]))|{natural['evidence_id']}
+    eids=set(primary.get('evidence_ids',[]))|{natural['evidence_id'],precedence_eid}
     for did in definition_ids:
         if did in catalogue['packages']:eids.update(catalogue['packages'][did]['evidence_ids'])
     source={'construction_set_id':construction_id,'definition_release':'v0.1.1',
@@ -221,13 +259,14 @@ def export_set(catalogue,construction_id,climate_zone,reference_id=None):
         'name':row['name'],'scope':scope,'source':source,'components':components,
         'infiltration':infiltration,'assemblies':assemblies,'materials':materials,'evidence':evidence,
         'metadata':{'source_definition_ids':definition_ids,'selection_decisions':decisions,
-            'assignment_policy':{'precedence':'space_type_then_building_default',
+            'assignment_policy':{'precedence':'space_type_then_story_then_building_default','evidence_id':precedence_eid,
                 'variant_resolution':'explicit_assignment_id_or_unique_compatible_rule',
                 'source_absent_override':'inherit_building_default','unmatched_or_ambiguous':'error'},
-            'input_sha256':input_hashes(),'source_files':copy.deepcopy(catalogue['source_files']),
+            'variant_selections':variant_selections or {},
+            'input_sha256':hashes if hashes is not None else input_hashes(),'source_files':copy.deepcopy(catalogue['source_files']),
             'migration':{'source_contract':'construction-json/1.0.0','physics':'unchanged',
-                'translator_owner':'BEMGen','review_status':'pending_human_review'}}}
-    validate_set(payload)
+                'translator_owner':'BEMGen','review_status':'design_accepted'}}}
+    validate_set(payload,cache=validation_cache)
     return payload
 
 
@@ -254,6 +293,7 @@ def main():
     parser.add_argument('--examples',action='store_true');parser.add_argument('--check',action='store_true')
     parser.add_argument('--construction-id');parser.add_argument('--climate-zone')
     parser.add_argument('--reference-id');parser.add_argument('--output',type=Path)
+    parser.add_argument('--variant',action='append',default=[],help='source-definition-id/selector=assembly-id; explicit source alternative')
     args=parser.parse_args()
     manifest=load_json(LIBRARY/'manifest.json')
     if digest(LIBRARY/'catalogue.json')!=manifest['files']['catalogue.json']['sha256']:
@@ -265,13 +305,14 @@ def main():
         outputs={OUTPUT/'medium-office.json':encoded(export_set(catalogue,medium,'4A')),
                  OUTPUT/'residential.json':encoded(export_set(catalogue,residential,'5A')),
                  OUTPUT/'index.json':encoded(build_index(catalogue))}
-        review={'schema_version':'2.0.0','status':'pending_human_review','steps_completed':[1,2,3],
+        review={'schema_version':'2.0.0','status':'design_accepted','steps_completed':[1,2,3],
             'input_sha256':input_hashes(),'schema_sha256':digest(ROOT/'schemas/construction-json-v2.schema.json'),
             'files':{p.name:{'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)} for p,b in outputs.items()}}
         outputs[OUTPUT/'review-manifest.json']=encoded(review)
     else:
         if not all([args.construction_id,args.climate_zone,args.output]):parser.error('Provide --examples or --construction-id, --climate-zone and --output')
-        outputs={args.output:encoded(export_set(catalogue,args.construction_id,args.climate_zone,args.reference_id))}
+        choices=dict(v.split('=',1) for v in args.variant)
+        outputs={args.output:encoded(export_set(catalogue,args.construction_id,args.climate_zone,args.reference_id,choices))}
     for path,value in outputs.items():
         if args.check:
             if not path.exists() or path.read_bytes()!=value:raise ValueError('Nonreproducible construction-set export: '+path.name)

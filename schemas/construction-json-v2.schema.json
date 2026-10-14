@@ -722,7 +722,8 @@
           "enum": [
             "building_default",
             "space_type",
-            "whole_dwelling"
+            "whole_dwelling",
+            "story"
           ]
         },
         "space_type": {
@@ -749,6 +750,10 @@
             "Surface",
             "Adiabatic"
           ]
+        },
+        "source_story_id": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [
@@ -772,6 +777,27 @@
             "not": {
               "required": [
                 "space_type"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "story"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_story_id"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "source_story_id"
               ]
             }
           }
@@ -1233,7 +1259,7 @@
           "additionalProperties": false,
           "properties": {
             "precedence": {
-              "const": "space_type_then_building_default"
+              "const": "space_type_then_story_then_building_default"
             },
             "variant_resolution": {
               "const": "explicit_assignment_id_or_unique_compatible_rule"
@@ -1243,13 +1269,18 @@
             },
             "unmatched_or_ambiguous": {
               "const": "error"
+            },
+            "evidence_id": {
+              "type": "string",
+              "minLength": 1
             }
           },
           "required": [
             "precedence",
             "variant_resolution",
             "source_absent_override",
-            "unmatched_or_ambiguous"
+            "unmatched_or_ambiguous",
+            "evidence_id"
           ]
         },
         "input_sha256": {
@@ -1294,7 +1325,7 @@
               "const": "BEMGen"
             },
             "review_status": {
-              "const": "pending_human_review"
+              "const": "design_accepted"
             }
           },
           "required": [
@@ -1303,6 +1334,13 @@
             "translator_owner",
             "review_status"
           ]
+        },
+        "variant_selections": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       },
       "required": [
@@ -1311,7 +1349,8 @@
         "assignment_policy",
         "input_sha256",
         "source_files",
-        "migration"
+        "migration",
+        "variant_selections"
       ]
     },
     "parameter": {
@@ -1369,7 +1408,8 @@
                           "scope": {
                             "enum": [
                               "building_default",
-                              "space_type"
+                              "space_type",
+                              "story"
                             ]
                           }
                         }
