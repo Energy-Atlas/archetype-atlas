@@ -1,6 +1,6 @@
 # Pure Python program schedule generator design
 
-Date: 2026-10-13. Status: written design for review. Implementation has not started.
+Date: 2026-10-13. Status: approved by the user on 2026-10-13, including annual-total conservation for both source families. Implementation has not started.
 Working branch: `codex/stochastic-schedule-extraction`, based on `c2dd1fd`.
 
 ## Intended result
