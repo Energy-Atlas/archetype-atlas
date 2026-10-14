@@ -5,7 +5,8 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from scripts.common import ROOT,load_json
-from scripts.construction_set_release import load_release,hydrate_context
+from scripts.construction_set_release import hydrate_context
+from scripts.construction_hotel_applicability import load_current_release as load_release
 from scripts.site_smoke import serve
 
 
@@ -44,6 +45,22 @@ def smoke(root,screenshots):
                     page.reload();expect(page.locator('.construction-climate')).to_have_value(climate)
                     page.screenshot(path=str(screenshots/(identity+'.png')))
                     checks.append(identity+': filtered selection, preview, exact frozen copy and reload')
+                from scripts.construction_hotel_applicability import validate_extensions
+                for identity in ('construction-c6985aaff2845cac856a73ab','construction-3d530eb85c2c6cd7c207e60d'):
+                    page.goto(base+'definitions/'+identity+'/?climate=4A')
+                    expect(page.locator('main')).to_contain_text('Atlas-added GuestRoom applicability')
+                    policy=page.get_by_role('link',name='Policy',exact=True)
+                    assert page.request.get(policy.evaluate('e=>e.href')).ok
+                    page.locator('.object-copy').click();page.get_by_role('button',name='Copy construction JSON',exact=True).click()
+                    expect(page.locator('.object-status')).to_contain_text('copied')
+                    value=json.loads(page.evaluate('navigator.clipboard.readText()'));assert validate_extensions(value)>0
+                    selected=next(c for c in release['contexts'].values() if c['construction_set_id']==identity and c['climate_zone']=='4A')
+                    assert value==hydrate_context(release,selected['id'])
+                    page.set_viewport_size({'width':390,'height':844})
+                    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'Hotel mobile overflow'
+                    page.screenshot(path=str(screenshots/(identity+'-hotel-mobile.png')))
+                    page.set_viewport_size({'width':1280,'height':900})
+                checks.append('Hotel generic attachment/inheritance: exact copied JSON, Atlas provenance and working policy downloads')
                 # Reference ambiguity and partial source scope are retained.
                 multiple=next(p for p in release['construction_sets'].values() if len({c['reference_id'] for c in release['contexts'].values() if c['construction_set_id']==p['id'] and c['climate_zone']=='4A'})>1)
                 page.goto(base+'definitions/'+multiple['id']+'/?climate=4A')

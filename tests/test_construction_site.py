@@ -1,5 +1,6 @@
 """Frozen construction delivery, consumer parity and presentation isolation."""
 import gzip
+import hashlib
 import html
 import importlib.util
 import json
@@ -110,6 +111,16 @@ class ConstructionSiteTests(unittest.TestCase):
         files=program_presentation_inputs(self.bundle)['files']
         for path in ('data/releases/v0.2.0/programs.json','scripts/semantics.py','scripts/program_json_aggregation.py','scripts/program_composition.py','schemas/program-json-v2.schema.json'):
             self.assertIn(path,files)
+
+    def test_delivered_applicability_manifest_matches_its_files(self):
+        from scripts.construction_site import install_contract
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);install_contract(root)
+            directory=root/'construction/applicability';manifest=load_json(directory/'manifest.json')
+            for name,entry in manifest['files'].items():
+                self.assertTrue((directory/name).is_file(),'Manifest names missing download: '+name)
+                data=(directory/name).read_bytes()
+                self.assertEqual(hashlib.sha256(data).hexdigest(),entry['sha256']);self.assertEqual(len(data),entry['bytes'])
 
 
 if __name__=='__main__':unittest.main()

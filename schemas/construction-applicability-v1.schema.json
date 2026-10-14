@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://energy-atlas.github.io/archetype-atlas/contracts/construction-applicability-v1.schema.json",
+  "title": "Atlas-added hotel GuestRoom applicability receipt extension 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "origin", "space_type", "mode", "source_space_type_instantiated", "evidence_id"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "origin": {"const": "atlas_added_applicability"},
+    "space_type": {"const": "GuestRoom"},
+    "mode": {"enum": ["attach_source_recipe", "inherit_existing_building_story_rules"]},
+    "source_space_type_instantiated": {"type": "boolean"},
+    "evidence_id": {"type": "string", "minLength": 1}
+  }
+}

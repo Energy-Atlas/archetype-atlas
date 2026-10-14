@@ -10,7 +10,8 @@ from scripts.definition_contract import canonical
 from scripts.definition_site import generate,write
 from scripts.catalogue_names import building_label
 from scripts.object_site import JSONStore,json_markup,PREFIX
-from scripts.construction_set_release import load_release,OUTPUT
+from scripts.construction_set_release import OUTPUT
+from scripts.construction_hotel_applicability import load_current_release as load_release
 from scripts.construction_set_export import dependency_closure
 
 
@@ -83,6 +84,11 @@ def generate_constructions(release,bundle,root):
         page+=f'`{identity}` · Construction set · {esc(profile["scope"])} · {esc(source["template"])} · {esc(source["source_family"])}\n\n'
         page+='One set contains its source-supported exterior and interior components. Select a climate and source reference to inspect or copy complete **construction JSON v2**. Source conditions and fixed reference ACH remain explicit. BEMGen supplies actual model geometry.\n\n'
         if profile['scope']=='space_type':page+='This is a partial source space set; it is not a complete building set.\n\n'
+        additions=[d['atlas_added_applicability'] for rows in packet['selector_receipts'].values() for d in rows if 'atlas_added_applicability' in d]
+        if additions:
+            mode=additions[0]['mode']
+            page+='**Atlas-added GuestRoom applicability:** '+('The source generic recipe is attached as an additional floor-agnostic construction option; all four specific variants are retained.' if mode=='attach_source_recipe' else 'A generic GuestRoom inherits this set’s existing building/story construction rules; source space-specific overrides remain separate.')
+            page+=' This is an explicit Atlas applicability decision. Physics and the single building infiltration reference are unchanged. [Policy](../construction/applicability/policy.json).\n\n'
         page+=markup+'\n\n## Component resources\n\n'
         page+='| Component type | Available assembly resources |\n|---|---|\n'
         roles={}
@@ -149,6 +155,13 @@ def install_contract(root,include_resources=True):
 Contract **2.0.0**. One construction set supplies all source-supported above-ground
 component types, fixed reference infiltration, materials and provenance.
 
+Applicability release **v2.1.0** adds explicit generic hotel GuestRoom support.
+SmallHotel 2019 attaches its native generic recipe and retains all four specific
+variants. Older SmallHotel sets declare inheritance through their existing
+building/story rules. Selector receipts mark `atlas_added_applicability`, with
+origin, mode, original source-instantiation status and an evidence reference.
+No program loads, physics or infiltration values are changed.
+
 - [Construction-set schema](../contracts/construction-json-v2.schema.json)
 - [Normalized catalogue schema](../contracts/construction-catalogue-v2.schema.json)
 - [Complete Medium Office example](../examples/construction/medium-office.json)
@@ -156,6 +169,8 @@ component types, fixed reference infiltration, materials and provenance.
 - [Source coverage](../construction/coverage.json)
 - [All assembly resources](../construction/assemblies/index.md)
 - [Pinned source retrieval](../construction/source-lock.json)
+- [Atlas hotel applicability policy](../construction/applicability/policy.json)
+- [Applicability receipt extension schema](../contracts/construction-applicability-v1.schema.json)
 
 ## Select and copy
 
@@ -207,6 +222,19 @@ production publication. Preserve source license notices when reusing artifacts.
     write(root,'construction/source-lock.json',(OUTPUT/'sources/construction-v2-source-lock.json').read_text(encoding='utf-8'))
     for path in (OUTPUT/'sources/licenses').glob('*.txt'):
         write(root,'notices/construction/'+path.name,path.read_text(encoding='utf-8'))
+    from scripts.construction_hotel_applicability import OUTPUT as applicability,SCHEMA
+    write(root,'contracts/'+SCHEMA.name,SCHEMA.read_text(encoding='utf-8'))
+    delivered={}
+    for name in ('overlay.json','policy.json','coverage.json','README.md','construction-applicability-v1.schema.json'):
+        # Publish an accurate delivery manifest for the static-download filenames.
+        target='README.txt' if name=='README.md' else name
+        content=(applicability/name).read_bytes();write(root,'construction/applicability/'+target,content.decode('utf-8'))
+        delivered[target]={'sha256':hashlib.sha256(content).hexdigest(),'bytes':len(content)}
+    delivery={'schema_version':'1.0.0','kind':'construction_applicability_site_delivery','release':'v2.1.0',
+        'base_release':'v2.0.0','source_manifest_sha256':hashlib.sha256((applicability/'manifest.json').read_bytes()).hexdigest(),
+        'interpretation_note':'Static delivery of the immutable applicability delta; README.md is served byte-identically as README.txt. The extension schema is also served under contracts/.',
+        'files':delivered}
+    write(root,'construction/applicability/manifest.json',canonical(delivery).decode())
 
 
 def program_presentation_inputs(bundle):

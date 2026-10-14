@@ -1,7 +1,16 @@
 # Construction-set JSON 2: unified, context-selected export
 
 Status: both examples accepted 2026-10-14; v2.0.0 frozen on the feature branch.
-Site integration and publication remain pending.
+Local site integration is complete; protected-main publication remains pending.
+
+The current v2.1.0 data delta adds [Atlas hotel GuestRoom applicability](adr/0023-atlas-hotel-guestroom-applicability.md)
+over the immutable v2.0.0 freeze. Consumer schema remains 2.0.0. The typed
+`atlas_added_applicability` selector-receipt extension records attachment of the
+native SmallHotel 2019 generic recipe or inheritance through older SmallHotel
+building/story rules. All four specific variants, source physics and infiltration
+remain unchanged. Load current data with
+`scripts.construction_hotel_applicability.load_current_release()`, then use the
+existing `hydrate_context()` API. The original frozen loader remains unchanged.
 
 One `construction_set` describes the above-ground construction component types
 for a selected source variant. Commercial and residential exports share the same

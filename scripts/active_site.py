@@ -68,7 +68,7 @@ def generate_active_site(bundle, target, publish=True):
             (stage / 'contracts').mkdir(exist_ok=True);shutil.copyfile(src, stage / 'contracts' / src.name)
         shutil.copytree(ROOT / 'docs/examples/program-json-v3', stage / 'examples')
         from scripts.construction_site import generate_constructions,install_contract,projection
-        from scripts.construction_set_release import load_release
+        from scripts.construction_hotel_applicability import load_current_release as load_release
         construction_ids=set(load_json(ROOT/'data/construction-releases/v2.0.0/index.json')['construction_sets'])
         has_constructions=construction_ids <= {r['id'] for r in bundle['constructions']}
         if has_constructions:

@@ -442,3 +442,32 @@ The source JSON, frozen releases and schemas remain unchanged. Staged inspection
 and security audit precede a reversible local commit. No push, GitHub workflow,
 PR, Pages deployment or production publication is part of this task. See the
 [local integration plan](../superpowers/plans/2026-10-14-construction-site-integration.md).
+
+## Hotel generic GuestRoom applicability — 2026-10-14
+
+Implemented the user's approved generic-room attachment as data release v2.1.0,
+a checksum-locked delta over immutable v2.0.0. Seven SmallHotel building sets /
+143 contexts are covered: 21 attach the existing same-template native 2019
+GuestRoom recipe; 122 explicitly declare GuestRoom inheritance through existing
+building/story rules. All four specific 2019 variants, native rule order,
+materials/assemblies and the single ACH reference remain unchanged. LargeHotel
+already has native generic definitions. Typed `atlas_added_applicability`
+metadata on selector receipts records Atlas origin, mode, source-instantiation
+status and locked evidence; consumer schema stays 2.0.0. See
+[ADR 0023](../adr/0023-atlas-hotel-guestroom-applicability.md).
+
+Fresh review found incorrect relative download links in focused rendering,
+missing geometry-input hash verification and an inaccurate static delivery
+manifest. Negative regressions preceded repairs; 43 focused Python and two Node
+tests pass. All affected contexts pass schema/physical/reference/provenance
+checks and every delta artifact reproduces exactly. Browser acceptance checks
+exact generic/inherited JSON copies, policy downloads, selection errors,
+integrity/clipboard fallbacks, mobile themes and no-JavaScript lists. Screenshots
+were inspected. All 232 refreshed pages pass link checks, and all construction
+packet/resource bindings match the current locked data.
+
+Refreshed 224 construction pages / 4,798 contexts locally using configured
+Markdown rendering and existing theme shells, with zero program-page generation.
+No full site/native/program build, remote push, CI/CD or deployment. Original
+v1/v2 frozen data/schemas, source exporters, program inputs and workflows are
+unchanged. Staged review and audit precede a reversible local feature commit.

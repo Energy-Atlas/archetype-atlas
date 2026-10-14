@@ -33,13 +33,16 @@ class Links(HTMLParser):
                 self.links.append('/archetype-atlas/' + descriptor['href'])
 
 
-def check_links(root, prefix='/archetype-atlas/'):
+def check_links(root, prefix='/archetype-atlas/',paths=None):
     root = Path(root).resolve()
     if not (root/'index.html').is_file():
         return ['Missing site index.html; build is empty or incomplete']
     parsed = {}
     errors = []
-    for p in root.rglob('*.html'):
+    for p in root.rglob('*.html') if paths is None else paths:
+        p=Path(p).resolve()
+        if not p.is_relative_to(root):
+            errors.append('Selected link-check path escapes site');continue
         doc = Links()
         doc.feed(p.read_text(encoding='utf-8'))
         parsed[p.resolve()] = doc
