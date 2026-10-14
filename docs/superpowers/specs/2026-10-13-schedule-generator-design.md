@@ -13,10 +13,13 @@ schedule slots instead of embedding a particular realization.
 
 ResStock supplies stochastic residential time allocation, including apartment
 units. Actual program definitions supply load magnitudes and their physical
-bases. Where a definition expresses annual energy or volume, changing the seed
-must change its allocation in time without changing its annual total. Commercial
-operating hours are sampled from the seed using applicable ComStock source
-distributions, and its own transformations coordinate the related schedules.
+bases. Both residential and commercial generated loads preserve the definition's
+annual energy or volume. A definition with a reference magnitude and schedule
+supplies its annual target through their integral. Commercial operating hours
+are sampled from the seed using applicable ComStock source distributions, and
+its own transformations coordinate the related schedules. These samples change
+temporal allocation; effective magnitudes are rescaled so they do not change
+the annual total.
 
 The generator supplies energy semantics, not geometry or population weights.
 Retain existing-stock and code/prototype identity, source-fixed channels,
@@ -42,6 +45,10 @@ remain immutable reference cases. Production integration follows the protected
   can contain any supported number of members, including repeated units.
 - Scale annual-energy and annual-volume magnitudes against the generated
   schedule integral rather than reusing a magnitude fitted to another realization.
+- Apply annual-total conservation to both residential and commercial loads,
+  including commercial definitions originally expressed as design power or
+  power density with a reference schedule. Sampled operating hours change the
+  temporal distribution only.
 
 ## Existing repository and primary mechanisms
 
@@ -132,7 +139,7 @@ physical inputs cannot be guessed from names, population prevalence or missing
 values. Commercial operating hours are outputs of seeded sampling. Record every
 sampled parameter and its distribution row.
 
-## Residential generation and load scaling
+## Annual allocation and load scaling
 
 Port the pinned activity-chain and end-use event mechanism together with its
 calibration resources. Preserve occupancy/end-use relationships, internal random
@@ -141,8 +148,9 @@ lighting location inputs and ceiling-fan weather dependence. Appliance power
 samples can influence a generated shape; they do not replace the program's
 annual load definition.
 
-For each time-allocated energy demand, let `g[h]` be the emitted normalized
-generated shape and `H_g = sum(g[h]) * 1 hour` its equivalent full-load hours.
+For each residential or commercial time-allocated energy demand, let `g[h]` be
+the emitted normalized generated shape and `H_g = sum(g[h]) * 1 hour` its
+equivalent full-load hours.
 With a direct annual definition `E_Wh`, use:
 
 ```text
@@ -188,9 +196,12 @@ remain unresolved and block a ready realization. There is no arbitrary cap that
 silently changes annual totals; reference physical nameplate limits, if supplied,
 must be checked and infeasible combinations reported.
 
-The integral adjustment applies to annual energy/volume allocations, including
-the accepted apartment hybrid's reference-derived budgets. It does not scale
-temperatures, activity W/person, installed capacity or the number of residents.
+The integral adjustment applies to both source families' annual energy/volume
+allocations, including reference-derived commercial and apartment budgets.
+Conservation refers to the load-weighted annual integral: the product of effective
+magnitude and schedule sum. A fractional shape's sum can change while that product
+remains constant. It does not scale temperatures, activity W/person, installed
+capacity or the number of residents.
 Occupancy fractions describe actual modeled residents and remain bounded by one;
 their stochastic person-hours can vary. Preserve fixed/background refrigeration
 and source-defined zero-occupant behavior through their applicable companion
@@ -220,13 +231,21 @@ source-fixed schedules when the method does not transform them. Handle constant
 profiles, zero/full-day operation, overnight wrapping, weekday/weekend distinctions,
 ramps, rule order and design-day treatment explicitly.
 
-Commercial design-power definitions retain their source magnitude semantics, so
-sampled operating hours can change annual consumption as in the source method.
-An explicitly annual-energy-defined commercial demand still uses its annual
-budget. The residential substitution's conservation rule must not silently cancel
-the intended commercial operating-hour variability. Record the magnitude method
-on every binding: `annual_budget`, `reference_budget_substitution`,
-`source_design_magnitude`, or a non-energy control method.
+For commercial definitions expressed as design power or power density, calculate
+the annual target from the unchanged source/reference magnitude and its reference
+schedule, before applying sampled operating hours or any sampled shape adjustment.
+After the source transformation, recompute the effective magnitude using the
+generated schedule integral. Longer sampled hours distribute the same annual
+target across more time; shorter sampled hours concentrate it. An explicitly
+annual-energy-defined commercial demand uses that annual target directly.
+
+This final normalization is the user's atlas experimental policy. It is separate
+from the upstream ComStock shape transformation and must not be presented as
+unmodified ComStock annual-consumption behavior. Preserve the original source
+magnitude and both schedule integrals in provenance. Record the magnitude method
+on every binding: `annual_budget`, `reference_budget_substitution`, or a
+non-energy control method. There is no active commercial design-magnitude
+exception to annual-total conservation.
 
 One coordinated commercial operating group receives one sample; room/member
 seeds do not independently shift that group. Distinct tenants can supply distinct
@@ -325,9 +344,11 @@ before expanding. The test and evidence set must demonstrate:
   thermostat ordering and preserved date/design-day semantics;
 - same-request reproduction, changed-seed behavior, stable constituent keys,
   stable substreams under reordering/insertion and coordinated commercial groups;
-- annual energy and water-volume conservation where required, correct new
+- annual energy and water-volume conservation for both residential and commercial
+  loads across different seeds and sampled hours, correct new
   magnitudes when schedule sums change and emitted-value rounding consistency;
-- reference design magnitudes retained for source-native commercial loads;
+- reference commercial design magnitudes retained in provenance, with final
+  effective magnitudes rescaled to their unchanged reference annual budgets;
 - arbitrary mixture member counts, per-hour trajectory conservation, fuel/host
   separation, shared-service deduplication and annual heat partitions;
 - explicit behavior for zero/absent/unknown inputs, zero generated integrals,
@@ -340,6 +361,9 @@ the shipped generator and its ordinary tests run in Python with local resources.
 Reference execution is opt-in and its results carry runtime/source hashes.
 A statistical check alone is insufficient to claim a faithful port; retain
 traceable same-input component comparisons and disclose intentional adaptations.
+Compare commercial source transformations before atlas normalization, then test
+the final normalization separately for annual-total conservation. A normalized
+atlas output is not an unmodified upstream commercial realization.
 
 Run the repository's full schema, physical, referential, schedule, provenance,
 release-integrity and reproducibility checks before declaring delivery complete.
