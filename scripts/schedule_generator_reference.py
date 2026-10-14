@@ -1,17 +1,113 @@
 """Opt-in independent Ruby/OpenStudio capture; ordinary generation remains offline Python."""
 import argparse
 import hashlib
+import os
 from pathlib import Path
 import subprocess
 import tarfile
 from atlas_schedules.canonical import canonical
 from atlas_schedules.errors import GeneratorError
-from atlas_schedules.resources import strict_json, ResourceSet
+from atlas_schedules.resources import strict_json, ResourceSet, safe_path
 from scripts.common import ROOT
 from scripts.runtime import extract_verified
 
 _LOCK=ROOT/'sources/schedule-generator-reference-lock.json'
 _VECTORS=ROOT/'data/schedule-generator/reference-vectors.json'
+
+def _long_path(path):
+    path=Path(path).resolve()
+    return Path('\\\\?\\'+str(path)) if os.name=='nt' else path
+
+def residential_capture_inputs(resources):
+    """Explicit scientific probes; no values inherited by the runtime kernel."""
+    installed={key:True for key in ('dishwasher','clothes_washer','clothes_dryer','cooking_range',
+                                   'plug_loads_other','plug_loads_tv','ceiling_fan','garage')}
+    base={'year':2007,'residents':1,'state':'NC','latitude':35.741,'longitude':-81.389,
+          'time_zone_utc_offset':-5,'weather_id':'USA_NC_Hickory.Rgnl.AP.723145_TMY3','installed':installed}
+    import copy
+    probes=[('one',42,{}),('multiple',84,{'residents':3}),
+            ('weather',42,{'weather_id':'USA_AK_Anchorage-Merrill.Field.702735_TMY3'}),
+            ('state',42,{'state':'CA'}),('location',42,{'latitude':61.21,'longitude':-149.85,'time_zone_utc_offset':-9}),
+            ('sparse',42,{'installed':{k:False for k in installed}}),('zero',42,{'residents':0}),
+            ('different_seed',0,{'year':2009,'residents':2})]
+    result=[]
+    for key,seed,overrides in probes:
+        inputs=copy.deepcopy(base);inputs.update(overrides)
+        weather=resources.get('weather',inputs['weather_id'])
+        result.append({'case_id':key,'unit_seed':seed,'inputs':inputs,'drybulb_C':weather['drybulb_C']})
+    return result
+
+def load_residential_reference():
+    lock=_read(ROOT/'sources/schedule-generator-residential-reference-lock.json')
+    data=_verify(ROOT/lock['vectors']['source_path'],lock['vectors'])
+    result=strict_json(data,'residential-reference')
+    if result['provenance']!=lock['capture_provenance']:
+        raise GeneratorError('source_integrity','residential-reference','Capture provenance mismatch')
+    return result
+
+def capture_residential(runtime_archive, resstock_archive, destination):
+    lock=_read(ROOT/'sources/runtime-lock.json')['archives'];destination=Path(destination)
+    if destination.exists():raise GeneratorError('source_integrity',str(destination),'Capture destination must be new')
+    _verify(runtime_archive,lock[0]);_verify(resstock_archive,lock[1]);destination.mkdir(parents=True)
+    selected=[lock[0]['root']+'/'+part for part in ('bin/','Ruby/','lib/','LICENSE.md','copyright.txt')]
+    runtime=extract_verified(runtime_archive,lock[0]['sha256'],destination/'runtime',include=selected)
+    source_selected=[lock[1]['root']+'/resources/hpxml-measures/'+part for part in
+                     ('BuildResidentialScheduleFile/','HPXMLtoOpenStudio/resources/')]+[lock[1]['root']+'/LICENSE.md']
+    # Strip only the archive root in this fresh extraction to stay within Windows paths.
+    source=(ROOT/'build'/('rs-'+hashlib.sha256(str(destination.resolve()).encode()).hexdigest()[:12])).resolve()
+    if source.exists():raise GeneratorError('source_integrity',str(source),'Source extraction must be new')
+    source.mkdir()
+    with tarfile.open(resstock_archive) as archive:
+        for member in archive.getmembers():
+            safe_path(member.name.rstrip('/'))
+            if not (member.isfile() or member.isdir()):
+                raise GeneratorError('source_integrity',member.name,'Non-regular archive member')
+            if not any(member.name==p.rstrip('/') or member.name.startswith(p.rstrip('/')+'/') for p in source_selected):continue
+            target=source/member.name.split('/',1)[1]
+            if not target.resolve().is_relative_to(source):raise GeneratorError('source_integrity',member.name,'Unsafe source target')
+            if member.isdir():_long_path(target).mkdir(parents=True,exist_ok=True)
+            else:
+                _long_path(target.parent).mkdir(parents=True,exist_ok=True);_long_path(target).write_bytes(archive.extractfile(member).read())
+    executable=runtime/lock[0]['root']/'bin/openstudio.exe'
+    manifest=_read(ROOT/'atlas_schedules/data/manifest.json');resources=ResourceSet.load(manifest['resource_set_id'])
+    receipts=[dict(e,provenance=resources.get(e['kind'],e['key']).get('provenance')) for e in manifest['resources']
+              if e['kind']=='residential' or e['kind']=='weather']
+    # Verify executed Ruby resource files against the packaged locked source records.
+    for e in receipts:
+        if e['kind']!='residential':continue
+        receipt=e['provenance']
+        if receipt.get('source_id')!='resstock':continue
+        path=source/receipt['source_path'].split('/',1)[1]
+        if hashlib.sha256(_long_path(path).read_bytes()).hexdigest()!=receipt['source_sha256']:
+            raise GeneratorError('source_integrity',str(path),'Executed resource mismatch')
+    inputs=residential_capture_inputs(resources);input_path=(destination/'input.json').resolve()
+    input_path.write_bytes(canonical(inputs));harness=ROOT/'scripts/reference_schedule_generator.rb'
+    output=(destination/'ruby-output.json').resolve()
+    completed=subprocess.run([str(executable.resolve()),str(harness),'--residential',str(source.resolve()),str(input_path),str(output)],
+                             cwd=ROOT,capture_output=True,text=True,check=False)
+    (destination/'execution.log').write_text(completed.stdout+completed.stderr,encoding='utf-8')
+    completed.check_returncode()
+    capture=_read(output)
+    if not capture['ruby_description'].startswith('ruby 3.2.2 '):raise GeneratorError('source_integrity','/runtime','Wrong Ruby version')
+    provenance={'source_revision':lock[1]['version'],'source_archive_sha256':lock[1]['sha256'],
+        'runtime_archive_sha256':lock[0]['sha256'],'runtime_version':lock[0]['version'],
+        'executed_openstudio_sha256':hashlib.sha256(executable.read_bytes()).hexdigest(),
+        'harness_sha256':hashlib.sha256(harness.read_bytes()).hexdigest(),'input_sha256':hashlib.sha256(input_path.read_bytes()).hexdigest(),
+        'resource_set_id':resources.resource_set_id,'resource_receipts':receipts,
+        'runtime_extraction_selection':selected,'source_extraction_selection':source_selected,
+        'source_locator':'schedules.rb:simulate_occupant_activities/create_stochastic_schedules/fill_plug_loads_schedule/fill_lighting_schedule; measure.rb:zero resident skip',
+        'field_locator':'cases[i].resident_states/decisions/main_state/channels; exact upstream method results',
+        'original_unit':'state ID; 15-minute duration; minute offset; dimensionless hourly fraction',
+        'original_value':'Independent upstream full-year traces and raw continuous channels retained',
+        'transformation':'one-hot matrices encoded as state IDs; Ruby MT packed integer encoded as uint32 words; weather monthly mean C converted to F by source UnitConversions',
+        'extraction_date':'2026-10-14','interpretation_note':'Source execution stops at first sink event method, after activity/shape generation. The zero-resident source measure skips generation; its fixture explicitly adapts that skip to zero occupancy only, with no source-generated other loads. No sizing or EnergyPlus. No export rounding.',
+        'comparison_policy':_read(ROOT/'sources/schedule-generator-policy.json')}
+    result={'schema_version':'1.0.0','ruby_description':capture['ruby_description'],'provenance':provenance,'cases':capture['cases']}
+    data=canonical(result);(destination/'residential-vectors.json').write_bytes(data)
+    candidate={'schema_version':'1.0.0','capture_provenance':provenance,'vectors':{
+        'source_path':'data/schedule-generator/residential-vectors.json','sha256':hashlib.sha256(data).hexdigest(),'size_bytes':len(data)}}
+    (destination/'residential-reference-lock.json').write_bytes(canonical(candidate))
+    print(completed.stdout.strip());return result
 
 def _read(path):
     return strict_json(Path(path).read_bytes(),str(path))
@@ -103,12 +199,21 @@ def capture_reference(runtime_archive: Path, resstock_archive: Path, standards_a
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-only',action='store_true')
+    parser.add_argument('--family',choices=['foundation','residential'],default='foundation')
     parser.add_argument('--runtime-archive',type=Path)
     parser.add_argument('--resstock-archive',type=Path)
     parser.add_argument('--standards-archive',type=Path)
     parser.add_argument('--ruby-source-cache',type=Path)
     parser.add_argument('--destination',type=Path)
     args=parser.parse_args()
+    if args.family=='residential':
+        if args.verify_only:
+            print('Verified residential cases:',len(load_residential_reference()['cases']))
+        else:
+            if any(p is None for p in [args.runtime_archive,args.resstock_archive,args.destination]):
+                parser.error('Residential capture requires runtime/resstock archives and a new destination')
+            capture_residential(args.runtime_archive,args.resstock_archive,args.destination)
+        return
     if args.verify_only:
         result=load_reference_vectors();print('Verified independently captured vectors:',len(result['random_vectors']),len(result['rule_vectors']))
     else:

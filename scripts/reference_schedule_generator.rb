@@ -2,6 +2,95 @@
 # Opt-in reference capture only; never called during packaged Python generation.
 require 'json'
 require 'date'
+if ARGV[0] == '--residential'
+  require 'ostruct'
+  _, source, input_path, output_path = ARGV
+  require File.join(source, 'resources/hpxml-measures/BuildResidentialScheduleFile/measure')
+  raise 'Unexpected Ruby runtime' unless RUBY_VERSION == '3.2.2'
+  module ActivityCapture
+    def simulate_occupant_activities
+      @capturing_activity = true
+      @capture_types = []
+      @capture_decisions = []
+      result = super
+      @capture_traces = result.map { |matrix| matrix.to_a.map { |row| row.index(1) } }
+      @capturing_activity = false
+      result
+    end
+    def fill_activity_duration_precomputed_vals(map, type)
+      @capture_types << type if @capturing_activity
+      super
+    end
+    def sample_activity_duration(prng, map, type, state, daytype, hour, precomputed = nil)
+      result = super
+      @capture_decisions << [state, result] if @capturing_activity
+      result
+    end
+    def generate_sink_schedule(traces)
+      state, left, = @prngs[:main].send(:marshal_dump)
+      @capture_result = {resident_states: @capture_traces, occupant_types: @capture_types,
+        decisions: @capture_decisions, unit_offset_minutes: @random_offset,
+        main_state: {algorithm: 'ruby-3.2.2-mt19937-v1', seed: @random_seed,
+          state: 624.times.map { |i| (state >> (32 * i)) & 0xffffffff }, index: 625 - left},
+        enduse_states: @prngs.reject { |key, _| key == :main }.to_h { |key,rng|
+          words, remaining, seed = rng.send(:marshal_dump)
+          [key,{algorithm: 'ruby-3.2.2-mt19937-v1', seed: seed,
+            state: 624.times.map { |i| (words >> (32 * i)) & 0xffffffff }, index: 625 - remaining}]
+        }, channels: @schedules.dup}
+      throw :captured_shapes
+    end
+    attr_reader :capture_result
+  end
+  ScheduleGenerator.prepend(ActivityCapture)
+  cases = JSON.parse(File.read(input_path)).map do |item|
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
+    hpxml = HPXML.new
+    hpxml.buildings.add(building_id: item.fetch('case_id'))
+    bldg = hpxml.buildings[0]
+    installed = item.fetch('inputs').fetch('installed')
+    {'dishwasher' => :dishwashers, 'clothes_washer' => :clothes_washers,
+     'clothes_dryer' => :clothes_dryers, 'cooking_range' => :cooking_ranges,
+     'ceiling_fan' => :ceiling_fans}.each do |key, collection|
+      bldg.send(collection).add(id: key) if installed.fetch(key)
+    end
+    {'plug_loads_other' => 'other', 'plug_loads_tv' => 'TV other'}.each do |key,type|
+      bldg.plug_loads.add(id: key, plug_load_type: type) if installed.fetch(key)
+    end
+    if installed.fetch('garage')
+      bldg.walls.add(id: 'garage', interior_adjacent_to: HPXML::LocationGarage,
+        exterior_adjacent_to: HPXML::LocationOutside)
+    end
+    inputs = item.fetch('inputs')
+    year = inputs.fetch('year')
+    temperatures = item.fetch('drybulb_C')
+    start = 0
+    monthly = Calendar.num_days_in_months(year).map do |days|
+      values = temperatures[start, days * 24]; start += days * 24
+      UnitConversions.convert(values.sum / values.size, 'C', 'F')
+    end
+    weather = OpenStruct.new(data: OpenStruct.new(MonthlyAvgDrybulbs: monthly))
+    generator = ScheduleGenerator.new(runner: runner, hpxml_bldg: bldg, state: inputs.fetch('state'),
+      column_names: ScheduleGenerator.export_columns, random_seed: item.fetch('unit_seed'), minutes_per_step: 60,
+      steps_in_day: 24, total_days_in_year: 365, sim_year: year, sim_start_day: DateTime.new(year,1,1),
+      debug: false, append_output: false)
+    args = {geometry_num_occupants: inputs.fetch('residents'),
+      resources_path: File.join(source,'resources/hpxml-measures/BuildResidentialScheduleFile/resources'),
+      latitude: inputs.fetch('latitude'), longitude: inputs.fetch('longitude'),
+      time_zone_utc_offset: inputs.fetch('time_zone_utc_offset')}
+    if inputs.fetch('residents') == 0
+      result = {resident_states: [], occupant_types: [], decisions: [], unit_offset_minutes: nil,
+        main_state: nil, enduse_states: {}, channels: {'occupants' => [0.0] * 8760}, status: 'upstream_zero_residents_skip'}
+    else
+      catch(:captured_shapes) { generator.create(args: args, weather: weather) }
+      result = generator.capture_result.merge(status: 'executed_source_through_coordinated_shapes')
+    end
+    result.merge(case_id: item.fetch('case_id'), inputs: inputs, unit_seed: item.fetch('unit_seed'),
+      fan_months: monthly.map { |v| v > 63.0 ? 1 : 0 })
+  end
+  File.write(output_path, JSON.generate({ruby_description: RUBY_DESCRIPTION, cases: cases}) + "\n")
+  puts "Captured #{cases.size} independent residential activity/shape cases"
+  exit
+end
 input_path, standards_method, output_path = ARGV
 input = JSON.parse(File.read(input_path))
 raise 'Unexpected Ruby runtime' unless RUBY_VERSION == '3.2.2'
