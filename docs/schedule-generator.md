@@ -1,6 +1,6 @@
-# Offline schedule generator v0.1.0
+# Offline schedule generator v0.1.1
 
-The [immutable v0.1.0 release](../data/generator-releases/v0.1.0/manifest.json) contains an ordinary independent `generator.zip`. Copy the ZIP and a request JSON to a machine with Python 3.11 or newer. Generation uses only Python's standard library, without Ruby, OpenStudio, EnergyPlus, source downloads or network access:
+The [immutable v0.1.1 release](../data/generator-releases/v0.1.1/manifest.json) contains an ordinary independent `generator.zip`. Copy the ZIP and a request JSON to a machine with Python 3.11 or newer. Generation uses only Python's standard library, without Ruby, OpenStudio, EnergyPlus, source downloads or network access:
 
 ```powershell
 python -I -S generator.zip --request medium-office-request.json --output bundle.json
@@ -18,12 +18,14 @@ Mixtures generate their individual constituents first. Normalized weights combin
 
 M1 advertises exactly [ten source-certified cases](../sources/schedule-generator-m1-scope.json): six residential source fixtures, two Office source/reviewed programs and two separate Plenum source/reviewed programs. Eight are active. Both Plenums have source-backed accepted-absence receipts and zero schedules; each still counts toward the ten-case denominator. Their Medium Office sampling configuration association is retained. Every active/fixed/control channel is included. The [coverage report](validation/schedule-generator-coverage.json) lists the remaining 1,890 program and 378 composition identities individually as unsupported or requiring a binding. An outside-scope family request fails clearly. Broader catalogue extraction remains open.
 
+Each included channel's coverage receipt points to a packaged program-evidence or schedule-provenance resource, with its JSON pointer and source-record SHA-256. The current coverage gate resolves those pointers against the pinned resource set and rejects absent or dangling evidence. The two inactive Plenum records retain their separate source-backed absence receipts. [v0.1.0](../data/generator-releases/v0.1.0/manifest.json) remains immutable and supports historical integrity and reproduction with its own runtime, but its coverage metadata left fourteen Office channel receipts null and is superseded for current completeness claims by v0.1.1.
+
 The release manifest pins SHA-256 and byte size for the ZIP and every embedded member, including package-local request/program/bundle schemas, 310 resource records, the resource manifest, source locks, exact M1 scope, complete commercial sampling audit, examples and upstream license notices. Original repository work remains unlicensed by user choice. The ZIP has no raw source archive, development runtime, credential or cache path. A frozen target is immutable; a correction requires a new release version.
 
 ```powershell
 python -m scripts.schedule_generator_coverage --check --scope m1
-python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.0 --verify
-python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.0 --reproduce
+python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.1 --verify
+python -m scripts.schedule_generator_release --target data/generator-releases/v0.1.1 --reproduce
 ```
 
 Verification hashes immutable members/resources. Reproduction executes **this release's own embedded runtime and resources** and compares regenerated results against its embedded complete reference: exact source identity, inputs, evidence, RNG/discrete decisions and included channels, with named continuous tolerances from `sources/schedule-generator-policy.json` (fractions `1e-6/1e-8`, temperature °C `0/1e-4`, activity W/person `1e-6/1e-6`, annual energy `1e-8/1e-8`, annual volume m3 `1e-8/1e-12` relative/absolute). Source arithmetic has `1e-8/1e-8`. A three-significant-digit source CSV reference additionally admits its documented quantization interval. JSON formatting, path and `rng.python_version` are administrative; generated JSON/ZIP byte hashes are not a scientific equality test.

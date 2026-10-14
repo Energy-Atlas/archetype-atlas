@@ -12,8 +12,8 @@ class GeneratorReleaseTests(unittest.TestCase):
     def test_frozen_integrity_and_numerical_reproduction(self):
         from scripts.schedule_generator_release import freeze_generator, verify_generator, reproduce_generator
         with tempfile.TemporaryDirectory() as directory:
-            target = Path(directory) / 'v0.1.0'
-            manifest = freeze_generator(target, '0.1.0')
+            target = Path(directory) / 'v0.1.1'
+            manifest = freeze_generator(target, '0.1.1')
             self.assertEqual(verify_generator(target), [])
             self.assertEqual(reproduce_generator(target), [])
             self.assertIn('generator.zip', manifest['files'])
@@ -22,7 +22,7 @@ class GeneratorReleaseTests(unittest.TestCase):
                 self.assertIn('sources/schedule-generator-m1-scope.json', archive.namelist())
                 self.assertIn('sources/licenses/resstock.txt', archive.namelist())
             with self.assertRaises(ValueError):
-                freeze_generator(target, '0.1.0')
+                freeze_generator(target, '0.1.1')
             blob = target / 'generator.zip'
             content = bytearray(blob.read_bytes())
             content[-40] ^= 1
@@ -43,6 +43,15 @@ class GeneratorReleaseTests(unittest.TestCase):
                 packaged_coverage = json.loads(archive.read('docs/validation/schedule-generator-coverage.json'))
                 self.assertEqual(packaged_coverage['scope']['case_count'], 1)
                 self.assertEqual(packaged_coverage['resource_set_id'], manifest['resource_set_id'])
+                from atlas_schedules.resources import ResourceSet
+                from scripts.schedule_generator_coverage import coverage_errors
+                with tempfile.TemporaryDirectory() as extracted:
+                    for name in archive.namelist():
+                        if name.startswith('atlas_schedules/data/'):
+                            archive.extract(name, extracted)
+                    packaged_resources = ResourceSet(Path(extracted) / 'atlas_schedules/data',
+                                                     manifest['resource_set_id'])
+                    self.assertEqual(coverage_errors(packaged_coverage, packaged_resources), [])
                 example = json.loads(archive.read('references/all-cases-request.json'))
                 self.assertEqual(example['params']['resource_set_id'], manifest['resource_set_id'])
                 self.assertNotIn('docs/examples/schedule-generator-v1/medium-office-request.json', archive.namelist())

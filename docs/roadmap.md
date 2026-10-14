@@ -67,7 +67,7 @@ unknowns. Geometry, assignment and sizing remain consumer responsibilities.
 
 ## 3. Discuss shipping schedule generators
 
-The [independent v0.1.0 generator](../data/generator-releases/v0.1.0/manifest.json)
+The [independent v0.1.1 generator](../data/generator-releases/v0.1.1/manifest.json)
 delivers the exact ten cases in the [versioned M1 scope](../sources/schedule-generator-m1-scope.json):
 six residential fixtures, two active Medium Office source/reviewed cases and two
 source-backed inactive Plenum source/reviewed cases. The [contract](schedule-generator.md)
@@ -76,6 +76,9 @@ source-certified channels, reproduction policy and unsupported catalogue records
 Expanding remaining families, templates and weather bindings remains open and
 requires new immutable releases. Site design and production publication remain
 separate work.
+The immutable v0.1.0 artifact remains historically verifiable and reproducible
+with its own runtime, while v0.1.1 supersedes its incomplete channel-evidence
+coverage metadata.
 
 - [x] Compare a versioned executable generator with a compact parametric recipe
   and the current fixed realization. Identify which schedule families each

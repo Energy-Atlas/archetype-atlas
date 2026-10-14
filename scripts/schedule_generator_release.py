@@ -16,7 +16,7 @@ from scripts.schedule_generator_coverage import build_coverage, coverage_errors
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / 'build' / 'schedule-generator-shipment'
-TARGET = ROOT / 'data/generator-releases/v0.1.0'
+TARGET = ROOT / 'data/generator-releases/v0.1.1'
 BOOTSTRAP = b'''"""Run an independent extracted release from this ordinary ZIP."""\nimport pathlib,runpy,sys,tempfile,zipfile\narchive=pathlib.Path(sys.argv[0]).resolve()\nwith tempfile.TemporaryDirectory(prefix="atlas-schedules-") as directory:\n    with zipfile.ZipFile(archive) as source:\n        names=source.namelist()\n        if len(names)!=len(set(names)) or any(name.startswith("/") or "\\\\" in name or ":" in name or any(part in ("..", ".", "") for part in name.split("/")) for name in names):\n            raise SystemExit("Unsafe ZIP inventory")\n        source.extractall(directory)\n    sys.path.insert(0,directory)\n    sys.argv[0]=str(archive)\n    if len(sys.argv)==2 and sys.argv[1]=="--reproduce":\n        runpy.run_module("atlas_schedules.reproduction",run_name="__main__")\n    else:\n        runpy.run_module("atlas_schedules.__main__",run_name="__main__")\n'''
 
 
@@ -146,10 +146,13 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None) -> d
     if audit.get('gate_status') != 'passed' or audit.get('configuration_id') != authoritative['commercial_sampling_gate']['configuration_id']:
         raise ValueError('Commercial sampling gate not passed')
     coverage = build_coverage(resources, scope)
-    errors = coverage_errors(coverage)
+    errors = coverage_errors(coverage, resources)
     if errors:
         raise ValueError('Incomplete declared scope: ' + '; '.join(errors[:10]))
     files, resource_set_id = _members(scope)
+    if scope['milestone_id'] == 'M1' and strict_json(
+            files['docs/validation/schedule-generator-coverage.json'], 'frozen coverage') != coverage:
+        raise ValueError('Current M1 coverage report differs from closed packaged evidence')
     request = _request(scope, files, resource_set_id)
     generated = _execute_zip(_archive(files), request)
     bundle = strict_json(generated, 'generated reference bundle')

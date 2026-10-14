@@ -1,5 +1,7 @@
 """Standalone generator behavior from a checkout-independent directory."""
 from pathlib import Path
+import inspect
+import os
 import shutil
 import subprocess
 import sys
@@ -14,7 +16,40 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUEST = ROOT / 'docs/examples/schedule-generator-v1/medium-office-request.json'
 
 
+def _audit_path_allowed(candidate, stdlib, extension_roots, stdlib_archive, extraction_root):
+    path = os.path.normcase(os.path.realpath(candidate))
+    if any(part in {'site-packages', 'dist-packages'} for part in Path(path).parts):
+        return False
+
+    def within(root):
+        root = os.path.normcase(os.path.realpath(root))
+        try:
+            return os.path.commonpath((path, root)) == root
+        except ValueError:
+            return False
+
+    return (path == os.path.normcase(os.path.realpath(stdlib_archive)) or
+            within(stdlib) or any(within(root) for root in extension_roots) or
+            bool(extraction_root and within(extraction_root)))
+
+
 class StandaloneCliTests(unittest.TestCase):
+    def test_isolation_path_predicate_is_version_aware_and_bounded(self):
+        stdlib = '/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11'
+        archive = '/opt/hostedtoolcache/Python/3.11.14/x64/lib/python311.zip'
+        extension = stdlib + '/lib-dynload'
+        extracted = '/tmp/atlas-schedules-actual'
+        self.assertTrue(_audit_path_allowed(archive, stdlib, (extension,), archive, extracted))
+        self.assertTrue(_audit_path_allowed(extension + '/_bz2.so', stdlib,
+                                            (extension,), archive, extracted))
+        self.assertTrue(_audit_path_allowed(extracted + '/atlas_schedules', stdlib,
+                                            (extension,), archive, extracted))
+        for untrusted in (stdlib + '-lookalike', extracted + '-lookalike',
+                          '/tmp/untrusted-atlas-schedules-probe',
+                          '/opt/hostedtoolcache/Python/3.11.14/x64/lib/python312.zip'):
+            self.assertFalse(_audit_path_allowed(untrusted, stdlib, (extension,),
+                                                 archive, extracted), untrusted)
+
     def test_api_cli_numerical_equivalence(self):
         from atlas_schedules.__main__ import main
         request = strict_json(REQUEST.read_bytes(), str(REQUEST))
@@ -71,21 +106,38 @@ class StandaloneCliTests(unittest.TestCase):
             output = root / 'bundle.json'
             # The child runs in an empty cwd with -I -S; an audit hook raises on
             # network/subprocess use and on any import outside stdlib or this ZIP.
-            script = ("import os,runpy,sys,sysconfig\n"
+            script = ("import os,runpy,sys,sysconfig,tempfile\nfrom pathlib import Path\n" +
+                      inspect.getsource(_audit_path_allowed) +
                       "z=sys.argv[1]; request=sys.argv[2]; output=sys.argv[3]\n"
                       "stdlib=os.path.realpath(sysconfig.get_paths()['stdlib'])\n"
+                      "stdlib_archive=os.path.realpath(os.path.join(os.path.dirname(stdlib),'python'+str(sys.version_info.major)+str(sys.version_info.minor)+'.zip'))\n"
+                      "extensions=[os.path.join(stdlib,'lib-dynload')]\n"
+                      "if os.name=='nt': extensions.append(os.path.join(sys.base_prefix,'DLLs'))\n"
+                      "sys.path[:]=[entry for entry in sys.path if os.path.normcase(os.path.realpath(entry))!=os.path.normcase(os.path.realpath(sys.base_prefix))]\n"
+                      "extraction={'root':None}\n"
+                      "original_tempdir=tempfile.TemporaryDirectory\n"
+                      "class CapturedTempdir(original_tempdir):\n"
+                      " def __enter__(self):\n"
+                      "  directory=super().__enter__()\n"
+                      "  extraction['root']=os.path.realpath(directory)\n"
+                      "  return directory\n"
+                      "tempfile.TemporaryDirectory=CapturedTempdir\n"
                       "def audit(event,args):\n"
                       " if event.startswith(('socket.','subprocess.')) or event in ('os.system','os.spawn','os.exec'):\n"
                       "  raise RuntimeError('forbidden runtime action: '+event)\n"
                       " if event=='import':\n"
                       "  for entry in sys.path:\n"
                       "   path=os.path.realpath(entry)\n"
-                      "   external=any(part in path.lower() for part in ('site-packages','dist-packages'))\n"
-                      "   allowed=not external and (path.startswith(stdlib) or path.startswith(os.path.realpath(sys.base_prefix+'/DLLs')) or path==os.path.realpath(sys.base_prefix) or path==os.path.realpath(z) or 'atlas-schedules-' in path or path.endswith('python314.zip'))\n"
+                      "   allowed=(os.path.normcase(path)==os.path.normcase(os.path.realpath(z)) or\n"
+                      "            (extraction['root'] and os.path.normcase(path)==os.path.normcase(extraction['root'])) or\n"
+                      "            _audit_path_allowed(path,stdlib,extensions,stdlib_archive,None))\n"
                       "   if not allowed: raise RuntimeError('external import path: '+path)\n"
                       "  if len(args)>1 and args[1]:\n"
                       "   path=os.path.realpath(args[1]); name=args[0]\n"
-                      "   allowed=path.startswith(stdlib) or path.startswith(os.path.realpath(sys.base_prefix+'/DLLs')) or (name.startswith('atlas_schedules') and 'atlas-schedules-' in path)\n"
+                      "   package_root=os.path.join(extraction['root'],'atlas_schedules') if extraction['root'] else None\n"
+                      "   allowed=(_audit_path_allowed(path,stdlib,extensions,stdlib_archive,None) or\n"
+                      "            (package_root and name.split('.')[0]=='atlas_schedules' and\n"
+                      "             _audit_path_allowed(path,package_root,(),stdlib_archive,None)))\n"
                       "   if not allowed: raise RuntimeError('external import: '+path)\n"
                       "sys.addaudithook(audit)\n"
                       "sys.path.insert(0,os.getcwd())\n"
