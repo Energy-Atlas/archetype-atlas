@@ -45,7 +45,7 @@ def select_conditional(table: dict, selectors: dict, uniform: float) -> dict:
 def sample_operating_parameters(inputs: dict, group_seed: int, resources) -> dict:
     """Draw exactly once for each of ten source parameters, including constants."""
     selector=inputs.get('building_type') if isinstance(inputs,dict) else None
-    if selector not in {'medium_office','small_office'}:
+    if selector not in {'medium_office','small_office','warehouse'}:
         raise GeneratorError('invalid_conditioning','/commercial/inputs','Exact audited selector required')
     prefix='' if selector=='medium_office' else selector+'__'
     audit = resources.get('commercial', prefix+'sampling-audit')

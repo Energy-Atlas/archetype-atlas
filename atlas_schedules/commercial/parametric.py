@@ -50,6 +50,43 @@ def _points(values):
     return [[float(i+1),float(v)] for i,v in enumerate(values) if i==23 or v!=values[i+1]]
 
 
+def _default_alias_day(source,year):
+    """Pinned cleanup's most-used default, including its ineffective conflict test."""
+    names=('Mon','Tue','Wed','Thu','Fri','Sat','Sun')
+    rules=[r for r in reversed(source['rules']) if set(r['day_types'].split('|')) & set(names+('Wkdy','Wknd'))]
+    def weekdays(rule):
+        tokens=set(rule['day_types'].split('|'))
+        return {i for i,n in enumerate(names) if n in tokens or i<5 and 'Wkdy' in tokens or i>=5 and 'Wknd' in tokens}
+    indices=[]
+    for day in range(365):
+        current=date(year,1,1)+timedelta(days=day);md=(current.month,current.day)
+        selected=-1
+        for i,rule in enumerate(rules):
+            def month_day(value):
+                value=('2000-'+value) if len(value)==5 else value[:10]
+                parsed=date.fromisoformat(value)
+                return parsed.month,parsed.day
+            start,end=month_day(rule['start_date']),month_day(rule['end_date'])
+            active=start<=md<=end if start<=end else md>=start or md<=end
+            if active and current.weekday() in weekdays(rule):selected=i;break
+        indices.append(selected)
+    unique=list(dict.fromkeys(indices))
+    most=max(unique,key=indices.count)
+    used=set().union(*(weekdays(rule) for rule in rules)) if rules else set()
+    replace=(-1 not in indices or most!=-1 and len(used)<7)
+    selected=most if replace else -1
+    if selected not in indices:
+        _error('special_profiles','Native default alias has no verified annual source occurrence')
+    return indices.index(selected),{'selected_original_rule_index':selected,'most_frequent_rule_index':most,
+        'default_promoted':replace,'source_locator':'Standards0.8.6 modify.rb:schedule_ruleset_cleanup_profiles lines600-695',
+        'selected_source_rule':copy.deepcopy(rules[selected]) if selected>=0 else
+            copy.deepcopy(next((r for r in reversed(source['rules']) if 'Default' in r['day_types'].split('|')),None)),
+        'tie_policy':'First chronological occurrence of original native active rule index on equal annual counts',
+        'transformation_stage':'Cleanup before parametric formulas; getter alias after parametric/occupancy/BPR adjustments',
+        'original_special_rule':None,'original_special_state':'not_explicitly_set',
+        'source_conflict_test':'Pinned comparisons use == rather than assignment; conflict_found remains false'}
+
+
 def _value(points, hour):
     return next((value for until,value in points if until >= hour),points[-1][1])
 
@@ -270,9 +307,11 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
     configurations = {'medium_office_90_1_2007','medium_office_90_1_2013','medium_office_90_1_2019',
                       'medium_office_doe_ref_1980_2004','medium_office_doe_ref_pre_1980',
                       'small_office_90_1_2007','small_office_90_1_2013','small_office_90_1_2019',
-                      'small_office_doe_ref_1980_2004','small_office_doe_ref_pre_1980'}
+                      'small_office_doe_ref_1980_2004','small_office_doe_ref_pre_1980',
+                      'warehouse_90_1_2007','warehouse_90_1_2013','warehouse_90_1_2019',
+                      'warehouse_doe_ref_1980_2004','warehouse_doe_ref_pre_1980'}
     if context['configuration_id'] not in configurations or context['standards_version']!='0.8.6':
-        _error('configuration_id','Only audited Medium/Small Office/Standards0.8.6 bindings supported')
+        _error('configuration_id','Only explicitly audited commercial/Standards0.8.6 configurations supported')
     if context['steps_per_hour']!=6 or isinstance(context['steps_per_hour'],bool):
         _error('steps_per_hour','Native validated timestep6 representation required')
     if context['holidays']!=[]: _error('holidays','Unvalidated commercial holiday inference context')
@@ -304,7 +343,7 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
         else: points[end-24]=1.0; points[start]=0.0; points[24.0]=1.0
         operations[daytype]=_hoo([[time,value] for time,value in sorted(points.items()) if time>0])
     inference=_infer(context)
-    output={}; special={}; transforms={}
+    output={}; special={}; transforms={};special_aliases={}
     for slot,source in context['slot_sources'].items():
         raw=evaluate_rules(source,context['year'],[])['values']
         native_original=[value for day in range(365) for value in _hourly(_points(raw[day*24:day*24+24]),6)]
@@ -378,7 +417,15 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
         specials={}
         for key in ('WntrDsn','SmrDsn'):
             candidates=[r for r in source['rules'] if key in r['day_types'].split('|')]
-            specials[key]=_points(candidates[-1]['values']) if candidates else []
+            if candidates:specials[key]=_points(candidates[-1]['values'])
+            else:
+                day,receipt=_default_alias_day(source,context['year'])
+                specials[key]=copy.deepcopy(daily[day])
+                special_aliases.setdefault(slot,{})[key]=dict(receipt,source_day_of_year=day+1,
+                    status='native_omitted_design_day_getter_aliases_transformed_default',
+                    getter='OpenStudio3.10 ScheduleRuleset.'+('winterDesignDaySchedule' if key=='WntrDsn' else 'summerDesignDaySchedule'),
+                    source_method_evidence=copy.deepcopy(context.get('source_default_cleanup_method_evidence',{})),
+                    interpretation='Actual native omitted design-day getter aliases cleaned/transformed default; explicit design days retain their source profiles')
         special[slot]=specials
         transforms[slot]={'daily_profiles':daily,'mode':mode,'source_rule_order':copy.deepcopy(source['rules'])}
         if source_discards:
@@ -392,4 +439,5 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                                'export_precision_decimals':5,'native_schedule_day_storage_significant_digits':15,
                                'get_value_query':'Snap forward to model timestep endpoint before No-interpolation source lookup',
                                'budget_binding':'Actual emitted8760 values; original raw frozen targets established before sampling/export rounding'})
+    if special_aliases:context['special_profile_alias_receipts']=special_aliases
     return {'channels':output,'source_context':context}

@@ -125,15 +125,12 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         denominator=mixture['denominator']
         if denominator['value']<=0 or denominator['unit']!=BASIS_UNITS[mixture['result_basis']]:
             _fail('/mixture/denominator','Positive denominator with matching result-basis unit required')
-    if mixture['composition_id'] is not None:
-        resources = ResourceSet.load(bundle['metadata']['resource_set_id'])
-        composition = next((c for c in resources.get('reference','catalogue-index')['compositions']
-                            if c['id']==mixture['composition_id']),None)
-        if composition is None or composition['status']!='compiled':
-            raise GeneratorError('unsupported_binding','/mixture/composition_id','Catalogue composition has no declared supported physical allocation')
-        raise GeneratorError('unsupported_binding','/mixture/composition_id','No source-backed M1 catalogue composition')
     owners={c['instance_key']:c for c in bundle['constituents']}
     members=[(owners[m['instance_key']],m['weight']) for m in mixture['members']]
+    source_recipe=None
+    if mixture['composition_id'] is not None:
+        from .source_compositions import validate_allocation
+        source_recipe,source_receipt=validate_allocation(mixture,members,ResourceSet.load(bundle['metadata']['resource_set_id']))
     for c,w in members:
         physical,receipts=normalize_basis_bindings(c.get('basis_bindings',{}),c['instance_key'])
         c['basis_bindings']=physical
@@ -159,6 +156,13 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
                             'evidence':{'interpretation':'One declared source basis unit; homogeneous weighted source-basis average, no inferred geometry'}})),
                          'members':copy.deepcopy(mixture['members']),'people_pairs':[],'control_policy':
                          'Active-member weight-normalized representative thermostats; water/activity/occupancy stay paired with actual members'}}
+    if source_recipe is not None:
+        definition=source_recipe['definition']
+        mixed['source'].update(template=definition['template'],evidence_view=definition['evidence_view'],
+                              source_id=definition['id'],source_family='source_composition')
+        mixed['generation'].update(method='conserved_source_composition',source_allocation=source_receipt,
+            control_policy='ADR0012 source represented-area pointwise eligible control average; no thermal conservation claim')
+        mixed['evidence'].append({'source_composition':copy.deepcopy(source_receipt)})
     def emit(slot,unit,kind,values):
         sid=schedule_id(key,slot)
         bundle['schedules'][sid]={'id':sid,'unit':unit,'year':calendar['year'],'clock':calendar['clock'],
@@ -251,6 +255,12 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         bundle['bindings'].append(dict(bound,kind='load',instance_key=key,program_id=mixed['program_id'],
                                        demand_id=slot,slot=slot,schedule_id=sid,fuel=fuel,host=host,budget_method='direct_annual'))
     for c,weight in members:
+        if c['generation'].get('method')=='conserved_source_composition':
+            for pair in c['generation']['people_pairs']:
+                pair=copy.deepcopy(pair)
+                pair['factor']*=weight*_basis_scale(c,c['generation']['result_basis'],mixture)
+                mixed['generation']['people_pairs'].append(pair)
+            continue
         people=_people_basis(c)
         if people is None: continue
         occupancy,basis,density=people
@@ -269,14 +279,17 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         control('people_heat','W'+SUFFIXES[result_basis],'people_heat',heat,
                 {'method':'sum_each_load_density_occupancy_activity','pairs':copy.deepcopy(pairs)})
     for slot in ('heating_setpoint','cooling_setpoint'):
-        active=[(c,w) for c,w in members if w>0 and slot in c['schedule_ids'] and
+        control_members=[(c,w*_basis_scale(c,'floor_area',mixture)) for c,w in members] if source_recipe is not None else members
+        active=[(c,w) for c,w in control_members if w>0 and slot in c['schedule_ids'] and
                 c.get('basis_bindings',{}).get('multiplicity',1)>0 and
                 all(e['value']>0 for e in c.get('basis_bindings',{}).get('extents',{}).values())]
         total=math.fsum(w for c,w in active)
         if total:
             values=[math.fsum(w*bundle['schedules'][c['schedule_ids'][slot]]['values'][h] for c,w in active)/total for h in range(8760)]
             control(slot,'C','temperature',values,{'interpretation':'Representative control, not thermal-load conservation',
-                    'method':'active_member_weight_normalized_average','active_members':[c['instance_key'] for c,w in active]})
+                    'method':'source_represented_area_pointwise_eligible_average' if source_recipe is not None else 'active_member_weight_normalized_average',
+                    'active_members':[c['instance_key'] for c,w in active],
+                    **({'active_factors':[w for c,w in active],'source_allocation':copy.deepcopy(source_receipt)} if source_recipe is not None else {})})
     if not mixed['slots']:
         mixed['evidence'][0]['accepted_absence']=all(c['evidence'][0].get('accepted_absence') for c,w in members)
     bundle['constituents'].append(mixed)

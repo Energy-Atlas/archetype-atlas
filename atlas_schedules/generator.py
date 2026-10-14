@@ -14,7 +14,7 @@ from .residential import generate_residential
 from .resources import ResourceSet
 from .seeds import assign_unit_seeds, commercial_group_seed
 
-_PREPARED = {'reference_channels', 'reference_budgets', 'source_context', 'companion_rules'}
+_PREPARED = {'reference_channels', 'reference_budgets', 'source_context', 'companion_rules','source_composition'}
 
 
 def _group_context(resolved):
@@ -66,6 +66,8 @@ def generate(params: dict, seed: int) -> dict:
         raise GeneratorError('unsupported_binding','/calendar','Outside the declared '+scope['milestone_id']+' calendar')
     resolved_instances = []
     basis_receipts={}
+    source_allocations=[]
+    occupied_keys={i['key'] for i in params['instances']}
     declared_programs={case['program_id'] for case in scope['cases']}
     for instance in params['instances']:
         try:
@@ -77,7 +79,25 @@ def generate(params: dict, seed: int) -> dict:
                 raise GeneratorError('unknown_input','/inputs','Calendar and preparation buffers are request/internal operands')
             inputs = dict(instance['inputs'],year=calendar['year'],holidays=calendar['holidays'])
             resolved = resolve_program(instance['program_id'],inputs,resources)
-            resolved_instances.append((instance,resolved))
+            if 'source_composition' in resolved['inputs']:
+                from .source_compositions import prepare_allocation
+                allocation=prepare_allocation(instance,resolved['inputs']['source_composition'])
+                allocation['parent_instance']=copy.deepcopy(instance)
+                allocation['parent_resolved']=resolved
+                allocation['parent_case_id']=resources.get('program',instance['program_id'])['case']['case_id']
+                for child in allocation['children']:
+                    if child['key'] in occupied_keys:
+                        raise GeneratorError('duplicate_instance','/key','Generated source-member key overlaps another instance')
+                    occupied_keys.add(child['key'])
+                    recipe=resources.get('program',child['program_id'])['recipe']
+                    if 'source_composition' in recipe:
+                        raise GeneratorError('unsupported_binding','/source_composition','Nested source parent needs its own audited physical expansion')
+                    child['inputs']=copy.deepcopy(recipe['bound_inputs'])
+                    child_resolved=resolve_program(child['program_id'],dict(child['inputs'],year=calendar['year'],holidays=calendar['holidays']),resources)
+                    basis_receipts[child['key']]={}
+                    resolved_instances.append((child,child_resolved))
+                source_allocations.append(allocation)
+            else:resolved_instances.append((instance,resolved))
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+instance['key']+error.path,error.message) from error
     # All original annual targets and inputs exist before any RNG is sampled.
@@ -109,6 +129,10 @@ def generate(params: dict, seed: int) -> dict:
               'metadata':{'resource_set_id':resources.resource_set_id,'calendar':calendar,
                           'scope_id':scope['milestone_id'],'scope_version':scope['scope_version'],
                           'population_realization_equivalent':False,'comparison_policy':policy}}
+    if source_allocations:
+        bundle['generation']['request_instance_order']=[i['key'] for i in params['instances']]
+        bundle['generation']['physical_member_generation_order']=[i['key'] for i,r in resolved_instances]
+        bundle['generation']['source_parent_derivation_order']=[a['parent_instance_key'] for a in source_allocations]
     for instance,resolved in resolved_instances:
         key = instance['key']
         inputs = resolved['inputs']
@@ -170,6 +194,9 @@ def generate(params: dict, seed: int) -> dict:
             bundle['constituents'].append(constituent)
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+key+error.path,error.message) from error
+    for allocation in source_allocations:
+        from .source_compositions import compose_source_parent
+        bundle=compose_source_parent(bundle,allocation)
     validate_bundle(bundle)
     if params.get('mixture') is not None:
         from .mixtures import compose_constituents

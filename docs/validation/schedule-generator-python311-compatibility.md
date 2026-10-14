@@ -15,3 +15,31 @@ The already generated Windows 3.11 bundle was compared with the frozen ZIP's `re
 This comparison resolves the scientific-parity limitation stated in the smoke paragraph above for this single mixed request. The other platform, suite, and current-source limits still apply.
 
 The compact evidence files were copied byte-identically to `build/task-10/python311-c2-check/` for these documentation references. Original execution paths and commands remain exactly recorded in the logs; the copy is not a second execution.
+
+## Frozen C3 v0.4.0
+
+The controller independently reused that same official Windows CPython 3.11.9
+runtime for one frozen v0.4.0 mixed request, with `-I -S`. The 72,240,150-byte ZIP
+matched SHA-256 `fb60c9231143af220739bb1947d9ff12262548ab5d449ffd5b90376324090531`.
+The request, archived reference, comparator and comparison policy each matched
+their manifest member hashes before use. Generation exited 0 and emitted 55
+schedules of 8,760 values, 57 bindings and four constituents. The ZIP's own
+archived comparator returned zero scientific differences. Exact resolved command,
+interpreter banner, member hashes and results are in
+`build/task-10/python311-c3-check/check-log.json`; the bounded driver is `check.py`.
+The fuller receipt is `python311-c3-compatibility-report.md` in the Task 10 scratch
+folder. This supersedes the latest-version smoke claim with one actual Windows
+3.11 v0.4.0 mixed request. It establishes no Linux/full-suite/current-source result.
+
+## Frozen C4 v0.5.0
+
+The same official Windows CPython3.11.9 runtime generated the frozen v0.5.0 mixed
+request once with `-I -S`:66 schedules of8760 values,68 bindings and7 constituents,
+exit0. The own archived comparator/policy found zero scientific differences.
+ZIP77,307,554bytes SHA256
+`ad0021ba53f2cf4df70059f7a34943cabfcab0d7bd26464189617d9e7d8b16ea`
+and the four request/reference/comparator/policy members matched manifest hashes
+before execution. Compact driver/output/receipt are in
+`build/task-10/python311-c4-check/` and `check-log.json`. Actual3.11.9 grammar also
+accepted all158 current runtime/script/test Python files. These bounded Windows
+checks establish no full3.11 or Linux suite result.

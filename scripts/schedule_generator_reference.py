@@ -249,28 +249,36 @@ def commercial_family_capture_inputs(resources):
     import copy
     from atlas_schedules.commercial.sampling import sample_operating_parameters
     result = []
-    building='SmallOffice' if resources.manifest['milestone_id']=='C3' else 'MediumOffice'
-    selector='small_office' if building=='SmallOffice' else 'medium_office'
+    building,selector={'C2':('MediumOffice','medium_office'),'C3':('SmallOffice','small_office'),
+                       'C4':('Warehouse','warehouse')}[resources.manifest['milestone_id']]
     for case in resources.manifest['cases']:
         if case['building_type'] != building:
             continue
         recipe = resources.get('program',case['program_id'])['recipe']
-        carrier = resources.get('program',recipe['source_context']['carrier_program_id'])['recipe']
-        context = copy.deepcopy(carrier['source_context'])
-        context.update(year=2007,holidays=[])
-        item={'case_id':case['case_id'],'source_context':context,
-            'schedules':copy.deepcopy(context['slot_sources']),
-            'operating':sample_operating_parameters({'building_type':selector},42,resources),
-            'source_case':copy.deepcopy(case),
-            'interpretation':'Actual same-building/template/view Office carrier; source-inactive space associated explicitly, never an occupancy claim for it'}
-        result.append(item)
-        for group_kind,group in [('instance',case['case_id']),('full_request',case['configuration_id'])]:
-            for seed in (42,51):
-                probe=copy.deepcopy(item)
-                probe['case_id'] += '@'+group_kind+'-'+str(seed)
-                probe['operating']=sample_operating_parameters({'building_type':selector},commercial_group_seed(seed,group),resources)
-                probe['source_seed_receipt']={'master_seed':seed,'operating_group':group,'policy':'SHA256-derived commercial group seed'}
-                result.append(probe)
+        targets=[(case['case_id'],recipe,None)]
+        if 'source_composition' in recipe:
+            targets=[(case['case_id']+'/member-'+str(i),resources.get('program',m['program_id'])['recipe'],
+                {'parent_program_id':case['program_id'],'composition_id':recipe['source_composition']['composition_id'],
+                 'member_index':i,'program_id':m['program_id'],'original_member':copy.deepcopy(m)})
+                for i,m in enumerate(recipe['source_composition']['definition']['members'])]
+        for native_id,target,member_receipt in targets:
+            # Active Warehouse rooms retain their actual source methods. Previous
+            # Office inactive associations retain their already captured carrier.
+            carrier=target if building=='Warehouse' else resources.get('program',target['source_context']['carrier_program_id'])['recipe']
+            context=copy.deepcopy(carrier['source_context']);context.update(year=2007,holidays=[])
+            item={'case_id':native_id,'source_context':context,'schedules':copy.deepcopy(context['slot_sources']),
+                'operating':sample_operating_parameters({'building_type':selector},42,resources),
+                'source_case':copy.deepcopy(case),
+                'interpretation':('Actual active room source methods with exact same-template/view WarehouseOffice carrier; composed parents qualify ordered actual members'
+                    if building=='Warehouse' else 'Actual same-building/template/view Office carrier; source-inactive space associated explicitly, never an occupancy claim for it')}
+            if member_receipt is not None:item['source_member_receipt']=member_receipt
+            result.append(item)
+            for group_kind,group in [('instance',case['case_id']),('full_request',case['configuration_id'])]:
+                for seed in (42,51):
+                    probe=copy.deepcopy(item);probe['case_id']+='@'+group_kind+'-'+str(seed)
+                    probe['operating']=sample_operating_parameters({'building_type':selector},commercial_group_seed(seed,group),resources)
+                    probe['source_seed_receipt']={'master_seed':seed,'operating_group':group,'policy':'SHA256-derived commercial group seed'}
+                    result.append(probe)
     return result
 
 
@@ -347,8 +355,8 @@ def capture_commercial(runtime_archive, destination, resources=None):
             dependencies[parameter] = resources.get('commercial',parameter)['dependencies']
     dependencies['building_type'] = []
     draws = [.1,.7,.2,.8,.3,.4,.5,.6,.7,.8]
-    selector='small_office' if manifest['milestone_id']=='C3' else 'medium_office'
-    prefix='small_office__' if selector=='small_office' else ''
+    selector={'M1':'medium_office','C2':'medium_office','C3':'small_office','C4':'warehouse'}[manifest['milestone_id']]
+    prefix='' if selector=='medium_office' else selector+'__'
     native = namespace['_com_execute_samples'](tables,dependencies,['building_type']+order,{0:draws},{0:{'building_type':selector}})[0]
     rows = []; selectors={'building_type':selector}
     for parameter,draw in zip(order,draws):

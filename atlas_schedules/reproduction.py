@@ -16,8 +16,10 @@ def main():
     differences = compare_bundles(actual, expected, expected['metadata']['comparison_policy'])
     if differences:
         raise SystemExit('\n'.join(differences[:30]))
-    print(f"Source/discrete and numerical reproduction passed: {len(actual['constituents'])} cases, "
-          f"{len(actual['schedules'])} schedules")
+    count=len(request['params']['instances'])
+    detail=f"; {len(actual['constituents'])} indexed actual/derived constituents" if actual['generation'].get('source_compositions') else ''
+    print(f"Source/discrete and numerical reproduction passed: {count} cases, "
+          f"{len(actual['schedules'])} schedules{detail}")
     mixed_request=root/'references/mixed-family-request.json'
     mixed_reference=root/'references/mixed-family-bundle.json.gz'
     if mixed_request.exists()!=mixed_reference.exists():

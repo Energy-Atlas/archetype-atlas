@@ -2,14 +2,18 @@
 import argparse
 import copy
 import hashlib
+import math
 from pathlib import Path
 import re
 import tempfile
 import tarfile
+from urllib.parse import quote
 
 from atlas_schedules.canonical import canonical
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.resources import ResourceSet, strict_json, write_resources
+from atlas_schedules.budgets import reference_budget
+from atlas_schedules.calendar import evaluate_rules
 from scripts.common import ROOT
 from scripts.schedule_generator_sources import extract_sources
 from scripts.schedule_generator_reference import load_reference_vectors
@@ -174,6 +178,26 @@ def compile_recipes(records, scope):
                                  'aggregation': {k: v for k, v in ready['metadata']['aggregation'].items() if k != 'component_schedules'},
                                  'aggregation_component_schedule_ids': list(ready['metadata']['aggregation'].get('component_schedules', {}))}]}
         resolved['source']['source_id'] = definition['source_id']
+        if definition.get('composition_id') is not None:
+            composition=records['composition',definition['composition_id']]
+            allocation={'parent_program_id':pid,'composition_id':definition['composition_id']}
+            composition['source_allocation']=copy.deepcopy(allocation)
+            allocation.update(definition=copy.deepcopy(composition['definition']),provenance=copy.deepcopy(composition['provenance']))
+            bound={'configuration_id':case['configuration']['sampling_configuration_id'],
+                   'carrier_policy':'explicit_single_nonresidential_reference_carrier'}
+            record['recipe']={'schema_version':'1.0.0','resolved':resolved,'bound_inputs':bound,
+                'variable_inputs':{'composition_basis_mode':['source_reference_area_normalized','caller_parent_floor_area'],
+                                  'composition_id':[definition['composition_id']]},
+                'required_inputs':['year',*bound,'composition_basis_mode'],'reference_year':scope['calendar']['year'],
+                'calendar_year_locked':True,'reference_sources':{},'companion_rules':{},'source_context':{},
+                'source_composition':allocation,'aggregate_binding_policy':'actual_original_member_targets_before_rng'}
+            # Source parent legacy profiles remain only in its immutable definition.
+            statuses[pid]='compiled'
+            policies['programs'].append({k:record['recipe'][k] for k in ('schema_version','bound_inputs','required_inputs',
+                'reference_year','calendar_year_locked','aggregate_binding_policy','variable_inputs')} | {
+                'program_id':pid,'status':'compiled','source_composition':allocation,'source':resolved['source'],
+                'slots':slots,'demands':demands,'controls':controls,'shared_services':resolved['shared_services'],'evidence':resolved['evidence']})
+            continue
 
         def add_slot(slot, sid, unit, kind):
             if any(s['slot'] == slot for s in slots):
@@ -299,7 +323,8 @@ def compile_recipes(records, scope):
                 'constituents': [{'schedule': carrier_source, 'nominal_people': 1.0, 'residential': False,
                                   'evidence': field_evidence(carrier_load['evidence_id'], receipt)}],
                 'interpretation': ('Declared M1 normalized Office carrier, not geometry or population; Plenum explicitly associated through named MediumOffice configuration' if case['building_type']=='MediumOffice' else
-                    'Explicit normalized actual SmallOffice carrier in the same template/view; source-inactive Attic associated with the named SmallOffice configuration; no geometry or population inferred')},
+                    'Explicit normalized actual SmallOffice carrier in the same template/view; source-inactive Attic associated with the named SmallOffice configuration; no geometry or population inferred' if case['building_type']=='SmallOffice' else
+                    'Exact same-template/view WarehouseOffice normalized carrier; zero local People in Fine/Bulk retained; actual room methods, no inferred geometry or population')},
                 occupancy_adjustment={'peak_occ_frac': 0.231, 'source_key': 'comstock__resources__options_lookup_tsv',
                 'source_options': ['baseline_hvac_sizing=autosize', 'baseline_hvac_sizing=hardsize'],
                 'interpretation': 'Locked common lookup value only; no HVAC sizing inference'},
@@ -315,6 +340,8 @@ def compile_recipes(records, scope):
                     'sampling_selector':case['configuration']['conditioning_inputs'],
                     'sampling_reference_audit_configuration':case['configuration']['conditioning_inputs']['building_type']+'_90_1_2013',
                     'interpretation':'Actual template/view schedules and targets transformed using pinned Standards 0.8.6 and audited ComStock v33 selector closure; no stock population equivalence'}
+            if case['building_type']=='Warehouse':
+                context['source_default_cleanup_method_evidence']=records['reference','standards086__lib__openstudio-standards__schedules__modify_rb']['provenance']
             original_loads = {l['demand_id']: l for l in definition['loads']}
             for load in ready['loads']:
                 slot = load['end_use']
@@ -364,6 +391,7 @@ def compile_recipes(records, scope):
                     'program_id': pid, 'status': statuses[pid], 'source': resolved['source'],
                     'slots': slots, 'demands': demands, 'controls': controls,
                     'shared_services': resolved['shared_services'], 'evidence': resolved['evidence']})
+    compile_source_parent_recipes(records,scope)
     compositions = [{'id': c['id'], 'status': 'compiled' if c['members'] and
                     all(m['program_id'] in statuses for m in c['members']) else 'unsupported_binding',
                     'members': c['members']} for c in bundle['compositions']]
@@ -385,11 +413,64 @@ def compile_recipes(records, scope):
             'catalogue-index': index, 'coverage': coverage}
 
 
+def compile_source_parent_recipes(records,scope):
+    """Declare exact derived slots and original member targets before RNG."""
+    from atlas_schedules.source_compositions import source_factors
+    for case in scope['cases']:
+        recipe=records['program',case['program_id']]['recipe']
+        allocation=recipe.get('source_composition')
+        if allocation is None:continue
+        areas,total,factors=source_factors(allocation)
+        groups={};children=[]
+        for member,factor in zip(allocation['definition']['members'],factors):
+            child=records['program',member['program_id']]['recipe']
+            children.append(child)
+            if child.get('source_composition') is not None or child['resolved']['shared_services']:
+                raise GeneratorError('requires_binding',case['program_id'],'Source nested/service allocation requires exact independently audited ownership')
+            for demand in child['resolved']['demands']:
+                source=child['reference_sources'][demand['slot']]
+                values=copy.deepcopy(source['values']) if source.get('type')=='annual' else evaluate_rules(source,scope['calendar']['year'],[])['values']
+                target=reference_budget(demand,values)
+                carrier='m3/s' if demand['unit'].startswith('m3/s') else 'W' if demand['unit'].startswith('W') else None
+                if carrier is None or demand['basis']!='floor_area':
+                    raise GeneratorError('requires_binding',case['program_id'],'Exact source composition physical basis/carrier needs audited conversion')
+                key=(demand['quantity'],carrier,demand['fuel'],demand['host'])
+                groups.setdefault(key,[]).append({'program_id':member['program_id'],'demand_id':demand['demand_id'],
+                    'factor':factor,'original_target':target,'source_demand':copy.deepcopy(demand)})
+        resolved=recipe['resolved']
+        for (quantity,carrier,fuel,host),components in groups.items():
+            slot='load/'+'/'.join(quote(part,safe='') for part in (quantity,carrier,fuel,host))
+            target=math.fsum(c['factor']*c['original_target']['total'] for c in components)
+            evidence={'method':'sum_original_member_annual_targets_before_rng','components':components,
+                'source_composition':copy.deepcopy(allocation),'original_parent_definition':copy.deepcopy(records['program',case['program_id']]['definition']['loads']),
+                'interpretation':'Source weights validate represented areas; individually original member targets authoritative, no legacy averaged profile product'}
+            resolved['slots'].append({'slot':slot,'source_schedule_id':'generated-member-trajectories','unit':'fraction','kind':'load'})
+            resolved['demands'].append({'demand_id':slot,'slot':slot,'quantity':quantity,'value':None,
+                'unit':carrier+'/m2','basis':'floor_area','fuel':fuel,'host':host,'evidence':evidence,
+                'annual_target':{'total':target,'unit':('m3' if carrier=='m3/s' else 'Wh')+'/m2','evidence':evidence}})
+        pairs=[c for c in children if any(x['quantity']=='occupancy_fraction' and x['evidence']['nominal_density']['value']>0 for x in c['resolved']['controls'])]
+        if pairs:
+            resolved['slots'].append({'slot':'people_heat','source_schedule_id':'generated-member-trajectories','unit':'W/m2','kind':'control'})
+            resolved['controls'].append({'slot':'people_heat','quantity':'people_heat','unit':'W/m2',
+                'evidence':{'method':'actual_member_density_occupancy_activity_pairs','source_composition':copy.deepcopy(allocation)}})
+        for slot in ('heating_setpoint','cooling_setpoint'):
+            eligible=[{'program_id':m['program_id'],'factor':factor,'source_control':copy.deepcopy(control)}
+                for m,factor,c in zip(allocation['definition']['members'],factors,children)
+                for control in c['resolved']['controls'] if control['slot']==slot]
+            if not eligible:continue
+            resolved['slots'].append({'slot':slot,'source_schedule_id':'generated-member-trajectories','unit':'C','kind':'control'})
+            resolved['controls'].append({'slot':slot,'quantity':'temperature','unit':'C',
+                'evidence':{'method':'source_represented_area_pointwise_eligible_average','eligible_members':eligible,
+                    'interpretation':'ADR0012 representative controls; no thermal conservation claim'}})
+        recipe['source_context']={'case_id':case['case_id'],'method':'actual_generated_source_constituents',
+                                  'source_composition':copy.deepcopy(allocation)}
+
+
 def build_resources(destination: Path, scope: str, tables_destination: Path | None = None) -> dict:
-    if scope not in {'pilot', 'residential', 'medium-office', 'small-office'}:
+    if scope not in {'pilot', 'residential', 'medium-office', 'small-office','warehouse'}:
         raise GeneratorError('unsupported_scope', '/scope', 'Unknown explicit source family scope')
-    lock_file = {'pilot':'sources/schedule-generator-lock.json','residential':'sources/schedule-generator-residential-lock.json','medium-office':'sources/schedule-generator-medium-office-lock.json','small-office':'sources/schedule-generator-small-office-lock.json'}[scope]
-    scope_file = {'pilot':'sources/schedule-generator-m1-scope.json','residential':'sources/schedule-generator-residential-scope.json','medium-office':'sources/schedule-generator-medium-office-scope.json','small-office':'sources/schedule-generator-small-office-scope.json'}[scope]
+    lock_file = {'pilot':'sources/schedule-generator-lock.json','residential':'sources/schedule-generator-residential-lock.json','medium-office':'sources/schedule-generator-medium-office-lock.json','small-office':'sources/schedule-generator-small-office-lock.json','warehouse':'sources/schedule-generator-warehouse-lock.json'}[scope]
+    scope_file = {'pilot':'sources/schedule-generator-m1-scope.json','residential':'sources/schedule-generator-residential-scope.json','medium-office':'sources/schedule-generator-medium-office-scope.json','small-office':'sources/schedule-generator-small-office-scope.json','warehouse':'sources/schedule-generator-warehouse-scope.json'}[scope]
     lock = _read(ROOT/lock_file)
     manifest_scope = _read(ROOT/scope_file)
     validate_scope(manifest_scope, lock)
@@ -404,9 +485,10 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
         sources = ResourceSet(Path(temporary)/'resources', source_manifest['resource_set_id'])
         records = {(e['kind'], e['key']): sources.get(e['kind'], e['key']) for e in source_manifest['resources']}
     records['commercial', 'sampling-audit'] = audit
-    if scope=='small-office':
+    if scope in {'small-office','warehouse'}:
         records['commercial','small_office__sampling-audit']=_read(ROOT/'data/schedule-generator/small-office-sampling-audit.json')
-    if scope in {'medium-office','small-office'}:
+    if scope=='warehouse':records['commercial','warehouse__sampling-audit']=_read(ROOT/'data/schedule-generator/warehouse-sampling-audit.json')
+    if scope in {'medium-office','small-office','warehouse'}:
         receipt = _read(ROOT/'sources/schedule-generator-ruby-float-lock.json')['sources'][0]
         content = (ROOT/receipt['source_path']).read_bytes()
         if hashlib.sha256(content).hexdigest()!=receipt['sha256'] or len(content)!=receipt['size_bytes']:
@@ -478,7 +560,7 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             records['reference', source_file['id']] = {'definition': source_file, 'provenance': _receipt(file, '/'+str(index), 'Exact upstream source revision and byte checksum')}
     file = 'data/resolution-releases/v0.4.0/fixed-background-schedules.json'
     records['residential', 'fixed-background-schedules'] = {'definition': _read(ROOT/file), 'provenance': _receipt(file, '/', 'Exact frozen source default variants')}
-    if scope in {'residential','medium-office','small-office'}:
+    if scope in {'residential','medium-office','small-office','warehouse'}:
         recovery = _read(ROOT/'data/program-inputs/residential-v1.json')
         fixed = records['residential', 'fixed-background-schedules']['definition']
         for shape in recovery['schedules'].values():
@@ -530,20 +612,22 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             records['reference',key] = native
     if scope == 'medium-office':
         records['reference','family-native-join'] = _read(ROOT/'data/schedule-generator/medium-office-cumulative-native.json')
-    if scope=='small-office':
-        certificate=ROOT/'data/schedule-generator/families/small-office/certification.json'
+    if scope in {'small-office','warehouse'}:
+        certificate=ROOT/('data/schedule-generator/families/'+scope+'/certification.json')
         if certificate.exists():records['reference','family-certification']=_read(certificate)
-        for key,file in {'family-native-lock':'sources/schedule-generator-small-office-cumulative-reference-lock.json',
+        native_files={'family-native-lock':'sources/schedule-generator-'+scope+'-cumulative-reference-lock.json',
                          'residential-native-lock':'sources/schedule-generator-residential-family-reference-lock.json',
                          'commercial-native-lock':'sources/schedule-generator-medium-office-family-reference-lock.json',
-                         'small-office-native-lock':'sources/schedule-generator-small-office-family-reference-lock.json'}.items():
+                         'small-office-native-lock':'sources/schedule-generator-small-office-family-reference-lock.json'}
+        if scope=='warehouse':native_files['warehouse-native-lock']='sources/schedule-generator-warehouse-family-reference-lock.json'
+        for key,file in native_files.items():
             path=ROOT/file
             if not path.exists():continue
             native=_read(path);vectors=(ROOT/native['vectors']['source_path']).read_bytes()
             if hashlib.sha256(vectors).hexdigest()!=native['vectors']['sha256'] or len(vectors)!=native['vectors']['size_bytes']:
                 raise GeneratorError('source_integrity',file,'Independent native component differs')
             records['reference',key]=native
-        join=ROOT/'data/schedule-generator/small-office-cumulative-native.json'
+        join=ROOT/('data/schedule-generator/'+scope+'-cumulative-native.json')
         if join.exists():records['reference','family-native-join']=_read(join)
     if tables_destination is not None:
         tables_destination.mkdir(parents=True, exist_ok=True)

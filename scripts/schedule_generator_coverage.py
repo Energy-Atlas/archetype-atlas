@@ -48,6 +48,11 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
         channels = []
         def channel(slot, value, state, pointer, evidence, required, identity=None, source_sid=None):
             runtime_slot = slot if slot in certified else None
+            if recipe and 'source_composition' in recipe and identity is not None and runtime_slot is None:
+                matches=[d['slot'] for d in recipe['resolved']['demands'] if d['quantity']==slot and
+                    any(original['demand_id']==identity and original['quantity']==slot for original in
+                        d['evidence'].get('original_parent_definition',[]))]
+                if len(matches)==1:runtime_slot=matches[0]
             if recipe and runtime_slot is None and source_sid is not None:
                 matches = [s['slot'] for s in recipe['resolved']['slots'] if s['source_schedule_id'] == source_sid]
                 if len(matches) == 1:
@@ -297,7 +302,19 @@ def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
                                          reason='outside_declared_milestone_scope'))
         else:
             outside_programs.append(item)
-    outside_compositions = index['compositions']
+    declared_compositions=[]
+    for case in scope['cases']:
+        recipe=resources.get('program',case['program_id'])['recipe']
+        allocation=recipe.get('source_composition')
+        if allocation is None:continue
+        key=allocation['composition_id'];entry=resource_entries['composition',key]
+        record=resources.get('composition',key)
+        declared_compositions.append({'id':key,'parent_program_id':case['program_id'],
+            'member_program_ids':[m['program_id'] for m in record['definition']['members']],
+            'source_evidence':{'resource_kind':'composition','resource_key':key,'pointer':'/provenance',
+                'resource_sha256':entry['sha256'],'receipt_sha256':hashlib.sha256(canonical(record['provenance'])).hexdigest()}})
+    declared_ids={c['id'] for c in declared_compositions}
+    outside_compositions = [c for c in index['compositions'] if c['id'] not in declared_ids]
     report = {'schema_version': '1.0.0', 'resource_set_id': resources.resource_set_id,
               'scope': {'milestone_id': scope['milestone_id'], 'scope_version': scope['scope_version'],
                         'scope_sha256': hashlib.sha256(canonical(scope)).hexdigest(),
@@ -308,6 +325,9 @@ def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
                                 'programs': outside_programs, 'compositions': outside_compositions},
               'catalogue_program_count': len(index['programs']),
               'catalogue_composition_count': len(index['compositions'])}
+    if declared_compositions:
+        report['scope'].update(composition_count=len(declared_compositions),composition_ids=[c['id'] for c in declared_compositions])
+        report['declared_compositions']=declared_compositions
     return report
 
 
@@ -320,6 +340,25 @@ def coverage_errors(report: dict, resources: ResourceSet | None = None) -> list[
     resource_entries = ({(entry['kind'], entry['key']): entry
                          for entry in resources.manifest['resources']} if resources else {})
     cases = report['cases']
+    if report.get('declared_compositions'):
+        compositions=report['declared_compositions']
+        if (len(compositions)!=report['scope'].get('composition_count') or
+                [c['id'] for c in compositions]!=report['scope'].get('composition_ids') or
+                len({c['id'] for c in compositions})!=len(compositions)):
+            errors.append('Declared source composition denominator differs')
+        for composition in compositions:
+            label=composition['id']
+            if composition['parent_program_id'] not in {c['program_id'] for c in cases}:
+                errors.append(label+': parent outside declared cases')
+            if resources:
+                record=resources.get('composition',label);receipt=composition['source_evidence']
+                entry=resource_entries['composition',label]
+                parent=resources.get('program',composition['parent_program_id'])['recipe'].get('source_composition')
+                if (parent is None or parent['composition_id']!=label or parent['definition']!=record['definition'] or
+                        [m['program_id'] for m in record['definition']['members']]!=composition['member_program_ids'] or
+                        receipt!={'resource_kind':'composition','resource_key':label,'pointer':'/provenance',
+                            'resource_sha256':entry['sha256'],'receipt_sha256':hashlib.sha256(canonical(record['provenance'])).hexdigest()}):
+                    errors.append(label+': source composition membership/evidence does not close')
     if [c['case_id'] for c in cases] != report['scope']['case_ids'] or len(cases) != report['scope']['case_count']:
         errors.append('Scope case inventory differs from declared case list')
     if len({c['case_id'] for c in cases}) != len(cases):

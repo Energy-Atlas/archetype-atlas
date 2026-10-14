@@ -31,7 +31,7 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
     recipe = resources.get('program', program_id)['recipe']
     if not isinstance(inputs, dict):
         raise GeneratorError('invalid_input', '/inputs', 'Explicit recipe operands required')
-    allowed = set(recipe['bound_inputs']) | {'year', 'holidays'}
+    allowed = set(recipe['bound_inputs']) | set(recipe.get('variable_inputs',{})) | {'year', 'holidays'}
     unknown = set(inputs) - allowed
     if unknown:
         raise GeneratorError('unknown_input', '/inputs/'+sorted(unknown)[0], 'Unknown recipe operand')
@@ -52,13 +52,18 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
         # Numeric equality alone must not accept True as one resident/coordinate.
         if not _same_operand(inputs[key], bound):
             raise GeneratorError('unsupported_binding', '/inputs/'+key, 'Operand differs from declared source configuration')
+    for key,options in recipe.get('variable_inputs',{}).items():
+        if key in inputs and not any(_same_operand(inputs[key],option) for option in options):
+            raise GeneratorError('unsupported_binding','/inputs/'+key,'Operand is outside explicitly declared recipe choices')
     if recipe['calendar_year_locked'] and inputs['year'] != recipe['reference_year']:
         raise GeneratorError('unsupported_binding', '/inputs/year', 'Annual source case requires its declared reference year')
     resolved = copy.deepcopy(recipe['resolved'])
-    if not resolved['slots'] and (status != 'accepted_inactive' or not resolved['evidence'][0].get('accepted_absence')):
+    if not resolved['slots'] and 'source_composition' not in recipe and (status != 'accepted_inactive' or not resolved['evidence'][0].get('accepted_absence')):
         raise GeneratorError('unsupported_binding', '/slots', 'Unresolved active recipe cannot masquerade as inactivity')
     resolved['inputs'] = copy.deepcopy(inputs)
     resolved['inputs']['holidays'] = calendar['holidays']
+    if 'source_composition' in recipe:
+        resolved['inputs']['source_composition']=copy.deepcopy(recipe['source_composition'])
     channels = {}
     for slot, source in recipe['reference_sources'].items():
         channels[slot] = (copy.deepcopy(source['values']) if source.get('type') == 'annual'

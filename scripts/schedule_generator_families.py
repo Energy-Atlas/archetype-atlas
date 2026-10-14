@@ -203,5 +203,112 @@ def prepare_small_office_family():
     return scope,lock
 
 
+def recover_commercial_closure(lock,selector):
+    """Recover exact selected v33 dependencies/rows; retain raw CDF values."""
+    audit=json.loads((ROOT/'data/schedule-generator/comstock-sampling-audit.json').read_text(encoding='utf-8'))
+    audit.update(configuration_id=selector+'_90_1_2013',conditioning_inputs={'building_type':selector},
+        out_of_scope_source_rows='Only exact '+selector+' rows in this audit; raw CDF errors remain contextual sampling failures')
+    source=next(a for a in lock['archives'] if a['source_id']=='comstock' and a['format']=='zip')
+    content=(ROOT/'data/raw'/source['cache_path']).read_bytes()
+    if hashlib.sha256(content).hexdigest()!=source['sha256']:raise ValueError('Conditional source archive differs')
+    with zipfile.ZipFile(io.BytesIO(content)) as archive:
+        for parameter in audit['parameters']:
+            name=parameter['parameter']
+            member=next(e for e in source['members'] if e['key']==name and e['kind']=='commercial')
+            blob=archive.read(member['path'])
+            if hashlib.sha256(blob).hexdigest()!=member['sha256']:raise ValueError('Conditional source member differs')
+            table=list(csv.reader(io.StringIO(blob.decode('utf-8-sig')),delimiter='\t'))
+            header=table[0];dependencies=[c[11:] for c in header if c.startswith('Dependency=')]
+            options=[c[7:] for c in header if c.startswith('Option=')]
+            selected=[];totals=[]
+            for line,row in enumerate(table[1:],2):
+                selectors={d:row[header.index('Dependency='+d)] for d in dependencies}
+                if selectors['building_type']!=selector:continue
+                probabilities=[float(row[header.index('Option='+o)]) for o in options]
+                if any(not math.isfinite(v) or v<0 or v>1 for v in probabilities) or abs(math.fsum(probabilities)-1)>1e-6:
+                    raise ValueError(selector+' requires separately evidenced source-error row qualification: '+str(line))
+                selected.append({'source_row':line,'selectors':selectors});totals.append(sum(probabilities))
+            if dependencies!=parameter['dependencies'] or not selected:raise ValueError('Inspected dependency closure differs')
+            parameter.update(conditioning_inputs={d:selector if d=='building_type' else {'sampled_parameter':d} for d in dependencies},
+                option_order=options,source_rows=[r['source_row'] for r in selected],selected_rows=selected,
+                raw_cdf_sum_range=[min(totals),max(totals)])
+            entry=copy.deepcopy(member);entry.update(key=selector+'__'+name,fixed_selectors={'building_type':selector})
+            source['members'].append(entry);lock['required_resources'].append({'kind':'commercial','key':entry['key']})
+    return audit
+
+
+def prepare_warehouse_family():
+    """Append all actual Warehouse rooms/compositions to immutable C3 order."""
+    read=lambda name:json.loads((ROOT/name).read_text(encoding='utf-8'))
+    prior=read('sources/schedule-generator-small-office-scope.json')
+    lock=read('sources/schedule-generator-small-office-lock.json')
+    audit=recover_commercial_closure(lock,'warehouse')
+    audit_file='data/schedule-generator/warehouse-sampling-audit.json'
+    (ROOT/audit_file).write_bytes(canonical(audit))
+    cases=copy.deepcopy(prior['cases'])
+    prototype=next(c for c in cases if c['building_type']=='MediumOffice')
+    for index,p in enumerate(read('data/definition-releases/v0.1.1/programs.json')):
+        if p['building_type']!='Warehouse':continue
+        case=copy.deepcopy(prototype)
+        config='warehouse_'+p['template'].lower().replace('.','_').replace('-','_').replace(' ','_')
+        case.update(case_id='C4-'+p['id'],program_id=p['id'],name=p['name'],building_type=p['building_type'],
+            template=p['template'],evidence_view=p['evidence_view'],configuration_id=config+'-'+p['evidence_view']+'-'+p['source_id'],
+            source_gate_status='requires_native_certification')
+        case['program_definition']['json_pointer']='/'+str(index)
+        case['configuration'].update(conditioning_inputs={'building_type':'warehouse'},sampling_configuration_id=config,
+            sampling_audit_file=audit_file,program_definition_pointer='/'+str(index),
+            interpretation='Prototype-budget-preserving hybrid with exact same-template/view WarehouseOffice carrier, actual room methods, original member budgets and audited v33 warehouse closure')
+        case['weather'].update(independence_certified_by=audit_file+': ten-table closure and selected interior transforms',
+            interpretation='No weather operand in selected interior source methods; no inferred DOE EPW')
+        cases.append(case)
+    native_file=ROOT/'sources/schedule-generator-warehouse-family-reference-lock.json'
+    if native_file.exists():
+        native=read(str(native_file.relative_to(ROOT)))
+        if hashlib.sha256((ROOT/native['vectors']['source_path']).read_bytes()).hexdigest()!=native['vectors']['sha256']:raise ValueError('Warehouse native reference differs')
+        if native.get('source_gate_status')=='passed':
+            for c in cases[79:]:c['source_gate_status']='passed'
+    scope=dict(prior,milestone_id='C4',cases=cases,
+        source_order_policy='Exact prior 79 C3 cases unchanged; append actual 40 Warehouse definitions in source order. Known parents expand ordered actual members under their group; existing requests retain their allocation.')
+    name='sources/schedule-generator-warehouse-scope.json'
+    (ROOT/name).write_bytes(canonical(scope))
+    for file in (name,audit_file):
+        blob=(ROOT/file).read_bytes();lock['frozen_files'][file]={'sha256':hashlib.sha256(blob).hexdigest(),'size_bytes':len(blob)}
+    lock.update(scope_cases=cases,milestone_id='C4',blocked_families=[{'family':'outside_C4','status':'requires_binding',
+        'reason':'Exact source operands/carriers/services and family-specific native qualification remain; full extraction open'}])
+    (ROOT/'sources/schedule-generator-warehouse-lock.json').write_bytes(canonical(lock))
+    return scope,lock
+
+
+def prepare_native_join(scope,component_files):
+    """Store actual immutable captures once and join precise source associations."""
+    read=lambda name:json.loads((ROOT/name).read_text(encoding='utf-8'))
+    components=[]
+    for key,file in component_files:
+        lock=read(file);content=(ROOT/lock['vectors']['source_path']).read_bytes()
+        if hashlib.sha256(content).hexdigest()!=lock['vectors']['sha256'] or len(content)!=lock['vectors']['size_bytes']:
+            raise ValueError('Native component bytes differ: '+key)
+        components.append({'reference_resource_key':key,'reference_resource_sha256':hashlib.sha256(canonical(lock)).hexdigest(),'lock':lock})
+    by_key={c['reference_resource_key']:c for c in components}
+    programs={p['id']:p for p in read('data/definition-releases/v0.1.1/programs.json')}
+    compositions={c['id']:c for c in read('data/definition-releases/v0.1.1/compositions.json')}
+    bindings=[]
+    for case in scope['cases']:
+        key={'MediumOffice':'commercial-native-lock','SmallOffice':'small-office-native-lock','Warehouse':'warehouse-native-lock'}.get(case['building_type'],'residential-native-lock')
+        component=by_key[key]
+        def binding(native_id):
+            return {'native_case_id':native_id,'reference_resource_key':key,
+                'reference_resource_sha256':component['reference_resource_sha256'],
+                'native_vectors_sha256':component['lock']['vectors']['sha256']}
+        item={'configuration_id':case['configuration_id'],'program_id':case['program_id']}
+        composition_id=programs[case['program_id']].get('composition_id')
+        if composition_id is not None:
+            item.update(composition_id=composition_id,native_members=[dict(member_index=i,program_id=m['program_id'],
+                **binding(case['case_id']+'/member-'+str(i))) for i,m in enumerate(compositions[composition_id]['members'])])
+        else:item.update(binding(case['case_id'] if case['building_type'] in {'MediumOffice','SmallOffice','Warehouse'} else case['configuration_id']))
+        bindings.append(item)
+    return {'schema_version':'1.0.0','components':components,'fixture_bindings':bindings,
+        'interpretation':'Actual component arrays stored once; exact source parents qualify actual ordered members, not their legacy averaged profiles'}
+
+
 if __name__ == '__main__':
     main()

@@ -143,7 +143,7 @@ def validate_request(params: dict, seed: int) -> None:
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Members must reference instances')
         if len({m['instance_key'] for m in members}) != len(members):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Duplicate member allocation')
-        if not math.isclose(math.fsum(m['weight'] for m in members), 1, rel_tol=0, abs_tol=1e-12):
+        if mixture['composition_id'] is None and not math.isclose(math.fsum(m['weight'] for m in members), 1, rel_tol=0, abs_tol=1e-12):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Normalized area weights must sum to one')
 
 
