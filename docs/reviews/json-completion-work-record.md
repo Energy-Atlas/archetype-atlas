@@ -330,3 +330,32 @@ internal-mass scaling and constant curtain incident-solar multipliers. This
 freezes ready inputs on the feature branch; it does not claim full simulation
 result parity or site publication. Program, frozen definitions, ground, systems
 and site/CI generation remain unchanged.
+
+## Unified construction-set migration for review (2026-10-14)
+
+The user accepted one source/context-selected construction set containing all
+component types, with Program-compatible header/source metadata. Catalogue
+selection resolves climate/reference; BEMGen owns BEM assignment and IDF
+translation. Generic required_bindings and deferred_scope fields are removed
+from the consumer contract. Component targets, assignment scopes, source
+conditions and geometry conventions are schema controlled.
+
+Implemented the v2 schema, selected exporter, compact 224-definition context
+index and complete Medium Office/residential examples. Source-selected Plenum
+overrides are embedded in the building set; compatibility-only Office lookups
+remain evidence. Residential parent-wall adjacency, pitch, internal-mass/
+interstory scaling and shading variants survive. Frozen v1 source physics,
+material/assembly IDs and selected fixed ACH remain unchanged.
+
+Fresh review found a legitimate Attic floor using a legacy roof role and missing
+guards against dropped geometry conventions. Regression tests were observed
+failing and repaired. Scoped-condition/root consistency was also strengthened
+because mislabeling affects BEMGen assignment. The review gate remains pending
+human comments; all-context release validation, source/program regeneration,
+site/CI, publication, translator, ground and systems remain outside this phase.
+See [the review entry](construction-set-v2-review.md).
+
+Focused final checks: 26 tests pass; all four review artifact bytes reproduce;
+review manifest verifies three artifact and eighteen input hashes. Frozen v1
+and program files have no changes. Artifacts are committed locally for review,
+with no site integration, CI, push or publication in this phase.
