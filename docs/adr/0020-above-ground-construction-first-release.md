@@ -111,12 +111,19 @@ infiltration geometry certificate. Source height/volume methods, unit position
 and exposure still need evaluation; total building floor count must not simply
 be used as an apartment's leakage height.
 
-The 183 commercial packages include 10 `Any` and five `Office` packages in
-`data/definition-releases/v0.1.1/constructions.json`. Such selectors do not
-identify a unique reference form. Trace applicable pinned source models and
-retain reference variants where their conversions differ; do not silently pick
-Medium Office for a generic selector, average forms or collapse different ACH
-derivations. Reconcile the final reference mapping before freezing the catalogue.
+Source geometry/exposure recovery now executes all 41 residential fixtures and
+129 commercial reference cases in `data/construction-inputs/geometry-v1.json`.
+All required residential pressure-boundary height/volume/exterior-fraction
+operands are recovered. The audit above describes the earlier starting data.
+The 16 attached fixtures have exterior fractions 0.1818–0.89567; the 15-storey
+apartment fixture has one conditioned dwelling storey and an 8 ft leakage height.
+
+All ten `Any` and five `Office` packages now have source reference matches.
+`Any` scopes are attic/plenum sets; each Office package retains six compatibility
+forms, distinct from actual building defaults. The receipt resolves 182/183
+package reference matches. SmallHotel 2019's generic GuestRoom source set is not
+instantiated in its model and is explicitly recorded with an unassigned whole-
+building candidate. No form is averaged, merged or arbitrarily chosen.
 
 Recover each source's leakage basis before using the reference geometry:
 commercial floor-area and exterior-area rates require different conversions;
@@ -125,8 +132,11 @@ leakage. Attached-unit exterior fractions must not silently become one. These
 conversion details and one reproducible factor per ASHRAE climate zone remain
 open. Source geometry selection does not authorize a universal conversion or
 discard foundation-associated leakage from a whole-enclosure pressure test.
-Ground/foundation delivery remains deferred. No scalar values have been generated
-or validated through this decision record.
+Ground/foundation delivery remains deferred. Candidate residential sensitivities
+and 42 climate-reference calculations are separate proposal evidence, not
+approved/released scalar natural ACH values. See the
+[reference and climate proposals](../reviews/construction-ach-reference-proposals.md)
+for source findings, measured factor differences and explicit answer areas.
 
 **Your comments on reference geometry:**
 

@@ -299,6 +299,12 @@ climate factors and conversion details remain open. The pinned source's
 annual-average scalar helper is a candidate conversion; this entry's earlier
 weather-dependent model proposal does not constitute acceptance of hourly output.
 
+**Recovery update:** All 41 pressure-boundary geometry/exposure records have been
+recovered by executing pinned source methods, including 16 attached-unit exterior
+fractions. See [the climate/reference proposals](construction-ach-reference-proposals.md)
+for annual-average versus dynamic conversion and measured climate-map alternatives.
+No final natural-ACH values or ready construction contract are claimed here.
+
 **Gap description and pattern:** All 41 residential enclosure records preserve
 their pressure-test leakage, including the 50 Pa reference. A usable infiltration
 model also needs the source pressure/weather/geometry transformation.

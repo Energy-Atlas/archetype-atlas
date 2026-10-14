@@ -215,3 +215,38 @@ require tracing reference-model mappings rather than choosing an arbitrary form.
 Preserve distinct reference variants when their derived constants differ.
 Climate factors and conversion details remain open. No scalar ACH generation,
 JSON regeneration, system/ground implementation or site/CI build was performed.
+
+## Source geometry/exposure recovery and climate proposals (2026-10-13)
+
+Executed pinned source argument, geometry and leakage methods for all 41
+residential fixtures. Recovered pressure-boundary height/volume, compartment
+areas, exterior fraction, terrain/shielding and neighbor-distance evidence.
+Sixteen attached fixtures have fractions 0.1818–0.89567; the 15-storey apartment
+fixture retains one dwelling storey and an 8 ft infiltration height. Ground
+adjacency dimensions were used only for the source pressure boundary; no ground
+heat-transfer contract/model was delivered.
+
+Executed geometry-only recovery for 129 commercial reference cases, with Medium
+Office first. Retained space scopes, exterior areas, vertical extent, multipliers,
+terrain/default flags and source lookup contexts. All 15 generic Any/Office sets
+have reference matches. The 183-package receipt contains 182 source matches and
+one evidence-backed uninstantiated SmallHotel 2019 GuestRoom scope; its whole-
+building candidate remains unassigned. All-space volume is not asserted to be a
+conditioned-volume denominator. No loads/HVAC/ground solver phases were run.
+
+Added separate versioned geometry and proposal-only climate evidence under
+`data/construction-inputs`. Executed 42 candidate source weather/shielding factors
+from the pinned 2006 and 2013 climate maps. The grouped reference review provides
+numeric factor alternatives, scientific interpretation, proposals and comment
+areas. No proposed climate factor, annual-average convention or surrogate room
+reference is treated as accepted by a blank comment.
+
+Independent review found missing residential SmallHotel story overrides, lost
+commercial terrain evidence and inadequate unmatched-package validation. All
+three were fixed; their regression tests were observed failing first and then
+passed. Eight focused tests pass, including a regression for floating-point
+geometry-sum noise. Derived runtime geometry is canonicalized to nine significant
+digits; literal source-table parameters remain unchanged. Focused replays cover
+all 41 residential cases, five commercial pilots and all 42 climate candidates.
+Frozen program, construction and system
+releases remain unchanged; no catalogue/site generation or full CI was run.

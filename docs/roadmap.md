@@ -59,6 +59,13 @@ reference geometry. Climate factors and conversion details remain open.
 [ADR 0020](adr/0020-above-ground-construction-first-release.md)
 supersedes the earlier all-kind publication gate for this first milestone.
 
+Source reference geometry/exposure is recovered for 41 residential and 129
+commercial cases. All 15 generic packages have reference matches; the full
+package receipt has 182 matches and one explicitly uninstantiated SmallHotel
+space scope. [Climate/reference proposals](reviews/construction-ach-reference-proposals.md)
+record the pending conversion and climate choices. This is evidence recovery,
+not the completed above-ground release.
+
 The initial above-ground/interior inventory contains 2,982 elements, plus 183
 mixed packages and 41 residential enclosures to project. Missing source selectors
 for doors/skylights/additional windows require dependency expansion before the
