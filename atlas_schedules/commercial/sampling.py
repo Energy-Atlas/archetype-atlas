@@ -44,10 +44,14 @@ def select_conditional(table: dict, selectors: dict, uniform: float) -> dict:
 
 def sample_operating_parameters(inputs: dict, group_seed: int, resources) -> dict:
     """Draw exactly once for each of ten source parameters, including constants."""
-    audit = resources.get('commercial', 'sampling-audit')
+    selector=inputs.get('building_type') if isinstance(inputs,dict) else None
+    if selector not in {'medium_office','small_office'}:
+        raise GeneratorError('invalid_conditioning','/commercial/inputs','Exact audited selector required')
+    prefix='' if selector=='medium_office' else selector+'__'
+    audit = resources.get('commercial', prefix+'sampling-audit')
     if (audit.get('gate_status') != 'passed' or audit.get('population_realization_equivalent') is not False
-            or audit.get('conditioning_inputs') != {'building_type':'medium_office'}
-            or audit.get('configuration_id') != 'medium_office_90_1_2013'
+            or audit.get('conditioning_inputs') != {'building_type':selector}
+            or audit.get('configuration_id') != selector+'_90_1_2013'
             or audit.get('tsv_version') != 'v33' or audit.get('stock_year_context') != 2018
             or audit.get('standards_dependency',{}).get('version') != '0.8.6'
             or len(audit.get('parameters',[])) != 10
@@ -65,7 +69,7 @@ def sample_operating_parameters(inputs: dict, group_seed: int, resources) -> dic
     if order != audit['selected_parameter_order'] or len(order) != 10:
         raise GeneratorError('sampling_gate', '/commercial/draw_order', 'Audited ten-parameter source order required')
     for parameter in order:
-        table = resources.get('commercial', parameter)
+        table = resources.get('commercial', prefix+parameter)
         conditioning = {d: selectors.get(d) for d in table['dependencies']}
         uniform = rng.random()
         selection = select_conditional(table, conditioning, uniform)

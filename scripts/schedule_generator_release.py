@@ -51,7 +51,9 @@ def validate_native_join(resources: ResourceSet, scope: dict) -> None:
         join=resources.get('reference','family-native-join')
         components=join['components']
         keys=[c['reference_resource_key'] for c in components]
-        if keys!=['residential-native-lock','commercial-native-lock']:
+        expected_keys=['residential-native-lock','commercial-native-lock']
+        if scope['milestone_id']=='C3':expected_keys.append('small-office-native-lock')
+        if keys!=expected_keys:
             raise ValueError('Native join component keys differ or repeat')
         by_key={}
         for component in components:
@@ -62,8 +64,8 @@ def validate_native_join(resources: ResourceSet, scope: dict) -> None:
             by_key[key]=component
         expected=[]
         for case in scope['cases']:
-            commercial=case['building_type']=='MediumOffice'
-            key='commercial-native-lock' if commercial else 'residential-native-lock'
+            commercial=case['building_type'] in {'MediumOffice','SmallOffice'}
+            key={'MediumOffice':'commercial-native-lock','SmallOffice':'small-office-native-lock'}.get(case['building_type'],'residential-native-lock')
             component=by_key[key]
             expected.append({'configuration_id':case['configuration_id'],'program_id':case['program_id'],
                 'native_case_id':case['case_id'] if commercial else case['configuration_id'],
@@ -93,7 +95,7 @@ def validate_family_certification(resources: ResourceSet, scope: dict) -> None:
     lock = resources.get('reference','family-native-lock')
     if native != lock['vectors'] or set(lock['fixture_order']) != {c['configuration_id'] for c in scope['cases']}:
         raise ValueError('Expanded family certification has incomplete native reference identity')
-    if scope['milestone_id']=='C2': validate_native_join(resources,scope)
+    if scope['milestone_id'] in {'C2','C3'}: validate_native_join(resources,scope)
 
 
 def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str, bytes], str]:
@@ -113,7 +115,7 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                          'sources/schedule-generator-residential-family-reference-lock.json',
                          'data/schedule-generator/residential-family-native.json.gz'):
                 files[name] = (ROOT/name).read_bytes()
-        if compiled_scope['milestone_id'] == 'C2':
+        if compiled_scope['milestone_id'] in {'C2','C3'}:
             for name in ('sources/schedule-generator-medium-office-scope.json',
                          'sources/schedule-generator-ruby-float-lock.json',
                          'data/schedule-generator/source-methods/ruby-numeric-v3_2_2.c',
@@ -125,8 +127,18 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                          'data/schedule-generator/medium-office-family-native.json.gz',
                          'data/schedule-generator/residential-family-native.json.gz'):
                 files[name] = (ROOT/name).read_bytes()
+            if compiled_scope['milestone_id']=='C3':
+                for name in ('sources/schedule-generator-small-office-scope.json',
+                             'sources/schedule-generator-small-office-lock.json',
+                             'sources/schedule-generator-small-office-cumulative-reference-lock.json',
+                             'sources/schedule-generator-small-office-family-reference-lock.json',
+                             'data/schedule-generator/small-office-sampling-audit.json',
+                             'data/schedule-generator/small-office-cumulative-native.json',
+                             'data/schedule-generator/small-office-family-native.json.gz'):
+                    files[name]=(ROOT/name).read_bytes()
             validate_native_join(ResourceSet(Path(resources_root),strict_json(files['atlas_schedules/data/manifest.json'],'manifest')['resource_set_id']),compiled_scope)
-            join=strict_json(files['data/schedule-generator/medium-office-cumulative-native.json'],'native join')
+            join_name='small-office' if compiled_scope['milestone_id']=='C3' else 'medium-office'
+            join=strict_json(files['data/schedule-generator/'+join_name+'-cumulative-native.json'],'native join')
             native_cases={}
             for component in join['components']:
                 vector=component['lock']['vectors']
@@ -220,14 +232,15 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                 "are packaged. Generation uses Python's standard library offline; native/source tools are development-only. "
                 "Frozen artifact/resource checksums are integrity gates; fresh schedules are compared by source/discrete and numerical equivalence.\n"
             ).encode('utf-8')
-        if resources_root is not None and compiled_scope['milestone_id'] == 'C2':
-            guide = (ROOT/'docs/schedule-generator-medium-office.md').read_text(encoding='utf-8')
+        if resources_root is not None and compiled_scope['milestone_id'] in {'C2','C3'}:
+            guide_name='small-office' if compiled_scope['milestone_id']=='C3' else 'medium-office'
+            guide = (ROOT/('docs/schedule-generator-'+guide_name+'.md')).read_text(encoding='utf-8')
             files['docs/schedule-generator.md'] = guide.replace('RESOURCE_SET_ID',manifest['resource_set_id']).encode('utf-8')
             if scope!=compiled_scope:
                 templates=', '.join(sorted({c['template'] for c in scope['cases']}))
                 files['docs/schedule-generator.md']=(
                     f"# Offline schedule generator — {scope['milestone_id']}\n\n"
-                    f"This restricted milestone declares {len(scope['cases'])} exact case(s), selected from independently certified C2. "
+                    f"This restricted milestone declares {len(scope['cases'])} exact case(s), selected from independently certified {compiled_scope['milestone_id']}. "
                     f"Included templates: {templates}. Resource identity: `{manifest['resource_set_id']}`. "
                     "Its complete runnable example is `references/all-cases-request.json`, with numerical reference "
                     "`references/all-cases-bundle.json.gz`. Extract the request and run "
@@ -258,11 +271,15 @@ def _request(scope: dict, files: dict[str, bytes], resource_set_id: str) -> dict
 
 def _mixed_request(scope: dict, resources: ResourceSet) -> dict:
     """Concrete caller-declared physical experiment from actual bound members."""
-    residential=next(c for c in scope['cases'] if c['building_type']!='MediumOffice'
+    residential=next(c for c in scope['cases'] if c['template']=='ResStock SDR source fixture'
                      and resources.get('program',c['program_id'])['recipe']['bound_inputs']['residents']>0)
     commercial=next(c for c in scope['cases'] if c['template']=='DOE Ref Pre-1980' and 'Office_MediumOffice' in c['name'])
     instances=[]
-    for case,basis,value,unit in [(residential,'dwelling_unit',1,'dwelling'),(commercial,'floor_area',100,'m2')]:
+    members=[(residential,'dwelling_unit',1,'dwelling'),(commercial,'floor_area',100,'m2')]
+    if scope['milestone_id']=='C3':
+        small=next(c for c in scope['cases'] if c['template']=='90.1-2013' and 'Office_SmallOffice' in c['name'])
+        members.append((small,'floor_area',100,'m2'))
+    for case,basis,value,unit in members:
         instances.append({'key':case['case_id'],'program_id':case['program_id'],
             'inputs':copy.deepcopy(resources.get('program',case['program_id'])['recipe']['bound_inputs']),
             'operating_group':None,'basis_bindings':{'extents':{basis:{'value':value,'unit':unit,
@@ -270,8 +287,8 @@ def _mixed_request(scope: dict, resources: ResourceSet) -> dict:
     return {'schema_version':'1.0.0','seed':42,'params':{'resource_set_id':resources.resource_set_id,
         'calendar':{'year':2007,'clock':'local_standard_time','holidays':[]},'instances':instances,
         'mixture':{'program_id':'cumulative-residential-doe-office','composition_id':None,
-            'members':[{'instance_key':i['key'],'weight':.5} for i in instances],
-            'result_basis':'floor_area','denominator':{'value':100,'unit':'m2',
+            'members':[{'instance_key':i['key'],'weight':1/len(instances)} for i in instances],
+            'result_basis':'floor_area','denominator':{'value':200 if scope['milestone_id']=='C3' else 100,'unit':'m2',
                 'evidence':{'caller':'Explicit experiment result area; participation multipliers are not population weights'}}}}}
 
 
@@ -298,7 +315,8 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
     original_root = Path(resources_root) if resources_root is not None else ROOT/'atlas_schedules/data'
     approved = {'M1':'sources/schedule-generator-m1-scope.json',
                 'R1':'sources/schedule-generator-residential-scope.json',
-                'C2':'sources/schedule-generator-medium-office-scope.json'}
+                'C2':'sources/schedule-generator-medium-office-scope.json',
+                'C3':'sources/schedule-generator-small-office-scope.json'}
     compiled_scope = strict_json((original_root/'reference/m1-scope.json').read_bytes(),'compiled source scope')
     family = compiled_scope.get('milestone_id')
     if family not in approved:
@@ -317,7 +335,7 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
         raise ValueError('Compiled resource scope differs from authoritative M1')
     if any(case not in authoritative['cases'] for case in scope['cases']):
         raise ValueError('Unknown or modified source case in partial scope')
-    if resources_root is not None and authoritative['milestone_id'] in {'R1','C2'}:
+    if resources_root is not None and authoritative['milestone_id'] in {'R1','C2','C3'}:
         # Restricted runtimes select from the fully certified source family;
         # source evidence and operands remain tied to its exact full scope.
         validate_family_certification(resources, authoritative)
@@ -351,7 +369,7 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
             raise ValueError('Task 8 source reference differs: ' + '; '.join(differences[:10]))
     files['references/all-cases-request.json'] = canonical(request)
     files['references/all-cases-bundle.json.gz'] = gzip.compress(generated, mtime=0)
-    if scope['milestone_id']=='C2' and len(scope['cases'])==len(authoritative['cases']):
+    if scope['milestone_id'] in {'C2','C3'} and len(scope['cases'])==len(authoritative['cases']):
         mixed=_mixed_request(scope,resources)
         mixed['params']['resource_set_id']=resource_set_id
         files['references/mixed-family-request.json']=canonical(mixed)

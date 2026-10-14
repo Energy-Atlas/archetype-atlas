@@ -57,6 +57,12 @@ covering 846 channels. Its [guide](docs/schedule-generator-medium-office.md) and
 a runnable generated residential/DOE Office mixture within one resource identity.
 Other catalogue families remain open; different releases cannot be composed.
 
+The cumulative [generator v0.4.0](data/generator-releases/v0.4.0/manifest.json)
+adds all 18 Small Office records, for 79 cases and 906 channels. Its
+[guide](docs/schedule-generator-small-office.md) and
+[coverage](docs/validation/schedule-generator-coverage-small-office.json) include
+an actual residential/Medium Office/Small Office mixture in one resource set.
+
 | Canonical table | Records |
 | --- | ---: |
 | programs | 768 |

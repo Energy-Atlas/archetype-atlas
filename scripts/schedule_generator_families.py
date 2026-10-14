@@ -5,6 +5,9 @@ import hashlib
 import json
 from pathlib import Path
 import zipfile
+import io
+import csv
+import math
 
 from atlas_schedules.canonical import canonical
 from scripts.common import ROOT
@@ -131,6 +134,73 @@ def prepare_medium_office_family():
         'reason':'Exact source selector/carrier/aggregation and required original annual decomposition need their own certification'}]
     (ROOT/'sources/schedule-generator-medium-office-lock.json').write_bytes(canonical(lock))
     return scope, lock
+
+
+def prepare_small_office_family():
+    """Append actual SmallOffice identities and recover its ten-table closure."""
+    read = lambda name: json.loads((ROOT/name).read_text(encoding='utf-8'))
+    prior = read('sources/schedule-generator-medium-office-scope.json')
+    lock = read('sources/schedule-generator-medium-office-lock.json')
+    audit = read('data/schedule-generator/comstock-sampling-audit.json')
+    audit.update(configuration_id='small_office_90_1_2013',conditioning_inputs={'building_type':'small_office'},
+        out_of_scope_source_rows='Only exact small_office rows in this audit; raw subunit CDF tails remain contextual sampling failures')
+    source = next(a for a in lock['archives'] if a['source_id']=='comstock' and a['format']=='zip')
+    content = (ROOT/'data/raw'/source['cache_path']).read_bytes()
+    if hashlib.sha256(content).hexdigest()!=source['sha256']: raise ValueError('Conditional source archive differs')
+    with zipfile.ZipFile(io.BytesIO(content)) as archive:
+        for parameter in audit['parameters']:
+            name=parameter['parameter']
+            member=next(e for e in source['members'] if e['key']==name and e['kind']=='commercial')
+            blob=archive.read(member['path'])
+            if hashlib.sha256(blob).hexdigest()!=member['sha256']: raise ValueError('Conditional member differs')
+            table=list(csv.reader(io.StringIO(blob.decode('utf-8-sig')),delimiter='\t'))
+            header=table[0]; dependencies=[c[11:] for c in header if c.startswith('Dependency=')]
+            options=[c[7:] for c in header if c.startswith('Option=')]
+            selected=[]; totals=[]
+            for line,row in enumerate(table[1:],2):
+                selectors={d:row[header.index('Dependency='+d)] for d in dependencies}
+                if selectors['building_type']!='small_office': continue
+                probabilities=[float(row[header.index('Option='+o)]) for o in options]
+                if any(not math.isfinite(v) or v<0 or v>1 for v in probabilities) or abs(math.fsum(probabilities)-1)>1e-6: raise ValueError('SmallOffice malformed conditional row')
+                selected.append({'source_row':line,'selectors':selectors});totals.append(sum(probabilities))
+            if dependencies!=parameter['dependencies'] or not selected: raise ValueError('SmallOffice closure differs from inspected dependency method')
+            parameter.update(conditioning_inputs={d:'small_office' if d=='building_type' else {'sampled_parameter':d} for d in dependencies},
+                option_order=options,source_rows=[r['source_row'] for r in selected],selected_rows=selected,
+                raw_cdf_sum_range=[min(totals),max(totals)])
+            entry=copy.deepcopy(member);entry.update(key='small_office__'+name,fixed_selectors={'building_type':'small_office'})
+            source['members'].append(entry)
+            lock['required_resources'].append({'kind':'commercial','key':entry['key']})
+    audit_file='data/schedule-generator/small-office-sampling-audit.json'
+    (ROOT/audit_file).write_bytes(canonical(audit))
+    cases=copy.deepcopy(prior['cases'])
+    prototype=next(c for c in cases if c['building_type']=='MediumOffice')
+    for index,p in enumerate(read('data/definition-releases/v0.1.1/programs.json')):
+        if p['building_type']!='SmallOffice': continue
+        case=copy.deepcopy(prototype)
+        config='small_office_'+p['template'].lower().replace('.','_').replace('-','_').replace(' ','_')
+        case.update(case_id='C3-'+p['id'],program_id=p['id'],name=p['name'],building_type=p['building_type'],
+            template=p['template'],evidence_view=p['evidence_view'],configuration_id=config+'-'+p['evidence_view']+'-'+p['source_id'],source_gate_status='requires_native_certification')
+        case['program_definition']['json_pointer']='/'+str(index)
+        case['configuration'].update(conditioning_inputs={'building_type':'small_office'},sampling_configuration_id=config,
+            sampling_audit_file=audit_file,program_definition_pointer='/'+str(index),
+            interpretation='Prototype-budget-preserving hybrid with actual same-template/view SmallOffice carrier, exact v33 small_office closure and pinned Standards 0.8.6 transforms')
+        case['weather'].update(independence_certified_by=audit_file+': ten-table closure and selected interior transforms',
+            interpretation='No weather operand in selected interior source methods; no inferred DOE EPW')
+        cases.append(case)
+    native_file=ROOT/'sources/schedule-generator-small-office-family-reference-lock.json'
+    if native_file.exists():
+        native=read(str(native_file.relative_to(ROOT)))
+        if hashlib.sha256((ROOT/native['vectors']['source_path']).read_bytes()).hexdigest()!=native['vectors']['sha256']: raise ValueError('SmallOffice native reference differs')
+        if native.get('source_gate_status')=='passed':
+            for c in cases[61:]:c['source_gate_status']='passed'
+    scope=dict(prior,milestone_id='C3',cases=cases,source_order_policy='Exact prior 61 C2 cases unchanged; append actual 18 SmallOffice definitions in source order; distinct ordered requests have distinct receipts')
+    name='sources/schedule-generator-small-office-scope.json'
+    (ROOT/name).write_bytes(canonical(scope))
+    for file in (name,audit_file):
+        blob=(ROOT/file).read_bytes();lock['frozen_files'][file]={'sha256':hashlib.sha256(blob).hexdigest(),'size_bytes':len(blob)}
+    lock.update(scope_cases=cases,milestone_id='C3',blocked_families=[{'family':'outside_C3','status':'requires_binding','reason':'Exact carrier/aggregation, original physical targets, caller operands and native method certification remain'}])
+    (ROOT/'sources/schedule-generator-small-office-lock.json').write_bytes(canonical(lock))
+    return scope,lock
 
 
 if __name__ == '__main__':

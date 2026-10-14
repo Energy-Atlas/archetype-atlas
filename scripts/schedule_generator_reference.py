@@ -249,8 +249,10 @@ def commercial_family_capture_inputs(resources):
     import copy
     from atlas_schedules.commercial.sampling import sample_operating_parameters
     result = []
+    building='SmallOffice' if resources.manifest['milestone_id']=='C3' else 'MediumOffice'
+    selector='small_office' if building=='SmallOffice' else 'medium_office'
     for case in resources.manifest['cases']:
-        if case['building_type'] != 'MediumOffice':
+        if case['building_type'] != building:
             continue
         recipe = resources.get('program',case['program_id'])['recipe']
         carrier = resources.get('program',recipe['source_context']['carrier_program_id'])['recipe']
@@ -258,15 +260,15 @@ def commercial_family_capture_inputs(resources):
         context.update(year=2007,holidays=[])
         item={'case_id':case['case_id'],'source_context':context,
             'schedules':copy.deepcopy(context['slot_sources']),
-            'operating':sample_operating_parameters({'building_type':'medium_office'},42,resources),
+            'operating':sample_operating_parameters({'building_type':selector},42,resources),
             'source_case':copy.deepcopy(case),
-            'interpretation':'Actual template/view Office carrier; inactive Plenum associated explicitly, never an occupancy claim for Plenum'}
+            'interpretation':'Actual same-building/template/view Office carrier; source-inactive space associated explicitly, never an occupancy claim for it'}
         result.append(item)
         for group_kind,group in [('instance',case['case_id']),('full_request',case['configuration_id'])]:
             for seed in (42,51):
                 probe=copy.deepcopy(item)
                 probe['case_id'] += '@'+group_kind+'-'+str(seed)
-                probe['operating']=sample_operating_parameters({'building_type':'medium_office'},commercial_group_seed(seed,group),resources)
+                probe['operating']=sample_operating_parameters({'building_type':selector},commercial_group_seed(seed,group),resources)
                 probe['source_seed_receipt']={'master_seed':seed,'operating_group':group,'policy':'SHA256-derived commercial group seed'}
                 result.append(probe)
     return result
@@ -345,10 +347,12 @@ def capture_commercial(runtime_archive, destination, resources=None):
             dependencies[parameter] = resources.get('commercial',parameter)['dependencies']
     dependencies['building_type'] = []
     draws = [.1,.7,.2,.8,.3,.4,.5,.6,.7,.8]
-    native = namespace['_com_execute_samples'](tables,dependencies,['building_type']+order,{0:draws},{0:{'building_type':'medium_office'}})[0]
-    rows = []; selectors={'building_type':'medium_office'}
+    selector='small_office' if manifest['milestone_id']=='C3' else 'medium_office'
+    prefix='small_office__' if selector=='small_office' else ''
+    native = namespace['_com_execute_samples'](tables,dependencies,['building_type']+order,{0:draws},{0:{'building_type':selector}})[0]
+    rows = []; selectors={'building_type':selector}
     for parameter,draw in zip(order,draws):
-        table=resources.get('commercial',parameter)
+        table=resources.get('commercial',prefix+parameter)
         row=next(r for r in table['rows'] if all(r['selectors'][d]==selectors[d] for d in table['dependencies']))
         rows.append({'parameter':parameter,'selectors':{d:selectors[d] for d in table['dependencies']},
                      'uniform':draw,'source_row':row['source_row'],'selected_option':native[parameter]})

@@ -217,7 +217,8 @@ def extract_sources(lock: dict, cache_root: Path, destination: Path) -> dict:
         if (entry['kind'], entry['key']) not in records:
             raise GeneratorError('missing_resource', f"{entry['kind']}/{entry['key']}", 'Required evidence is absent')
     # Resolve the selected table dependency graph without importing the sampler.
-    graph = {key: record['dependencies'] for (kind, key), record in records.items()
+    graph = {key: [(key.split('__',1)[0]+'__'+d if '__' in key and d not in lock.get('external_selectors',[]) else d)
+                   for d in record['dependencies']] for (kind, key), record in records.items()
              if kind == 'commercial' and record['format'] == 'conditional_tsv'}
     visiting, resolved = set(), set(lock.get('external_selectors', []))
     def visit(key):

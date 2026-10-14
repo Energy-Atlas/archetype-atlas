@@ -288,8 +288,8 @@ def compile_recipes(records, scope):
         else:
             bound = {'configuration_id': case['configuration']['sampling_configuration_id'],
                      'carrier_policy': 'explicit_single_nonresidential_reference_carrier'}
-            carrier_case = next(c for c in scope['cases'] if c['building_type'] == 'MediumOffice'
-                                and 'Office_MediumOffice' in c['name'] and c['evidence_view'] == case['evidence_view']
+            carrier_case = next(c for c in scope['cases'] if c['building_type'] == case['building_type']
+                                and 'Office_'+case['building_type'] in c['name'] and c['evidence_view'] == case['evidence_view']
                                 and c['template'] == case['template'])
             carrier = definitions[carrier_case['program_id']]
             carrier_load = next(l for l in carrier['loads'] if l['quantity'] == 'occupancy')
@@ -298,7 +298,8 @@ def compile_recipes(records, scope):
                 slot_sources={}, slot_modes={}, occupancy_aggregation={'policy': bound['carrier_policy'],
                 'constituents': [{'schedule': carrier_source, 'nominal_people': 1.0, 'residential': False,
                                   'evidence': field_evidence(carrier_load['evidence_id'], receipt)}],
-                'interpretation': 'Declared M1 normalized Office carrier, not geometry or population; Plenum explicitly associated through named MediumOffice configuration'},
+                'interpretation': ('Declared M1 normalized Office carrier, not geometry or population; Plenum explicitly associated through named MediumOffice configuration' if case['building_type']=='MediumOffice' else
+                    'Explicit normalized actual SmallOffice carrier in the same template/view; source-inactive Attic associated with the named SmallOffice configuration; no geometry or population inferred')},
                 occupancy_adjustment={'peak_occ_frac': 0.231, 'source_key': 'comstock__resources__options_lookup_tsv',
                 'source_options': ['baseline_hvac_sizing=autosize', 'baseline_hvac_sizing=hardsize'],
                 'interpretation': 'Locked common lookup value only; no HVAC sizing inference'},
@@ -312,7 +313,7 @@ def compile_recipes(records, scope):
                 context['adaptation'] = {'method':'prototype_budget_preserving_commercial_hybrid',
                     'source_template':case['template'], 'evidence_view':case['evidence_view'],
                     'sampling_selector':case['configuration']['conditioning_inputs'],
-                    'sampling_reference_audit_configuration':'medium_office_90_1_2013',
+                    'sampling_reference_audit_configuration':case['configuration']['conditioning_inputs']['building_type']+'_90_1_2013',
                     'interpretation':'Actual template/view schedules and targets transformed using pinned Standards 0.8.6 and audited ComStock v33 selector closure; no stock population equivalence'}
             original_loads = {l['demand_id']: l for l in definition['loads']}
             for load in ready['loads']:
@@ -385,10 +386,10 @@ def compile_recipes(records, scope):
 
 
 def build_resources(destination: Path, scope: str, tables_destination: Path | None = None) -> dict:
-    if scope not in {'pilot', 'residential', 'medium-office'}:
-        raise GeneratorError('unsupported_scope', '/scope', 'Only exact M1 pilot is source-gated')
-    lock_file = {'pilot':'sources/schedule-generator-lock.json','residential':'sources/schedule-generator-residential-lock.json','medium-office':'sources/schedule-generator-medium-office-lock.json'}[scope]
-    scope_file = {'pilot':'sources/schedule-generator-m1-scope.json','residential':'sources/schedule-generator-residential-scope.json','medium-office':'sources/schedule-generator-medium-office-scope.json'}[scope]
+    if scope not in {'pilot', 'residential', 'medium-office', 'small-office'}:
+        raise GeneratorError('unsupported_scope', '/scope', 'Unknown explicit source family scope')
+    lock_file = {'pilot':'sources/schedule-generator-lock.json','residential':'sources/schedule-generator-residential-lock.json','medium-office':'sources/schedule-generator-medium-office-lock.json','small-office':'sources/schedule-generator-small-office-lock.json'}[scope]
+    scope_file = {'pilot':'sources/schedule-generator-m1-scope.json','residential':'sources/schedule-generator-residential-scope.json','medium-office':'sources/schedule-generator-medium-office-scope.json','small-office':'sources/schedule-generator-small-office-scope.json'}[scope]
     lock = _read(ROOT/lock_file)
     manifest_scope = _read(ROOT/scope_file)
     validate_scope(manifest_scope, lock)
@@ -403,7 +404,9 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
         sources = ResourceSet(Path(temporary)/'resources', source_manifest['resource_set_id'])
         records = {(e['kind'], e['key']): sources.get(e['kind'], e['key']) for e in source_manifest['resources']}
     records['commercial', 'sampling-audit'] = audit
-    if scope == 'medium-office':
+    if scope=='small-office':
+        records['commercial','small_office__sampling-audit']=_read(ROOT/'data/schedule-generator/small-office-sampling-audit.json')
+    if scope in {'medium-office','small-office'}:
         receipt = _read(ROOT/'sources/schedule-generator-ruby-float-lock.json')['sources'][0]
         content = (ROOT/receipt['source_path']).read_bytes()
         if hashlib.sha256(content).hexdigest()!=receipt['sha256'] or len(content)!=receipt['size_bytes']:
@@ -475,7 +478,7 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             records['reference', source_file['id']] = {'definition': source_file, 'provenance': _receipt(file, '/'+str(index), 'Exact upstream source revision and byte checksum')}
     file = 'data/resolution-releases/v0.4.0/fixed-background-schedules.json'
     records['residential', 'fixed-background-schedules'] = {'definition': _read(ROOT/file), 'provenance': _receipt(file, '/', 'Exact frozen source default variants')}
-    if scope in {'residential','medium-office'}:
+    if scope in {'residential','medium-office','small-office'}:
         recovery = _read(ROOT/'data/program-inputs/residential-v1.json')
         fixed = records['residential', 'fixed-background-schedules']['definition']
         for shape in recovery['schedules'].values():
@@ -527,6 +530,21 @@ def build_resources(destination: Path, scope: str, tables_destination: Path | No
             records['reference',key] = native
     if scope == 'medium-office':
         records['reference','family-native-join'] = _read(ROOT/'data/schedule-generator/medium-office-cumulative-native.json')
+    if scope=='small-office':
+        certificate=ROOT/'data/schedule-generator/families/small-office/certification.json'
+        if certificate.exists():records['reference','family-certification']=_read(certificate)
+        for key,file in {'family-native-lock':'sources/schedule-generator-small-office-cumulative-reference-lock.json',
+                         'residential-native-lock':'sources/schedule-generator-residential-family-reference-lock.json',
+                         'commercial-native-lock':'sources/schedule-generator-medium-office-family-reference-lock.json',
+                         'small-office-native-lock':'sources/schedule-generator-small-office-family-reference-lock.json'}.items():
+            path=ROOT/file
+            if not path.exists():continue
+            native=_read(path);vectors=(ROOT/native['vectors']['source_path']).read_bytes()
+            if hashlib.sha256(vectors).hexdigest()!=native['vectors']['sha256'] or len(vectors)!=native['vectors']['size_bytes']:
+                raise GeneratorError('source_integrity',file,'Independent native component differs')
+            records['reference',key]=native
+        join=ROOT/'data/schedule-generator/small-office-cumulative-native.json'
+        if join.exists():records['reference','family-native-join']=_read(join)
     if tables_destination is not None:
         tables_destination.mkdir(parents=True, exist_ok=True)
         for name, table in tables.items():

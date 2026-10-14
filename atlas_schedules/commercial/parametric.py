@@ -268,9 +268,11 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
     for key in required:
         if key not in context: _error('source_context/'+key,'Required dependency binding missing')
     configurations = {'medium_office_90_1_2007','medium_office_90_1_2013','medium_office_90_1_2019',
-                      'medium_office_doe_ref_1980_2004','medium_office_doe_ref_pre_1980'}
+                      'medium_office_doe_ref_1980_2004','medium_office_doe_ref_pre_1980',
+                      'small_office_90_1_2007','small_office_90_1_2013','small_office_90_1_2019',
+                      'small_office_doe_ref_1980_2004','small_office_doe_ref_pre_1980'}
     if context['configuration_id'] not in configurations or context['standards_version']!='0.8.6':
-        _error('configuration_id','Only audited Medium Office/Standards0.8.6 binding supported')
+        _error('configuration_id','Only audited Medium/Small Office/Standards0.8.6 bindings supported')
     if context['steps_per_hour']!=6 or isinstance(context['steps_per_hour'],bool):
         _error('steps_per_hour','Native validated timestep6 representation required')
     if context['holidays']!=[]: _error('holidays','Unvalidated commercial holiday inference context')
@@ -349,9 +351,12 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                 for day in range(365):
                     if (date(context['year'],1,1)+timedelta(days=day)).weekday()>=5:
                         points=daily[day]
-                        verified=(context['configuration_id'] in {'medium_office_doe_ref_1980_2004','medium_office_doe_ref_pre_1980','medium_office_90_1_2007'}
+                        weekday=(date(context['year'],1,1)+timedelta(days=day)).weekday()
+                        native_days={'medium_office_doe_ref_1980_2004':{6},'medium_office_doe_ref_pre_1980':{6},'medium_office_90_1_2007':{6},
+                                     'small_office_90_1_2007':{5,6},'small_office_90_1_2013':{5,6},'small_office_90_1_2019':{5,6},
+                                     'small_office_doe_ref_1980_2004':{6},'small_office_doe_ref_pre_1980':{6}}
+                        verified=(weekday in native_days.get(context['configuration_id'],set())
                                   and slot in {'lighting','electric_equipment'}
-                                  and (date(context['year'],1,1)+timedelta(days=day)).weekday()==6
                                   and len(points)>1 and max(v for _,v in points)==min(v for _,v in points)>0)
                         if verified:
                             source_discards.append({'day_of_year':day+1,'slot':slot,
@@ -361,7 +366,8 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                                 'source_method_evidence':copy.deepcopy(context.get('source_discard_method_evidence',{}).get(slot,{})),
                                 'arithmetic':{'scale':'nonfinite','new_values':'NaN','encoding':'explicit_status_no_nonfinite_JSON_numbers'},
                                 'native_default_profile':[[24.0,0.0]],
-                                'interpretation':'Exact verified multi-point equal-positive Sunday native storage result; original annual target retained'})
+                                'interpretation':('Exact verified SmallOffice multi-point equal-positive '+('Saturday' if weekday==5 else 'Sunday')+' native storage result; original annual target retained' if context['configuration_id'].startswith('small_office_') else
+                                    'Exact verified multi-point equal-positive Sunday native storage result; original annual target retained')})
                         daily[day],_=_bpr(points,ratios['weekend'],min(bases),native_equal_profile=verified)
         hourly_cache={}; annual=[]
         for points in daily:
