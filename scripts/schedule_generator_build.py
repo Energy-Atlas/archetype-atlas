@@ -10,6 +10,7 @@ from atlas_schedules.errors import GeneratorError
 from atlas_schedules.resources import ResourceSet, strict_json, write_resources
 from scripts.common import ROOT
 from scripts.schedule_generator_sources import extract_sources
+from scripts.schedule_generator_reference import load_reference_vectors
 
 
 def _read(path):
@@ -84,6 +85,9 @@ def build_resources(destination: Path, scope: str) -> dict:
     records['commercial', 'sampling-audit'] = audit
     records['reference', 'm1-scope'] = manifest_scope
     records['reference', 'comparison-policy'] = _read(ROOT/'sources/schedule-generator-policy.json')
+    records['reference', 'source-random-rule-vectors'] = load_reference_vectors()
+    records['reference', 'notice-ruby-random'] = {'text': (ROOT/'sources/licenses/ruby-random.txt').read_text(encoding='utf-8'),
+                                                    'source_path': 'sources/licenses/ruby-random.txt'}
     programs_file = 'data/definition-releases/v0.1.1/programs.json'
     programs = _read(ROOT/programs_file)
     schedule_ids, source_program_ids = set(), set()
