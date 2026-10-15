@@ -197,6 +197,9 @@ def validate_bundle(bundle: dict) -> None:
             raise GeneratorError('invalid_contract','/metadata/building_realizations',
                                  'Building realizations require schema 1.2.0')
     _schema_errors(bundle, 'bundle',bundle.get('schema_version'))
+    if bundle['schema_version'] == '1.2.0':
+        raise GeneratorError('requires_binding','/schema_version',
+                             'Physical service 1.2 semantic bundle validation awaits retained-source integration')
     schedules = bundle['schedules']
     cal = bundle['metadata']['calendar']
     if calendar.isleap(cal['year']):
