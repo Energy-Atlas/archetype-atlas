@@ -66,6 +66,28 @@ class ThermalEquivalenceTests(unittest.TestCase):
             {'weight': 1, 'layers': [{'R': 2, 'C': 0}]}])
         self.assertEqual(result['layers'], [{'R': 2., 'C': 0., 'model': 'Material:NoMass'}])
 
+    def test_low_capacity_metal_door_has_valid_mass_slots_without_extra_layers(self):
+        result = self.implementation().reduce_opaque([
+            {'weight': 1., 'layers': [{'R': .0008/45.28, 'C': .0008*7823.99999999999*500},
+                                     {'R': .0282222222222221, 'C': 0}]}])
+        self.assertEqual(result['status'], 'ready')
+        self.assertEqual(len(result['layers']), 3)
+        for layer in (result['layers'][0], result['layers'][-1]):
+            self.assertGreaterEqual(layer['thickness_m'], .003)
+            self.assertLessEqual(layer['conductivity_W_m_K']/(layer['density_kg_m3']*layer['specific_heat_J_kg_K']), 1e-5)
+
+    def test_internal_mass_exposes_last_layer_and_has_adiabatic_back(self):
+        module = self.implementation()
+        self.assertTrue(hasattr(module, 'one_sided_response'))
+        r, c = .2, 80000
+        for h in (1,6,24,72,168):
+            z = cmath.sqrt(1j*2*math.pi/(h*3600)*r*c)
+            bare = z/r*cmath.tanh(z)
+            expected = bare/(1+.13*bare)
+            # A large resistance on the adiabatic back cannot affect the exposed face.
+            actual = module.one_sided_response([{'R': 1000, 'C': 0}, {'R': r, 'C': c}], h)
+            self.assertLess(abs(actual-expected), 1e-9)
+
     def test_unknown_or_invalid_operands_are_never_normalized_away(self):
         module = self.implementation()
         for bad in (None, -1, float('nan'), float('inf')):

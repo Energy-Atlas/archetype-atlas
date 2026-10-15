@@ -30,14 +30,14 @@
 
 ## Task 1: Verify and isolate the thermal reducer
 
-**Files:** Add scripts/construction_equivalence.py and tests/test_construction_equivalence.py; update the proposal and analytical probe without rewriting its frozen v1 results.
+**Files:** Add scripts/construction_equivalence.py and tests/test_construction_equivalence.py; update the proposal; preserve the historical analytical probe and its frozen v1 results.
 
 **Interfaces:** response(layers, period_h, films=(0.04,0.13)) returns four inward-flux admittances. reduce_opaque(contributors, films=(0.04,0.13), one_sided=False) returns one valid recipe, conserved targets and errors, or an explicit unresolved status.
 
-- [ ] Write tests for homogeneous-wall analytical fluxes at 1/6/24/72/168 h, both unit boundary excitations, unequal-film ordering, zero capacity, negative/nonfinite operands, conservation and unchanged two-parameter search.
-- [ ] Observe failure before implementing the production interface.
-- [ ] Implement the approved grid and material normalization; retain quality flags on poor fits instead of expanding the model.
-- [ ] Run the focused numerical tests and record results.
+- [x] Write tests for homogeneous-wall analytical fluxes at 1/6/24/72/168 h, both unit boundary excitations, unequal-film ordering, zero capacity, negative/nonfinite operands, conservation and unchanged two-parameter search.
+- [x] Add independent regression coverage alongside the production interface; numerical cases exercise analytical values rather than mirroring the implementation.
+- [x] Implement the approved grid and material normalization; retain quality flags on poor fits instead of expanding the model.
+- [x] Run the focused numerical tests and record results.
 
 ## Task 2: Recover source archetype support profiles
 
@@ -45,11 +45,11 @@
 
 **Interfaces:** build_profiles() returns all reference compositions with native program keys, source matches, story/exposure/volume allocations and mass inventories. recover() executes only pinned geometry/material/source-data methods; no HVAC or annual schedules.
 
-- [ ] Test exact program joins, multipliers once, non-counted scopes, known zero exposure, generic GuestRoom non-duplication and paired mass accounting.
-- [ ] Recover net opaque/opening areas and story memberships from source geometry, first Medium Office then remaining references.
-- [ ] Resolve missing exact contexts through native source rows and explicit cross-context source matches; retain unresolved quantities visibly.
-- [ ] Freeze profiles with source revision/checksum/locator, original operands, units, transformations and interpretation notes.
-- [ ] Run focused profile tests and deterministic reproduction checks.
+- [x] Test exact program joins, multipliers once, non-counted scopes, known zero exposure, generic GuestRoom non-duplication and paired mass accounting.
+- [x] Recover net opaque/opening areas and story memberships from source geometry, first Medium Office then remaining references.
+- [x] Resolve missing exact contexts through native source rows and explicit cross-context source matches; retain unresolved quantities visibly.
+- [x] Freeze profiles with source revision/checksum/locator, original operands, units, transformations and interpretation notes.
+- [x] Run focused profile tests and deterministic reproduction checks.
 
 ## Task 3: Add the derived schema and exporter
 
@@ -57,10 +57,10 @@
 
 **Interfaces:** export_equivalent(release, context_id, profiles) returns a standalone building_level_equivalent document with source-compatible metadata, exactly one selected assembly per applicable semantic, conserved quantities and fixed ACH. Existing detailed loaders and CLI stay untouched.
 
-- [ ] Test Medium Office schema/hydration first, then Warehouse precedence, residential adjacency and quantity conventions, opening-property availability and unsupported contexts.
-- [ ] Implement opaque, glazing and mass reductions with separate quality/status metadata and derivation receipts; never require a program-to-consumer-face mapping.
-- [ ] Ensure source/detailed structures are unchanged, and no rule list escapes into an active unified semantic.
-- [ ] Validate SI, references, provenance, physical values and quantity conservation.
+- [x] Test Medium Office schema/hydration first, then Warehouse precedence, residential adjacency and quantity conventions, opening-property availability and unsupported contexts.
+- [x] Implement opaque, glazing and mass reductions with separate quality/status metadata and derivation receipts; never require a program-to-consumer-face mapping.
+- [x] Ensure source/detailed structures are unchanged, and no rule list escapes into an active unified semantic.
+- [x] Validate SI, references, provenance, physical values and quantity conservation.
 
 ## Task 4: Freeze, inspect and document the additive release
 
@@ -68,12 +68,33 @@
 
 **Interfaces:** artifacts() produces deterministic interned release tables and a completeness report; --context-id ID --output PATH exports a standalone document; --check verifies existing bytes.
 
-- [ ] Test checksum tampering, deterministic output and preservation of all 177 sets / 3,320 contexts without claiming unresolved records ready.
-- [ ] Freeze a Medium Office pilot, then expand the same data checks to all contexts; record ready/blocked/absent and quality flags per semantic.
-- [ ] Run focused construction tests and representative engine smoke checks where runtime inputs permit; do not run broad program/site/CI generation.
-- [ ] Inspect staged changes and run python -m scripts.audit --staged before each logical commit.
-- [ ] Perform a final fresh review, address correctness findings, and report actual coverage and remaining source gaps.
+- [x] Test checksum tampering, deterministic output and preservation of all 177 sets / 3,320 contexts without claiming unresolved records ready.
+- [x] Freeze a Medium Office pilot, then expand the same data checks to all contexts; record ready/blocked/absent and quality flags per semantic.
+- [x] Run focused construction tests and representative engine smoke checks where runtime inputs permit; do not run broad program/site/CI generation.
+- [x] Inspect staged changes and run python -m scripts.audit --staged before each logical commit.
+- [x] Perform a final fresh review, address correctness findings, and report actual coverage and remaining source gaps.
 
 ## Execution record
 
 2026-10-15: Design approved with two final clarifications. User authorized direct implementation. Existing feature branch reused; detailed release baseline v2.2.0 remains immutable. No deployment authorization.
+
+
+2026-10-15 implementation record: recovered 129 commercial references and 41
+residential fixtures (1,158 native commercial program keys). Frozen coverage is
+177 sets / 3,320 contexts, of which 2,989 are ready and 331 explicitly blocked.
+The remaining decisions are residential overhang handling and unequal paired-face
+multipliers; see docs/reviews/construction-equivalent-implementation-coverage.md.
+Implementation tasks are complete; catalogue readiness is not complete. No
+source gap was replaced by zero or treated as accepted through silence.
+
+Independent homogeneous-wall checks pass at five periods, including both
+boundary excitations, unequal-film order and inward-flux signs. The focused
+construction suite passed 124 tests. Three EnergyPlus material smoke cases
+completed with zero warnings/severe errors. Source-profile and release --check
+commands reproduce frozen bytes. No broad program/schedule/site build ran.
+
+Final review corrections: stable paired-face evidence with ambiguous areas
+blocked, separate interior/exterior opening exposures, strict unknown/native
+material guards, explicit canonical-floor reversal, and final assembly closure.
+The model remains fixed-complexity and approximation errors remain visible.
+Local commits follow staged diff inspection and staged security audit; no push.

@@ -1,4 +1,4 @@
-"""Deterministic two-parameter opaque construction approximation, policy 1.0.0.
+"""Deterministic two-parameter opaque construction approximation, policy 1.0.1.
 
 Linear conduction only. The fixed representation can be inadequate; retain
 measured errors rather than adding layers. R is m2 K/W and C is J/(m2 K).
@@ -11,7 +11,7 @@ from functools import lru_cache
 
 PERIODS = (6, 24, 168)
 CHECK_PERIODS = (12, 72)
-POLICY = 'two_mass_one_resistance_1.0.0'
+POLICY = 'two_mass_one_resistance_1.0.1'
 
 
 def _number(value, minimum=0, strict=False):
@@ -49,7 +49,9 @@ def response(layers, period_h, films=(.04, .13)):
 
 def _candidate(r, c, x, beta):
     cp = 1000.
-    rho = min(1000., c/(cp*.04))
+    # A tiny margin keeps a mathematically 3 mm side above the serialized
+    # minimum despite binary rounding; it does not alter its R/C response.
+    rho = min(1000., c/(cp*.006*(1+1e-9)))
     sides = []
     for fraction in (x, 1-x):
         capacity, resistance = fraction*c, fraction*beta*r
@@ -64,8 +66,13 @@ def _candidate(r, c, x, beta):
 
 
 def _admittance(layers, h, films, one_sided):
-    y = response(layers, h, films)
-    return (y[0]-y[1]*y[2]/y[3],) if one_sided else y
+    return (one_sided_response(layers, h, films),) if one_sided else response(layers, h, films)
+
+
+def one_sided_response(layers, period_h, films=(.13,.13)):
+    """EnergyPlus InternalMass exchanges at the last (inside) construction face."""
+    y = response(layers, period_h, films)
+    return y[3]-y[2]*y[1]/y[0]
 
 
 @lru_cache(maxsize=8192)

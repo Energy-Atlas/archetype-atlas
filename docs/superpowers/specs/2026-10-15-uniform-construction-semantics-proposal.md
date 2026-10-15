@@ -159,9 +159,14 @@ massless layers contribute zero capacity; missing mass properties remain unknown
 Use three slots: exterior `Material`, middle `Material:NoMass`, interior
 `Material`. This is an effective thermal model, not a claim of actual composition.
 For positive total capacity C = C_A_target, fix specific heat to 1000 J/(kg K)
-and density to min(1000, C / (1000 * 0.04)) kg/m3. This numerical normalization
-gives at least 0.04 m total massive-layer thickness; its values are derived model
+and density to min(1000, C / (1000 * 0.006)) kg/m3. This numerical normalization
+gives at least 0.006 m total massive-layer thickness; its values are derived model
 parameters, not recovered source material properties. Fix R_target and C exactly.
+Implementation policy 1.0.1 uses this 6 mm minimum instead of the initial probe's
+40 mm normalization. The larger arbitrary minimum rejected low-capacity metal
+doors against the diffusivity bound. Two 3 mm slots can retain the same R/C
+without that artefact. The response matrix depends on R/C, not the numerical
+density/thickness normalization; the two-parameter method is unchanged.
 
 Optimize only x, the exterior fraction of capacity, and beta, the fraction of
 total material resistance assigned to the two massive layers:
@@ -286,7 +291,9 @@ For two-sided interior surfaces, reuse the two-parameter conduction procedure
 with 0.13 m2 K/W reference films on both sides. For a one-sided InternalMass
 object, use the source-consistent exposed-area/capacity convention and an
 adiabatic back: reduce the two-port admittance to
-Y_one_face = Y00 - Y01*Y10/Y11 before weighting and fitting. Match that scalar
+Y_one_face = Y11 - Y10*Y01/Y00 before weighting and fitting. The last/interior
+layer is exposed, consistent with EnergyPlus InternalMass; the first side is
+adiabatic. Match that scalar
 complex response at the same periods, normalized by max(|Y_target|, C/86400).
 Keep the declared equivalent R as a fixed source-derived reference parameter;
 an adiabatic mass object has no steady through-conductance to identify by fitting.
