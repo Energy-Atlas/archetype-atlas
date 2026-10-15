@@ -20,6 +20,7 @@ from scripts.schedule_generator_reference import load_reference_vectors
 from scripts.definition_release import read_bundle
 from scripts.program_json_v3 import ProgramExporter
 from scripts.definition_contract import stable_id
+from scripts.schedule_generator_apartment_water import compile_apartment_water_requirement
 
 
 def _read(path):

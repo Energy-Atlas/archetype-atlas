@@ -140,13 +140,20 @@ def generate(params: dict, seed: int) -> dict:
             raise GeneratorError(error.code,'/instances/'+instance['key']+error.path,error.message) from error
     # Task7 routes exact1.2 resolution through _prepare_exact_instances before
     # reaching this hook; the temporary public1.2 entry guard remains in force.
-    exact_plan=None
+    exact_plan=None;caller_plan=None
     if version=='1.2.0':
-        from .physical_sets import prepare_exact_bindings
-        exact_plan=prepare_exact_bindings(params,resolved_instances,resources)
-        resolved_instances=exact_plan['resolved_instances']
-        source_allocations=exact_plan['source_allocations']
-        for child,_ in resolved_instances:basis_receipts.setdefault(child['key'],{})
+        if any(r.get('mode')=='caller_unit_prototype_density_fixed_dhw'
+               for r in params.get('building_realizations',[])):
+            from .caller_unit_water import prepare_caller_water
+            caller_plan=prepare_caller_water(params,resolved_instances,resources)
+            resolved_instances=caller_plan['resolved_instances']
+        if any(r.get('mode')=='exact_source_fixture_extents'
+               for r in params.get('building_realizations',[])):
+            from .physical_sets import prepare_exact_bindings
+            exact_plan=prepare_exact_bindings(params,resolved_instances,resources)
+            resolved_instances=exact_plan['resolved_instances']
+            source_allocations=exact_plan['source_allocations']
+            for child,_ in resolved_instances:basis_receipts.setdefault(child['key'],{})
     # All original annual targets and inputs exist before any RNG is sampled.
     service_link_plans=prepare_required_service_links(resolved_instances,version)
     residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
@@ -157,6 +164,8 @@ def generate(params: dict, seed: int) -> dict:
             if instance['operating_group'] is not None:
                 raise GeneratorError('operating_group_conflict','/instances/'+instance['key']+'/operating_group',
                                      'Residential source units do not use commercial operating groups')
+            continue
+        if instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw':
             continue
         # Missing coordination means an independent group named by the instance.
         group = instance['operating_group'] if instance['operating_group'] is not None else instance['key']
@@ -190,7 +199,12 @@ def generate(params: dict, seed: int) -> dict:
         inputs = resolved['inputs']
         context = inputs['source_context']
         try:
-            if key in unit_seeds:
+            if instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw':
+                generated={'channels':copy.deepcopy(inputs['reference_channels']),
+                           'source_context':{'method':'source_fixed_apartment_dhw',
+                                             'random_draw_count':0}}
+                kernel_context=generated['source_context']
+            elif key in unit_seeds:
                 generated = generate_residential(inputs,unit_seeds[key],resources)
                 kernel_context = {'residential':generated['source_context']}
             else:
@@ -253,7 +267,8 @@ def generate(params: dict, seed: int) -> dict:
                                           'control_quantity':control['quantity']})
             bundle['constituents'].append(constituent)
             if version in {'1.1.0','1.2.0'}:
-                constituent['generation']['operating_group']=instance['operating_group'] if instance['operating_group'] is not None else key
+                constituent['generation']['operating_group']=(None if instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw'
+                    else instance['operating_group'] if instance['operating_group'] is not None else key)
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+key+error.path,error.message) from error
     bind_required_service_links(bundle,service_link_plans)
@@ -263,6 +278,9 @@ def generate(params: dict, seed: int) -> dict:
     if exact_plan is not None:
         from .physical_sets import bind_exact_projections
         bind_exact_projections(bundle,exact_plan)
+    if caller_plan is not None:
+        from .caller_unit_water import bind_caller_water
+        bind_caller_water(bundle,caller_plan)
     validate_bundle(bundle)
     if params.get('mixture') is not None:
         from .mixtures import compose_constituents

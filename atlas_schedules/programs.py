@@ -90,3 +90,19 @@ def _resolve_program_record(program_id, inputs, record, status):
     context.update(year=inputs['year'], holidays=calendar['holidays'])
     resolved['inputs']['source_context'] = context
     return resolved
+
+
+def verify_caller_water_programme(instance: dict, resolved: dict, requirement: dict) -> None:
+    """Keep a caller programme's water demand as independent non-owning source authority."""
+    programme=requirement['programme']['value']
+    source=resolved.get('source',{})
+    if (instance.get('program_id')!=programme['id'] or resolved.get('program_id')!=programme['id'] or
+            resolved.get('required_service_links')!=[] or
+            resolved.get('required_service_sets')!=[requirement] or
+            any(source.get(k)!=programme.get(v) for k,v in (
+                ('source_id','source_id'),('building_type','building_type'),
+                ('template','template'),('evidence_view','evidence_view'))) or
+            any(d.get('quantity')=='hot_water_volume' for d in resolved.get('demands',[])) or
+            any(s.get('slot')=='hot_water_volume' for s in resolved.get('slots',[]))):
+        raise GeneratorError('source_integrity','/program_id',
+                             'Caller programme must retain one independently compiled water requirement without a local water owner')
