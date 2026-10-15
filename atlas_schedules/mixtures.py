@@ -75,10 +75,11 @@ def _people_basis(constituent):
 def _qualified_group_weather_records(bundle,group,receipt,version):
     """Validate disclosure owners separately from unchanged consumed science."""
     from .commercial.parametric import _RESTAURANT_CONFIGURATIONS
+    from .commercial.source_models import RETAIL_CONFIGURATIONS
     context=receipt.get('context',{})
     owners=[c for c in bundle['constituents'] if c['generation'].get('operating_group')==group]
     def qualified(value):
-        return (isinstance(value,dict) and value.get('source_hoo_configuration_id') in _RESTAURANT_CONFIGURATIONS and
+        return (isinstance(value,dict) and value.get('source_hoo_configuration_id') in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS and
             isinstance(value.get('occupancy_aggregation'),dict) and
             value['occupancy_aggregation'].get('policy')=='explicit_source_model_nonresidential_people')
     actual_qualified=any(qualified(c['generation'].get('source_inputs')) for c in owners)
@@ -119,6 +120,13 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
     identify their actual constituent keys. Output is another complete bundle,
     with original constituents plus a scoped mixed result owner.
     """
+    return _compose_constituents(constituents,mixture,calendar)
+
+
+def _compose_constituents(constituents,mixture,calendar,*,verified_resources=None):
+    """Share composition checks with private same-request source-parent assembly."""
+    if verified_resources is not None and type(verified_resources) is not ResourceSet:
+        raise GeneratorError('resource_integrity','/resource_set_id','Exact verified ResourceSet required')
     if not isinstance(constituents,list) or not constituents:
         raise GeneratorError('invalid_mixture','/constituents','At least one generated bundle required')
     bundle = None
@@ -126,6 +134,8 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
     input_receipts=[]; operating_groups={}; qualified_weather_groups=set()
     for incoming in constituents:
         validate_bundle(incoming)
+        if verified_resources is not None and verified_resources.resource_set_id!=incoming['metadata']['resource_set_id']:
+            raise GeneratorError('resource_integrity','/resource_set_id','Verified request snapshot identity differs')
         if incoming['metadata']['calendar'] != calendar:
             raise GeneratorError('invalid_calendar','/calendar','Constituent calendar differs from mixture')
         if any(c['generation'].get('method')=='conserved_constituent_mixture' for c in incoming['constituents']):
@@ -200,7 +210,8 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
     source_recipe=None
     if mixture['composition_id'] is not None:
         from .source_compositions import validate_allocation
-        source_recipe,source_receipt=validate_allocation(mixture,members,ResourceSet.load(bundle['metadata']['resource_set_id']))
+        resources=verified_resources if verified_resources is not None else ResourceSet.load(bundle['metadata']['resource_set_id'])
+        source_recipe,source_receipt=validate_allocation(mixture,members,resources)
     service_members=[];service_receipt=None
     if version=='1.1.0':
         from .services import select_whole_services

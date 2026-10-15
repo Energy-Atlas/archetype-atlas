@@ -11,6 +11,7 @@ import math
 
 from ..calendar import evaluate_rules
 from ..errors import GeneratorError
+from .source_models import RETAIL_CONFIGURATIONS,validate_retail_people
 
 
 def _error(path, message):
@@ -144,7 +145,10 @@ def _infer(context):
     if not isinstance(aggregation,dict): _error('occupancy_aggregation','Explicit aggregation object required')
     parts=aggregation.get('constituents')
     source_model=aggregation.get('policy')=='explicit_source_model_nonresidential_people'
-    if source_model:
+    if source_model and context.get('source_hoo_configuration_id') in RETAIL_CONFIGURATIONS:
+        configuration=context['source_hoo_configuration_id']
+        scope,weight=validate_retail_people(context)
+    elif source_model:
         configuration=context.get('source_hoo_configuration_id')
         if (configuration not in _RESTAURANT_CONFIGURATIONS or configuration!=context.get('configuration_id') or
                 configuration!=aggregation.get('source_hoo_configuration_id') or context.get('year')!=2007 or context.get('holidays')!=[]):
@@ -177,7 +181,7 @@ def _infer(context):
             # space multiplier before its one weighted-hour round6 operation.
             weight+=part['nominal_people']
     else:
-        if context.get('configuration_id') in _RESTAURANT_CONFIGURATIONS:
+        if context.get('configuration_id') in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS:
             _error('occupancy_aggregation/policy','Source/view model configuration cannot substitute a normalized reference carrier')
         if aggregation.get('policy')!='explicit_single_nonresidential_reference_carrier':
             _error('occupancy_aggregation/policy','Only audited explicit nonresidential carrier policies supported')
@@ -367,9 +371,9 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                       'small_office_doe_ref_1980_2004','small_office_doe_ref_pre_1980',
                       'warehouse_90_1_2007','warehouse_90_1_2013','warehouse_90_1_2019',
                       'warehouse_doe_ref_1980_2004','warehouse_doe_ref_pre_1980'}
-    if context['configuration_id'] not in configurations|_RESTAURANT_CONFIGURATIONS or context['standards_version']!='0.8.6':
+    if context['configuration_id'] not in configurations|_RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS or context['standards_version']!='0.8.6':
         _error('configuration_id','Only explicitly audited commercial/Standards0.8.6 configurations supported')
-    if context['configuration_id'] in _RESTAURANT_CONFIGURATIONS:
+    if context['configuration_id'] in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS:
         policy=context.get('parametric_apply')
         if (not isinstance(policy,dict) or policy.get('error_on_out_of_order') is not False or
                 policy.get('source_method')!='create_typical.rb:766' or not policy.get('source_member')):

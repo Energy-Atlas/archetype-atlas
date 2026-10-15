@@ -98,7 +98,14 @@ def _check_schema(value, schema, root, path):
     elif isinstance(value,list):
         if not schema.get('minItems',0)<=len(value)<=schema.get('maxItems',math.inf): fail('Incorrect array length')
         if schema.get('uniqueItems') and any(value[i] in value[:i] for i in range(len(value))): fail('Duplicate array item')
+        numeric_items = schema.get('items') == {'type':'number'}
         for i,child in enumerate(value):
+            # Only this exact scalar schema has no other child constraints.
+            # Invalid values retain the recursive error path and precedence.
+            if numeric_items and type(child) in (int,float):
+                try:
+                    if math.isfinite(child): continue
+                except OverflowError: pass
             if 'items' in schema: _check_schema(child,schema['items'],root,path+'/'+str(i))
     elif isinstance(value,str):
         if len(value)<schema.get('minLength',0): fail('String too short')
@@ -119,6 +126,10 @@ def _finite(value, path=''):
             _finite(child, f'{path}/{key}')
     elif isinstance(value, list):
         for i, child in enumerate(value):
+            # JSON-valid scalars need no indexed path allocation on success.
+            # Nested, exotic and nonfinite values keep the original traversal.
+            if child is None or type(child) in (str,bool,int): continue
+            if type(child) is float and math.isfinite(child): continue
             _finite(child, f'{path}/{i}')
 
 

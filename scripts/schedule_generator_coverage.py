@@ -549,6 +549,9 @@ def coverage_errors(report: dict, resources: ResourceSet | None = None) -> list[
             selected=copy.deepcopy(selected)
             selected['cases']=[programme_ids[c['case_id']] for c in cases]
             selected['service_cases']=[service_ids[c['case_id']] for c in services]
+            if 'qualification_request_order' in selected:
+                keys={c['case_id'] for c in selected['cases']+selected['service_cases']}
+                selected['qualification_request_order']=[key for key in selected['qualification_request_order'] if key in keys]
             selected['milestone_id']=report['scope']['milestone_id']
             selected['scope_version']=report['scope']['scope_version']
             if hashlib.sha256(canonical(selected)).hexdigest()!=report['scope']['scope_sha256']:

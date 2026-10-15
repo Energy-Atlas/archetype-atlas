@@ -89,3 +89,43 @@ The cut02 check above precedes the service-authority correction. A separate actu
 The positive emitted bundle was validated before mutations. Coherent Main→existing Booster substitution with original inventory/evidence preserved rejected with requires_binding; dropping one/all aliases rejected with requires_binding; removing the independent original requirement inventory rejected by the1.1schema. Invalid CLI version/missing seed controls also rejected. The helper checked copied packaged JSON-schema hashes separately from Python grammar; the writer independently verifies canonical schema mirrors.
 
 Evidence build/task-10/python311-c5-postfix-20261014-01 contains snapshot-locks SHA256 `6fd35e68205230a94ee3666936d712bc9da0b9c8375065084a8bfd96cfcc7734`, runtime-summary SHA256 `92c0ded0d4160a864b5e590ab0fb264de4dd330f16dff2e1eedc27dc53be7ba2` and authority-negative-summary SHA256 `e07232d6839e809dd5608e98cbcc579499610591ab3cb6dd508acead298c1551`. The bounded report python311-c5-postfix-compatibility-report.md has SHA256 `3c8e193acc7ef9e00f276350c0a2b5422c6b948f58ea04f3b820c6fe8fd8faab`. This is exact current-source Windows mixed-request proof, not a frozen archive, full191-case, native or full/Linux3.11 suite claim.
+
+
+## C6 current source and native codec
+
+A separate actual Windows CPython3.11.9 proof uses byte-locked stable cut
+`0773902cfd1868aefcb79612a9bf219188502b8ecb59b913bedf070a9daba346`
+and precertificate resource identity
+`resources-f99ad2b53ea4b7d07790fcce53c6ea7546fff90ae529f23ac6e9dd7aa578e15f`.
+All209copied Python files compile;32runtime/schema files and44normalized
+implementation fingerprints match. The actual copied strict decoder checks both
+new declared XZ native input/vector containers: compressed and raw hashes/sizes,
+336unique source-context cases each, missing/unknown format and altered-body
+rejections. It retains unchanged raw source bytes; historical original gzip was
+outside this copied cut, with only synthetic legacy guards exercised.
+
+Sequential3.14API,3.11API and unchanged3.11CLI runs of the same eleven-instance
+seed42mixed request emit18owners/123schedules/125bindings, including two real
+source parents and four physical fixtures. All three scientific comparisons
+return zero differences. Genuine positive output validates before coherent
+Main-to-Booster, one/all alias deletion, missing independent requirement inventory
+and cross-parent nested binding-reference mutations are rejected. Strict CLI
+version/seed controls also reject. Raw cross-version JSON hashes differ and are
+not the scientific gate.
+
+The exact raw report python311-c6-current-compatibility-report.md in the Task10
+evidence folder has SHA256
+`9933900750ad058d22ef91ed4ea628d29494a67df9f65b28282345e0bfe54a69`.
+Evidence lives under build/task-10/python311-c6-20261015-01; snapshot-locks SHA256
+is `ab1b32f27e4203e0ed73991ecd1b30f2e895c62d2fa5871760e58587a7c1eb99`.
+This bounds current-source Windows grammar, codec and one mixed-request proof;
+no frozen C6 artifact, full261-case, full-suite, Linux or new native qualification
+claim follows from it.
+
+
+The post-Ruling26 current proof supersedes the preceding cut for current runtime claims. Actual Windows CPython3.11.9 compiled210/210 copied Python files at cut f6997ac529dfe43eefa5a17f97989d7ebe853caa2993af1266a0f6a1138c3034, with32 runtime/schema files,44 normalized implementation fingerprints and unchanged precertificate resources. Current copied3.14 API,3.11 API and unchanged3.11 CLI each emitted18 owners/123 schedules/125 bindings for the same11-instance mixed request, including Warehouse and Retail source parents and four physical services. All three scientific comparisons returned zero differences. Genuine positive source-parent composition succeeded through both the private verified-snapshot route and the public independently loading route; wrong snapshot type/RID, independently corrupted public resources, original-service-authority and both parent nested-reference mutations rejected.
+
+The exact raw post-R26 report python311-c6-resource-reuse-compatibility-report.md has SHA256 afbf69fe146f58d14e725d4bfd5205d297eefd469d48621a604a071bc8c8672f; evidence is under build/task-10/python311-c6-resource-reuse-20261015-01. Its native-XZ proof is explicitly inherited only through exact decoder/dependency/lock/container identity from the earlier actual3.11 run, not newly decoded. Temporary own X: mapping and cleanup are disclosed; the initial pre-append report remains separately preserved. This is current-source Windows grammar and one mixed API/CLI/guard proof, not the frozen artifact, full261 request, complete suite, Linux or new native-method qualification.
+
+
+Ruling27 changes only the development helper's named combined-reproduction allowance to600 seconds; generation remains240 seconds. Current cut03 SHA05bea30b61673e48fb1d44447a7898f0c51fed817e01b84664f6309598101265 contains211 Python files,32 byte-identical runtime/schema files and44 implementation fingerprints. Actual pinned Windows CPython3.11.9 compiled211/211 and passed the four focused helper tests. `build/task-10/python311-c6-helper-20261015-02.json` SHAa51d5b48ed2a908c51cfef077c6578ab05c123cd5fa888aeea8a879998d39c3c records this bounded proof. The earlier actual mixed/API/CLI and native-codec proof is inherited only after rechecking all32 runtime/schema files plus exact prior decoder/dependency/lock/container bytes; no new mixed/full261/frozen/Linux claim follows. The first helper probe compiled the same grammar and tests; the second added explicit codec dependency/container identity checks, with separate logs.

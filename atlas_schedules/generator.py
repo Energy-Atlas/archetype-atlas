@@ -5,6 +5,7 @@ from .budgets import bind_budget
 from .canonical import schedule_id
 from .commercial.parametric import transform_commercial,_RESTAURANT_CONFIGURATIONS
 from .commercial.sampling import sample_operating_parameters
+from .commercial.source_models import RETAIL_CONFIGURATIONS
 from .companions import generate_companions
 from .contract import finalize_channels, validate_bundle, validate_request
 from .errors import GeneratorError
@@ -37,7 +38,7 @@ def _group_context(resolved):
     result['source'] = {k:resolved['source'][k] for k in ('building_type','template','vintage','weather')}
     if context['occupancy_aggregation'].get('policy')=='explicit_source_model_nonresidential_people':
         configuration=context.get('source_hoo_configuration_id')
-        if (configuration not in _RESTAURANT_CONFIGURATIONS or configuration!=context['configuration_id'] or
+        if (configuration not in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS or configuration!=context['configuration_id'] or
                 context['configuration_association'].get('conditioning_inputs')!={'building_type':configuration.split('__')[0]}):
             raise GeneratorError('operating_group_conflict','/source_hoo_configuration_id','Exact qualified source-model dependency scope required')
         weather=resolved['source']['weather']
@@ -48,7 +49,9 @@ def _group_context(resolved):
         # consumed cfg/view/People/calendar/caller operands above remain exact.
         result['source']['weather']=None
         result['unused_weather_dependency']={'mode':'not_used',
-            'scope':'Exact qualified restaurant source/view model methods and ten-table selector closure',
+            'scope':('Exact qualified RetailStandalone source/view model methods and ten-table selector closure'
+                     if configuration in RETAIL_CONFIGURATIONS else
+                     'Exact qualified restaurant source/view model methods and ten-table selector closure'),
             'original_owner_weather_records':'Retained in owners and explicit group receipt'}
     return result
 
@@ -239,7 +242,7 @@ def generate(params: dict, seed: int) -> dict:
     bind_required_service_links(bundle,service_link_plans)
     for allocation in source_allocations:
         from .source_compositions import compose_source_parent
-        bundle=compose_source_parent(bundle,allocation)
+        bundle=compose_source_parent(bundle,allocation,resources)
     validate_bundle(bundle)
     if params.get('mixture') is not None:
         from .mixtures import compose_constituents

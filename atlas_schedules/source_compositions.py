@@ -202,12 +202,12 @@ def project_source_members(bundle,keys):
     return local,inverse
 
 
-def compose_source_parent(bundle,allocation):
+def compose_source_parent(bundle,allocation,resources=None):
     """Use the public composer locally, then append only its parent to global data."""
-    from .mixtures import compose_constituents
+    from .mixtures import _compose_constituents
     local,inverse=project_source_members(bundle,[c['key'] for c in allocation['children']])
     physical_count=len(local['bindings'])
-    derived=compose_constituents([local],allocation['mixture'],bundle['metadata']['calendar'])
+    derived=_compose_constituents([local],allocation['mixture'],bundle['metadata']['calendar'],verified_resources=resources)
     parent=copy.deepcopy(derived['constituents'][-1])
     parent_bindings=copy.deepcopy(derived['bindings'][physical_count:])
     if parent['binding_indices']!=list(range(physical_count,len(derived['bindings']))):

@@ -311,7 +311,13 @@ def compile_recipes(records, scope):
                 companions[slot] = {'method': 'translated_thermostat', 'evidence': thermostat_evidence}
         else:
             restaurant=case['building_type'] in {'FullServiceRestaurant','QuickServiceRestaurant'}
-            if restaurant:
+            retail=case['building_type']=='RetailStandalone'
+            if retail:
+                from scripts.schedule_generator_retail import program_source_context
+                bound,context=program_source_context(case)
+                resolved['shared_services']=[]
+                links=[]
+            elif restaurant:
                 from scripts.schedule_generator_restaurants import program_source_context
                 bound,context=program_source_context(case)
                 resolved['shared_services']=[]
@@ -351,7 +357,7 @@ def compile_recipes(records, scope):
                     'sampling_selector':case['configuration']['conditioning_inputs'],
                     'sampling_reference_audit_configuration':case['configuration']['conditioning_inputs']['building_type']+'_90_1_2013',
                     'interpretation':'Actual template/view schedules and targets transformed using pinned Standards 0.8.6 and audited ComStock v33 selector closure; no stock population equivalence'}
-            if case['building_type']=='Warehouse' or restaurant:
+            if case['building_type']=='Warehouse' or restaurant or retail:
                 context['source_default_cleanup_method_evidence']=records['reference','standards086__lib__openstudio-standards__schedules__modify_rb']['provenance']
             original_loads = {l['demand_id']: l for l in definition['loads']}
             for load in ready['loads']:
@@ -396,7 +402,7 @@ def compile_recipes(records, scope):
                   'calendar_year_locked': residential, 'reference_sources': sources,
                   'companion_rules': companions, 'source_context': context,
                   'aggregate_binding_policy': 'source_recovered_physical_demands' if residential else 'original_definition_demands'}
-        if not residential and restaurant:
+        if not residential and (restaurant or retail):
             recipe.update(required_contract_version='1.1.0',required_service_links=links,
                           calendar_year_locked=True,
                           aggregate_binding_policy='original_definition_local_demands_and_typed_external_service_links')
