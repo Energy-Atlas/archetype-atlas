@@ -4,6 +4,7 @@ import math
 from urllib.parse import quote
 
 from .errors import GeneratorError
+from .owners import owner_identity
 from .mixtures import normalize_basis_bindings
 
 
@@ -89,7 +90,7 @@ def validate_allocation(mixture,members,resources):
     denominator=mixture['denominator']
     operating=None
     for i,((member,weight),expected,factor) in enumerate(zip(members,definition['members'],factors)):
-        if (member['program_id']!=expected['program_id'] or weight!=1 or
+        if (owner_identity(member)!=('program',expected['program_id']) or weight!=1 or
                 any(member['source'].get(k)!=definition[k] for k in ('template','evidence_view'))):
             _fail('members/'+str(i),'Exact member ID, source view/template and unit physical participation required')
         physical,_=normalize_basis_bindings(member.get('basis_bindings',{}),member['instance_key'])
@@ -166,6 +167,12 @@ def project_source_members(bundle,keys):
     owners={c['instance_key']:c for c in bundle['constituents']}
     if len(owners)!=len(bundle['constituents']) or any(k not in owners for k in keys):
         _fail('members','Actual source member owner is missing or repeated')
+    if bundle['schema_version']=='1.1.0':
+        from .services import select_whole_services,validate_service_links
+        validate_service_links(bundle)
+        physical,_=select_whole_services(bundle,{'members':[{'instance_key':k,'weight':1} for k in keys]},
+                                         [(owners[k],1) for k in keys])
+        keys=list(keys)+[c['instance_key'] for c,w in physical if c['instance_key'] not in keys]
     selected=[];bindings=[];schedules={};inverse={};forward={}
     for key in keys:
         child=copy.deepcopy(owners[key])
@@ -181,7 +188,7 @@ def project_source_members(bundle,keys):
             if type(original) is not int or not 0<=original<len(bundle['bindings']) or original in forward:
                 _fail('binding_indices','Actual owned binding is missing or repeated')
             binding=bundle['bindings'][original]
-            if (binding['instance_key']!=key or binding['program_id']!=child['program_id'] or
+            if (binding['instance_key']!=key or owner_identity(binding)!=owner_identity(child) or
                     binding['schedule_id']!=child['schedule_ids'].get(binding['slot'])):
                 _fail('binding_indices','Selected binding belongs to another owner or schedule')
             local=len(bindings);forward[original]=local;inverse[local]=original

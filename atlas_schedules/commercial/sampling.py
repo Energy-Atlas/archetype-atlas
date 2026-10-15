@@ -33,7 +33,9 @@ def select_conditional(table: dict, selectors: dict, uniform: float) -> dict:
         raise GeneratorError('invalid_probability', '/commercial/row', 'Raw probabilities must sum within audited tolerance')
     index = next((i for i, value in enumerate(cdf) if value > uniform), None)
     if index is None:
-        raise GeneratorError('source_selection', '/commercial/uniform', 'Draw outside raw source CDF; no selected option, retry or tail fill')
+        raise GeneratorError('source_selection', '/commercial/uniform',
+            f'Draw outside raw source CDF; source_row={row["source_row"]}; selectors={selectors!r}; '
+            f'raw_cdf_sum={cumulative!r}; uniform={uniform!r}; no selected option, retry or tail fill')
     option = table['options'][index]
     value = table['option_values'][index] if 'option_values' in table else option
     return {'source_row': row['source_row'], 'original_option': option, 'option_index': index,
@@ -45,7 +47,7 @@ def select_conditional(table: dict, selectors: dict, uniform: float) -> dict:
 def sample_operating_parameters(inputs: dict, group_seed: int, resources) -> dict:
     """Draw exactly once for each of ten source parameters, including constants."""
     selector=inputs.get('building_type') if isinstance(inputs,dict) else None
-    if selector not in {'medium_office','small_office','warehouse'}:
+    if selector not in {'medium_office','small_office','warehouse','full_service_restaurant','quick_service_restaurant'}:
         raise GeneratorError('invalid_conditioning','/commercial/inputs','Exact audited selector required')
     prefix='' if selector=='medium_office' else selector+'__'
     audit = resources.get('commercial', prefix+'sampling-audit')

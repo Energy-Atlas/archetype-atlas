@@ -58,6 +58,9 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
     if recipe['calendar_year_locked'] and inputs['year'] != recipe['reference_year']:
         raise GeneratorError('unsupported_binding', '/inputs/year', 'Annual source case requires its declared reference year')
     resolved = copy.deepcopy(recipe['resolved'])
+    if 'required_service_links' in recipe:
+        resolved['required_service_links']=copy.deepcopy(recipe['required_service_links'])
+        resolved['required_contract_version']=recipe['required_contract_version']
     if not resolved['slots'] and 'source_composition' not in recipe and (status != 'accepted_inactive' or not resolved['evidence'][0].get('accepted_absence')):
         raise GeneratorError('unsupported_binding', '/slots', 'Unresolved active recipe cannot masquerade as inactivity')
     resolved['inputs'] = copy.deepcopy(inputs)

@@ -6,6 +6,7 @@ from .canonical import canonical
 from .errors import GeneratorError
 from .generator import generate
 from .resources import strict_json
+from .owners import request_version
 
 
 def main(argv=None):
@@ -14,8 +15,10 @@ def main(argv=None):
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args(argv)
     request = strict_json(args.request.read_bytes(), str(args.request))
-    if not isinstance(request, dict) or set(request) != {'schema_version', 'params', 'seed'} or request['schema_version'] != '1.0.0':
-        raise GeneratorError('invalid_contract', '/', 'Expected the v1 schema_version/params/seed request wrapper')
+    if not isinstance(request, dict) or set(request) != {'schema_version', 'params', 'seed'}:
+        raise GeneratorError('invalid_contract', '/', 'Expected the exact schema_version/params/seed request wrapper')
+    if request['schema_version']!=request_version(request['params']):
+        raise GeneratorError('invalid_contract','/schema_version','Envelope must match explicit/effective params version')
     bundle = generate(request['params'], request['seed'])
     content = canonical(bundle)
     if args.output.exists():

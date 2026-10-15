@@ -1,5 +1,6 @@
 """Numerical and scientific equality for emitted bundles, independent of JSON bytes."""
 import math
+from .owners import owner_identity
 
 
 def _close(actual, expected, tolerance, quant_digits=None):
@@ -16,7 +17,7 @@ def _close(actual, expected, tolerance, quant_digits=None):
 
 
 def _binding_key(binding):
-    return (binding.get('instance_key'), binding.get('program_id'),
+    return (binding.get('instance_key'), owner_identity(binding),
             binding.get('demand_id', binding.get('control_quantity')), binding.get('slot'), binding.get('kind'))
 
 
@@ -101,7 +102,7 @@ def _scientific_equal(actual, expected, tolerances, path=(), derived=False, inte
 
 def _reference_projection(bundle):
     """Replace only generated references with their scientific ownership keys."""
-    schedules={sid:(c['instance_key'],c['program_id'],slot)
+    schedules={sid:(c['instance_key'],owner_identity(c),slot)
                for c in bundle.get('constituents',[]) for slot,sid in c.get('schedule_ids',{}).items()}
     bindings={i:_binding_key(b) for i,b in enumerate(bundle.get('bindings',[]))}
     def project(value):
@@ -162,19 +163,19 @@ def compare_bundles(actual: dict, expected: dict, policy: dict) -> list[str]:
     def scientific_constituents(bundle):
         result = {}
         for item in bundle.get('constituents', []):
-            key = (item.get('instance_key'), item.get('program_id'))
+            key = (item.get('instance_key'), owner_identity(item))
             result[key] = {k: v for k, v in item.items() if k not in {'schedule_ids', 'binding_indices'}}
         return result
     if not _scientific_equal(scientific_constituents(a_science),scientific_constituents(e_science),tolerances):
         differences.append('constituents/source_parameters_or_decisions')
     def constituent_schedules(bundle):
-        return {(item.get('instance_key'), item.get('program_id'), slot): sid
+        return {(item.get('instance_key'), owner_identity(item), slot): sid
                 for item in bundle.get('constituents', [])
                 for slot, sid in item.get('schedule_ids', {}).items()}
     a_refs, e_refs = constituent_schedules(actual), constituent_schedules(expected)
     if a_refs.keys() != e_refs.keys():
         differences.append('constituents/included_channels')
-    bound_slots = {(b['instance_key'], b['program_id'], b['slot']) for b in e_bindings.values()}
+    bound_slots = {(b['instance_key'], owner_identity(b), b['slot']) for b in e_bindings.values()}
     for key in (a_refs.keys() & e_refs.keys()) - bound_slots:
         _compare_schedule(actual.get('schedules', {}).get(a_refs[key]),
                           expected.get('schedules', {}).get(e_refs[key]),

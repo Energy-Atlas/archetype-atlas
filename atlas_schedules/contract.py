@@ -11,6 +11,7 @@ from functools import lru_cache
 from .budgets import ANNUAL_UNITS
 from .canonical import schedule_id
 from .errors import GeneratorError
+from .owners import request_version,owner_identity
 
 _ROOT = Path(__file__).resolve().parent
 _SCHEMA_KEYWORDS = {'$schema', '$id', '$defs', '$ref', 'type', 'const', 'enum', 'oneOf',
@@ -18,14 +19,17 @@ _SCHEMA_KEYWORDS = {'$schema', '$id', '$defs', '$ref', 'type', 'const', 'enum', 
                    'minProperties', 'minItems', 'maxItems', 'minLength', 'pattern', 'minimum', 'maximum'}
 
 
-def _schema_errors(value, name):
-    schema = _load_schema(name)
+def _schema_errors(value, name, version='1.0.0'):
+    schema = _load_schema(name,version)
     _check_schema(value, schema, schema, '')
 
 
-@lru_cache(maxsize=3)
-def _load_schema(name):
-    schema = json.loads((_ROOT/f'schemas/schedule-generator-{name}-v1.schema.json').read_text(encoding='utf-8'))
+@lru_cache(maxsize=6)
+def _load_schema(name,version='1.0.0'):
+    if version not in {'1.0.0','1.1.0'}:
+        raise GeneratorError('unsupported_schema','/schema_version','Unsupported schema version')
+    suffix='v1' if version=='1.0.0' else 'v1_1'
+    schema = json.loads((_ROOT/f'schemas/schedule-generator-{name}-{suffix}.schema.json').read_text(encoding='utf-8'))
     def vocabulary(node):
         # Check every schema branch, including unselected/optional fields.
         unknown=set(node)-_SCHEMA_KEYWORDS
@@ -122,7 +126,11 @@ def validate_request(params: dict, seed: int) -> None:
     if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed < 2**64:
         raise GeneratorError('invalid_seed', '/seed', 'Explicit unsigned 64-bit integer required')
     _finite(params)
-    _schema_errors(params, 'request')
+    version=request_version(params)
+    checked=params
+    if version=='1.0.0' and 'schema_version' in params:
+        checked={k:v for k,v in params.items() if k!='schema_version'}
+    _schema_errors(checked, 'request',version)
     year = params['calendar']['year']
     if calendar.isleap(year):
         raise GeneratorError('leap_year', '/calendar/year', 'Hourly generator requires a non-leap Gregorian year')
@@ -139,17 +147,29 @@ def validate_request(params: dict, seed: int) -> None:
     mixture = params.get('mixture')
     if mixture:
         members = mixture['members']
-        if not members or any(m['instance_key'] not in keys for m in members):
+        service_members=mixture.get('service_members',[]) if version=='1.1.0' else []
+        if (not members and not service_members) or any(m['instance_key'] not in keys for m in members):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Members must reference instances')
         if len({m['instance_key'] for m in members}) != len(members):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Duplicate member allocation')
-        if mixture['composition_id'] is None and not math.isclose(math.fsum(m['weight'] for m in members), 1, rel_tol=0, abs_tol=1e-12):
+        if members and mixture['composition_id'] is None and not math.isclose(math.fsum(m['weight'] for m in members), 1, rel_tol=0, abs_tol=1e-12):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Normalized area weights must sum to one')
+        if version=='1.1.0':
+            owners={item['key']:item for item in params['instances']}
+            if any(owners[m['instance_key']]['owner_kind']=='physical_service' for m in members):
+                raise GeneratorError('invalid_mixture','/mixture/members','Whole physical services use separate unweighted service_members')
+            if (len({m['instance_key'] for m in service_members})!=len(service_members) or
+                    any(m['instance_key'] not in owners or owners[m['instance_key']]['owner_kind']!='physical_service' for m in service_members)):
+                raise GeneratorError('invalid_mixture','/mixture/service_members','Unique physical-service owner keys required')
+            if service_members and ('result_basis' not in mixture or 'denominator' not in mixture):
+                raise GeneratorError('requires_binding','/mixture/denominator','Whole services require explicit physical result basis and denominator')
+            if service_members and mixture['composition_id'] is not None:
+                raise GeneratorError('invalid_mixture','/mixture/service_members','Explicit service selection cannot alter an authoritative source composition')
 
 
 def validate_bundle(bundle: dict) -> None:
     _finite(bundle)
-    _schema_errors(bundle, 'bundle')
+    _schema_errors(bundle, 'bundle',bundle.get('schema_version'))
     schedules = bundle['schedules']
     cal = bundle['metadata']['calendar']
     if calendar.isleap(cal['year']):
@@ -221,7 +241,7 @@ def validate_bundle(bundle: dict) -> None:
             if index >= len(bundle['bindings']):
                 raise GeneratorError('invalid_reference', f'{path}/binding_indices', 'Binding index missing')
             binding = bundle['bindings'][index]
-            if binding['instance_key'] != constituent['instance_key'] or binding['program_id'] != constituent['program_id']:
+            if binding['instance_key'] != constituent['instance_key'] or owner_identity(binding)!=owner_identity(constituent):
                 raise GeneratorError('invalid_reference', f'{path}/binding_indices', 'Binding belongs to another constituent')
             slot = binding['slot']
             if slot not in slots or constituent['schedule_ids'].get(slot) != binding['schedule_id']:
@@ -252,6 +272,9 @@ def validate_bundle(bundle: dict) -> None:
     if referenced != set(schedules):
         raise GeneratorError('invalid_reference', '/schedules', 'Every schedule must be referenced')
     _validate_generated_binding_references(bundle)
+    if bundle['schema_version']=='1.1.0':
+        from .services import validate_service_links
+        validate_service_links(bundle)
 
 
 def _validate_generated_binding_references(bundle):
@@ -274,12 +297,20 @@ def _validate_generated_binding_references(bundle):
                         any(not isinstance(c,dict) or not required<=set(c) for c in components)):
                     raise GeneratorError('invalid_reference',path+'/components',
                                          'Actual generated trajectory components require complete binding ownership')
+                if bundle['schema_version']=='1.1.0':
+                    for component in components:
+                        if 'owner_kind' not in component:
+                            raise GeneratorError('invalid_reference',path+'/components',
+                                                 'Typed trajectory components require an explicit owner kind')
+                        owner_identity(component)
             if 'binding_index' in value:
                 actual=binding(value['binding_index'],path+'/binding_index')
-                for field in ('instance_key','schedule_id','demand_id'):
+                for field in ('instance_key','schedule_id','demand_id','source_service_id','physical_id'):
                     if field in value and value[field]!=actual.get(field):
                         raise GeneratorError('invalid_reference',path+'/'+field,
                                              'Generated component reference belongs to another owner, schedule or demand')
+                if 'owner_kind' in value and owner_identity(value)!=owner_identity(actual):
+                    raise GeneratorError('invalid_reference',path+'/owner_kind','Generated reference has a different typed source owner')
             if 'binding_indices' in value:
                 indices=value['binding_indices']
                 if not isinstance(indices,list):

@@ -1,5 +1,6 @@
 """Inspect exact M1 case/channel support and the remaining catalogue."""
 import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -35,6 +36,8 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
         manifest = read(ROOT/'atlas_schedules/data/manifest.json')
         resources = ResourceSet.load(manifest['resource_set_id'])
     compiled = {p['id']: p['status'] for p in resources.get('reference', 'catalogue-index')['programs']}
+    resource_entries={(e['kind'],e['key']):e for e in resources.manifest['resources']}
+    declared_service_cases=resources.get('reference','m1-scope').get('service_cases',[])
     programs = []
     for index, definition in enumerate(definitions):
         pid = definition['id']
@@ -43,6 +46,8 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
         compiled_record = (resources.get('program', pid)
                            if compiled.get(pid) in {'compiled', 'accepted_inactive'} else None)
         recipe = compiled_record['recipe'] if compiled_record else None
+        required_links=(_required_link_coverage(resources,resource_entries,compiled_record,declared_service_cases)
+                        if recipe and recipe.get('required_service_links') else [])
         certified = ({s['slot']: ('source_fixed' if s['slot'] in recipe['companion_rules'] else 'generated')
                       for s in recipe['resolved']['slots']} if recipe else {})
         channels = []
@@ -58,6 +63,12 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
                 if len(matches) == 1:
                     runtime_slot = matches[0]
             status = certified.get(runtime_slot, 'absent' if state == 'absent' else 'requires_binding')
+            service_link=None
+            if recipe and status=='requires_binding' and slot=='hot_water_volume':
+                matches=[proof for link,proof in zip(recipe.get('required_service_links',[]),required_links)
+                         if identity in {link['source_service_id'],link['original_demand']['demand_id']}]
+                if len(matches)==1:
+                    service_link=matches[0];status=service_link['status']
             if state == 'excluded':
                 status = 'unsupported'
             absence = None
@@ -125,6 +136,9 @@ def build_catalogue_inventory(resources: ResourceSet | None = None) -> dict:
                     ('existing_scope_exclusion' if state == 'excluded' else
                      'recoverable_exact_fixture_inputs_weather_and_source_branch_certification' if residential else
                      'source_occupancy_carrier_aggregation_and_transform_applicability_not_yet_certified')})
+            if service_link is not None:
+                channels[-1]['resolved_service_link_evidence']=service_link
+                channels[-1]['required_inputs']=service_link['required_caller_inputs']
         for i, load in enumerate(definition['loads']):
             state = 'unknown' if load['value'] is None else 'absent' if load['value'] == 0 else 'known'
             channel(load['quantity'], load['value'], state, f'programs.json#/{index}/loads/{i}',
@@ -239,12 +253,88 @@ def _channel_evidence(resources: ResourceSet, resource_entries: dict, program_id
             'receipt_sha256': hashlib.sha256(canonical(receipt)).hexdigest()}
 
 
+def _coverage_record(resources,kind,key,cache):
+    pair=(kind,key)
+    if pair not in cache:cache[pair]=resources.get(kind,key)
+    return cache[pair]
+
+
+def _resource_evidence(resources, entries, kind, key, pointer, cache=None):
+    cache={} if cache is None else cache
+    receipt=_pointer_value(_coverage_record(resources,kind,key,cache),pointer)
+    if not isinstance(receipt,dict) or not receipt:
+        raise ValueError('Missing actual source evidence at '+key+pointer)
+    return {'resource_kind':kind,'resource_key':key,'pointer':pointer,
+        'resource_sha256':entries[kind,key]['sha256'],
+        'receipt_sha256':hashlib.sha256(canonical(receipt)).hexdigest()}
+
+
+def _physical_service_coverage(resources,entries,declaration,cache):
+    sid=declaration['source_service_id'];key=declaration['resource_key']
+    config=declaration['source_hoo_configuration_id'];errors=[];channels=[]
+    record=_coverage_record(resources,'reference',key,cache);recipe=record['recipe'];resolved=recipe['resolved']
+    variant=recipe.get('configurations',{}).get(config)
+    if (key!='physical-service__'+sid or record['definition']['id']!=sid or
+            resolved.get('source_service_id')!=sid or resolved.get('owner_kind')!='physical_service' or
+            recipe.get('required_contract_version')!='1.1.0' or variant is None):
+        errors.append('physical source identity/configuration does not close')
+    if declaration.get('source_gate_status')!='passed':errors.append('source gate did not pass')
+    if variant is not None:
+        context=variant['source_context']
+        if (context['source_hoo_configuration_id']!=config or context['configuration_id']!=config or
+                context['occupancy_aggregation']['evidence_view']!=declaration['hoo_evidence_view'] or
+                record['definition']['building_type']!=declaration['building_type'] or
+                record['definition']['template']!=declaration['template']):
+            errors.append('physical source family/template/view context differs')
+        prefix='/recipe/configurations/'+config.replace('~','~0').replace('/','~1')
+        for slot in resolved['slots']:
+            name=slot['slot'];fixed=name in variant['companion_rules']
+            pointer=prefix+('/companion_rules/'+name+'/evidence' if fixed else '/reference_source')
+            proof=_resource_evidence(resources,entries,'reference',key,pointer,cache)
+            channel={'slot':name,'kind':'control' if fixed else 'load',
+                'status':'source_fixed' if fixed else 'generated','source_schedule_id':slot['source_schedule_id'],
+                'source_evidence':proof}
+            if fixed:
+                method=variant['companion_rules'][name];native=method['evidence']['native_control_reference']
+                value=_pointer_value(_coverage_record(resources,native['resource_kind'],native['resource_key'],cache),native['json_pointer'])
+                if (value['profiles']['default']!=method['native_source_profile'] or
+                        value['hourly_count']!=8760 or value['hourly_value']!=method['native_hourly_value'] or
+                        value['source_native_pointer']!=native['source_native_pointer'] or
+                        value['hourly_array_sha256']!=hashlib.sha256(canonical([method['native_hourly_value']]*8760)).hexdigest()):
+                    errors.append('fixed source native operand differs: '+name)
+                channel['native_evidence']=_resource_evidence(resources,entries,native['resource_kind'],
+                    native['resource_key'],native['json_pointer'],cache)
+            channels.append(channel)
+    return {**declaration,'status':'compiled' if not errors else 'failed_validation',
+        'expected_slots':[s['slot'] for s in resolved['slots']], 'channels':channels,
+        'source_origin_evidence':_resource_evidence(resources,entries,'reference',key,'/provenance',cache),
+        'caller_binding_required':True,'fully_bound_example_proven':False,'errors':errors}
+
+
+def _required_link_coverage(resources,entries,record,service_cases):
+    recipe=record['recipe'];links=[];pid=record['definition']['id']
+    config=record['case']['configuration_id']
+    for i,link in enumerate(recipe.get('required_service_links',[])):
+        sid=link['source_service_id'];allowed=[c['case_id'] for c in service_cases
+            if c['source_service_id']==sid and c['source_hoo_configuration_id']==config]
+        links.append({'source_channel':link['source_channel'],'source_service_id':sid,
+            'ownership':'external_physical_service','status':'generated' if len(allowed)==1 else 'requires_binding',
+            'allowed_service_case_ids':allowed,'source_hoo_configuration_id':config,
+            'caller_binding_required':True,'fully_bound_example_proven':False,
+            'required_caller_inputs':['service_links['+sid+']','selected matching physical_service instance',
+                'physical_id','source_hoo_configuration_id','physical_fixture_evidence','exact whole fixture basis/extent operands'],
+            'source_evidence':_resource_evidence(resources,entries,'program',pid,'/recipe/required_service_links/'+str(i))})
+    return links
+
+
 def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
     scope = scope if scope is not None else resources.get('reference', 'm1-scope')
     index = resources.get('reference', 'catalogue-index')
     programmed = {row['id']: row for row in index['programs']}
     resource_entries = {(entry['kind'], entry['key']): entry for entry in resources.manifest['resources']}
     evidence_inventory = {}
+    coverage_cache={}
+    service_cases=[_physical_service_coverage(resources,resource_entries,c,coverage_cache) for c in scope.get('service_cases',[])]
     cases = []
     for declaration in scope['cases']:
         case_id, program_id = declaration['case_id'], declaration['program_id']
@@ -292,6 +382,15 @@ def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
                       'accepted_absence': resolved['evidence'][0].get('accepted_absence', False),
                       'absence_evidence': resolved['evidence'][0] if absent else None,
                       'errors': errors})
+        if recipe.get('required_contract_version')=='1.1.0':
+            links=_required_link_coverage(resources,resource_entries,record,service_cases)
+            cases[-1]['required_service_links']=links
+            for link in links:
+                proof=link['source_evidence']
+                evidence_inventory[proof['resource_kind'],proof['resource_key'],proof['pointer']]=proof
+                if link['status']=='requires_binding':
+                    cases[-1]['errors'].append('required service case missing: '+link['source_service_id'])
+                    cases[-1]['status']='failed_validation'
     declared = {case['program_id'] for case in scope['cases']}
     outside_programs = []
     for item in index['programs']:
@@ -325,6 +424,18 @@ def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
                                 'programs': outside_programs, 'compositions': outside_compositions},
               'catalogue_program_count': len(index['programs']),
               'catalogue_composition_count': len(index['compositions'])}
+    if 'service_cases' in scope:
+        for case in service_cases:
+            proofs=[case['source_origin_evidence']]+[c['source_evidence'] for c in case['channels']]
+            proofs.extend(c['native_evidence'] for c in case['channels'] if 'native_evidence' in c)
+            for proof in proofs:evidence_inventory[proof['resource_kind'],proof['resource_key'],proof['pointer']]=proof
+        report['service_cases']=service_cases
+        report['scope'].update(service_case_count=len(service_cases),
+            service_case_ids=[c['case_id'] for c in service_cases],
+            source_service_definition_count=len({c['source_service_id'] for c in service_cases}),
+            declared_owned_slot_count=sum(len(c['expected_slots']) for c in cases+service_cases),
+            required_programme_service_link_count=sum(len(c.get('required_service_links',[])) for c in cases))
+        report['evidence_inventory']=[evidence_inventory[key] for key in sorted(evidence_inventory)]
     if declared_compositions:
         report['scope'].update(composition_count=len(declared_compositions),composition_ids=[c['id'] for c in declared_compositions])
         report['declared_compositions']=declared_compositions
@@ -405,6 +516,52 @@ def coverage_errors(report: dict, resources: ResourceSet | None = None) -> list[
                     valid = False
                 if not valid:
                     errors.append(label + ': evidence does not resolve in packaged resources')
+    services=report.get('service_cases',[])
+    if ('service_cases' in report or 'service_case_count' in report['scope'] or
+            resources and 'service_cases' in resources.get('reference','m1-scope')):
+        if (len(services)!=report['scope'].get('service_case_count') or
+                [c['case_id'] for c in services]!=report['scope'].get('service_case_ids') or
+                len({c['case_id'] for c in services})!=len(services) or
+                len({(c['source_service_id'],c['source_hoo_configuration_id']) for c in services})!=len(services)):
+            errors.append('Physical service case denominator differs')
+        if report['scope'].get('source_service_definition_count')!=len({c['source_service_id'] for c in services}):
+            errors.append('Physical source service-definition denominator differs')
+        if report['scope'].get('declared_owned_slot_count')!=sum(len(c['expected_slots']) for c in cases+services):
+            errors.append('Programme/physical owned-slot denominator differs')
+        links=[l for c in cases for l in c.get('required_service_links',[])]
+        if len(links)!=report['scope'].get('required_programme_service_link_count'):
+            errors.append('Required programme service-link denominator differs')
+        for service in services:
+            if service['status']!='compiled' or service['errors']:
+                errors.append(service['case_id']+': incomplete physical service case')
+            if [c['slot'] for c in service['channels']]!=service['expected_slots']:
+                errors.append(service['case_id']+': physical channel inventory differs')
+        for link in links:
+            if link['status']!='generated' or len(link['allowed_service_case_ids'])!=1:
+                errors.append(link['source_service_id']+': required programme physical service unresolved')
+        if resources:
+            selected=resources.get('reference','m1-scope')
+            programme_ids={c['case_id']:c for c in selected['cases']}
+            service_ids={c['case_id']:c for c in selected.get('service_cases',[])}
+            if any(c['case_id'] not in programme_ids for c in cases) or any(c['case_id'] not in service_ids for c in services):
+                errors.append('Unknown programme/physical source case in selected scope')
+                return errors
+            selected=copy.deepcopy(selected)
+            selected['cases']=[programme_ids[c['case_id']] for c in cases]
+            selected['service_cases']=[service_ids[c['case_id']] for c in services]
+            selected['milestone_id']=report['scope']['milestone_id']
+            selected['scope_version']=report['scope']['scope_version']
+            if hashlib.sha256(canonical(selected)).hexdigest()!=report['scope']['scope_sha256']:
+                errors.append('Selected programme/physical source scope identity differs')
+            actual=build_coverage(resources,selected)
+            if services!=actual.get('service_cases'):
+                errors.append('Physical service source/configuration/channel evidence does not close')
+            expected_links={c['case_id']:c.get('required_service_links',[]) for c in actual['cases']}
+            if any(c.get('required_service_links',[])!=expected_links.get(c['case_id']) for c in cases):
+                errors.append('Required programme service-link evidence does not close')
+            actual_inventory={(e['resource_kind'],e['resource_key'],e['pointer']):e for e in actual['evidence_inventory']}
+            if inventory!=actual_inventory:
+                errors.append('Programme/physical evidence inventory differs from actual packaged resources')
     return errors
 
 

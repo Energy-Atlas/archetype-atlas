@@ -3,7 +3,7 @@ import copy
 
 from .budgets import bind_budget
 from .canonical import schedule_id
-from .commercial.parametric import transform_commercial
+from .commercial.parametric import transform_commercial,_RESTAURANT_CONFIGURATIONS
 from .commercial.sampling import sample_operating_parameters
 from .companions import generate_companions
 from .contract import finalize_channels, validate_bundle, validate_request
@@ -13,6 +13,8 @@ from .programs import resolve_program
 from .residential import generate_residential
 from .resources import ResourceSet
 from .seeds import assign_unit_seeds, commercial_group_seed
+from .owners import request_version,identity_fields
+from .services import resolve_physical_service,prepare_required_service_links,bind_required_service_links
 
 _PREPARED = {'reference_channels', 'reference_budgets', 'source_context', 'companion_rules','source_composition'}
 
@@ -28,9 +30,26 @@ def _group_context(resolved):
     keys = ('year','holidays','configuration_id','method','standards_version','steps_per_hour',
             'source_clock','occupancy_adjustment','occupancy_aggregation')
     result = {key:copy.deepcopy(context[key]) for key in keys}
+    for key in ('source_hoo_configuration_id','parametric_apply'):
+        if key in context:result[key]=copy.deepcopy(context[key])
     result['conditioning'] = {k:v for k,v in context['configuration_association'].items()
                               if k not in {'program_definition_pointer'}}
     result['source'] = {k:resolved['source'][k] for k in ('building_type','template','vintage','weather')}
+    if context['occupancy_aggregation'].get('policy')=='explicit_source_model_nonresidential_people':
+        configuration=context.get('source_hoo_configuration_id')
+        if (configuration not in _RESTAURANT_CONFIGURATIONS or configuration!=context['configuration_id'] or
+                context['configuration_association'].get('conditioning_inputs')!={'building_type':configuration.split('__')[0]}):
+            raise GeneratorError('operating_group_conflict','/source_hoo_configuration_id','Exact qualified source-model dependency scope required')
+        weather=resolved['source']['weather']
+        if weather is not None and (not isinstance(weather,dict) or weather.get('mode')!='not_used' or
+                set(weather)-{'mode','interpretation','independence_certified_by'}):
+            raise GeneratorError('operating_group_conflict','/weather','Qualified source-model methods have no weather operand; used/foreign weather context cannot be ignored')
+        # Only method-unused metadata representation is projected away. All
+        # consumed cfg/view/People/calendar/caller operands above remain exact.
+        result['source']['weather']=None
+        result['unused_weather_dependency']={'mode':'not_used',
+            'scope':'Exact qualified restaurant source/view model methods and ten-table selector closure',
+            'original_owner_weather_records':'Retained in owners and explicit group receipt'}
     return result
 
 
@@ -57,7 +76,9 @@ def generate(params: dict, seed: int) -> dict:
     emitted constituent/mixed schedule once and retains physical source receipts.
     """
     validate_request(params,seed)
+    version=request_version(params)
     params = copy.deepcopy(params)
+    params.pop('schema_version',None)
     calendar = params['calendar']
     calendar.setdefault('holidays',[])
     resources = ResourceSet.load(params['resource_set_id'])
@@ -69,10 +90,21 @@ def generate(params: dict, seed: int) -> dict:
     source_allocations=[]
     occupied_keys={i['key'] for i in params['instances']}
     declared_programs={case['program_id'] for case in scope['cases']}
+    declared_services={(case['source_service_id'],case['source_hoo_configuration_id']):case
+                       for case in scope.get('service_cases',[])}
     for instance in params['instances']:
         try:
             physical,receipts=normalize_basis_bindings(instance['basis_bindings'],instance['key'])
             instance['basis_bindings']=physical; basis_receipts[instance['key']]=receipts
+            if instance.get('owner_kind')=='physical_service':
+                service_case=declared_services.get((instance['source_service_id'],instance['inputs'].get('source_hoo_configuration_id')))
+                if service_case is None:
+                    raise GeneratorError('unsupported_binding','/source_service_id',
+                                         'Physical service/configuration is outside the declared '+scope['milestone_id']+' service set')
+                resolved=resolve_physical_service(instance,calendar,resources)
+                resolved['inputs']['source_context']['case_id']=service_case['case_id']
+                resolved_instances.append((instance,resolved))
+                continue
             if instance['program_id'] not in declared_programs:
                 raise GeneratorError('unsupported_binding','/program_id','Program is outside the declared '+scope['milestone_id']+' case set')
             if set(instance['inputs']) & ({'year','holidays'} | _PREPARED):
@@ -101,6 +133,7 @@ def generate(params: dict, seed: int) -> dict:
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+instance['key']+error.path,error.message) from error
     # All original annual targets and inputs exist before any RNG is sampled.
+    service_link_plans=prepare_required_service_links(resolved_instances,version)
     residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
     unit_seeds = assign_unit_seeds(seed,residential_keys)
     groups = {}
@@ -117,12 +150,16 @@ def generate(params: dict, seed: int) -> dict:
             raise GeneratorError('operating_group_conflict','/instances/'+instance['key']+'/operating_group',
                                  'Group has conflicting source/configuration/carrier/calendar context')
         groups.setdefault(group,{'context':fingerprint})
+        if 'unused_weather_dependency' in fingerprint:
+            groups[group].setdefault('original_owner_weather_records',[]).append({
+                'instance_key':instance['key'],**identity_fields(resolved,version),
+                'weather':copy.deepcopy(resolved['source']['weather'])})
     for group,entry in groups.items():
         group_seed = commercial_group_seed(seed,group)
         entry['operating'] = sample_operating_parameters(entry['context']['conditioning']['conditioning_inputs'],
                                                        group_seed,resources)
     policy = resources.get('reference','comparison-policy')
-    bundle = {'schema_version':'1.0.0','algorithm_version':policy['algorithm_version'],
+    bundle = {'schema_version':version,'algorithm_version':policy['algorithm_version'],
               'schedules':{},'bindings':[],'constituents':[],
               'generation':{'master_seed':seed,'residential_unit_order':residential_keys,'unit_seeds':unit_seeds,
                             'operating_groups':groups,'source_seed_policy':'native_unit_order_and_atlas_conditional_seeded_v1'},
@@ -170,7 +207,10 @@ def generate(params: dict, seed: int) -> dict:
                           'source_inputs':copy.deepcopy(context)}
             if basis_receipts[key]:generation['basis_alias_receipts']=basis_receipts[key]
             constituent = {k:copy.deepcopy(resolved[k]) for k in
-                           ('program_id','recipe_id','source','slots','demands','controls','shared_services','evidence')}
+                           ('recipe_id','source','slots','demands','controls','shared_services','evidence')}
+            constituent.update(identity_fields(resolved,version))
+            if version=='1.1.0' and resolved.get('owner_kind','program')!='physical_service':
+                constituent['required_service_links']=copy.deepcopy(resolved.get('required_service_links',[]))
             constituent['source']['source_family'] = resolved['source_family']
             constituent.update(instance_key=key,inputs={k:v for k,v in inputs.items() if k not in _PREPARED},
                                basis_bindings=copy.deepcopy(instance['basis_bindings']),schedule_ids={},binding_indices=[],generation=generation)
@@ -182,18 +222,21 @@ def generate(params: dict, seed: int) -> dict:
             for demand in constituent['demands']:
                 demand['heat_fractions'] = _heat_fractions(demand,resolved)
                 bound = bind_budget(inputs['reference_budgets'][demand['demand_id']],channels[demand['slot']])
-                binding = dict(bound,kind='load',instance_key=key,program_id=resolved['program_id'],
+                binding = dict(bound,kind='load',instance_key=key,**identity_fields(resolved,version),
                                demand_id=demand['demand_id'],slot=demand['slot'],schedule_id=constituent['schedule_ids'][demand['slot']],
                                fuel=demand['fuel'],host=demand['host'],budget_method=bound['reference_target']['method'])
                 constituent['binding_indices'].append(len(bundle['bindings'])); bundle['bindings'].append(binding)
             for control in constituent['controls']:
                 constituent['binding_indices'].append(len(bundle['bindings']))
-                bundle['bindings'].append({'kind':'control','instance_key':key,'program_id':resolved['program_id'],
+                bundle['bindings'].append({'kind':'control','instance_key':key,**identity_fields(resolved,version),
                                           'slot':control['slot'],'schedule_id':constituent['schedule_ids'][control['slot']],
                                           'control_quantity':control['quantity']})
             bundle['constituents'].append(constituent)
+            if version=='1.1.0':
+                constituent['generation']['operating_group']=instance['operating_group'] if instance['operating_group'] is not None else key
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+key+error.path,error.message) from error
+    bind_required_service_links(bundle,service_link_plans)
     for allocation in source_allocations:
         from .source_compositions import compose_source_parent
         bundle=compose_source_parent(bundle,allocation)

@@ -8,6 +8,7 @@ from .canonical import schedule_id
 from .contract import validate_bundle, validate_request
 from .errors import GeneratorError
 from .resources import ResourceSet
+from .owners import identity_fields,upgrade_generated_reference_identities
 
 BASIS_UNITS = {'floor_area':'m2','dwelling_unit':'dwelling','person':'person','absolute':'1'}
 SUFFIXES = {'floor_area':'/m2','dwelling_unit':'/dwelling','person':'/person','absolute':''}
@@ -71,6 +72,45 @@ def _people_basis(constituent):
     return occupancy,density['basis'],density['value']
 
 
+def _qualified_group_weather_records(bundle,group,receipt,version):
+    """Validate disclosure owners separately from unchanged consumed science."""
+    from .commercial.parametric import _RESTAURANT_CONFIGURATIONS
+    context=receipt.get('context',{})
+    owners=[c for c in bundle['constituents'] if c['generation'].get('operating_group')==group]
+    def qualified(value):
+        return (isinstance(value,dict) and value.get('source_hoo_configuration_id') in _RESTAURANT_CONFIGURATIONS and
+            isinstance(value.get('occupancy_aggregation'),dict) and
+            value['occupancy_aggregation'].get('policy')=='explicit_source_model_nonresidential_people')
+    actual_qualified=any(qualified(c['generation'].get('source_inputs')) for c in owners)
+    if not actual_qualified and not qualified(context):
+        return None
+    if not actual_qualified or not qualified(context):
+        raise GeneratorError('operating_group_conflict','/operating_groups/'+group+'/context',
+            'Actual qualified owner and root configuration/context differ')
+    from .generator import _group_context
+    path='/operating_groups/'+group+'/original_owner_weather_records'
+    records=receipt.get('original_owner_weather_records')
+    if (not isinstance(records,list) or not owners or len(records)!=len(owners) or
+            any(not isinstance(r,dict) or not isinstance(r.get('instance_key'),str) for r in records) or
+            len({r.get('instance_key') for r in records})!=len(records)):
+        raise GeneratorError('invalid_reference',path,'Exact retained input owner weather disclosures required')
+    for record,owner in zip(records,owners):
+        expected={'instance_key':owner['instance_key'],**identity_fields(owner,version),
+                  'weather':owner['source']['weather']}
+        if record!=expected:
+            raise GeneratorError('invalid_reference',path,'Weather disclosure points to another source/physical owner or original weather')
+        source=owner['generation'].get('source_inputs')
+        if not isinstance(source,dict) or _group_context({'inputs':{'source_context':source},'source':owner['source']})!=context:
+            raise GeneratorError('operating_group_conflict',path,'Actual consumed owner configuration/People/calendar/caller context differs')
+        operating=owner['generation'].get('source_context',{}).get('operating_receipt')
+        if operating is not None:
+            actual=copy.deepcopy(operating);root=copy.deepcopy(receipt['operating'])
+            for value in (actual,root):value.get('rng',{}).pop('python_version',None)
+            if actual!=root:
+                raise GeneratorError('operating_group_conflict',path,'Actual consumed owner group seed/operating draws differ')
+    return copy.deepcopy(records)
+
+
 def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict) -> dict:
     """Compose complete generated bundles, retaining their indexed schedules.
 
@@ -82,7 +122,8 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
     if not isinstance(constituents,list) or not constituents:
         raise GeneratorError('invalid_mixture','/constituents','At least one generated bundle required')
     bundle = None
-    input_receipts=[]; operating_groups={}
+    version='1.1.0' if any(b.get('schema_version')=='1.1.0' for b in constituents) else '1.0.0'
+    input_receipts=[]; operating_groups={}; qualified_weather_groups=set()
     for incoming in constituents:
         validate_bundle(incoming)
         if incoming['metadata']['calendar'] != calendar:
@@ -93,15 +134,35 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         # targets, magnitudes, services and generation receipts as well as owners.
         from .source_compositions import remap_binding_references
         incoming=copy.deepcopy(incoming)
+        if version=='1.1.0':
+            legacy=incoming['schema_version']=='1.0.0'
+            incoming['schema_version']=version
+            for record in incoming['constituents']+incoming['bindings']:record.update(identity_fields(record,version))
+            if legacy:upgrade_generated_reference_identities(incoming)
         offset=len(bundle['bindings']) if bundle is not None else 0
         remap_binding_references(incoming,{i:i+offset for i in range(len(incoming['bindings']))})
         input_receipts.append(copy.deepcopy(incoming['generation']))
         for group,receipt in incoming['generation'].get('operating_groups',{}).items():
             normalized=copy.deepcopy(receipt)
             normalized.get('operating',{}).get('rng',{}).pop('python_version',None)
-            if group in operating_groups and operating_groups[group]!=normalized:
+            disclosed=_qualified_group_weather_records(incoming,group,receipt,version)
+            if disclosed is not None:
+                qualified_weather_groups.add(group)
+                normalized.pop('original_owner_weather_records')
+            previous=copy.deepcopy(operating_groups.get(group))
+            prior_disclosed=(previous.pop('original_owner_weather_records',None) if previous is not None else None)
+            if group in operating_groups and previous!=normalized:
                 raise GeneratorError('operating_group_conflict','/operating_groups/'+group,
                                      'Precomputed group names have conflicting actual source/sample receipts')
+            if disclosed is not None:
+                combined=(prior_disclosed or [])+disclosed
+                if len({r['instance_key'] for r in combined})!=len(combined):
+                    raise GeneratorError('invalid_reference','/operating_groups/'+group,'Duplicate retained weather owner identity')
+                normalized['original_owner_weather_records']=combined
+            elif prior_disclosed is not None:
+                # Only the exact qualified source-model policy above may
+                # separate this disclosure from its consumed group receipt.
+                raise GeneratorError('operating_group_conflict','/operating_groups/'+group,'Conflicting group disclosure policy')
             operating_groups[group]=normalized
         if bundle is None:
             bundle = incoming
@@ -119,10 +180,15 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         bundle['generation']={'method':'precomputed_bundle_composition_v1',
                               'input_generation_receipts':input_receipts,
                               'seed_interpretation':'Preserve actual input allocations; no multifamily reallocation or reseeding'}
-    instances = [{'key':c['instance_key'],'program_id':c['program_id'],'inputs':{},
+        if qualified_weather_groups:
+            bundle['generation']['operating_groups']=copy.deepcopy(operating_groups)
+            bundle['generation']['operating_group_disclosure_scope']='All retained generated input owners in input order; mixture participation is separately disclosed'
+    instances = [{'key':c['instance_key'],**identity_fields(c,version),'inputs':{},
                   'basis_bindings':c.get('basis_bindings',{}),'operating_group':None} for c in bundle['constituents']]
-    validate_request({'resource_set_id':bundle['metadata']['resource_set_id'],'calendar':calendar,
-                      'instances':instances,'mixture':mixture},0)
+    reconstructed={'resource_set_id':bundle['metadata']['resource_set_id'],'calendar':calendar,
+                   'instances':instances,'mixture':mixture}
+    if version=='1.1.0':reconstructed['schema_version']=version
+    validate_request(reconstructed,0)
     if ('denominator' in mixture) != ('result_basis' in mixture):
         _fail('/mixture','Result basis and physical denominator must be supplied together')
     if 'denominator' in mixture:
@@ -135,11 +201,16 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
     if mixture['composition_id'] is not None:
         from .source_compositions import validate_allocation
         source_recipe,source_receipt=validate_allocation(mixture,members,ResourceSet.load(bundle['metadata']['resource_set_id']))
-    for c,w in members:
+    service_members=[];service_receipt=None
+    if version=='1.1.0':
+        from .services import select_whole_services
+        service_members,service_receipt=select_whole_services(bundle,mixture,members)
+    load_members=members+service_members
+    for c,w in load_members:
         physical,receipts=normalize_basis_bindings(c.get('basis_bindings',{}),c['instance_key'])
         c['basis_bindings']=physical
         if receipts:c['generation']['basis_alias_receipts']=receipts
-    all_bases={d['basis'] for c,w in members for d in c['demands']}
+    all_bases={d['basis'] for c,w in load_members for d in c['demands']}
     all_bases.update(p[1] for c,w in members if (p:=_people_basis(c)) is not None)
     if 'result_basis' not in mixture and len(all_bases)>1:
         _fail('/mixture/denominator','Mixed source bases require explicit physical conversion and denominator')
@@ -167,6 +238,10 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         mixed['generation'].update(method='conserved_source_composition',source_allocation=source_receipt,
             control_policy='ADR0012 source represented-area pointwise eligible control average; no thermal conservation claim')
         mixed['evidence'].append({'source_composition':copy.deepcopy(source_receipt)})
+    if version=='1.1.0':
+        mixed['owner_kind']='program' if source_recipe is not None else 'derived_result'
+        mixed['required_service_links']=[]
+    if service_receipt is not None:mixed['generation']['service_selection']=service_receipt
     def emit(slot,unit,kind,values):
         sid=schedule_id(key,slot)
         bundle['schedules'][sid]={'id':sid,'unit':unit,'year':calendar['year'],'clock':calendar['clock'],
@@ -179,10 +254,10 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         sid=emit(slot,unit,'control',values)
         mixed['controls'].append({'slot':slot,'quantity':quantity,'unit':unit,'evidence':evidence})
         mixed['binding_indices'].append(len(bundle['bindings']))
-        bundle['bindings'].append({'kind':'control','instance_key':key,'program_id':mixed['program_id'],
+        bundle['bindings'].append({'kind':'control','instance_key':key,**identity_fields(mixed,version),
                                   'slot':slot,'schedule_id':sid,'control_quantity':quantity})
     groups={}; services={}
-    for c,weight in members:
+    for c,weight in load_members:
         for index in c['binding_indices']:
             binding=bundle['bindings'][index]
             if binding['kind']!='load': continue
@@ -223,7 +298,8 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
                 factor=extent['value']/mixture['denominator']['value']
             groups.setdefault(group,[]).append({'binding_index':index,'schedule_id':binding['schedule_id'],
                                                'instance_key':c['instance_key'],'demand_id':demand['demand_id'],
-                                               'factor':factor,'heat_fractions':demand.get('heat_fractions')})
+                                               'factor':factor,'heat_fractions':demand.get('heat_fractions'),
+                                               **(identity_fields(c,version) if version=='1.1.0' else {})})
     for (quantity,carrier,fuel,host),components in groups.items():
         slot='load/'+ '/'.join(quote(part,safe='') for part in (quantity,carrier,fuel,host))
         unit=carrier+SUFFIXES[result_basis]
@@ -256,7 +332,7 @@ def compose_constituents(constituents: list[dict], mixture: dict, calendar: dict
         bound=bind_budget(reference_budget(demand,[]),values)
         sid=emit(slot,'fraction','load',values)
         mixed['demands'].append(demand); mixed['binding_indices'].append(len(bundle['bindings']))
-        bundle['bindings'].append(dict(bound,kind='load',instance_key=key,program_id=mixed['program_id'],
+        bundle['bindings'].append(dict(bound,kind='load',instance_key=key,**identity_fields(mixed,version),
                                        demand_id=slot,slot=slot,schedule_id=sid,fuel=fuel,host=host,budget_method='direct_annual'))
     for c,weight in members:
         if c['generation'].get('method')=='conserved_source_composition':

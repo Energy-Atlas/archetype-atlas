@@ -50,8 +50,94 @@ def implementation_source_hash(content):
     return hashlib.sha256(content.replace(b'\r\n',b'\n')).hexdigest()
 
 
+def implementation_sources(milestone):
+    paths={p.relative_to(ROOT).as_posix() for p in (ROOT/'atlas_schedules').rglob('*.py')}
+    paths.update({'scripts/schedule_generator_build.py','scripts/schedule_generator_reference.py',
+        'scripts/schedule_generator_release.py','scripts/schedule_generator_coverage.py',
+        'scripts/schedule_generator_families.py'})
+    if milestone=='C5':
+        paths.update({'scripts/schedule_generator_restaurants.py','scripts/schedule_generator_restaurant_build.py',
+            'scripts/schedule_generator_restaurant_certification.py'})
+        paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT/'atlas_schedules/schemas').glob('*.json'))
+    return paths
+
+
+def _native_component_entries(lock):
+    entries=[lock['vectors']]
+    entries.extend(lock[k] for k in ('inputs','driver','harness') if isinstance(lock.get(k),dict))
+    entries.extend(lock.get('capture_sources',[]))
+    return entries
+
+
+def native_component_files(resources):
+    """Copy actual locked captures once, including their executed source/input evidence."""
+    files={}
+    for component in resources.get('reference','family-native-join')['components']:
+        for entry in _native_component_entries(component['lock']):
+            name=str(safe_path(entry['source_path']));content=(ROOT/name).read_bytes()
+            if name in files and files[name]!=content:raise ValueError('Conflicting native component identity')
+            files[name]=content
+    return files
+
+
+def validate_packaged_native_components(resources,files):
+    """Close packaged raw bytes and actual arrays against extracted operands/pointers."""
+    join=resources.get('reference','family-native-join');case_ids={};seen=set()
+    for component in join['components']:
+        key=component['reference_resource_key'];lock=component['lock']
+        if key in seen:raise ValueError('Duplicate packaged native component identity')
+        seen.add(key)
+        if resources.get('reference',key)!=lock or hashlib.sha256(canonical(lock)).hexdigest()!=component['reference_resource_sha256']:
+            raise ValueError('Packaged native component resource identity differs')
+        for entry in _native_component_entries(lock):
+            name=entry['source_path']
+            if name not in files:raise ValueError('Missing packaged native component: '+name)
+            if _digest(files[name])!={'sha256':entry['sha256'],'size_bytes':entry['size_bytes']}:
+                raise ValueError('Packaged native component hash differs: '+name)
+        vector=lock['vectors'];payload=gzip.decompress(files[vector['source_path']])
+        if hashlib.sha256(payload).hexdigest()!=vector['payload_sha256']:
+            raise ValueError('Packaged native payload hash differs')
+        capture=strict_json(payload,'packaged actual native component')
+        ids=[c['case_id'] for c in capture['cases']]
+        if len(ids)!=len(set(ids)):raise ValueError('Packaged native cases repeat')
+        case_ids[key]=set(ids)
+        if key=='restaurant-water-native-lock':
+            from scripts.schedule_generator_restaurants import validate_fixed_native_operands
+            validate_fixed_native_operands(resources.get('reference','restaurant-water-fixed-native-operands'),
+                {'native':capture,'lock':lock})
+        for binding in join.get('service_bindings',[]):
+            for field in ('private_native_fixtures','public_native_fixtures'):
+                for reference in binding[field]:
+                    if reference['reference_resource_key']!=key:continue
+                    parts=reference['pointer'].strip('/').split('/')
+                    if (len(parts)!=4 or parts[0]!='cases' or parts[2]!='fixtures' or
+                            any(not parts[i].isdigit() for i in (1,3))):
+                        raise ValueError('Packaged native fixture pointer shape differs')
+                    source_case=capture['cases'][int(parts[1])]
+                    value=source_case['fixtures'][int(parts[3])]
+                    if (source_case['case_id']!=reference['native_case_id'] or
+                            source_case['source_hoo_configuration_id']!=binding['source_hoo_configuration_id'] or
+                            reference['reference_resource_sha256']!=component['reference_resource_sha256'] or
+                            reference['native_vectors_sha256']!=vector['sha256'] or
+                            value['source_service_id']!=binding['source_service_id']):
+                        raise ValueError('Packaged native fixture pointer identity differs')
+        del capture,payload
+    for binding in join['fixture_bindings']:
+        for reference in binding.get('native_members',[binding]):
+            expected=[reference['native_case_id']]+reference.get('public_native_case_ids',[])
+            if not set(expected)<=case_ids[reference['reference_resource_key']]:
+                raise ValueError('Packaged native component misses exact scoped source cases')
+
+
 def validate_native_join(resources: ResourceSet, scope: dict) -> None:
     """Close the cumulative scope against actual component resource hashes."""
+    if scope['milestone_id']=='C5':
+        from scripts.schedule_generator_restaurant_certification import validate_native_associations
+        packaged=resources.get('reference','m1-scope')
+        if scope['cases']!=packaged['cases'] or scope.get('service_cases')!=packaged.get('service_cases'):
+            raise ValueError('C5 source/native qualification requires the exact complete compiled scope')
+        validate_native_associations(resources,resources.get('reference','family-native-join'))
+        return
     try:
         join=resources.get('reference','family-native-join')
         components=join['components']
@@ -101,6 +187,25 @@ def validate_family_certification(resources: ResourceSet, scope: dict) -> None:
     except GeneratorError as error:
         raise ValueError('Expanded family source certification is missing') from error
     expected = [c['case_id'] for c in scope['cases']]
+    if scope['milestone_id']=='C5':
+        services=scope.get('service_cases',[])
+        if (certificate.get('service_case_ids')!=[c['case_id'] for c in services] or
+                len(expected)!=165 or len(services)!=26 or
+                certificate.get('declared_owned_slot_count')!=1370 or
+                certificate.get('required_service_link_count')!=10 or
+                certificate.get('source_service_definition_count')!=13):
+            raise ValueError('C5 programme/service/owned-slot/link certification denominator differs')
+        qualifications=certificate.get('family_qualifications',{})
+        if set(qualifications)!={'FullServiceRestaurant','QuickServiceRestaurant'}:
+            raise ValueError('C5 separate restaurant family qualification is missing')
+        for family in qualifications:
+            qualified=qualifications[family]
+            if (qualified.get('programme_case_ids')!=[c['case_id'] for c in scope['cases'] if c['building_type']==family] or
+                    qualified.get('service_case_ids')!=[c['case_id'] for c in services if c['building_type']==family] or
+                    qualified.get('master_seeds')!=[42,51] or
+                    qualified.get('native_source_discrete_numerical_passed') is not True or
+                    qualified.get('bound_public_examples_passed') is not True):
+                raise ValueError('C5 exact family native/public qualification differs: '+family)
     if (certificate.get('status') != 'passed' or certificate.get('case_ids') != expected or
             certificate.get('scope_sha256') != hashlib.sha256(canonical(scope)).hexdigest() or
             certificate.get('dependency_sha256') != certification_dependency_hash(resources.manifest) or
@@ -113,15 +218,12 @@ def validate_family_certification(resources: ResourceSet, scope: dict) -> None:
     lock = resources.get('reference','family-native-lock')
     if native != lock['vectors'] or set(lock['fixture_order']) != {c['configuration_id'] for c in scope['cases']}:
         raise ValueError('Expanded family certification has incomplete native reference identity')
-    if scope['milestone_id'] in {'C2','C3','C4'}: validate_native_join(resources,scope)
-    if scope['milestone_id']=='C4':
-        expected={p.relative_to(ROOT).as_posix() for p in (ROOT/'atlas_schedules').rglob('*.py')}
-        expected.update({'scripts/schedule_generator_build.py','scripts/schedule_generator_reference.py',
-                         'scripts/schedule_generator_release.py','scripts/schedule_generator_coverage.py',
-                         'scripts/schedule_generator_families.py'})
+    if scope['milestone_id'] in {'C2','C3','C4','C5'}: validate_native_join(resources,scope)
+    if scope['milestone_id'] in {'C4','C5'}:
+        expected=implementation_sources(scope['milestone_id'])
         receipts=certificate.get('implementation_source_sha256',{})
         if set(receipts)!=expected or any(implementation_source_hash((ROOT/name).read_bytes())!=digest for name,digest in receipts.items()):
-            raise ValueError('C4 certificate implementation/checker source differs from tested code')
+            raise ValueError('Family certificate implementation/checker source differs from tested code')
 
 
 def validate_native_case_sources(resources,scope,join,payloads):
@@ -178,7 +280,7 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
         for path in sorted(Path(resources_root).rglob('*.json')):
             files['atlas_schedules/data/'+path.relative_to(resources_root).as_posix()] = path.read_bytes()
         compiled_scope = strict_json(files['atlas_schedules/data/reference/m1-scope.json'],'source family scope')
-        if compiled_scope['milestone_id']=='C4':
+        if compiled_scope['milestone_id'] in {'C4','C5'}:
             certificate=strict_json(files['atlas_schedules/data/reference/family-certification.json'],'certificate')
             for name,digest in certificate['implementation_source_sha256'].items():
                 if name.startswith('atlas_schedules/') and implementation_source_hash(files[name])!=digest:
@@ -189,7 +291,7 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                          'sources/schedule-generator-residential-family-reference-lock.json',
                          'data/schedule-generator/residential-family-native.json.gz'):
                 files[name] = (ROOT/name).read_bytes()
-        if compiled_scope['milestone_id'] in {'C2','C3','C4'}:
+        if compiled_scope['milestone_id'] in {'C2','C3','C4','C5'}:
             for name in ('sources/schedule-generator-medium-office-scope.json',
                          'sources/schedule-generator-ruby-float-lock.json',
                          'data/schedule-generator/source-methods/ruby-numeric-v3_2_2.c',
@@ -201,7 +303,7 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                          'data/schedule-generator/medium-office-family-native.json.gz',
                          'data/schedule-generator/residential-family-native.json.gz'):
                 files[name] = (ROOT/name).read_bytes()
-            if compiled_scope['milestone_id'] in {'C3','C4'}:
+            if compiled_scope['milestone_id'] in {'C3','C4','C5'}:
                 for name in ('sources/schedule-generator-small-office-scope.json',
                              'sources/schedule-generator-small-office-lock.json',
                              'sources/schedule-generator-small-office-cumulative-reference-lock.json',
@@ -210,7 +312,7 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                              'data/schedule-generator/small-office-cumulative-native.json',
                              'data/schedule-generator/small-office-family-native.json.gz'):
                     files[name]=(ROOT/name).read_bytes()
-            if compiled_scope['milestone_id']=='C4':
+            if compiled_scope['milestone_id'] in {'C4','C5'}:
                 for name in ('sources/schedule-generator-warehouse-scope.json',
                              'sources/schedule-generator-warehouse-lock.json',
                              'sources/schedule-generator-warehouse-cumulative-reference-lock.json',
@@ -219,8 +321,21 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                              'data/schedule-generator/warehouse-cumulative-native.json',
                              'data/schedule-generator/warehouse-family-native.json.gz'):
                     files[name]=(ROOT/name).read_bytes()
-            validate_native_join(ResourceSet(Path(resources_root),strict_json(files['atlas_schedules/data/manifest.json'],'manifest')['resource_set_id']),compiled_scope)
-            join_name={'C2':'medium-office','C3':'small-office','C4':'warehouse'}[compiled_scope['milestone_id']]
+            current_resources=ResourceSet(Path(resources_root),strict_json(files['atlas_schedules/data/manifest.json'],'manifest')['resource_set_id'])
+            validate_native_join(current_resources,compiled_scope)
+            if compiled_scope['milestone_id']=='C5':
+                for name in ('sources/schedule-generator-restaurant-scope.json',
+                    'sources/schedule-generator-restaurant-lock.json',
+                    'sources/schedule-generator-restaurant-cumulative-reference-lock.json',
+                    'sources/schedule-generator-restaurant-programme-reference-lock.json',
+                    'sources/schedule-generator-restaurant-water-reference-lock.json',
+                    'sources/schedule-generator-restaurant-water-public-reference-lock.json',
+                    'data/schedule-generator/restaurant-cumulative-native.json',
+                    'data/schedule-generator/reference/restaurant-native-discrete.json'):
+                    files[name]=(ROOT/name).read_bytes()
+                files.update(native_component_files(current_resources))
+                validate_packaged_native_components(current_resources,files)
+            join_name={'C2':'medium-office','C3':'small-office','C4':'warehouse','C5':'restaurant'}[compiled_scope['milestone_id']]
             join=strict_json(files['data/schedule-generator/'+join_name+'-cumulative-native.json'],'native join')
             native_cases={};native_payloads={}
             for component in join['components']:
@@ -264,6 +379,7 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
         entry = next(e for e in manifest['resources'] if e['kind'] == 'reference' and e['key'] == 'm1-scope')
         entry.update(_digest(files['atlas_schedules/data/reference/m1-scope.json']))
         manifest['cases'] = copy.deepcopy(scope['cases'])
+        if 'service_cases' in scope:manifest['service_cases']=copy.deepcopy(scope['service_cases'])
         manifest['milestone_id'] = scope['milestone_id']
         manifest['scope_version'] = scope['scope_version']
         manifest['resource_set_id'] = manifest_identity(manifest)
@@ -318,15 +434,17 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
                 "are packaged. Generation uses Python's standard library offline; native/source tools are development-only. "
                 "Frozen artifact/resource checksums are integrity gates; fresh schedules are compared by source/discrete and numerical equivalence.\n"
             ).encode('utf-8')
-        if resources_root is not None and compiled_scope['milestone_id'] in {'C2','C3','C4'}:
-            guide_name={'C2':'medium-office','C3':'small-office','C4':'warehouse'}[compiled_scope['milestone_id']]
+        if resources_root is not None and compiled_scope['milestone_id'] in {'C2','C3','C4','C5'}:
+            guide_name={'C2':'medium-office','C3':'small-office','C4':'warehouse','C5':'restaurants'}[compiled_scope['milestone_id']]
             guide = (ROOT/('docs/schedule-generator-'+guide_name+'.md')).read_text(encoding='utf-8')
             files['docs/schedule-generator.md'] = guide.replace('RESOURCE_SET_ID',manifest['resource_set_id']).encode('utf-8')
             if scope!=compiled_scope:
                 templates=', '.join(sorted({c['template'] for c in scope['cases']}))
+                declared_count=(f"{len(scope['cases'])} exact programme case(s) and {len(scope.get('service_cases',[]))} physical service/configuration case(s)"
+                    if compiled_scope['milestone_id']=='C5' else f"{len(scope['cases'])} exact case(s)")
                 files['docs/schedule-generator.md']=(
                     f"# Offline schedule generator — {scope['milestone_id']}\n\n"
-                    f"This restricted milestone declares {len(scope['cases'])} exact case(s), selected from independently certified {compiled_scope['milestone_id']}. "
+                    f"This restricted milestone declares {declared_count}, selected from independently certified {compiled_scope['milestone_id']}. "
                     f"Included templates: {templates}. Resource identity: `{manifest['resource_set_id']}`. "
                     "Its complete runnable example is `references/all-cases-request.json`, with numerical reference "
                     "`references/all-cases-bundle.json.gz`. Extract the request and run "
@@ -344,6 +462,15 @@ def _members(scope: dict, resources_root: Path | None = None) -> tuple[dict[str,
 
 
 def _request(scope: dict, files: dict[str, bytes], resource_set_id: str) -> dict:
+    if 'service_cases' in scope:
+        from scripts.schedule_generator_restaurants import qualification_request
+        records={('reference','m1-scope'):scope}
+        pairs=[('program',c['program_id']) for c in scope['cases']]
+        pairs.extend(('reference',c['resource_key']) for c in scope.get('service_cases',[]))
+        for kind,key in pairs:
+            records[kind,key]=strict_json(files['atlas_schedules/data/'+kind+'/'+key+'.json'],key)
+        params=qualification_request(records);params['resource_set_id']=resource_set_id
+        return {'schema_version':'1.1.0','params':params,'seed':42}
     instances = []
     for case in scope['cases']:
         record = strict_json(files[f"atlas_schedules/data/program/{case['program_id']}.json"], case['program_id'])
@@ -358,6 +485,12 @@ def _request(scope: dict, files: dict[str, bytes], resource_set_id: str) -> dict
 
 def _mixed_request(scope: dict, resources: ResourceSet) -> dict:
     """Concrete caller-declared physical experiment from actual bound members."""
+    if scope['milestone_id']=='C5':
+        from scripts.schedule_generator_restaurants import mixed_qualification_request
+        records={('reference','m1-scope'):scope}
+        for case in scope['cases']:records['program',case['program_id']]=resources.get('program',case['program_id'])
+        for case in scope['service_cases']:records['reference',case['resource_key']]=resources.get('reference',case['resource_key'])
+        return mixed_qualification_request(records,resources.resource_set_id)
     residential=next(c for c in scope['cases'] if c['template']=='ResStock SDR source fixture'
                      and resources.get('program',c['program_id'])['recipe']['bound_inputs']['residents']>0)
     commercial=next(c for c in scope['cases'] if c['template']=='DOE Ref Pre-1980' and 'Office_MediumOffice' in c['name'])
@@ -411,7 +544,8 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
                 'R1':'sources/schedule-generator-residential-scope.json',
                 'C2':'sources/schedule-generator-medium-office-scope.json',
                 'C3':'sources/schedule-generator-small-office-scope.json',
-                'C4':'sources/schedule-generator-warehouse-scope.json'}
+                'C4':'sources/schedule-generator-warehouse-scope.json',
+                'C5':'sources/schedule-generator-restaurant-scope.json'}
     compiled_scope = strict_json((original_root/'reference/m1-scope.json').read_bytes(),'compiled source scope')
     family = compiled_scope.get('milestone_id')
     if family not in approved:
@@ -422,7 +556,8 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
     scope = copy.deepcopy(scope if scope is not None else authoritative)
     if scope['milestone_id'] == 'M1' and scope != authoritative:
         raise ValueError('M1 declaration must equal the authoritative ten-case scope')
-    if not scope['cases'] or len({case['case_id'] for case in scope['cases']}) != len(scope['cases']):
+    if (not scope['cases'] and not scope.get('service_cases') or
+            len({case['case_id'] for case in scope['cases']}) != len(scope['cases'])):
         raise ValueError('Declared scope must contain distinct cases')
     manifest = strict_json((original_root/'manifest.json').read_bytes(), 'resource manifest')
     resources = ResourceSet(original_root, manifest['resource_set_id'])
@@ -430,7 +565,15 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
         raise ValueError('Compiled resource scope differs from authoritative M1')
     if any(case not in authoritative['cases'] for case in scope['cases']):
         raise ValueError('Unknown or modified source case in partial scope')
-    if resources_root is not None and authoritative['milestone_id'] in {'R1','C2','C3','C4'}:
+    if authoritative['milestone_id']=='C5':
+        services=scope.get('service_cases')
+        if (not isinstance(services,list) or len({c['case_id'] for c in services})!=len(services) or
+                any(c not in authoritative['service_cases'] for c in services)):
+            raise ValueError('Unknown, duplicated or modified physical service/configuration in partial scope')
+        allowed_changes={'milestone_id','cases','service_cases'}
+        if {k:v for k,v in scope.items() if k not in allowed_changes}!={k:v for k,v in authoritative.items() if k not in allowed_changes}:
+            raise ValueError('Modified C5 source qualification metadata in partial scope')
+    if resources_root is not None and authoritative['milestone_id'] in {'R1','C2','C3','C4','C5'}:
         # Restricted runtimes select from the fully certified source family;
         # source evidence and operands remain tied to its exact full scope.
         validate_family_certification(resources, authoritative)
@@ -448,16 +591,19 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
     request = _request(scope, files, resource_set_id)
     generated = _execute_zip(_archive(files), request)
     bundle = strict_json(generated, 'generated reference bundle')
-    requested={c['case_id'] for c in scope['cases']}
+    requested={c['case_id'] for c in scope['cases']+scope.get('service_cases',[])}
     child_keys={k for a in bundle['generation'].get('source_compositions',[]) for k in a['member_instance_keys']}
     owners={c['instance_key']:c for c in bundle['constituents']}
     if len(owners)!=len(bundle['constituents']) or set(owners)!=requested|child_keys:
         raise ValueError('Generated requested/actual-member owner count differs from declared scope')
-    for case in scope['cases']:
+    from atlas_schedules.owners import owner_identity
+    requested_instances={i['key']:i for i in request['params']['instances']}
+    for case in scope['cases']+scope.get('service_cases',[]):
         constituent=owners[case['case_id']]
-        if case['case_id'] != constituent['instance_key'] or case['program_id'] != constituent['program_id']:
+        declared_identity=owner_identity(requested_instances[case['case_id']])
+        if case['case_id'] != constituent['instance_key'] or owner_identity(constituent)!=declared_identity:
             raise ValueError('Generated case identity differs from scope')
-        expected = next(row for row in coverage['cases'] if row['case_id'] == case['case_id'])
+        expected = next(row for row in coverage['cases']+coverage.get('service_cases',[]) if row['case_id'] == case['case_id'])
         if set(constituent['schedule_ids']) != set(expected['expected_slots']):
             raise ValueError('Generated channels differ from complete declared channel list: ' + case['case_id'])
     if scope['milestone_id'] == 'M1':
@@ -468,7 +614,7 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
             raise ValueError('Task 8 source reference differs: ' + '; '.join(differences[:10]))
     files['references/all-cases-request.json'] = canonical(request)
     files['references/all-cases-bundle.json.gz'] = gzip.compress(generated, mtime=0)
-    if scope['milestone_id'] in {'C2','C3','C4'} and len(scope['cases'])==len(authoritative['cases']):
+    if scope['milestone_id'] in {'C2','C3','C4','C5'} and scope==authoritative:
         mixed=_mixed_request(scope,resources)
         mixed['params']['resource_set_id']=resource_set_id
         files['references/mixed-family-request.json']=canonical(mixed)
@@ -483,6 +629,12 @@ def freeze_generator(target: Path, version: str, scope: dict | None = None,
                'commercial_audit_sha256': hashlib.sha256(files['data/schedule-generator/comstock-sampling-audit.json']).hexdigest(),
                'files': {'generator.zip': _digest(archive)},
                'members': {name: _digest(content) for name, content in sorted(files.items())}}
+    if 'service_cases' in scope:
+        release['scope'].update(service_case_count=len(scope['service_cases']),
+            service_case_ids=[c['case_id'] for c in scope['service_cases']],
+            source_service_definition_count=len({c['source_service_id'] for c in scope['service_cases']}),
+            declared_owned_slot_count=coverage['scope']['declared_owned_slot_count'],
+            required_programme_service_link_count=coverage['scope']['required_programme_service_link_count'])
     target.mkdir(parents=True)
     (target / 'generator.zip').write_bytes(archive)
     (target / 'manifest.json').write_bytes(canonical(release))
@@ -513,6 +665,11 @@ def verify_generator(target: Path) -> list[str]:
             resource_manifest = strict_json(source.read('atlas_schedules/data/manifest.json'), 'resource manifest')
             if [case['case_id'] for case in scope['cases']] != manifest['scope']['case_ids'] or len(scope['cases']) != manifest['scope']['case_count']:
                 errors.append('Frozen scope case inventory differs')
+            if 'service_cases' in scope:
+                if (manifest['scope'].get('service_case_ids')!=[c['case_id'] for c in scope['service_cases']] or
+                        manifest['scope'].get('service_case_count')!=len(scope['service_cases']) or
+                        resource_manifest.get('service_cases')!=scope['service_cases']):
+                    errors.append('Frozen physical service/configuration inventory differs')
             if _digest(source.read('sources/schedule-generator-m1-scope.json'))['sha256'] != manifest['scope']['sha256']:
                 errors.append('Frozen source scope hash differs')
             if resource_manifest['resource_set_id'] != manifest['resource_set_id'] or manifest_identity(resource_manifest) != manifest['resource_set_id']:

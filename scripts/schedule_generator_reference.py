@@ -1,6 +1,7 @@
 """Opt-in independent Ruby/OpenStudio capture; ordinary generation remains offline Python."""
 import argparse
 import hashlib
+import gzip
 import os
 from pathlib import Path
 import subprocess
@@ -191,6 +192,130 @@ def load_commercial_reference():
     if result['provenance'] != lock['capture_provenance']:
         raise GeneratorError('source_integrity', 'commercial-reference', 'Capture provenance mismatch')
     return result
+
+
+def load_restaurant_water_reference(lock=None):
+    """Read hash-locked actual native arrays and portable capture inputs offline.
+
+    This bounded development loader proves method input/reference associations;
+    it does not certify complete programme recipes or a family shipment.
+    """
+    lock=lock if lock is not None else _read(ROOT/'sources/schedule-generator-restaurant-water-reference-lock.json')
+    if lock.get('source_gate_status')!='water_hoo_native_method_passed_programme_family_pending':
+        raise GeneratorError('source_integrity','restaurant-water','Unexpected method qualification boundary')
+    def member(entry):
+        path=ROOT/str(safe_path(entry['source_path']))
+        blob=_verify(path,entry)
+        try:payload=gzip.decompress(blob)
+        except (OSError,EOFError) as error:
+            raise GeneratorError('source_integrity','restaurant-water','Invalid native gzip payload') from error
+        if len(payload)!=entry['payload_size_bytes'] or hashlib.sha256(payload).hexdigest()!=entry['payload_sha256']:
+            raise GeneratorError('source_integrity','restaurant-water','Native payload checksum differs')
+        return strict_json(payload,'restaurant-water')
+    inputs=member(lock['inputs']);native=member(lock['vectors'])
+    if inputs.get('provenance')!=lock['capture_provenance'] or native.get('ruby_description')!=lock['ruby_description']:
+        raise GeneratorError('source_integrity','restaurant-water','Actual capture provenance differs')
+    def cases(value):
+        records=value.get('cases',[])
+        mapped={c['case_id']:c for c in records}
+        if len(records)!=40 or len(mapped)!=40:
+            raise GeneratorError('source_integrity','restaurant-water','Missing or duplicate actual native configuration/seed case')
+        return mapped
+    given=cases(inputs);actual=cases(native)
+    if set(given)!=set(actual):
+        raise GeneratorError('source_integrity','restaurant-water','Native input/reference keys differ')
+    configurations=set();services=set();fixture_count=0
+    for key,case in actual.items():
+        expected=given[key]
+        if (case['source_hoo_configuration_id']!=expected['source_hoo_configuration_id'] or
+                any(case[field]!=expected[field] for field in ('family','template','evidence_view','operating','parametric_apply','adaptation')) or
+                case['parametric_apply'].get('error_on_out_of_order') is not False or
+                {f['source_service_id'] for f in case['fixtures']}!={s['id'] for s in expected['services']}):
+            raise GeneratorError('source_integrity','restaurant-water/'+key,'Native source/configuration/fixture association differs')
+        configurations.add(case['source_hoo_configuration_id']);services.update(f['source_service_id'] for f in case['fixtures'])
+        fixture_count+=len(case['fixtures'])
+    if (configurations!=set(lock['configuration_ids']) or services!=set(lock['source_service_ids']) or
+            len(configurations)!=20 or len(services)!=13 or fixture_count!=52):
+        raise GeneratorError('source_integrity','restaurant-water','Exact actual method scope differs')
+    return {'lock':lock,'inputs':inputs,'native':native}
+
+
+def _restaurant_capture_members(lock,name):
+    if lock.get('source_gate_status')!='native_method_passed_public_family_certification_pending':
+        raise GeneratorError('source_integrity',name,'Unexpected native method qualification boundary')
+    result={}
+    for kind in ('inputs','vectors'):
+        entry=lock[kind];blob=_verify(ROOT/str(safe_path(entry['source_path'])),entry)
+        try:payload=gzip.decompress(blob)
+        except (OSError,EOFError) as error:raise GeneratorError('source_integrity',name,'Invalid native capture gzip') from error
+        if len(payload)!=entry['payload_size_bytes'] or hashlib.sha256(payload).hexdigest()!=entry['payload_sha256']:
+            raise GeneratorError('source_integrity',name,'Actual native capture payload differs')
+        result[kind]=strict_json(payload,name)
+    return result['inputs'],result['vectors']
+
+
+def load_restaurant_programme_reference(lock=None):
+    """Actual230 native programme contexts; complete public artefact gate separate."""
+    lock=lock if lock is not None else _read(ROOT/'sources/schedule-generator-restaurant-programme-reference-lock.json')
+    inputs,native=_restaurant_capture_members(lock,'restaurant-programme')
+    if (not isinstance(inputs,list) or not isinstance(native,dict) or
+            native.get('ruby_description')!=lock['capture_summary']['ruby_description']):
+        raise GeneratorError('source_integrity','restaurant-programme','Invalid actual native capture structure/runtime')
+    actual=native.get('cases',[]);given={c['case_id']:c for c in inputs};mapped={c['case_id']:c for c in actual}
+    if len(inputs)!=230 or len(actual)!=230 or len(given)!=230 or set(given)!=set(mapped):
+        raise GeneratorError('source_integrity','restaurant-programme','Missing/duplicate/mispointed actual native case')
+    programmes=set();configurations=set();checks=0
+    for key,case in mapped.items():
+        expected=given[key];context=expected['source_context']
+        if (case['source_context']!=context or case['schedules']!=expected['schedules'] or case['operating']!=expected['operating'] or
+                context.get('parametric_apply',{}).get('error_on_out_of_order') is not False or
+                case['source_reference_geometry']!=expected['geometry_receipt'] or
+                len(case['actual_people'])!=len(context['occupancy_aggregation']['constituents'])):
+            raise GeneratorError('source_integrity','restaurant-programme/'+key,'Actual source/model/operating association differs')
+        for person,part in zip(case['actual_people'],context['occupancy_aggregation']['constituents']):
+            if (person['program_id']!=part['program_id'] or person['source_program_id']!=part['source_program_id'] or
+                    person['space_name']!=part['source_space_name'] or person['nominal_people']!=part['nominal_people'] or
+                    person['floor_area_m2']!=part['source_floor_area_m2'] or person['multiplier']!=part['source_multiplier'] or
+                    person['residential'] is not False):
+                raise GeneratorError('source_integrity','restaurant-programme/'+key,'Actual People operand/order differs')
+        programmes.add(expected['source_case']['program_id']);configurations.add(context['configuration_id'])
+        if expected['uncached_getter_check']:
+            getter=case.get('getter_receipt',{})
+            if not getter.get('original_cached_uncached_8760_equal') or not getter.get('changed_cached_uncached_8760_equal'):
+                raise GeneratorError('source_integrity','restaurant-programme/'+key,'Actual native getter cache query closure missing')
+            checks+=1
+    summary=lock['capture_summary']
+    if (len(programmes)!=46 or len(configurations)!=20 or checks!=20 or summary.get('case_count')!=230 or
+            summary.get('programme_count')!=46 or summary.get('configuration_count')!=20):
+        raise GeneratorError('source_integrity','restaurant-programme','Exact programme/context/getter scope differs')
+    return {'lock':lock,'inputs':inputs,'native':native}
+
+
+def load_restaurant_public_water_reference(lock=None):
+    """Actual52 fixtures using the public full-request cfg group uniforms."""
+    lock=lock if lock is not None else _read(ROOT/'sources/schedule-generator-restaurant-water-public-reference-lock.json')
+    inputs,native=_restaurant_capture_members(lock,'restaurant-water-public')
+    if (not isinstance(inputs,dict) or not isinstance(native,dict) or
+            inputs.get('provenance')!=lock['capture_provenance'] or
+            native.get('ruby_description')!=lock['capture_summary']['ruby_description']):
+        raise GeneratorError('source_integrity','restaurant-water-public','Actual provenance/runtime differs')
+    given={c['case_id']:c for c in inputs.get('cases',[])};actual={c['case_id']:c for c in native.get('cases',[])}
+    if len(given)!=40 or len(inputs['cases'])!=40 or len(actual)!=40 or len(native['cases'])!=40 or set(given)!=set(actual):
+        raise GeneratorError('source_integrity','restaurant-water-public','Missing/duplicate/mispointed actual native context')
+    configurations=set();services=set();fixtures=0
+    for key,case in actual.items():
+        expected=given[key];seed=expected['operating']['source_seed_receipt'];config=expected['source_hoo_configuration_id']
+        from atlas_schedules.seeds import commercial_group_seed
+        if (any(case[field]!=expected[field] for field in ('source_hoo_configuration_id','family','template','evidence_view','operating','parametric_apply','adaptation')) or
+                seed['operating_group']!=config or seed['master_seed'] not in {42,51} or
+                seed['group_seed']!=commercial_group_seed(seed['master_seed'],config) or
+                expected['parametric_apply'].get('error_on_out_of_order') is not False or
+                {f['source_service_id'] for f in case['fixtures']}!={s['id'] for s in expected['services']}):
+            raise GeneratorError('source_integrity','restaurant-water-public/'+key,'Exact public cfg/group/fixture/native association differs')
+        configurations.add(config);services.update(f['source_service_id'] for f in case['fixtures']);fixtures+=len(case['fixtures'])
+    if len(configurations)!=20 or len(services)!=13 or fixtures!=52 or lock['capture_summary'].get('fixture_count')!=52:
+        raise GeneratorError('source_integrity','restaurant-water-public','Exact public fixture/configuration scope differs')
+    return {'lock':lock,'inputs':inputs,'native':native}
 
 
 def commercial_capture_inputs(resources):

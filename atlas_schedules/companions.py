@@ -7,6 +7,43 @@ from .calendar import evaluate_rules
 from .errors import GeneratorError
 
 
+def _native_constant(slot,rule):
+    """Selected source-created water Ruleset, native storage then round5 getter."""
+    from .commercial.parametric import _stored, _hourly
+    path='/companions/'+slot
+    evidence=rule.get('evidence',{})
+    fields=('original_value','stored_value','native_hourly_value')
+    if (slot not in {'water_target_temperature','water_sensible_fraction','water_latent_fraction'} or
+            any(type(rule.get(k)) not in (int,float) or not math.isfinite(rule[k]) for k in fields) or
+            not isinstance(evidence,dict) or not evidence.get('native_output_sha256') or
+            evidence.get('source_method')!='create_water_use.rb:39-62; Standards0.8.6 information.rb:338-382'):
+        raise GeneratorError('source_integrity',path,'Exact finite source fixed-control/native method evidence required')
+    operand=rule.get('source_operand',{})
+    profile=rule.get('native_source_profile')
+    specials=rule.get('native_special_profiles',{});creation=rule.get('source_profile_creation',{})
+    if (not isinstance(operand,dict) or type(operand.get('value')) not in (int,float) or not math.isfinite(operand['value']) or
+            not isinstance(profile,list) or len(profile)!=1 or profile[0]!=[24.0,rule['stored_value']] or
+            not isinstance(specials,dict) or set(specials)!={'WntrDsn','SmrDsn'} or any(points!=profile for points in specials.values()) or
+            creation.get('method')!='create_constant_schedule_ruleset' or creation.get('original_rule_order')!=[] or
+            creation.get('original_special_state')!='not_explicitly_set'):
+        raise GeneratorError('source_integrity',path,'Actual source operand and native constant profile required')
+    if slot=='water_target_temperature':
+        if (operand.get('unit')!='F' or operand.get('method')!='OpenStudio.convert(F,C) then native constant ScheduleDay storage' or
+                (operand['value']-32)/1.8!=rule['original_value']):
+            raise GeneratorError('source_integrity',path,'Original Fahrenheit and canonical Celsius source operands differ')
+        # The compiled profile is an actual locked native fixed operand, not an
+        # emulation of OpenStudio's unit-library floating-point conversion.
+        stored=_stored(profile[0][1])
+    else:
+        if operand.get('unit')!='fraction' or operand['value']!=rule['original_value']:
+            raise GeneratorError('source_integrity',path,'Original source fixed fraction operand differs')
+        stored=_stored(rule['original_value'])
+    hourly=_hourly([[24.0,stored]],6)[0]
+    if stored!=rule['stored_value'] or hourly!=rule['native_hourly_value']:
+        raise GeneratorError('source_integrity',path,'Native fixed-control storage/getter receipt differs from source calculation')
+    return [hourly]*8760
+
+
 def _thermostats(arguments, year):
     profiles = {}
     for mode in ('heating', 'cooling'):
@@ -71,10 +108,21 @@ def generate_companions(resolved: dict, resources) -> dict:
             values = [rule['value']]*8760
         elif method == 'source_rules':
             values = evaluate_rules(rule['source'], year, inputs['holidays'])['values']
+        elif method == 'native_constant_ruleset':
+            values = _native_constant(slot,rule)
         else:
             raise GeneratorError('unsupported_binding', '/companions/'+slot, 'No compiled source method')
         channels[slot] = values
         receipts[slot] = dict(copy.deepcopy(rule['evidence']), method=method)
+        if method=='native_constant_ruleset':
+            receipts[slot]['native_getter_precision']={
+                'original_canonical_value':rule['original_value'],'source_operand':copy.deepcopy(rule['source_operand']),
+                'actual_native_stored_value':rule['stored_value'],'actual_native_source_profile':copy.deepcopy(rule['native_source_profile']),
+                'native_special_profiles':copy.deepcopy(rule['native_special_profiles']),
+                'source_profile_creation':copy.deepcopy(rule['source_profile_creation']),
+                'hourly_value':values[0],'method':'Pinned native ScheduleDay getter then Ruby3.2.2 round5',
+                'canonical_value_is_native_stored_value':rule['original_value']==rule['stored_value'],
+                'annual_normalization':'none; fixed control retains source semantics'}
     for slot, values in channels.items():
         if len(values) != 8760 or any(isinstance(v, bool) or not isinstance(v, (int,float)) or not math.isfinite(v) for v in values):
             raise GeneratorError('invalid_schedule', '/companions/'+slot, '8760 finite hourly source values required')

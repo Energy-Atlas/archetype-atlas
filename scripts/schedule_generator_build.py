@@ -310,26 +310,37 @@ def compile_recipes(records, scope):
                 add_control(slot, ready['controls'][slot+'_schedule_id'], 'C', 'temperature', thermostat_evidence)
                 companions[slot] = {'method': 'translated_thermostat', 'evidence': thermostat_evidence}
         else:
-            bound = {'configuration_id': case['configuration']['sampling_configuration_id'],
-                     'carrier_policy': 'explicit_single_nonresidential_reference_carrier'}
-            carrier_case = next(c for c in scope['cases'] if c['building_type'] == case['building_type']
-                                and 'Office_'+case['building_type'] in c['name'] and c['evidence_view'] == case['evidence_view']
-                                and c['template'] == case['template'])
-            carrier = definitions[carrier_case['program_id']]
-            carrier_load = next(l for l in carrier['loads'] if l['quantity'] == 'occupancy')
-            carrier_source = schedules[carrier_load['schedule_id']]
-            context.update(configuration_id=bound['configuration_id'], standards_version='0.8.6', steps_per_hour=6,
-                slot_sources={}, slot_modes={}, occupancy_aggregation={'policy': bound['carrier_policy'],
-                'constituents': [{'schedule': carrier_source, 'nominal_people': 1.0, 'residential': False,
-                                  'evidence': field_evidence(carrier_load['evidence_id'], receipt)}],
-                'interpretation': ('Declared M1 normalized Office carrier, not geometry or population; Plenum explicitly associated through named MediumOffice configuration' if case['building_type']=='MediumOffice' else
-                    'Explicit normalized actual SmallOffice carrier in the same template/view; source-inactive Attic associated with the named SmallOffice configuration; no geometry or population inferred' if case['building_type']=='SmallOffice' else
-                    'Exact same-template/view WarehouseOffice normalized carrier; zero local People in Fine/Bulk retained; actual room methods, no inferred geometry or population')},
-                occupancy_adjustment={'peak_occ_frac': 0.231, 'source_key': 'comstock__resources__options_lookup_tsv',
-                'source_options': ['baseline_hvac_sizing=autosize', 'baseline_hvac_sizing=hardsize'],
-                'interpretation': 'Locked common lookup value only; no HVAC sizing inference'},
-                source_clock={'TZ': 'UTC', 'variant': 'controlled_no_DST_local_standard_calendar'},
-                carrier_program_id=carrier_case['program_id'], configuration_association=case['configuration'])
+            restaurant=case['building_type'] in {'FullServiceRestaurant','QuickServiceRestaurant'}
+            if restaurant:
+                from scripts.schedule_generator_restaurants import program_source_context
+                bound,context=program_source_context(case)
+                resolved['shared_services']=[]
+                links=[{'source_service_id':load['service_id'],'source_channel':'hot_water_volume','required':True,
+                        'original_demand':copy.deepcopy(load),'evidence':field_evidence(load['evidence_id'],receipt)}
+                       for load in definition['loads'] if load.get('service_id') and load['status']=='known']
+                if {link['source_service_id'] for link in links}!=set(definition['service_ids']):
+                    raise GeneratorError('source_integrity',pid,'Exact active programme/service alias set differs')
+            else:
+                bound = {'configuration_id': case['configuration']['sampling_configuration_id'],
+                         'carrier_policy': 'explicit_single_nonresidential_reference_carrier'}
+                carrier_case = next(c for c in scope['cases'] if c['building_type'] == case['building_type']
+                                    and 'Office_'+case['building_type'] in c['name'] and c['evidence_view'] == case['evidence_view']
+                                    and c['template'] == case['template'])
+                carrier = definitions[carrier_case['program_id']]
+                carrier_load = next(l for l in carrier['loads'] if l['quantity'] == 'occupancy')
+                carrier_source = schedules[carrier_load['schedule_id']]
+                context.update(configuration_id=bound['configuration_id'], standards_version='0.8.6', steps_per_hour=6,
+                    slot_sources={}, slot_modes={}, occupancy_aggregation={'policy': bound['carrier_policy'],
+                    'constituents': [{'schedule': carrier_source, 'nominal_people': 1.0, 'residential': False,
+                                      'evidence': field_evidence(carrier_load['evidence_id'], receipt)}],
+                    'interpretation': ('Declared M1 normalized Office carrier, not geometry or population; Plenum explicitly associated through named MediumOffice configuration' if case['building_type']=='MediumOffice' else
+                        'Explicit normalized actual SmallOffice carrier in the same template/view; source-inactive Attic associated with the named SmallOffice configuration; no geometry or population inferred' if case['building_type']=='SmallOffice' else
+                        'Exact same-template/view WarehouseOffice normalized carrier; zero local People in Fine/Bulk retained; actual room methods, no inferred geometry or population')},
+                    occupancy_adjustment={'peak_occ_frac': 0.231, 'source_key': 'comstock__resources__options_lookup_tsv',
+                    'source_options': ['baseline_hvac_sizing=autosize', 'baseline_hvac_sizing=hardsize'],
+                    'interpretation': 'Locked common lookup value only; no HVAC sizing inference'},
+                    source_clock={'TZ': 'UTC', 'variant': 'controlled_no_DST_local_standard_calendar'},
+                    carrier_program_id=carrier_case['program_id'], configuration_association=case['configuration'])
             if scope['milestone_id'] != 'M1':
                 context['source_discard_method_evidence'] = {slot:records['reference',key]['provenance'] for slot,key in {
                     'lighting':'comstock__resources__measures__set_interior_lighting_bpr__measure_rb',
@@ -340,12 +351,13 @@ def compile_recipes(records, scope):
                     'sampling_selector':case['configuration']['conditioning_inputs'],
                     'sampling_reference_audit_configuration':case['configuration']['conditioning_inputs']['building_type']+'_90_1_2013',
                     'interpretation':'Actual template/view schedules and targets transformed using pinned Standards 0.8.6 and audited ComStock v33 selector closure; no stock population equivalence'}
-            if case['building_type']=='Warehouse':
+            if case['building_type']=='Warehouse' or restaurant:
                 context['source_default_cleanup_method_evidence']=records['reference','standards086__lib__openstudio-standards__schedules__modify_rb']['provenance']
             original_loads = {l['demand_id']: l for l in definition['loads']}
             for load in ready['loads']:
                 slot = load['end_use']
                 original = original_loads[load['demand_id']]
+                if restaurant and load['type']=='hot_water':continue
                 sid = original['schedule_id']
                 src = source_schedule(sid, ready)
                 sources[slot] = src
@@ -384,6 +396,10 @@ def compile_recipes(records, scope):
                   'calendar_year_locked': residential, 'reference_sources': sources,
                   'companion_rules': companions, 'source_context': context,
                   'aggregate_binding_policy': 'source_recovered_physical_demands' if residential else 'original_definition_demands'}
+        if not residential and restaurant:
+            recipe.update(required_contract_version='1.1.0',required_service_links=links,
+                          calendar_year_locked=True,
+                          aggregate_binding_policy='original_definition_local_demands_and_typed_external_service_links')
         record['recipe'] = recipe
         statuses[pid] = 'accepted_inactive' if accepted_absence else 'compiled'
         policies['programs'].append({k: recipe[k] for k in ('schema_version', 'bound_inputs', 'required_inputs',
@@ -467,6 +483,9 @@ def compile_source_parent_recipes(records,scope):
 
 
 def build_resources(destination: Path, scope: str, tables_destination: Path | None = None) -> dict:
+    if scope=='restaurants':
+        from scripts.schedule_generator_restaurant_build import build_cumulative_resources
+        return build_cumulative_resources(destination,tables_destination)
     if scope not in {'pilot', 'residential', 'medium-office', 'small-office','warehouse'}:
         raise GeneratorError('unsupported_scope', '/scope', 'Unknown explicit source family scope')
     lock_file = {'pilot':'sources/schedule-generator-lock.json','residential':'sources/schedule-generator-residential-lock.json','medium-office':'sources/schedule-generator-medium-office-lock.json','small-office':'sources/schedule-generator-small-office-lock.json','warehouse':'sources/schedule-generator-warehouse-lock.json'}[scope]

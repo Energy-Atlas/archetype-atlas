@@ -142,23 +142,67 @@ def _close_gaps(points):
 def _infer(context):
     aggregation=context['occupancy_aggregation']
     if not isinstance(aggregation,dict): _error('occupancy_aggregation','Explicit aggregation object required')
-    if aggregation.get('policy')!='explicit_single_nonresidential_reference_carrier':
-        _error('occupancy_aggregation/policy','Only audited explicit nonresidential reference carrier is supported')
     parts=aggregation.get('constituents')
-    if not isinstance(parts,list) or len(parts)!=1:
-        _error('occupancy_aggregation/constituents','Exact single-profile inference carrier required; mixed buildings need new validation')
+    source_model=aggregation.get('policy')=='explicit_source_model_nonresidential_people'
+    if source_model:
+        configuration=context.get('source_hoo_configuration_id')
+        if (configuration not in _RESTAURANT_CONFIGURATIONS or configuration!=context.get('configuration_id') or
+                configuration!=aggregation.get('source_hoo_configuration_id') or context.get('year')!=2007 or context.get('holidays')!=[]):
+            _error('source_hoo_configuration_id','Exact source/view model configuration and validated calendar required')
+        view=configuration.rsplit('__',1)[1]
+        names={'Dining','Kitchen'} if view=='source' else {'Dining'}
+        scope=aggregation.get('source_model_scope')
+        if (aggregation.get('evidence_view')!=view or not isinstance(parts,list) or len(parts)!=len(names) or
+                {p.get('source_space_name') for p in parts if isinstance(p,dict)}!=names or
+                not isinstance(scope,dict) or scope.get('population_or_whole_prototype_equivalent') is not False or
+                scope.get('reviewed_kitchen_people')!=('omitted' if view=='reviewed' else 'original_source')):
+            _error('occupancy_aggregation','Exact selected-view People scope required; omitted Kitchen cannot be borrowed')
+        weight=0.0
+        for part in parts:
+            if (not isinstance(part,dict) or part.get('residential') is not False or not part.get('evidence') or
+                    not isinstance(part.get('program_id'),str) or part['program_id'] not in scope.get('selected_program_ids',[]) or
+                    not isinstance(part.get('source_program_id'),str) or part.get('schedule')!=parts[0].get('schedule')):
+                _error('occupancy_aggregation/constituents','Exact nonresidential source People sharing one actual source schedule required')
+            for field in ('source_floor_area_m2','source_multiplier','source_density_person_m2','nominal_people'):
+                if _number(part.get(field),'occupancy_aggregation/'+field)<=0:
+                    _error('occupancy_aggregation/'+field,'Positive actual source People operand required')
+            evidence=part['evidence'];definition=evidence.get('source_people_definition')
+            nominal=_number(evidence.get('native_nominal_people'),'occupancy_aggregation/native_nominal_people')
+            if (nominal!=part['nominal_people'] or not isinstance(definition,dict) or
+                    definition.get('value')!=part['source_density_person_m2'] or definition.get('unit')!='person/m2' or
+                    definition.get('basis')!='floor_area' or definition.get('schedule_id')!=part['schedule'].get('id')):
+                _error('occupancy_aggregation/constituents','Actual nominal/density/schedule operands differ from their source/native receipts')
+            # Pinned space.rb groups by the actual shared ScheduleRuleset object,
+            # accumulating People.getNumberOfPeople(floorArea) without an extra
+            # space multiplier before its one weighted-hour round6 operation.
+            weight+=part['nominal_people']
+    else:
+        if context.get('configuration_id') in _RESTAURANT_CONFIGURATIONS:
+            _error('occupancy_aggregation/policy','Source/view model configuration cannot substitute a normalized reference carrier')
+        if aggregation.get('policy')!='explicit_single_nonresidential_reference_carrier':
+            _error('occupancy_aggregation/policy','Only audited explicit nonresidential carrier policies supported')
+        if not isinstance(parts,list) or len(parts)!=1:
+            _error('occupancy_aggregation/constituents','Exact single-profile inference carrier required; mixed buildings need new validation')
+        weight=_number(parts[0].get('nominal_people'),'occupancy_aggregation/nominal_people')
     part=parts[0]
     if not isinstance(part,dict) or part.get('residential') is not False or not part.get('evidence'):
         _error('occupancy_aggregation/constituents','Explicit nonresidential classification and source evidence required')
-    weight=_number(part.get('nominal_people'),'occupancy_aggregation/nominal_people')
     if weight==0: _error('occupancy_aggregation/nominal_people','Positive normalized inference weight required')
     raw=evaluate_rules(part.get('schedule'),context['year'],[])['values']
-    profiles=[];groups={}
+    profiles=[];groups={};storage_receipts=[]
     for day in range(365):
         values=[_round(v*weight,6)/weight for v in raw[24*day:24*(day+1)]]
         threshold=min(values)+(max(values)-min(values))*.25
         binary=[1.0 if value!=0 and value>=threshold else 0.0 for value in values]
-        points=_close_gaps(_points(binary)); operation=_hoo(points)
+        points=_close_gaps(_points(binary))
+        if source_model and any(time==0 for time,value in points):
+            supplied=copy.deepcopy(points)
+            points=[p for p in points if p[0]>0]
+            storage_receipts.append({'day_of_year':day+1,'status':'native_zero_time_add_value_rejected',
+                'source_locator':'Standards0.8.6 parametric.rb:model_infer_hours_of_operation_building lines108-132; OpenStudio3.10 ScheduleDay.addValue',
+                'supplied_profile':supplied,'stored_profile':copy.deepcopy(points),
+                'interpretation':'Exact source gap-edge time0 rejected by native storage; no missing/undefined values replaced'})
+        operation=_hoo(points)
         weekday=(date(context['year'],1,1)+timedelta(days=day)).weekday()
         key=(min(weekday,5) if weekday<6 else 6,tuple(map(tuple,points)))
         # All weekdays are one source category; Saturdays and Sundays separate.
@@ -168,9 +212,22 @@ def _infer(context):
     daily=[]
     for key,operation,points in profiles:
         daily.append(dict(operation,days_used=list(groups[key])))
-    return {'daily_hoo':daily,'daily_profiles':[points for _,_,points in profiles],
+    result={'daily_hoo':daily,'daily_profiles':[points for _,_,points in profiles],
             'source_weighted_occupancy_precision_decimals':6,
             'interpretation':'Declared inference carrier; no actual populated-building or arbitrary-scale equivalence claim'}
+    if source_model:
+        result['source_model_people_receipt']={'source_hoo_configuration_id':configuration,
+            'method':'Ordered native same-ScheduleRuleset nominal People sum before weighted-hour round6; no extra multiplier',
+            'source_nominal_people':[p['nominal_people'] for p in parts],'combined_nominal_people':weight,
+            'source_model_scope':copy.deepcopy(scope),'population_or_whole_prototype_equivalent':False}
+        if storage_receipts:result['source_storage_receipts']=storage_receipts
+    return result
+
+
+_RESTAURANT_CONFIGURATIONS={family+'__'+template+'__'+view
+    for family in ('full_service_restaurant','quick_service_restaurant')
+    for template in ('90_1_2007','90_1_2013','90_1_2019','doe_ref_1980_2004','doe_ref_pre_1980')
+    for view in ('source','reviewed')}
 
 
 def _formula(points, original_hoo, floor, ceiling, mode):
@@ -310,8 +367,13 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                       'small_office_doe_ref_1980_2004','small_office_doe_ref_pre_1980',
                       'warehouse_90_1_2007','warehouse_90_1_2013','warehouse_90_1_2019',
                       'warehouse_doe_ref_1980_2004','warehouse_doe_ref_pre_1980'}
-    if context['configuration_id'] not in configurations or context['standards_version']!='0.8.6':
+    if context['configuration_id'] not in configurations|_RESTAURANT_CONFIGURATIONS or context['standards_version']!='0.8.6':
         _error('configuration_id','Only explicitly audited commercial/Standards0.8.6 configurations supported')
+    if context['configuration_id'] in _RESTAURANT_CONFIGURATIONS:
+        policy=context.get('parametric_apply')
+        if (not isinstance(policy,dict) or policy.get('error_on_out_of_order') is not False or
+                policy.get('source_method')!='create_typical.rb:766' or not policy.get('source_member')):
+            _error('parametric_apply','Explicit pinned selected caller false policy and source method evidence required')
     if context['steps_per_hour']!=6 or isinstance(context['steps_per_hour'],bool):
         _error('steps_per_hour','Native validated timestep6 representation required')
     if context['holidays']!=[]: _error('holidays','Unvalidated commercial holiday inference context')

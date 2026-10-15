@@ -53,3 +53,39 @@ v0.5.0 archived arrays and current fixed API without temporal regeneration.
 Evidence: `build/task-10/c4-fix1-python311-api-green-20261014-01.log`. This is a
 bounded current-source syntax/API check, not a new frozen patch mixed run or a
 full3.11/Linux suite claim.
+
+## Current C5 source snapshot
+
+Independent actual Windows CPython3.11.9 checked the byte-locked precertificate
+source cut02 (`c553ccdddfbe45743481775132c8b65df6dda50469a9301b99f3eedd5dd5f430`)
+with resource set
+`resources-98a6b73726765a86b90ed91af7e1dafb7ac15e615c2ac10c7e7eb5fc54e0ad54`.
+All194copied repository Python files compiled with the actual3.11 interpreter.
+The unchanged public API and CLI, running with `-I -S` from an isolated copied
+package/data snapshot, each generated93schedules/95bindings/12constituents from
+the explicit1.1 nine-instance seed42mixed request. Typed ownership includes eight
+programme owners (two are expanded Warehouse members), three physical services
+and one derived result. Bundle validation passed and scientific API/CLI comparison
+returned zero differences. Invalid envelope version and missing seed controls
+rejected without output. Network/subprocess operations and unrelated file access
+were blocked; ResourceSet.load was unchanged.
+
+Evidence is in `build/task-10/python311-c5-current-20261014-01/`:
+snapshot-locks.json SHA256
+`068b91ac21345d1edd59a47928700cd465e46f964555936d20ec11c37df057c5`,
+runtime-summary.json SHA256
+`019779745dfd040d8dc3caab60a0f5e8687af82b631b8119b0b127545774a59f`.
+The mixed request SHA256 is
+`cbca123df02b95de45d54c015fc88a358c59cc0b5348bcc753f5bdc0ddd44842`;
+the bounded report is python311-c5-current-compatibility-report.md in the Task10
+evidence folder. This proves this exact current Windows source/request snapshot,
+not a frozen C5 archive, full191-instance run, native parity or full/Linux3.11 suite.
+
+
+## C5 after original-service-authority correction
+
+The cut02 check above precedes the service-authority correction. A separate actual Windows CPython3.11.9 check copied stable source cut03, SHA256 `c4fd55bebdf934fd7ba373f222b20b68950c8b2f3062036383973901d9508c6b`, unchanged2855resource entries and the same nine-instance seed42request into its own build. All194copied Python grammar files compile. Genuine unpatched API and CLI runs took22.597s and24.564s; each emitted93schedules/95bindings/12owners, passed bundle validation and compared with zero scientific differences.
+
+The positive emitted bundle was validated before mutations. Coherent Main→existing Booster substitution with original inventory/evidence preserved rejected with requires_binding; dropping one/all aliases rejected with requires_binding; removing the independent original requirement inventory rejected by the1.1schema. Invalid CLI version/missing seed controls also rejected. The helper checked copied packaged JSON-schema hashes separately from Python grammar; the writer independently verifies canonical schema mirrors.
+
+Evidence build/task-10/python311-c5-postfix-20261014-01 contains snapshot-locks SHA256 `6fd35e68205230a94ee3666936d712bc9da0b9c8375065084a8bfd96cfcc7734`, runtime-summary SHA256 `92c0ded0d4160a864b5e590ab0fb264de4dd330f16dff2e1eedc27dc53be7ba2` and authority-negative-summary SHA256 `e07232d6839e809dd5608e98cbcc579499610591ab3cb6dd508acead298c1551`. The bounded report python311-c5-postfix-compatibility-report.md has SHA256 `3c8e193acc7ef9e00f276350c0a2b5422c6b948f58ea04f3b820c6fe8fd8faab`. This is exact current-source Windows mixed-request proof, not a frozen archive, full191-case, native or full/Linux3.11 suite claim.

@@ -304,14 +304,17 @@ class WarehouseFamilyTests(unittest.TestCase):
             with self.subTest(mutation=mutation),self.assertRaises(ValueError):
                 validate_native_case_sources(resources,scope,join,{'warehouse-native-lock':bad})
 
-    def test_rebuilt_certification_binds_current_implementation_and_association_gate(self):
+    def test_historical_certification_rejects_changed_current_implementation(self):
         from scripts.schedule_generator_release import validate_family_certification
         resources=self.family();scope=resources.get('reference','m1-scope')
         certificate=resources.get('reference','family-certification')
         self.assertTrue('implementation_source_sha256' in certificate,'Current implementation source qualification missing')
         self.assertIn('scripts/schedule_generator_release.py',certificate['implementation_source_sha256'])
         self.assertTrue(any('warehouse-native-association-green' in r['log'] for r in certificate['validation_receipts']))
-        validate_family_certification(resources,scope)
+        # C4's immutable certificate still closes its source/association proof,
+        # but its implementation receipt cannot certify subsequent C5 code.
+        with self.assertRaisesRegex(ValueError,'^Family certificate implementation/checker source differs from tested code$'):
+            validate_family_certification(resources,scope)
 
     def test_source_parent_policy_export_enumerates_all_operands_and_slots(self):
         self.family()
