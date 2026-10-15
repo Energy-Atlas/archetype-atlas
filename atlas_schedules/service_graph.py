@@ -63,10 +63,32 @@ def _source_consistency(value):
                 if current['path'] in files and files[current['path']]!=current['sha256']:
                     _fail(path,'One retained source file has conflicting revisions')
                 files[current['path']]=current['sha256']
-            for k,v in current.items():walk(v,path+'/'+k)
+            for k,v in current.items():
+                if isinstance(v,(dict,list)):walk(v,path+'/'+k)
         elif isinstance(current,list):
-            for i,v in enumerate(current):walk(v,path+'/'+str(i))
+            for i,v in enumerate(current):
+                if isinstance(v,(dict,list)):walk(v,path+'/'+str(i))
     walk(value,'')
+
+
+def _validation_workspace(bundle,mode):
+    """Private expected graph: copy only the roots the selected binder writes.
+
+    Nested sources, proofs and schedules remain read-only within validation;
+    neither workspace nor any of its shared containers is returned publicly.
+    """
+    result=dict(bundle)
+    result['constituents']=[dict(owner) for owner in bundle['constituents']]
+    if mode=='legacy':
+        result['bindings']=[dict(binding) for binding in bundle['bindings']]
+    else:
+        for owner in result['constituents']:
+            owner['generation']=dict(owner['generation'])
+            if 'service_set_projections' in owner:
+                owner['service_set_projections']=list(owner['service_set_projections'])
+        result['metadata']=dict(bundle['metadata'])
+        result['metadata']['building_realizations']=list(bundle['metadata']['building_realizations'])
+    return result
 
 
 def _binding(bundle,owner):
@@ -431,7 +453,7 @@ def _caller_realization(bundle,realization,owners):
     if not _same(realization['source_requirements'],[pool[pid]['requirement'] for pid in selected]):
         _fail(path,'Actual declared requirement order/coverage differs from static pool')
     retained=[c for c in owners.values() if c.get('building_realization_id')==building]
-    owner_plans=[];projections=[];covered=set();claims=set();expected=copy.deepcopy(bundle)
+    owner_plans=[];projections=[];covered=set();claims=set();expected=_validation_workspace(bundle,'caller')
     expected_owners=_owners(expected)
     for owner in retained:
         key=(building,owner.get('unit_id'));entry=entries.get(key)
@@ -643,7 +665,7 @@ def _validate_physical_graph(bundle):
     owners=_owners(bundle);_source_consistency(bundle)
     # Normalize only the 1.2 legacy discriminator for the unchanged C5 proof.
     from .services import validate_service_links,_whole_proof
-    legacy=copy.deepcopy(bundle)
+    legacy=_validation_workspace(bundle,'legacy')
     for owner in legacy['constituents']+legacy['bindings']:
         if owner.get('physical_binding_kind')=='legacy_whole':owner.pop('physical_binding_kind')
     legacy_owners=_owners(legacy);legacy_proofs={}

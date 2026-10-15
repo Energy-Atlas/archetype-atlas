@@ -8,6 +8,7 @@ selected native methods, including their zero/full-day decisions.
 import copy
 from datetime import date, timedelta
 import math
+import struct
 
 from ..calendar import evaluate_rules
 from ..errors import GeneratorError
@@ -49,6 +50,38 @@ def _points(values):
     if len(values)==1:
         return [[24.0,float(values[0])]]
     return [[float(i+1),float(v)] for i,v in enumerate(values) if i==23 or v!=values[i+1]]
+
+
+def _native_numeric_key(value):
+    """Exact builtin representation; float equality would merge signed zero."""
+    if type(value) is float:return ('float',struct.pack('>d',value))
+    if type(value) is int:return ('int',value)
+    if type(value) is bool:return ('bool',value)
+    raise TypeError('uncacheable numeric type')
+
+
+def _native_getter_key(points,steps):
+    return (_native_numeric_key(steps),
+            tuple(tuple(_native_numeric_key(value) for value in pair) for pair in points))
+
+
+def _memo_native_day(points,steps,cache):
+    try:key=_native_getter_key(points,steps)
+    except TypeError:return _hourly(points,steps)
+    if key in cache:return cache[key]
+    result=_hourly(points,steps)  # Failed computations never enter the table.
+    cache[key]=result
+    return result
+
+
+def _native_original(raw):
+    """One source slot/invocation, retaining every daily point evaluation."""
+    cache={};result=[]
+    for day in range(365):
+        points=_points(raw[day*24:day*24+24])
+        # Only immutable numeric elements reach the temporary reference list.
+        result.extend(_memo_native_day(points,6,cache))
+    return result
 
 
 def _default_alias_day(source,year):
@@ -412,7 +445,7 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
     output={}; special={}; transforms={};special_aliases={}
     for slot,source in context['slot_sources'].items():
         raw=evaluate_rules(source,context['year'],[])['values']
-        native_original=[value for day in range(365) for value in _hourly(_points(raw[day*24:day*24+24]),6)]
+        native_original=_native_original(raw)
         values=channels[slot]
         if not isinstance(values,list) or len(values)!=8760:
             _error('channels/'+slot,'Original8760 hourly source values required')
