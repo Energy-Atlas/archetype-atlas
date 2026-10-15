@@ -17,7 +17,8 @@ def main(argv=None):
     request = strict_json(args.request.read_bytes(), str(args.request))
     if not isinstance(request, dict) or set(request) != {'schema_version', 'params', 'seed'}:
         raise GeneratorError('invalid_contract', '/', 'Expected the exact schema_version/params/seed request wrapper')
-    if request['schema_version']!=request_version(request['params']):
+    envelope_version=request_version({'schema_version':request['schema_version']})
+    if envelope_version!=request_version(request['params']):
         raise GeneratorError('invalid_contract','/schema_version','Envelope must match explicit/effective params version')
     bundle = generate(request['params'], request['seed'])
     content = canonical(bundle)

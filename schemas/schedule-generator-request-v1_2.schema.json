@@ -1,0 +1,856 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:schedule-generator-request:1.2.0",
+  "type": "object",
+  "required": [
+    "resource_set_id",
+    "calendar",
+    "instances",
+    "schema_version",
+    "building_realizations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "resource_set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "calendar": {
+      "$ref": "#/$defs/calendar"
+    },
+    "instances": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/instance"
+      }
+    },
+    "mixture": {
+      "$ref": "#/$defs/mixture"
+    },
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "building_realizations": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/exact_realization"
+          },
+          {
+            "$ref": "#/$defs/caller_realization"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "calendar": {
+      "type": "object",
+      "required": [
+        "year",
+        "clock"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "year": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
+        "clock": {
+          "const": "local_standard_time"
+        },
+        "holidays": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      }
+    },
+    "instance": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "key",
+            "program_id",
+            "inputs",
+            "basis_bindings",
+            "operating_group",
+            "owner_kind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "program_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputs": {
+              "type": "object"
+            },
+            "basis_bindings": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "multiplicity": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "extents": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "floor_area": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "dwelling_unit": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "person": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "absolute": {
+                      "$ref": "#/$defs/extent"
+                    }
+                  }
+                },
+                "floor_area_m2": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "operating_group": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "owner_kind": {
+              "const": "program"
+            },
+            "service_links": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "building_realization_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "key",
+            "program_id",
+            "inputs",
+            "basis_bindings",
+            "operating_group",
+            "owner_kind",
+            "unit_id",
+            "building_realization_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "program_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputs": {
+              "type": "object"
+            },
+            "basis_bindings": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "multiplicity": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "extents": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "floor_area": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "dwelling_unit": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "person": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "absolute": {
+                      "$ref": "#/$defs/extent"
+                    }
+                  }
+                },
+                "floor_area_m2": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "operating_group": {
+              "type": "null"
+            },
+            "owner_kind": {
+              "const": "program"
+            },
+            "service_links": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "building_realization_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "key",
+            "inputs",
+            "basis_bindings",
+            "operating_group",
+            "owner_kind",
+            "source_service_id",
+            "physical_id",
+            "physical_binding_kind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputs": {
+              "type": "object"
+            },
+            "basis_bindings": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "multiplicity": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "extents": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "floor_area": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "dwelling_unit": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "person": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "absolute": {
+                      "$ref": "#/$defs/extent"
+                    }
+                  }
+                },
+                "floor_area_m2": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "operating_group": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "owner_kind": {
+              "const": "physical_service"
+            },
+            "source_service_id": {
+              "type": "string",
+              "pattern": "^service-[0-9a-f]{24}$"
+            },
+            "physical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "physical_binding_kind": {
+              "const": "legacy_whole"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "key",
+            "inputs",
+            "basis_bindings",
+            "operating_group",
+            "owner_kind",
+            "source_service_id",
+            "physical_id",
+            "physical_binding_kind",
+            "building_realization_id",
+            "source_fixture_role_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputs": {
+              "type": "object"
+            },
+            "basis_bindings": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "multiplicity": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "extents": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "floor_area": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "dwelling_unit": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "person": {
+                      "$ref": "#/$defs/extent"
+                    },
+                    "absolute": {
+                      "$ref": "#/$defs/extent"
+                    }
+                  }
+                },
+                "floor_area_m2": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "operating_group": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "owner_kind": {
+              "const": "physical_service"
+            },
+            "source_service_id": {
+              "type": "string",
+              "pattern": "^service-[0-9a-f]{24}$"
+            },
+            "physical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "physical_binding_kind": {
+              "const": "exact_source_role"
+            },
+            "building_realization_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_fixture_role_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "key",
+            "inputs",
+            "basis_bindings",
+            "operating_group",
+            "owner_kind",
+            "source_service_id",
+            "physical_id",
+            "physical_binding_kind",
+            "building_realization_id",
+            "unit_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputs": {
+              "type": "object",
+              "required": [
+                "water_method",
+                "source_geometry_departure"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "water_method": {
+                  "const": "source_fixed_apartment_dhw"
+                },
+                "source_geometry_departure": {
+                  "const": "caller_unit_area"
+                }
+              }
+            },
+            "basis_bindings": {
+              "type": "object",
+              "required": [
+                "multiplicity",
+                "extents"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "multiplicity": {
+                  "const": 1
+                },
+                "extents": {
+                  "type": "object",
+                  "required": [
+                    "floor_area"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "floor_area": {
+                      "$ref": "#/$defs/caller_area_extent"
+                    }
+                  }
+                }
+              }
+            },
+            "operating_group": {
+              "type": "null"
+            },
+            "owner_kind": {
+              "const": "physical_service"
+            },
+            "source_service_id": {
+              "type": "string",
+              "pattern": "^service-[0-9a-f]{24}$"
+            },
+            "physical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "physical_binding_kind": {
+              "const": "caller_unit_prototype_density_fixed_dhw"
+            },
+            "building_realization_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "mixture": {
+      "type": "object",
+      "required": [
+        "program_id",
+        "composition_id",
+        "members"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "program_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "composition_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "members": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "required": [
+              "instance_key",
+              "weight"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "instance_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "result_basis": {
+          "enum": [
+            "floor_area",
+            "dwelling_unit",
+            "person",
+            "absolute"
+          ]
+        },
+        "denominator": {
+          "$ref": "#/$defs/extent"
+        },
+        "service_members": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "instance_key"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "instance_key": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "extent": {
+      "type": "object",
+      "required": [
+        "value",
+        "unit",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "m2",
+            "dwelling",
+            "person",
+            "1"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
+    },
+    "field_evidence": {
+      "type": "object",
+      "required": [
+        "source_revision",
+        "source_path",
+        "source_sha256",
+        "locator",
+        "original_value",
+        "original_unit",
+        "transformation",
+        "extraction_date",
+        "interpretation_note"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_value": {},
+        "original_unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transformation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extraction_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "interpretation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source_object": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "locator",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {}
+      }
+    },
+    "exact_realization": {
+      "type": "object",
+      "required": [
+        "building_realization_id",
+        "mode",
+        "inventory_id",
+        "inventory_sha256",
+        "source_hoo_configuration_id",
+        "selected_method_context_id",
+        "operating_group"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "building_realization_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "const": "exact_source_fixture_extents"
+        },
+        "inventory_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inventory_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_hoo_configuration_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selected_method_context_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operating_group": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "caller_unit": {
+      "type": "object",
+      "required": [
+        "unit_id",
+        "physical_id",
+        "source_service_id",
+        "source_beneficiary_id",
+        "programme_ids",
+        "water_authority_programme_id",
+        "floor_area_m2",
+        "area_evidence",
+        "multiplicity",
+        "identity_evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "unit_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "physical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_service_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_beneficiary_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "programme_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "water_authority_programme_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "floor_area_m2": {
+          "type": "number",
+          "minimum": 5e-324
+        },
+        "area_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/field_evidence"
+          }
+        },
+        "multiplicity": {
+          "const": 1
+        },
+        "identity_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/field_evidence"
+          }
+        }
+      }
+    },
+    "caller_unit_inventory": {
+      "type": "object",
+      "required": [
+        "authority",
+        "units"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "authority": {
+          "const": "caller_declared_units"
+        },
+        "units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/caller_unit"
+          }
+        }
+      }
+    },
+    "caller_realization": {
+      "type": "object",
+      "required": [
+        "mode",
+        "building_realization_id",
+        "building_type",
+        "template",
+        "unit_inventory_id",
+        "unit_inventory",
+        "unit_inventory_sha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "caller_unit_prototype_density_fixed_dhw"
+        },
+        "building_realization_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "building_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit_inventory_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit_inventory": {
+          "$ref": "#/$defs/caller_unit_inventory"
+        },
+        "unit_inventory_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "caller_area_extent": {
+      "type": "object",
+      "required": [
+        "value",
+        "unit",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 5e-324
+        },
+        "unit": {
+          "const": "m2"
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/field_evidence"
+          }
+        }
+      }
+    }
+  }
+}

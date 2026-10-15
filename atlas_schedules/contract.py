@@ -22,13 +22,20 @@ _SCHEMA_KEYWORDS = {'$schema', '$id', '$defs', '$ref', 'type', 'const', 'enum', 
 def _schema_errors(value, name, version='1.0.0'):
     schema = _load_schema(name,version)
     _check_schema(value, schema, schema, '')
+    if version == '1.2.0' and name == 'bundle':
+        # JSON Schema calls 1.0 an integer; seed positions are exact Python ints.
+        for i, receipt in enumerate(value['generation']['physical_unit_seed_sequence']):
+            for field in ('position','unit_seed'):
+                if type(receipt[field]) is not int:
+                    raise GeneratorError('invalid_contract',f'/generation/physical_unit_seed_sequence/{i}/{field}',
+                                         'Physical unit receipt requires an integer')
 
 
 @lru_cache(maxsize=6)
 def _load_schema(name,version='1.0.0'):
-    if version not in {'1.0.0','1.1.0'}:
+    if version not in {'1.0.0','1.1.0','1.2.0'}:
         raise GeneratorError('unsupported_schema','/schema_version','Unsupported schema version')
-    suffix='v1' if version=='1.0.0' else 'v1_1'
+    suffix={'1.0.0':'v1','1.1.0':'v1_1','1.2.0':'v1_2'}[version]
     schema = json.loads((_ROOT/f'schemas/schedule-generator-{name}-{suffix}.schema.json').read_text(encoding='utf-8'))
     def vocabulary(node):
         # Check every schema branch, including unselected/optional fields.
@@ -158,14 +165,14 @@ def validate_request(params: dict, seed: int) -> None:
     mixture = params.get('mixture')
     if mixture:
         members = mixture['members']
-        service_members=mixture.get('service_members',[]) if version=='1.1.0' else []
+        service_members=mixture.get('service_members',[]) if version in {'1.1.0','1.2.0'} else []
         if (not members and not service_members) or any(m['instance_key'] not in keys for m in members):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Members must reference instances')
         if len({m['instance_key'] for m in members}) != len(members):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Duplicate member allocation')
         if members and mixture['composition_id'] is None and not math.isclose(math.fsum(m['weight'] for m in members), 1, rel_tol=0, abs_tol=1e-12):
             raise GeneratorError('invalid_mixture', '/mixture/members', 'Normalized area weights must sum to one')
-        if version=='1.1.0':
+        if version in {'1.1.0','1.2.0'}:
             owners={item['key']:item for item in params['instances']}
             if any(owners[m['instance_key']]['owner_kind']=='physical_service' for m in members):
                 raise GeneratorError('invalid_mixture','/mixture/members','Whole physical services use separate unweighted service_members')
@@ -180,6 +187,15 @@ def validate_request(params: dict, seed: int) -> None:
 
 def validate_bundle(bundle: dict) -> None:
     _finite(bundle)
+    if isinstance(bundle,dict) and bundle.get('schema_version') in {'1.0.0','1.1.0'}:
+        if (isinstance(bundle.get('generation'),dict) and
+                'physical_unit_seed_sequence' in bundle['generation']):
+            raise GeneratorError('invalid_contract','/generation/physical_unit_seed_sequence',
+                                 'Physical unit seed receipts require schema 1.2.0')
+        if (isinstance(bundle.get('metadata'),dict) and
+                'building_realizations' in bundle['metadata']):
+            raise GeneratorError('invalid_contract','/metadata/building_realizations',
+                                 'Building realizations require schema 1.2.0')
     _schema_errors(bundle, 'bundle',bundle.get('schema_version'))
     schedules = bundle['schedules']
     cal = bundle['metadata']['calendar']
