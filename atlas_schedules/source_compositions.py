@@ -124,6 +124,12 @@ def bind_parent_identity(bundle,allocation):
     parent.update(instance_key=key,recipe_id=resolved['recipe_id'],source=copy.deepcopy(resolved['source']),
                   inputs=copy.deepcopy(instance['inputs']),basis_bindings=copy.deepcopy(instance['basis_bindings']))
     parent['source']['source_family']=resolved['source_family']
+    if bundle['schema_version']=='1.2.0' and 'exact_children' in allocation:
+        parent.update(owner_kind='program',building_realization_id=instance['building_realization_id'],
+            required_service_links=copy.deepcopy(resolved['required_service_links']),
+            required_service_sets=copy.deepcopy(resolved['required_service_sets']),service_set_projections=[])
+        if 'hot_water_volume' in parent['schedule_ids']:
+            _fail('hot_water_volume','Exact source parent water is a non-owning projection')
     parent['evidence'].extend(copy.deepcopy(resolved['evidence']))
     parent['generation'].update(case_id=allocation['parent_case_id'],source_allocation=copy.deepcopy(allocation['receipt']),
         parent_requested_instance_key=key,member_instance_keys=[c['key'] for c in allocation['children']])
@@ -221,3 +227,69 @@ def compose_source_parent(bundle,allocation,resources=None):
     bundle['bindings'].extend(parent_bindings);bundle['constituents'].append(parent)
     bind_parent_identity(bundle,allocation)
     return bundle
+
+
+def _prepare_exact_parent(params, instance, resolved, authority, association, resources, occupied):
+    """Resolve supplied qualified child executables; retain canonical member identity."""
+    from .physical_sets import (_canonical_record, _without_owned_water, _get, _same, _fail as fail,
+        _original_executable, _executable_context, _exact, _typed, resolve_child_variant)
+    from .programs import _resolve_program_record
+    requirements=resolved['required_service_sets']
+    if len(requirements)!=1 or requirements[0]['kind']!='original_source_components':
+        fail('/source_composition','One original parent requirement required')
+    if instance['inputs'].get('composition_basis_mode')!='source_reference_area_normalized':
+        fail('/instances/'+instance['key']+'/composition_basis_mode','Exact parent requires original reference area','incompatible_source_composition')
+    requirement=requirements[0]; building=instance['building_realization_id']
+    realization=next(r for r in params['building_realizations'] if r['building_realization_id']==building)
+    recipe=resources.get('program',instance['program_id'])['recipe']
+    by_id={r['requirement_id']:r for r in authority['source_requirements']}
+    if not _same(resolved['inputs']['source_composition']['definition'],requirement['composition']['value']):
+        fail('/source_composition/definition','Executable composition differs from independent original composition')
+    allocation=prepare_allocation(instance,resolved['inputs']['source_composition'])
+    allocation.update(parent_instance=copy.deepcopy(instance),parent_resolved=_without_owned_water(resolved),
+        parent_case_id=resources.get('program',instance['program_id'])['case']['case_id'])
+    if len(allocation['children'])!=len(requirement['components']):fail('/source_composition/components','Original child cardinality differs')
+    pairs=[]; projections=[]; originals={}; child_entries=[]
+    for component,child in zip(requirement['components'],allocation['children']):
+        if child['program_id']!=component['member_program_id']:fail('/source_composition/components','Actual child order differs')
+        if child['key'] in occupied:fail('/source_composition/children','Generated key overlaps request','shared_service_conflict')
+        occupied.add(child['key']);child.update(owner_kind='program',building_realization_id=building)
+        req=by_id[component['child_requirement_id']]
+        member={'parent_inventory_id':authority['inventory']['payload']['inventory_id'],'parent_inventory_sha256':authority['inventory']['inventory_sha256'],
+            'canonical_member':req['programme'],'original_method_reference':component['original_method_reference'],
+            'conserved_source_authority':[],'evidence':req['evidence']}
+        # Use the permitted variant's retained whole originals; Core2 independently
+        # closes each original load/Ruleset against the locked inventory below.
+        permitted=recipe.get('permitted_child_variants',[])
+        if not isinstance(permitted,list):fail('/source_composition/permitted_child_variants','Variant array required')
+        for e in permitted:
+            _exact(e,('variant_id','key'),'/source_composition/permitted_child_variants')
+            _typed(e['variant_id'],'id','/source_composition/variant_id')
+            _exact(e['key'],('parent_inventory_id','parent_inventory_sha256','member_program_id','member_evidence_view','selected_method_context_id'),'/source_composition/key')
+        expected={'parent_inventory_id':member['parent_inventory_id'],'parent_inventory_sha256':member['parent_inventory_sha256'],
+            'member_program_id':child['program_id'],'member_evidence_view':component['member_evidence_view'],
+            'selected_method_context_id':realization['selected_method_context_id']}
+        candidates=[e for e in permitted if _same(e['key'],expected)]
+        if len(candidates)!=1:fail('/source_composition/permitted_child_variants','One permitted child tuple required','requires_binding')
+        candidate=_get(resources,'physical-child-variant__'+candidates[0]['variant_id'])
+        _typed(candidate,'child_variant','/source_composition/child_variant')
+        member['conserved_source_authority']=candidate['qualification']['value']['conserved_source_authority']
+        variant=resolve_child_variant(authority['inventory'],member,realization['selected_method_context_id'],recipe,resources)
+        if not _same(variant['selected_method_context'],association['selected_method_context']):
+            fail('/source_composition/selected_context','Child and parent selected contexts differ','operating_group_conflict')
+        candidates=[e for e in association['child_program_records'] if e['variant_id']==variant['variant_id'] and _same(e['key'],variant['key'])]
+        if len(candidates)!=1:fail('/source_composition/child_program_records','One explicit child executable required','requires_binding')
+        original=_canonical_record(resources,'program',child['program_id']);originals[child['program_id']]=original
+        selected=candidates[0]['program_record']['value']
+        _original_executable(selected,original['value'],{'bound_inputs','required_inputs','variable_inputs','source_context','companion_rules'},'/source_composition/executable')
+        if not _same(selected['definition'],variant['canonical_member']['value']):fail('/source_composition/canonical_member','Executable canonical member differs')
+        child['inputs']=copy.deepcopy(selected['recipe']['bound_inputs'])
+        cr=_resolve_program_record(child['program_id'],dict(child['inputs'],year=params['calendar']['year'],holidays=params['calendar'].get('holidays',[])),selected,'compiled')
+        _executable_context(cr['inputs']['source_context'],realization,params['calendar'],'/source_composition/source_context')
+        cr['method_variant']=copy.deepcopy(variant)
+        pairs.append((child,_without_owned_water(cr)))
+        child_entries.append({'instance':copy.deepcopy(child),'requirement':req,'variant':variant})
+        projections.append({'instance_key':child['key'],'building_realization_id':building,'requirement':req,'children':[]})
+    allocation['exact_children']=child_entries
+    projections.append({'instance_key':instance['key'],'building_realization_id':building,'requirement':requirement,'children':child_entries})
+    return allocation,pairs,projections,originals

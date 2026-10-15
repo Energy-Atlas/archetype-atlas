@@ -3,7 +3,7 @@ import copy
 import math
 
 from .errors import GeneratorError
-from .owners import owner_identity
+from .owners import owner_identity, identity_fields
 from .budgets import reference_budget
 from .calendar import evaluate_rules
 
@@ -86,10 +86,17 @@ def resolve_physical_service(instance,calendar,resources):
     """Resolve original volume/controls before RNG, with exact physical operands."""
     identity=owner_identity(instance)
     if identity[0]!='physical_service':_fail('/owner_kind','Exact physical-service identity required')
-    _,sid,physical_id=identity
+    sid=instance['source_service_id'];physical_id=instance['physical_id']
     try:record=resources.get('reference','physical-service__'+sid)
     except GeneratorError as error:
         raise GeneratorError('requires_binding','/source_service_id','No qualified source recipe for physical service '+sid) from error
+    return _resolve_physical_service_record(instance,calendar,record)
+
+
+def _resolve_physical_service_record(instance,calendar,record):
+    """Resolve a verified selected artifact through the unchanged source engine."""
+    owner_identity(instance)
+    sid=instance['source_service_id'];physical_id=instance['physical_id']
     definition=record.get('definition');recipe=record.get('recipe');provenance=record.get('provenance',{})
     if (not isinstance(definition,dict) or definition.get('id')!=sid or not isinstance(recipe,dict) or
             recipe.get('required_contract_version')!='1.1.0' or recipe.get('ownership')!='instantiate_once' or
@@ -148,6 +155,8 @@ def resolve_physical_service(instance,calendar,resources):
         reference_budgets={d['demand_id']:reference_budget(d,channels[d['slot']]) for d in resolved['demands']},
         companion_rules=copy.deepcopy(variant['companion_rules']),source_context=copy.deepcopy(variant['source_context']))
     resolved['physical_id']=physical_id
+    if 'physical_binding_kind' in instance:
+        resolved.update(identity_fields(instance,'1.2.0'))
     resolved['shared_services']=[{'source_service_id':sid,'physical_id':physical_id,'demand_id':sid,
         'mode':'whole','ownership':'instantiate_once','extent':extent,'physical_operands':operands,
         'physical_operand_evidence':copy.deepcopy(inputs.get('fixture_extent_evidence',inputs['physical_fixture_evidence'])),

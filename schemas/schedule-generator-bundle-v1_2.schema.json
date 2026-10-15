@@ -1716,7 +1716,8 @@
                       "selected_method_context_id",
                       "qualification_id",
                       "source_context",
-                      "evidence"
+                      "evidence",
+                      "execution_authority"
                     ],
                     "additionalProperties": false,
                     "properties": {
@@ -1742,6 +1743,9 @@
                         "items": {
                           "$ref": "#/$defs/field_evidence"
                         }
+                      },
+                      "execution_authority": {
+                        "$ref": "#/$defs/execution_authority"
                       }
                     }
                   }
@@ -5194,6 +5198,120 @@
           "minItems": 1,
           "items": {
             "$ref": "#/$defs/field_evidence"
+          }
+        }
+      }
+    },
+    "execution_association": {
+      "type": "object",
+      "required": [
+        "selected_method_context",
+        "physical_service_records",
+        "child_program_records",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "selected_method_context": {
+          "$ref": "#/$defs/source_object"
+        },
+        "physical_service_records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_object"
+          }
+        },
+        "child_program_records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "variant_id",
+              "key",
+              "program_record"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "variant_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "key": {
+                "type": "object",
+                "required": [
+                  "parent_inventory_id",
+                  "parent_inventory_sha256",
+                  "member_program_id",
+                  "member_evidence_view",
+                  "selected_method_context_id"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "parent_inventory_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "parent_inventory_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "member_program_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "member_evidence_view": {
+                    "enum": [
+                      "source",
+                      "reviewed"
+                    ]
+                  },
+                  "selected_method_context_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "program_record": {
+                "$ref": "#/$defs/source_object"
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/field_evidence"
+          }
+        }
+      }
+    },
+    "execution_authority": {
+      "type": "object",
+      "required": [
+        "method_qualification",
+        "execution_association",
+        "canonical_physical_records",
+        "canonical_program_records"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "method_qualification": {
+          "$ref": "#/$defs/source_object"
+        },
+        "execution_association": {
+          "$ref": "#/$defs/execution_association"
+        },
+        "canonical_physical_records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_object"
+          }
+        },
+        "canonical_program_records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_object"
           }
         }
       }

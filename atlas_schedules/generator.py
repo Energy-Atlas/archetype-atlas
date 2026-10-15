@@ -138,6 +138,15 @@ def generate(params: dict, seed: int) -> dict:
             else:resolved_instances.append((instance,resolved))
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+instance['key']+error.path,error.message) from error
+    # Task7 routes exact1.2 resolution through _prepare_exact_instances before
+    # reaching this hook; the temporary public1.2 entry guard remains in force.
+    exact_plan=None
+    if version=='1.2.0':
+        from .physical_sets import prepare_exact_bindings
+        exact_plan=prepare_exact_bindings(params,resolved_instances,resources)
+        resolved_instances=exact_plan['resolved_instances']
+        source_allocations=exact_plan['source_allocations']
+        for child,_ in resolved_instances:basis_receipts.setdefault(child['key'],{})
     # All original annual targets and inputs exist before any RNG is sampled.
     service_link_plans=prepare_required_service_links(resolved_instances,version)
     residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
@@ -215,8 +224,13 @@ def generate(params: dict, seed: int) -> dict:
             constituent = {k:copy.deepcopy(resolved[k]) for k in
                            ('recipe_id','source','slots','demands','controls','shared_services','evidence')}
             constituent.update(identity_fields(resolved,version))
-            if version=='1.1.0' and resolved.get('owner_kind','program')!='physical_service':
+            if version in {'1.1.0','1.2.0'} and resolved.get('owner_kind','program')!='physical_service':
                 constituent['required_service_links']=copy.deepcopy(resolved.get('required_service_links',[]))
+                if version=='1.2.0':
+                    constituent['required_service_sets']=copy.deepcopy(resolved.get('required_service_sets',[]))
+                    constituent['service_set_projections']=[]
+            if 'method_variant' in resolved:
+                generation['method_variant']=copy.deepcopy(resolved['method_variant'])
             constituent['source']['source_family'] = resolved['source_family']
             constituent.update(instance_key=key,inputs={k:v for k,v in inputs.items() if k not in _PREPARED},
                                basis_bindings=copy.deepcopy(instance['basis_bindings']),schedule_ids={},binding_indices=[],generation=generation)
@@ -238,7 +252,7 @@ def generate(params: dict, seed: int) -> dict:
                                           'slot':control['slot'],'schedule_id':constituent['schedule_ids'][control['slot']],
                                           'control_quantity':control['quantity']})
             bundle['constituents'].append(constituent)
-            if version=='1.1.0':
+            if version in {'1.1.0','1.2.0'}:
                 constituent['generation']['operating_group']=instance['operating_group'] if instance['operating_group'] is not None else key
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+key+error.path,error.message) from error
@@ -246,6 +260,9 @@ def generate(params: dict, seed: int) -> dict:
     for allocation in source_allocations:
         from .source_compositions import compose_source_parent
         bundle=compose_source_parent(bundle,allocation,resources)
+    if exact_plan is not None:
+        from .physical_sets import bind_exact_projections
+        bind_exact_projections(bundle,exact_plan)
     validate_bundle(bundle)
     if params.get('mixture') is not None:
         from .mixtures import compose_constituents

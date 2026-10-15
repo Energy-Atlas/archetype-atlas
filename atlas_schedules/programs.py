@@ -28,7 +28,13 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
     if status not in {'compiled', 'accepted_inactive'}:
         raise GeneratorError('unsupported_binding', '/program_id',
                              'No source-backed recipe/decomposition for this catalogue identity')
-    recipe = resources.get('program', program_id)['recipe']
+    record = resources.get('program', program_id)
+    return _resolve_program_record(program_id, inputs, record, status)
+
+
+def _resolve_program_record(program_id, inputs, record, status):
+    """Shared engine for an explicitly verified selected executable record."""
+    recipe = record['recipe']
     if not isinstance(inputs, dict):
         raise GeneratorError('invalid_input', '/inputs', 'Explicit recipe operands required')
     allowed = set(recipe['bound_inputs']) | set(recipe.get('variable_inputs',{})) | {'year', 'holidays'}
