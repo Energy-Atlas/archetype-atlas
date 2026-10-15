@@ -311,8 +311,8 @@ def validate_bundle(bundle: dict) -> None:
         from .services import validate_service_links
         validate_service_links(bundle)
     if bundle['schema_version']=='1.2.0':
-        from .service_graph import validate_physical_graph
-        try:validate_physical_graph(bundle)
+        from .service_graph import _validate_physical_graph
+        try:_validate_physical_graph(bundle)
         except GeneratorError:raise
         except (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:
             raise GeneratorError('source_integrity','/','Incomplete retained physical source proof') from error
