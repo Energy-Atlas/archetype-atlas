@@ -1717,7 +1717,8 @@
                       "qualification_id",
                       "source_context",
                       "evidence",
-                      "execution_authority"
+                      "execution_authority",
+                      "execution_qualification"
                     ],
                     "additionalProperties": false,
                     "properties": {
@@ -1746,6 +1747,9 @@
                       },
                       "execution_authority": {
                         "$ref": "#/$defs/execution_authority"
+                      },
+                      "execution_qualification": {
+                        "$ref": "#/$defs/source_object"
                       }
                     }
                   }

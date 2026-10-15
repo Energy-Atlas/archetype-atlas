@@ -514,14 +514,24 @@ def _canonical_record(resources, kind, key):
     return {'path': matches[0]['path'], 'sha256': matches[0]['sha256'], 'locator': '/', 'value': record}
 
 
-def _execution_association(authority, realization, resources):
+def _qualified_execution_association(qualification):
+    """Closed independent proof domain for native-to-executable association."""
+    return False
+
+
+def _direct_program_ids(params, building):
+    return list(dict.fromkeys(i['program_id'] for i in params['instances']
+        if i.get('owner_kind')=='program' and i.get('building_realization_id')==building))
+
+
+def _execution_association(authority, realization, resources, direct_program_ids):
     selected = authority['method_qualification']['value']['selected_method_context']
     association = _get(resources, 'physical-execution-association__'+realization['selected_method_context_id'])
     _exact(association, ('selected_method_context', 'physical_service_records', 'child_program_records', 'evidence'), '/execution_association')
     _evidence(association['evidence'], '/execution_association/evidence')
     if not _same(association['selected_method_context'], selected):
         _fail('/execution_association/selected_method_context', 'Whole qualified selected context differs', 'operating_group_conflict')
-    resources_used = _selected_context(selected)['method_consumed_context']['value']['source_resources']
+    _selected_context(selected)
     for name in ('physical_service_records', 'child_program_records'):
         if not isinstance(association[name], list): _fail('/execution_association/'+name, 'Ordered executable array required')
         for item in association[name]:
@@ -532,9 +542,42 @@ def _execution_association(authority, realization, resources):
                 _check_schema(item['key'], schema['$defs']['child_variant']['properties']['key'], schema, '/execution_association/key')
                 item = item['program_record']
             _source(item, '/execution_association/executable_record')
-            if not isinstance(item['value'], dict) or not any(_same(item, r) for r in resources_used):
-                _fail('/execution_association/executable_record', 'Whole executable SourceObject absent from qualified consumed resources')
-    return copy.deepcopy(association)
+            if not isinstance(item['value'], dict):
+                _fail('/execution_association/executable_record', 'Whole executable record object required')
+    # Executable packaging is a separately qualified artifact, not an actual
+    # native consumed input. Embedding it in native resources would recurse for
+    # original_context recipes that retain their complete original method.
+    qualification=_source(_get(resources,'physical-execution-qualification__'+realization['selected_method_context_id']),'/execution_qualification')
+    q=qualification['value']
+    _exact(q,('qualification_id','qualification_scope','selected_method_context','execution_association','standalone_program_records','evidence'),'/execution_qualification/value')
+    _typed(q['qualification_id'],'id','/execution_qualification/qualification_id')
+    _evidence(q['evidence'],'/execution_qualification/evidence')
+    if q['qualification_scope']!=FULL_SCOPE:
+        _fail('/execution_qualification/qualification_scope','Full native/executable association scope required','requires_binding')
+    if not _same(q['selected_method_context'],selected):
+        _fail('/execution_qualification/selected_method_context','Entire selected native context differs','operating_group_conflict')
+    _source(q['execution_association'],'/execution_qualification/execution_association')
+    original=_canonical_record(resources,'reference','physical-execution-association__'+realization['selected_method_context_id'])
+    if not _same(q['execution_association'],original):
+        _fail('/execution_qualification/execution_association','Whole qualified association value/path/hash/locator differs')
+    records=q['standalone_program_records']
+    if not isinstance(records,list):_fail('/execution_qualification/standalone_program_records','Ordered direct executable records required')
+    ids=[]
+    for i,record in enumerate(records):
+        where='/execution_qualification/standalone_program_records/'+str(i)
+        _source(record,where)
+        value=record['value']
+        if not isinstance(value,dict) or not isinstance(value.get('definition'),dict):_fail(where,'Whole canonical programme executable required')
+        pid=_typed(value['definition'].get('id'),'id',where+'/definition/id')
+        if pid in ids:_fail(where,'Ambiguous duplicate direct programme executable','requires_binding')
+        ids.append(pid)
+        if not _same(record,_canonical_record(resources,'program',pid)):
+            _fail(where,'Actual canonical executable value/path/hash/locator differs from qualified record')
+    if ids!=direct_program_ids:
+        _fail('/execution_qualification/standalone_program_records','Exact direct programme encounter-order closure missing or extra','requires_binding')
+    if not _qualified_execution_association(qualification):
+        _fail('/execution_qualification','Native-to-executable association is not independently qualified','requires_binding')
+    return copy.deepcopy(association),copy.deepcopy(qualification)
 
 
 def _original_executable(selected, original, allowed, path):
@@ -597,13 +640,14 @@ def _prepare_exact_instances(params, resources):
                 instance['inputs'].get('composition_basis_mode')!='source_reference_area_normalized'):
             _fail('/instances/'+instance['key']+'/composition_basis_mode','Exact parent requires original reference area','incompatible_source_composition')
         clock = params['calendar']; inputs = dict(instance['inputs'], year=clock['year'], holidays=clock.get('holidays', []))
-        resolved = resolve_program(instance['program_id'], inputs, resources)
-        pairs.append((instance, resolved))
         building = instance.get('building_realization_id')
         if building in realizations:
             recipe = resources.get('program', instance['program_id'])['recipe']
             authority = resolve_exact_authority(instance, realizations[building], recipe, resources)
+            _execution_association(authority,realizations[building],resources,_direct_program_ids(params,building))
             authorities[building] = authority
+        resolved = resolve_program(instance['program_id'], inputs, resources)
+        pairs.append((instance, resolved))
     for instance in params['instances']:
         if instance.get('owner_kind') != 'physical_service': continue
         if instance.get('physical_binding_kind') == 'legacy_whole':
@@ -617,7 +661,7 @@ def _prepare_exact_instances(params, resources):
         if authority is None:
             recipe = _get(resources, 'physical-service__'+instance['source_service_id'])['recipe']
             authority = resolve_exact_authority(instance, realization, recipe, resources); authorities[building] = authority
-        association = _execution_association(authority, realization, resources)
+        association,_ = _execution_association(authority,realization,resources,_direct_program_ids(params,building))
         resolved, _ = _resolve_exact_physical(instance, params['calendar'], realization, authority, association, resources)
         pairs.append((instance, resolved))
     order = {i['key']: n for n, i in enumerate(params['instances'])}
@@ -665,7 +709,7 @@ def prepare_exact_bindings(params: dict, resolved_instances: list[tuple[dict,dic
     realizations={r['building_realization_id']:r for r in exact}
     if len(realizations)!=len(exact):_fail('/building_realizations','Duplicate realization','shared_service_conflict')
     if len({i['key'] for i,r in pairs})!=len(pairs):_fail('/instances','Duplicate instance key','shared_service_conflict')
-    authorities={};associations={};canonical_physical={};canonical_programs={};used=set()
+    authorities={};associations={};execution_qualifications={};canonical_physical={};canonical_programs={};used=set()
     for instance,resolved in pairs:
         building=instance.get('building_realization_id')
         has_sets=bool(resolved.get('required_service_sets'))
@@ -681,7 +725,8 @@ def prepare_exact_bindings(params: dict, resolved_instances: list[tuple[dict,dic
         authority=resolve_exact_authority(instance,realizations[building],recipe,resources)
         if building in authorities and not _same(authorities[building],authority):_fail('/building_realizations/'+building,'Realization authorities disagree')
         authorities[building]=authority;used.add(building)
-        associations[building]=_execution_association(authority,realizations[building],resources)
+        associations[building],execution_qualifications[building]=_execution_association(
+            authority,realizations[building],resources,_direct_program_ids(params,building))
         clock=authority['method_qualification']['value']['selected_method_context']['value']['method_consumed_context']['value']['calendar']
         if not _same(params['calendar'],clock):_fail('/calendar','Selected qualified calendar differs','operating_group_conflict')
         payload=authority['inventory']['payload']
@@ -695,6 +740,9 @@ def prepare_exact_bindings(params: dict, resolved_instances: list[tuple[dict,dic
                 _fail('/instances/'+instance['key']+'/source','Resolved canonical programme identity/requirements differs')
             if any(not _same(_programme_requirement(r)['value'],programme) for r in recipe['required_service_sets']):
                 _fail('/instances/'+instance['key']+'/definition','Canonical programme differs from independent requirement')
+            expected_context=dict(copy.deepcopy(recipe['source_context']),year=params['calendar']['year'],holidays=params['calendar'].get('holidays',[]))
+            if not _same(resolved['inputs']['source_context'],expected_context):
+                _fail('/instances/'+instance['key']+'/source_context','Supplied resolved context differs from qualified actual executable')
             _executable_context(resolved['inputs']['source_context'],realizations[building],params['calendar'],'/instances/'+instance['key']+'/source_context')
     if set(realizations)!=used:_fail('/building_realizations','Unused realization declaration','requires_binding')
     owner_plans=[];physical={};identities=set();exact_sids=set();legacy_sids=set()
@@ -791,6 +839,7 @@ def prepare_exact_bindings(params: dict, resolved_instances: list[tuple[dict,dic
             inventory_resource={'resource_set_id':resources.resource_set_id,'kind':'reference','key':key,'sha256':entry['sha256']},
             native_context={'source_hoo_configuration_id':realization['source_hoo_configuration_id'],'selected_method_context_id':realization['selected_method_context_id'],
                 'qualification_id':context['qualification_id'],'source_context':copy.deepcopy(actual),'evidence':copy.deepcopy(native['evidence']),
+                'execution_qualification':copy.deepcopy(execution_qualifications[building]),
                 'execution_authority':{'method_qualification':copy.deepcopy(authority['method_qualification']),'execution_association':copy.deepcopy(associations[building]),
                     'canonical_physical_records':list(copy.deepcopy(canonical_physical.get(building,{})).values()),
                     'canonical_program_records':list(copy.deepcopy(canonical_programs.get(building,{})).values())}}))
