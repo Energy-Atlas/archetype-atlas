@@ -128,6 +128,10 @@ def bind_parent_identity(bundle,allocation):
         parent.update(owner_kind='program',building_realization_id=instance['building_realization_id'],
             required_service_links=copy.deepcopy(resolved['required_service_links']),
             required_service_sets=copy.deepcopy(resolved['required_service_sets']),service_set_projections=[])
+        parent['inputs']={k:copy.deepcopy(v) for k,v in resolved['inputs'].items() if k not in {
+            'reference_channels','reference_budgets','source_context','companion_rules','source_composition'}}
+        parent['generation'].update(source_inputs=copy.deepcopy(resolved['inputs']['source_context']),
+            operating_group=instance['operating_group'] if instance['operating_group'] is not None else key)
         if 'hot_water_volume' in parent['schedule_ids']:
             _fail('hot_water_volume','Exact source parent water is a non-owning projection')
     parent['evidence'].extend(copy.deepcopy(resolved['evidence']))
@@ -135,6 +139,9 @@ def bind_parent_identity(bundle,allocation):
         parent_requested_instance_key=key,member_instance_keys=[c['key'] for c in allocation['children']])
     for index in parent['binding_indices']:
         binding=bundle['bindings'][index];binding['instance_key']=key;binding['schedule_id']=aliases[binding['schedule_id']]
+        if bundle['schema_version']=='1.2.0' and 'exact_children' in allocation:
+            from .owners import identity_fields
+            binding.update(identity_fields(parent,'1.2.0'))
         if binding['kind']=='load':
             target=resolved['inputs']['reference_budgets'][binding['demand_id']]
             if not math.isclose(target['total'],binding['reference_target']['total'],rel_tol=1e-12,abs_tol=1e-8):
@@ -235,6 +242,92 @@ def compose_source_parent(bundle,allocation,resources=None):
         if sid in bundle['schedules']:_fail('schedule_id','Derived source parent overlaps a global schedule')
         bundle['schedules'][sid]=derived['schedules'][sid]
     bundle['bindings'].extend(parent_bindings);bundle['constituents'].append(parent)
+    bind_parent_identity(bundle,allocation)
+    return bundle
+
+
+def _derive_prepared_source_parent(bundle,allocation,resources):
+    """Derive an ongoing request's real parent before its complete graph exists.
+
+    This private producer consumes Core3's actual prepared allocation and emitted
+    children. Public incoming composition continues through its strict validator.
+    """
+    from .resources import ResourceSet
+    from .mixtures import _derive_constituent
+    from .owners import identity_fields
+    if type(resources) is not ResourceSet or resources.resource_set_id!=bundle['metadata']['resource_set_id']:
+        raise GeneratorError('resource_integrity','/resource_set_id','Matching verified ResourceSet required')
+    if bundle.get('schema_version')!='1.2.0':
+        raise GeneratorError('unsupported_schema','/schema_version','Prepared derivation is only for 1.2 generation')
+    owners={c['instance_key']:c for c in bundle['constituents']}
+    children=allocation['children'];keys=[c['key'] for c in children]
+    if len(owners)!=len(bundle['constituents']) or len(set(keys))!=len(keys) or any(k not in owners for k in keys):
+        _fail('children','Unique actual emitted source children required')
+    members=[(owners[c['key']],1) for c in children]
+    mixture=allocation['mixture'];parent=allocation['parent_instance'];resolved=allocation['parent_resolved']
+    if (allocation['parent_instance_key']!=parent['key'] or parent['key'] in owners or
+            mixture['members']!=[{'instance_key':key,'weight':1} for key in keys] or
+            mixture['program_id']!=parent['program_id'] or mixture['result_basis']!='floor_area'):
+        _fail('children','Prepared parent identity/member order differs')
+    for child,(owner,weight) in zip(children,members):
+        if (owner_identity(owner)!=('program',child['program_id']) or
+                any(owner.get(k)!=v for k,v in identity_fields(child,'1.2.0').items()) or
+                owner['basis_bindings']!=child['basis_bindings'] or owner.get('required_service_links')):
+            _fail('children/'+child['key'],'Actual child identity/extent or unproved legacy water selection differs')
+        indices=owner['binding_indices']
+        if len(set(indices))!=len(indices):_fail('binding_indices','Repeated actual child binding')
+        for index in indices:
+            if type(index) is not int or not 0<=index<len(bundle['bindings']):_fail('binding_indices','Missing actual child binding')
+            binding=bundle['bindings'][index];slot=binding['slot']
+            if (binding.get('instance_key')!=child['key'] or owner_identity(binding)!=owner_identity(owner) or
+                    any(binding.get(k)!=v for k,v in identity_fields(owner,'1.2.0').items()) or
+                    binding.get('schedule_id')!=owner['schedule_ids'].get(slot) or
+                    binding.get('schedule_id') not in bundle['schedules']):
+                _fail('binding_indices','Actual child binding ownership/schedule differs')
+    if 'exact_children' in allocation:
+        from .physical_sets import _get,_same,_without_owned_water
+        from .programs import _resolve_program_record
+        from .service_graph import _check_resolved
+        exact_children=allocation['exact_children']
+        if len(exact_children)!=len(children):_fail('children','Prepared exact child count differs')
+        for child,item,(owner,weight) in zip(children,exact_children,members):
+            variant=item['variant'];key=variant['key'];building=parent['building_realization_id']
+            if (not _same(item['instance'],child) or key['member_program_id']!=child['program_id'] or
+                    owner.get('building_realization_id')!=building or
+                    owner['source']['evidence_view']!=key['member_evidence_view'] or
+                    not _same(owner['generation'].get('method_variant'),variant)):
+                _fail('children','Actual exact child full tuple/own view/selected variant differs')
+            association=_get(resources,'physical-execution-association__'+key['selected_method_context_id'])
+            candidates=[r for r in association['child_program_records'] if r['variant_id']==variant['variant_id'] and _same(r['key'],key)]
+            if len(candidates)!=1 or not _same(association['selected_method_context'],variant['selected_method_context']):
+                _fail('children','Prepared child selected executable association differs')
+            selected=candidates[0]['program_record']['value'];clock=bundle['metadata']['calendar']
+            expected=_resolve_program_record(child['program_id'],dict(child['inputs'],year=clock['year'],holidays=clock['holidays']),selected,'compiled')
+            expected=_without_owned_water(expected)
+            _check_resolved(owner,expected,child['operating_group'])
+            if any(d['slot']=='hot_water_volume' for d in owner['demands']):
+                _fail('children','Exact parent local derivation cannot own projected water')
+            for index in owner['binding_indices']:
+                binding=bundle['bindings'][index]
+                if binding['kind']=='load' and not _same(binding['reference_target'],expected['inputs']['reference_budgets'][binding['demand_id']]):
+                    _fail('reference_target','Selected child original annual target differs')
+        source_recipe=resources.get('program',parent['program_id'])['recipe']['source_composition']
+        areas,total,factors=source_factors(source_recipe)
+        original=resolved['inputs']['source_composition']
+        if (not _same(source_recipe,original) or len(areas)!=len(children) or
+                not _same(allocation['receipt']['original_members'],source_recipe['definition']['members']) or
+                not _same(allocation['receipt']['physical_factors'],factors) or
+                mixture['denominator']['value']!=total or mixture['denominator']['unit']!='m2'):
+            _fail('source_allocation','Original prepared parent source areas/factors differ')
+        for child,area in zip(children,areas):
+            if child['basis_bindings']['extents']['floor_area']['value']!=area:
+                _fail('source_allocation','Actual exact child area differs from original component')
+        source_receipt={'composition_id':mixture['composition_id'],'original_members':copy.deepcopy(source_recipe['definition']['members']),
+            'physical_factors':factors,'source_total_area_m2':total,'source':copy.deepcopy(source_recipe['provenance']),
+            'control_method':'source_represented_area_pointwise_eligible_average'}
+    else:
+        source_recipe,source_receipt=validate_allocation(mixture,members,resources)
+    bundle=_derive_constituent(bundle,mixture,members,members,'floor_area',source_recipe,source_receipt,None)
     bind_parent_identity(bundle,allocation)
     return bundle
 

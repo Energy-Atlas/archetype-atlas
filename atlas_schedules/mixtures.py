@@ -234,7 +234,7 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
             _fail('/mixture/denominator','Positive denominator with matching result-basis unit required')
     owners={c['instance_key']:c for c in bundle['constituents']}
     members=[(owners[m['instance_key']],m['weight']) for m in mixture['members']]
-    source_recipe=None
+    source_recipe=None;source_receipt=None
     if mixture['composition_id'] is not None:
         from .source_compositions import validate_allocation
         resources=verified_resources if verified_resources is not None else ResourceSet.load(bundle['metadata']['resource_set_id'])
@@ -257,6 +257,17 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
         _fail('/mixture/denominator','Mixed source bases require explicit physical conversion and denominator')
     result_basis=mixture.get('result_basis',next(iter(all_bases),'absolute'))
     if result_basis not in BASIS_UNITS: _fail('/mixture/result_basis','Unknown physical basis')
+    bundle=_derive_constituent(bundle,mixture,members,load_members,result_basis,
+                               source_recipe,source_receipt,service_receipt)
+    validate_bundle(bundle)
+    return bundle
+
+
+def _derive_constituent(bundle,mixture,members,load_members,result_basis,
+                        source_recipe,source_receipt,service_receipt):
+    """Shared arithmetic for validated incoming or privately prepared source data."""
+    version=bundle['schema_version'];calendar=bundle['metadata']['calendar']
+    owners={c['instance_key']:c for c in bundle['constituents']}
     key='mixture/'+mixture['program_id']
     if key in owners: raise GeneratorError('duplicate_instance','/mixture/program_id','Mixed result key overlaps an instance')
     mixed={'instance_key':key,'program_id':mixture['program_id'],'recipe_id':'conserved-mixture-v1',
@@ -420,5 +431,4 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
         mixed['evidence'][0]['accepted_absence']=all(c['evidence'][0].get('accepted_absence') for c,w in members)
     bundle['constituents'].append(mixed)
     bundle['generation']['mixture']=copy.deepcopy(mixture)
-    validate_bundle(bundle)
     return bundle

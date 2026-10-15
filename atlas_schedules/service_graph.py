@@ -71,7 +71,25 @@ def _source_consistency(value):
 
 def _binding(bundle,owner):
     indices=owner['binding_indices']
-    if len(indices)!=1 or type(indices[0]) is not int or not 0<=indices[0]<len(bundle['bindings']):
+    if (not indices or any(type(i) is not int or not 0<=i<len(bundle['bindings']) for i in indices) or
+            len(set(indices))!=len(indices)):
+        _fail('/constituents/'+owner['instance_key'],'Physical owned binding indices differ','invalid_reference')
+    if owner['physical_binding_kind']=='legacy_whole':
+        # C5 retains fixed companion controls in addition to its one owned load.
+        # Every reference still belongs to this exact owner; new modes remain
+        # restricted to their separately qualified water-only binding contract.
+        for i in indices:
+            b=bundle['bindings'][i]
+            if (b.get('instance_key')!=owner['instance_key'] or b.get('owner_kind')!='physical_service' or
+                    any(b.get(k)!=owner.get(k) for k in ('source_service_id','physical_id','physical_binding_kind',
+                        'building_realization_id','unit_id','source_fixture_role_id')) or
+                    b.get('schedule_id')!=owner['schedule_ids'].get(b.get('slot')) or
+                    b.get('schedule_id') not in bundle['schedules'] or
+                    b.get('kind') not in {'load','control'} or
+                    b.get('kind')=='load' and b.get('slot')!='hot_water_volume'):
+                _fail('/bindings/'+str(i),'Legacy physical owned load/control reference differs','invalid_reference')
+        indices=[i for i in indices if bundle['bindings'][i].get('kind')=='load']
+    if len(indices)!=1:
         _fail('/constituents/'+owner['instance_key'],'One physical owned water binding required','invalid_reference')
     index=indices[0];binding=bundle['bindings'][index]
     if (binding.get('instance_key')!=owner['instance_key'] or binding.get('kind')!='load' or
@@ -456,11 +474,14 @@ def _actors(bundle):
         apartment=method=='unit_occupancy_interior_lighting'
         if not stock and not apartment:continue
         n=inputs.get('residents')
-        if kind!='program' or type(n) is not int or n<0:_fail('/constituents/'+key,'Retained actor lacks source/cohort authority')
+        if kind!='program':_fail('/constituents/'+key,'Retained actor lacks programme authority')
         if stock:
+            if (type(n) not in (int,float) or not math.isfinite(n) or n<0 or n!=0 and int(n)==0):
+                _fail('/constituents/'+key,'Retained stock actor lacks original resident operand authority')
             if building is not None or unit is not None:_fail('/constituents/'+key,'Stock actor has caller unit identity')
             actor='stock';action='generate'
         else:
+            if type(n) is not int or n<0:_fail('/constituents/'+key,'Retained apartment actor requires integer cohort')
             if (family not in {'code_prototype_rules','existing_stock_benchmark'} or
                     owner['source'].get('building_type') not in {'HighriseApartment','MidriseApartment'} or
                     not isinstance(building,str) or not building or not isinstance(unit,str) or not unit):

@@ -188,16 +188,13 @@ class V12WireTests(unittest.TestCase):
             else: bad['instances'][0][path] = value
             self.assert_contract_error(lambda bad=bad: _schema_errors(bad, 'request', '1.2.0'))
 
-    def test_v12_public_generate_rejects_before_resource_preparation_or_rng(self):
+    def test_v12_malformed_schema_rejects_before_resource_preparation_or_rng(self):
         params = self.request()
         sentry = AssertionError('1.2 reached resource, preparation, or RNG')
         with (patch('atlas_schedules.generator.ResourceSet.load', side_effect=sentry),
               patch('atlas_schedules.generator.normalize_basis_bindings', side_effect=sentry),
               patch('atlas_schedules.generator.assign_unit_seeds', side_effect=sentry),
               patch('atlas_schedules.generator.sample_operating_parameters', side_effect=sentry)):
-            with self.assertRaises(GeneratorError) as caught:
-                generate(params, 42)
-            self.assertEqual(caught.exception.code, 'requires_binding')
             malformed = copy.deepcopy(params); malformed.pop('building_realizations')
             with self.assertRaises(GeneratorError) as invalid:
                 generate(malformed, 42)

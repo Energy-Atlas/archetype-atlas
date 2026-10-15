@@ -162,6 +162,14 @@ def validate_request(params: dict, seed: int) -> None:
     keys = [item['key'] for item in params['instances']]
     if len(keys) != len(set(keys)):
         raise GeneratorError('duplicate_instance', '/instances', 'Instance keys must be unique')
+    if version=='1.2.0':
+        buildings=[r['building_realization_id'] for r in params['building_realizations']]
+        if len(buildings)!=len(set(buildings)):
+            raise GeneratorError('invalid_request','/building_realizations','Realization IDs must be unique')
+        prepared={'year','holidays','reference_channels','reference_budgets','source_context','companion_rules','source_composition'}
+        for instance in params['instances']:
+            if set(instance['inputs']) & prepared:
+                raise GeneratorError('unknown_input','/instances/'+instance['key']+'/inputs','Calendar and prepared operands are internal')
     mixture = params.get('mixture')
     if mixture:
         members = mixture['members']

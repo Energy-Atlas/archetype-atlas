@@ -1,5 +1,6 @@
 """Public offline orchestration: resolve, seed, emit, bind, then compose."""
 import copy
+import math
 
 from .budgets import bind_budget
 from .canonical import schedule_id
@@ -40,12 +41,16 @@ def collect_physical_unit_actors(resolved_instances: list[tuple[dict,dict]],
         key = instance.get('key')
         if (resolved.get('source_family') == 'existing_stock_source_fixture' and
                 method == 'resstock_time_allocation_with_selected_source_companions'):
+            n=inputs.get('residents')
             if (instance.get('owner_kind', 'program') != 'program' or
                     instance.get('building_realization_id') is not None or
                     instance.get('unit_id') is not None or
-                    type(inputs.get('residents')) is not int or inputs['residents'] < 0):
+                    type(n) not in (int,float) or not math.isfinite(n) or n < 0):
                 raise GeneratorError('requires_binding', '/instances/'+str(key),
                                      'Stock actor requires a programme owner and resident cohort')
+            if n!=0 and int(n)==0:
+                raise GeneratorError('unsupported_input','/instances/'+str(key)+'/inputs/residents',
+                                     'Positive count truncating to zero is undefined upstream')
             actors.append({'actor_kind': 'stock', 'instance_key': key,
                            'building_realization_id': None, 'unit_id': None,
                            'stochastic_action': 'generate'})
@@ -151,6 +156,87 @@ def _heat_fractions(demand, resolved):
     return None
 
 
+def _prepare_v12_request(params, resources):
+    """Prepare independent source modes; never route foreign identities as legacy."""
+    from .physical_sets import _prepare_exact_instances
+    from .caller_unit_water import prepare_caller_water
+    realizations={r['building_realization_id']:r for r in params['building_realizations']}
+    if len(realizations)!=len(params['building_realizations']):
+        raise GeneratorError('shared_service_conflict','/building_realizations','Duplicate realization')
+    modes={};sids={};physical_ids={}
+    for instance in params['instances']:
+        key=instance['key'];building=instance.get('building_realization_id')
+        if building is not None and building not in realizations:
+            raise GeneratorError('shared_service_conflict','/instances/'+key+'/building_realization_id','Unknown realization')
+        mode=realizations[building]['mode'] if building is not None else None
+        kind=instance.get('physical_binding_kind')
+        if ((kind=='exact_source_role' and mode!='exact_source_fixture_extents') or
+                (kind=='caller_unit_prototype_density_fixed_dhw' and mode!=kind) or
+                (instance.get('unit_id') is not None and mode!='caller_unit_prototype_density_fixed_dhw')):
+            raise GeneratorError('shared_service_conflict','/instances/'+key+'/building_realization_id','Owner and realization modes differ')
+        if set(instance['inputs']) & ({'year','holidays'} | _PREPARED):
+            raise GeneratorError('unknown_input','/instances/'+key+'/inputs','Calendar and preparation buffers are request/internal operands')
+        modes[key]=mode
+        if instance['owner_kind']=='physical_service':
+            for field,index in (('source_service_id',sids),('physical_id',physical_ids)):
+                value=instance[field]
+                if value in index and index[value]!=kind:
+                    raise GeneratorError('shared_service_conflict','/instances/'+key+'/'+field,'Cross-mode physical identity is ambiguous')
+                index[value]=kind
+    exact_params=dict(params,instances=[i for i in params['instances'] if modes[i['key']]=='exact_source_fixture_extents'],
+                      building_realizations=[r for r in params['building_realizations'] if r['mode']=='exact_source_fixture_extents'])
+    exact_pairs=_prepare_exact_instances(exact_params,resources) if exact_params['building_realizations'] else []
+    caller_params=dict(params,instances=[i for i in params['instances'] if modes[i['key']]=='caller_unit_prototype_density_fixed_dhw'],
+                       building_realizations=[r for r in params['building_realizations'] if r['mode']=='caller_unit_prototype_density_fixed_dhw'])
+    # Core4 explicitly accepts unresolved physical pairs: it derives actual water
+    # from independent locked per-ID authority, never from this empty operand.
+    caller_pairs=[(i,{}) for i in caller_params['instances'] if i['owner_kind']=='physical_service']
+    if caller_params['building_realizations']:
+        prepare_caller_water(caller_params,caller_pairs,resources)
+    return modes,exact_params,{i['key']:r for i,r in exact_pairs},caller_params
+
+
+def _merge_exact_preparation(pairs, plan, occupied):
+    """Splice selected exact children where their requested parent occurred."""
+    replacements={i['key']:(i,r) for i,r in plan['resolved_instances']}
+    children={a['parent_instance_key']:[c['key'] for c in a['children']] for a in plan['source_allocations']}
+    for keys in children.values():
+        for key in keys:
+            if key in occupied:
+                raise GeneratorError('duplicate_instance','/instances/'+key,'Generated source-member key overlaps another instance')
+            occupied.add(key)
+    result=[]
+    for instance,resolved in pairs:
+        key=instance['key']
+        if key in children:result.extend(replacements[c] for c in children[key])
+        else:result.append(replacements.get(key,(instance,resolved)))
+    return result
+
+
+def _preflight_v12_mixture(params, pairs, service_links, exact_plan, caller_plan):
+    """Close requested whole participation and alternative overlap before RNG."""
+    mixture=params.get('mixture')
+    if mixture is None:return
+    positive={m['instance_key'] for m in mixture['members'] if m['weight']>0}
+    required={p['programme_instance_key'] for p in service_links}
+    for plan in (exact_plan,caller_plan):
+        if plan is not None:required.update(p['instance_key'] for p in plan['projections'])
+    if mixture.get('service_members') or positive & required:
+        if 'result_basis' not in mixture or 'denominator' not in mixture:
+            raise GeneratorError('requires_binding','/mixture/denominator','Whole services require explicit result basis and denominator')
+        basis=mixture['result_basis'];denominator=mixture['denominator']
+        if (basis not in {'floor_area','absolute'} or
+                denominator['unit']!={'floor_area':'m2','absolute':'1'}.get(basis) or denominator['value']<=0):
+            raise GeneratorError('incompatible_basis','/mixture/denominator','Physical participation requires positive matching root denominator')
+    claims=set()
+    for instance,resolved in pairs:
+        if instance['key'] not in positive or instance.get('unit_id') is None:continue
+        identity=(instance.get('building_realization_id'),instance['unit_id'])
+        if identity in claims:
+            raise GeneratorError('incompatible_source_composition','/mixture/members','Positive alternative views overlap one actual unit')
+        claims.add(identity)
+
+
 def generate(params: dict, seed: int) -> dict:
     """Generate the packaged declared cases with an explicit uint64 realization.
 
@@ -160,11 +246,8 @@ def generate(params: dict, seed: int) -> dict:
     """
     validate_request(params,seed)
     version=request_version(params)
-    if version == '1.2.0':
-        raise GeneratorError('requires_binding','/schema_version',
-                             'Physical service 1.2 generation awaits source qualification and public integration')
     params = copy.deepcopy(params)
-    params.pop('schema_version',None)
+    if version!='1.2.0':params.pop('schema_version',None)
     calendar = params['calendar']
     calendar.setdefault('holidays',[])
     resources = ResourceSet.load(params['resource_set_id'])
@@ -178,10 +261,23 @@ def generate(params: dict, seed: int) -> dict:
     declared_programs={case['program_id'] for case in scope['cases']}
     declared_services={(case['source_service_id'],case['source_hoo_configuration_id']):case
                        for case in scope.get('service_cases',[])}
+    exact_plan=None;caller_plan=None
+    if version=='1.2.0':
+        for instance in params['instances']:
+            physical,receipts=normalize_basis_bindings(instance['basis_bindings'],instance['key'])
+            instance['basis_bindings']=physical;basis_receipts[instance['key']]=receipts
+        modes,exact_params,exact_resolved,caller_params=_prepare_v12_request(params,resources)
     for instance in params['instances']:
         try:
-            physical,receipts=normalize_basis_bindings(instance['basis_bindings'],instance['key'])
-            instance['basis_bindings']=physical; basis_receipts[instance['key']]=receipts
+            if version!='1.2.0':
+                physical,receipts=normalize_basis_bindings(instance['basis_bindings'],instance['key'])
+                instance['basis_bindings']=physical; basis_receipts[instance['key']]=receipts
+            elif instance['key'] in exact_resolved:
+                resolved_instances.append((instance,exact_resolved[instance['key']]))
+                continue
+            elif instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw':
+                resolved_instances.append((instance,{}))
+                continue
             if instance.get('owner_kind')=='physical_service':
                 service_case=declared_services.get((instance['source_service_id'],instance['inputs'].get('source_hoo_configuration_id')))
                 if service_case is None:
@@ -191,12 +287,16 @@ def generate(params: dict, seed: int) -> dict:
                 resolved['inputs']['source_context']['case_id']=service_case['case_id']
                 resolved_instances.append((instance,resolved))
                 continue
-            if instance['program_id'] not in declared_programs:
+            if instance['program_id'] not in declared_programs and not (version=='1.2.0' and modes[instance['key']]=='caller_unit_prototype_density_fixed_dhw'):
                 raise GeneratorError('unsupported_binding','/program_id','Program is outside the declared '+scope['milestone_id']+' case set')
             if set(instance['inputs']) & ({'year','holidays'} | _PREPARED):
                 raise GeneratorError('unknown_input','/inputs','Calendar and preparation buffers are request/internal operands')
             inputs = dict(instance['inputs'],year=calendar['year'],holidays=calendar['holidays'])
             resolved = resolve_program(instance['program_id'],inputs,resources)
+            if version=='1.2.0' and resolved.get('required_service_sets') and (
+                    modes[instance['key']] is None or modes[instance['key']]=='caller_unit_prototype_density_fixed_dhw' and
+                    instance.get('unit_id') is None):
+                raise GeneratorError('requires_binding','/building_realization_id','Independent service sets require actual declared scope')
             if 'source_composition' in resolved['inputs']:
                 from .source_compositions import prepare_allocation
                 allocation=prepare_allocation(instance,resolved['inputs']['source_composition'])
@@ -218,36 +318,40 @@ def generate(params: dict, seed: int) -> dict:
             else:resolved_instances.append((instance,resolved))
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+instance['key']+error.path,error.message) from error
-    # Task7 routes exact1.2 resolution through _prepare_exact_instances before
-    # reaching this hook; the temporary public1.2 entry guard remains in force.
-    exact_plan=None;caller_plan=None
     if version=='1.2.0':
-        if any(r.get('mode')=='caller_unit_prototype_density_fixed_dhw'
-               for r in params.get('building_realizations',[])):
+        if caller_params['building_realizations']:
             from .caller_unit_water import prepare_caller_water
             caller_plan=prepare_caller_water(params,resolved_instances,resources)
             resolved_instances=caller_plan['resolved_instances']
-        if any(r.get('mode')=='exact_source_fixture_extents'
-               for r in params.get('building_realizations',[])):
+        if exact_params['building_realizations']:
             from .physical_sets import prepare_exact_bindings
-            exact_plan=prepare_exact_bindings(params,resolved_instances,resources)
-            resolved_instances=exact_plan['resolved_instances']
-            source_allocations=exact_plan['source_allocations']
+            exact_plan=prepare_exact_bindings(exact_params,
+                [(i,r) for i,r in resolved_instances if i['key'] in exact_resolved],resources)
+            resolved_instances=_merge_exact_preparation(resolved_instances,exact_plan,occupied_keys)
+            source_allocations.extend(exact_plan['source_allocations'])
             for child,_ in resolved_instances:basis_receipts.setdefault(child['key'],{})
+        request_order={i['key']:n for n,i in enumerate(params['instances'])}
+        source_allocations.sort(key=lambda a:request_order[a['parent_instance_key']])
     # All original annual targets and inputs exist before any RNG is sampled.
-    service_link_plans=prepare_required_service_links(resolved_instances,version)
+    if version=='1.2.0':
+        # Reuse the unchanged C5 contract on a private legacy-scope view, as the
+        # incoming graph validator does. Exact/caller ownership is never erased.
+        link_pairs=copy.deepcopy(resolved_instances)
+        for instance,resolved in link_pairs:
+            if instance.get('physical_binding_kind')=='legacy_whole':
+                instance.pop('physical_binding_kind');resolved.pop('physical_binding_kind')
+        service_link_plans=prepare_required_service_links(link_pairs,'1.1.0')
+    else:service_link_plans=prepare_required_service_links(resolved_instances,version)
     if version == '1.2.0':
-        physical_generation = build_physical_unit_generation(seed, resolved_instances)
-        residential_keys = physical_generation['residential_unit_order']
-        unit_seeds = physical_generation['unit_seeds']
-        physical_actors_by_key = {actor['instance_key']: actor
-                                  for actor in physical_generation['physical_unit_seed_sequence']}
+        _preflight_v12_mixture(params,resolved_instances,service_link_plans,exact_plan,caller_plan)
+        actors=collect_physical_unit_actors(resolved_instances,version)
+        residential_keys=[a['instance_key'] for a in actors]
     else:
         residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
         unit_seeds = assign_unit_seeds(seed,residential_keys)
     groups = {}
     for instance,resolved in resolved_instances:
-        if (instance['key'] in unit_seeds if version == '1.2.0'
+        if (instance['key'] in residential_keys if version == '1.2.0'
                 else 'residents' in resolved['inputs']):
             if instance['operating_group'] is not None:
                 raise GeneratorError('operating_group_conflict','/instances/'+instance['key']+'/operating_group',
@@ -266,6 +370,10 @@ def generate(params: dict, seed: int) -> dict:
             groups[group].setdefault('original_owner_weather_records',[]).append({
                 'instance_key':instance['key'],**identity_fields(resolved,version),
                 'weather':copy.deepcopy(resolved['source']['weather'])})
+    if version=='1.2.0':
+        physical_generation=build_physical_unit_generation(seed,resolved_instances)
+        unit_seeds=physical_generation['unit_seeds']
+        physical_actors_by_key={a['instance_key']:a for a in physical_generation['physical_unit_seed_sequence']}
     for group,entry in groups.items():
         group_seed = commercial_group_seed(seed,group)
         entry['operating'] = sample_operating_parameters(entry['context']['conditioning']['conditioning_inputs'],
@@ -280,6 +388,7 @@ def generate(params: dict, seed: int) -> dict:
                           'population_realization_equivalent':False,'comparison_policy':policy}}
     if version == '1.2.0':
         bundle['generation'].update(physical_generation)
+        bundle['metadata']['building_realizations']=[]
     if source_allocations:
         bundle['generation']['request_instance_order']=[i['key'] for i in params['instances']]
         bundle['generation']['physical_member_generation_order']=[i['key'] for i,r in resolved_instances]
@@ -366,14 +475,20 @@ def generate(params: dict, seed: int) -> dict:
             raise GeneratorError(error.code,'/instances/'+key+error.path,error.message) from error
     bind_required_service_links(bundle,service_link_plans)
     for allocation in source_allocations:
-        from .source_compositions import compose_source_parent
-        bundle=compose_source_parent(bundle,allocation,resources)
+        from .source_compositions import compose_source_parent,_derive_prepared_source_parent
+        if version=='1.2.0':
+            allocation['receipt']['basis_alias_receipts'].update(basis_receipts.get(allocation['parent_instance_key'],{}))
+        bundle=(_derive_prepared_source_parent(bundle,allocation,resources) if version=='1.2.0'
+                else compose_source_parent(bundle,allocation,resources))
     if exact_plan is not None:
         from .physical_sets import bind_exact_projections
         bind_exact_projections(bundle,exact_plan)
     if caller_plan is not None:
         from .caller_unit_water import bind_caller_water
         bind_caller_water(bundle,caller_plan)
+    if version=='1.2.0':
+        realization_order={r['building_realization_id']:n for n,r in enumerate(params['building_realizations'])}
+        bundle['metadata']['building_realizations'].sort(key=lambda r:realization_order[r['building_realization_id']])
     validate_bundle(bundle)
     if params.get('mixture') is not None:
         from .mixtures import compose_constituents
