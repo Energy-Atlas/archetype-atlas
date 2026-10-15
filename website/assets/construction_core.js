@@ -45,6 +45,20 @@
       evidence: select('evidence', evidenceIds), metadata: {...packet.metadata,
         source_definition_ids: config.source_definition_ids, selection_decisions: decisions, variant_selections: {}}});
   }
+  function hydrateUnified(packet, contextId) {
+    if (packet.kind !== 'construction_equivalent_site_packet' || packet.schema_version !== '1.0.0') throw new Error('Unsupported unified construction delivery.');
+    if (!Object.hasOwn(packet.contexts, contextId)) throw new Error('Unsupported unified construction context.');
+    const context = structuredClone(packet.contexts[contextId]);
+    if (context.detailed_context_id !== contextId || context.kind !== 'building_level_equivalent' || context.schema_version !== '1.1.0') throw new Error('Invalid unified context.');
+    if (!Object.hasOwn(packet.component_sets, context.component_set_id)) throw new Error('Missing unified component set.');
+    const body = packet.component_sets[context.component_set_id];delete context.component_set_id;
+    const ids = new Set(Object.values(body.components).filter(c => c.status === 'ready').map(c => c.assembly_id));
+    const assemblies = Object.fromEntries([...ids].sort().map(id => {
+      if (!Object.hasOwn(packet.assemblies, id)) throw new Error('Missing unified assembly: ' + id);
+      return [id, packet.assemblies[id]];
+    }));
+    return structuredClone({...context, ...body, assemblies});
+  }
   function select(contexts, climate = '', reference = '', building = '') {
     const climates = [...new Set(contexts.map(c => c.climate))];
     if (climate && !climates.includes(climate)) throw new Error('Unsupported construction climate.');
@@ -61,5 +75,5 @@
     if (matches.length > 1) throw new Error('Ambiguous construction context.');
     return {climate, reference, id:matches.length === 1 ? matches[0].id : null};
   }
-  return {hydrate, select};
+  return {hydrate, hydrateUnified, select};
 });

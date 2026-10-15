@@ -144,30 +144,37 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
                         blob.unlink()
             path.unlink(missing_ok=True)
     remove_empty_retired_routes(root,retired)
+    from scripts.construction_equivalent_site import load_equivalents,packet_for as equivalent_packet
+    equivalents=load_equivalents()
     originals={r['id']:r for r in bundle['constructions']}
     report={'schema_version':'1.0.0','construction_schema':'2.0.0','definitions':len(release['construction_sets']),
-        'contexts':len(release['contexts']),'packets':{},'resources':{k:{} for k in ('assemblies','materials','evidence')}}
+        'contexts':len(release['contexts']),'packets':{},'unified_schema':'1.1.0','unified_packets':{},
+        'resources':{k:{} for k in ('assemblies','materials','evidence')}}
     for identity,profile in release['construction_sets'].items():
         if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*',identity):raise ValueError('Unsafe construction identity')
         contexts={i:c for i,c in release['contexts'].items() if c['construction_set_id']==identity}
         packet=packet_for(release,identity,contexts);descriptor=store.put(packet);report['packets'][identity]=descriptor
+        unified=store.put(equivalent_packet(equivalents,identity,contexts));report['unified_packets'][identity]=unified
         raw=store.put(originals.get(identity,profile));source=profile['source']
         choices=context_choices(profile,contexts)
         controls='<div class="definition-filters construction-controls"><label>Climate<select class="construction-climate"><option value="">Choose climate</option>'
         controls+=''.join(f'<option value="{esc(v)}">{esc(v)}</option>' for v in sorted({c['climate_zone'] for c in contexts.values()}))
-        controls+='</select></label><label>Source reference<select class="construction-reference"><option value="">Choose source reference</option></select></label></div>'
-        markup=json_markup(raw).replace('data-raw=',f'data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-raw=',1)
+        controls+='</select></label><label>Source reference<select class="construction-reference"><option value="">Choose source reference</option></select></label>'
+        controls+='<label>JSON representation<select class="construction-representation"><option value="detailed">Detailed construction set</option><option value="unified">Unified building construction</option></select></label></div>'
+        controls+='<p class="construction-description">Detailed JSON retains original assemblies and program/story assignment rules. Unified JSON provides one assembly per semantic with approximation evidence.</p>'
+        markup=json_markup(raw).replace('data-raw=',f'data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" data-unified="{esc(json.dumps(unified,separators=(",",":")))}" data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-raw=',1)
         markup=markup.replace('<button type="button" class="object-copy">',controls+'<button type="button" class="object-copy">',1)
+        markup=markup.replace('</button>','</button><button type="button" class="construction-download" disabled>Download detailed JSON</button>',1)
         page=f'# {esc(profile["name"])}\n\n[Construction catalogue](../catalogue/{"residential" if profile["scope"]=="whole_dwelling" else "nonresidential"}/construction/index.md) · [Construction JSON contract](../guides/construction-json.md)\n\n'
         page+=f'`{identity}` · Construction set · {esc(profile["scope"])} · {esc(source["template"])} · {esc(source["source_family"])}\n\n'
-        page+='One set contains its source-supported exterior and interior components. Select a climate and source reference to inspect or copy complete **construction JSON v2**. Source conditions and fixed reference ACH remain explicit. BEMGen supplies actual model geometry.\n\n'
+        page+='One set contains its source-supported exterior and interior components. Select a climate and source reference, then choose **Detailed** or **Unified** JSON. Each representation previews, copies and downloads as a separate file for the same selected context. Fixed reference ACH remains explicit. BEMGen supplies actual model geometry.\n\n'
         if profile['scope']=='space_type':page+='This is a partial source space set; it is not a complete building set.\n\n'
         additions=[d['atlas_added_applicability'] for rows in packet['selector_receipts'].values() for d in rows if 'atlas_added_applicability' in d]
         if additions:
             mode=additions[0]['mode']
             page+='**Atlas-added GuestRoom applicability:** '+('The source generic recipe is attached as an additional floor-agnostic construction option; all four specific variants are retained.' if mode=='attach_source_recipe' else 'A generic GuestRoom inherits this set’s existing building/story construction rules; source space-specific overrides remain separate.')
             page+=' This is an explicit Atlas applicability decision. Physics and the single building infiltration reference are unchanged. [Policy](../construction/applicability/policy.json).\n\n'
-        page+=markup+'\n\n## Component resources\n\n'
+        page+=markup+'\n\n## Component resources\n\nThese links retain the original detailed assemblies. Unified equivalent assemblies are included in the selected unified JSON.\n\n'
         page+='| Component type | Available assembly resources |\n|---|---|\n'
         roles={}
         for config in packet['component_configurations'].values():
@@ -215,6 +222,7 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
     page+=''.join(f'<li><a href="{PREFIX}{entry["path"]}">{esc(release["assemblies"][i]["name"])} · {esc(release["assemblies"][i]["role"])} · {esc(i)}</a></li>' for i,entry in rows.items())+'</ul></details>\n'
     write(root,'construction/assemblies/index.md',page)
     write(root,'construction/coverage.json',canonical({'definitions':report['definitions'],'contexts':report['contexts'],
+        'unified_release':'1.1.0','unified_contexts':report['contexts'],
         'assemblies':len(rows),'source_table_only_assembly_ids':release['metadata'].get('source_table_only_assembly_ids',[])}).decode())
     write(root,'object-index.json',canonical(registry).decode());write(root,'construction-site.json',canonical(report).decode())
     repair_retired_references(root,bundle,release)
@@ -244,6 +252,22 @@ def install_contract(root,include_resources=True):
 Contract **2.0.0**. One construction set supplies all source-supported above-ground
 component types, fixed reference infiltration, materials and provenance.
 
+Each definition page offers two separate JSON exports for the same selected
+climate and source reference:
+
+- **Detailed construction set (2.0.0):** original assemblies, materials,
+  program/story assignment rules and provenance.
+- **Unified building construction (1.1.0):** one assembly per applicable semantic,
+  precomputed archetype weights, mass budgets, fixed reference ACH and fit errors.
+
+The unified export is additive. It does not replace detailed source rules. Its
+fixed two-mass-layer plus massless-resistance approximation may inadequately
+reproduce source transient responses; measured errors and review flags remain
+visible. Do not combine both representations' mass quantities in one model.
+Source overhang dimensions remain evidence; BEMGen supplies actual overhang
+geometry. Paired-face budget means retain original operands in supporting
+profiles, with unequal-multiplier approximation flags and affected pair counts.
+
 Current distribution **v2.2.0** ships 177 complete building/dwelling sets and
 3,320 supported contexts. Room-specific rules are embedded in building sets.
 Standalone space-type sets are retained in frozen source releases rather than
@@ -261,6 +285,9 @@ No program loads, physics or infiltration values are changed.
 - [Normalized catalogue schema](../contracts/construction-catalogue-v2.schema.json)
 - [Complete Medium Office example](../examples/construction/medium-office.json)
 - [Complete residential example](../examples/construction/residential.json)
+- [Unified construction schema](../contracts/construction-equivalent-v1.1.schema.json)
+- [Unified Medium Office example](../examples/construction/unified-medium-office.json)
+- [Unified residential example](../examples/construction/unified-residential.json)
 - [Source coverage](../construction/coverage.json)
 - [All assembly resources](../construction/assemblies/index.md)
 - [Pinned source retrieval](../construction/source-lock.json)
@@ -279,9 +306,12 @@ resolved automatically. Climate controls both supported applicability and the
 selected construction/reference ACH. Scope and source evidence remain metadata;
 they are not separate construction catalogue filters.
 
-Expand **JSON** or select **Copy JSON → Copy construction JSON** for the complete
-self-contained source-ready set. **Copy source JSON** retains the original
-source definition. Construction copying does not apply program defaults.
+Choose **JSON representation: Detailed / Unified**, then expand **JSON**, copy
+or download the selected representation. Downloads have distinct `-detailed.json`
+and `-unified.json` filenames and contain one representation each. Changing the
+representation keeps the same climate and reference. Each compressed packet
+loads only when needed and is verified before use. **Copy source JSON** retains
+the original source definition. Construction copying does not apply program defaults.
 
 ## Components and geometry
 
@@ -318,6 +348,10 @@ production publication. Preserve source license notices when reusing artifacts.
         write(root,'contracts/'+name,(OUTPUT/'schemas'/name).read_text(encoding='utf-8'))
     for name in ('medium-office.json','residential.json'):
         write(root,'examples/construction/'+name,(OUTPUT/'examples'/name).read_text(encoding='utf-8'))
+    from scripts.construction_equivalent_release import OUTPUT as equivalent_output,SCHEMA as equivalent_schema
+    write(root,'contracts/'+equivalent_schema.name,equivalent_schema.read_text(encoding='utf-8'))
+    for source,target in (('medium-office-2019-3B.json','unified-medium-office.json'),('residential.json','unified-residential.json')):
+        write(root,'examples/construction/'+target,(equivalent_output/'examples'/source).read_text(encoding='utf-8'))
     write(root,'construction/source-lock.json',(OUTPUT/'sources/construction-v2-source-lock.json').read_text(encoding='utf-8'))
     for path in (OUTPUT/'sources/licenses').glob('*.txt'):
         write(root,'notices/construction/'+path.name,path.read_text(encoding='utf-8'))
@@ -395,7 +429,8 @@ def integrate_existing(bundle,root):
 def library_guide():
     return ('# Library definitions\n\nPrograms supply loads and determined schedules. '
             'A construction set groups its source-supported above-ground components, materials, fixed reference infiltration and provenance. '
-            'Choose its climate and source reference, then copy self-contained Construction JSON v2. '
+            'Choose its climate and source reference, then preview, copy or download either Detailed construction JSON v2 or Unified building construction JSON v1.1 as separate files. '
+            'Unified JSON uses precomputed archetype shares and one assembly per semantic, retaining approximation evidence and mass-budget rules. '
             'Room-specific construction rules are embedded in complete building sets. Independent assembly resources and unsupported contexts retain their source evidence. '
             'BEMGen owns component matching and translation using actual model geometry. '
             'Ground and systems completion remain deferred; existing HVAC pages retain source evidence.\n\n'
@@ -409,6 +444,8 @@ def verify_delivery(root,release=None):
     root=Path(root)
     if not (root/'construction-site.json').exists():return []
     release=release or load_release();report=load_json(root/'construction-site.json');errors=[];loaded={}
+    from scripts.construction_equivalent_site import load_equivalents,packet_for as equivalent_packet
+    equivalents=load_equivalents()
     class Section(HTMLParser):
         def __init__(self):super().__init__();self.sections=[]
         def handle_starttag(self,tag,attrs):
@@ -429,9 +466,10 @@ def verify_delivery(root,release=None):
         if len(decoded)!=descriptor['decoded_size_bytes']:raise ValueError('Construction decoded size mismatch')
         value=json.loads(decoded)
         # Profile packets repeat shared proofs; retaining every packet wastes memory.
-        if value.get('kind')!='construction_site_packet':loaded[key]=value
+        if value.get('kind') not in ('construction_site_packet','construction_equivalent_site_packet'):loaded[key]=value
         return value
     if set(report['packets'])!=set(release['construction_sets']):errors.append('Construction set census mismatch')
+    if set(report.get('unified_packets',{}))!=set(release['construction_sets']):errors.append('Unified construction set census mismatch')
     contexts=set()
     for identity,descriptor in report['packets'].items():
         try:
@@ -442,6 +480,9 @@ def verify_delivery(root,release=None):
             if not page.exists():page=root/f'definitions/{identity}.md'
             attrs=page_attributes(page)
             if json.loads(attrs['data-construction'])!=descriptor:raise ValueError('Construction page packet binding mismatch')
+            unified=report['unified_packets'][identity]
+            if json.loads(attrs['data-unified'])!=unified:raise ValueError('Unified construction page packet binding mismatch')
+            if read(unified)!=equivalent_packet(equivalents,identity,expected):raise ValueError('Unified packet differs from frozen equivalent release')
             if json.loads(attrs['data-contexts'])!=context_choices(release['construction_sets'][identity],expected):raise ValueError('Construction page context binding mismatch')
             if attrs['data-root']!='../../':raise ValueError('Construction page resource root mismatch')
             contexts.update(expected)

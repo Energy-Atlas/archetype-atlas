@@ -154,6 +154,16 @@ What the family takes from the ArtCraft reference:
 
 ---
 
+### 0.16 Construction export representations
+
+Construction definition pages share one climate/reference selection across two
+separate exports: Detailed construction set and Unified building construction.
+Use a labeled representation select within the existing filter controls. Preview,
+copy and download apply to that representation only; source JSON remains available
+in the copy dialog. Copy keeps the existing inverted primary style; Download uses
+the existing outlined secondary style. Keep packets lazy and checksum verified.
+Unified approximation evidence is explained in prose, without new badges or colours.
+
 ## 1. Design Intent
 
 Restyle the MkDocs website using the reference UI (section 0.2) as the primary visual reference for:

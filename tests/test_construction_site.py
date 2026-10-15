@@ -103,6 +103,36 @@ class ConstructionSiteTests(unittest.TestCase):
             result=subprocess.run(['node','-e',code,str(payload)],cwd=ROOT,capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr[:2500])
 
+    def test_separate_unified_packet_hydrates_frozen_documents_for_same_contexts(self):
+        from scripts.construction_equivalent_release import export_frozen,OUTPUT
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);report=self.generate(root)
+            self.assertIn('unified_packets',report)
+            packets={}
+            for identity,descriptor in report['unified_packets'].items():
+                page=(root/f'definitions/{identity}.md').read_text(encoding='utf-8')
+                self.assertIn('construction-representation',page)
+                self.assertIn('construction-download',page)
+                bound=json.loads(html.unescape(re.search(r'data-unified="([^"]+)"',page)[1]))
+                self.assertEqual(bound,descriptor)
+                self.assertNotEqual(descriptor,report['packets'][identity])
+                packets[identity]=json.loads(gzip.decompress((root/descriptor['href']).read_bytes()))
+            expected={i:export_frozen(OUTPUT,i) for i in self.release['contexts']}
+            payload=root/'unified-parity.json'
+            payload.write_text(json.dumps({'packets':packets,'expected':expected,'contexts':self.release['contexts']}),encoding='utf-8')
+            code="const assert=require('node:assert/strict'),fs=require('node:fs'),core=require('./website/assets/construction_core.js'); const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));for(const [id,p] of Object.entries(d.expected)){const packet=d.packets[d.contexts[id].construction_set_id];assert.deepEqual(core.hydrateUnified(packet,id),p);assert.throws(()=>core.hydrateUnified(packet,'unknown'));}"
+            result=subprocess.run(['node','-e',code,str(payload)],cwd=ROOT,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr[:2500])
+
+    def test_verifier_rejects_missing_unified_page_binding(self):
+        from scripts.construction_site import verify_delivery
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);report=self.generate(root)
+            self.assertIn('unified_packets',report)
+            identity=next(iter(report['packets']));page=root/f'definitions/{identity}.md'
+            page.write_text(re.sub(r' data-unified="[^"]+"','',page.read_text(encoding='utf-8')),encoding='utf-8')
+            self.assertTrue(verify_delivery(root,self.release))
+
     def test_every_physical_resource_and_provenance_is_accessible(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);report=self.generate(root)

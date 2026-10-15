@@ -35,7 +35,7 @@
     } finally { clearTimeout(timer); }
   }
   function load(section, mode = 'raw') {
-    if (!section || !['raw', 'defaulted', 'construction'].includes(mode)) return Promise.reject(new Error('Unknown JSON export mode.'));
+    if (!section || !['raw', 'defaulted', 'construction', 'unified'].includes(mode)) return Promise.reject(new Error('Unknown JSON export mode.'));
     if (!cache.has(section)) cache.set(section, new Map());
     const modes = cache.get(section);
     if (!modes.has(mode)) modes.set(mode, fetchObject(section, mode).catch(error => { modes.delete(mode); throw error; }));

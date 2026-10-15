@@ -27,7 +27,7 @@ class Links(HTMLParser):
         for key in ['href', 'src']:
             if attrs.get(key):
                 self.links.append(attrs[key])
-        for key in ['data-raw', 'data-defaulted', 'data-construction']:
+        for key in ['data-raw', 'data-defaulted', 'data-construction', 'data-unified']:
             if attrs.get(key):
                 descriptor = json.loads(attrs[key])
                 self.links.append('/archetype-atlas/' + descriptor['href'])

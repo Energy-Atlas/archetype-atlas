@@ -1084,6 +1084,7 @@ html {
 .definition-copy,
 .definition-resource button,
 .object-copy,
+.construction-download,
 .schedule-load,
 .schedule-update,
 .object-dialog button {
@@ -1104,7 +1105,7 @@ html {
 }
 
 :is(.definition-filters button, .definition-more, .definition-copy, .definition-resource button, .schedule-update,
-  .object-dialog button):is(:hover, :focus-visible):not(:disabled) {
+  .object-dialog button, .construction-download):is(:hover, :focus-visible):not(:disabled) {
   border-color: var(--ea-accent);
   color: var(--ea-accent);
 }
@@ -1130,7 +1131,7 @@ html {
 
 :is(.definition-filters, .schedule-controls, .object-dialog, .object-json, .object-references, .schedule-static,
   .definition-static, .definition-resource, .definition-header, .definition-results) :focus-visible,
-:is(.object-copy, .schedule-load, .definition-more):focus-visible {
+:is(.object-copy, .construction-download, .schedule-load, .definition-more):focus-visible {
   outline: 2px solid var(--ea-accent);
   outline-offset: 2px;
 }
@@ -1783,6 +1784,7 @@ body:has(> .definition-document) {
   .definition-filters,
   .schedule-controls,
   .object-copy,
+  .construction-download,
   .schedule-load {
     display: none;
   }

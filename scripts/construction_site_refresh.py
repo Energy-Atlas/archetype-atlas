@@ -52,7 +52,7 @@ def render_page(source,existing,source_path,docs):
 
 
 def descriptor_set(report):
-    values=list(report['packets'].values())+[v['json'] for table in report['resources'].values() for v in table.values()]
+    values=list(report['packets'].values())+list(report.get('unified_packets',{}).values())+[v['json'] for table in report['resources'].values() for v in table.values()]
     return {d['href']:d for d in values}
 
 
@@ -130,6 +130,13 @@ def refresh(docs,site,release=None,bundle=None):
         for source in (docs/directory).iterdir():
             if source.is_file():
                 target=site/directory/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
+    for source in (docs/'examples/construction').glob('unified-*.json'):
+        target=site/'examples/construction'/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
+    # Only construction interaction assets change; cached program pages and
+    # schedule assets remain untouched by this focused renderer.
+    for name in ('construction.js','construction_core.js','object.js','site.css'):
+        for root in (docs,site):
+            target=root/'assets'/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(ROOT/'website/assets'/name,target)
     for gate in ('residential','nonresidential'):
         path=f'catalogue/{gate}/construction/entries.json';target=site/path
         if target.parent.is_dir():shutil.copyfile(docs/path,target)
@@ -157,7 +164,7 @@ def refresh(docs,site,release=None,bundle=None):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--docs',type=Path,default=ROOT/'build/site-docs');parser.add_argument('--site',type=Path,default=ROOT/'build/site')
     args=parser.parse_args();report=refresh(args.docs,args.site)
-    path=ROOT/'build/hotel-guestroom-site-refresh.json';path.write_bytes(canonical(report));print(json.dumps(report,indent=2))
+    path=ROOT/'build/construction-site-refresh.json';path.write_bytes(canonical(report));print(json.dumps(report,indent=2))
 
 
 if __name__=='__main__':main()
