@@ -130,7 +130,7 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
     if not isinstance(constituents,list) or not constituents:
         raise GeneratorError('invalid_mixture','/constituents','At least one generated bundle required')
     bundle = None
-    version='1.1.0' if any(b.get('schema_version')=='1.1.0' for b in constituents) else '1.0.0'
+    version=max((b.get('schema_version','1.0.0') for b in constituents))
     input_receipts=[]; operating_groups={}; qualified_weather_groups=set()
     for incoming in constituents:
         validate_bundle(incoming)
@@ -138,12 +138,18 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
             raise GeneratorError('resource_integrity','/resource_set_id','Verified request snapshot identity differs')
         if incoming['metadata']['calendar'] != calendar:
             raise GeneratorError('invalid_calendar','/calendar','Constituent calendar differs from mixture')
-        if any(c['generation'].get('method')=='conserved_constituent_mixture' for c in incoming['constituents']):
+        if version!='1.2.0' and any(c['generation'].get('method')=='conserved_constituent_mixture' for c in incoming['constituents']):
             raise GeneratorError('invalid_mixture','/constituents','Nested mixed results need an explicit new physical allocation')
+        if version=='1.2.0' and any(c['generation'].get('method')=='conserved_constituent_mixture' and
+                not c['generation'].get('service_set_selection',{}).get('effective_physical_members') for c in incoming['constituents']):
+            raise GeneratorError('invalid_mixture','/constituents','Nested nonwater mixed results retain their existing explicit-allocation boundary')
         # Complete source-parent bundles contain references below demands,
         # targets, magnitudes, services and generation receipts as well as owners.
         from .source_compositions import remap_binding_references
         incoming=copy.deepcopy(incoming)
+        if version=='1.2.0' and incoming['schema_version']!='1.2.0':
+            from .service_graph import _upgrade_bundle
+            incoming=_upgrade_bundle(incoming)
         if version=='1.1.0':
             legacy=incoming['schema_version']=='1.0.0'
             incoming['schema_version']=version
@@ -184,12 +190,22 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
             raise GeneratorError('duplicate_instance','/constituents','Constituent schedule identities overlap')
         bundle['schedules'].update(copy.deepcopy(incoming['schedules']))
         bundle['bindings'].extend(copy.deepcopy(incoming['bindings']))
+        if version=='1.2.0':
+            retained={r['building_realization_id']:r for r in bundle['metadata']['building_realizations']}
+            for realization in incoming['metadata']['building_realizations']:
+                key=realization['building_realization_id']
+                if key in retained and retained[key]!=realization:
+                    raise GeneratorError('shared_service_conflict','/metadata/building_realizations','Conflicting retained realization authority')
+                if key not in retained:
+                    bundle['metadata']['building_realizations'].append(copy.deepcopy(realization));retained[key]=realization
         for c in copy.deepcopy(incoming['constituents']):
             bundle['constituents'].append(c)
     if len(input_receipts)>1:
         bundle['generation']={'method':'precomputed_bundle_composition_v1',
                               'input_generation_receipts':input_receipts,
                               'seed_interpretation':'Preserve actual input allocations; no multifamily reallocation or reseeding'}
+        if version=='1.2.0':
+            bundle['generation'].update(physical_unit_seed_sequence=[],residential_unit_order=[],unit_seeds={})
         if qualified_weather_groups:
             bundle['generation']['operating_groups']=copy.deepcopy(operating_groups)
             bundle['generation']['operating_group_disclosure_scope']='All retained generated input owners in input order; mixture participation is separately disclosed'
@@ -198,7 +214,18 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
     reconstructed={'resource_set_id':bundle['metadata']['resource_set_id'],'calendar':calendar,
                    'instances':instances,'mixture':mixture}
     if version=='1.1.0':reconstructed['schema_version']=version
-    validate_request(reconstructed,0)
+    if version=='1.2.0':
+        from .contract import _check_schema,_load_schema
+        schema=_load_schema('request',version)
+        _check_schema(mixture,schema['properties']['mixture'],schema,'/mixture')
+        keys={i['key']:i for i in instances};weighted=mixture['members'];explicit=mixture.get('service_members',[])
+        if (not weighted and not explicit or len({m['instance_key'] for m in weighted})!=len(weighted) or
+                len({m['instance_key'] for m in explicit})!=len(explicit) or
+                any(m['instance_key'] not in keys or keys[m['instance_key']]['owner_kind']=='physical_service' for m in weighted) or
+                any(m['instance_key'] not in keys or keys[m['instance_key']]['owner_kind']!='physical_service' for m in explicit) or
+                weighted and mixture['composition_id'] is None and not math.isclose(math.fsum(m['weight'] for m in weighted),1,rel_tol=0,abs_tol=1e-12)):
+            raise GeneratorError('invalid_mixture','/mixture','Unique actual members and normalized programme participation required')
+    else:validate_request(reconstructed,0)
     if ('denominator' in mixture) != ('result_basis' in mixture):
         _fail('/mixture','Result basis and physical denominator must be supplied together')
     if 'denominator' in mixture:
@@ -216,6 +243,9 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
     if version=='1.1.0':
         from .services import select_whole_services
         service_members,service_receipt=select_whole_services(bundle,mixture,members)
+    elif version=='1.2.0':
+        from .service_graph import select_physical_services
+        service_members,service_receipt=select_physical_services(bundle,mixture,members)
     load_members=members+service_members
     for c,w in load_members:
         physical,receipts=normalize_basis_bindings(c.get('basis_bindings',{}),c['instance_key'])
@@ -249,10 +279,11 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
         mixed['generation'].update(method='conserved_source_composition',source_allocation=source_receipt,
             control_policy='ADR0012 source represented-area pointwise eligible control average; no thermal conservation claim')
         mixed['evidence'].append({'source_composition':copy.deepcopy(source_receipt)})
-    if version=='1.1.0':
+    if version in {'1.1.0','1.2.0'}:
         mixed['owner_kind']='program' if source_recipe is not None else 'derived_result'
         mixed['required_service_links']=[]
-    if service_receipt is not None:mixed['generation']['service_selection']=service_receipt
+        if version=='1.2.0':mixed.update(required_service_sets=[],service_set_projections=[])
+    if service_receipt is not None:mixed['generation']['service_set_selection' if version=='1.2.0' else 'service_selection']=service_receipt
     def emit(slot,unit,kind,values):
         sid=schedule_id(key,slot)
         bundle['schedules'][sid]={'id':sid,'unit':unit,'year':calendar['year'],'clock':calendar['clock'],
@@ -293,8 +324,12 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
                           'reference_target':binding['reference_target'],'extent':extent,
                           'values':bundle['schedules'][binding['schedule_id']]['values']}
                 physical_id=descriptor['physical_id']
-                if physical_id in services:
-                    previous=services[physical_id]
+                service_key=physical_id
+                if version=='1.2.0':
+                    from .owners import physical_identity
+                    service_key=physical_identity(c)
+                if service_key in services:
+                    previous=services[service_key]
                     if previous['identity']!=identity:
                         raise GeneratorError('shared_service_conflict','/shared_services/'+physical_id,
                                              'Repeated whole physical service differs in source/budget/extent/trajectory')
@@ -304,13 +339,13 @@ def _compose_constituents(constituents,mixture,calendar,*,verified_resources=Non
                 receipt={'physical_id':physical_id,'ownership':'instantiate_once','mode':'whole',
                          'links':[{'instance_key':c['instance_key'],'descriptor':copy.deepcopy(descriptor)}],
                          'interpretation':'Whole source service emitted once; informational allocation/program weights do not rescale it'}
-                services[physical_id]={'identity':identity,'receipt':receipt}
+                services[service_key]={'identity':identity,'receipt':receipt}
                 mixed['shared_services'].append(receipt)
                 factor=extent['value']/mixture['denominator']['value']
             groups.setdefault(group,[]).append({'binding_index':index,'schedule_id':binding['schedule_id'],
                                                'instance_key':c['instance_key'],'demand_id':demand['demand_id'],
                                                'factor':factor,'heat_fractions':demand.get('heat_fractions'),
-                                               **(identity_fields(c,version) if version=='1.1.0' else {})})
+                                               **(identity_fields(c,version) if version in {'1.1.0','1.2.0'} else {})})
     for (quantity,carrier,fuel,host),components in groups.items():
         slot='load/'+ '/'.join(quote(part,safe='') for part in (quantity,carrier,fuel,host))
         unit=carrier+SUFFIXES[result_basis]

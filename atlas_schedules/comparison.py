@@ -1,5 +1,6 @@
 """Numerical and scientific equality for emitted bundles, independent of JSON bytes."""
 import math
+from .canonical import canonical
 from .owners import owner_identity
 
 
@@ -62,6 +63,8 @@ def _scientific_equal(actual, expected, tolerances, path=(), derived=False, inte
     """
     if isinstance(expected,dict):
         if not isinstance(actual,dict): return False
+        if set(expected)=={'path','sha256','locator','value'}:
+            return canonical(actual)==canonical(expected)
         derived = derived or expected.get('generation',{}).get('method')=='conserved_constituent_mixture'
         if derived and isinstance(expected.get('unit'),str) and expected['unit'].startswith('m3'):
             integral_tolerance='annual_volume_m3'
@@ -107,6 +110,7 @@ def _reference_projection(bundle):
     bindings={i:_binding_key(b) for i,b in enumerate(bundle.get('bindings',[]))}
     def project(value):
         if isinstance(value,dict):
+            if set(value)=={'path','sha256','locator','value'}:return value
             return {k:bindings.get(v,v) if k=='binding_index' and type(v) is int else project(v)
                     for k,v in value.items()}
         if isinstance(value,list): return [project(v) for v in value]
@@ -126,6 +130,9 @@ def compare_bundles(actual: dict, expected: dict, policy: dict) -> list[str]:
     for field in ('calendar', 'resource_set_id'):
         if actual.get('metadata', {}).get(field) != expected.get('metadata', {}).get(field):
             differences.append(f'metadata/{field}')
+    if (expected.get('schema_version')=='1.2.0' or actual.get('schema_version')=='1.2.0') and canonical(
+            actual.get('metadata',{}).get('building_realizations'))!=canonical(expected.get('metadata',{}).get('building_realizations')):
+        differences.append('metadata/building_realizations/source_authority')
     if not _scientific_equal(a_science.get('generation'),e_science.get('generation'),tolerances):
         differences.append('generation/source_decisions')
     try:

@@ -54,9 +54,17 @@ class V12WireTests(unittest.TestCase):
         validate_request(params, 42)
         _schema_errors(params, 'request', '1.2.0')
         _schema_errors(self.bundle(), 'bundle', '1.2.0')
-        with self.assertRaises(GeneratorError) as unqualified:
-            validate_bundle(self.bundle())
-        self.assertEqual(unqualified.exception.code, 'requires_binding')
+        complete=self.bundle()
+        complete['generation'].update(residential_unit_order=[],unit_seeds={})
+        validate_bundle(complete)
+        invalid=copy.deepcopy(complete)
+        invalid['generation']['physical_unit_seed_sequence']=[{
+            'actor_kind':'stock','instance_key':invalid['constituents'][0]['instance_key'],
+            'building_realization_id':None,'unit_id':None,'stochastic_action':'generate',
+            'position':0,'unit_seed':invalid['generation']['master_seed']}]
+        with self.assertRaises(GeneratorError) as inconsistent:
+            validate_bundle(invalid)
+        self.assertEqual(inconsistent.exception.code, 'invalid_reference')
         for version, old_params in [('1.0.0', explicit), ('1.1.0', old)]:
             changed = copy.deepcopy(old_params); changed['building_realizations'] = []
             self.assert_contract_error(lambda: validate_request(changed, 42))

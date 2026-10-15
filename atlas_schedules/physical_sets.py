@@ -92,7 +92,7 @@ def _extent(role, path):
     return {'value': value, 'unit': unit, 'evidence': copy.deepcopy(operands['evidence'])}
 
 
-def validate_inventory(inventory):
+def validate_inventory(inventory, *, _incoming=False):
     """Validate a locked independent inventory, including its separate census."""
     _exact(inventory, ('inventory_sha256', 'payload'), '/inventory')
     payload = inventory['payload']; _typed(payload, 'inventory_payload', '/inventory/payload')
@@ -150,7 +150,7 @@ def validate_inventory(inventory):
                     not _same(authority['service_definition'], role['service_definition']) or not authority['source_rows']):
                 _fail(path+'/schedule_authority', 'Recovered source bridge must retain frozen null and entire original service/rows')
             _evidence(authority['bridge_evidence'], path+'/schedule_authority/bridge_evidence')
-            if not _qualified_recovered_bridge(role):
+            if not _incoming and not _qualified_recovered_bridge(role):
                 _fail(path+'/schedule_authority', 'Recovered-null source Ruleset bridge is not independently qualified', 'requires_binding')
         if sid in services and (not _same(services[sid], role['service_definition']) or not _same(schedules[sid], authority)):
             _fail(path, 'Repeated service definition/Ruleset authority differs')
@@ -417,7 +417,7 @@ def _member(adapter):
     return programme
 
 
-def _variant_record(original_member, selected_context, qualification):
+def _variant_record(original_member, selected_context, qualification, *, _incoming=False):
     """Shared source validator/constructor for compiler and locked runtime record."""
     p = _member(original_member); context = _selected_context(selected_context)
     key = {'parent_inventory_id': original_member['parent_inventory_id'],
@@ -454,7 +454,7 @@ def _variant_record(original_member, selected_context, qualification):
         'adaptation': adaptation, 'qualification': copy.deepcopy(qualification)}
     result['variant_id'] = 'variant-'+hashlib.sha256(canonical(result)).hexdigest()
     _typed(result, 'child_variant', '/child_variant')
-    if not _qualified_exact_context(qualification):
+    if not _incoming and not _qualified_exact_context(qualification):
         _fail('/qualification', 'Exact selected child full-slot tuple remains unqualified', 'requires_binding')
     return result
 

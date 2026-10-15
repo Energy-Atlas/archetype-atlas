@@ -383,7 +383,7 @@ def _physical_result(instance,entry,clock):
     values=evaluate_rules(req['source_ruleset']['value'],clock['year'],clock['holidays'])['values']
     demand={'demand_id':sid,'slot':'hot_water_volume','quantity':'hot_water_volume',
             'value':original['value'],'unit':'m3/s/m2','basis':'floor_area',
-            'fuel':'water','host':'unresolved_zone_heat',
+            'fuel':'water','host':'building_service',
             'evidence':{'original_demand':copy.deepcopy(req['original_demand']),
                         'service_definition':copy.deepcopy(req['service_definition']),
                         'source_ruleset':copy.deepcopy(req['source_ruleset'])}}
@@ -589,7 +589,7 @@ def bind_caller_water(bundle: dict, plan: dict) -> None:
         values=evaluate_rules(req['source_ruleset']['value'],bundle['metadata']['calendar']['year'],
                               bundle['metadata']['calendar'].get('holidays',[]))['values']
         demand={'quantity':'hot_water_volume','value':original['value'],'unit':original['unit'],
-                'basis':original['basis'],'fuel':'water','host':'unresolved_zone_heat',
+                'basis':original['basis'],'fuel':'water','host':'building_service',
                 'evidence':{'original_demand':req['original_demand']}}
         independent=reference_budget(demand,values)
         if (independent['total']!=actual['total'] or

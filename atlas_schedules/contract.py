@@ -197,9 +197,6 @@ def validate_bundle(bundle: dict) -> None:
             raise GeneratorError('invalid_contract','/metadata/building_realizations',
                                  'Building realizations require schema 1.2.0')
     _schema_errors(bundle, 'bundle',bundle.get('schema_version'))
-    if bundle['schema_version'] == '1.2.0':
-        raise GeneratorError('requires_binding','/schema_version',
-                             'Physical service 1.2 semantic bundle validation awaits retained-source integration')
     schedules = bundle['schedules']
     cal = bundle['metadata']['calendar']
     if calendar.isleap(cal['year']):
@@ -305,6 +302,12 @@ def validate_bundle(bundle: dict) -> None:
     if bundle['schema_version']=='1.1.0':
         from .services import validate_service_links
         validate_service_links(bundle)
+    if bundle['schema_version']=='1.2.0':
+        from .service_graph import validate_physical_graph
+        try:validate_physical_graph(bundle)
+        except GeneratorError:raise
+        except (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:
+            raise GeneratorError('source_integrity','/','Incomplete retained physical source proof') from error
 
 
 def _validate_generated_binding_references(bundle):
@@ -320,6 +323,7 @@ def _validate_generated_binding_references(bundle):
         return bindings[index]
     def walk(value,path):
         if isinstance(value,dict):
+            if bundle['schema_version']=='1.2.0' and set(value)=={'path','sha256','locator','value'}:return
             if value.get('method')=='actual_generated_bound_trajectory_sum':
                 components=value.get('components')
                 required={'binding_index','instance_key','schedule_id','demand_id'}
@@ -327,19 +331,29 @@ def _validate_generated_binding_references(bundle):
                         any(not isinstance(c,dict) or not required<=set(c) for c in components)):
                     raise GeneratorError('invalid_reference',path+'/components',
                                          'Actual generated trajectory components require complete binding ownership')
-                if bundle['schema_version']=='1.1.0':
+                if bundle['schema_version'] in {'1.1.0','1.2.0'}:
                     for component in components:
+                        if bundle['schema_version']=='1.2.0' and set(component)-{
+                                'binding_index','instance_key','schedule_id','demand_id','factor','heat_fractions',
+                                'owner_kind','program_id','source_service_id','physical_id','physical_binding_kind',
+                                'building_realization_id','unit_id','source_fixture_role_id'}:
+                            raise GeneratorError('invalid_reference',path+'/components','Unknown generated component reference field')
                         if 'owner_kind' not in component:
                             raise GeneratorError('invalid_reference',path+'/components',
                                                  'Typed trajectory components require an explicit owner kind')
                         owner_identity(component)
             if 'binding_index' in value:
                 actual=binding(value['binding_index'],path+'/binding_index')
-                for field in ('instance_key','schedule_id','demand_id','source_service_id','physical_id'):
+                for field in ('instance_key','schedule_id','demand_id','source_service_id','physical_id',
+                              'building_realization_id','unit_id','source_fixture_role_id','physical_binding_kind'):
                     if field in value and value[field]!=actual.get(field):
                         raise GeneratorError('invalid_reference',path+'/'+field,
                                              'Generated component reference belongs to another owner, schedule or demand')
-                if 'owner_kind' in value and owner_identity(value)!=owner_identity(actual):
+                identity=value
+                if (bundle['schema_version']=='1.2.0' and actual.get('physical_binding_kind')=='legacy_whole' and
+                        value.get('owner_kind')=='physical_service' and 'physical_binding_kind' not in value):
+                    identity=dict(value,physical_binding_kind='legacy_whole')
+                if 'owner_kind' in value and owner_identity(identity)!=owner_identity(actual):
                     raise GeneratorError('invalid_reference',path+'/owner_kind','Generated reference has a different typed source owner')
             if 'binding_indices' in value:
                 indices=value['binding_indices']

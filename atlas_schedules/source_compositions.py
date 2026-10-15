@@ -158,6 +158,7 @@ def remap_binding_references(value,mapping):
         if isinstance(current,list):
             for child in current:walk(child)
         else:
+            if set(current)=={'path','sha256','locator','value'}:return
             for key,child in current.items():
                 if key=='binding_index':current[key]=index(child)
                 elif key=='binding_indices':
@@ -179,13 +180,17 @@ def project_source_members(bundle,keys):
         physical,_=select_whole_services(bundle,{'members':[{'instance_key':k,'weight':1} for k in keys]},
                                          [(owners[k],1) for k in keys])
         keys=list(keys)+[c['instance_key'] for c,w in physical if c['instance_key'] not in keys]
+    elif bundle['schema_version']=='1.2.0':
+        from .service_graph import required_graph_closure
+        keys=required_graph_closure(bundle,keys)
     selected=[];bindings=[];schedules={};inverse={};forward={}
     for key in keys:
         child=copy.deepcopy(owners[key])
-        if child['generation'].get('method') in {'conserved_source_composition','conserved_constituent_mixture'}:
+        if bundle['schema_version']!='1.2.0' and child['generation'].get('method') in {'conserved_source_composition','conserved_constituent_mixture'}:
             _fail('members','Nested source allocation requires separately audited physical expansion')
         demand_ids={d['demand_id'] for d in child['demands']}
-        if any(s.get('demand_id') not in demand_ids for s in child['shared_services']):
+        if (not (bundle['schema_version']=='1.2.0' and child['owner_kind']=='derived_result') and
+                any(s.get('demand_id') not in demand_ids for s in child['shared_services'])):
             _fail('shared_services','Every selected service descriptor needs its actual owned demand binding')
         for sid in child['schedule_ids'].values():
             if sid not in bundle['schedules']:_fail('schedule_id','Selected source member schedule is missing')
@@ -204,7 +209,12 @@ def project_source_members(bundle,keys):
     for binding in bindings:remap_binding_references(binding,forward)
     local={'schema_version':bundle['schema_version'],'algorithm_version':bundle['algorithm_version'],
         'metadata':copy.deepcopy(bundle['metadata']),'constituents':selected,'bindings':bindings,'schedules':schedules,
-        'generation':{'method':'private_actual_source_member_projection'}}
+        'generation':copy.deepcopy(bundle['generation']) if bundle['schema_version']=='1.2.0' else {'method':'private_actual_source_member_projection'}}
+    if bundle['schema_version']=='1.2.0':
+        buildings={c.get('building_realization_id') for c in selected}
+        local['metadata']['building_realizations']=[r for r in local['metadata']['building_realizations'] if r['building_realization_id'] in buildings]
+        local['generation'].pop('mixture',None)
+        remap_binding_references(local['generation'],forward)
     return local,inverse
 
 
