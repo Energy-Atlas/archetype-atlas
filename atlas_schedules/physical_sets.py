@@ -571,10 +571,14 @@ def _execution_association(authority, realization, resources, direct_program_ids
         pid=_typed(value['definition'].get('id'),'id',where+'/definition/id')
         if pid in ids:_fail(where,'Ambiguous duplicate direct programme executable','requires_binding')
         ids.append(pid)
+        if pid not in authority['method_qualification']['value']['program_ids']:
+            _fail(where,'Eligible programme is absent from independent native qualification coverage')
         if not _same(record,_canonical_record(resources,'program',pid)):
             _fail(where,'Actual canonical executable value/path/hash/locator differs from qualified record')
-    if ids!=direct_program_ids:
-        _fail('/execution_qualification/standalone_program_records','Exact direct programme encounter-order closure missing or extra','requires_binding')
+    # The qualified source-order pool belongs to the immutable context; caller
+    # selection/order does not change that context or add unselected actors.
+    if any(pid not in ids for pid in direct_program_ids):
+        _fail('/execution_qualification/standalone_program_records','Selected direct programme lacks a whole eligible executable record','requires_binding')
     if not _qualified_execution_association(qualification):
         _fail('/execution_qualification','Native-to-executable association is not independently qualified','requires_binding')
     return copy.deepcopy(association),copy.deepcopy(qualification)

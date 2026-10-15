@@ -38,7 +38,7 @@ def artifact(value,path):
     return {'path':path,'sha256':hashlib.sha256(canonical(value)).hexdigest(),'locator':'/','value':copy.deepcopy(value)}
 
 
-def records_fixture(mode='hotel', parent=False, zero=False, bad_weights=False, bad_area=False, original_context=False):
+def records_fixture(mode='hotel', parent=False, zero=False, bad_weights=False, bad_area=False, original_context=False, peer_programmes=False):
     from scripts.schedule_generator_physical_sets import compile_exact_inventory, compile_exact_requirements, compile_child_variant
     selected_configuration='source-context' if original_context else 'selected-context'
     records = fixture(); original = records['ordered_fixture_roles'][0]
@@ -60,7 +60,7 @@ def records_fixture(mode='hotel', parent=False, zero=False, bad_weights=False, b
         role['geometry_operands'].update(floor_area_m2=39.02202 if i == 0 else (624.3157440000001-156.08808)/12,
                                         space_multiplier=4, zone_multiplier=[1,10,1,1][i])
         records['ordered_fixture_roles'].append(role)
-    if parent:
+    if parent or peer_programmes:
         leaf = records['programmes'][0]['value']
         # Deliberately unequal component areas/densities; parent scalar is unrelated.
         second = copy.deepcopy(leaf); second.update(id='leaf-two', source_id='source-two', service_ids=['water-two'])
@@ -75,6 +75,7 @@ def records_fixture(mode='hotel', parent=False, zero=False, bad_weights=False, b
             role['service_definition']['value']['load'] = dict(copy.deepcopy(second['loads'][0]), scope='building_service')
             records['ordered_fixture_roles'].append(role)
         records['method_references'].append(source(dict(copy.deepcopy(records['method_references'][0]['value']), program_id='leaf-two')))
+    if parent:
         areas = [624.3157440000001, 20]; total = math.fsum(areas)
         components = [{'program_id': p['value']['id'], 'weight': a/total, 'load': copy.deepcopy(p['value']['loads'][0])}
                       for p,a in zip(records['programmes'], areas)]
@@ -179,7 +180,8 @@ def records_fixture(mode='hotel', parent=False, zero=False, bad_weights=False, b
         data['program','parent']['recipe']['required_inputs']=list(programme['inputs'])
     else:
         # Standalone programme executes its supplied selected context as well.
-        data['program','leaf']['recipe']['source_context']=context(selected_configuration)
+        for p in records['programmes']:
+            data['program',p['value']['id']]['recipe']['source_context']=context(selected_configuration)
     instances=[programme]
     for r in inventory['payload']['roles']:
         inputs={'source_hoo_configuration_id':selected_configuration,'physical_fixture_evidence':{'role':r['source_space']}}
@@ -195,7 +197,8 @@ def records_fixture(mode='hotel', parent=False, zero=False, bad_weights=False, b
         'qualification_id':'independent-labelled-execution-q','qualification_scope':'full_selected_programme_and_water_registration',
         'selected_method_context':selected_context,
         'execution_association':artifact(association,'reference/physical-execution-association__selected.json'),
-        'standalone_program_records':[artifact(data['program',direct_id],'program/'+direct_id+'.json')], 'evidence':evidence()})
+        'standalone_program_records':[artifact(data['program',pid],'program/'+pid+'.json') for pid in
+            ([p['value']['id'] for p in records['programmes']] if peer_programmes else [direct_id])], 'evidence':evidence()})
     return data, {'schema_version':'1.2.0','calendar':CALENDAR,'building_realizations':[realization],'instances':instances}
 
 
@@ -426,7 +429,6 @@ class PhysicalBindingTests(unittest.TestCase):
     def test_source_only_execution_needs_no_direct_programme_record(self):
         import atlas_schedules.physical_sets as sets
         data,params=records_fixture();params['instances']=params['instances'][1:2]
-        data['reference','physical-execution-qualification__selected']['value']['standalone_program_records']=[]
         resources=self.resources(data)
         with patch.object(sets,'_qualified_exact_context',return_value=True), patch.object(sets,'_qualified_execution_association',return_value=True):
             pairs=sets._prepare_exact_instances(params,resources)
@@ -434,6 +436,62 @@ class PhysicalBindingTests(unittest.TestCase):
         self.assertEqual(len(plan['owners']),1)
         self.assertEqual(plan['projections'],[])
         self.assertEqual(plan['building_realizations'][0]['native_context']['execution_authority']['canonical_program_records'],[])
+
+    def test_one_context_pool_supports_request_subsets_and_caller_order(self):
+        import atlas_schedules.physical_sets as sets
+        data,params=records_fixture(peer_programmes=True)
+        peer=dict(copy.deepcopy(params['instances'][0]),key='peer',program_id='leaf-two')
+        params['instances'].insert(1,peer)
+        resources=self.resources(data)
+        original=canonical(resources.get('reference','physical-execution-qualification__selected'))
+        native=canonical(resources.get('reference','qualification'))
+        selections=[('both',params['instances'],6,2,['leaf','leaf-two']),
+            ('leaf',[i for i in params['instances'] if i.get('program_id')=='leaf' or i.get('source_service_id')=='water'],4,1,['leaf']),
+            ('peer',[i for i in params['instances'] if i.get('program_id')=='leaf-two' or i.get('source_service_id')=='water-two'],2,1,['leaf-two']),
+            ('physical',[next(i for i in params['instances'] if i.get('owner_kind')=='physical_service')],1,0,[]),
+            ('reversed',list(reversed(params['instances'])),6,2,['leaf-two','leaf'])]
+        for label,instances,count,projections,pids in selections:
+            selected=copy.deepcopy(params);selected['instances']=copy.deepcopy(instances)
+            with self.subTest(label=label),patch.object(sets,'_qualified_exact_context',return_value=True),patch.object(sets,'_qualified_execution_association',return_value=True):
+                pairs=sets._prepare_exact_instances(selected,resources)
+                self.assertEqual([i['key'] for i,r in pairs],[i['key'] for i in instances])
+                plan=sets.prepare_exact_bindings(selected,pairs,resources)
+                result=self.emit(plan)
+                self.assertEqual(len(result['bindings']),count)
+                self.assertEqual([c['program_id'] for c in result['constituents'] if c['owner_kind']=='program'],pids)
+                self.assertCountEqual([c['source_fixture_role_id'] for c in result['constituents'] if c['owner_kind']=='physical_service'],
+                    [i['source_fixture_role_id'] for i in instances if i['owner_kind']=='physical_service'])
+                for c in result['constituents']:
+                    for projection,requirement in zip(c.get('service_set_projections',[]),c.get('required_service_sets',[])):
+                        self.assertEqual(projection['role_ids'],requirement['expected_role_ids'])
+                self.assertEqual(sum(len(c.get('service_set_projections',[])) for c in result['constituents']),projections)
+                proof=result['metadata']['building_realizations'][0]['native_context']
+                pool=proof['execution_qualification']['value']['standalone_program_records']
+                self.assertEqual([r['value']['definition']['id'] for r in pool],['leaf','leaf-two'])
+                actual=proof['execution_authority']['canonical_program_records']
+                self.assertEqual([r['value']['definition']['id'] for r in actual],pids)
+                self.assertEqual(canonical(resources.get('reference','physical-execution-qualification__selected')),original)
+                self.assertEqual(canonical(resources.get('reference','qualification')),native)
+
+    def test_unselected_eligible_pool_entries_are_still_authoritative(self):
+        import atlas_schedules.physical_sets as sets
+        for label in ('duplicate','unknown-native-id','corrupt-value','corrupt-sha','missing-selected'):
+            data,params=records_fixture(peer_programmes=True)
+            pool=data['reference','physical-execution-qualification__selected']['value']['standalone_program_records']
+            if label=='duplicate':pool.append(copy.deepcopy(pool[1]))
+            if label=='unknown-native-id':
+                foreign=copy.deepcopy(data['program','leaf-two']);foreign['definition']['id']='foreign'
+                data['program','foreign']=foreign
+                pool.append(artifact(foreign,'program/foreign.json'))
+            if label=='corrupt-value':pool[1]['value']['recipe']['source_context']['case_id']='foreign'
+            if label=='corrupt-sha':pool[1]['sha256']='b'*64
+            if label=='missing-selected':pool.pop(0)
+            params['instances']=[params['instances'][0]] if label=='missing-selected' else params['instances'][1:2]
+            resources=self.resources(data)
+            with self.subTest(label=label),patch.object(sets,'_qualified_exact_context',return_value=True),patch.object(sets,'_qualified_execution_association',return_value=True),patch(
+                    'atlas_schedules.programs._resolve_program_record',side_effect=AssertionError('unqualified programme executed')):
+                with self.assertRaises(GeneratorError) as caught:sets._prepare_exact_instances(params,resources)
+                self.assertEqual(caught.exception.code,'requires_binding' if label in {'duplicate','missing-selected'} else 'source_integrity')
 
     def test_standalone_programme_whole_executable_is_qualified_before_execution(self):
         def change(data,params):
