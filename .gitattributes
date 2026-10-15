@@ -7,6 +7,10 @@ data/resolution-releases/**/profiles/*.csv -text whitespace=blank-at-eol,blank-a
 # Executed native capture sources retain their exact locked bytes, including CRLF.
 data/schedule-generator/reference/*-driver.py -text whitespace=cr-at-eol
 data/schedule-generator/reference/*-harness.rb -text whitespace=cr-at-eol
+# Apartment proof sources and capture-time code are immutable byte-locked copies.
+data/schedule-generator/apartment/capture-sources/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof,-space-before-tab
+data/schedule-generator/apartment/capture-code/** -text whitespace=cr-at-eol
+data/schedule-generator/apartment/evidence/*-harness.rb -text whitespace=cr-at-eol
 
 # Preserve byte-locked independent compatibility report receipts.
 .superpowers/sdd/2026-10-13-schedule-generator/python311-c5-*-compatibility-report.md -text whitespace=cr-at-eol,-blank-at-eof
