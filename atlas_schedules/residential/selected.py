@@ -6,8 +6,9 @@ their source weather, installed equipment and event semantics.
 import math
 
 from ..errors import GeneratorError
-from .activity import dates, required, rows, simulate_activities
-from .shapes import MONTHS, _schedules, building_america_lighting, shift_and_normalize
+from .activity import dates, required, simulate_activities
+from .shapes import (_schedules, _state_month_shifts, _resident_fractions,
+                     _interior_lighting_shape, shift_and_normalize)
 
 _LOCATION_FIELDS = ('state', 'latitude', 'longitude', 'time_zone_utc_offset')
 _POSITIVE_FIELDS = {'year', 'holidays', 'residents', *_LOCATION_FIELDS}
@@ -66,42 +67,14 @@ def generate_unit_occupancy_interior_lighting(inputs: dict, unit_seed: int, reso
 def _selected_shapes(activity: dict, inputs: dict, resources, domain: dict) -> dict:
     """Source arithmetic on a real activity result; also permits capture-protocol proof."""
     days = dates(inputs['year'])
-    shifts = {}
-    for daytype in ('weekday', 'weekend'):
-        table = rows(resources, daytype+'__state_and_monthly_schedule_shift_csv')
-        header = table[0]
-        shifts[daytype] = {row[header.index('Month')]: int(row[header.index('Lead')])
-                           for row in table[1:] if row[header.index('State')] == inputs['state']}
-        if set(shifts[daytype]) != set(MONTHS):
-            raise GeneratorError('unsupported_input', '/inputs/state',
-                                 'State/month shifts not reported by source')
-    traces = activity['resident_states']
-    count = activity['simulated_residents']
-    if len(traces) != count or any(len(trace) != 35040 or any(type(s) is not int or not 0 <= s < 7
-                                                            for s in trace) for trace in traces):
-        raise GeneratorError('activity_context', '/activities/resident_states',
-                             'Complete source state traces required')
-    awake = []
-    home = []
-    for step in range(35040):
-        away = sum(trace[step] == 5 for trace in traces)/count
-        sleeping = sum(trace[step] == 0 for trace in traces)/count
-        awake.append(1-(away+sleeping))
-        home.extend([1-away]*15)
+    shifts = _state_month_shifts(resources, inputs['state'])
+    awake, home = _resident_fractions(activity)
     offset = activity['unit_offset_minutes']
     occupants = shift_and_normalize(home, offset, days, shifts, 60)
     custom = _schedules(resources, 'schedules_csv')
-    lighting = building_america_lighting(
-        inputs['latitude'], inputs['longitude'], inputs['time_zone_utc_offset'],
-        custom['lighting_interior', 'LightingInteriorMonthlyMultipliers'])
-    minute_values = []
-    for step, today in enumerate(days):
-        profile = lighting[today.month-1]
-        minimum = min(profile)
-        for quarter in range(96):
-            value = minimum+(profile[quarter//4]-minimum)*awake[step*96+quarter]
-            minute_values.extend([value]*15)
-    interior = shift_and_normalize(minute_values, offset, days, shifts)
+    interior = _interior_lighting_shape(
+        awake, inputs['latitude'], inputs['longitude'], inputs['time_zone_utc_offset'],
+        custom, offset, days, shifts)
     context = {
         'method': 'unit_occupancy_interior_lighting',
         'method_locator': 'ResStock BuildResidentialScheduleFile/resources/schedules.rb:945-955,1046-1067',
@@ -112,7 +85,7 @@ def _selected_shapes(activity: dict, inputs: dict, resources, domain: dict) -> d
         'raw_source_precision': 'raw_source_float',
         'activity_status': activity['status'],
         'residents_input': inputs['residents'],
-        'simulated_residents': count,
+        'simulated_residents': activity['simulated_residents'],
         'unit_seed': activity['unit_seed'],
         'occupant_types': list(activity['occupant_types']),
         'enduse_seeds': dict(activity['enduse_seeds']),

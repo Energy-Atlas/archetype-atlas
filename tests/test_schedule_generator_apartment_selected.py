@@ -16,7 +16,6 @@ from scripts.common import ROOT
 LOCK = ROOT / 'sources/schedule-generator-apartment-timing-lock.json'
 M1 = ROOT / 'data/schedule-generator/residential-vectors.json'
 R1 = ROOT / 'data/schedule-generator/residential-family-native.json.gz'
-NATIVE4 = ROOT / 'build/task-10/native-apartment-boundary-20261014-01/native-output.json'
 DOMAIN = ROOT / 'data/schedule-generator/apartment/timing-domain.json'
 POLICY = ROOT / 'atlas_schedules/data/reference/comparison-policy.json'
 
@@ -48,7 +47,18 @@ class ApartmentSelectedTests(unittest.TestCase):
             Path(cls.temporary.name)/'resources', cls.domain, cls.lock, ROOT/'data/raw')
         cls.m1 = json.loads(source_bytes(M1, cls.lock['vectors']['M1']['sha256']))['cases']
         cls.r1 = json.loads(gzip.decompress(source_bytes(R1, cls.lock['vectors']['R1']['sha256'])))['cases']
-        cls.native4 = json.loads(source_bytes(NATIVE4, cls.lock['vectors']['selected4']['sha256']))['cases']
+        fixture = cls.lock['selected_native_fixture']
+        compressed = source_bytes(ROOT/fixture['path'], fixture['sha256'])
+        assert len(compressed) == fixture['size_bytes']
+        payload = gzip.decompress(compressed)
+        assert len(payload) == fixture['payload_size_bytes']
+        assert hashlib.sha256(payload).hexdigest() == fixture['payload_sha256']
+        assert cls.lock['vectors']['selected4']['payload_sha256'] == fixture['payload_sha256']
+        assert cls.lock['vectors']['selected4']['sha256'] == fixture['sha256']
+        assert fixture['source_revision'] == cls.lock['source_revision']
+        assert all((ROOT/path).is_file() for path in fixture['upstream_notices'])
+        cls.native4 = json.loads(payload)['cases']
+        assert len(cls.native4) == 6
         cls.tolerance = json.loads(POLICY.read_text(encoding='utf-8'))['tolerances']['fraction']
         cls.receipts = []
 
@@ -289,6 +299,21 @@ class ApartmentSelectedTests(unittest.TestCase):
         activity = simulate_activities(inputs, 42, self.resources)
         with self.assertRaises(GeneratorError):
             occupancy_shapes(activity, inputs, self.resources)
+
+    def test_selected_and_whole_share_exact_two_channel_arithmetic(self):
+        from atlas_schedules.residential.activity import simulate_activities
+        from atlas_schedules.residential.shapes import occupancy_shapes
+        installed = json.loads((ROOT/'atlas_schedules/data/manifest.json').read_text())
+        whole_resources = ResourceSet.load(installed['resource_set_id'])
+        for index in range(6):
+            case = self.m1[index]
+            inputs = case['inputs']
+            activity = simulate_activities(inputs, case['unit_seed'], whole_resources)
+            whole = occupancy_shapes(activity, inputs, whole_resources)
+            selected = self.selected(selected_inputs(case), case['unit_seed'])
+            for name in ('occupants', 'lighting_interior'):
+                self.assertEqual(selected['channels'][name], whole['channels'][name],
+                                 (f'M1#/cases/{index}', name))
 
     def test_resource_integrity_and_independence(self):
         entries = self.resources.manifest['resources']

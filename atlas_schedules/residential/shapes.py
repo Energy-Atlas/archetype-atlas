@@ -47,6 +47,42 @@ def _finite(inputs,key,low,high):
     return value
 
 
+def _state_month_shifts(resources, state):
+    shifts={}
+    for daytype in ('weekday','weekend'):
+        table=rows(resources,daytype+'__state_and_monthly_schedule_shift_csv')
+        header=table[0]
+        shifts[daytype]={r[header.index('Month')]:int(r[header.index('Lead')]) for r in table[1:]
+                         if r[header.index('State')]==state}
+        if set(shifts[daytype])!=set(MONTHS):
+            raise GeneratorError('unsupported_input','/inputs/state','State/month shifts not reported by source')
+    return shifts
+
+
+def _resident_fractions(activities):
+    traces=activities['resident_states'];count=activities['simulated_residents']
+    if len(traces)!=count or any(len(t)!=35040 or any(type(s) is not int or not 0<=s<7 for s in t) for t in traces):
+        raise GeneratorError('activity_context','/activities/resident_states','Complete source state traces required')
+    awake=[];home=[]
+    for step in range(35040):
+        away=sum(t[step]==5 for t in traces)/count
+        sleeping=sum(t[step]==0 for t in traces)/count
+        # Match source arithmetic and its per-resident fraction normalization.
+        awake.append(1-(away+sleeping));home.extend([1-away]*15)
+    return awake,home
+
+
+def _interior_lighting_shape(awake, latitude, longitude, utc_offset, custom, offset, days, shifts):
+    lighting=building_america_lighting(latitude,longitude,utc_offset,custom['lighting_interior','LightingInteriorMonthlyMultipliers'])
+    minute_values=[]
+    for i,today in enumerate(days):
+        profile=lighting[today.month-1];minimum=min(profile)
+        for step in range(96):
+            value=minimum+(profile[step//4]-minimum)*awake[i*96+step]
+            minute_values.extend([value]*15)
+    return shift_and_normalize(minute_values,offset,days,shifts)
+
+
 def building_america_lighting(latitude, longitude, utc_offset, seasonal):
     """Pinned source solar/location equation including its built-in seasonal offset.
 
@@ -113,14 +149,7 @@ def occupancy_shapes(activities: dict, inputs: dict, resources) -> dict:
         context['rng_consumed']=False
         return {'channels':{'occupants':[0.0]*8760},'source_context':context}
     state=required(inputs,'state')
-    shifts={}
-    for daytype in ('weekday','weekend'):
-        table=rows(resources,daytype+'__state_and_monthly_schedule_shift_csv')
-        header=table[0]
-        shifts[daytype]={r[header.index('Month')]:int(r[header.index('Lead')]) for r in table[1:]
-                         if r[header.index('State')]==state}
-        if set(shifts[daytype])!=set(MONTHS):
-            raise GeneratorError('unsupported_input','/inputs/state','State/month shifts not reported by source')
+    shifts=_state_month_shifts(resources,state)
     installed=required(inputs,'installed')
     if not isinstance(installed,dict) or set(installed)!=set(PRESENCE_KEYS) or any(type(v) is not bool for v in installed.values()):
         raise GeneratorError('invalid_input','/inputs/installed','Exact source presence booleans required')
@@ -135,15 +164,7 @@ def occupancy_shapes(activities: dict, inputs: dict, resources) -> dict:
         hours=calendar.monthrange(inputs['year'],month)[1]*24
         average=math.fsum(drybulb[start:start+hours])/hours
         fan_months.append(int(average*1.8+32>63.0));start+=hours
-    traces=activities['resident_states'];count=activities['simulated_residents']
-    if len(traces)!=count or any(len(t)!=35040 or any(type(s) is not int or not 0<=s<7 for s in t) for t in traces):
-        raise GeneratorError('activity_context','/activities/resident_states','Complete source state traces required')
-    awake=[];home=[]
-    for step in range(35040):
-        away=sum(t[step]==5 for t in traces)/count
-        sleeping=sum(t[step]==0 for t in traces)/count
-        # Match source arithmetic and its per-resident fraction normalization.
-        awake.append(1-(away+sleeping));home.extend([1-away]*15)
+    awake,home=_resident_fractions(activities)
     offset=activities['unit_offset_minutes']
     channels={'occupants':shift_and_normalize(home,offset,days,shifts,60)}
     custom=_schedules(resources,'schedules_csv')
@@ -163,14 +184,7 @@ def occupancy_shapes(activities: dict, inputs: dict, resources) -> dict:
                 value=minimum+(full-minimum)*awake[i*96+step]
                 minute_values.extend([value]*15)
         channels[slot]=shift_and_normalize(minute_values,offset,days,shifts)
-    lighting=building_america_lighting(latitude,longitude,utc_offset,custom['lighting_interior','LightingInteriorMonthlyMultipliers'])
-    minute_values=[]
-    for i,today in enumerate(days):
-        profile=lighting[today.month-1];minimum=min(profile)
-        for step in range(96):
-            value=minimum+(profile[step//4]-minimum)*awake[i*96+step]
-            minute_values.extend([value]*15)
-    channels['lighting_interior']=shift_and_normalize(minute_values,offset,days,shifts)
+    channels['lighting_interior']=_interior_lighting_shape(awake,latitude,longitude,utc_offset,custom,offset,days,shifts)
     if installed['garage']:channels['lighting_garage']=list(channels['lighting_interior'])
     context.update(state=state,monthly_shifts=shifts,installed=dict(installed),fan_months=fan_months,
                    weather_id=weather_id,weather_provenance=weather['provenance'],latitude=latitude,
