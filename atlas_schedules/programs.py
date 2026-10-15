@@ -61,6 +61,11 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
     if 'required_service_links' in recipe:
         resolved['required_service_links']=copy.deepcopy(recipe['required_service_links'])
         resolved['required_contract_version']=recipe['required_contract_version']
+    # Internal exact-source preparation remains separate from the public 1.2
+    # generation gate. Retain original source requirements/methods, never aliases.
+    for field in ('required_service_sets', 'exact_source_authority', 'permitted_child_variants', 'original_method_reference'):
+        if field in recipe:
+            resolved[field] = copy.deepcopy(recipe[field])
     if not resolved['slots'] and 'source_composition' not in recipe and (status != 'accepted_inactive' or not resolved['evidence'][0].get('accepted_absence')):
         raise GeneratorError('unsupported_binding', '/slots', 'Unresolved active recipe cannot masquerade as inactivity')
     resolved['inputs'] = copy.deepcopy(inputs)

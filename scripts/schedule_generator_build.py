@@ -26,6 +26,50 @@ def _read(path):
     return strict_json(Path(path).read_bytes(), str(path))
 
 
+def compile_exact_authority_resources(records: dict, source_records: dict) -> dict:
+    """Opt-in source preparation; never enable a native context or default scope.
+
+    Existing recipe C5 inventory is independent and retained in full. The locked
+    requirement resource and per-programme recipe inventory must agree; caller
+    links and generated owners do not participate in this compilation.
+    """
+    from scripts.schedule_generator_physical_sets import compile_exact_inventory, compile_exact_requirements
+    from atlas_schedules.physical_sets import _no_double_listing, _programme_requirement
+    inventory = compile_exact_inventory(source_records)
+    requirements = compile_exact_requirements(source_records, inventory)
+    iid = inventory['payload']['inventory_id']
+    inventory_key = 'physical-fixture-inventory__'+iid
+    requirements_key = 'physical-fixture-requirements__'+iid
+    reference = {'inventory_id': iid, 'inventory_sha256': inventory['inventory_sha256'],
+                 'requirements_key': requirements_key, 'qualification_key': 'physical-fixture-qualification__'+iid}
+    additions = {('reference', inventory_key): inventory, ('reference', requirements_key): requirements}
+    changes = {}
+    for programme in source_records['programmes']:
+        pid = programme['value']['id']; key = ('program', pid)
+        if key not in records or not isinstance(records[key].get('recipe'), dict):
+            raise GeneratorError('requires_binding', '/program/'+pid, 'Existing independently compiled programme recipe is required')
+        record = copy.deepcopy(records[key]); recipe = record['recipe']
+        if not isinstance(recipe.get('required_service_links'), list):
+            raise GeneratorError('source_integrity', '/required_service_links', 'Independent complete C5 inventory must be retained')
+        own = [r for r in requirements if _programme_requirement(r)['value']['id'] == pid]
+        _no_double_listing(recipe['required_service_links'], own)
+        for field, value in (('required_service_sets', own), ('exact_source_authority', reference)):
+            if field in recipe and canonical(recipe[field]) != canonical(value):
+                raise GeneratorError('source_integrity', '/recipe/'+field, 'Existing independent source authority differs')
+            recipe[field] = copy.deepcopy(value)
+        methods = [m for m in source_records['method_references'] if m['value']['program_id'] == pid]
+        if methods:
+            if 'original_method_reference' in recipe and canonical(recipe['original_method_reference']) != canonical(methods[0]):
+                raise GeneratorError('source_integrity', '/recipe/original_method_reference', 'Existing original method authority differs')
+            recipe['original_method_reference'] = copy.deepcopy(methods[0])
+        changes[key] = record
+    for key, value in additions.items():
+        if key in records and canonical(records[key]) != canonical(value):
+            raise GeneratorError('source_integrity', '/reference/'+key[1], 'Immutable compiled authority resource already differs')
+    records.update(additions); records.update(changes)
+    return copy.deepcopy(reference)
+
+
 def validate_scope(scope: dict, lock: dict | None = None) -> None:
     lock = lock if lock is not None else _read(ROOT/'sources/schedule-generator-lock.json')
     if scope.get('calendar') != lock['calendar'] or scope.get('cases') != lock['scope_cases']:
