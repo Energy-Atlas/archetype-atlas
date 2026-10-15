@@ -1,28 +1,49 @@
 # Remaining atlas tasks
 
-Updated: 2026-10-14, following the user's construction-first boundary decision.
+Updated: 2026-10-15, following the user's construction closure and BEMGen-test priority decision.
 
 This is the current roadmap for remaining work. The
 [Program JSON completion plan](superpowers/plans/2026-10-11-program-completion.md)
 is complete and remains the implementation record. The order and scope below
 supersede the earlier proposal to hand off to BEMGen immediately after program
-publication. Discussion items remain open design topics, not accepted designs.
+publication. The current execution order below supersedes the earlier requirement
+to discuss schedule generators before the BEMGen handoff. Discussion items remain
+open design topics, not accepted designs.
+
+## Current execution order
+
+1. **Complete:** review and close the above-ground construction implementation,
+   with fresh coverage, reproducibility and consumer-boundary evidence. See the
+   [milestone closure record](reviews/construction-milestone-closure.md).
+2. Prepare the construction site and release for protected-main publication.
+   Publication and its required checks are a separate gate from implementation
+   closure; closing construction does not claim production deployment.
+3. Prepare the BEMGen test handoff using existing schedule contracts. Include
+   both construction representations, program/schema integration, component
+   assignment, geometry responsibilities, infiltration and mass accounting.
+4. Support BEMGen integration testing and resolve Atlas contract/data issues;
+   record the acceptance results and remaining limitations.
+5. Revisit lighter artifact delivery only after the BEMGen test is accepted.
+
+Schedule-generator packaging does not block publication or BEMGen testing.
+Ground/foundation and systems remain deferred. Only item 1 is authorized for
+the current execution turn; subsequent items are planned, not started.
 
 The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-json-completion.md)
 details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
 construction and system field reviews with coverage patterns and annotation space.
 The independent above-ground construction consumer export is frozen at 100%
-source coverage. Local construction site integration is implemented; production
-publication remains open. Ground and systems
-are deferred.
+source coverage. Its detailed/unified implementation and local integration are
+reviewed and closed in the [closure record](reviews/construction-milestone-closure.md).
+Production publication remains open. Ground and systems are deferred.
 
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
 | 2 | Include constructions and systems, with separate JSON exports and pages | Above-ground JSON frozen at 100%; publication pending; ground/foundation and systems deferred |
-| 3 | Discuss shipping schedule generators instead of a single generated schedule | Design discussion |
-| 4 | Send BEMGen a handoff for schema updates and missing typology plan generators | Pending the preceding contract work |
-| 5 | Discuss a lighter deployed site and decoupled artifact generation | Design discussion |
+| Deferred | Discuss shipping schedule generators instead of a single generated schedule | Deferred; not a publication or BEMGen-test prerequisite |
+| 3–4 | Prepare BEMGen schema/typology handoff and support integration testing | Next after publication preparation; use existing schedule contracts |
+| 5 | Discuss a lighter deployed site and decoupled artifact generation | Deferred until BEMGen testing is accepted |
 
 ## 1. Publish Program JSON v3
 
@@ -131,6 +152,9 @@ water-use room gains and distribution-waste draws remain outside program scope.
 
 ## 3. Discuss shipping schedule generators
 
+Deferred by the 2026-10-15 user decision. Retain the questions below for later;
+existing schedule contracts support the first BEMGen integration test.
+
 - [ ] Compare a versioned executable generator with a compact parametric recipe
   and the current fixed realization. Identify which schedule families each
   approach can faithfully reproduce.
@@ -153,8 +177,9 @@ runtime has already been selected.
 
 ## 4. BEMGen schema and missing-typology handoff
 
-- [ ] Compare BEMGen's current schemas and consumers with the published program,
-  construction and system contracts and the schedule-generator decision.
+- [ ] Compare BEMGen's current schemas and consumers with the program,
+  detailed/unified construction and existing schedule contracts. Systems remain
+  deferred and a schedule-generator decision is not a prerequisite.
 - [ ] Inventory missing typologies against BEMGen's actual plan generators;
   identify missing generators and supported atlas assignments explicitly.
 - [ ] Prepare a handoff with exact contract versions, example JSONs, published
@@ -162,6 +187,8 @@ runtime has already been selected.
 - [ ] Send the handoff to the identified BEMGen task, covering both JSON schema
   updates and the missing typology plan generators.
 - [ ] Record the receiving task and acknowledged scope.
+- [ ] Define representative detailed/unified translation tests, confirm valid
+  EnergyPlus inputs, resolve Atlas-side issues and record test acceptance.
 
 The handoff must cover geometry/program assignment and consumer sizing as well
 as schema changes. Do not invent the missing typology list or the target task.
@@ -173,6 +200,8 @@ This replaces the narrower handoff scope in Task 11 of the
 <!-- Write here. -->
 
 ## 5. Discuss a lighter site and decoupled generation
+
+Deferred until the BEMGen integration test is accepted, per the 2026-10-15 decision.
 
 - [ ] Measure CI generation/validation/build time separately from deployed
   payload size and browser load/interaction cost.

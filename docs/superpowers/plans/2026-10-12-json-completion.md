@@ -4,11 +4,28 @@
 
 **Goal:** Complete construction and system JSON delivery, then resolve schedule-generator packaging, hand off to BEMGen, and decide how to lighten publication.
 
-**Current milestone (2026-10-13):** First ship above-ground construction at 100%
+**Latest sequencing decision (2026-10-15):** Review and close the above-ground
+construction implementation first, then prepare site/release publication and the
+BEMGen test handoff using existing schedules. Schedule-generator packaging does
+not block these tasks. Lighter artifact delivery waits until BEMGen testing is
+accepted; ground/foundation and systems remain deferred. The
+[current roadmap](../../roadmap.md#current-execution-order) supersedes historical
+task ordering below. Current execution is limited to the construction review and
+closure; publication preparation and handoff/testing are subsequent tasks.
+
+**Construction closure (2026-10-15):** The
+[final review and receipt](../../reviews/construction-milestone-closure.md) close
+the above-ground implementation and local integration at 177 complete sets /
+3,320 ready contexts for both representations. Publication preparation and
+BEMGen testing remain separate, unstarted tasks.
+
+**Earlier milestone (2026-10-13):** First ship above-ground construction at 100%
 coverage. Combined ground/foundation/basement, its below-grade/interface assemblies,
 and all systems are deferred. Construction includes infiltration only; fixed
 catalogue ACH per construction and climate zone is selected, derived using source
 archetype reference geometry. Climate factors and conversion details remain open.
+The subsequently accepted climate policies and completed implementation are
+recorded in the [closure review](../../reviews/construction-milestone-closure.md).
 Follow [ADR 0020](../../adr/0020-above-ground-construction-first-release.md)
 for the revised publication gate and source selector/dependency audit.
 

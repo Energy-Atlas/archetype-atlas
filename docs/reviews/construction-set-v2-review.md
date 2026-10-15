@@ -1,5 +1,11 @@
 # Construction-set v2 review
 
+Historical v2.0.0 acceptance and migration record. Current distribution is v2.2.0,
+with 177 complete sets and 3,320 contexts; site integration is now complete locally.
+See the [current milestone closure](construction-milestone-closure.md) for the
+latest review, validation and publication boundary. Counts below describe the
+earlier immutable freeze, including its then-selectable partial space sets.
+
 Acceptance recorded 2026-10-14: the user reviewed both examples and said
 "both looks ok", then authorized full migration validation and the v2 freeze.
 The unified structure and examples are accepted. Site integration/publication

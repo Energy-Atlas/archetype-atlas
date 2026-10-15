@@ -2,6 +2,12 @@
 
 Date: 2026-10-15. Local branch: `feature/json-completion`.
 
+This is the exporter implementation record. The subsequent local site integration
+is recorded [separately](unified-construction-site-local.md); the
+[milestone closure](construction-milestone-closure.md) records the final review
+and fresh checks. References below to unchanged website exports or site work
+outside this implementation describe the earlier exporter-only phase.
+
 The additive exporter is implemented alongside detailed construction v2.2.0.
 It supplies one assembly per applicable semantic, precomputed source-archetype
 weights, fixed reference ACH, mass budgets and derivation receipts. Existing

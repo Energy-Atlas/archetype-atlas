@@ -1,0 +1,151 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "construction_milestone_closure_audit",
+  "date": "2026-10-15",
+  "reviewed_commit": "ab1d17b02a62c30b26f6d0044fe22c82668d46eb",
+  "scope": "above_ground_construction_only",
+  "status": "implementation_and_local_integration_closed",
+  "coverage": {
+    "building_sets": 136,
+    "construction_sets": 177,
+    "contexts": 3320,
+    "embedded_space_contexts": 1470,
+    "retired_space_type_sets": 47,
+    "source_evidence_contexts": 8,
+    "whole_dwelling_sets": 41
+  },
+  "detailed_contexts_validated": 3320,
+  "detailed_resources": {
+    "assemblies": 4868,
+    "materials": 858,
+    "evidence": 8021
+  },
+  "unified_completeness": {
+    "blocked_context_ids_by_reason": {},
+    "blocked_contexts": 0,
+    "component_status_counts": {
+      "BuildingShading/not_applicable": 3320,
+      "ExteriorDoor/not_applicable": 299,
+      "ExteriorDoor/ready": 3021,
+      "ExteriorFloor/not_applicable": 514,
+      "ExteriorFloor/ready": 2806,
+      "ExteriorRoof/not_applicable": 7,
+      "ExteriorRoof/ready": 3313,
+      "ExteriorWall/ready": 3320,
+      "ExteriorWindow/not_applicable": 252,
+      "ExteriorWindow/ready": 3068,
+      "FloorDistributedMass/not_applicable": 749,
+      "FloorDistributedMass/ready": 2571,
+      "GlassDoor/not_applicable": 547,
+      "GlassDoor/ready": 2773,
+      "InteriorCeiling/not_applicable": 21,
+      "InteriorCeiling/ready": 3299,
+      "InteriorDoor/not_applicable": 702,
+      "InteriorDoor/ready": 2618,
+      "InteriorFloor/not_applicable": 17,
+      "InteriorFloor/ready": 3303,
+      "InteriorWall/not_applicable": 14,
+      "InteriorWall/ready": 3306,
+      "InteriorWindow/not_applicable": 3320,
+      "InternalMass/ready": 3320,
+      "OverheadDoor/not_applicable": 404,
+      "OverheadDoor/ready": 2916,
+      "SiteShading/not_applicable": 3320,
+      "Skylight/not_applicable": 1434,
+      "Skylight/ready": 1886,
+      "SpaceShading/not_applicable": 3320,
+      "TubularDaylightDiffuser/not_applicable": 707,
+      "TubularDaylightDiffuser/ready": 2613,
+      "TubularDaylightDome/not_applicable": 707,
+      "TubularDaylightDome/ready": 2613
+    },
+    "construction_sets": 177,
+    "contexts": 3320,
+    "interpretation": "Quality review flags do not add layers or imply measured annual energy error.",
+    "quality_counts_per_context_recipe": {
+      "approximation_review": 13539,
+      "area_weighted_optical_proxy": 21,
+      "unchanged_source_physics": 10199,
+      "within_initial_screen": 20002
+    },
+    "ready_contexts": 3320
+  },
+  "locked_manifests_sha256": {
+    "data/construction-releases/v2.0.0/manifest.json": "d3de9efa1327a28f8f9618d87d043342fb63116ad96421770e0f8b8af29abb93",
+    "data/construction-releases/v2.1.0/manifest.json": "8fdba696b557c1fa15a82b7439f003627000351c4f515f0fb37041b72ab775e2",
+    "data/construction-releases/v2.2.0/manifest.json": "4a26d369805da34b6eb96a86ec2b48a624fce7b2af00e2b79436c181ea77242b",
+    "data/program-support/construction-weighting-v1.1.0/manifest.json": "4a57d0feca9de7693d9a69460415e4d1817460349255fe0198d7de588e86c47e",
+    "data/construction-equivalent-releases/v1.1.0/manifest.json": "3733249030bd6b68e4837667b5a040bafc6702efc065857e735c829233a2c961"
+  },
+  "manifest_output_references_verified": 36,
+  "manifest_input_references_verified": 43,
+  "site_pages_verified": 177,
+  "site_packet_resource_equality": "all detailed and unified packets plus linked resources match frozen releases",
+  "checks": [
+    "all current detailed contexts hydrate and validate schema, physics, references, provenance and assignment rules",
+    "all retained detailed resource schema/graph checks",
+    "frozen output and declared input checksum closure",
+    "all construction site packets and resources match frozen release",
+    "both named copy controls and no legacy source-record binding on every construction definition",
+    "links on all construction definition pages"
+  ],
+  "excluded_work": [
+    "publication preparation",
+    "push/CI/CD/Pages",
+    "broad program/schedule/site generation",
+    "ground/foundation",
+    "systems",
+    "BEMGen translator/test",
+    "systematic whole-building error experiment"
+  ],
+  "elapsed_seconds": 194.306,
+  "test_results": {
+    "python": {
+      "command": "$constructionTestModules = @(rg --files tests -g 'test_construction*.py' | ForEach-Object { $_ -replace '\\.py$','' -replace '[\\\\/]','.' }); .venv/Scripts/python.exe -m unittest @constructionTestModules tests.test_site_asset_versions tests.test_html_delivery -q",
+      "tests": 138,
+      "failures": 0,
+      "exit_code": 0
+    },
+    "javascript": {
+      "command": "$siteJsTests = @(rg --files tests -g '*.test.js'); node --test @siteJsTests",
+      "tests": 24,
+      "failures": 0,
+      "exit_code": 0
+    }
+  },
+  "reproducibility_checks": [
+    {
+      "command": ".venv/Scripts/python.exe -m scripts.construction_weighting --check",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/Scripts/python.exe -m scripts.construction_distribution --check",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/Scripts/python.exe -m scripts.construction_equivalent_release --check",
+      "exit_code": 0
+    }
+  ],
+  "site_page_link_errors": [],
+  "independent_review": {
+    "scope": "final above-ground construction implementation and closure-document consistency",
+    "required_findings": [],
+    "minor_documentation_finding": "Use next planned milestone rather than next authorized milestone; corrected before closure."
+  },
+  "historical_engine_smoke": {
+    "receipt": "docs/reviews/construction-equivalent-material-smoke-v1.json",
+    "sha256": "f5c54a234b1490ad36d56c6c2825b951ec78b63ef68e353af7dab58592c31d69",
+    "rerun_in_this_pass": false,
+    "interpretation": "Three material-input cells, not annual building or BEMGen translation validation."
+  },
+  "accepted_limitations": [
+    "Fixed two-mass-plus-resistance approximation may inadequately reproduce source transients; fit errors retained.",
+    "Archetype-based weights and fixed-reference natural ACH are not geometry-specific building calibration.",
+    "Mean zone-weighted paired-face budget is a reference-model approximation.",
+    "Actual overhang geometry is supplied by BEMGen.",
+    "Consumer reconciles explicit wall/slab mass with additional and residual mass budgets; no double counting.",
+    "Ready is contract completeness under accepted policies, not exact transient or annual building-energy accuracy."
+  ],
+  "next_gate": "site/release publication preparation; production and BEMGen test acceptance remain separate gates"
+}
