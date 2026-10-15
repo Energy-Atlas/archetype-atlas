@@ -15,6 +15,7 @@ import yaml
 from scripts.common import ROOT,load_json
 from scripts.definition_contract import canonical
 from scripts.construction_site import update_existing,install_contract,verify_delivery,PREFIX
+from scripts.site_asset_versions import version_asset_urls
 
 
 @lru_cache(maxsize=1)
@@ -48,7 +49,7 @@ def render_page(source,existing,source_path,docs):
     body=re.sub(r'href="([^"]+)"',link,body)
     pattern=re.compile(r'(<article\b[^>]*>).*?(</article>)',re.S)
     if len(pattern.findall(existing))!=1:raise ValueError('Expected one verified page article')
-    return pattern.sub(lambda m:m[1]+body+m[2],existing)
+    return version_asset_urls(pattern.sub(lambda m:m[1]+body+m[2],existing))
 
 
 def descriptor_set(report):

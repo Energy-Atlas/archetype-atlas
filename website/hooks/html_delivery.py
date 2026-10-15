@@ -2,6 +2,7 @@
 from html.parser import HTMLParser
 import re
 from urllib.parse import urlsplit
+from scripts.site_asset_versions import version_asset_urls
 
 
 class DeliveryHTML(HTMLParser):
@@ -59,5 +60,5 @@ def on_post_page(output,*,page,config):
             compact_head='<head>'+''.join(retained)+'<script src="'+prefix+'assets/theme.js"></script></head>'
             scripts=re.findall(r'<script\b[^>]*src="[^"]*(?:assets/(?:core|site|definition|definition_core|object|construction|construction_core|schedule|schedule_core)\.js|plotly[^"/]*)"[^>]*>.*?</script>',output,re.S)
             output='<!doctype html><html lang="en">'+compact_head+'<body><header class="definition-header"><a href="'+prefix+'">Energy Archetype Atlas</a> · <a href="'+prefix+'catalogue/">Catalogue</a> · <a href="'+prefix+'sources/">Sources</a></header><main class="definition-document">'+article[0]+'</main>'+''.join(scripts)+'</body></html>'
-    parser=DeliveryHTML();parser.feed(output);parser.close()
+    parser=DeliveryHTML();parser.feed(version_asset_urls(output));parser.close()
     return ''.join(parser.parts)

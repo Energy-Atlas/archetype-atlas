@@ -14,6 +14,7 @@ from scripts.object_site import JSONStore,json_markup,PREFIX
 from scripts.construction_set_release import OUTPUT
 from scripts.construction_distribution import load_current_release as load_release
 from scripts.construction_set_export import dependency_closure
+from scripts.site_asset_versions import version_asset_urls
 
 
 def esc(value):return html.escape(str(value),quote=True)
@@ -112,7 +113,7 @@ def resource_path(table,identity):return f'construction/{table}/{identity}/index
 
 
 def static_page(name,body):
-    return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    return version_asset_urls('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>{esc(name)}</title><link rel="stylesheet" href="{PREFIX}assets/fonts.css"><link rel="stylesheet" href="{PREFIX}assets/site.css">'
         f'<script src="{PREFIX}assets/theme.js"></script></head><body><header class="definition-header"><a href="{PREFIX}">Energy Archetype Atlas</a> · '
         f'<a href="{PREFIX}catalogue/">Catalogue</a> · <a href="{PREFIX}sources/">Sources</a></header><main class="definition-document">'

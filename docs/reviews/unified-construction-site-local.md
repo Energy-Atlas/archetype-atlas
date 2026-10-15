@@ -2,6 +2,36 @@
 
 Date: 2026-10-15. Branch: `feature/json-completion`.
 
+## Cached-asset repair
+
+The actual open in-app browser tab loaded current copy-only HTML together with
+the old unversioned `construction.js`. That script still attached a handler to
+the removed Download button and raised a null `addEventListener` error. Reference
+selection never initialized and both copy controls stayed disabled. The old
+cached stylesheet also omitted the new copy-button styling. Fresh browser
+contexts had missed this warm-cache failure.
+
+Generated first-party script/style URLs now carry a SHA-256-derived version.
+The full delivery hook, standalone construction resources and focused renderer
+share the same function; external assets and Material's existing hashed asset
+names are unchanged. Changing asset bytes changes the URL; repeat rendering is
+idempotent. No research or JSON semantics changed.
+
+Two regression tests failed before the fix and now pass. All 26 focused asset,
+HTML-delivery, construction site and refresh tests passed. The local rebuild
+refreshed 177 pages / 3,320 contexts, generated zero program pages and zero new
+JSON resources. Every construction page's script/style versions match served
+bytes; all focused links passed.
+
+The existing user tab was reloaded and directly checked: Medium Office reference
+selection initializes, both copy dialogs complete with their respective copied
+status, and the visible unified preview parses as schema 1.1.0 for the selected
+context. Its repaired screenshot is the ignored local file
+`build/unified-construction-cache-fixed.jpg`. The browser connector's clipboard
+read returned an empty value, so this check does not claim an independent
+clipboard-content comparison; frozen export parity remains covered by the
+existing automated tests and earlier browser verification.
+
 ## Copy-only follow-up
 
 The user requested copy actions for both representations instead of downloads.

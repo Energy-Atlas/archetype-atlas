@@ -166,6 +166,11 @@ Unified Copy uses the existing outlined secondary style. No download action.
 Keep packets lazy and checksum verified.
 Unified approximation evidence is explained in prose, without new badges or colours.
 
+Generated pages must reference first-party interaction scripts and styles with
+a content-derived asset version. Both the full HTML delivery hook and focused
+local renderer update these URLs, preventing a revised page from loading an
+older cached controller or stylesheet.
+
 ## 1. Design Intent
 
 Restyle the MkDocs website using the reference UI (section 0.2) as the primary visual reference for:
