@@ -19,6 +19,11 @@ the above-ground implementation and local integration at 177 complete sets /
 3,320 ready contexts for both representations. Publication preparation and
 BEMGen testing remain separate, unstarted tasks.
 
+**Publication preparation (2026-10-15):** The user subsequently authorized the
+next task. [Preparation record](../../reviews/construction-publication-preparation.md)
+documents local release notes, site guidance, required construction-presence and
+workflow/browser gates. Remote publication checks and BEMGen work remain unstarted.
+
 **Earlier milestone (2026-10-13):** First ship above-ground construction at 100%
 coverage. Combined ground/foundation/basement, its below-grade/interface assemblies,
 and all systems are deferred. Construction includes infiltration only; fixed

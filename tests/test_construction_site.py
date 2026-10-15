@@ -15,6 +15,24 @@ from scripts.definition_contract import DefinitionBundle,record
 
 
 class ConstructionSiteTests(unittest.TestCase):
+    def test_required_publication_delivery_rejects_missing_catalogue(self):
+        from scripts.construction_site import verify_delivery
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            self.assertEqual(verify_delivery(root),[])
+            errors=verify_delivery(root,require_construction=True)
+            self.assertTrue(errors,'A publication without construction delivery must fail')
+            self.assertIn('Missing required construction delivery',errors[0])
+
+    def test_publication_cli_requires_construction_before_reporting_success(self):
+        import sys
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);(root/'index.html').write_text('<h1>Fixture</h1>',encoding='utf-8')
+            result=subprocess.run([sys.executable,'-m','scripts.site_check','--site',str(root),'--require-construction'],
+                                  cwd=ROOT,capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn('Missing required construction delivery',result.stderr+result.stdout)
+
     def test_retired_space_recipe_links_point_to_complete_parents(self):
         from scripts import construction_site
         self.assertTrue(hasattr(construction_site,'rewrite_retired_links'))
@@ -166,7 +184,7 @@ class ConstructionSiteTests(unittest.TestCase):
         self.assertTrue(hasattr(construction_site,'verify_delivery'),'Construction presentation verifier is missing')
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);report=self.generate(root)
-            self.assertEqual(construction_site.verify_delivery(root,self.release),[])
+            self.assertEqual(construction_site.verify_delivery(root,self.release,require_construction=True),[])
             descriptor=next(iter(report['resources']['assemblies'].values()))['json']
             (root/descriptor['href']).write_bytes(b'corrupted')
             self.assertTrue(construction_site.verify_delivery(root,self.release))

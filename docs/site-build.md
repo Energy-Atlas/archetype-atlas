@@ -13,10 +13,11 @@ on Linux/macOS. Install the pinned site/browser dependencies and Chromium first.
 .venv/Scripts/python.exe -m playwright install chromium
 .venv/Scripts/python.exe -m scripts.site
 .venv/Scripts/python.exe -m mkdocs build --strict
-.venv/Scripts/python.exe -m scripts.site_check
+.venv/Scripts/python.exe -m scripts.site_check --require-construction
 node --test tests/*.test.js
 .venv/Scripts/python.exe -m unittest discover -s tests -v
 .venv/Scripts/python.exe -m scripts.site_smoke --screenshots build/screenshots
+.venv/Scripts/python.exe -m scripts.construction_site_smoke --screenshots build/screenshots/construction
 .venv/Scripts/python.exe -m scripts.site_smoke --serve
 ```
 
@@ -46,6 +47,12 @@ Programs offer raw or default-filled self-contained DTOs under the
 [v3 connector contract](program-json-v3-contract.md). Other library objects
 retain explicit unknowns; program defaults do not manufacture HVAC performance.
 
+Constructions provide separate detailed schema 2.0.0 and additive unified schema
+1.1.0 exports for all 177 current sets / 3,320 supported contexts. Both named copy
+buttons act directly without a chooser; preview mode does not change their
+representation. Source-record copying is absent on construction definition pages.
+See [construction release notes](release-notes-construction-v2.2.0.md).
+
 Schedules show unique daily step profiles, an annual day × hour heatmap, exact
 tables and selected-day inspection. Rules use an explicit preview year and holiday
 overrides; annual realizations retain their recorded year and cannot be remapped.
@@ -73,6 +80,9 @@ frozen input releases remain available for scientific verification.
   exports and the 1,000,000,000-byte publication ceiling.
 - `scripts/active_smoke.py`: Chromium gates, search, filters, copying, plots,
   mobile layout and no-JS catalogue fallback.
+- `scripts/construction_site_smoke.py`: separate detailed/unified preview and
+  clipboard parity for Medium Office, Warehouse and residential examples, lazy
+  loading, unsupported contexts and desktop/mobile themes.
 - `build/site-docs/`, `build/site/`: ignored generated documents and HTML.
 
 Energy pages use a compact document shell. Evidence/coverage records use compact
@@ -91,6 +101,10 @@ contracts (delivery, query, program JSON, active-site and browser tests, Node
 tests), generates the catalogue, builds it with `mkdocs build --strict`,
 and passes `site_check` and the Chromium smoke test before it uploads the Pages
 artifact. The same pipeline calls the reusable `validate.yml` research matrix.
+Construction presentation tests run in the build job. Publication explicitly
+requires `construction-site.json` through `site_check --require-construction`;
+the default checker still permits small construction-free research fixtures.
+Both construction copy representations are browser-checked before artifact upload.
 Deployment requires both the build and research validation to succeed for the
 same commit. It runs only on `main`, automatically for pushes or after a manual
 dispatch with `deploy` set. The production environment also permits `main` only.
@@ -124,3 +138,15 @@ Independently of that optimization, the reusable `validate.yml` research matrix
 fetches the sources, verifies every frozen release, reproduces the v3 program
 completeness receipt and runs the full Python suite on every pipeline run.
 Artifact generation remains part of site CI pending roadmap item 5's discussion.
+
+The research matrix additionally reproduces frozen construction base v2.0.0,
+applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with
+their existing `--check` commands. Supporting profile 1.1.0 files and declared
+input hashes are verified by `construction_weighting.load_profiles()`; this does
+not require the ignored native-recovery cache. Reproducing profiles with
+`construction_weighting --check` is a separate maintenance check requiring the
+previously recovered `build/equivalent-work/commercial-weights.json` and pinned
+source/runtime retrieval for re-execution. These publication checks run on both
+required platforms. No native source recovery or annual construction simulation
+is introduced. Lighter artifact delivery remains deferred until BEMGen testing
+is accepted; this change does not decouple generation from CI.

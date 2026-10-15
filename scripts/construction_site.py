@@ -274,6 +274,9 @@ profiles, with unequal-multiplier approximation flags and affected pair counts.
 
 Current distribution **v2.2.0** ships 177 complete building/dwelling sets and
 3,320 supported contexts. Room-specific rules are embedded in building sets.
+The detailed consumer schema is **2.0.0**; the separate additive unified release
+and consumer schema are **1.1.0**. Release versions and schema versions identify
+different artifacts and must not be inferred from each other.
 Standalone space-type sets are retained in frozen source releases rather than
 offered as independent consumer choices. Eight legacy office plenum contexts
 without a supported 0A/0B building context are preserved as nonselectable evidence.
@@ -344,8 +347,9 @@ They remain accessible and explicitly identified; their applicability is not
 invented. Unsupported source climates remain unsupported.
 
 Foundation-dependent assemblies, ground and systems remain separate deferred
-work. Program JSON stays independent. This local integration does not constitute
-production publication. Preserve source license notices when reusing artifacts.
+work. Program JSON stays independent. Ready exports establish contract completeness
+under the documented policies, not annual building-energy accuracy. Preserve
+source license notices when reusing artifacts.
 '''
     if not include_resources:
         guide=guide.replace('- [Source coverage](../construction/coverage.json)\n','').replace('- [All assembly resources](../construction/assemblies/index.md)\n','')
@@ -444,12 +448,13 @@ def library_guide():
             '[Construction JSON contract](construction-json.md) · [Program JSON contract](program-json.md) · [Sources](../sources.md)\n')
 
 
-def verify_delivery(root,release=None):
+def verify_delivery(root,release=None,*,require_construction=False):
     """Compare every presentation packet/resource to the checksum-locked freeze."""
     import gzip
     from html.parser import HTMLParser
     root=Path(root)
-    if not (root/'construction-site.json').exists():return []
+    if not (root/'construction-site.json').exists():
+        return ['Missing required construction delivery: construction-site.json'] if require_construction else []
     release=release or load_release();report=load_json(root/'construction-site.json');errors=[];loaded={}
     from scripts.construction_equivalent_site import load_equivalents,packet_for as equivalent_packet
     equivalents=load_equivalents()

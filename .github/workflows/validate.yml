@@ -43,5 +43,12 @@ jobs:
       - run: python -m scripts.definition_release --verify
       - run: python -m scripts.definition_release --reproduce
       - run: python -m scripts.program_completeness --check
+      - name: Verify frozen profiles and reproduce detailed and unified constructions
+        run: |
+          python -m scripts.construction_set_release --check --quiet
+          python -m scripts.construction_hotel_applicability --check
+          python -m scripts.construction_distribution --check
+          python -c "from scripts.construction_weighting import load_profiles; load_profiles(); print('Frozen construction profiles and input checksums verified')"
+          python -m scripts.construction_equivalent_release --check
       - run: python -m scripts.schedule_coverage --report build/schedule-coverage.json
       - run: python -m scripts.audit

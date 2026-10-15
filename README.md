@@ -12,6 +12,16 @@ Sources: ComStock, ResStock, OpenStudio Standards, DOE Commercial Reference
 Buildings, and DOE/PNNL Prototype Building Models. Source interpretations and
 coverage will be recorded under `docs/` and `sources/`.
 
+Current construction publication candidate: **detailed distribution v2.2.0**
+(consumer schema 2.0.0) and separate **unified building construction 1.1.0**.
+Both cover 177 complete sets and 3,320 supported climate/reference contexts.
+The [release notes](docs/release-notes-construction-v2.2.0.md) describe migration,
+exact artifact identities, accepted approximation limits and consumer geometry/
+mass responsibilities. [Implementation closure](docs/reviews/construction-milestone-closure.md)
+is complete; production publication remains pending. Ground and systems are
+deferred, and Program JSON remains independent. The historical source-input
+release description below is not the current construction readiness status.
+
 Layout: `schemas/` contracts; `sources/` pinned retrieval and selection;
 `scripts/` reproducible tooling; `tests/` validation regressions; `data/raw/`
 immutable local downloads; `data/interim/` intermediate diagnostics;

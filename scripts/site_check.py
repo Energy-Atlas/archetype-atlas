@@ -130,9 +130,10 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--site', type=Path, default=ROOT/'build/site')
     p.add_argument('--prefix', default='/archetype-atlas/')
+    p.add_argument('--require-construction',action='store_true',help='Reject a publication build without the frozen construction catalogue')
     args = p.parse_args()
     from scripts.construction_site import verify_delivery
-    errors = check_links(args.site, args.prefix)+check_size(args.site)+check_active(args.site)+verify_delivery(args.site)
+    errors = check_links(args.site, args.prefix)+check_size(args.site)+check_active(args.site)+verify_delivery(args.site,require_construction=args.require_construction)
     if errors:
         raise SystemExit('\n'.join(errors[:50]) + f'\n{len(errors)} broken references')
     print('All built links, fragments, assets, publication size, retirement, program exports and frozen construction delivery passed')

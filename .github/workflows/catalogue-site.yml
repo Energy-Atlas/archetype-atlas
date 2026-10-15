@@ -104,6 +104,7 @@ jobs:
           python -m unittest tests.test_site_delivery tests.test_html_delivery -q
           python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
           python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_completion tests.test_program_recovery tests.test_program_completeness tests.test_er_triage tests.test_active_site tests.test_object_browser -q
+          python -m unittest tests.test_construction_site tests.test_construction_site_refresh tests.test_site_asset_versions -q
           node --test tests/*.test.js
       - name: Generate the current definition catalogue and build
         run: |
@@ -111,8 +112,9 @@ jobs:
           python -m mkdocs build --strict
       - name: Verify all links and browser behavior
         run: |
-          python -m scripts.site_check
+          python -m scripts.site_check --require-construction
           python -m scripts.site_smoke --screenshots build/screenshots
+          python -m scripts.construction_site_smoke --screenshots build/screenshots/construction
       - name: Retain verification screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

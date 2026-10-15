@@ -15,7 +15,8 @@ open design topics, not accepted designs.
 1. **Complete:** review and close the above-ground construction implementation,
    with fresh coverage, reproducibility and consumer-boundary evidence. See the
    [milestone closure record](reviews/construction-milestone-closure.md).
-2. Prepare the construction site and release for protected-main publication.
+2. **Prepared locally:** construction site and release candidate for protected-main
+   publication; see the [preparation record](reviews/construction-publication-preparation.md).
    Publication and its required checks are a separate gate from implementation
    closure; closing construction does not claim production deployment.
 3. Prepare the BEMGen test handoff using existing schedule contracts. Include
@@ -26,8 +27,9 @@ open design topics, not accepted designs.
 5. Revisit lighter artifact delivery only after the BEMGen test is accepted.
 
 Schedule-generator packaging does not block publication or BEMGen testing.
-Ground/foundation and systems remain deferred. Only item 1 is authorized for
-the current execution turn; subsequent items are planned, not started.
+Ground/foundation and systems remain deferred. Items 1 and 2 have been carried
+out locally. Push/PR checks, production publication and the BEMGen handoff/test
+have not started.
 
 The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-json-completion.md)
 details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
