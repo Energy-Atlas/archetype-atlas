@@ -171,6 +171,97 @@ def legacy_bundle(sid='service-'+ '3'*24):
 
 
 class PhysicalGraphTests(unittest.TestCase):
+    @staticmethod
+    def rewrite_retained_programmes(bundle,change,physical=False):
+        def walk(value):
+            if isinstance(value,dict):
+                if set(value)=={'path','sha256','locator','value'}:
+                    record=value['value']
+                    if isinstance(record,dict) and isinstance(record.get('definition'),dict) and ('loads' in record['definition'] or physical) and 'recipe' in record:
+                        change(record)
+                    for child in record.values() if isinstance(record,dict) else []:walk(child)
+                    if isinstance(record,dict) and ('recipe' in record or set(record)=={'selected_method_context','physical_service_records','child_program_records','evidence'}):
+                        value['sha256']=hashlib.sha256(canonical(record)).hexdigest()
+                    return
+                for child in value.values():walk(child)
+            elif isinstance(value,list):
+                for child in value:walk(child)
+        walk(bundle)
+
+    def test_original_water_obligations_cannot_be_erased_from_recipes(self):
+        for mode,parent in (('hotel',False),('office',False),('hotel',True)):
+            with self.subTest(mode=mode,parent=parent):
+                bundle=exact_bundle(mode=mode,parent=parent)
+                originals=copy.deepcopy([r['value']['definition'] for r in bundle['metadata']['building_realizations'][0]['native_context']['execution_authority']['canonical_program_records']])
+                self.rewrite_retained_programmes(bundle,lambda r:r['recipe'].update(required_service_sets=[]))
+                for owner in bundle['constituents']:
+                    if owner['owner_kind']=='program':owner.update(required_service_sets=[],service_set_projections=[])
+                self.assertEqual(originals,[r['value']['definition'] for r in bundle['metadata']['building_realizations'][0]['native_context']['execution_authority']['canonical_program_records']])
+                with self.assertRaises(GeneratorError):validate_bundle(bundle)
+
+    def test_retained_caller_operands_groups_and_exact_calendars_are_actual(self):
+        caller=caller_bundle(alternatives=False)
+        changes={
+            'method':lambda b:b['constituents'][0]['inputs'].update(water_method='invented'),
+            'resident':lambda b:b['constituents'][0]['inputs'].update(residents=5),
+            'owner_calendar':lambda b:b['constituents'][0]['inputs'].update(year=2009),
+            'missing_programme_group':lambda b:b['constituents'][1]['generation'].pop('operating_group'),
+            'programme_group':lambda b:b['constituents'][1]['generation'].update(operating_group='commercial-g')}
+        for label,change in changes.items():
+            invalid=copy.deepcopy(caller);change(invalid)
+            with self.subTest(label=label),self.assertRaises(GeneratorError):validate_bundle(invalid)
+        exact=exact_bundle()
+        for owner_index in (0,1):
+            for field,value in (('year',2009),('holidays',['01-01'])):
+                invalid=copy.deepcopy(exact);invalid['constituents'][owner_index]['inputs'][field]=value
+                with self.subTest(owner=owner_index,field=field),self.assertRaises(GeneratorError):validate_bundle(invalid)
+
+    def test_caller_source_family_cannot_reclassify_original_prototype(self):
+        bundle=caller_bundle(alternatives=False);owner=bundle['constituents'][1]
+        original=copy.deepcopy(owner['required_service_sets'][0]['programme'])
+        owner['source']['source_family']='existing_stock_benchmark'
+        self.assertEqual(owner['required_service_sets'][0]['programme'],original)
+        with patch('atlas_schedules.service_graph._actors',side_effect=AssertionError('classification before original authority')):
+            with self.assertRaises(GeneratorError):validate_bundle(bundle)
+
+    def test_unused_pool_parent_and_child_must_match_selected_context(self):
+        for branch in ('parent','child','physical'):
+            bundle=exact_bundle(parent=True)
+            bundle['constituents']=[c for c in bundle['constituents'] if c['owner_kind']=='physical_service']
+            bundle['metadata']['building_realizations'][0]['native_context']['execution_authority']['canonical_program_records']=[]
+            if branch=='physical':
+                chosen=bundle['bindings'][0]['source_service_id']
+                bundle['constituents']=[c for c in bundle['constituents'] if c['source_service_id']==chosen]
+                bundle['bindings']=[b for b in bundle['bindings'] if b['source_service_id']==chosen]
+                bundle['schedules']={k:v for k,v in bundle['schedules'].items() if k in {b['schedule_id'] for b in bundle['bindings']}}
+                authority=bundle['metadata']['building_realizations'][0]['native_context']['execution_authority']
+                authority['canonical_physical_records']=[r for r in authority['canonical_physical_records'] if r['value']['definition']['id']==chosen]
+            validate_bundle(bundle)
+            def foreign(record):
+                if branch=='physical':
+                    if 'load' in record['definition'] and record['definition']['id']!=chosen:
+                        record['recipe']['configurations']['selected-context']['source_context']['source_hoo_configuration_id']='foreign-context'
+                elif 'loads' in record['definition'] and (record['definition']['id']=='parent')==(branch=='parent'):
+                    record['recipe']['source_context']['source_hoo_configuration_id']='foreign-context'
+            self.rewrite_retained_programmes(bundle,foreign,physical=branch=='physical')
+            with self.subTest(branch=branch),self.assertRaises(GeneratorError):validate_bundle(bundle)
+
+    def test_legacy_identical_alias_proof_survives_v12_and_conflict_rejects(self):
+        from atlas_schedules.mixtures import compose_constituents
+        first=legacy_bundle();alias=rename_graph(first,'-alias')
+        request=mixture(services=[{'instance_key':'legacy-water'},{'instance_key':'legacy-water-alias'}])
+        baseline=compose_constituents([first,alias],request,CALENDAR)
+        self.assertEqual(len(baseline['constituents'][-1]['generation']['service_selection']['effective_service_members']),1)
+        mixed=compose_constituents([first,alias,exact_bundle()],request,CALENDAR)
+        receipt=mixed['constituents'][-1]['generation']['service_set_selection']
+        self.assertEqual(len(receipt['effective_physical_members']),1)
+        self.assertEqual([r['deduplicated'] for r in receipt['reasons']],[False,True])
+        validate_bundle(mixed)
+        conflict=copy.deepcopy(alias);conflict['constituents'][0]['evidence'].append({'different':'whole physical proof'})
+        validate_bundle(conflict)
+        with self.assertRaises(GeneratorError) as caught:compose_constituents([first,conflict,exact_bundle()],request,CALENDAR)
+        self.assertEqual(caught.exception.code,'shared_service_conflict')
+
     def test_absolute_source_reference_conserves_input_components_without_local_demand(self):
         bundle=exact_bundle(mode='office');validate_bundle(bundle)
         programme=bundle['constituents'][0];self.assertEqual(programme['demands'],[])

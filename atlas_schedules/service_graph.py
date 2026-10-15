@@ -108,9 +108,41 @@ def _check_resolved(owner,resolved,group):
     wanted=copy.deepcopy(resolved['demands'])
     for d in wanted:d.pop('heat_fractions',None)
     if not _same(actual,wanted):_fail(path+'/demands','Original executable demand changed')
+    prepared={'reference_channels','reference_budgets','source_context','companion_rules','source_composition'}
+    inputs={k:v for k,v in resolved['inputs'].items() if k not in prepared}
+    if not _same(owner['inputs'],inputs):
+        _fail(path+'/inputs','Actual retained operands/calendar differ from reconstructed executable')
+    if owner['owner_kind']!='physical_service' and not _same(owner['required_service_links'],resolved.get('required_service_links',[])):
+        _fail(path+'/required_service_links','Actual C5 inventory differs from original executable')
     if (not _same(owner['generation'].get('source_inputs'),resolved['inputs']['source_context']) or
             owner['generation'].get('operating_group')!=group):
         _fail(path+'/generation','Actual executable method/group context differs','operating_group_conflict')
+
+
+def _original_obligations(programme,recipe,path):
+    """Count obligations from whole originals before inspecting supplied entries."""
+    expected=[];occupied=set()
+    for load in programme['loads']:
+        if load.get('quantity')!='hot_water_volume' or 'source_components' in load:continue
+        sid=load.get('service_id')
+        if sid in occupied:_fail(path,'Duplicate original water obligation')
+        occupied.add(sid)
+        expected.append(('original_programme_demand',load))
+    for sid in programme['service_ids']:
+        if sid not in occupied:
+            expected.append(('original_service_reference',sid));occupied.add(sid)
+    expected.extend(('original_source_components',load) for load in programme['loads']
+        if load.get('quantity')=='hot_water_volume' and 'source_components' in load)
+    actual=[]
+    for requirement in recipe['required_service_sets']:
+        kind=requirement['kind']
+        if kind=='original_programme_demand':value=requirement['original_demand']['value']
+        elif kind=='original_service_reference':value=requirement['source_service_id']
+        elif kind=='original_source_components':value=requirement['original_mixed_demand']['value']
+        else:_fail(path,'Foreign requirement branch in exact source original')
+        actual.append((kind,value))
+    if not _same(actual,expected):
+        _fail(path,'Required inventory does not cover complete original water demand/reference/components in source order')
 
 
 def _exact_realization(bundle,realization,owners):
@@ -166,6 +198,8 @@ def _exact_realization(bundle,realization,owners):
             _fail(path,'Whole canonical programme is outside qualified eligible context')
         if pid in pool and pid in canonical_programs and not _same(pool[pid],canonical_programs[pid]):
             _fail(path,'Selected programme differs from eligible source pool')
+    for record in pool.values():
+        exact._executable_context(record['value']['recipe']['source_context'],realization,clock,path+'/eligible/source_context')
     selected_owners=[c for c in owners.values() if c.get('building_realization_id')==building]
     programmes=[c for c in selected_owners if c['owner_kind']=='program']
     physical=[c for c in selected_owners if c.get('physical_binding_kind')=='exact_source_role']
@@ -185,6 +219,7 @@ def _exact_realization(bundle,realization,owners):
                 key['member_program_id']!=definition.get('id') or
                 key['member_evidence_view']!=definition.get('evidence_view') or key['member_program_id'] not in q['program_ids']):
             _fail(path,'Child executable full tuple/original view/qualified coverage differs')
+        exact._executable_context(item['program_record']['value']['recipe']['source_context'],realization,clock,path+'/associated_child/source_context')
         child_records[item['variant_id']]=item
     requirements={}
     # An unused eligible parent still has independently retained component leaves
@@ -201,6 +236,7 @@ def _exact_realization(bundle,realization,owners):
             _fail(path,'Eligible whole programme original/source/inventory differs')
         exact._method(recipe.get('original_method_reference'),programme)
         exact._no_double_listing(recipe['required_service_links'],recipe['required_service_sets'])
+        _original_obligations(programme,recipe,path+'/programme/'+programme['id']+'/required_service_sets')
         for req in recipe['required_service_sets']:
             if not _same(exact._programme_requirement(req)['value'],programme):_fail(path,'Eligible requirement changed original whole programme')
             rid=req['requirement_id']
@@ -214,6 +250,13 @@ def _exact_realization(bundle,realization,owners):
     for sid,record in associated.items():
         roles=[r for r in payload['roles'] if r['source_service_id']==sid]
         if not _same(record['value'].get('definition'),roles[0]['service_definition']['value']):_fail(path,'Executable original service authority differs')
+        configurations=record['value']['recipe'].get('configurations',{})
+        variant=configurations.get(realization['source_hoo_configuration_id'])
+        if not isinstance(variant,dict):_fail(path,'Associated physical executable lacks selected configuration')
+        exact._executable_context(variant.get('source_context'),realization,clock,path+'/associated_physical/source_context')
+        schedule=roles[0]['schedule_authority']
+        rules=schedule.get('canonical_schedule',{}).get('value',schedule.get('compiled_ruleset'))
+        if not _same(variant.get('reference_source'),rules):_fail(path,'Associated physical executable changed original Ruleset')
         if sid in canonical_physical:
             original=canonical_physical[sid];_canonical_record(original,path+'/physical/'+sid)
             if original['path']!='reference/physical-service__'+sid+'.json':_fail(path,'Canonical service resource path differs')
@@ -361,6 +404,8 @@ def _caller_realization(bundle,realization,owners):
         key=(building,owner.get('unit_id'));entry=entries.get(key)
         if entry is None:_fail(path,'Foreign caller unit owner/claim','shared_service_conflict')
         unit=entry['unit'];where='/constituents/'+owner['instance_key']
+        if 'operating_group' not in owner['generation'] or owner['generation']['operating_group'] is not None:
+            _fail(where+'/generation/operating_group','Caller physical/programme water uses a null group','operating_group_conflict')
         extent={'value':unit['floor_area_m2'],'unit':'m2','evidence':unit['area_evidence']}
         if not _same(owner['basis_bindings'],{'multiplicity':1,'extents':{'floor_area':extent}}):
             _fail(where,'Actual caller A/evidence/multiplicity differs','incompatible_basis')
@@ -368,7 +413,12 @@ def _caller_realization(bundle,realization,owners):
             if (owner['physical_binding_kind']!=CALLER or key in covered or owner['physical_id']!=unit['physical_id'] or
                     owner['source_service_id']!=unit['source_service_id']):_fail(where,'Caller one-owner identity differs','shared_service_conflict')
             covered.add(key);entry=copy.deepcopy(entry);entry['fixed_controls']=pool[entry['water_authority_programme_id']]['fixed_controls']
-            instance={'key':owner['instance_key'],'inputs':{'water_method':caller.METHOD,'source_geometry_departure':'caller_unit_area'}}
+            inputs=owner['inputs'];clock=bundle['metadata']['calendar']
+            if (set(inputs)!={'water_method','source_geometry_departure','year','holidays'} or
+                    inputs['water_method']!=caller.METHOD or inputs['source_geometry_departure']!='caller_unit_area' or
+                    not _same(inputs['year'],clock['year']) or not _same(inputs['holidays'],clock['holidays'])):
+                _fail(where+'/inputs','Exact retained fixed-water method/departure/calendar operands required')
+            instance={'key':owner['instance_key'],'inputs':{k:v for k,v in inputs.items() if k not in {'year','holidays'}}}
             resolved,plan=caller._physical_result(instance,entry,bundle['metadata']['calendar'])
             _check_resolved(owner,resolved,None)
             if not _same(owner['shared_services'],resolved['shared_services']):_fail(where,'Whole caller source/control/A/B/W authority differs')
@@ -379,7 +429,8 @@ def _caller_realization(bundle,realization,owners):
             claims.add(claim);req=pool[pid]['requirement'];programme=req['programme']['value']
             if (owner['required_service_sets']!=[req] or owner['required_service_links'] or
                     any(owner['source'].get(k)!=programme[v] for k,v in (
-                        ('source_id','source_id'),('building_type','building_type'),('template','template'),('evidence_view','evidence_view'))) or
+                        ('source_id','source_id'),('building_type','building_type'),('template','template'),('evidence_view','evidence_view'),
+                        ('source_family','source_family'))) or
                     any(d['slot']=='hot_water_volume' for d in owner['demands']) or 'hot_water_volume' in owner['schedule_ids']):
                 _fail(where,'Alternative programme changed or owns original water')
             projections.append({'instance_key':owner['instance_key'],'building_realization_id':building,'unit_id':unit['unit_id'],'requirement':req})
@@ -540,13 +591,25 @@ def _validate_physical_graph(bundle):
     """Validate retained original proofs, actual owners, projections and selection."""
     if bundle.get('schema_version')!='1.2.0':_fail('/schema_version','Physical graph requires 1.2.0','unsupported_schema')
     owners=_owners(bundle);_source_consistency(bundle)
+    # Normalize only the 1.2 legacy discriminator for the unchanged C5 proof.
+    from .services import validate_service_links,_whole_proof
+    legacy=copy.deepcopy(bundle)
+    for owner in legacy['constituents']+legacy['bindings']:
+        if owner.get('physical_binding_kind')=='legacy_whole':owner.pop('physical_binding_kind')
+    legacy_owners=_owners(legacy);legacy_proofs={}
     physical={};roles=set();units=set();sids={};raw={}
     for owner in owners.values():
         if owner['owner_kind']!='physical_service':
             exact._no_double_listing(owner['required_service_links'],owner['required_service_sets'])
             continue
         identity=physical_identity(owner);_binding(bundle,owner)
-        if identity in physical:_fail('/constituents','Duplicate scoped physical owner','shared_service_conflict')
+        if identity in physical:
+            if identity[0]!='legacy_whole':_fail('/constituents','Duplicate scoped physical owner','shared_service_conflict')
+            proof=_whole_proof(legacy,legacy_owners[owner['instance_key']])
+            if not _same(proof,legacy_proofs[identity]):
+                _fail('/constituents','Legacy aliases have conflicting complete physical proof','shared_service_conflict')
+        elif identity[0]=='legacy_whole':
+            legacy_proofs[identity]=_whole_proof(legacy,legacy_owners[owner['instance_key']])
         physical[identity]=owner
         kind=identity[0];sid=owner['source_service_id'];local=owner['physical_id']
         if sid in sids and sids[sid]!=kind or local in raw and raw[local]!=kind:
@@ -560,14 +623,7 @@ def _validate_physical_graph(bundle):
             key=(owner['building_realization_id'],owner['unit_id'])
             if key in units:_fail('/constituents','Duplicate caller unit owner','shared_service_conflict')
             units.add(key)
-    # C5 proof is unchanged; normalize its 1.2 discriminator only for this call.
-    from .services import validate_service_links,_whole_proof
-    legacy=copy.deepcopy(bundle)
-    for owner in legacy['constituents']+legacy['bindings']:
-        if owner.get('physical_binding_kind')=='legacy_whole':owner.pop('physical_binding_kind')
     validate_service_links(legacy)
-    for owner in legacy['constituents']:
-        if owner['owner_kind']=='physical_service' and 'physical_binding_kind' not in owner:_whole_proof(legacy,owner)
     realizations={}
     for realization in bundle['metadata']['building_realizations']:
         building=realization['building_realization_id']
