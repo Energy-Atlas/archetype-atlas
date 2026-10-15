@@ -7,7 +7,9 @@ from unittest.mock import patch
 from pathlib import Path
 
 from atlas_schedules.errors import GeneratorError
-from atlas_schedules.generator import collect_physical_unit_actors
+from atlas_schedules.generator import (collect_physical_unit_actors,
+                                       build_physical_unit_generation,
+                                       _run_physical_unit_actor)
 from atlas_schedules.seeds import (assign_physical_unit_sequence,
                                    source_streams, validate_physical_unit_sequence)
 
@@ -138,11 +140,24 @@ class PhysicalUnitOrderTests(unittest.TestCase):
                     collect_physical_unit_actors([bad], '1.2.0')
 
     def test_retained_stock_bundle_receipt_and_tampering(self):
-        receipts = self.sequence([stock('s1'), water('owner'), stock('s2')])
+        produced = build_physical_unit_generation(42,
+                                                  [stock('s1'), water('owner'), stock('s2')])
+        self.assertEqual(produced, {
+            'physical_unit_seed_sequence': [
+                {'actor_kind': 'stock', 'instance_key': 's1',
+                 'building_realization_id': None, 'unit_id': None,
+                 'stochastic_action': 'generate', 'position': 0, 'unit_seed': 42},
+                {'actor_kind': 'stock', 'instance_key': 's2',
+                 'building_realization_id': None, 'unit_id': None,
+                 'stochastic_action': 'generate', 'position': 1, 'unit_seed': 84}],
+            'residential_unit_order': ['s1', 's2'],
+            'unit_seeds': {'s1': 42, 's2': 84}})
+        self.assertEqual(build_physical_unit_generation(42,
+                         [water('owner'), other('source-view'), other('reviewed-view')]), {
+            'physical_unit_seed_sequence': [],
+            'residential_unit_order': [], 'unit_seeds': {}})
         bundle = {'schema_version': '1.2.0', 'generation': {'master_seed': 42,
-                  'physical_unit_seed_sequence': receipts,
-                  'residential_unit_order': ['s1', 's2'],
-                  'unit_seeds': {'s1': 42, 's2': 84}}}
+                  **produced}}
         validate_physical_unit_sequence(bundle)
         for index, field, value in ((0, 'position', 1), (1, 'unit_seed', 85)):
             mutated = copy.deepcopy(bundle)
@@ -187,6 +202,42 @@ class PhysicalUnitOrderTests(unittest.TestCase):
         self.assertEqual(list(source_streams(receipts[0]['unit_seed'])),
                          ['main', 'hygiene', 'dishwasher', 'clothes_washer',
                           'clothes_dryer', 'ev', 'cooking'])
+
+    def test_selected_n0_skips_actual_kernel_and_stream_boundary(self):
+        from atlas_schedules.resources import ResourceSet
+        from atlas_schedules.programs import resolve_program
+        from atlas_schedules.residential import activity
+        from atlas_schedules.residential import events
+        from atlas_schedules.generator import generate_residential
+        root = Path(__file__).resolve().parents[1]
+        manifest = json.loads((root/'atlas_schedules/data/manifest.json').read_text())
+        resources = ResourceSet.load(manifest['resource_set_id'])
+        pid = 'program-03fe19ed8968e605f4be3b8d'
+        inputs = copy.deepcopy(resources.get('program', pid)['recipe']['bound_inputs'])
+        prepared = resolve_program(pid, dict(inputs, year=2007, holidays=[]), resources)
+        with patch('atlas_schedules.generator._qualified_apartment_actor', return_value=True):
+            skipped, stock_actor = build_physical_unit_generation(42, [
+                apartment('a0', 'b1', 'u1', 0), stock('s1')])['physical_unit_seed_sequence']
+        self.assertEqual((skipped['position'], skipped['unit_seed'],
+                          skipped['stochastic_action']), (0, 42, 'skip_n0'))
+        self.assertEqual(stock_actor['unit_seed'], 84)
+        with patch('atlas_schedules.generator.generate_residential', wraps=generate_residential) as kernel, \
+             patch('atlas_schedules.residential.activity.source_streams',
+                   wraps=activity.source_streams) as streams, \
+             patch('atlas_schedules.residential.generate_events',
+                   wraps=events.generate_events) as event_kernel:
+            with self.assertRaises(GeneratorError):
+                _run_physical_unit_actor(skipped, {'residents': 0}, resources)
+            self.assertEqual((kernel.call_count, streams.call_count,
+                              event_kernel.call_count), (0, 0, 0))
+            result = _run_physical_unit_actor(stock_actor, prepared['inputs'], resources)
+            self.assertIn('channels', result)
+            self.assertEqual(kernel.call_count, 1)
+            streams.assert_called_once_with(84)
+            self.assertEqual(event_kernel.call_count, 1)
+            self.assertEqual(list(result['source_context']['activity']['enduse_seeds']),
+                             ['hygiene', 'dishwasher', 'clothes_washer',
+                              'clothes_dryer', 'ev', 'cooking'])
 
 
 if __name__ == '__main__':

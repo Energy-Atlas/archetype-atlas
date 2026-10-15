@@ -80,6 +80,26 @@ def collect_physical_unit_actors(resolved_instances: list[tuple[dict,dict]],
     return actors
 
 
+def build_physical_unit_generation(master: int,
+                                   resolved_instances: list[tuple[dict,dict]]) -> dict:
+    """Assemble the exact 1.2 generation receipt from resolved source actors."""
+    sequence = assign_physical_unit_sequence(
+        master, collect_physical_unit_actors(resolved_instances, '1.2.0'))
+    return {'physical_unit_seed_sequence': sequence,
+            'residential_unit_order': [actor['instance_key'] for actor in sequence],
+            'unit_seeds': {actor['instance_key']: actor['unit_seed'] for actor in sequence}}
+
+
+def _run_physical_unit_actor(actor: dict, inputs: dict, resources) -> dict:
+    """Keep the qualified stock kernel and closed apartment adapter at one boundary."""
+    if actor['actor_kind'] == 'stock' and actor['stochastic_action'] == 'generate':
+        return generate_residential(inputs, actor['unit_seed'], resources)
+    # An N0 adapter position never initializes streams, HMM, events or lighting.
+    # Positive adapter execution also awaits separate native/source qualification.
+    raise GeneratorError('requires_binding', '/source_context/method',
+                         'Apartment occupancy/lighting execution awaits qualification')
+
+
 def _group_context(resolved):
     """Compare source science shared by the group, allowing distinct room slots.
 
@@ -217,13 +237,11 @@ def generate(params: dict, seed: int) -> dict:
     # All original annual targets and inputs exist before any RNG is sampled.
     service_link_plans=prepare_required_service_links(resolved_instances,version)
     if version == '1.2.0':
-        physical_unit_seed_sequence = assign_physical_unit_sequence(
-            seed, collect_physical_unit_actors(resolved_instances, version))
-        residential_keys = [actor['instance_key'] for actor in physical_unit_seed_sequence]
-        unit_seeds = {actor['instance_key']: actor['unit_seed']
-                      for actor in physical_unit_seed_sequence}
-        apartment_actor_keys = {actor['instance_key'] for actor in physical_unit_seed_sequence
-                                if actor['actor_kind'] == 'apartment_adapter'}
+        physical_generation = build_physical_unit_generation(seed, resolved_instances)
+        residential_keys = physical_generation['residential_unit_order']
+        unit_seeds = physical_generation['unit_seeds']
+        physical_actors_by_key = {actor['instance_key']: actor
+                                  for actor in physical_generation['physical_unit_seed_sequence']}
     else:
         residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
         unit_seeds = assign_unit_seeds(seed,residential_keys)
@@ -261,7 +279,7 @@ def generate(params: dict, seed: int) -> dict:
                           'scope_id':scope['milestone_id'],'scope_version':scope['scope_version'],
                           'population_realization_equivalent':False,'comparison_policy':policy}}
     if version == '1.2.0':
-        bundle['generation']['physical_unit_seed_sequence'] = physical_unit_seed_sequence
+        bundle['generation'].update(physical_generation)
     if source_allocations:
         bundle['generation']['request_instance_order']=[i['key'] for i in params['instances']]
         bundle['generation']['physical_member_generation_order']=[i['key'] for i,r in resolved_instances]
@@ -276,9 +294,9 @@ def generate(params: dict, seed: int) -> dict:
                            'source_context':{'method':'source_fixed_apartment_dhw',
                                              'random_draw_count':0}}
                 kernel_context=generated['source_context']
-            elif version == '1.2.0' and key in apartment_actor_keys:
-                raise GeneratorError('requires_binding', '/source_context/method',
-                                     'Apartment occupancy/lighting execution awaits qualification')
+            elif version == '1.2.0' and key in physical_actors_by_key:
+                generated = _run_physical_unit_actor(physical_actors_by_key[key], inputs, resources)
+                kernel_context = {'residential':generated['source_context']}
             elif key in unit_seeds:
                 generated = generate_residential(inputs,unit_seeds[key],resources)
                 kernel_context = {'residential':generated['source_context']}
