@@ -33,6 +33,15 @@ Weather controls the fan monthly threshold (strictly greater than 63 F monthly
 mean); location controls the Building America lighting equation; state controls
 daily rotations. None changes raw Markov activity draws.
 
+The later A1 selected apartment subgraph has a narrower input contract than
+`occupancy_shapes`: it consumes the actual state, latitude, longitude and
+physical UTC offset plus positive integer N, source streams and the 2007
+calendar, with no weather or installed flags. The original whole wrappers
+above remain weather dependent. A1 compared 55 ordinary unmodified HMM
+targets and three separately classified controlled component targets; the
+four selected-method cases passed the named 8,760-hour fraction policy.
+These results do not certify a particular prototype programme or caller unit.
+
 Source zero-resident generation skips before any RNG initialization. The atlas
 adapter therefore emits explicit zero occupancy only and marks the source skip;
 it creates no schedules for unknown other loads. The zero occupancy array is an
