@@ -6,6 +6,7 @@ module never loads repository files or creates an apartment stochastic actor.
 import copy
 import hashlib
 import math
+import re
 
 from .budgets import bind_budget, reference_budget
 from .calendar import evaluate_rules
@@ -49,6 +50,8 @@ def _positive(value,path):
 def _original_load(programme):
     loads=programme['value'].get('loads')
     if not isinstance(loads,list):_fail('/programme/loads','Entire original loads required')
+    if any(not isinstance(load,dict) for load in loads):
+        _fail('/programme/loads','Every original load must be an object')
     matches=[(i,load) for i,load in enumerate(loads) if load.get('quantity')=='hot_water_volume']
     if len(matches)!=1:_fail('/programme/loads','One original apartment water load required','requires_binding')
     index,load=matches[0]
@@ -66,7 +69,9 @@ def _validate_source(programme,service,ruleset,evidence):
     p=programme['value'];s=service['value'];r=ruleset['value'];row=space['value']
     if any(not isinstance(v,dict) for v in (p,s,r,row)):_fail('/source','Whole original objects required')
     sid=s.get('id');load=_original_load(programme);d=load['value'];sd=s.get('load')
-    if (p.get('building_type') not in ('HighriseApartment','MidriseApartment') or
+    if (not isinstance(p.get('service_ids'),list) or not isinstance(s.get('evidence_ids'),list) or
+            not isinstance(s.get('beneficiary_program_ids'),list) or
+            p.get('building_type') not in ('HighriseApartment','MidriseApartment') or
             p.get('evidence_view') not in ('source','reviewed') or
             type(p.get('id')) is not str or not p['id'] or type(p.get('source_id')) is not str or
             p.get('template')!=s.get('template') or p.get('building_type')!=s.get('building_type') or
@@ -81,7 +86,8 @@ def _validate_source(programme,service,ruleset,evidence):
             d.get('thermal_effects')!={} or d.get('zone_heat_assignment')!='unresolved' or
             d.get('target_temperature_degC')!=60 or d.get('evidence_id') not in s.get('evidence_ids',[]) or
             d.get('schedule_id')!=r.get('id') or r.get('schedule_type')!='fraction' or
-            r.get('time_resolution_minutes')!=60 or not isinstance(r.get('rules'),list) or not r['rules']):
+            r.get('time_resolution_minutes')!=60 or not isinstance(r.get('rules'),list) or
+            not r['rules'] or any(not isinstance(rule,dict) for rule in r['rules'])):
         _fail('/original_demand','Original programme/service/SID/Ruleset authority differs')
     _positive(d.get('value'),'/original_demand/value')
     if (not isinstance(row.get('space_type'),str) or
@@ -131,6 +137,19 @@ def _validate_source(programme,service,ruleset,evidence):
     _exact(density,('value','unit','canonical_value','canonical_unit'),'/fixed_controls/original_density')
     _exact(temperature,('original_value','original_unit','canonical_value','canonical_unit'),'/fixed_controls/target_temperature')
     for name in ('sensible_fraction','latent_fraction'):_exact(c[name],('value','unit'),'/fixed_controls/'+name)
+    for field,value in (('original_density/value',density['value']),
+                        ('original_density/canonical_value',density['canonical_value']),
+                        ('target_temperature/original_value',temperature['original_value']),
+                        ('target_temperature/canonical_value',temperature['canonical_value']),
+                        ('sensible_fraction/value',c['sensible_fraction']['value']),
+                        ('latent_fraction/value',c['latent_fraction']['value'])):
+        if type(value) not in (int,float) or not math.isfinite(value):
+            _fail('/fixed_controls/'+field,'Finite numeric original control required')
+    for field in ('service_water_heating_peak_flow_per_area','service_water_heating_target_temperature',
+                  'service_water_heating_fraction_sensible','service_water_heating_fraction_latent'):
+        value=row[field]
+        if type(value) not in (int,float) or not math.isfinite(value):
+            _fail('/source_system_type/'+field,'Finite numeric original source field required')
     conversion=0.003785411784/3600/0.09290304
     if (c['selected_branch']!='is_flow_per_area_true' or density['unit']!='US gal/h/ft2' or
             density['canonical_unit']!='m3/s/m2' or type(density['value']) not in (int,float) or
@@ -153,6 +172,16 @@ def _validate_source(programme,service,ruleset,evidence):
             'sensible_fraction: 0.2' not in helpers[1]['value'] or
             'latent_fraction: 0.05' not in helpers[1]['value']):
         _fail('/fixed_controls/source_helpers','Pinned source branch/default controls not retained','requires_binding')
+    selected=re.search(r'water_fixture = OpenstudioStandards::ServiceWaterHeating\.create_water_use\(model,(.*?)service_water_loop: swh_loop\)',
+                       helpers[0]['value'],re.S)
+    constructor=re.search(r'def self\.create_water_use\(model,(.*?)space: nil\)',helpers[1]['value'],re.S)
+    if (selected is None or constructor is None or
+            re.search(r'\b(?:sensible|latent)_fraction\s*:',selected.group(1)) or
+            not re.search(r'\bsensible_fraction:\s*0\.2\s*,',constructor.group(1)) or
+            not re.search(r'\blatent_fraction:\s*0\.05\s*,',constructor.group(1)) or
+            c['sensible_fraction']!={'value':0.2,'unit':'1'} or
+            c['latent_fraction']!={'value':0.05,'unit':'1'}):
+        _fail('/fixed_controls/source_helpers','Selected call must inherit pinned constructor fractions','requires_binding')
     a=association['value']
     _exact(a,('programme','original_demand','service_definition','source_ruleset','fixed_controls',
               'source_system_type','reference_calendar','evidence'),'/association/value')
@@ -166,6 +195,11 @@ def _validate_source(programme,service,ruleset,evidence):
 
 def compile_requirement(programme: dict, service: dict, ruleset: dict, evidence: dict) -> dict:
     """Compile immutable original water authority independently of caller units."""
+    for name,value in (('programme',programme),('service',service),('ruleset',ruleset),('evidence',evidence)):
+        try:_finite(value,'/'+name)
+        except GeneratorError as error:
+            if error.code!='invalid_json':raise
+            raise GeneratorError('source_integrity',error.path,error.message) from error
     load,row=_validate_source(programme,service,ruleset,evidence)
     p=programme['value'];sid=service['value']['id']
     identity=[p['id'],p['evidence_view'],load['value']['demand_id']]
@@ -189,6 +223,50 @@ def _qualified_caller_water_method(qualification):
     return False
 
 
+def validate_caller_unit_evidence(realization: dict) -> None:
+    """Bind retained FieldEvidence to a separate fact-only caller declaration.
+
+    Source paths and file hashes are caller provenance; this offline check does
+    not fetch or authenticate the separately sourced fact record.
+    """
+    inventory=realization['unit_inventory'];units=inventory['units']
+    fields=('unit_id','physical_id','source_service_id','source_beneficiary_id',
+            'programme_ids','water_authority_programme_id')
+    mandatory={'/building_realization_id','/unit_inventory_id'}
+    for i in range(len(units)):
+        mandatory.add('/units/'+str(i)+'/floor_area_m2')
+        mandatory.update('/units/'+str(i)+'/'+field for field in fields)
+    primary=None
+    for i,u in enumerate(units):
+        path='/unit_inventory/units/'+str(i)
+        base='/units/'+str(i)
+        area={base+'/floor_area_m2':(u['floor_area_m2'],'m2')}
+        identity={'/building_realization_id':(realization['building_realization_id'],None),
+                  '/unit_inventory_id':(realization['unit_inventory_id'],None)}
+        identity.update({base+'/'+field:(u[field],None) for field in fields})
+        seen=set()
+        for name,expected in (('area_evidence',area),('identity_evidence',identity)):
+            records=u[name]
+            _evidence(records,path+'/'+name)
+            for j,record in enumerate(records):
+                locator=record['locator'];where=path+'/'+name+'/'+str(j)
+                if locator in mandatory:
+                    if locator not in expected or locator in seen:
+                        _fail(where,'Caller fact locator is misplaced or duplicated')
+                    value,unit=expected[locator]
+                    if not _same(record['original_value'],value) or record['original_unit']!=unit:
+                        _fail(where,'Original caller fact differs from declared unit')
+                    if locator==base+'/floor_area_m2':
+                        _positive(record['original_value'],where+'/original_value')
+                    provenance=(record['source_path'],record['source_sha256'])
+                    if primary is None:primary=provenance
+                    elif provenance!=primary:
+                        _fail(where,'Mandatory caller facts require one primary source file')
+                    seen.add(locator)
+        if seen!=set(area)|set(identity):
+            _fail(path,'Complete original caller area and identity facts required','requires_binding')
+
+
 def resolve_caller_unit_inventory(realization: dict, requirements: dict[str,dict]) -> dict:
     """Resolve the complete caller declaration independently of owner aliases."""
     schema=_load_schema('request','1.2.0')
@@ -200,6 +278,7 @@ def resolve_caller_unit_inventory(realization: dict, requirements: dict[str,dict
     if realization['unit_inventory_sha256']!=hashlib.sha256(canonical(inventory)).hexdigest():
         _fail('/unit_inventory_sha256','Caller declaration checksum differs')
     if not units:_fail('/unit_inventory/units','At least one explicit actual unit required','requires_binding')
+    validate_caller_unit_evidence(realization)
     answer={}
     for u in units:
         path='/unit_inventory/units/'+u['unit_id'];key=(realization['building_realization_id'],u['unit_id'])

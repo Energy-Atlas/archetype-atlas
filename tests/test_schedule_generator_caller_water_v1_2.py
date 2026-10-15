@@ -124,6 +124,24 @@ def unit(unit_id,physical_id,programmes,area=80.0,chosen=None):
 
 def realization(units,family='HighriseApartment',template='90.1-2013'):
     inventory={'authority':'caller_declared_units','units':copy.deepcopy(units)}
+    fields=('unit_id','physical_id','source_service_id','source_beneficiary_id',
+            'programme_ids','water_authority_programme_id','floor_area_m2')
+    facts={'building_realization_id':'building-1','unit_inventory_id':'caller-inventory-1',
+           'units':[{k:copy.deepcopy(u[k]) for k in fields} for u in inventory['units']]}
+    fact_path='contract-fixture/caller-facts.json';fact_sha=hashlib.sha256(canonical(facts)).hexdigest()
+    def claim(locator,value,unit=None):
+        return {'source_revision':'labelled-caller-contract-fixture','source_path':fact_path,
+                'source_sha256':fact_sha,'locator':locator,'original_value':copy.deepcopy(value),
+                'original_unit':unit,'transformation':'Caller fact retained in normalized m2',
+                'extraction_date':'2026-10-15',
+                'interpretation_note':'Fact-only caller authority, not source geometry or native certificate'}
+    for i,u in enumerate(inventory['units']):
+        base='/units/'+str(i)
+        u['area_evidence']=[claim(base+'/floor_area_m2',u['floor_area_m2'],'m2')]
+        u['identity_evidence']=[claim('/building_realization_id',facts['building_realization_id']),
+                                claim('/unit_inventory_id',facts['unit_inventory_id'])]
+        u['identity_evidence'].extend(claim(base+'/'+field,u[field]) for field in fields
+                                      if field!='floor_area_m2')
     return {'mode':'caller_unit_prototype_density_fixed_dhw','building_realization_id':'building-1',
             'building_type':family,'template':template,'unit_inventory_id':'caller-inventory-1',
             'unit_inventory':inventory,'unit_inventory_sha256':hashlib.sha256(canonical(inventory)).hexdigest()}
@@ -239,7 +257,47 @@ class CallerWaterContractTests(unittest.TestCase):
         evidence['fixed_controls']['value']['source_space_type']=copy.deepcopy(evidence['source_system_type'])
         evidence['association']['value']['source_system_type']=copy.deepcopy(evidence['source_system_type'])
         evidence['association']['value']['fixed_controls']=copy.deepcopy(evidence['fixed_controls'])
-        with self.assertRaises(GeneratorError):compile_requirement(*args)
+        with self.assertRaises(GeneratorError) as raised:compile_requirement(*args)
+        self.assertEqual(raised.exception.path,'/source_system_type')
+
+    def test_coherently_changed_row_fractions_cannot_override_selected_helper_defaults(self):
+        from atlas_schedules.caller_unit_water import compile_requirement
+        args=list(source_case());evidence=args[3]
+        row=evidence['source_system_type']['value']
+        for field,value in (('service_water_heating_fraction_sensible',0.3),
+                            ('service_water_heating_fraction_latent',0.04)):
+            row[field]=value
+            for record in evidence['field_evidence']:
+                if record['locator'].endswith('/'+field):record['original_value']=value
+        controls=evidence['fixed_controls']['value']
+        controls['source_space_type']=copy.deepcopy(evidence['source_system_type'])
+        controls['sensible_fraction']['value']=0.3;controls['latent_fraction']['value']=0.04
+        controls['evidence']=copy.deepcopy(evidence['field_evidence'])
+        association=evidence['association']['value']
+        association['source_system_type']=copy.deepcopy(evidence['source_system_type'])
+        association['fixed_controls']=copy.deepcopy(evidence['fixed_controls'])
+        with self.assertRaises(GeneratorError) as raised:compile_requirement(*args)
+        self.assertEqual(raised.exception.path,'/fixed_controls/source_helpers')
+
+    def test_malformed_nested_source_proof_raises_contextual_generator_error(self):
+        from atlas_schedules.caller_unit_water import compile_requirement
+        mutations={
+            'canonical_string':lambda a:a[3]['fixed_controls']['value']['original_density'].__setitem__('canonical_value','bad'),
+            'canonical_null':lambda a:a[3]['fixed_controls']['value']['original_density'].__setitem__('canonical_value',None),
+            'canonical_list':lambda a:a[3]['fixed_controls']['value']['original_density'].__setitem__('canonical_value',[]),
+            'canonical_bool':lambda a:a[3]['fixed_controls']['value']['original_density'].__setitem__('canonical_value',True),
+            'canonical_nonfinite':lambda a:a[3]['fixed_controls']['value']['original_density'].__setitem__('canonical_value',float('inf')),
+            'temperature_string':lambda a:a[3]['fixed_controls']['value']['target_temperature'].__setitem__('original_value','bad'),
+            'load_null':lambda a:a[0]['value'].__setitem__('loads',[None]),
+            'load_list':lambda a:a[0]['value'].__setitem__('loads',[[]]),
+            'service_ids_null':lambda a:a[0]['value'].__setitem__('service_ids',None),
+            'evidence_ids_null':lambda a:a[1]['value'].__setitem__('evidence_ids',None),
+        }
+        for label,change in mutations.items():
+            with self.subTest(label=label):
+                args=list(source_case());change(args)
+                with self.assertRaises(GeneratorError) as raised:compile_requirement(*args)
+                self.assertIn(raised.exception.code,{'source_integrity','requires_binding'})
 
     def test_bounded_source_inventory_is_candidate_only(self):
         path=ROOT/'.superpowers/sdd/2026-10-13-schedule-generator/apartment-water-ownership-source-paths.tsv'
@@ -268,6 +326,40 @@ class CallerWaterContractTests(unittest.TestCase):
                 if label=='duplicate_view':u['programme_ids'].append(u['programme_ids'][0])
                 if label=='foreign_top_floor':u['programme_ids'][1]=MID[0]
                 if label!='hash':broken['unit_inventory_sha256']=hashlib.sha256(canonical(broken['unit_inventory'])).hexdigest()
+                with self.assertRaises(GeneratorError):resolve_caller_unit_inventory(broken,lookup)
+
+    def test_caller_evidence_must_bind_area_identity_views_and_primary_provenance(self):
+        from atlas_schedules.caller_unit_water import resolve_caller_unit_inventory
+        a,b=compiled(HIGH,0),compiled(HIGH,1)
+        lookup={r['programme']['value']['id']:r for r in (a,b)}
+        original=realization([unit('unit-1','draw-1',[a,b],area=80),
+                              unit('unit-2','draw-2',[a],area=95)])
+        self.assertEqual(len(resolve_caller_unit_inventory(original,lookup)),2)
+        supported=copy.deepcopy(original)
+        extra=copy.deepcopy(supported['unit_inventory']['units'][0]['area_evidence'][0])
+        extra.update(locator='/supporting/original-drawing-area',source_path='contract-fixture/other-drawing.json',
+                     source_sha256='c'*64,original_value=861.113,original_unit='ft2')
+        supported['unit_inventory']['units'][0]['area_evidence'].append(extra)
+        supported['unit_inventory_sha256']=hashlib.sha256(canonical(supported['unit_inventory'])).hexdigest()
+        self.assertEqual(len(resolve_caller_unit_inventory(supported,lookup)),2)
+        for label in ('zero_original_area','wrong_unit','wrong_draw','reordered_views',
+                      'wrong_locator','wrong_unit_of_area','boolean_area','duplicate_claim',
+                      'cross_unit_provenance','missing_building_claim'):
+            with self.subTest(label=label):
+                broken=copy.deepcopy(original);units=broken['unit_inventory']['units'];u=units[0]
+                area=u['area_evidence'][0];claims=u['identity_evidence']
+                byloc={entry['locator']:entry for entry in claims}
+                if label=='zero_original_area':area['original_value']=0
+                if label=='wrong_unit':byloc['/units/0/unit_id']['original_value']='unit-2'
+                if label=='wrong_draw':byloc['/units/0/physical_id']['original_value']='draw-2'
+                if label=='reordered_views':byloc['/units/0/programme_ids']['original_value'].reverse()
+                if label=='wrong_locator':area['locator']='/units/1/floor_area_m2'
+                if label=='wrong_unit_of_area':area['original_unit']='ft2'
+                if label=='boolean_area':area['original_value']=True
+                if label=='duplicate_claim':claims.append(copy.deepcopy(byloc['/units/0/unit_id']))
+                if label=='cross_unit_provenance':units[1]['identity_evidence'][0]['source_sha256']='b'*64
+                if label=='missing_building_claim':claims.remove(byloc['/building_realization_id'])
+                broken['unit_inventory_sha256']=hashlib.sha256(canonical(broken['unit_inventory'])).hexdigest()
                 with self.assertRaises(GeneratorError):resolve_caller_unit_inventory(broken,lookup)
 
     def test_default_closed_and_fixture_qualified_same_unit_views_distinct_units(self):
