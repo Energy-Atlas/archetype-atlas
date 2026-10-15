@@ -9,6 +9,29 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class GeneratorReleaseTests(unittest.TestCase):
+    def test_version_discovery_rejects_nonobject_without_fallback(self):
+        from scripts.schedule_generator_release import _release_reproduction_command,reproduce_generator
+        with tempfile.TemporaryDirectory() as directory:
+            target=Path(directory);(target/'manifest.json').write_text('[]')
+            with self.assertRaises(ValueError):_release_reproduction_command(target,target.parent/'unused.json')
+            self.assertTrue(reproduce_generator(target))
+
+    def test_v2_malformed_runner_inventory_returns_errors(self):
+        from scripts.schedule_generator_release import reproduce_generator
+        with tempfile.TemporaryDirectory() as directory:
+            target=Path(directory);(target/'references').mkdir()
+            for name in ('generator.zip','reproduce.py','references/all-cases-bundle.json.gz'):(target/name).write_bytes(b'foreign')
+            (target/'manifest.json').write_text(json.dumps({'schema_version':'2.0.0','reference_layout':'external_local_gzip_json_v1','files':{}}))
+            self.assertTrue(reproduce_generator(target))
+
+    def test_legacy_manifest_discovery_keeps_zip_entrypoint(self):
+        from scripts.schedule_generator_release import _release_reproduction_command
+        target=ROOT/'data/generator-releases/v0.1.1'
+        command=_release_reproduction_command(target,ROOT/'build/unused-receipt.json')
+        self.assertEqual(command[1:3],['-I','-S'])
+        self.assertEqual(Path(command[3]),target/'generator.zip')
+        self.assertEqual(command[4:],['--reproduce'])
+
     def test_frozen_integrity_and_numerical_reproduction(self):
         from scripts.schedule_generator_release import freeze_generator, verify_generator, reproduce_generator
         with tempfile.TemporaryDirectory() as directory:

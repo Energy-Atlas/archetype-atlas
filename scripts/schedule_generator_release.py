@@ -21,6 +21,32 @@ TARGET = ROOT / 'data/generator-releases/v0.1.1'
 # Development allowance includes both complete generation and scientific comparison.
 COMPLETE_REPRODUCTION_TIMEOUT_SECONDS = 600
 BOOTSTRAP = b'''"""Run an independent extracted release from this ordinary ZIP."""\nimport pathlib,runpy,sys,tempfile,zipfile\narchive=pathlib.Path(sys.argv[0]).resolve()\nwith tempfile.TemporaryDirectory(prefix="atlas-schedules-") as directory:\n    with zipfile.ZipFile(archive) as source:\n        names=source.namelist()\n        if len(names)!=len(set(names)) or any(name.startswith("/") or "\\\\" in name or ":" in name or any(part in ("..", ".", "") for part in name.split("/")) for name in names):\n            raise SystemExit("Unsafe ZIP inventory")\n        source.extractall(directory)\n    sys.path.insert(0,directory)\n    sys.argv[0]=str(archive)\n    if len(sys.argv)==2 and sys.argv[1]=="--reproduce":\n        runpy.run_module("atlas_schedules.reproduction",run_name="__main__")\n    else:\n        runpy.run_module("atlas_schedules.__main__",run_name="__main__")\n'''
+BOOTSTRAP_V2 = b'''"""Ordinary generation from layout2; reproduction needs the local release."""
+import pathlib,runpy,stat,sys,tempfile,zipfile
+if len(sys.argv)==2 and sys.argv[1]=="--reproduce":
+    print("Release layout 2 reproduction requires manifest.json, reproduce.py and references/all-cases-bundle.json.gz. Run the release-level reproduce.py with --release-root and an outside --receipt path.",file=sys.stderr)
+    raise SystemExit(2)
+archive=pathlib.Path(sys.argv[0]).resolve()
+with tempfile.TemporaryDirectory(prefix="atlas-schedules-") as directory:
+    with zipfile.ZipFile(archive) as source:
+        names=source.namelist();prefixes={}
+        if len(names)!=len(set(names)):
+            raise SystemExit("Unsafe ZIP inventory")
+        for info in source.infolist():
+            name=info.filename;parts=name.split("/")
+            reserved={"CON","PRN","AUX","NUL"}|{a+str(i) for a in ("COM","LPT") for i in range(1,10)}
+            if name.startswith("/") or "\\\\" in name or ":" in name or any(p in ("..",".","") or p.endswith(("."," ")) or p.split(".")[0].upper() in reserved for p in parts) or info.is_dir() or info.flag_bits&1 or stat.S_IFMT(info.external_attr>>16) not in (0,stat.S_IFREG):
+                raise SystemExit("Unsafe ZIP inventory")
+            for i in range(1,len(parts)+1):
+                prefix="/".join(parts[:i]);key=prefix.casefold()
+                if key in prefixes and prefixes[key]!=prefix:
+                    raise SystemExit("Unsafe ZIP inventory")
+                prefixes[key]=prefix
+        source.extractall(directory)
+    sys.path.insert(0,directory)
+    sys.argv[0]=str(archive)
+    runpy.run_module("atlas_schedules.__main__",run_name="__main__")
+'''
 
 
 def _digest(content: bytes) -> dict:
@@ -603,6 +629,9 @@ def _execute_zip(blob: bytes, request: dict) -> bytes:
 
 def freeze_generator(target: Path, version: str, scope: dict | None = None,
                      resources_root: Path | None = None) -> dict:
+    if scope is not None and scope.get('milestone_id') == 'A1':
+        from scripts.schedule_generator_apartment_certification import freeze_apartment_generator
+        return freeze_apartment_generator(target,version,scope,resources_root)
     target = Path(target)
     if target.exists():
         raise ValueError('Immutable release target already exists; choose a new version')
@@ -720,6 +749,12 @@ def verify_generator(target: Path) -> list[str]:
     errors = []
     try:
         manifest = strict_json((target / 'manifest.json').read_bytes(), 'manifest.json')
+        if not isinstance(manifest,dict):raise ValueError('Expected release manifest object')
+        if manifest.get('schema_version') == '2.0.0':
+            from scripts.schedule_generator_release_reproduction import verify_v2_release
+            try:verify_v2_release(target)
+            except Exception as error:return [str(error)]
+            return []
         if manifest.get('schema_version') != '1.0.0':
             errors.append('Invalid release schema version')
         if {p.name for p in target.iterdir()} != {'manifest.json', 'generator.zip'}:
@@ -763,7 +798,82 @@ def verify_generator(target: Path) -> list[str]:
     return errors
 
 
+def _release_reproduction_command(target: Path, receipt: Path) -> list[str]:
+    """Small strict discovery only; expensive v2 verification stays in the child."""
+    target=Path(target).resolve()
+    manifest=strict_json((target/'manifest.json').read_bytes(),'manifest.json')
+    if not isinstance(manifest,dict):raise ValueError('Expected release manifest object')
+    if manifest.get('schema_version')=='1.0.0':
+        return [sys.executable,'-I','-S',str(target/'generator.zip'),'--reproduce']
+    if manifest.get('schema_version')=='2.0.0':
+        if manifest.get('reference_layout')!='external_local_gzip_json_v1':
+            raise ValueError('Unsupported version2 reference layout')
+        return [sys.executable,'-I','-S',str(target/'reproduce.py'),'--release-root',str(target),'--receipt',str(Path(receipt).resolve())]
+    raise ValueError('Unsupported release schema version')
+
+
+def _pin_v2_runner(target: Path, manifest: dict) -> None:
+    """Pin the small executable before launch; full verification repeats inside."""
+    from scripts.schedule_generator_release_reproduction import _inventory,_regular,_identity,FILES
+    _inventory(target)
+    if not isinstance(manifest.get('files'),dict) or set(manifest['files'])!=FILES:
+        raise ValueError('Invalid version2 runner file inventory')
+    _identity(manifest['files']['reproduce.py'])
+    runner=target/'reproduce.py';_regular(runner)
+    if _digest(runner.read_bytes())!=manifest['files']['reproduce.py']:
+        raise ValueError('Version2 runner identity differs before launch')
+
+
+def _v2_reproduction_receipt(path: Path, manifest: dict, manifest_identity: dict) -> dict:
+    """Require actual completed comparison and exact incoming transport identities."""
+    receipt=strict_json(Path(path).read_bytes(),'reproduction receipt')
+    if not isinstance(receipt,dict):raise ValueError('Expected reproduction receipt object')
+    if not isinstance(receipt.get('input_identities'),dict):raise ValueError('Invalid receipt input identities')
+    if (receipt.get('passed') is not True or receipt.get('strict_actual_validated') is not True
+            or receipt.get('strict_expected_validated') is not True or receipt.get('comparison_difference_count')!=0
+            or type(receipt.get('comparison_difference_count')) is not int
+            or receipt.get('actual_counts')!={k:manifest['public_counts'][k] for k in ('constituents','schedules','bindings')}
+            or receipt.get('requested_owners')!=manifest['public_counts']['requested_owners']
+            or receipt.get('input_identities',{}).get('manifest.json')!=manifest_identity
+            or any(receipt.get('input_identities',{}).get(k)!=v for k,v in manifest['files'].items())):
+        raise ValueError('Missing/failed/inconsistent version2 scientific reproduction receipt')
+    if (not all(type(v) is int for v in receipt['actual_counts'].values())
+            or type(receipt.get('requested_owners')) is not int
+            or receipt.get('request_identity')!={k:manifest['request'][k] for k in ('sha256','size_bytes')}
+            or receipt.get('reference')!=manifest['reference']):
+        raise ValueError('Version2 receipt counts/request/reference differ')
+    modules=receipt.get('packaged_modules',{})
+    required={'atlas_schedules.__main__','atlas_schedules.contract','atlas_schedules.resources','atlas_schedules.comparison'}
+    if not isinstance(modules,dict) or not required<=set(modules):raise ValueError('Missing packaged module origins')
+    for module in modules.values():
+        if not isinstance(module,dict):raise ValueError('Invalid packaged module identity')
+        name=module.get('path','');safe_path(name)
+        if not name.startswith('atlas_schedules/') or {k:module.get(k) for k in ('sha256','size_bytes')}!=manifest['members'].get(name):
+            raise ValueError('Foreign packaged module identity')
+    return receipt
+
+
 def reproduce_generator(target: Path) -> list[str]:
+    # v2 verifies all actual files inside the one600s child, rather than spending
+    # an unbounded verifier/decode before starting its development deadline.
+    try:
+        incoming_target=Path(target)
+        target=incoming_target.resolve()
+        manifest_blob=(target/'manifest.json').read_bytes()
+        manifest=strict_json(manifest_blob,'manifest.json')
+        if not isinstance(manifest,dict):raise ValueError('Expected release manifest object')
+        if manifest.get('schema_version')=='2.0.0':
+            _pin_v2_runner(incoming_target,manifest)
+            with tempfile.TemporaryDirectory(prefix='atlas-release-dev-') as directory:
+                work=Path(directory);receipt=work/'reproduction.json'
+                command=_release_reproduction_command(target,receipt)
+                result=subprocess.run(command,cwd=work,capture_output=True,text=True,timeout=COMPLETE_REPRODUCTION_TIMEOUT_SECONDS)
+                if result.returncode:return ['Frozen runtime reproduction failed: '+result.stderr[:2000]]
+                _v2_reproduction_receipt(receipt,manifest,_digest(manifest_blob))
+                print(result.stdout.strip())
+            return []
+    except (OSError,ValueError,subprocess.TimeoutExpired) as error:
+        return [str(error)]
     errors = verify_generator(target)
     if errors:
         return errors
@@ -785,13 +895,17 @@ def main(argv=None):
     parser.add_argument('--freeze', action='store_true')
     parser.add_argument('--verify', action='store_true')
     parser.add_argument('--reproduce', action='store_true')
-    parser.add_argument('--scope', type=Path)
+    parser.add_argument('--scope')
     parser.add_argument('--resources-root', type=Path)
     args = parser.parse_args(argv)
     if sum((args.freeze, args.verify, args.reproduce)) != 1:
         parser.error('Choose exactly one of --freeze, --verify, --reproduce')
     if args.freeze:
-        scope = strict_json(args.scope.read_bytes(), str(args.scope)) if args.scope else None
+        if args.scope=='a1':
+            from scripts.schedule_generator_apartment_certification import apartment_scope
+            scope=apartment_scope()
+        else:
+            scope = strict_json(Path(args.scope).read_bytes(), str(args.scope)) if args.scope else None
         manifest = freeze_generator(args.target, args.target.name.removeprefix('v'), scope, args.resources_root)
         print(f"Frozen {manifest['scope']['case_count']} cases at {args.target}")
     else:

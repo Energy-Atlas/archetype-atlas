@@ -1,5 +1,30 @@
 # Offline schedule generator v0.1.1
 
+Release layout is discovered from `manifest.json`. Historical layout `1.0.0`
+keeps its embedded reference and ZIP `--reproduce` command. New apartment
+layout `2.0.0` distributes exactly four local files: `manifest.json`,
+`generator.zip`, `reproduce.py`, and `references/all-cases-bundle.json.gz`.
+Copy all four, preserving the `references` directory, for development
+reproduction. Requests and receipts belong outside that immutable release root:
+
+```powershell
+python -I -S release/generator.zip --request work/request.json --output work/bundle.json
+python -I -S release/reproduce.py --release-root release --receipt work/reproduction.json
+```
+
+The ZIP alone supports ordinary generation. Layout 2 ZIP-only `--reproduce`
+exits 2 with the release-level command; it does not search for nearby files.
+The release runner verifies all local file/member/resource/request/reference
+identities, generates afresh through the verified extracted CLI, strictly
+validates both full bundles, and compares under the exact packaged policy.
+Both release helpers and apartment profiling use that same versioned route.
+The combined child retains one 600-second deadline; ordinary generation retains
+240 seconds and each transported file retains the 104857600-byte limit. Raw
+decoded reference bytes remain separately reported. The sidecar is local
+development evidence, never a generation dependency or source authority.
+See [ADR 0033](adr/0033-release-sidecar-reproduction.md). This packaging support
+does not establish an apartment shipment or full catalogue qualification.
+
 The [immutable v0.1.1 release](../data/generator-releases/v0.1.1/manifest.json) contains an ordinary independent `generator.zip`. Copy the ZIP and a request JSON to a machine with Python 3.11 or newer. Generation uses only Python's standard library, without Ruby, OpenStudio, EnergyPlus, source downloads or network access:
 
 ```powershell
