@@ -273,6 +273,7 @@ def validate_requirements(requirements, inventory):
 
 
 def _get(resources, key):
+    _typed(key, 'id', '/reference/key')
     try:
         return resources.get('reference', key)
     except GeneratorError as error:
@@ -341,7 +342,10 @@ def resolve_exact_authority(instance: dict, realization: dict, recipe: dict, res
     if (context['selected_method_context_id'] != realization.get('selected_method_context_id') or
             context['source_hoo_configuration_id'] != realization.get('source_hoo_configuration_id')):
         _fail('/selected_method_context_id', 'Selected actual realization method differs', 'operating_group_conflict')
-    if not isinstance(q['program_ids'], list) or len(set(q['program_ids'])) != len(q['program_ids']):
+    if not isinstance(q['program_ids'], list):
+        _fail('/method_qualification/program_ids', 'Exact qualified programme coverage is malformed')
+    for pid in q['program_ids']: _typed(pid, 'id', '/method_qualification/program_ids')
+    if len(set(q['program_ids'])) != len(q['program_ids']):
         _fail('/method_qualification/program_ids', 'Exact qualified programme coverage is malformed')
     if instance.get('owner_kind') == 'program' and (not own or instance.get('program_id') not in q['program_ids']):
         _fail('/method_qualification/program_ids', 'Exact programme full-slot qualification is missing', 'requires_binding')
@@ -448,6 +452,7 @@ def resolve_child_variant(parent_inventory: dict, member: dict, selected_method_
     if not isinstance(entries, list): _fail('/permitted_child_variants', 'Exact variant list required')
     for entry in entries:
         _exact(entry, ('variant_id', 'key'), '/permitted_child_variants')
+        _typed(entry['variant_id'], 'id', '/permitted_child_variants/variant_id')
         schema = _load_schema('bundle', '1.2.0')
         _check_schema(entry['key'], schema['$defs']['child_variant']['properties']['key'], schema, '/permitted_child_variants/key')
     matches = [entry for entry in entries if _same(entry['key'], key)]

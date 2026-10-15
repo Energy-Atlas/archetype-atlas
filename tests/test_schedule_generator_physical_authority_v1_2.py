@@ -286,6 +286,14 @@ class PhysicalAuthorityTests(unittest.TestCase):
             changed = copy.deepcopy(recipe); changed['exact_source_authority']['qualification_key'] = 'missing'
             with self.assertRaises(GeneratorError) as caught: resolve_exact_authority(instance, realization, changed, resources)
             self.assertEqual(caught.exception.code, 'requires_binding')
+            changed = copy.deepcopy(recipe); changed['exact_source_authority']['requirements_key'] = ['not-an-id']
+            with self.assertRaises(GeneratorError): resolve_exact_authority(instance, realization, changed, resources)
+        malformed = copy.deepcopy(qualification); malformed['value']['program_ids'] = [['not-an-id']]
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = write_resources(Path(directory), {('reference', 'physical-fixture-inventory__labelled'): inv,
+                ('reference', 'requirements-fixture'): reqs, ('reference', 'full-fixture'): malformed}, {})
+            resources = ResourceSet(Path(directory), manifest['resource_set_id'])
+            with self.assertRaises(GeneratorError): resolve_exact_authority(instance, realization, recipe, resources)
 
     def test_child_variant_exact_tuple_and_crossview(self):
         from scripts.schedule_generator_physical_sets import compile_child_variant
@@ -318,10 +326,11 @@ class PhysicalAuthorityTests(unittest.TestCase):
             recipe = {'permitted_child_variants': [{'variant_id': variant['variant_id'], 'key': key}]}
             with patch('atlas_schedules.physical_sets._qualified_exact_context', return_value=True):
                 self.assertEqual(resolve_child_variant(inv, member, 'reviewed-selected', recipe, resources), variant)
-            for mutation in ('absent', 'ambiguous', 'view', 'hash', 'context'):
+            for mutation in ('absent', 'ambiguous', 'view', 'hash', 'context', 'variant_id'):
                 changed = copy.deepcopy(recipe)
                 if mutation == 'absent': changed['permitted_child_variants'] = []
                 if mutation == 'ambiguous': changed['permitted_child_variants'] *= 2
+                if mutation == 'variant_id': changed['permitted_child_variants'][0]['variant_id'] = ['not-an-id']
                 if mutation in ('view', 'hash', 'context'):
                     field = {'view': 'member_evidence_view', 'hash': 'parent_inventory_sha256', 'context': 'selected_method_context_id'}[mutation]
                     changed['permitted_child_variants'][0]['key'][field] = 'wrong'
