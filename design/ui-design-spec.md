@@ -158,10 +158,12 @@ What the family takes from the ArtCraft reference:
 
 Construction definition pages share one climate/reference selection across two
 separate exports: Detailed construction set and Unified building construction.
-Use a labeled representation select within the existing filter controls. Preview,
-copy and download apply to that representation only; source JSON remains available
-in the copy dialog. Copy keeps the existing inverted primary style; Download uses
-the existing outlined secondary style. Keep packets lazy and checksum verified.
+Use a labeled representation select within the existing filter controls for the
+preview. Separate Copy detailed JSON and Copy unified JSON buttons copy their
+named representation independently of the preview; source JSON remains available
+in the copy dialog. Detailed Copy keeps the existing inverted primary style;
+Unified Copy uses the existing outlined secondary style. No download action.
+Keep packets lazy and checksum verified.
 Unified approximation evidence is explained in prose, without new badges or colours.
 
 ## 1. Design Intent

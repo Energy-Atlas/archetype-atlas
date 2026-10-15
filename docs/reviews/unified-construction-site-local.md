@@ -2,6 +2,21 @@
 
 Date: 2026-10-15. Branch: `feature/json-completion`.
 
+## Copy-only follow-up
+
+The user requested copy actions for both representations instead of downloads.
+The current page therefore has **Copy detailed JSON** and **Copy unified JSON**.
+Each copies its named representation for the selected climate/reference,
+independently of the preview selector. Source JSON and manual clipboard fallback
+remain in the copy dialog. There is no construction download action. The initial
+download checks below describe the earlier integration, before this UI revision.
+
+The follow-up passed 19 focused site/refresh tests and the construction Node
+tests. The browser regression checks both clipboard documents against their
+frozen exports while the opposite representation is selected for preview.
+
+## Initial integration
+
 All 177 current construction definition pages offer separate Detailed (consumer
 schema 2.0.0) and Unified (consumer schema 1.1.0) JSON for the same selected climate
 and source reference. A representation selector controls preview, copy and

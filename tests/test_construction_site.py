@@ -112,7 +112,7 @@ class ConstructionSiteTests(unittest.TestCase):
             for identity,descriptor in report['unified_packets'].items():
                 page=(root/f'definitions/{identity}.md').read_text(encoding='utf-8')
                 self.assertIn('construction-representation',page)
-                self.assertIn('construction-download',page)
+                self.assertIn('construction-copy-unified',page)
                 bound=json.loads(html.unescape(re.search(r'data-unified="([^"]+)"',page)[1]))
                 self.assertEqual(bound,descriptor)
                 self.assertNotEqual(descriptor,report['packets'][identity])

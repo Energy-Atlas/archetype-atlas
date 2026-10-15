@@ -38,15 +38,14 @@ def run(site,screenshots):
                     expect(page.locator('.object-source pre')).to_contain_text('"kind": "'+expected['kind']+'"')
                     preview=json.loads(page.locator('.object-source pre').inner_text())
                     assert preview==expected,(mode,'preview differs from frozen export')
-                    with page.expect_download() as download:
-                        page.locator('.construction-download').click()
-                    assert download.value.suggested_filename==c['id']+'-'+mode+'.json'
-                    assert json.loads(Path(download.value.path()).read_text(encoding='utf-8'))==expected
-                    expect(page.locator('.construction-download')).to_have_text('Download '+mode+' JSON')
-                    page.locator('.object-copy').click()
+                    expect(page.get_by_role('button',name='Download',exact=False)).to_have_count(0)
+                    # Copy buttons have fixed representations, independent of preview.
+                    page.locator('.construction-representation').select_option('unified' if mode=='detailed' else 'detailed')
+                    page.get_by_role('button',name='Copy '+mode+' JSON',exact=True).click()
                     page.get_by_role('dialog').get_by_role('button',name='Copy '+mode+' JSON',exact=True).click()
                     expect(page.get_by_role('dialog')).to_have_count(0)
                     assert json.loads(page.evaluate('navigator.clipboard.readText()'))==expected
+                    page.locator('.construction-representation').select_option(mode)
                 assert len(requests)==2,'Each representation must load once and reuse its verified packet'
                 # Browser guard must reject a missing equivalent material resource.
                 assert page.evaluate("""async () => {
@@ -68,18 +67,20 @@ def run(site,screenshots):
                     page.locator('.object-json').scroll_into_view_if_needed()
                     page.screenshot(path=str(screenshots/'mobile.png'),full_page=False)
                     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),'Mobile page overflow'
-                    expect(page.locator('.construction-download')).to_be_visible()
+                    expect(page.get_by_role('button',name='Copy detailed JSON',exact=True)).to_be_visible()
+                    expect(page.get_by_role('button',name='Copy unified JSON',exact=True)).to_be_visible()
                     # Shared representation URL restores both selection and mode.
                     page.reload(wait_until='networkidle')
                     expect(page.locator('.construction-representation')).to_have_value('unified')
                     expect(page.locator('.construction-reference')).to_have_value(c['reference_id'])
                 assert not errors,errors
                 results.append({'context_id':c['id'],'reference':c['reference_id'],'exports':['detailed','unified'],
-                                'preview_copy_download_parity':True,'lazy_packet_requests':2})
+                                'preview_copy_parity':True,'lazy_packet_requests':2})
                 page.close()
-            # Unsupported context must keep download disabled instead of guessing.
+            # Unsupported context must keep both copy actions disabled.
             page=context.new_page();page.goto(base+'definitions/'+commercial[0]['construction_set_id']+'/?climate=invalid')
-            expect(page.locator('.construction-download')).to_be_disabled()
+            expect(page.get_by_role('button',name='Copy detailed JSON',exact=True)).to_be_disabled()
+            expect(page.get_by_role('button',name='Copy unified JSON',exact=True)).to_be_disabled()
             expect(page.locator('.object-status')).to_contain_text('Unsupported')
             browser.close()
     finally:server.shutdown();server.server_close()

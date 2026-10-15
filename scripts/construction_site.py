@@ -163,11 +163,12 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
         controls+='<label>JSON representation<select class="construction-representation"><option value="detailed">Detailed construction set</option><option value="unified">Unified building construction</option></select></label></div>'
         controls+='<p class="construction-description">Detailed JSON retains original assemblies and program/story assignment rules. Unified JSON provides one assembly per semantic with approximation evidence.</p>'
         markup=json_markup(raw).replace('data-raw=',f'data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" data-unified="{esc(json.dumps(unified,separators=(",",":")))}" data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-raw=',1)
-        markup=markup.replace('<button type="button" class="object-copy">',controls+'<button type="button" class="object-copy">',1)
-        markup=markup.replace('</button>','</button><button type="button" class="construction-download" disabled>Download detailed JSON</button>',1)
+        markup=markup.replace('<button type="button" class="object-copy">Copy JSON</button>',controls+
+            '<button type="button" class="object-copy" disabled>Copy detailed JSON</button>'+
+            '<button type="button" class="construction-copy-unified" disabled>Copy unified JSON</button>',1)
         page=f'# {esc(profile["name"])}\n\n[Construction catalogue](../catalogue/{"residential" if profile["scope"]=="whole_dwelling" else "nonresidential"}/construction/index.md) · [Construction JSON contract](../guides/construction-json.md)\n\n'
         page+=f'`{identity}` · Construction set · {esc(profile["scope"])} · {esc(source["template"])} · {esc(source["source_family"])}\n\n'
-        page+='One set contains its source-supported exterior and interior components. Select a climate and source reference, then choose **Detailed** or **Unified** JSON. Each representation previews, copies and downloads as a separate file for the same selected context. Fixed reference ACH remains explicit. BEMGen supplies actual model geometry.\n\n'
+        page+='One set contains its source-supported exterior and interior components. Select a climate and source reference, then copy **Detailed** or **Unified** JSON using its own button. The representation selector controls the preview. Both copies use the same selected context. Fixed reference ACH remains explicit. BEMGen supplies actual model geometry.\n\n'
         if profile['scope']=='space_type':page+='This is a partial source space set; it is not a complete building set.\n\n'
         additions=[d['atlas_added_applicability'] for rows in packet['selector_receipts'].values() for d in rows if 'atlas_added_applicability' in d]
         if additions:
@@ -306,10 +307,10 @@ resolved automatically. Climate controls both supported applicability and the
 selected construction/reference ACH. Scope and source evidence remain metadata;
 they are not separate construction catalogue filters.
 
-Choose **JSON representation: Detailed / Unified**, then expand **JSON**, copy
-or download the selected representation. Downloads have distinct `-detailed.json`
-and `-unified.json` filenames and contain one representation each. Changing the
-representation keeps the same climate and reference. Each compressed packet
+Choose **JSON representation: Detailed / Unified** to preview either version.
+**Copy detailed JSON** and **Copy unified JSON** each copy their named
+representation, independently of the preview selection. Both use the same
+climate and source reference. Each compressed packet
 loads only when needed and is verified before use. **Copy source JSON** retains
 the original source definition. Construction copying does not apply program defaults.
 
@@ -429,7 +430,7 @@ def integrate_existing(bundle,root):
 def library_guide():
     return ('# Library definitions\n\nPrograms supply loads and determined schedules. '
             'A construction set groups its source-supported above-ground components, materials, fixed reference infiltration and provenance. '
-            'Choose its climate and source reference, then preview, copy or download either Detailed construction JSON v2 or Unified building construction JSON v1.1 as separate files. '
+            'Choose its climate and source reference, then preview either representation and use its own Copy detailed JSON or Copy unified JSON button. '
             'Unified JSON uses precomputed archetype shares and one assembly per semantic, retaining approximation evidence and mass-budget rules. '
             'Room-specific construction rules are embedded in complete building sets. Independent assembly resources and unsupported contexts retain their source evidence. '
             'BEMGen owns component matching and translation using actual model geometry. '
