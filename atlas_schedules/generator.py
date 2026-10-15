@@ -13,11 +13,71 @@ from .mixtures import normalize_basis_bindings
 from .programs import resolve_program
 from .residential import generate_residential
 from .resources import ResourceSet
-from .seeds import assign_unit_seeds, commercial_group_seed
+from .seeds import assign_unit_seeds, assign_physical_unit_sequence, commercial_group_seed
 from .owners import request_version,identity_fields
 from .services import resolve_physical_service,prepare_required_service_links,bind_required_service_links
 
 _PREPARED = {'reference_channels', 'reference_budgets', 'source_context', 'companion_rules','source_composition'}
+
+
+def _qualified_apartment_actor(instance: dict, resolved: dict) -> bool:
+    """Production occupancy/lighting adapter qualification remains closed."""
+    return False
+
+
+def collect_physical_unit_actors(resolved_instances: list[tuple[dict,dict]],
+                                 version: str) -> list[dict]:
+    """Collect only selected physical stochastic units in resolved request order."""
+    if version != '1.2.0':
+        raise GeneratorError('unsupported_schema', '/schema_version',
+                             'Physical unit actor collection requires 1.2.0')
+    actors = []
+    seen_units = set()
+    for instance, resolved in resolved_instances:
+        inputs = resolved.get('inputs', {})
+        context = inputs.get('source_context', {})
+        method = context.get('method') if isinstance(context, dict) else None
+        key = instance.get('key')
+        if (resolved.get('source_family') == 'existing_stock_source_fixture' and
+                method == 'resstock_time_allocation_with_selected_source_companions'):
+            if (instance.get('owner_kind', 'program') != 'program' or
+                    instance.get('building_realization_id') is not None or
+                    instance.get('unit_id') is not None or
+                    type(inputs.get('residents')) is not int or inputs['residents'] < 0):
+                raise GeneratorError('requires_binding', '/instances/'+str(key),
+                                     'Stock actor requires a programme owner and resident cohort')
+            actors.append({'actor_kind': 'stock', 'instance_key': key,
+                           'building_realization_id': None, 'unit_id': None,
+                           'stochastic_action': 'generate'})
+            continue
+        if method != 'unit_occupancy_interior_lighting':
+            continue
+        source = resolved.get('source', {})
+        building = instance.get('building_realization_id')
+        unit = instance.get('unit_id')
+        n = inputs.get('residents')
+        if (instance.get('owner_kind') != 'program' or
+                resolved.get('source_family') not in {'code_prototype_rules',
+                                                      'existing_stock_benchmark'} or
+                not isinstance(source, dict) or
+                source.get('building_type') not in {'HighriseApartment', 'MidriseApartment'} or
+                not isinstance(building, str) or not building or
+                not isinstance(unit, str) or not unit or
+                type(n) is not int or n < 0):
+            raise GeneratorError('requires_binding', '/instances/'+str(key),
+                                 'Selected apartment actor lacks exact source, unit or cohort')
+        if not _qualified_apartment_actor(instance, resolved):
+            raise GeneratorError('requires_binding', '/instances/'+str(key),
+                                 'Apartment occupancy/lighting method is not independently qualified')
+        actual_unit = (building, unit)
+        if actual_unit in seen_units:
+            raise GeneratorError('shared_service_conflict', '/instances/'+str(key),
+                                 'Duplicate selected apartment actor for one physical unit')
+        seen_units.add(actual_unit)
+        actors.append({'actor_kind': 'apartment_adapter', 'instance_key': key,
+                       'building_realization_id': building, 'unit_id': unit,
+                       'stochastic_action': 'skip_n0' if n == 0 else 'generate'})
+    return actors
 
 
 def _group_context(resolved):
@@ -156,11 +216,21 @@ def generate(params: dict, seed: int) -> dict:
             for child,_ in resolved_instances:basis_receipts.setdefault(child['key'],{})
     # All original annual targets and inputs exist before any RNG is sampled.
     service_link_plans=prepare_required_service_links(resolved_instances,version)
-    residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
-    unit_seeds = assign_unit_seeds(seed,residential_keys)
+    if version == '1.2.0':
+        physical_unit_seed_sequence = assign_physical_unit_sequence(
+            seed, collect_physical_unit_actors(resolved_instances, version))
+        residential_keys = [actor['instance_key'] for actor in physical_unit_seed_sequence]
+        unit_seeds = {actor['instance_key']: actor['unit_seed']
+                      for actor in physical_unit_seed_sequence}
+        apartment_actor_keys = {actor['instance_key'] for actor in physical_unit_seed_sequence
+                                if actor['actor_kind'] == 'apartment_adapter'}
+    else:
+        residential_keys = [i['key'] for i,r in resolved_instances if 'residents' in r['inputs']]
+        unit_seeds = assign_unit_seeds(seed,residential_keys)
     groups = {}
     for instance,resolved in resolved_instances:
-        if 'residents' in resolved['inputs']:
+        if (instance['key'] in unit_seeds if version == '1.2.0'
+                else 'residents' in resolved['inputs']):
             if instance['operating_group'] is not None:
                 raise GeneratorError('operating_group_conflict','/instances/'+instance['key']+'/operating_group',
                                      'Residential source units do not use commercial operating groups')
@@ -190,6 +260,8 @@ def generate(params: dict, seed: int) -> dict:
               'metadata':{'resource_set_id':resources.resource_set_id,'calendar':calendar,
                           'scope_id':scope['milestone_id'],'scope_version':scope['scope_version'],
                           'population_realization_equivalent':False,'comparison_policy':policy}}
+    if version == '1.2.0':
+        bundle['generation']['physical_unit_seed_sequence'] = physical_unit_seed_sequence
     if source_allocations:
         bundle['generation']['request_instance_order']=[i['key'] for i in params['instances']]
         bundle['generation']['physical_member_generation_order']=[i['key'] for i,r in resolved_instances]
@@ -204,6 +276,9 @@ def generate(params: dict, seed: int) -> dict:
                            'source_context':{'method':'source_fixed_apartment_dhw',
                                              'random_draw_count':0}}
                 kernel_context=generated['source_context']
+            elif version == '1.2.0' and key in apartment_actor_keys:
+                raise GeneratorError('requires_binding', '/source_context/method',
+                                     'Apartment occupancy/lighting execution awaits qualification')
             elif key in unit_seeds:
                 generated = generate_residential(inputs,unit_seeds[key],resources)
                 kernel_context = {'residential':generated['source_context']}
