@@ -606,7 +606,7 @@ def _validate_physical_graph(bundle):
         if identity in physical:
             if identity[0]!='legacy_whole':_fail('/constituents','Duplicate scoped physical owner','shared_service_conflict')
             proof=_whole_proof(legacy,legacy_owners[owner['instance_key']])
-            if not _same(proof,legacy_proofs[identity]):
+            if proof!=legacy_proofs[identity]:
                 _fail('/constituents','Legacy aliases have conflicting complete physical proof','shared_service_conflict')
         elif identity[0]=='legacy_whole':
             legacy_proofs[identity]=_whole_proof(legacy,legacy_owners[owner['instance_key']])

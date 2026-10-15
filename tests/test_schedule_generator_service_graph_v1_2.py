@@ -248,7 +248,12 @@ class PhysicalGraphTests(unittest.TestCase):
 
     def test_legacy_identical_alias_proof_survives_v12_and_conflict_rejects(self):
         from atlas_schedules.mixtures import compose_constituents
+        from atlas_schedules.services import _whole_proof
         first=legacy_bundle();alias=rename_graph(first,'-alias')
+        alias['constituents'][0]['basis_bindings']['multiplicity']=1.0
+        validate_bundle(first);validate_bundle(alias)
+        self.assertEqual(_whole_proof(first,first['constituents'][0]),
+                         _whole_proof(alias,alias['constituents'][0]))
         request=mixture(services=[{'instance_key':'legacy-water'},{'instance_key':'legacy-water-alias'}])
         baseline=compose_constituents([first,alias],request,CALENDAR)
         self.assertEqual(len(baseline['constituents'][-1]['generation']['service_selection']['effective_service_members']),1)
