@@ -1,9 +1,11 @@
 """Qualified bounded matrix proofs; fixture identities never authorize release.
 
-Prepared A4 resources are reproduced by the existing
-scripts.schedule_generator_apartment_authority.build_apartment_resources helper
-from durable locked source/qualification inputs. Tests only load that prepared
-directory: they never rebuild qualification, read a release ZIP or run native code.
+Each suite assembles fresh resources with the existing stdlib
+build_apartment_resources helper, the tracked locked v0.7 predecessor and actual
+locked source/qualification inputs. No old prepared directory is read. Exact
+production inventories are archived test assets, with distinct raw/canonical
+identities; historical source paths are metadata only. No native method or new
+qualification capture runs, and existing authority preimages stay byte-exact.
 Only ResourceSet.load is redirected for actual public generation; no scientific
 predicate, source qualification, seed receipt or strict validator is patched.
 """
@@ -13,26 +15,72 @@ import inspect
 import json
 import math
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 from urllib.parse import quote
+import zlib
 
 from atlas_schedules import generate
 from atlas_schedules.canonical import canonical
 from atlas_schedules.contract import validate_bundle
 from atlas_schedules.errors import GeneratorError
-from atlas_schedules.resources import ResourceSet
+from atlas_schedules.resources import ResourceSet, strict_json
 from scripts import schedule_generator_case_matrix as adapter
 
 ROOT = Path(__file__).resolve().parents[1]
 UNIT, COM = 'unit-fixture', 'commercial-fixture'
 ACTOR_FIELDS = ('actor_kind', 'instance_key', 'building_realization_id', 'unit_id',
                 'stochastic_action', 'position', 'unit_seed')
+FIXTURES = ROOT/'tests/fixtures/schedule_generator_case_matrix'
+FIXTURE_MANIFEST = {'size_bytes': 3055, 'sha256': 'b7781a15cfd04230328def736f61935c3b12f8d4c1f3d6cf997e4ce409fa0c7c'}
 
 
 def identity(value):
     blob = canonical(value)
     return {'size_bytes': len(blob), 'sha256': hashlib.sha256(blob).hexdigest()}
+
+
+def bytes_identity(blob):
+    return {'size_bytes': len(blob), 'sha256': hashlib.sha256(blob).hexdigest()}
+
+
+def production_fixture_inputs():
+    """Authenticate durable exact raw archives; never resolve historical paths."""
+    raw = (FIXTURES/'manifest.json').read_bytes()
+    assert bytes_identity(raw) == FIXTURE_MANIFEST
+    manifest = strict_json(raw, 'case-matrix fixture manifest')
+    assert manifest['schema_version'] == 'case-matrix-test-fixtures-1.0.0'
+    assert [r['file'] for r in manifest['files']] == [
+        'full-request.json.gz', 'resource-manifest.json.gz', 'r74-design-mapping.json.gz']
+    values = []
+    for entry in manifest['files']:
+        blob = (FIXTURES/entry['file']).read_bytes()
+        assert bytes_identity(blob) == entry['compressed'] and len(blob) <= 104857600
+        decoder = zlib.decompressobj(16+zlib.MAX_WBITS)
+        decoded = decoder.decompress(blob, entry['decoded_raw']['size_bytes']+1)
+        assert decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail
+        assert bytes_identity(decoded) == entry['decoded_raw']
+        value = strict_json(decoded, entry['file'])
+        assert identity(value) == entry['canonical_content']
+        values.append(value)
+    assert {k: values[2][k] for k in ('schema_version', 'status')} == manifest['source_mapping']
+    return values
+
+
+def prepare_fixture_resources(destination):
+    """Normal unittest setup, requiring the repository's locked CI source inputs."""
+    from scripts.schedule_generator_apartment_authority import build_apartment_resources
+    authority = ROOT/'data/schedule-generator/apartment/authority'
+    def snapshot():
+        return {p.name: bytes_identity(p.read_bytes()) for p in sorted(authority.glob('*.json'))}
+    before = snapshot()
+    assert len(before) == 253, 'Tracked authority preimages are a required fixture input'
+    manifest = build_apartment_resources(destination)
+    assert snapshot() == before, 'Fixture assembly changed tracked authority bytes/inventory'
+    assert identity(manifest) == {'size_bytes': 925452,
+        'sha256': 'b2af62dcda8814878f44df9f4334414a1503eec4343b46d1d9b1b562fbdf30af'}
+    return ResourceSet(destination, manifest['resource_set_id'])
 
 
 def descriptor(request, resources, mapping, expected, *, reference=None, cases=None):
@@ -138,10 +186,8 @@ def restaurant_request(resources):
     return kitchen, physical
 
 
-def fixture():
-    root = ROOT/'build/task-10/apartment-a4/resources'
-    manifest = json.loads((root/'manifest.json').read_bytes())
-    resources = ResourceSet(root, manifest['resource_set_id'])
+def fixture(resources):
+    manifest = resources.manifest
     stock_a, stock_b = [
         {'owner_kind': 'program', 'key': key, 'program_id': pid, 'operating_group': None,
          'inputs': resources.get('program', pid)['recipe']['bound_inputs'], 'basis_bindings': {}}
@@ -293,7 +339,10 @@ def fixture():
 class CaseMatrixTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.request, cls.resources, cls.mapping, cls.reference, expected = fixture()
+        temporary = tempfile.TemporaryDirectory(prefix='case-matrix-fixture-')
+        cls.addClassCleanup(temporary.cleanup)
+        resources = prepare_fixture_resources(Path(temporary.name)/'resources')
+        cls.request, cls.resources, cls.mapping, cls.reference, expected = fixture(resources)
         cls.desc = descriptor(cls.request, cls.resources, cls.mapping, expected, reference=cls.reference)
         cls.matrix = adapter._compile_structure(cls.request, cls.resources, cls.mapping, cls.desc)
         cls.cases = {cid: adapter._route_reference_structure(cls.reference, cls.matrix, cid, cls.desc)
@@ -475,18 +524,7 @@ class ProductionAdmissionTests(unittest.TestCase):
     """Static admitted inventory only; never decode or generate the full graph."""
     @classmethod
     def setUpClass(cls):
-        paths = (
-            ('build/task-10/apartment-a5/profile/post-r70-current-actual/pre-generation-request.json', 450192,
-             '61e0e1175edfbc161dd2ea2fbf61cfe73070ae3b48bf7363e341fb03dc63b59c'),
-            ('build/task-10/apartment-a5/r73-current-architecture-attribution/p/atlas_schedules/data/manifest.json', 1308701,
-             '4ce3102071a801b24ad903eac22e4a8011f643d8a6a7f8d7de6f9badfdc12564'),
-            ('.superpowers/sdd/2026-10-13-schedule-generator/apartment-a5-r74-case-matrix-mapping.json', 24013603,
-             'a44112fe884c35d18b44f69977ccdbcecf5dfb453a2f8095c08b3f8cc302eb52'))
-        values = []
-        for name, size, digest in paths:
-            blob = (ROOT/name).read_bytes()
-            assert len(blob) == size and hashlib.sha256(blob).hexdigest() == digest
-            values.append(json.loads(blob))
+        values = production_fixture_inputs()
         cls.request, cls.resources, cls.mapping = values
         cls.matrix = adapter.compile_case_matrix(*values)
 
