@@ -195,6 +195,51 @@ class V12WireTests(unittest.TestCase):
                 generate(malformed, 42)
             self.assertEqual(invalid.exception.code, 'invalid_contract')
 
+    def test_v12_caller_receipt_accepts_only_apartment_source_requirements(self):
+        evidence = {'source_revision': 'contract_structure_only',
+                    'source_path': 'fixture.json', 'source_sha256': 'a'*64,
+                    'locator': '/0', 'original_value': 75, 'original_unit': 'm2',
+                    'transformation': 'identity', 'extraction_date': '2026-10-15',
+                    'interpretation_note': 'contract_structure_only'}
+        source = {'path': 'fixture.json', 'sha256': 'a'*64, 'locator': '/0',
+                  'value': {'fixture': 'contract_structure_only'}}
+        caller = {'requirement_id': 'caller-requirement', 'kind': 'original_apartment_unit_demand',
+                  'required': True, 'source_channel': 'hot_water_volume',
+                  'ownership_mode': 'caller_unit_prototype_density_fixed_dhw',
+                  'water_method': 'source_fixed_apartment_dhw',
+                  'programme': source, 'original_demand': source,
+                  'service_definition': source, 'source_ruleset': source,
+                  'source_service_id': 'service-source', 'source_beneficiary_id': 'programme-source',
+                  'family': 'HighriseApartment', 'template': '90.1-2013',
+                  'programme_evidence_view': 'source', 'source_system_type': 'Shared',
+                  'reference_calendar': {'year': 2007, 'clock': 'local_standard_time', 'holidays': []},
+                  'interpretation': 'caller_unit_area_adaptation_of_original_fixed_dhw_density',
+                  'evidence': [evidence]}
+        receipt = {'mode': 'caller_unit_prototype_density_fixed_dhw',
+                   'building_realization_id': 'building', 'building_type': 'HighriseApartment',
+                   'template': '90.1-2013', 'unit_inventory_id': 'units',
+                   'unit_inventory_sha256': 'b'*64,
+                   'unit_inventory': {'authority': 'caller_declared_units', 'units': [{
+                       'unit_id': 'unit', 'physical_id': 'draw', 'source_service_id': 'service-source',
+                       'source_beneficiary_id': 'programme-source', 'programme_ids': ['programme'],
+                       'water_authority_programme_id': 'programme', 'floor_area_m2': 75,
+                       'area_evidence': [evidence], 'multiplicity': 1,
+                       'identity_evidence': [evidence]}]},
+                   'source_requirements': [caller], 'method_qualification': source}
+        valid = self.bundle(); valid['metadata']['building_realizations'] = [receipt]
+        _schema_errors(valid, 'bundle', '1.2.0')
+        exact = {'requirement_id': 'exact-requirement', 'required': True,
+                 'source_channel': 'hot_water_volume', 'inventory_id': 'source-inventory',
+                 'inventory_sha256': 'c'*64, 'family': 'LargeOffice', 'template': '90.1-2013',
+                 'source_hoo_configuration_id': 'hoo', 'evidence': [evidence],
+                 'kind': 'original_programme_demand', 'programme': source,
+                 'original_demand': source, 'service_definition': source,
+                 'source_service_id': 'service-source', 'source_beneficiary_id': 'programme-source',
+                 'expected_role_ids': ['role'], 'interpretation': 'canonical_density_partition'}
+        invalid = copy.deepcopy(valid)
+        invalid['metadata']['building_realizations'][0]['source_requirements'] = [exact]
+        self.assert_contract_error(lambda: _schema_errors(invalid, 'bundle', '1.2.0'))
+
 
 if __name__ == '__main__':
     unittest.main()
