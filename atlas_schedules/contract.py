@@ -370,7 +370,8 @@ def _validate_generated_binding_references(bundle):
                 for i,index in enumerate(indices):binding(index,path+'/binding_indices/'+str(i))
             for key,child in value.items():walk(child,path+'/'+key)
         elif isinstance(value,list):
-            for i,child in enumerate(value):walk(child,path+'/'+str(i))
+            for i,child in enumerate(value):
+                if isinstance(child,(dict,list)):walk(child,path+'/'+str(i))
     for field in ('bindings','constituents','generation'):walk(bundle[field],'/'+field)
 
 
