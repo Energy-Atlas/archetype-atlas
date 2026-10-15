@@ -79,6 +79,22 @@ def compilers():
     return compile_exact_inventory, compile_exact_requirements
 
 
+def component_fixture():
+    records = fixture(); leaf = records['programmes'][0]['value']
+    component = {'program_id': 'leaf', 'weight': 0, 'load': copy.deepcopy(leaf['loads'][0])}
+    parent = {'id': 'parent', 'source_id': 'source-parent', 'building_type': 'Fixture', 'template': '2013',
+              'evidence_view': 'reviewed', 'composition_id': 'mix', 'service_ids': [],
+              'loads': [{'quantity': 'hot_water_volume', 'source_components': [component], 'value': 999}]}
+    records['programmes'].append(source(parent, '/programmes/1'))
+    records['compositions'] = [source({'id': 'mix', 'building_type': 'Fixture', 'template': '2013',
+        'evidence_view': 'reviewed', 'members': [{'program_id': 'leaf', 'source_program_id': 'source-leaf',
+                                               'represented_area_m2': 20, 'weight': 0}]})]
+    records['method_references'].append(source({'program_id': 'parent', 'source_hoo_configuration_id': 'reviewed-context',
+        'context_evidence_view': 'reviewed', 'method_consumed_context': consumed(),
+        'original_method': source({'whole_original_method': 'parent'}), 'evidence': evidence()}))
+    return records
+
+
 class PhysicalAuthorityTests(unittest.TestCase):
     def test_compilers_and_runtime_resolvers_exist(self):
         from scripts.schedule_generator_physical_sets import compile_child_variant
@@ -168,6 +184,56 @@ class PhysicalAuthorityTests(unittest.TestCase):
             if mutation == 'composition_id_array': records['compositions'] = [source({'id': []})]
             if mutation == 'method_id_array': records['method_references'][0]['value']['program_id'] = []
             with self.subTest(mutation=mutation), self.assertRaises(GeneratorError): compile_requirements(records, inv)
+        for malformed in (None, False, 1, 'leaf', {}, [], [None], [False], [1], ['leaf'], [[]]):
+            records = component_fixture(); inv = compile_inventory(records)
+            records['programmes'][1]['value']['loads'][0]['source_components'] = malformed
+            original = copy.deepcopy(records)
+            with self.subTest(source_components=malformed):
+                with self.assertRaises(GeneratorError) as caught: compile_requirements(records, inv)
+                self.assertEqual(caught.exception.code, 'source_integrity')
+                self.assertIn('/source_components', caught.exception.path)
+                self.assertEqual(records, original)
+        for field in ('program_id', 'load', 'weight'):
+            for malformed in (None, [], {}, True, ''):
+                records = component_fixture(); inv = compile_inventory(records)
+                records['programmes'][1]['value']['loads'][0]['source_components'][0][field] = malformed
+                original = copy.deepcopy(records)
+                with self.subTest(component_field=field, value=malformed):
+                    with self.assertRaises(GeneratorError) as caught: compile_requirements(records, inv)
+                    self.assertEqual(caught.exception.code, 'source_integrity')
+                    self.assertIn('/source_components/0/'+field, caught.exception.path)
+                    self.assertEqual(records, original)
+        for field in ('demand_id', 'service_id', 'schedule_id'):
+            records = component_fixture(); inv = compile_inventory(records)
+            records['programmes'][1]['value']['loads'][0]['source_components'][0]['load'][field] = ['not-an-id']
+            with self.subTest(load_id=field):
+                with self.assertRaises(GeneratorError) as caught: compile_requirements(records, inv)
+                self.assertEqual(caught.exception.code, 'source_integrity')
+                self.assertIn('/source_components/0/load/'+field, caught.exception.path)
+        for malformed in (None, False, 1, 'leaf', {}, [], [None], [False], [1], ['leaf'], [[]]):
+            records = component_fixture(); inv = compile_inventory(records)
+            records['compositions'][0]['value']['members'] = malformed
+            original = copy.deepcopy(records)
+            with self.subTest(composition_members=malformed):
+                with self.assertRaises(GeneratorError) as caught: compile_requirements(records, inv)
+                self.assertEqual(caught.exception.code, 'source_integrity')
+                self.assertIn('/members', caught.exception.path)
+                self.assertEqual(records, original)
+        for field in ('program_id', 'source_program_id', 'represented_area_m2', 'weight'):
+            for malformed in (None, [], {}, True, ''):
+                records = component_fixture(); inv = compile_inventory(records)
+                records['compositions'][0]['value']['members'][0][field] = malformed
+                with self.subTest(member_field=field, value=malformed):
+                    with self.assertRaises(GeneratorError) as caught: compile_requirements(records, inv)
+                    self.assertEqual(caught.exception.code, 'source_integrity')
+                    self.assertIn('/members/0/'+field, caught.exception.path)
+        for malformed in (None, [], {}, True, ''):
+            records = component_fixture(); inv = compile_inventory(records)
+            records['programmes'][1]['value']['composition_id'] = malformed
+            with self.subTest(composition_id=malformed):
+                with self.assertRaises(GeneratorError) as caught: compile_requirements(records, inv)
+                self.assertEqual(caught.exception.code, 'source_integrity')
+                self.assertIn('/composition_id', caught.exception.path)
 
     def test_entire_original_load_and_entire_service_relation_are_separate_branches(self):
         compile_inventory, compile_requirements = compilers()
@@ -192,18 +258,8 @@ class PhysicalAuthorityTests(unittest.TestCase):
 
     def test_original_components_keep_member_own_view_method_order_area_and_zero_weight(self):
         compile_inventory, compile_requirements = compilers()
-        records = fixture(); leaf = records['programmes'][0]['value']
-        component = {'program_id': 'leaf', 'weight': 0, 'load': copy.deepcopy(leaf['loads'][0])}
-        parent = {'id': 'parent', 'source_id': 'source-parent', 'building_type': 'Fixture', 'template': '2013',
-                  'evidence_view': 'reviewed', 'composition_id': 'mix', 'service_ids': [],
-                  'loads': [{'quantity': 'hot_water_volume', 'source_components': [component], 'value': 999}]}
-        records['programmes'].append(source(parent, '/programmes/1'))
-        records['compositions'] = [source({'id': 'mix', 'building_type': 'Fixture', 'template': '2013',
-            'evidence_view': 'reviewed', 'members': [{'program_id': 'leaf', 'source_program_id': 'source-leaf',
-                                                   'represented_area_m2': 20, 'weight': 0}]})]
-        records['method_references'].append(source({'program_id': 'parent', 'source_hoo_configuration_id': 'reviewed-context',
-            'context_evidence_view': 'reviewed', 'method_consumed_context': consumed(),
-            'original_method': source({'whole_original_method': 'parent'}), 'evidence': evidence()}))
+        records = component_fixture()
+        component = records['programmes'][1]['value']['loads'][0]['source_components'][0]
         inv = compile_inventory(records); reqs = compile_requirements(records, inv)
         parent_req = reqs[1]; c = parent_req['components'][0]
         self.assertEqual((c['component_index'], c['member_evidence_view'], c['represented_area_m2'], c['original_weight']),
@@ -228,6 +284,47 @@ class PhysicalAuthorityTests(unittest.TestCase):
             'compiled_ruleset': {'rules': []}, 'bridge_evidence': evidence()}
         with self.assertRaises(GeneratorError) as caught: compile_inventory(records)
         self.assertEqual(caught.exception.code, 'requires_binding')
+
+    def test_qualified_programme_with_independently_empty_obligations_resolves(self):
+        from scripts.schedule_generator_build import compile_exact_authority_resources
+        from atlas_schedules.physical_sets import resolve_exact_authority
+        records = fixture(); records['programmes'][0]['value'].update(loads=[], service_ids=[])
+        packaged = {('program', 'leaf'): {'recipe': {'required_service_links': []}}}
+        reference = compile_exact_authority_resources(packaged, records)
+        recipe = packaged['program', 'leaf']['recipe']
+        self.assertEqual(recipe['required_service_sets'], [])
+        self.assertEqual(packaged['reference', reference['requirements_key']], [])
+        realization = {'mode': 'exact_source_fixture_extents', 'inventory_id': 'labelled',
+            'inventory_sha256': reference['inventory_sha256'], 'building_realization_id': 'building',
+            'source_hoo_configuration_id': 'source-context', 'selected_method_context_id': 'selected', 'operating_group': 'g'}
+        instance = {'owner_kind': 'program', 'key': 'p', 'program_id': 'leaf',
+                    'building_realization_id': 'building', 'operating_group': 'g', 'inputs': {}}
+        context = source({'selected_method_context_id': 'selected', 'source_hoo_configuration_id': 'source-context',
+            'context_evidence_view': 'source', 'qualification_scope': 'full_selected_programme_and_water_registration',
+            'qualification_id': 'q', 'method_consumed_context': consumed()})
+        for covered in (['leaf'], ['another-programme'], []):
+            qualification = source({'qualification_id': 'q',
+                'qualification_scope': 'full_selected_programme_and_water_registration',
+                'inventory_id': 'labelled', 'inventory_sha256': reference['inventory_sha256'],
+                'program_ids': covered, 'selected_method_context': context, 'evidence': evidence()})
+            resources_data = dict(packaged)
+            resources_data['reference', reference['qualification_key']] = qualification
+            with self.subTest(covered=covered), tempfile.TemporaryDirectory() as directory:
+                manifest = write_resources(Path(directory), resources_data, {})
+                resources = ResourceSet(Path(directory), manifest['resource_set_id'])
+                with self.assertRaises(GeneratorError) as caught:
+                    resolve_exact_authority(instance, realization, recipe, resources)
+                self.assertEqual(caught.exception.code, 'requires_binding')
+                with patch('atlas_schedules.physical_sets._qualified_exact_context', return_value=True):
+                    if covered == ['leaf']:
+                        resolved = resolve_exact_authority(instance, realization, recipe, resources)
+                        self.assertEqual(resolved['source_requirements'], [])
+                        self.assertEqual(resolved['method_qualification'], qualification)
+                    else:
+                        with self.assertRaises(GeneratorError) as caught:
+                            resolve_exact_authority(instance, realization, recipe, resources)
+                        self.assertEqual((caught.exception.code, caught.exception.path),
+                                         ('requires_binding', '/method_qualification/program_ids'))
 
     def test_runtime_inventory_is_first_and_complete_aliases_cannot_omit_zero_role(self):
         from atlas_schedules.physical_sets import resolve_exact_authority

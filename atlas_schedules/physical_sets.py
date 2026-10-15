@@ -181,6 +181,37 @@ def _programme_requirement(requirement):
     return requirement['parent_programme'] if requirement['kind'] == 'original_source_components' else requirement['programme']
 
 
+def _source_components(value, path):
+    if not isinstance(value, list) or not value:
+        _fail(path, 'Nonempty original source-component array required')
+    for i, component in enumerate(value):
+        where = path+'/'+str(i)
+        if not isinstance(component, dict): _fail(where, 'Entire original component object required')
+        _typed(component.get('program_id'), 'id', where+'/program_id')
+        _positive(component.get('weight'), where+'/weight', zero=True)
+        load = component.get('load')
+        if not isinstance(load, dict): _fail(where+'/load', 'Entire original component load required')
+        for field in ('demand_id', 'service_id'):
+            _typed(load.get(field), 'id', where+'/load/'+field)
+        if load.get('schedule_id') is not None:
+            _typed(load['schedule_id'], 'id', where+'/load/schedule_id')
+
+
+def _composition(value, path):
+    if not isinstance(value, dict): _fail(path, 'Entire original composition object required')
+    _typed(value.get('id'), 'id', path+'/id')
+    members = value.get('members')
+    if not isinstance(members, list) or not members: _fail(path+'/members', 'Nonempty original composition member array required')
+    for i, member in enumerate(members):
+        where = path+'/members/'+str(i)
+        if not isinstance(member, dict): _fail(where, 'Entire original composition member object required')
+        for field in ('program_id', 'source_program_id'):
+            _typed(member.get(field), 'id', where+'/'+field)
+        _positive(member.get('represented_area_m2'), where+'/represented_area_m2')
+        _positive(member.get('weight'), where+'/weight', zero=True)
+    return value
+
+
 def _programme(value, path):
     if (not isinstance(value, dict) or any(not isinstance(value.get(k), str) or not value[k]
             for k in ('id', 'source_id', 'building_type', 'template')) or value.get('evidence_view') not in ('source', 'reviewed') or
@@ -188,6 +219,10 @@ def _programme(value, path):
             not isinstance(value.get('service_ids'), list) or any(not isinstance(sid, str) or not sid for sid in value['service_ids']) or
             len(set(value['service_ids'])) != len(value['service_ids'])):
         _fail(path, 'Entire original programme identity, loads and unique service relation required')
+    for i, load in enumerate(value['loads']):
+        if load.get('quantity') == 'hot_water_volume' and 'source_components' in load:
+            _typed(value.get('composition_id'), 'id', path+'/composition_id')
+            _source_components(load['source_components'], path+'/loads/'+str(i)+'/source_components')
     return value
 
 
@@ -236,8 +271,8 @@ def validate_requirements(requirements, inventory):
         matches = [i for i, load in enumerate(p.get('loads', [])) if _same(load, original['value'])]
         if len(matches) != 1 or not _same(original, nested_source(programme, '/loads/'+str(matches[0]), original['value'])):
             _fail('/source_requirements/original_mixed_demand', 'Entire original mixed load must be retained')
-        composition = r['composition']['value']
-        if (not isinstance(composition, dict) or composition.get('id') != p.get('composition_id') or composition.get('building_type') != p.get('building_type') or
+        composition = _composition(r['composition']['value'], '/source_requirements/composition')
+        if (composition.get('id') != p.get('composition_id') or composition.get('building_type') != p.get('building_type') or
                 composition.get('template') != p.get('template') or composition.get('evidence_view') != p.get('evidence_view')):
             _fail('/source_requirements/composition', 'Original composition source/view differs')
         originals = original['value'].get('source_components', [])
@@ -347,7 +382,7 @@ def resolve_exact_authority(instance: dict, realization: dict, recipe: dict, res
     for pid in q['program_ids']: _typed(pid, 'id', '/method_qualification/program_ids')
     if len(set(q['program_ids'])) != len(q['program_ids']):
         _fail('/method_qualification/program_ids', 'Exact qualified programme coverage is malformed')
-    if instance.get('owner_kind') == 'program' and (not own or instance.get('program_id') not in q['program_ids']):
+    if instance.get('owner_kind') == 'program' and instance.get('program_id') not in q['program_ids']:
         _fail('/method_qualification/program_ids', 'Exact programme full-slot qualification is missing', 'requires_binding')
     if own and any(_programme_requirement(r)['value']['evidence_view'] != payload['evidence_view'] for r in own):
         _fail('/source_requirements', 'Programme own view differs from selected inventory; child variant required')

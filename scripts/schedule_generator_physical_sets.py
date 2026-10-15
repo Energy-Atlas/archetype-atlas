@@ -53,8 +53,8 @@ def compile_exact_requirements(source_records: dict, inventory: dict) -> list[di
     if not authority._same(compile_exact_inventory(source_records), inventory):
         authority._fail('/inventory', 'Inventory differs from the complete locked extraction adapter')
     payload = inventory['payload']; programmes, methods, compositions = {}, {}, {}
-    for obj in source_records['programmes']:
-        value = authority._programme(obj['value'], '/programmes'); pid = value.get('id')
+    for i, obj in enumerate(source_records['programmes']):
+        value = authority._programme(obj['value'], '/programmes/'+str(i)); pid = value.get('id')
         if not pid or pid in programmes: authority._fail('/programmes', 'Unique exact original programme identity required')
         if value.get('building_type') != payload['family'] or value.get('template') != payload['template']:
             authority._fail('/programmes', 'Programme family/template differs from inventory')
@@ -64,9 +64,9 @@ def compile_exact_requirements(source_records: dict, inventory: dict) -> list[di
         authority._typed(pid, 'id', '/method_references/program_id')
         if pid not in programmes or pid in methods: authority._fail('/method_references', 'Missing/duplicate exact original member method')
         authority._method(obj, programmes[pid]['value']); methods[pid] = obj
-    for obj in source_records['compositions']:
-        cid = obj['value'].get('id')
-        authority._typed(cid, 'id', '/compositions/id')
+    for i, obj in enumerate(source_records['compositions']):
+        value = authority._composition(obj['value'], '/compositions/'+str(i))
+        cid = value['id']
         if not cid or cid in compositions: authority._fail('/compositions', 'Unique entire original composition required')
         compositions[cid] = obj
     services = {}
