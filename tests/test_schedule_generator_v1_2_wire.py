@@ -9,6 +9,7 @@ from unittest.mock import patch
 from atlas_schedules.__main__ import main
 from atlas_schedules.contract import _schema_errors, validate_bundle, validate_request
 from atlas_schedules.errors import GeneratorError
+from atlas_schedules.generator import generate
 from atlas_schedules.owners import identity_fields, owner_identity, request_version
 from tests.test_schedule_generator_contract import bundle as legacy_bundle
 from tests.test_schedule_generator_contract import request as legacy_request
@@ -178,6 +179,21 @@ class V12WireTests(unittest.TestCase):
             if path == 'inputs': bad['instances'][0]['inputs'].update(value)
             else: bad['instances'][0][path] = value
             self.assert_contract_error(lambda bad=bad: _schema_errors(bad, 'request', '1.2.0'))
+
+    def test_v12_public_generate_rejects_before_resource_preparation_or_rng(self):
+        params = self.request()
+        sentry = AssertionError('1.2 reached resource, preparation, or RNG')
+        with (patch('atlas_schedules.generator.ResourceSet.load', side_effect=sentry),
+              patch('atlas_schedules.generator.normalize_basis_bindings', side_effect=sentry),
+              patch('atlas_schedules.generator.assign_unit_seeds', side_effect=sentry),
+              patch('atlas_schedules.generator.sample_operating_parameters', side_effect=sentry)):
+            with self.assertRaises(GeneratorError) as caught:
+                generate(params, 42)
+            self.assertEqual(caught.exception.code, 'requires_binding')
+            malformed = copy.deepcopy(params); malformed.pop('building_realizations')
+            with self.assertRaises(GeneratorError) as invalid:
+                generate(malformed, 42)
+            self.assertEqual(invalid.exception.code, 'invalid_contract')
 
 
 if __name__ == '__main__':

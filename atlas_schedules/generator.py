@@ -80,6 +80,9 @@ def generate(params: dict, seed: int) -> dict:
     """
     validate_request(params,seed)
     version=request_version(params)
+    if version == '1.2.0':
+        raise GeneratorError('requires_binding','/schema_version',
+                             'Physical service 1.2 generation awaits source qualification and public integration')
     params = copy.deepcopy(params)
     params.pop('schema_version',None)
     calendar = params['calendar']
