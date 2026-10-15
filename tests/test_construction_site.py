@@ -133,6 +133,18 @@ class ConstructionSiteTests(unittest.TestCase):
             page.write_text(re.sub(r' data-unified="[^"]+"','',page.read_text(encoding='utf-8')),encoding='utf-8')
             self.assertTrue(verify_delivery(root,self.release))
 
+    def test_construction_pages_omit_legacy_source_record_but_other_objects_retain_it(self):
+        from scripts.object_site import json_markup
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);report=self.generate(root)
+            for identity in report['packets']:
+                page=(root/f'definitions/{identity}.md').read_text(encoding='utf-8')
+                self.assertNotIn('data-raw=',page)
+                self.assertIn('Copy detailed JSON',page)
+                self.assertIn('Copy unified JSON',page)
+            # The generic source/default chooser belongs to other object types.
+            self.assertIn('data-raw=',json_markup({'href':'source.json'}))
+
     def test_every_physical_resource_and_provenance_is_accessible(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);report=self.generate(root)
@@ -166,7 +178,7 @@ class ConstructionSiteTests(unittest.TestCase):
             root=Path(d);report=self.generate(root)
             identity,descriptor=next(iter(report['packets'].items()))
             path=root/'definitions'/(identity+'.md');original=path.read_text(encoding='utf-8')
-            raw=re.search(r'data-raw="([^"]+)"',original)[1]
+            raw=re.search(r'data-unified="([^"]+)"',original)[1]
             path.write_text(re.sub(r'data-construction="[^"]+"',lambda _: 'data-construction="'+raw+'"',original),encoding='utf-8')
             self.assertTrue(verify_delivery(root,self.release),'Wrong page packet must fail')
             packet=json.loads(gzip.decompress((root/descriptor['href']).read_bytes()))

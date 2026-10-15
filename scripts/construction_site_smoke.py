@@ -42,11 +42,12 @@ def run(site,screenshots):
                     # Copy buttons have fixed representations, independent of preview.
                     page.locator('.construction-representation').select_option('unified' if mode=='detailed' else 'detailed')
                     page.get_by_role('button',name='Copy '+mode+' JSON',exact=True).click()
-                    page.get_by_role('dialog').get_by_role('button',name='Copy '+mode+' JSON',exact=True).click()
                     expect(page.get_by_role('dialog')).to_have_count(0)
+                    expect(page.locator('.object-status')).to_contain_text(mode+' construction JSON copied.')
                     assert json.loads(page.evaluate('navigator.clipboard.readText()'))==expected
                     page.locator('.construction-representation').select_option(mode)
                 assert len(requests)==2,'Each representation must load once and reuse its verified packet'
+                assert page.locator('.object-json').get_attribute('data-raw') is None
                 # Browser guard must reject a missing equivalent material resource.
                 assert page.evaluate("""async () => {
                     const packet=structuredClone(await AtlasObjects.load(document.querySelector('.object-json'),'unified'));

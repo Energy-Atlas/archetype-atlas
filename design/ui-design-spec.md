@@ -160,8 +160,11 @@ Construction definition pages share one climate/reference selection across two
 separate exports: Detailed construction set and Unified building construction.
 Use a labeled representation select within the existing filter controls for the
 preview. Separate Copy detailed JSON and Copy unified JSON buttons copy their
-named representation independently of the preview; source JSON remains available
-in the copy dialog. Detailed Copy keeps the existing inverted primary style;
+named representation immediately, independently of the preview, without a popup.
+Construction pages do not expose the older source-record copy choice. If clipboard
+access fails, display only the requested JSON inline for manual copy. Other object
+types retain their existing copy dialogs and source/default choices.
+Detailed Copy keeps the existing inverted primary style;
 Unified Copy uses the existing outlined secondary style. No download action.
 Keep packets lazy and checksum verified.
 Unified approximation evidence is explained in prose, without new badges or colours.

@@ -6,7 +6,7 @@
     const climate = section.querySelector('.construction-climate'), reference = section.querySelector('.construction-reference');
     const representation = section.querySelector('.construction-representation'), unifiedCopy = section.querySelector('.construction-copy-unified');
     const status = section.querySelector('.object-status'), details = section.querySelector('.object-source');
-    const trigger = section.querySelector('.object-copy');let selected = null, revision = 0, previewToken = 0;
+    const trigger = section.querySelector('.object-copy');let selected = null, revision = 0, previewToken = 0, copying = false;
     representation.value = params.get('representation') === 'unified' ? 'unified' : 'detailed';
     const label = () => representation.value === 'unified' ? 'Unified' : 'Detailed';
     const descriptions = {
@@ -14,7 +14,7 @@
       detailed: 'Detailed construction set: original assemblies, materials, program/story assignment rules and source evidence. BEMGen resolves assignments using actual model geometry.'
     };
     function describe() {
-      trigger.disabled = !selected;unifiedCopy.disabled = !selected;
+      trigger.disabled = !selected || copying;unifiedCopy.disabled = !selected || copying;
       section.querySelector('.construction-description').textContent = descriptions[representation.value];
     }
     climate.value = params.get('climate') || '';
@@ -22,7 +22,7 @@
       const option = node('option', params.get('climate') + ' (unavailable)');option.value = params.get('climate');climate.append(option);climate.value = option.value;
     }
     function update(requested = reference.value, building = '') {
-      revision++;selected = null;reference.replaceChildren();
+      revision++;selected = null;reference.replaceChildren();section.querySelector('.construction-manual-copy')?.remove();
       try {
         const state = ConstructionCore.select(contexts, climate.value, requested, building);climate.value = state.climate;
         const first = node('option', state.climate ? 'Choose source reference' : 'Choose climate first');first.value = '';reference.append(first);
@@ -58,32 +58,28 @@
     reference.addEventListener('change', () => update());
     representation.addEventListener('change', () => update());
     details.addEventListener('toggle', () => {if (details.open) preview();});
-    function chooseCopy(trigger, representationMode) {
-      const dialog = document.createElement('dialog');dialog.className = 'object-dialog';
-      const heading = node('h2', 'Copy construction JSON');heading.id = 'construction-copy-title';dialog.setAttribute('aria-labelledby', heading.id);
-      const info = node('p', descriptions[representationMode] + ' Source JSON retains the original source definition.');
-      const copyReady = node('button', 'Copy ' + representationMode + ' JSON'), copyRaw = node('button', 'Copy source JSON'), cancel = node('button', 'Cancel');
-      [copyReady, copyRaw, cancel].forEach(b => b.type = 'button');copyReady.disabled = !selected;
-      const output = node('p', selected ? '' : 'Choose climate and source reference first.');output.setAttribute('role', 'status');output.setAttribute('aria-live', 'polite');
-      dialog.append(heading, info, copyReady, copyRaw, cancel, output);document.body.append(dialog);
-      cancel.addEventListener('click', () => dialog.close());dialog.addEventListener('close', () => {dialog.remove();trigger.focus();});
-      async function copy(mode) {
-        copyReady.disabled = true;copyRaw.disabled = true;output.textContent = 'Loading verified JSON…';dialog.querySelector('textarea')?.remove();
-        try {
-          const value = JSON.stringify(mode === 'construction' ? await ready(representationMode) : await AtlasObjects.load(section, 'raw'), null, 2);
-          if (!dialog.open) return;
-          try {await navigator.clipboard.writeText(value);}
-          catch (_) {output.textContent = 'The clipboard is unavailable. Select and copy the complete JSON below.';
-            const text = document.createElement('textarea');text.readOnly = true;text.value = value;text.setAttribute('aria-label', 'Complete construction JSON for manual copy');dialog.append(text);text.focus();text.select();return;}
-          status.textContent = (mode === 'construction' ? representationMode + ' construction JSON' : 'Source JSON') + ' copied.';dialog.close();
-        } catch (error) {if (dialog.open) output.textContent = error.message;}
-        finally {copyReady.disabled = !selected;copyRaw.disabled = false;}
-      }
-      copyReady.addEventListener('click', () => copy('construction'));copyRaw.addEventListener('click', () => copy('raw'));
-      dialog.showModal();(selected ? copyReady : copyRaw).focus();
+    async function copy(representationMode) {
+      if (copying || !selected) return;
+      const version = revision;
+      copying = true;describe();status.textContent = 'Loading verified ' + representationMode + ' JSON…';
+      section.querySelector('.construction-manual-copy')?.remove();
+      try {
+        const value = JSON.stringify(await ready(representationMode), null, 2);
+        try {await navigator.clipboard.writeText(value);}
+        catch (_) {
+          if (version !== revision) return;
+          status.textContent = 'The clipboard is unavailable. Select and copy the ' + representationMode + ' JSON below.';
+          const fallback = node('div', '');fallback.className = 'construction-manual-copy';
+          const text = node('textarea', '');text.readOnly = true;text.value = value;
+          text.setAttribute('aria-label', representationMode + ' construction JSON for manual copy');
+          fallback.append(text);section.append(fallback);text.focus();text.select();return;
+        }
+        if (version === revision) status.textContent = representationMode + ' construction JSON copied.';
+      } catch (error) {if (version === revision) status.textContent = error.message;}
+      finally {copying = false;describe();}
     }
-    trigger.addEventListener('click', () => chooseCopy(trigger, 'detailed'));
-    unifiedCopy.addEventListener('click', () => chooseCopy(unifiedCopy, 'unified'));
+    trigger.addEventListener('click', () => copy('detailed'));
+    unifiedCopy.addEventListener('click', () => copy('unified'));
     update(params.get('reference') || '', params.get('building') || '');
   }
   window.AtlasConstruction = {init};

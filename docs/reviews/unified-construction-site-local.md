@@ -2,6 +2,28 @@
 
 Date: 2026-10-15. Branch: `feature/json-completion`.
 
+## Direct-copy revision — current behaviour
+
+For construction definitions only, both named copy buttons stay visible and
+copy immediately without a chooser or popup. The legacy Atlas source-record
+option and its `data-raw` binding are removed from these pages; no new legacy
+source-record payload is generated for them. Detailed/unified physics, source
+provenance and evidence resources remain intact. Other object types retain
+their existing source/default chooser.
+
+If clipboard access is unavailable, the requested construction JSON appears in
+an inline read-only text area. No dialog is created. Both buttons are disabled
+during copying; changing context clears any stale manual-copy content.
+
+Earlier sections below record previous UI iterations and their verification.
+
+Verification: 27 focused Python tests and all 24 Node tests passed. The local
+refresh covered 177 pages / 3,320 contexts, with zero program pages regenerated
+and zero new JSON resources. In the existing user tab, one click on each copy
+button produced its copied status with zero dialogs; the construction section
+has no legacy `data-raw` binding. Screenshot:
+`build/unified-construction-direct-copy.jpg` (ignored local artefact).
+
 ## Cached-asset repair
 
 The actual open in-app browser tab loaded current copy-only HTML together with

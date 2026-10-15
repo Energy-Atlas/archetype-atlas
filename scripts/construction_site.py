@@ -147,7 +147,6 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
     remove_empty_retired_routes(root,retired)
     from scripts.construction_equivalent_site import load_equivalents,packet_for as equivalent_packet
     equivalents=load_equivalents()
-    originals={r['id']:r for r in bundle['constructions']}
     report={'schema_version':'1.0.0','construction_schema':'2.0.0','definitions':len(release['construction_sets']),
         'contexts':len(release['contexts']),'packets':{},'unified_schema':'1.1.0','unified_packets':{},
         'resources':{k:{} for k in ('assemblies','materials','evidence')}}
@@ -156,17 +155,20 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
         contexts={i:c for i,c in release['contexts'].items() if c['construction_set_id']==identity}
         packet=packet_for(release,identity,contexts);descriptor=store.put(packet);report['packets'][identity]=descriptor
         unified=store.put(equivalent_packet(equivalents,identity,contexts));report['unified_packets'][identity]=unified
-        raw=store.put(originals.get(identity,profile));source=profile['source']
+        source=profile['source']
         choices=context_choices(profile,contexts)
         controls='<div class="definition-filters construction-controls"><label>Climate<select class="construction-climate"><option value="">Choose climate</option>'
         controls+=''.join(f'<option value="{esc(v)}">{esc(v)}</option>' for v in sorted({c['climate_zone'] for c in contexts.values()}))
         controls+='</select></label><label>Source reference<select class="construction-reference"><option value="">Choose source reference</option></select></label>'
         controls+='<label>JSON representation<select class="construction-representation"><option value="detailed">Detailed construction set</option><option value="unified">Unified building construction</option></select></label></div>'
         controls+='<p class="construction-description">Detailed JSON retains original assemblies and program/story assignment rules. Unified JSON provides one assembly per semantic with approximation evidence.</p>'
-        markup=json_markup(raw).replace('data-raw=',f'data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" data-unified="{esc(json.dumps(unified,separators=(",",":")))}" data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-raw=',1)
-        markup=markup.replace('<button type="button" class="object-copy">Copy JSON</button>',controls+
+        markup=(f'<section class="object-json" data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" '
+            f'data-unified="{esc(json.dumps(unified,separators=(",",":")))}" '
+            f'data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-root="../../">'+controls+
             '<button type="button" class="object-copy" disabled>Copy detailed JSON</button>'+
-            '<button type="button" class="construction-copy-unified" disabled>Copy unified JSON</button>',1)
+            '<button type="button" class="construction-copy-unified" disabled>Copy unified JSON</button>'+
+            '<details class="object-source"><summary>JSON</summary><pre tabindex="0">Expand to load the selected construction JSON.</pre></details>'+
+            '<p class="object-status" role="status" aria-live="polite"></p></section>')
         page=f'# {esc(profile["name"])}\n\n[Construction catalogue](../catalogue/{"residential" if profile["scope"]=="whole_dwelling" else "nonresidential"}/construction/index.md) · [Construction JSON contract](../guides/construction-json.md)\n\n'
         page+=f'`{identity}` · Construction set · {esc(profile["scope"])} · {esc(source["template"])} · {esc(source["source_family"])}\n\n'
         page+='One set contains its source-supported exterior and interior components. Select a climate and source reference, then copy **Detailed** or **Unified** JSON using its own button. The representation selector controls the preview. Both copies use the same selected context. Fixed reference ACH remains explicit. BEMGen supplies actual model geometry.\n\n'
@@ -311,9 +313,12 @@ they are not separate construction catalogue filters.
 Choose **JSON representation: Detailed / Unified** to preview either version.
 **Copy detailed JSON** and **Copy unified JSON** each copy their named
 representation, independently of the preview selection. Both use the same
-climate and source reference. Each compressed packet
-loads only when needed and is verified before use. **Copy source JSON** retains
-the original source definition. Construction copying does not apply program defaults.
+climate and source reference and copy immediately, without a chooser or popup.
+Each compressed packet loads only when needed and is verified before use.
+If clipboard access fails, the selected JSON appears inline for manual copying.
+Construction pages do not expose the older Atlas source-record copy option.
+Construction copying does not apply program defaults. Other object types keep
+their existing source/default copy controls.
 
 ## Components and geometry
 
