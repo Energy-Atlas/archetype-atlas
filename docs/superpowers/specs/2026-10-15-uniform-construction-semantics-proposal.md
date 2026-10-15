@@ -177,6 +177,10 @@ conductivity_side = thickness_side / R_side
 The two massive layers consequently share conductivity. No free fitting of
 individual density, specific heat, thickness, absorptance or extra layers occurs.
 If source-proven C is zero, use a massless representation without invented mass.
+This fixed two-mass-layer plus massless-resistance approximation may inadequately
+reproduce some source constructions. Retain this method and report its measured
+approximation errors and quality flags; inadequacy alone does not authorize
+additional layers or greater fitting complexity.
 
 #### Weighted transient response and fitting objective
 
@@ -505,6 +509,9 @@ applied before weighting, so the building default is not counted again.
 R and capacity are preserved within relative 1e-12 in all three examples. Basic
 solver checks cover a pure resistor, subdivision of a homogeneous slab,
 reciprocity and layer reversal. These check the analytical probe, not EnergyPlus.
+Implementation additionally checks an analytical homogeneous wall across several
+frequencies, independently verifying both boundary excitations, air-film ordering
+and inward-flux sign conventions.
 The office wall's six-hour response RMS is 8.05%, compared with 2.30% at 24 h;
 one transmission-amplitude statistic alone would conceal that larger self-response
 error. The two held-out periods check interpolation without optimizing to them.
