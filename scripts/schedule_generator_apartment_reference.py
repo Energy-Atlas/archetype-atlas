@@ -269,7 +269,12 @@ def _member(entry):
 
 def load_apartment_fixed_reference(lock: dict | None = None) -> dict:
     """Verify retained actual input/output bytes and exact source identities offline."""
-    authoritative = _read(ROOT / LOCK)
+    historical_path = BASE + 'evidence/a3-reviewed-lock.json'
+    historical_blob = _bytes(ROOT / historical_path,
+        '6165bfbfbec59caa59d09e2c754c3d7a7e29e305f7053331165cc32c5bd51f87')
+    authoritative = json.loads(historical_blob)
+    if not _same(_read(ROOT / LOCK), authoritative):
+        _fail('/lock', 'Original reviewed historical lock changed')
     if lock is not None and not _same(lock, authoritative):
         _fail('/lock', 'Supplied reference lock differs from independently retained lock')
     lock = authoritative
@@ -277,8 +282,19 @@ def load_apartment_fixed_reference(lock: dict | None = None) -> dict:
         _fail('/lock', 'Unexpected method boundary')
     for entry in lock['capture_provenance']['source_members']:
         _bytes(ROOT / str(safe_path(entry['source_path'])), entry['sha256'])
-    for entry in (lock['harness'], lock['builder'], lock['qualification_builder'], *lock['qualification_dependencies']):
+    for entry in (lock['harness'], lock['builder']):
         _bytes(ROOT / entry['source_path'], entry['sha256'])
+    retention = _read(ROOT / (BASE + 'evidence/authority-retention.json'))
+    entries = [lock['qualification_builder'], *lock['qualification_dependencies']]
+    expected = [{'original_path': e['source_path'],
+        'retained_path': BASE+'qualification-code/a3/'+e['source_path'],
+        'sha256': e['sha256'], 'size_bytes': e['size_bytes']} for e in entries]
+    if not _same(retention['historical_dependency_relocations'], expected):
+        _fail('/historical_dependencies', 'Exact complete historical relocation table differs')
+    for entry in expected:
+        blob = _bytes(ROOT / str(safe_path(entry['retained_path'])), entry['sha256'])
+        if len(blob) != entry['size_bytes']:
+            _fail('/historical_dependencies', 'Retained historical source size differs')
     for entry in [lock['capture_provenance']['source_origins'],
                   *lock['capture_provenance']['upstream_notices'],
                   *lock['evidence_files'], lock['qualification_manifest']]:

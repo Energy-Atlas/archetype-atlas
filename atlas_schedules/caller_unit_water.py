@@ -13,7 +13,8 @@ from .calendar import evaluate_rules
 from .canonical import canonical
 from .contract import _check_schema, _finite, _load_schema
 from .errors import GeneratorError
-from .physical_sets import _evidence, _source, _typed
+from .physical_sets import _typed
+from .authority_types import _field_evidence as _evidence, _source_object as _source
 from .programs import verify_caller_water_programme
 from .resources import ResourceSet
 
@@ -193,7 +194,7 @@ def _validate_source(programme,service,ruleset,evidence):
     return load,row
 
 
-def compile_requirement(programme: dict, service: dict, ruleset: dict, evidence: dict) -> dict:
+def _compile_requirement(programme: dict, service: dict, ruleset: dict, evidence: dict) -> dict:
     """Compile immutable original water authority independently of caller units."""
     for name,value in (('programme',programme),('service',service),('ruleset',ruleset),('evidence',evidence)):
         try:_finite(value,'/'+name)
@@ -214,13 +215,87 @@ def compile_requirement(programme: dict, service: dict, ruleset: dict, evidence:
         'reference_calendar':copy.deepcopy(CALENDAR),
         'interpretation':'caller_unit_area_adaptation_of_original_fixed_dhw_density',
         'evidence':copy.deepcopy(evidence['field_evidence'])}
+    return requirement
+
+
+def compile_requirement(programme: dict, service: dict, ruleset: dict, evidence: dict) -> dict:
+    """Public source compiler retains its existing final schema check."""
+    requirement=_compile_requirement(programme,service,ruleset,evidence)
     _typed(requirement,'caller_requirement','/caller_requirement')
     return requirement
 
 
 def _qualified_caller_water_method(qualification):
-    """Production remains closed until each exact source method is reviewed."""
-    return False
+    """Only the independently reviewed exact A3 per-ID whole proof is admitted."""
+    from .apartment_authority import validate_fixed_resource
+    try:
+        value=qualification['value']
+        if 'qualifications' in value:
+            context={k:copy.deepcopy(value[k]) for k in ('family','template','reference_calendar')}
+            key='caller-water-qualification-set__'+hashlib.sha256(canonical(context)).hexdigest()
+            validate_fixed_resource(key,qualification)
+            return True
+        pid=qualification['value']['programme_id']
+        validate_fixed_resource('caller-water-qualification__'+pid,qualification)
+        _native_control_source(qualification)
+    except (GeneratorError,KeyError,TypeError):return False
+    return True
+
+
+def _caller_control_obligations(requirement: dict, fixed_controls: dict) -> dict:
+    """Mode-mandatory controls from complete original source, independent of output."""
+    from .apartment_recipes import _water_evidence
+    from .apartment_authority import _original
+    req=requirement;controls=_source(fixed_controls,'/fixed_controls');c=controls['value']
+    _exact(req,('requirement_id','kind','required','source_channel','ownership_mode','water_method','programme',
+        'original_demand','service_definition','source_ruleset','source_service_id','source_beneficiary_id','family',
+        'template','programme_evidence_view','source_system_type','reference_calendar','interpretation','evidence'),'/requirement')
+    _exact(c,('source_space_type','source_helpers','selected_branch','original_density','target_temperature',
+        'sensible_fraction','latent_fraction','source_system_type','evidence'),'/fixed_controls/value')
+    for key in ('programme','service_definition','source_ruleset'):_original(req[key],'/requirement/'+key)
+    row=c['source_space_type'];_original(row,'/fixed_controls/source_space_type')
+    for helper in c['source_helpers']:_original(helper,'/fixed_controls/source_helpers')
+    proof=_water_evidence(req['programme'],req['service_definition'],req['source_ruleset'],row,c['source_helpers'])
+    if not _same(proof['fixed_controls']['value'],c):_fail('/fixed_controls','Complete independently reconstructed controls differ')
+    proof['fixed_controls']=controls
+    proof['association']['value']['fixed_controls']=copy.deepcopy(controls)
+    compiled=_compile_requirement(req['programme'],req['service_definition'],req['source_ruleset'],proof)
+    if not _same(compiled,req):_fail('/requirement','Entire original requirement differs')
+    return {'water_target_temperature':{'unit':'C','quantity':'temperature',
+                'original_operand':copy.deepcopy(c['target_temperature']),'constructor_source':copy.deepcopy(c['source_helpers'])},
+            'water_sensible_fraction':{'unit':'fraction','quantity':'sensible_fraction',
+                'original_operand':copy.deepcopy(c['sensible_fraction']),'constructor_source':copy.deepcopy(c['source_helpers'])},
+            'water_latent_fraction':{'unit':'fraction','quantity':'latent_fraction',
+                'original_operand':copy.deepcopy(c['latent_fraction']),'constructor_source':copy.deepcopy(c['source_helpers'])}}
+
+
+def _native_control_source(qualification: dict) -> dict:
+    """Reconstruct mandatory independent wrapped SourceObject, never infer absence."""
+    _source(qualification,'/method_qualification');q=qualification['value']
+    _exact(q,('qualification_id','qualification_scope','programme_id','requirement','association','fixed_controls','evidence'),'/method_qualification/value')
+    _evidence(q['evidence'],'/method_qualification/evidence')
+    matches=[e for e in q['evidence'] if e.get('locator')=='/native_control_schedules']
+    if len(matches)!=1:_fail('/method_qualification/native_control_schedules','One complete native-control proof is mandatory','requires_binding')
+    e=matches[0];_evidence([e],'/method_qualification/native_control_schedules')
+    if e['original_unit'] is not None:_fail('/method_qualification/native_control_schedules','Native source proof has null original unit')
+    source={'path':e['source_path'],'sha256':e['source_sha256'],'locator':e['locator'],'value':copy.deepcopy(e['original_value'])}
+    _source(source,'/native_control_source');v=source['value']
+    _exact(v,('programme_id','requirement_id','association','fixed_controls','reference_calendar','rules','evidence'),'/native_control_source/value')
+    if source['sha256']!=hashlib.sha256(canonical({'native_control_schedules':v})).hexdigest():
+        _fail('/native_control_source','Actual wrapped canonical preimage differs')
+    obligations=_caller_control_obligations(q['requirement'],q['fixed_controls'])
+    _exact(v['rules'],obligations,'/native_control_source/rules')
+    if (v['programme_id']!=q['programme_id'] or v['requirement_id']!=q['requirement']['requirement_id'] or
+            not _same(v['association'],q['association']) or not _same(v['fixed_controls'],q['fixed_controls']) or
+            not _same(v['reference_calendar'],CALENDAR) or set(v['rules'])!=set(obligations)):
+        _fail('/native_control_source','Mandatory whole native-control/source association differs')
+    from .companions import _native_constant
+    for slot,rule in v['rules'].items():
+        _native_constant(slot,rule)
+        want=obligations[slot]['original_operand']
+        original=want['canonical_value'] if slot=='water_target_temperature' else want['value']
+        if rule['original_value']!=original:_fail('/native_control_source/rules/'+slot,'Original native operand differs')
+    return source
 
 
 def validate_caller_unit_evidence(realization: dict) -> None:
@@ -359,6 +434,11 @@ def _qualified_pool(resources,realization):
                             ('association',association),('qualification',qualification)):
             if not _same(actual,_resource(resources,'caller-water-'+name+'__'+pid)):
                 _fail(path+'/'+name,'Whole independently locked resource differs')
+        native=_native_control_source(qualification)
+        if not _same(native,_resource(resources,'caller-water-native-controls__'+pid)):
+            _fail(path+'/native_control_schedules','Whole independent native-control resource differs','requires_binding')
+        if not _qualified_caller_water_method(qualification):
+            _fail(path,'Exact per-ID fixed source/control method is not independently qualified','requires_binding')
         a=association['value']
         _exact(a,('programme','original_demand','service_definition','source_ruleset',
                   'fixed_controls','source_system_type','reference_calendar','evidence'),path+'/association/value')
@@ -374,6 +454,8 @@ def _qualified_pool(resources,realization):
         order=(req['programme']['path'],int(locator[1:]))
         if source_order and order<=source_order[-1]:_fail(path,'Eligible proof pool source order/uniqueness differs')
         source_order.append(order);pool[pid]=qualification
+    if not _qualified_caller_water_method(group):
+        _fail('/method_qualification','Complete independently reviewed static pool is required','requires_binding')
     return group,pool
 
 
@@ -406,6 +488,17 @@ def _physical_result(instance,entry,clock):
                     'source_system_type':req['source_system_type'],
                     'interpretation':'conserved_original_density_on_one_caller_unit'}}
     p=req['programme']['value']
+    qualification=entry.get('qualification')
+    if qualification is None:_fail('/method_qualification','Caller mode requires complete qualification','requires_binding')
+    native=_native_control_source(qualification)
+    if not _same(native,entry.get('native_control_source')):
+        _fail('/native_control_source','Complete selected native-control source required','requires_binding')
+    obligations=_caller_control_obligations(req,entry['fixed_controls'])
+    slots=[{'slot':slot,'source_schedule_id':native['path']+'#/native_control_schedules/rules/'+slot,
+            'unit':o['unit'],'kind':'control'} for slot,o in obligations.items()]
+    controls=[{'slot':slot,'quantity':o['quantity'],'unit':o['unit'],
+               'evidence':{'original_obligation':copy.deepcopy(o),'native_control_source':copy.deepcopy(native)}}
+              for slot,o in obligations.items()]
     resolved={'recipe_id':'caller-water-'+req['requirement_id'],
         'source_family':p['source_family'],
         'source':{'source_id':sid,'building_type':req['family'],'template':req['template'],
@@ -414,21 +507,32 @@ def _physical_result(instance,entry,clock):
         'physical_binding_kind':MODE,'building_realization_id':entry['building_realization_id'],
         'unit_id':u['unit_id'],
         'slots':[{'slot':'hot_water_volume','source_schedule_id':req['source_ruleset']['value']['id'],
-                  'unit':'fraction','kind':'load'}],
-        'demands':[demand],'controls':[],'shared_services':[descriptor],
+                  'unit':'fraction','kind':'load'},*slots],
+        'demands':[demand],'controls':controls,'shared_services':[descriptor],
         'evidence':[{'source_requirement':copy.deepcopy(req),
-                     'method':'source_fixed_apartment_dhw','source_controls':copy.deepcopy(entry['fixed_controls'])}],
+                     'method':'source_fixed_apartment_dhw','source_controls':copy.deepcopy(entry['fixed_controls']),
+                     'native_control_source':copy.deepcopy(native)}],
         'inputs':dict(copy.deepcopy(instance['inputs']),year=clock['year'],holidays=copy.deepcopy(clock['holidays']),
                       reference_channels={'hot_water_volume':values},reference_budgets={sid:target},
-                      companion_rules={},source_context={'case_id':'caller-water-'+req['requirement_id'],
+                      companion_rules=copy.deepcopy(native['value']['rules']),source_context={'case_id':'caller-water-'+req['requirement_id'],
                           'method':METHOD,'calendar':copy.deepcopy(clock),
                           'compiled_requirement':copy.deepcopy(req),
-                          'fixed_controls':copy.deepcopy(entry['fixed_controls'])})}
+                          'fixed_controls':copy.deepcopy(entry['fixed_controls']),
+                          'native_control_source':copy.deepcopy(native),
+                          'method_qualification':copy.deepcopy(qualification)})}
     plan={'instance_key':instance['key'],'building_realization_id':entry['building_realization_id'],
           'unit_id':u['unit_id'],'physical_id':u['physical_id'],'source_service_id':sid,
           'source_basis_target':target,'extent':extent,'whole_input_target':whole_target,
-          'chosen_requirement':copy.deepcopy(req)}
+          'chosen_requirement':copy.deepcopy(req),'qualification':copy.deepcopy(qualification),
+          'native_control_source':copy.deepcopy(native),'fixed_controls':copy.deepcopy(entry['fixed_controls'])}
     return resolved,plan
+
+
+def _caller_extent(unit,owner_kind):
+    """Exact existing owner-specific evidence representations, never coercion."""
+    evidence=copy.deepcopy(unit['area_evidence'])
+    if owner_kind=='program':evidence={'field_evidence':evidence}
+    return {'value':unit['floor_area_m2'],'unit':'m2','evidence':evidence}
 
 
 def prepare_caller_water(params: dict, resolved_instances: list[tuple[dict,dict]],
@@ -466,7 +570,7 @@ def prepare_caller_water(params: dict, resolved_instances: list[tuple[dict,dict]
         bound=instance.get('basis_bindings',{})
         if (set(bound)!={'multiplicity','extents'} or type(bound['multiplicity']) not in (int,float) or
                 bound['multiplicity']!=1 or set(bound['extents'])!={'floor_area'} or
-                not _same(bound['extents']['floor_area'],{'value':u['floor_area_m2'],'unit':'m2','evidence':u['area_evidence']})):
+                not _same(bound['extents']['floor_area'],_caller_extent(u,instance.get('owner_kind')))):
             _fail('/instances/'+instance['key']+'/basis_bindings','Caller A/evidence/multiplicity differs','incompatible_basis')
         if instance.get('owner_kind')=='physical_service':
             if (kind!=MODE or instance.get('inputs')!={'water_method':METHOD,'source_geometry_departure':'caller_unit_area'} or
@@ -495,6 +599,8 @@ def prepare_caller_water(params: dict, resolved_instances: list[tuple[dict,dict]
             entry=units[instance['building_realization_id'],instance['unit_id']]
             chosen=entry['water_authority_programme_id'];q=groups[instance['building_realization_id']]['value']['qualifications']
             entry['fixed_controls']=next(record['value']['fixed_controls'] for record in q if record['value']['programme_id']==chosen)
+            entry['qualification']=next(copy.deepcopy(record) for record in q if record['value']['programme_id']==chosen)
+            entry['native_control_source']=_native_control_source(entry['qualification'])
             actual,plan=_physical_result(instance,entry,clock);replaced.append((instance,actual));owners.append(plan)
         else:replaced.append((instance,resolved))
     projections=[{'instance_key':instance['key'],'building_realization_id':instance['building_realization_id'],
@@ -512,6 +618,41 @@ def prepare_caller_water(params: dict, resolved_instances: list[tuple[dict,dict]
             'building_realizations':receipts}
 
 
+def _caller_owned_bindings(bundle,owner,requirement,fixed_controls,native_control_source):
+    """Pure mode-mandatory four-binding check; absence cannot select a smaller mode."""
+    where='/constituents/'+owner['instance_key'];indices=owner['binding_indices'];bindings=bundle['bindings']
+    obligations=_caller_control_obligations(requirement,fixed_controls)
+    wanted={'hot_water_volume',*obligations}
+    if (len(indices)!=4 or any(type(i) is not int or not 0<=i<len(bindings) for i in indices) or
+            len(set(indices))!=4 or {bindings[i].get('slot') for i in indices}!=wanted):
+        _fail(where,'Caller mode mandates exactly one water LOAD and three CONTROL bindings','invalid_reference')
+    if ({s['slot'] for s in owner['slots']}!=wanted or len(owner['slots'])!=4 or
+            set(owner['schedule_ids'])!=wanted or {c['slot'] for c in owner['controls']}!=set(obligations) or
+            len(owner['controls'])!=3):
+        _fail(where,'Caller mandatory slot/control/source set differs','invalid_reference')
+    from .companions import _native_constant
+    native=_source(native_control_source,where+'/native_control_source');water=None
+    for i in indices:
+        binding=bindings[i];slot=binding['slot'];sid=binding.get('schedule_id');schedule=bundle['schedules'].get(sid,{})
+        if (any(binding.get(k)!=owner.get(k) for k in ('instance_key','owner_kind','source_service_id','physical_id',
+                'physical_binding_kind','building_realization_id','unit_id')) or
+                owner['schedule_ids'].get(slot)!=sid or
+                schedule.get('year')!=bundle['metadata']['calendar']['year'] or
+                schedule.get('clock')!=bundle['metadata']['calendar']['clock'] or schedule.get('timestep_minutes')!=60):
+            _fail(where+'/binding_indices','Wrong caller owner/schedule/calendar','invalid_reference')
+        if slot=='hot_water_volume':
+            if binding.get('kind')!='load' or schedule.get('unit')!='fraction':
+                _fail(where,'One water LOAD with fractional schedule required','invalid_reference')
+            water=(i,binding)
+        else:
+            o=obligations[slot]
+            if (binding.get('kind')!='control' or binding.get('control_quantity')!=o['quantity'] or
+                    schedule.get('unit')!=o['unit'] or
+                    not _same(schedule.get('values'),_native_constant(slot,native['value']['rules'][slot]))):
+                _fail(where+'/binding_indices','Mandatory actual native control differs','invalid_reference')
+    return water
+
+
 def bind_caller_water(bundle: dict, plan: dict) -> None:
     """Close each emitted fixed source rule against one B, A and B×A owner."""
     owners={c['instance_key']:c for c in bundle['constituents']}
@@ -524,6 +665,7 @@ def bind_caller_water(bundle: dict, plan: dict) -> None:
             if owner.get(field)!=entry[field]:_fail(where+'/'+field,'Physical owner identity differs','invalid_reference')
         if owner.get('physical_binding_kind')!=MODE or owner.get('owner_kind')!='physical_service':
             _fail(where,'Caller physical binding kind differs','invalid_reference')
+        _caller_owned_bindings(bundle,owner,entry['chosen_requirement'],entry['fixed_controls'],entry['native_control_source'])
         candidates=[i for i in owner['binding_indices'] if type(i) is int and 0<=i<len(bindings) and
                     bindings[i].get('kind')=='load' and bindings[i].get('slot')=='hot_water_volume']
         if len(candidates)!=1:_fail(where+'/binding_indices','Exactly one owned water binding required','invalid_reference')

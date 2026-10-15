@@ -22,8 +22,18 @@ _PREPARED = {'reference_channels', 'reference_budgets', 'source_context', 'compa
 
 
 def _qualified_apartment_actor(instance: dict, resolved: dict) -> bool:
-    """Production occupancy/lighting adapter qualification remains closed."""
-    return False
+    """Independently recheck the retained per-ID source/executable association."""
+    from .apartment_authority import reconstruct_apartment_programme,bind_apartment_unit_context
+    from .canonical import canonical
+    try:
+        q=resolved['inputs']['source_context']['apartment_qualification']
+        raw={k:v for k,v in resolved['inputs'].items() if k not in _PREPARED}
+        expected=reconstruct_apartment_programme(raw,q['value']['compiled_recipe']['value'],q)
+        bind_apartment_unit_context(instance,expected)
+        if instance.get('program_id')!=expected['program_id']:return False
+        return all(canonical(resolved.get(k))==canonical(expected.get(k)) for k in
+            ('program_id','source','source_family','slots','demands','controls','evidence','inputs','required_service_sets'))
+    except (GeneratorError,KeyError,TypeError):return False
 
 
 def collect_physical_unit_actors(resolved_instances: list[tuple[dict,dict]],
@@ -60,7 +70,7 @@ def collect_physical_unit_actors(resolved_instances: list[tuple[dict,dict]],
         source = resolved.get('source', {})
         building = instance.get('building_realization_id')
         unit = instance.get('unit_id')
-        n = inputs.get('residents')
+        n = inputs.get('N')
         if (instance.get('owner_kind') != 'program' or
                 resolved.get('source_family') not in {'code_prototype_rules',
                                                       'existing_stock_benchmark'} or
@@ -95,10 +105,32 @@ def build_physical_unit_generation(master: int,
             'unit_seeds': {actor['instance_key']: actor['unit_seed'] for actor in sequence}}
 
 
+def _apartment_fixed_channels(inputs):
+    record=inputs['source_context']['apartment_qualification']['value']['compiled_recipe']['value']
+    selected={s['slot'] for s in record['recipe']['resolved']['slots']}
+    return {k:copy.deepcopy(v) for k,v in inputs['reference_channels'].items()
+            if k in selected and k not in inputs['companion_rules']}
+
+
 def _run_physical_unit_actor(actor: dict, inputs: dict, resources) -> dict:
     """Keep the qualified stock kernel and closed apartment adapter at one boundary."""
     if actor['actor_kind'] == 'stock' and actor['stochastic_action'] == 'generate':
         return generate_residential(inputs, actor['unit_seed'], resources)
+    if actor['actor_kind']=='apartment_adapter':
+        if not inputs.get('source_context',{}).get('apartment_qualification'):
+            raise GeneratorError('requires_binding','/source_context','Complete qualified apartment inputs required')
+        if actor['stochastic_action']=='skip_n0':
+            return {'channels':_apartment_fixed_channels(inputs),
+                    'source_context':{'method':'source_measure_skip_and_original_fixed_rule_retention',
+                                      'N':0,'unit_seed':actor['unit_seed'],'random_draw_count':0}}
+        from .residential.selected import generate_unit_occupancy_interior_lighting
+        consumed={k:inputs[k] for k in ('year','holidays','state','latitude','longitude','time_zone_utc_offset')}
+        consumed['residents']=inputs['N']
+        selected=generate_unit_occupancy_interior_lighting(consumed,actor['unit_seed'],resources)
+        channels=_apartment_fixed_channels(inputs)
+        for slot in ('occupants','lighting_interior','additional_lighting'):
+            if slot in channels:channels[slot]=copy.deepcopy(selected['channels']['occupants' if slot=='occupants' else 'lighting_interior'])
+        return {'channels':channels,'source_context':selected['source_context']}
     # An N0 adapter position never initializes streams, HMM, events or lighting.
     # Positive adapter execution also awaits separate native/source qualification.
     raise GeneratorError('requires_binding', '/source_context/method',
@@ -293,6 +325,10 @@ def generate(params: dict, seed: int) -> dict:
                 raise GeneratorError('unknown_input','/inputs','Calendar and preparation buffers are request/internal operands')
             inputs = dict(instance['inputs'],year=calendar['year'],holidays=calendar['holidays'])
             resolved = resolve_program(instance['program_id'],inputs,resources)
+            from .apartment_authority import candidate,bind_apartment_unit_context
+            if candidate(resources.get('program',instance['program_id'])):
+                if version!='1.2.0':raise GeneratorError('unsupported_schema','/schema_version','Apartment methods require explicit1.2.0')
+                bind_apartment_unit_context(instance,resolved)
             if version=='1.2.0' and resolved.get('required_service_sets') and (
                     modes[instance['key']] is None or modes[instance['key']]=='caller_unit_prototype_density_fixed_dhw' and
                     instance.get('unit_id') is None):
@@ -359,6 +395,10 @@ def generate(params: dict, seed: int) -> dict:
             continue
         if instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw':
             continue
+        if resolved['inputs']['source_context'].get('method')=='source_fixed_apartment_programme':
+            if instance['operating_group'] is not None:
+                raise GeneratorError('operating_group_conflict','/instances/'+instance['key'],'Fixed apartment programme has no commercial group')
+            continue
         # Missing coordination means an independent group named by the instance.
         group = instance['operating_group'] if instance['operating_group'] is not None else instance['key']
         fingerprint = _group_context(resolved)
@@ -406,6 +446,10 @@ def generate(params: dict, seed: int) -> dict:
             elif version == '1.2.0' and key in physical_actors_by_key:
                 generated = _run_physical_unit_actor(physical_actors_by_key[key], inputs, resources)
                 kernel_context = {'residential':generated['source_context']}
+            elif context.get('method')=='source_fixed_apartment_programme':
+                generated={'channels':_apartment_fixed_channels(inputs),
+                           'source_context':{'method':'source_fixed_apartment_programme','random_draw_count':0}}
+                kernel_context=generated['source_context']
             elif key in unit_seeds:
                 generated = generate_residential(inputs,unit_seeds[key],resources)
                 kernel_context = {'residential':generated['source_context']}
@@ -469,7 +513,7 @@ def generate(params: dict, seed: int) -> dict:
                                           'control_quantity':control['quantity']})
             bundle['constituents'].append(constituent)
             if version in {'1.1.0','1.2.0'}:
-                constituent['generation']['operating_group']=(None if instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw'
+                constituent['generation']['operating_group']=(None if instance.get('physical_binding_kind')=='caller_unit_prototype_density_fixed_dhw' or context.get('method') in {'unit_occupancy_interior_lighting','source_fixed_apartment_programme'}
                     else instance['operating_group'] if instance['operating_group'] is not None else key)
         except GeneratorError as error:
             raise GeneratorError(error.code,'/instances/'+key+error.path,error.message) from error

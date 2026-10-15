@@ -141,6 +141,7 @@ def caller_bundle(alternatives=True):
             result['bindings'].append(dict(bind_budget(resolved['inputs']['reference_budgets'][d['demand_id']],values),
                 kind='load',instance_key=instance['key'],**identity_fields(instance,'1.2.0'),
                 demand_id=d['demand_id'],slot=slot,schedule_id=sid,fuel=d['fuel'],host=d['host'],budget_method='reference_schedule'))
+        if physical:fixtures.emit_fixture_controls(result,c,resolved)
         result['constituents'].append(c)
     caller.bind_caller_water(result,plan)
     return result
@@ -171,6 +172,11 @@ def legacy_bundle(sid='service-'+ '3'*24):
 
 
 class PhysicalGraphTests(unittest.TestCase):
+    def setUp(self):
+        # These whole-class graphs are explicitly structural source-association fixtures.
+        for target,value in (('atlas_schedules.caller_unit_water._qualified_caller_water_method',True),
+                             ('atlas_schedules.service_graph._validate_apartment_owner',None)):
+            context=patch(target,return_value=value);context.start();self.addCleanup(context.stop)
     @staticmethod
     def rewrite_retained_programmes(bundle,change,physical=False):
         def walk(value):
@@ -416,7 +422,7 @@ class PhysicalGraphTests(unittest.TestCase):
     def test_actor_reconstruction_rejects_self_asserted_receipts_and_keeps_n0(self):
         from atlas_schedules.seeds import assign_physical_unit_sequence
         bundle=caller_bundle(alternatives=False);owner=bundle['constituents'][1]
-        owner['inputs']['residents']=0;owner['generation']['source_inputs']={'method':'unit_occupancy_interior_lighting'}
+        owner['inputs']['N']=0;owner['generation']['source_inputs']={'method':'unit_occupancy_interior_lighting'}
         actor={'actor_kind':'apartment_adapter','instance_key':owner['instance_key'],
             'building_realization_id':owner['building_realization_id'],'unit_id':owner['unit_id'],'stochastic_action':'skip_n0'}
         sequence=assign_physical_unit_sequence(42,[actor]);bundle['generation'].update(
@@ -428,7 +434,7 @@ class PhysicalGraphTests(unittest.TestCase):
             if label=='position':changed['generation']['physical_unit_seed_sequence'][0]['position']=1
             if label=='removed':changed['generation'].update(physical_unit_seed_sequence=[],residential_unit_order=[],unit_seeds={})
             if label=='invented':changed['generation']['physical_unit_seed_sequence'][0]['actor_kind']='stock'
-            if label=='cohort':changed['constituents'][1]['inputs']['residents']=1
+            if label=='cohort':changed['constituents'][1]['inputs']['N']=1
             with self.subTest(label=label),self.assertRaises(GeneratorError):validate_bundle(changed)
     def test_two_incoming_bundle_graph_remap(self):
         from atlas_schedules.mixtures import compose_constituents

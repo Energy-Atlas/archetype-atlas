@@ -230,6 +230,11 @@ class PublicV12IntegrationTests(unittest.TestCase):
 
 
 class ContractStructureOnlyIntegrationTests(unittest.TestCase):
+    def setUp(self):
+        # Explicit structural fixtures; production qualification remains unpatched elsewhere.
+        for target,value in (('atlas_schedules.caller_unit_water._qualified_caller_water_method',True),
+                             ('atlas_schedules.service_graph._validate_apartment_owner',None)):
+            context=patch(target,return_value=value);context.start();self.addCleanup(context.stop)
     def test_contract_structure_only_prepared_exact_parent_final_graph_and_negatives(self):
         from atlas_schedules.source_compositions import _derive_prepared_source_parent,compose_source_parent
         from atlas_schedules.physical_sets import bind_exact_projections

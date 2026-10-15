@@ -37,7 +37,7 @@ def apartment(key, building, unit, residents, *, family='code_prototype_rules',
     return ({'key': key, 'owner_kind': 'program', 'building_realization_id': building,
              'unit_id': unit},
             {'source_family': family, 'source': {'building_type': building_type},
-             'inputs': {'residents': residents, 'source_context': {
+             'inputs': {'N': residents, 'source_context': {
                  'method': 'unit_occupancy_interior_lighting'}}})
 
 

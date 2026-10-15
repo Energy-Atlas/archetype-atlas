@@ -29,14 +29,18 @@ def resolve_program(program_id: str, inputs: dict, resources) -> dict:
         raise GeneratorError('unsupported_binding', '/program_id',
                              'No source-backed recipe/decomposition for this catalogue identity')
     record = resources.get('program', program_id)
-    return _resolve_program_record(program_id, inputs, record, status)
+    return _resolve_program_record(program_id, inputs, record, status, resources=resources)
 
 
-def _resolve_program_record(program_id, inputs, record, status):
+def _resolve_program_record(program_id, inputs, record, status, *, resources=None):
     """Shared engine for an explicitly verified selected executable record."""
-    recipe = record['recipe']
     if not isinstance(inputs, dict):
         raise GeneratorError('invalid_input', '/inputs', 'Explicit recipe operands required')
+    from .apartment_authority import candidate,resolve_apartment_authority,reconstruct_apartment_programme
+    if candidate(record):
+        qualification=resolve_apartment_authority(program_id,record,resources)
+        return reconstruct_apartment_programme(inputs,record,qualification)
+    recipe = record['recipe']
     allowed = set(recipe['bound_inputs']) | set(recipe.get('variable_inputs',{})) | {'year', 'holidays'}
     unknown = set(inputs) - allowed
     if unknown:
@@ -63,6 +67,43 @@ def _resolve_program_record(program_id, inputs, record, status):
             raise GeneratorError('unsupported_binding','/inputs/'+key,'Operand is outside explicitly declared recipe choices')
     if recipe['calendar_year_locked'] and inputs['year'] != recipe['reference_year']:
         raise GeneratorError('unsupported_binding', '/inputs/year', 'Annual source case requires its declared reference year')
+    return _prepare_program_record(inputs,record,status)
+
+
+def _validate_apartment_recipe_inputs(inputs: dict, record: dict) -> None:
+    from .apartment_authority import SELECTED,CALENDAR
+    from .apartment_authority_pins import LOCATIONS
+    from .residential.selected import validate_selected_inputs
+    recipe=record['recipe'];method=recipe['source_context']['method']
+    allowed={'year','holidays','apartment_method'}
+    if method==SELECTED:
+        allowed.add('N')
+        if 'N' not in inputs:raise GeneratorError('missing_input','/inputs/N','Explicit cohort is required')
+        if type(inputs['N']) is not int or inputs['N']<0:
+            raise GeneratorError('invalid_input','/inputs/N','Strict nonnegative integer cohort required')
+        if inputs['N']>0:allowed.update(('state','latitude','longitude','time_zone_utc_offset'))
+    unknown=set(inputs)-allowed
+    if unknown:raise GeneratorError('unknown_input','/inputs/'+sorted(unknown)[0],'Unknown apartment operand')
+    for key in recipe['required_inputs']:
+        if key not in inputs:raise GeneratorError('missing_input','/inputs/'+key,'Required original operand missing')
+    for key,bound in recipe['bound_inputs'].items():
+        if not _same_operand(inputs.get(key),bound):
+            raise GeneratorError('unsupported_binding','/inputs/'+key,'Original bound source operand differs')
+    if type(inputs['year']) is not int or inputs['year']!=2007 or type(inputs.get('holidays',[])) is not list or inputs.get('holidays',[])!=[]:
+        raise GeneratorError('unsupported_binding','/inputs/year','Exact original 2007 local standard calendar required')
+    if method==SELECTED:
+        consumed={'year':inputs['year'],'holidays':inputs.get('holidays',[]),'residents':inputs['N']}
+        if inputs['N']>0:
+            for key in ('state','latitude','longitude','time_zone_utc_offset'):
+                if key not in inputs:raise GeneratorError('missing_input','/inputs/'+key,'Full original location tuple required')
+                consumed[key]=inputs[key]
+        validate_selected_inputs(consumed,LOCATIONS)
+
+
+def _prepare_program_record(inputs,record,status):
+    """Pure preparation, after the caller's independent source/input gate."""
+    recipe=record['recipe']
+    calendar={'year':inputs['year'],'clock':'local_standard_time','holidays':inputs.get('holidays',[])}
     resolved = copy.deepcopy(recipe['resolved'])
     if 'required_service_links' in recipe:
         resolved['required_service_links']=copy.deepcopy(recipe['required_service_links'])

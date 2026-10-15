@@ -534,6 +534,9 @@ def compile_source_parent_recipes(records,scope):
 
 
 def build_resources(destination: Path, scope: str, tables_destination: Path | None = None) -> dict:
+    if scope=='apartments':
+        from scripts.schedule_generator_apartment_authority import build_apartment_resources
+        return build_apartment_resources(destination,tables_destination)
     if scope=='restaurants':
         from scripts.schedule_generator_restaurant_build import build_cumulative_resources
         return build_cumulative_resources(destination,tables_destination)

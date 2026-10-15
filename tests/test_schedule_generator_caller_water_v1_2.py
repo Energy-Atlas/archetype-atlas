@@ -73,31 +73,12 @@ def source_case(case=HIGH, index=0):
     row=json.loads((RAW/row_path).read_text(encoding='utf-8'))['space_types'][row_index]
     space=source('data/raw/openstudio-standards/'+row_path,'/space_types/'+str(row_index),row)
     helpers=[source('data/raw/openstudio-standards/'+p,'/',(RAW/p).read_text(encoding='utf-8')) for p in HELPERS]
-    rootloc=space['locator']; rawpath=space['path']
-    evidence=[field_evidence(rawpath,rootloc+'/'+field,row[field],unit) for field,unit in (
-        ('service_water_heating_peak_flow_per_area','US gal/h/ft2'),
-        ('service_water_heating_target_temperature','F'),
-        ('service_water_heating_fraction_sensible','1'),
-        ('service_water_heating_fraction_latent','1'),
-        ('service_water_heating_system_type',None))]
-    evidence.extend(field_evidence(helper['path'],helper['locator'],helper['value'],'Ruby source')
-                    for helper in helpers)
-    controls=derived('controls-'+programme_ids[index],{
-        'source_space_type':space,'source_helpers':helpers,
-        'selected_branch':'is_flow_per_area_true',
-        'original_density':{'value':0.003663157895,'unit':'US gal/h/ft2',
-                            'canonical_value':4.146067251759837e-8,'canonical_unit':'m3/s/m2'},
-        'target_temperature':{'original_value':140,'original_unit':'F','canonical_value':60,'canonical_unit':'C'},
-        'sensible_fraction':{'value':0.2,'unit':'1'},'latent_fraction':{'value':0.05,'unit':'1'},
-        'source_system_type':row['service_water_heating_system_type'],'evidence':evidence})
-    load_index,load=next((i,v) for i,v in enumerate(programme['value']['loads']) if v['quantity']=='hot_water_volume')
-    original=dict(programme,locator=programme['locator']+'/loads/'+str(load_index),value=copy.deepcopy(load))
-    association=derived('association-'+programme_ids[index],{
-        'programme':programme,'original_demand':original,'service_definition':service,
-        'source_ruleset':ruleset,'fixed_controls':controls,'source_system_type':space,
-        'reference_calendar':{'year':2007,'clock':'local_standard_time','holidays':[]},'evidence':evidence})
-    return programme,service,ruleset,{'field_evidence':evidence,'source_system_type':space,
-                                      'fixed_controls':controls,'association':association}
+    from atlas_schedules.apartment_recipes import _water_evidence
+    proof=_water_evidence(programme,service,ruleset,space,helpers)
+    controls=derived('controls-'+programme_ids[index],proof['fixed_controls']['value'])
+    association_value=copy.deepcopy(proof['association']['value']);association_value['fixed_controls']=controls
+    proof.update(fixed_controls=controls,association=derived('association-'+programme_ids[index],association_value))
+    return programme,service,ruleset,proof
 
 
 def compiled(case=HIGH,index=0):
@@ -122,11 +103,11 @@ def unit(unit_id,physical_id,programmes,area=80.0,chosen=None):
             'multiplicity':1,'identity_evidence':area_evidence(unit_id)}
 
 
-def realization(units,family='HighriseApartment',template='90.1-2013'):
+def realization(units,family='HighriseApartment',template='90.1-2013',building='building-1'):
     inventory={'authority':'caller_declared_units','units':copy.deepcopy(units)}
     fields=('unit_id','physical_id','source_service_id','source_beneficiary_id',
             'programme_ids','water_authority_programme_id','floor_area_m2')
-    facts={'building_realization_id':'building-1','unit_inventory_id':'caller-inventory-1',
+    facts={'building_realization_id':building,'unit_inventory_id':'caller-inventory-1',
            'units':[{k:copy.deepcopy(u[k]) for k in fields} for u in inventory['units']]}
     fact_path='contract-fixture/caller-facts.json';fact_sha=hashlib.sha256(canonical(facts)).hexdigest()
     def claim(locator,value,unit=None):
@@ -142,7 +123,7 @@ def realization(units,family='HighriseApartment',template='90.1-2013'):
                                 claim('/unit_inventory_id',facts['unit_inventory_id'])]
         u['identity_evidence'].extend(claim(base+'/'+field,u[field]) for field in fields
                                       if field!='floor_area_m2')
-    return {'mode':'caller_unit_prototype_density_fixed_dhw','building_realization_id':'building-1',
+    return {'mode':'caller_unit_prototype_density_fixed_dhw','building_realization_id':building,
             'building_type':family,'template':template,'unit_inventory_id':'caller-inventory-1',
             'unit_inventory':inventory,'unit_inventory_sha256':hashlib.sha256(canonical(inventory)).hexdigest()}
 
@@ -156,15 +137,29 @@ def resource_fixture(requirements):
         index=case[:2].index(pid)
         _,_,_,evidence=source_case(case,index)
         controls=evidence['fixed_controls'];association=evidence['association']
+        # Actual getter profiles, synthetic association: structure only, never attestation.
+        native_path=ROOT/('data/schedule-generator/apartment/proofs/caller-water-native-controls__'+pid+'.json')
+        native_value=json.loads(native_path.read_bytes())['native_control_schedules']
+        native_value.update(association=copy.deepcopy(association),fixed_controls=copy.deepcopy(controls),
+                            requirement_id=req['requirement_id'])
+        for rule in native_value['rules'].values():rule['evidence']['qualification_scope']='contract_structure_only'
+        native_blob=canonical({'native_control_schedules':native_value})
+        native={'path':'contract-fixture/native-controls-'+pid+'.json','sha256':hashlib.sha256(native_blob).hexdigest(),
+                'locator':'/native_control_schedules','value':native_value}
+        native_evidence={'source_revision':'contract_structure_only','source_path':native['path'],
+            'source_sha256':native['sha256'],'locator':native['locator'],'original_value':copy.deepcopy(native_value),
+            'original_unit':None,'transformation':'Synthetic source association for structural validation only',
+            'extraction_date':'2026-10-15','interpretation_note':'contract_structure_only; not production scientific attestation'}
         qualification=derived('qualification-'+pid,{
             'qualification_id':'contract-fixture-'+pid,
             'qualification_scope':'exact_apartment_programme_fixed_rule_calendar_controls',
             'programme_id':pid,'requirement':req,'association':association,
-            'fixed_controls':controls,'evidence':evidence['field_evidence']})
+            'fixed_controls':controls,'evidence':[*evidence['field_evidence'],native_evidence]})
         records['reference','caller-water-requirement__'+pid]=copy.deepcopy(req)
         records['reference','caller-water-controls__'+pid]=copy.deepcopy(controls)
         records['reference','caller-water-association__'+pid]=copy.deepcopy(association)
         records['reference','caller-water-qualification__'+pid]=copy.deepcopy(qualification)
+        records['reference','caller-water-native-controls__'+pid]=copy.deepcopy(native)
         proofs.append(qualification)
     first=requirements[0];calendar={'year':2007,'clock':'local_standard_time','holidays':[]}
     context={'family':first['family'],'template':first['template'],'reference_calendar':calendar}
@@ -177,6 +172,20 @@ def resource_fixture(requirements):
     manifest=write_resources(Path(temporary.name),records,{'purpose':'labelled contract fixture'})
     resources=ResourceSet(Path(temporary.name),manifest['resource_set_id'])
     return temporary,resources,group
+
+
+def emit_fixture_controls(bundle,owner,resolved):
+    """Labelled generated caller fixtures obey the same mandatory four-slot shape."""
+    from atlas_schedules.companions import _native_constant
+    from atlas_schedules.canonical import schedule_id
+    from atlas_schedules.owners import identity_fields
+    for control in resolved['controls']:
+        slot=control['slot'];sid=schedule_id(owner['instance_key'],slot)
+        bundle['schedules'][sid]={'id':sid,'unit':control['unit'],'year':2007,'clock':'local_standard_time',
+            'timestep_minutes':60,'values':_native_constant(slot,resolved['inputs']['companion_rules'][slot])}
+        owner['schedule_ids'][slot]=sid;owner['binding_indices'].append(len(bundle['bindings']))
+        bundle['bindings'].append({'kind':'control','instance_key':owner['instance_key'],
+            **identity_fields(owner,'1.2.0'),'slot':slot,'schedule_id':sid,'control_quantity':control['quantity']})
 
 
 def pairs(real,requirements,programme_claims=True):
@@ -196,6 +205,7 @@ def pairs(real,requirements,programme_claims=True):
                 i={'key':'view-'+u['unit_id']+'-'+pid,'owner_kind':'program','program_id':pid,
                    'building_realization_id':real['building_realization_id'],'unit_id':u['unit_id'],
                    'operating_group':None,'inputs':{},'basis_bindings':copy.deepcopy(p['basis_bindings'])}
+                i['basis_bindings']['extents']['floor_area']['evidence']={'field_evidence':copy.deepcopy(u['area_evidence'])}
                 r={'program_id':pid,'owner_kind':'program','required_service_sets':[req],
                    'required_service_links':[],'source':{
                        'source_id':req['source_beneficiary_id'],'building_type':req['family'],
@@ -467,6 +477,11 @@ class CallerWaterContractTests(unittest.TestCase):
                                  'building_realization_id':'building-1','unit_id':'unit-1',
                                  'demands':[],'slots':[],'schedule_ids':{},'binding_indices':[],
                                  'required_service_sets':[req],'service_set_projections':[]}]}
+        owner=bundle['constituents'][0]
+        owner['slots']=copy.deepcopy(owner_resolved['slots']);owner['controls']=copy.deepcopy(owner_resolved['controls'])
+        owner['generation']['source_inputs']=copy.deepcopy(owner_resolved['inputs']['source_context'])
+        bundle['schedules']['water-schedule'].update(unit='fraction',year=2007,clock='local_standard_time',timestep_minutes=60)
+        emit_fixture_controls(bundle,owner,owner_resolved)
         water.bind_caller_water(bundle,plan)
         descriptor=bundle['constituents'][0]['shared_services'][0]
         self.assertEqual(descriptor['source_basis_target']['unit'],'m3/m2')

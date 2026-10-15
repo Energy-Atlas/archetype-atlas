@@ -71,6 +71,16 @@ def _source_consistency(value):
 
 def _binding(bundle,owner):
     indices=owner['binding_indices']
+    if owner['physical_binding_kind']==CALLER:
+        # The mode itself mandates four bindings, even if every proof is erased.
+        if len(indices)!=4:
+            _fail('/constituents/'+owner['instance_key'],'Caller mode mandates one water LOAD plus three CONTROL bindings','invalid_reference')
+        from . import caller_unit_water as caller
+        context=owner['generation'].get('source_inputs',{})
+        qualification=context.get('method_qualification')
+        if qualification is None:_fail('/constituents/'+owner['instance_key'],'Mandatory native-control qualification missing')
+        native=caller._native_control_source(qualification)
+        return caller._caller_owned_bindings(bundle,owner,context['compiled_requirement'],context['fixed_controls'],native)
     if (not indices or any(type(i) is not int or not 0<=i<len(bundle['bindings']) for i in indices) or
             len(set(indices))!=len(indices)):
         _fail('/constituents/'+owner['instance_key'],'Physical owned binding indices differ','invalid_reference')
@@ -386,6 +396,8 @@ def _caller_realization(bundle,realization,owners):
             value['template']!=realization['template'] or not _same(value['reference_calendar'],bundle['metadata']['calendar']) or
             not _same(value['reference_calendar'],caller.CALENDAR) or not isinstance(value['qualifications'],list) or not value['qualifications']):
         _fail(path,'Static qualified family/template/calendar pool differs')
+    if not caller._qualified_caller_water_method(group):
+        _fail(path+'/method_qualification','Complete independently reviewed static pool required')
     pool={};last=None
     for qualification in value['qualifications']:
         exact._source(qualification,path+'/qualifications');q=qualification['value']
@@ -395,7 +407,7 @@ def _caller_realization(bundle,realization,owners):
         exact._source(association,path+'/association');exact._source(controls,path+'/fixed_controls');a=association['value']
         exact._exact(a,('programme','original_demand','service_definition','source_ruleset','fixed_controls','source_system_type','reference_calendar','evidence'),path+'/association/value')
         if not _same(a['fixed_controls'],controls):_fail(path,'Whole fixed controls/association differ')
-        compiled=caller.compile_requirement(a['programme'],a['service_definition'],a['source_ruleset'],{
+        compiled=caller._compile_requirement(a['programme'],a['service_definition'],a['source_ruleset'],{
             'field_evidence':req['evidence'],'source_system_type':a['source_system_type'],'fixed_controls':controls,'association':association})
         if (q['qualification_scope']!='exact_apartment_programme_fixed_rule_calendar_controls' or pid in pool or
                 compiled['programme']['value']['id']!=pid or not _same(compiled,req) or
@@ -407,6 +419,9 @@ def _caller_realization(bundle,realization,owners):
         order=(req['programme']['path'],int(locator[1:]))
         if last is not None and order<=last:_fail(path,'Static proof pool source order differs')
         last=order;pool[pid]=q
+        if not caller._qualified_caller_water_method(qualification):
+            _fail(path+'/method_qualification/'+pid,'Exact independently reviewed per-ID fixed source proof required')
+        caller._native_control_source(qualification)
     declaration={k:v for k,v in realization.items() if k not in {'source_requirements','method_qualification'}}
     entries=caller.resolve_caller_unit_inventory(declaration,{pid:q['requirement'] for pid,q in pool.items()})
     selected=[]
@@ -424,13 +439,15 @@ def _caller_realization(bundle,realization,owners):
         unit=entry['unit'];where='/constituents/'+owner['instance_key']
         if 'operating_group' not in owner['generation'] or owner['generation']['operating_group'] is not None:
             _fail(where+'/generation/operating_group','Caller physical/programme water uses a null group','operating_group_conflict')
-        extent={'value':unit['floor_area_m2'],'unit':'m2','evidence':unit['area_evidence']}
+        extent=caller._caller_extent(unit,owner['owner_kind'])
         if not _same(owner['basis_bindings'],{'multiplicity':1,'extents':{'floor_area':extent}}):
             _fail(where,'Actual caller A/evidence/multiplicity differs','incompatible_basis')
         if owner['owner_kind']=='physical_service':
             if (owner['physical_binding_kind']!=CALLER or key in covered or owner['physical_id']!=unit['physical_id'] or
                     owner['source_service_id']!=unit['source_service_id']):_fail(where,'Caller one-owner identity differs','shared_service_conflict')
             covered.add(key);entry=copy.deepcopy(entry);entry['fixed_controls']=pool[entry['water_authority_programme_id']]['fixed_controls']
+            chosen=next(q for q in value['qualifications'] if q['value']['programme_id']==entry['water_authority_programme_id'])
+            entry['qualification']=copy.deepcopy(chosen);entry['native_control_source']=caller._native_control_source(chosen)
             inputs=owner['inputs'];clock=bundle['metadata']['calendar']
             if (set(inputs)!={'water_method','source_geometry_departure','year','holidays'} or
                     inputs['water_method']!=caller.METHOD or inputs['source_geometry_departure']!='caller_unit_area' or
@@ -473,7 +490,7 @@ def _actors(bundle):
         stock=family=='existing_stock_source_fixture' and method=='resstock_time_allocation_with_selected_source_companions'
         apartment=method=='unit_occupancy_interior_lighting'
         if not stock and not apartment:continue
-        n=inputs.get('residents')
+        n=inputs.get('residents') if stock else inputs.get('N')
         if kind!='program':_fail('/constituents/'+key,'Retained actor lacks programme authority')
         if stock:
             if (type(n) not in (int,float) or not math.isfinite(n) or n<0 or n!=0 and int(n)==0):
@@ -490,6 +507,18 @@ def _actors(bundle):
             seen.add((building,unit));actor='apartment_adapter';action='skip_n0' if n==0 else 'generate'
         actors.append({'actor_kind':actor,'instance_key':key,'building_realization_id':building,'unit_id':unit,'stochastic_action':action})
     return actors
+
+
+def _validate_apartment_owner(owner):
+    from .apartment_authority_pins import PROGRAMME_IDS
+    from .apartment_authority import reconstruct_apartment_owner,SELECTED,FIXED
+    if (owner.get('owner_kind')!='program' or
+            owner.get('program_id') not in PROGRAMME_IDS and
+            owner['generation'].get('source_inputs',{}).get('method') not in {SELECTED,FIXED}):return
+    expected=reconstruct_apartment_owner(owner)
+    if owner['program_id']!=expected['program_id'] or not _same(owner['evidence'],expected['evidence']):
+        _fail('/constituents/'+owner['instance_key'],'Whole apartment original evidence/programme differs')
+    _check_resolved(owner,expected,None)
 
 
 def _seed_closure(bundle):
@@ -658,6 +687,7 @@ def _validate_physical_graph(bundle):
         if building is not None and building not in realizations:_fail('/constituents/'+owner['instance_key'],'Unknown realization','invalid_reference')
         if owner['owner_kind']!='physical_service' and building is None and (owner['required_service_sets'] or owner['service_set_projections']):
             _fail('/constituents/'+owner['instance_key'],'Set owner has no actual realization')
+        _validate_apartment_owner(owner)
     _seed_closure(bundle)
     for owner in owners.values():
         receipt=owner['generation'].get('service_set_selection')
