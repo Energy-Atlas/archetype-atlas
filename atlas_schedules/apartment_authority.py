@@ -197,7 +197,16 @@ def resolve_apartment_authority(program_id: str,record: dict,resources: Resource
         if q['selected_timing'] is not None and not _same(q['selected_timing'],resources.get('reference','apartment-selected-timing')):
             _fail('/apartment/selected_timing','Independent timing resource differs')
         if q['selected_timing'] is not None:
-            for key,sha in q['selected_timing']['value']['residential_resources'].items():
+            timing=q['selected_timing']['value'];lock=timing['timing_lock']['value']
+            domain={'schema_version':'1.0.0','format':'source_domain','value':timing['domain']['value'],
+                'provenance':{'source_revision':lock['source_revision'],
+                    'source_lock_sha256':lock['source_lock_sha256'],
+                    'native_capture_sha256':{label:lock['vectors'][label]['sha256'] for label in ('M1','R1')},
+                    'extraction_date':lock['extraction_date'],'upstream_notices':lock['notices'],
+                    'interpretation_note':'Selected-method controlled timing domain only'}}
+            if not _same(domain,resources.get('reference','apartment-timing-domain')):
+                _fail('/reference/apartment-timing-domain','Whole actual selected domain and resource provenance differ')
+            for key,sha in timing['residential_resources'].items():
                 if _hash(resources.get('residential',key))!=sha:
                     _fail('/residential/'+key,'Actual selected scientific source record differs')
         if not _same(record,resources.get('program',program_id)):_fail('/apartment/compiled_recipe','Actual executable differs')

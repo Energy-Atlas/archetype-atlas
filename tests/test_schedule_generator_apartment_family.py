@@ -348,5 +348,40 @@ class ApartmentFamily(unittest.TestCase):
                 with self.assertRaises(GeneratorError) as caught:resolve_program(PID,inputs,changed)
             self.assertEqual(caught.exception.path,'/residential/'+first)
 
+    def test_live_domain_preflight_before_any_rng(self):
+        # Real mixed public positive records exactly the resources it consumes.
+        # Mutations below change actual files and coherent manifest identities.
+        from tests.test_schedule_generator_v1_2_integration import PublicV12IntegrationTests
+        helper=PublicV12IntegrationTests();helper.resources=self.resources
+        kitchen,physical=helper.restaurant()
+        params=self.request(n=1)
+        params['instances']=[kitchen,*physical,*params['instances']]
+        consumed=set();actual_get=ResourceSet.get
+        def retain(resource_set,kind,key):
+            consumed.add((kind,key));return actual_get(resource_set,kind,key)
+        with patch.object(ResourceSet,'get',new=retain):
+            valid=self.generate(params)
+        self.assertEqual(valid['constituents'][-1]['inputs']['N'],1)
+        self.assertTrue(valid['generation']['operating_groups'])
+        genuine={key:actual_get(self.resources,*key) for key in consumed}
+        for mutation in ('missing','evidence','locations','wrapper','provenance'):
+            records=copy.deepcopy(genuine);key=('reference','apartment-timing-domain')
+            if mutation=='missing':records.pop(key)
+            elif mutation=='evidence':records[key]['value']['evidence'][0]['source_revision']='foreign'
+            elif mutation=='locations':records[key]['value']['locations'][0]['latitude']+=.001
+            elif mutation=='wrapper':records[key]['format']='foreign'
+            else:records[key]['provenance']['source_revision']='foreign'
+            with tempfile.TemporaryDirectory(dir=ROOT/'build',prefix='a4-domain-') as directory:
+                manifest=write_resources(Path(directory),records,{})
+                changed=ResourceSet(Path(directory),manifest['resource_set_id'])
+                request=copy.deepcopy(params);request['resource_set_id']=changed.resource_set_id
+                with (self.subTest(mutation=mutation),
+                      patch('atlas_schedules.generator.ResourceSet.load',return_value=changed),
+                      patch('atlas_schedules.generator.sample_operating_parameters',side_effect=AssertionError('COM RNG')),
+                      patch('atlas_schedules.residential.activity.source_streams',side_effect=AssertionError('RES RNG'))):
+                    with self.assertRaises(GeneratorError) as caught:generate(request,42)
+                    self.assertIn('apartment-timing-domain',caught.exception.path)
+                    self.assertEqual(caught.exception.code,'requires_binding' if mutation=='missing' else 'source_integrity')
+
 
 if __name__=='__main__':unittest.main()

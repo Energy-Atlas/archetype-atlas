@@ -1,5 +1,7 @@
 """Standalone generator behavior from a checkout-independent directory."""
 from pathlib import Path
+import contextlib
+import io
 import inspect
 import os
 import shutil
@@ -7,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from atlas_schedules import generate
 from atlas_schedules.comparison import compare_bundles
@@ -34,6 +37,28 @@ def _audit_path_allowed(candidate, stdlib, extension_roots, stdlib_archive, extr
 
 
 class StandaloneCliTests(unittest.TestCase):
+    def test_resource_build_cli_summarizes_case_and_inventory_manifests(self):
+        from scripts import schedule_generator_build as builder
+        # Exercise real CLI parsing/summary with complete returned manifest shapes;
+        # source compilation is outside this return-contract regression.
+        from atlas_schedules.resources import write_resources
+        with tempfile.TemporaryDirectory() as directory:
+            apartment=write_resources(Path(directory),{
+                ('reference','first'):{'label':'contract_structure_only'},
+                ('reference','second'):{'label':'contract_structure_only'}},
+                {'scope':'apartments','scope_version':'1.0.0','interpretation':'CLI return-contract fixture'})
+        legacy={'resource_set_id':'resources-legacy','resources':[{},{}],'cases':[{}, {}, {}]}
+        for scope,manifest,expected in (
+                ('pilot',legacy,'Verified 2 dependencies for 3 cases: resources-legacy'),
+                ('apartments',apartment,f"Verified 2 dependencies: {apartment['resource_set_id']}")):
+            output=io.StringIO()
+            with (self.subTest(scope=scope),patch.object(builder,'build_resources',return_value=manifest),
+                  patch.object(sys,'argv',['schedule_generator_build','--scope',scope,'--destination','isolated-output']),
+                  contextlib.redirect_stdout(output)):
+                self.assertIsNone(builder.main())
+            self.assertEqual(output.getvalue().strip(),expected)
+        self.assertNotIn('cases',apartment)
+
     def test_isolation_path_predicate_is_version_aware_and_bounded(self):
         stdlib = '/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11'
         archive = '/opt/hostedtoolcache/Python/3.11.14/x64/lib/python311.zip'

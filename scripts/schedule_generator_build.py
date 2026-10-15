@@ -720,7 +720,8 @@ def main():
     parser.add_argument('--tables-destination', type=Path)
     args = parser.parse_args()
     manifest = build_resources(args.destination, args.scope, args.tables_destination)
-    print(f"Verified {len(manifest['resources'])} dependencies for {len(manifest['cases'])} cases: {manifest['resource_set_id']}")
+    cases=f" for {len(manifest['cases'])} cases" if 'cases' in manifest else ''
+    print(f"Verified {len(manifest['resources'])} dependencies{cases}: {manifest['resource_set_id']}")
 
 
 if __name__ == '__main__':
