@@ -17,6 +17,7 @@ from scripts.schedule_generator_apartment_water import compile_apartment_water_r
 
 
 CALENDAR = {'year': 2007, 'clock': 'local_standard_time', 'holidays': []}
+ORDERED_PROGRAMME_IDS_SHA256 = '3c0d169db7dd01f6cf0ebd5ce1c5a77d991d5a1cf16891b36178d6167c6794f0'
 SLOTS = {'occupancy': 'occupants', 'lighting': 'lighting_interior',
          'additional_lighting': 'additional_lighting',
          'electric_equipment': 'electric_equipment', 'gas_equipment': 'gas_equipment'}
@@ -131,6 +132,11 @@ def compile_apartment_sources(scope: dict) -> dict:
             scope.get('qualification_state') != 'closed' or scope.get('calendar') != CALENDAR or
             len(scope.get('programmes', [])) != 84 or len(scope.get('locations', [])) != 37):
         _fail('/scope', 'Exact closed 84-programme, 37-location candidate scope required')
+    if (any(not isinstance(row, dict) or not isinstance(row.get('id'), str)
+            for row in scope['programmes']) or
+            hashlib.sha256(canonical([row['id'] for row in scope['programmes']])).hexdigest()
+            != ORDERED_PROGRAMME_IDS_SHA256):
+        _fail('/programmes', 'Appendix A exact ordered programme inventory differs')
     expected = {'programs.json', 'schedules.json', 'services.json',
                 'provenance.json', 'source_files.json'}
     if set(scope.get('source_files', {})) != expected:

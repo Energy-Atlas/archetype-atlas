@@ -18,6 +18,15 @@ SCOPE = ROOT / 'sources/schedule-generator-apartment-scope.json'
 IDS_SHA = '3c0d169db7dd01f6cf0ebd5ce1c5a77d991d5a1cf16891b36178d6167c6794f0'
 
 
+class OrderedInventoryGuard(unittest.TestCase):
+    def test_valid_id_permutation_rejected(self):
+        scope = json.loads(SCOPE.read_text(encoding='utf-8'))
+        scope['programmes'][0], scope['programmes'][1] = scope['programmes'][1], scope['programmes'][0]
+        self.assertEqual(len({p['id'] for p in scope['programmes']}), 84)
+        with self.assertRaises(GeneratorError):
+            compile_apartment_sources(scope)
+
+
 class ApartmentRecipes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
