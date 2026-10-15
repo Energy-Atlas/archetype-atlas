@@ -98,3 +98,16 @@ blocked, separate interior/exterior opening exposures, strict unknown/native
 material guards, explicit canonical-floor reversal, and final assembly closure.
 The model remains fixed-complexity and approximation errors remain visible.
 Local commits follow staged diff inspection and staged security audit; no push.
+
+2026-10-15 follow-up: user explicitly accepted consumer-resolved overhang geometry
+and the symmetric paired-face reference-area mean. Implement these in new
+profile/export version 1.1.0, preserving 1.0.0 artefacts. Keep source overhangs
+as derivation evidence and common solar modifiers active. Retain original paired
+face operands, flag unequal-multiplier means, and expose affected pair counts.
+Recheck focused tests, all-context readiness and exact reproducibility locally.
+
+Follow-up verification: 128 focused construction tests passed. Both --check
+commands reproduced exact bytes. Version 1.1.0 contains 177 sets and 3,320 ready
+contexts with zero blocked. Independent audits confirmed all 432 unequal-multiplier
+inventory pairs are flagged and every exported overhang matches its original
+source evidence (47 component derivations). Previous release files are unchanged.

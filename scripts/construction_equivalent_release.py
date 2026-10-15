@@ -13,10 +13,10 @@ from scripts.construction_equivalent_export import export_equivalent
 from scripts.construction_weighting import encoded, sha, load_profiles
 from scripts.definition_contract import stable_id
 
-OUTPUT = ROOT/'data/construction-equivalent-releases/v1.0.0'
-SCHEMA = ROOT/'schemas/construction-equivalent-v1.schema.json'
+OUTPUT = ROOT/'data/construction-equivalent-releases/v1.1.0'
+SCHEMA = ROOT/'schemas/construction-equivalent-v1.1.schema.json'
 VALIDATOR = Draft202012Validator(load_json(SCHEMA))
-README = '''# Additive building-level construction equivalents 1.0.0
+README = '''# Additive building-level construction equivalents 1.1.0
 
 Precomputed source-archetype shares resolve one assembly per applicable semantic.
 Detailed construction v2.2.0 and its historical sources/exports remain unchanged.
@@ -30,7 +30,7 @@ Construction-only generation; no annual schedules, website or CI/CD build.
 catalogue.json stores context metadata, component_sets.json shared semantic recipes
 and quantity rules, assemblies.json their thermal/optical data. completeness.json
 records source gaps and approximation flags; blocked is never interpreted as zero.
-Supporting program-library profiles live in data/program-support/construction-weighting-v1/.
+Supporting program-library profiles live in data/program-support/construction-weighting-v1.1.0/.
 Recover those once with python -m scripts.construction_weighting --recover --check;
 this executes pinned geometry and source mass rules, not an annual energy model.
 
@@ -45,6 +45,8 @@ Mass quantities describe additional source mass or a residual physical capacity
 budget, never an instruction to add slabs already represented by surfaces.
 BEMGen reconciles actual geometry; consumer geometry is not a blending input.
 Natural ACH is copied unchanged from the selected detailed reference context.
+Source overhang dimensions remain evidence; BEMGen supplies actual geometry.
+Paired-face budgets use the accepted symmetric mean with unequal-multiplier flags.
 
 Preserve LICENSE and sources/licenses upstream notices. Original Atlas work is
 unlicensed by user choice. Local research artefact; no production publication.
@@ -137,17 +139,17 @@ def artifacts(source=None, profiles=None, context_ids=None):
                 'quality_counts_per_context_recipe': dict(sorted(qualities.items())),
                 'blocked_context_ids_by_reason': dict(sorted(gaps.items())),
                 'interpretation': 'Quality review flags do not add layers or imply measured annual energy error.'}
-    catalogue = {'schema_version': '1.0.0', 'kind': 'construction_equivalent_catalogue', 'source_release': 'v2.2.0',
+    catalogue = {'schema_version': '1.1.0', 'kind': 'construction_equivalent_catalogue', 'source_release': 'v2.2.0',
                  'construction_sets': {i:source['construction_sets'][i] for i in sorted(selected_sets)}, 'contexts': contexts}
     files = {'catalogue.json': encoded(catalogue), 'component_sets.json': encoded(settings),
              'assemblies.json': encoded(assemblies), 'completeness.json': encoded(coverage),
              'README.md': README.encode('utf-8'), **examples}
     inputs = ['scripts/construction_equivalence.py', 'scripts/construction_equivalent_export.py',
-              'scripts/construction_equivalent_release.py', 'schemas/construction-equivalent-v1.schema.json',
-              'data/program-support/construction-weighting-v1/profiles.json',
-              'data/program-support/construction-weighting-v1/manifest.json',
+              'scripts/construction_equivalent_release.py', 'schemas/construction-equivalent-v1.1.schema.json',
+              'data/program-support/construction-weighting-v1.1.0/profiles.json',
+              'data/program-support/construction-weighting-v1.1.0/manifest.json',
               *[f'data/construction-releases/{v}/manifest.json' for v in ('v2.0.0','v2.1.0','v2.2.0')]]
-    manifest = {'schema_version': '1.0.0', 'kind': 'construction_equivalent_release', 'release': '1.0.0',
+    manifest = {'schema_version': '1.0.0', 'kind': 'construction_equivalent_release', 'release': '1.1.0',
                 'input_sha256': {p: sha(ROOT/p) for p in inputs},
                 'files': {name: {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)} for name,data in sorted(files.items())},
                 'coverage': {k:coverage[k] for k in ('construction_sets','contexts','ready_contexts','blocked_contexts')}}
@@ -158,7 +160,7 @@ def artifacts(source=None, profiles=None, context_ids=None):
 def export_frozen(directory, context_id):
     directory = Path(directory)
     manifest = load_json(directory/'manifest.json')
-    if manifest.get('kind') != 'construction_equivalent_release' or manifest.get('release') != '1.0.0':
+    if manifest.get('kind') != 'construction_equivalent_release' or manifest.get('release') not in ('1.0.0','1.1.0'):
         raise ValueError('Invalid equivalent release')
     for name, row in manifest['files'].items():
         if sha(directory/name) != row['sha256'] or (directory/name).stat().st_size != row['bytes']:
@@ -170,7 +172,8 @@ def export_frozen(directory, context_id):
     all_assemblies = load_json(directory/'assemblies.json')
     used = {v['assembly_id'] for v in body['components'].values() if v['status']=='ready'}
     header['assemblies'] = {aid: all_assemblies[aid] for aid in sorted(used)}
-    VALIDATOR.validate(header)
+    schema = SCHEMA if header['schema_version']=='1.1.0' else ROOT/'schemas/construction-equivalent-v1.schema.json'
+    Draft202012Validator(load_json(schema)).validate(header)
     return header
 
 

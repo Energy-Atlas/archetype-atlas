@@ -14,10 +14,10 @@ from pathlib import Path
 from scripts.common import ROOT, load_json
 from scripts.definition_contract import stable_id
 
-OUTPUT = ROOT/'data/program-support/construction-weighting-v1'
+OUTPUT = ROOT/'data/program-support/construction-weighting-v1.1.0'
 WORK = ROOT/'build/equivalent-work'
 DATE = '2026-10-15'
-README = '''# Construction weighting support profiles 1.0.0
+README = '''# Construction weighting support profiles 1.1.0
 
 Program-library supporting data, separate from program loads and schedules.
 129 commercial source references and 41 residential source fixtures; 1,158 native
@@ -30,11 +30,10 @@ volume, story scopes and physical mass inventories retain their denominators.
 Non-counted scopes use direct exposure. Apply source multipliers once.
 Window-operation areas are separated by exterior/interior semantic.
 
-Surface-pair inventories preserve both original face operands. A pair with unequal
-multipliers has unknown physical area under the default require_equal policy;
-it is not resolved by whichever face is encountered first. The proposed symmetric
-mean policy requires an explicit user decision. Profiles retain evidence while
-corresponding derived mass semantics are blocked.
+Surface-pair inventories preserve both original face operands. The accepted
+mean_zone_weighted_faces policy averages multiplied face areas. Unequal source
+multipliers carry an explicit reference-model approximation flag; this is not a
+claim about physical copies. The result is independent of face iteration order.
 
 python -m scripts.construction_weighting --check compares normalized cached source
 recovery and manifest bytes. Add --recover to rerun the pinned geometry/mass
@@ -75,7 +74,7 @@ def program_index(rows, definitions):
     return {k: sorted(set(v)) for k, v in index.items()}
 
 
-def build_commercial_profile(record, programs, paired_area_policy='require_equal'):
+def build_commercial_profile(record, programs, paired_area_policy='mean_zone_weighted_faces'):
     if paired_area_policy not in ('require_equal','mean_zone_weighted_faces'):
         raise ValueError('Unknown paired-face area policy')
     total = sum(s['floor_area_m2']*s['multiplier'] for s in record['spaces'] if s['counted_floor_area'])
@@ -101,6 +100,7 @@ def build_commercial_profile(record, programs, paired_area_policy='require_equal
                 'area_m2': area, 'area_per_counted_floor_area': None if area is None else area/total,
                 'status': 'ambiguous_pair_multipliers' if area is None else 'ready',
                 'paired_area_policy': paired_area_policy,
+                'approximation': 'mean_of_unequal_zone_weighted_faces' if ambiguous and area is not None else None,
                 'rule': 'one physical '+kind+'; preserve both original face operands'}
     for s in record['spaces']:
         mult = s['multiplier']
@@ -292,7 +292,7 @@ def build_profiles():
 def load_profiles(directory=OUTPUT):
     directory=Path(directory)
     manifest=load_json(directory/'manifest.json')
-    if manifest.get('kind')!='program_support_profile_release' or manifest.get('release')!='1.0.0':
+    if manifest.get('kind')!='program_support_profile_release' or manifest.get('release')!='1.1.0':
         raise ValueError('Invalid support profile release')
     for name,row in manifest['files'].items():
         if sha(directory/name)!=row['sha256']:
@@ -324,7 +324,7 @@ def main():
               'scripts/construction_weighting.py', 'scripts/recover_construction_weights.rb',
               'scripts/recover_construction_geometry.py']
     geometry = load_json(ROOT/inputs[0])
-    manifest = {'schema_version': '1.0.0', 'kind': 'program_support_profile_release', 'release': '1.0.0',
+    manifest = {'schema_version': '1.0.0', 'kind': 'program_support_profile_release', 'release': '1.1.0',
                 'input_sha256': {p: sha(ROOT/p) for p in inputs},
                 'source_runtime': geometry['runtime'],
                 'source_files': {p: q for p,q in geometry['source_files'].items()

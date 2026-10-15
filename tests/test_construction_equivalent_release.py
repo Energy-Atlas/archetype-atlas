@@ -13,7 +13,8 @@ class EquivalentReleaseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.source = load_current_release()
-        cls.profiles = load_json(ROOT/'data/program-support/construction-weighting-v1/profiles.json')
+        from scripts.construction_weighting import load_profiles
+        cls.profiles = load_profiles()
         cls.context = next(c['id'] for c in cls.source['contexts'].values()
                            if c['reference_id']=='90.1-2019/MediumOffice' and c['climate_zone']=='3B'
                            and cls.source['construction_sets'][c['construction_set_id']]['source']['building_type']=='MediumOffice')
@@ -53,6 +54,11 @@ class EquivalentReleaseTests(unittest.TestCase):
         del invalid['assemblies'][aid]
         with self.assertRaisesRegex(ValueError, 'reference'):
             m.validate_document(invalid, self.source, self.profiles)
+
+    def test_original_frozen_release_remains_hydratable(self):
+        document = self.module().export_frozen(ROOT/'data/construction-equivalent-releases/v1.0.0',self.context)
+        self.assertEqual(document['schema_version'],'1.0.0')
+        self.assertEqual(document['detailed_context_id'],self.context)
 
 
 if __name__ == '__main__':

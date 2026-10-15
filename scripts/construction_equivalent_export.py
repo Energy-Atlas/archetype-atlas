@@ -130,11 +130,15 @@ def _surface_properties(release, rows):
 
 def _opening(release, rows):
     sources = [release['assemblies'][r['assembly_id']] for r in rows]
+    # Approved boundary: geometric overhangs are BEMGen inputs, not material
+    # modifiers. Every source dimension remains in the component derivation.
+    modifiers = [{k:copy.deepcopy(v) for k,v in a.get('solar_modifiers',{}).items()
+                  if k!='overhang_geometry'} for a in sources]
     def physics(value):
         if isinstance(value, dict):
             return {k: physics(v) for k,v in value.items() if k != 'evidence_id'}
         return value
-    if any(physics(a.get('solar_modifiers', {})) != physics(sources[0].get('solar_modifiers', {})) for a in sources):
+    if any(physics(m) != physics(modifiers[0]) for m in modifiers):
         raise ValueError('Different source solar modifiers need an explicit aggregate policy')
     physical = [[{'model': release['materials'][l['material_id']]['model'],
                   'properties': release['materials'][l['material_id']]['properties']} for l in a['layers']] for a in sources]
@@ -142,7 +146,7 @@ def _opening(release, rows):
     if all(p == physical[0] for p in physical):
         return {'status': 'ready', 'model': sources[0]['model'], 'layers': copy.deepcopy(physical[0]),
                 'quality': 'unchanged_source_physics', 'fit': None,
-                'solar_modifiers': copy.deepcopy(sources[0].get('solar_modifiers', {}))}
+                'solar_modifiers': modifiers[0]}
     if all(a['model'] == 'simple_glazing' and len(p) == 1 for a,p in zip(sources, physical)):
         p = {}
         for name in ('u_W_m2_K', 'shgc', 'visible_transmittance'):
@@ -150,11 +154,10 @@ def _opening(release, rows):
             if any(v is None for v in values):
                 raise ValueError('Unknown glazing property: '+name)
             p[name] = sum(r['weight']*v for r,v in zip(rows, values))
-        if any(a.get('solar_modifiers') for a in sources):
-            raise ValueError('Multiple source solar modifiers need an explicit aggregate policy')
         return {'status': 'ready', 'model': 'simple_glazing',
                 'layers': [{'model': 'SimpleGlazing', 'properties': p}],
-                'quality': 'area_weighted_optical_proxy', 'fit': None}
+                'quality': 'area_weighted_optical_proxy', 'fit': None,
+                'solar_modifiers': modifiers[0]}
     raise ValueError('Heterogeneous detailed glazing requires attained optical properties')
 
 
@@ -276,6 +279,12 @@ def export_equivalent(release, context_id, packet):
             output = {'status': recipe['status'], 'assembly_id': None,
                       'derivation': {'contributors': rows, 'weight_basis': basis,
                                      'source_reference_area_m2': area}}
+            geometry = [{'source_assembly_id': row['assembly_id'],
+                         'overhang_geometry': copy.deepcopy(release['assemblies'][row['assembly_id']]['solar_modifiers']['overhang_geometry'])}
+                        for row in rows if 'overhang_geometry' in release['assemblies'][row['assembly_id']].get('solar_modifiers',{})]
+            if geometry:
+                output['derivation'].update(geometry_evidence=geometry,
+                    geometry_policy='consumer_overhang_geometry_by_BEMGen')
             if role == 'InternalMass':
                 output['quantity'] = {'area_per_counted_floor_area': area/profile['counted_floor_area_m2'],
                                       'unit': 'm2/m2', 'application': 'additional_source_mass_only'}
@@ -350,16 +359,21 @@ def export_equivalent(release, context_id, packet):
     # earlier successful recipe; close resources over final ready components.
     used = {v['assembly_id'] for v in components.values() if v['status']=='ready'}
     assemblies = {aid:a for aid,a in assemblies.items() if aid in used}
-    return {'schema_version': '1.0.0', 'kind': 'building_level_equivalent',
-            'id': stable_id('equivalent-construction', {'context_id': context_id, 'policy': '1.0.0'}),
+    area_approximations = {kind: sum(bool(item.get('approximation')) for item in profile.get(key,[])) if profile else 0
+                          for kind,key in (('floor_pairs','floor_inventory'),('wall_pairs','wall_inventory'))}
+    consumer_inputs = ['actual component areas and geometry', 'actual counted floor area',
+                       'physical mass already represented by instantiated interior surfaces']
+    if any('geometry_evidence' in v.get('derivation',{}) for v in components.values()):
+        consumer_inputs.append('actual overhang geometry resolved by BEMGen; source dimensions are evidence only')
+    return {'schema_version': '1.1.0', 'kind': 'building_level_equivalent',
+            'id': stable_id('equivalent-construction', {'context_id': context_id, 'policy': '1.1.0'}),
             'name': primary['name']+' / building-level equivalent', 'scope': primary['scope'],
             'source': copy.deepcopy(primary['source']), 'detailed_context_id': context_id,
             'climate_zone': c['climate_zone'], 'reference_id': c['reference_id'],
             'supporting_profile_id': profile_id, 'weighting_policy': 'precomputed_source_archetype',
             'status': 'blocked' if any(x['status'] == 'blocked' for x in components.values()) else 'ready',
             'components': components, 'assemblies': assemblies, 'infiltration': copy.deepcopy(c['infiltration']),
-            'consumer_inputs': ['actual component areas and geometry', 'actual counted floor area',
-                                'physical mass already represented by instantiated interior surfaces'],
+            'consumer_inputs': consumer_inputs,
             'mass_accounting': {'floor_pair_policy': 'one physical slab; do not add both floor and ceiling capacity',
                                 'paired_surface_policy': {'canonical_side':'InteriorFloor',
                                     'adjacent_ceiling':'reverse the same canonical floor assembly',
@@ -368,8 +382,13 @@ def export_equivalent(release, context_id, packet):
                                 'removed_wall_policy': 'Convert removed physical wall capacity to InternalMass area using its equivalent areal capacity; heat-exchange equivalence remains approximate',
                                 'residual_floor_policy': 'Convert only unrepresented floor capacity to FloorDistributedMass area; explicit slabs retain their capacity',
                                 'physical_inventory_profile_id': profile_id,
+                                'paired_face_area_policy': 'mean_zone_weighted_faces',
+                                'reference_area_approximation': {
+                                    'unequal_multiplier_pair_counts': area_approximations,
+                                    'evidence_profile_id': profile_id,
+                                    'interpretation': 'Mean of multiplied face areas where multipliers differ; reference-model approximation, not physical copy reconstruction'},
                                 'physical_capacity_budgets': mass_budgets},
-            'provenance': {'detailed_release': 'v2.2.0', 'profile_release': 'construction-weighting-v1',
+            'provenance': {'detailed_release': 'v2.2.0', 'profile_release': 'construction-weighting-v1.1.0',
                            'original_unit': 'source SI layers and archetype reference areas',
                            'transformation': 'Source precedence, precomputed area weights, fixed two-parameter thermal approximation; fixed ACH unchanged',
                            'interpretation_note': 'Additive approximation, not replacement detailed rules. Reported fit errors are not building energy error bounds.'}}

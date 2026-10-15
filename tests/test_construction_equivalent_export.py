@@ -10,7 +10,8 @@ class EquivalentExportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.release = load_current_release()
-        cls.profiles = load_json(ROOT/'data/program-support/construction-weighting-v1/profiles.json')
+        from scripts.construction_weighting import load_profiles
+        cls.profiles = load_profiles()
 
     def module(self):
         self.assertIsNotNone(importlib.util.find_spec('scripts.construction_equivalent_export'))
@@ -56,6 +57,22 @@ class EquivalentExportTests(unittest.TestCase):
         self.assertAlmostEqual(d['components']['InternalMass']['quantity']['area_per_counted_floor_area'], 1)
         self.assertEqual(d['components']['InternalMass']['status'], 'ready')
 
+    def test_residential_overhangs_are_evidence_and_common_solar_modifier_is_active(self):
+        c = next(c for c in self.release['contexts'].values()
+                 if self.release['construction_sets'][c['construction_set_id']]['scope']=='whole_dwelling')
+        original = copy.deepcopy(self.release['assemblies'])
+        d = self.module().export_equivalent(self.release,c['id'],self.profiles)
+        window = d['components']['ExteriorWindow']
+        self.assertEqual(window['status'],'ready')
+        recipe = d['assemblies'][window['assembly_id']]
+        self.assertNotIn('overhang_geometry',recipe['solar_modifiers'])
+        self.assertAlmostEqual(recipe['solar_modifiers']['incident_solar_multiplier']['value'],.8276)
+        evidence = window['derivation']['geometry_evidence']
+        self.assertEqual(len(evidence),2)
+        self.assertEqual({v['overhang_geometry']['distance_to_top_of_window_m'] for v in evidence},{.3048})
+        self.assertEqual(window['derivation']['geometry_policy'],'consumer_overhang_geometry_by_BEMGen')
+        self.assertEqual(original,self.release['assemblies'])
+
     def test_missing_profile_blocks_instead_of_using_equal_shares(self):
         c = self.context('Warehouse')
         profiles = dict(self.profiles, profiles={})
@@ -85,7 +102,7 @@ class EquivalentExportTests(unittest.TestCase):
 
     def test_standalone_output_satisfies_additional_schema(self):
         from jsonschema import Draft202012Validator
-        path = ROOT/'schemas/construction-equivalent-v1.schema.json'
+        path = ROOT/'schemas/construction-equivalent-v1.1.schema.json'
         self.assertTrue(path.exists(), 'Additive equivalent schema is missing')
         c = self.context('MediumOffice')
         schema = load_json(path)
@@ -149,6 +166,17 @@ class EquivalentExportTests(unittest.TestCase):
         self.assertEqual(d['mass_accounting']['paired_surface_policy']['canonical_side'],'InteriorFloor')
         self.assertIn('reverse',d['mass_accounting']['paired_surface_policy']['adjacent_ceiling'])
         validate_document(d,self.release,profiles)
+
+    def test_accepted_hospital_mass_budget_is_ready_with_visible_approximation(self):
+        from scripts.construction_equivalent_release import validate_document
+        c = self.context('Hospital')
+        d = self.module().export_equivalent(self.release,c['id'],self.profiles)
+        self.assertEqual(d['status'],'ready')
+        self.assertEqual(d['components']['InternalMass']['status'],'ready')
+        policy = d['mass_accounting']['reference_area_approximation']
+        self.assertGreater(policy['unequal_multiplier_pair_counts']['wall_pairs'],0)
+        self.assertEqual(policy['evidence_profile_id'],'90.1-2019/Hospital')
+        validate_document(d,self.release,self.profiles)
 
 
 if __name__ == '__main__':

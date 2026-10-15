@@ -1,12 +1,11 @@
 # ADR 0025: Add precomputed building-level construction equivalents
 
-Date: 2026-10-15. Status: accepted architecture; source shading and unequal
-paired-face multiplier policies pending.
+Date: 2026-10-15. Status: accepted architecture and source policies.
 
 The user approved an additional one-assembly-per-semantic representation for
 applications without program-specific envelope allocation. Preserve detailed
 construction v2.2.0, original assemblies, source mappings and assignment rules.
-The new `building_level_equivalent` schema is independently versioned at 1.0.0;
+The new `building_level_equivalent` schema is independently versioned at 1.1.0;
 it does not replace or migrate any detailed or program JSON release.
 
 ## Source profiles and selection
@@ -51,20 +50,22 @@ closed-form solution. InternalMass exchanges at the last/interior layer with an
 adiabatic first side; verify that convention independently too.
 
 For glazing, retain identical source layered physics or area-weight known simple
-glazing properties. Do not silently average geometric shadows. Differing source
-overhang geometries currently block the unified residential window semantic;
-the detailed definitions and source evidence remain available pending a decision
-on leaving overhang geometry to BEMGen.
+glazing properties, preserving common non-geometric solar modifiers. Source
+overhang dimensions and evidence IDs remain in each component's derivation;
+actual overhang geometry is a BEMGen consumer input. Do not activate a selected
+source overhang or pretend to average geometric shadows. The user explicitly
+accepted this boundary. Genuinely different non-geometric modifiers remain blocked.
 
 ## Quantities and consumer responsibilities
 
 Recover actual source furnishing/internal-mass objects, rather than attaching a
 mass recipe without a quantity. Partition quantities for residential fixtures
 retain the pinned exposed-side convention. Physical wall and floor ledgers count
-paired faces once. Unequal source face multipliers are not resolved by choosing
-the first face encountered: preserve both operands and mark their area unknown
-until a reference-area policy is accepted. The proposed symmetric mean remains
-a pending decision. Furnishings/partition objects are additional mass; distributed
+paired faces once. The accepted reference-area policy averages the two multiplied
+face areas, independently of processing order. Preserve both operands and flag
+unequal multipliers as a reference-model approximation, without claiming a
+physical copy reconstruction. Derived mass accounting reports affected pair
+counts and links to the evidence profile. Furnishings/partition objects are additional mass; distributed
 floor mass represents only physical slab capacity omitted from explicit surfaces.
 
 For a paired floor/ceiling, the floor is the canonical construction side and its
@@ -93,6 +94,11 @@ provenance, quantity accounting and deterministic bytes for every context. Small
 EnergyPlus material/input smoke cells use the bundled 25.1.0 engine; they are not
 whole-building accuracy tests. Defer systematic separation of construction and
 zoning simplification errors to journal experiments or a reviewer request.
+
+Version 1.1.0 implements the two explicitly accepted source policies. Keep the
+previous 1.0.0 release, supporting profiles and schema immutable and hydratable;
+the new profiles are at construction-weighting-v1.1.0. Schema 1.1.0 adds explicit
+geometry evidence; the fixed thermal fitting policy remains 1.0.1.
 
 The release is an additive local research artefact. No site build, push, CI/CD or
 production deployment is authorized. Keep upstream license notices and frozen

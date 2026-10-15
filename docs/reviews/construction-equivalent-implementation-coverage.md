@@ -6,8 +6,9 @@ The additive exporter is implemented alongside detailed construction v2.2.0.
 It supplies one assembly per applicable semantic, precomputed source-archetype
 weights, fixed reference ACH, mass budgets and derivation receipts. Existing
 detailed construction, program, schedule and website exports are unchanged.
-This is a local research artefact with explicit readiness gaps, not a production
-publication or a claim that every context is simulation-ready.
+Version 1.1.0 is a local research artefact. Every context is ready under the
+accepted approximation and consumer-geometry policies; it is not a production
+publication or a claim of exact source-response reproduction.
 
 ## Coverage
 
@@ -15,8 +16,8 @@ publication or a claim that every context is simulation-ready.
 | --- | ---: |
 | Source construction sets retained | 177 |
 | Detailed contexts represented | 3,320 |
-| Ready contexts | 2,989 |
-| Blocked contexts | 331 |
+| Ready contexts | 3,320 |
+| Blocked contexts | 0 |
 | Commercial source reference profiles | 129 |
 | Residential source fixture profiles | 41 |
 | Native commercial program keys recovered | 1,158 |
@@ -28,17 +29,21 @@ where exact source joins exist. Recovering a share key does not create a missing
 program load contract. Non-counted scopes retain direct exposure; known absence
 is zero, while an unresolved operand remains unknown.
 
-## Remaining decisions
+## Accepted policies and resolved gaps
 
-| Gap | Affected contexts | Concrete proposal | Current behaviour |
-| --- | ---: | --- | --- |
-| Residential windows have different source overhang dimensions | 41 | Retain blended window materials and common solar modifiers, retain all original overhang evidence, and leave actual overhang geometry to BEMGen | Window semantic blocked; shading is not silently discarded |
-| Paired interzone faces have unequal source zone multipliers | 290 for InternalMass; 227 of these also affect FloorDistributedMass | Use the mean of the two multiplied face areas as an order-independent reference budget; preserve both operands and flag the approximation | Area unknown and affected mass semantic blocked |
+The user explicitly accepted both policies on 2026-10-15. Version 1.1.0 closes
+all 331 previously blocked contexts without increasing fitting complexity.
 
-The two groups are disjoint: their union is 331 contexts. The mass counts overlap
-and must not be added. Both questions have been submitted for an explicit decision;
-silence is not agreement. No other unresolved fitting or missing selector operand
-blocks the current catalogue. A poor approximation remains separately flagged.
+| Previous gap | Affected contexts | Implemented policy |
+| --- | ---: | --- |
+| Different residential source overhang dimensions | 41 | Keep material recipes and common non-geometric solar modifiers active. Preserve every source overhang dimension and evidence ID in the component derivation; BEMGen supplies actual overhang geometry. |
+| Unequal source zone multipliers on paired interzone faces | 290 for InternalMass; 227 of these also affected FloorDistributedMass | Average the two multiplied face areas, retaining both operands in the profile. Flag unequal multipliers as a reference-model approximation and report affected pair counts in derived mass accounting. |
+
+The mass counts overlap. Both groups are resolved; no further policy decision is
+required for this representation. Actual geometry remains a consumer input and
+the paired-face mean is not a claim about physical copies. Different non-geometric
+solar modifiers would still block readiness; none occur among these residential
+window contributors. Previous 1.0.0 data and schema remain immutable and hydratable.
 
 ## Fixed approximation and evidence
 
@@ -54,9 +59,9 @@ Current counts are per context recipe, including repeated shared recipes:
 
 | Quality label | Count |
 | --- | ---: |
-| within_initial_screen | 19,712 |
-| approximation_review | 13,312 |
-| unchanged_source_physics | 10,158 |
+| within_initial_screen | 20,002 |
+| approximation_review | 13,539 |
+| unchanged_source_physics | 10,199 |
 | area_weighted_optical_proxy | 21 |
 
 Normalization policy 1.0.1 uses a nominal 6 mm minimum total massive thickness
@@ -73,7 +78,7 @@ surfaces. Consumer geometry is not required to calculate blending weights.
 
 ## Verification
 
-- 124 focused construction tests passed, including the existing detailed
+- 128 focused construction tests passed, including the existing detailed
   construction suite. No broad program, schedule or site generation was run.
 - An independent homogeneous-slab solution at 1, 6, 24, 72 and 168 hours checks
   both boundary excitations, inward-flux signs, and swapped unequal film ordering.
@@ -85,6 +90,8 @@ surfaces. Consumer geometry is not required to calculate blending weights.
   synthetic design day in EnergyPlus 25.1.0 with zero warnings and severe errors.
   [Smoke receipt](construction-equivalent-material-smoke-v1.json). These verify
   input viability, not annual building-level accuracy or residential shading.
+  These smoke runs describe the unchanged thermal fitting method tested for 1.0.0;
+  the 1.1.0 source-policy update is checked through focused tests and all-context validation.
 
 A fresh code review found five correctness issues, now covered by regression
 tests: paired-face iteration dependence, exterior/interior window-area mixing,
@@ -95,12 +102,12 @@ zoning experiment or more complex fit was introduced.
 
 ## Files and use
 
-- Profiles: `data/program-support/construction-weighting-v1/`.
-- Schema: `schemas/construction-equivalent-v1.schema.json`.
-- Derived release: `data/construction-equivalent-releases/v1.0.0/`.
+- Profiles: `data/program-support/construction-weighting-v1.1.0/`.
+- Schema: `schemas/construction-equivalent-v1.1.schema.json`.
+- Derived release: `data/construction-equivalent-releases/v1.1.0/`.
 - Standalone examples: `examples/medium-office-2019-3B.json` and
-  `examples/residential.json` within that release. The residential example
-  transparently retains its blocked window status.
+  `examples/residential.json` within that release. Both examples are ready; residential overhangs are
+  explicitly marked as consumer-resolved geometry.
 
 ```powershell
 .venv/Scripts/python.exe -m scripts.construction_weighting --check

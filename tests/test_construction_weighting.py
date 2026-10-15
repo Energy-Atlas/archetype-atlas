@@ -70,13 +70,29 @@ class ConstructionWeightingTests(unittest.TestCase):
         b['surfaces'] = [{'id':'wall-b','adjacent_id':'wall-a','type':'Wall','boundary':'Surface',
                           'gross_area_m2':20,'net_area_m2':20,'openings':[]}]
         record['spaces'] = [a,b]
-        first = self.module().build_commercial_profile(record,{})['wall_inventory']
+        first = self.module().build_commercial_profile(record,{},paired_area_policy='require_equal')['wall_inventory']
         record['spaces'].reverse()
-        second = self.module().build_commercial_profile(record,{})['wall_inventory']
+        second = self.module().build_commercial_profile(record,{},paired_area_policy='require_equal')['wall_inventory']
         self.assertEqual(first,second)
         self.assertEqual(first[0]['status'],'ambiguous_pair_multipliers')
         self.assertIsNone(first[0]['area_m2'])
         self.assertEqual([f['weighted_area_m2'] for f in first[0]['faces']],[20,80])
+
+    def test_accepted_default_averages_unequal_faces_and_flags_approximation(self):
+        record = self.record()
+        a = dict(record['spaces'][0], name='Corridor', multiplier=1)
+        b = dict(record['spaces'][0], name='Room', multiplier=4)
+        a['surfaces'] = [{'id':'a','adjacent_id':'b','type':'Wall','boundary':'Surface',
+                          'gross_area_m2':20,'net_area_m2':20,'openings':[]}]
+        b['surfaces'] = [{'id':'b','adjacent_id':'a','type':'Wall','boundary':'Surface',
+                          'gross_area_m2':20,'net_area_m2':20,'openings':[]}]
+        record['spaces'] = [a,b]
+        first = self.module().build_commercial_profile(record,{})['wall_inventory']
+        self.assertEqual(first[0]['area_m2'],50)
+        self.assertEqual(first[0]['approximation'],'mean_of_unequal_zone_weighted_faces')
+        self.assertEqual([f['weighted_area_m2'] for f in first[0]['faces']],[20,80])
+        record['spaces'].reverse()
+        self.assertEqual(first,self.module().build_commercial_profile(record,{})['wall_inventory'])
 
     def test_support_profile_checksum_is_verified_before_loading(self):
         m = self.module()
