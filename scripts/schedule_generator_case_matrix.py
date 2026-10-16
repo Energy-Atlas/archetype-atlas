@@ -137,6 +137,22 @@ def assemble_original_union(case_bundles: dict[str, dict], matrix: dict) -> dict
     return result
 
 
+def stream_original_union(case_bundles: dict[str, dict], matrix: dict):
+    """Admit exactly like assemble_original_union, then stream canonical union pieces.
+
+    Returns an iterator of (JSON pointer, bytes) whose concatenation equals
+    canonical(assemble_original_union(...)). Under R145 the union itself is not
+    revalidated here: each case is, and union bytes are compared exactly with
+    the authenticated reference that generate() validated when it was made.
+    """
+    identities = _admit_matrix(matrix)
+    _require(isinstance(case_bundles, dict) and set(case_bundles) == set(_CASE_ORDER),
+             'matrix_admission', 'case_bundles', 'Every exact approved case is required')
+    identities['case_bundles'] = {key: _identity(value) for key, value in case_bundles.items()}
+    for bundle in case_bundles.values(): validate_bundle(bundle)
+    return _stream_union_structure(case_bundles, matrix, identities)
+
+
 def _check_identities(identities, **values):
     _require(isinstance(identities, dict) and identities.get('schema_version') == _DESCRIPTOR,
              'matrix_identity', 'descriptor', 'Explicit versioned structural descriptor required')
@@ -492,3 +508,115 @@ def _assemble_union_structure(case_bundles: dict[str, dict], matrix: dict, ident
     result['metadata']['building_realizations'] = [_copy_generated(realizations[c['request_realization']['building_realization_id']]) for c in mapping['building_contexts']]
     _graph(result, mapping); _global_consistency(result)
     return result
+
+
+_UNION_KEYS = frozenset(('schema_version', 'algorithm_version', 'metadata', 'generation',
+                         'constituents', 'bindings', 'schedules'))
+_CANONICAL_OPTIONS = {'ensure_ascii': False, 'allow_nan': False, 'sort_keys': True, 'separators': (',', ':')}
+
+
+def _union_skeleton(case_bundles, matrix, identities):
+    """The exact _assemble_union_structure value without its whole-union deep copy.
+
+    Every check and order is unchanged. Owners, bindings and generation receipts
+    are private remapped workspace copies; schedules, metadata and SourceObjects
+    stay shared read-only with the cases. The skeleton never leaves this module:
+    it is only encoded, so no caller can mutate the shared case data through it.
+    """
+    mapping = _matrix_structure(matrix, identities)
+    _require(isinstance(case_bundles, dict) and set(case_bundles) == set(matrix['case_order']),
+             'matrix_partition', 'case_bundles', 'Every exact case required')
+    _require(identities.get('case_bundles') == {k: _identity(v) for k, v in case_bundles.items()},
+             'matrix_identity', 'case_bundles', 'Actual case content differs from descriptor')
+    _global_consistency(case_bundles)
+    for cid in matrix['case_order']: _graph(case_bundles[cid], mapping, cid)
+    first = case_bundles[matrix['case_order'][0]]
+    metadata = {k: v for k, v in first['metadata'].items() if k != 'building_realizations'}
+    owners = {}; schedules = {}; realizations = {}
+    for cid in matrix['case_order']:
+        bundle = case_bundles[cid]
+        _require(bundle['algorithm_version'] == first['algorithm_version'] and
+                 _same({k: v for k, v in bundle['metadata'].items() if k != 'building_realizations'}, metadata),
+                 'matrix_context_closure', 'metadata', 'Actual cases disagree on algorithm/resource/calendar/policy')
+        owners.update({c['instance_key']: (cid, c) for c in bundle['constituents']})
+        _require(not set(schedules) & set(bundle['schedules']), 'matrix_slot_closure', 'schedules', 'Cross-case schedule collision')
+        schedules.update(bundle['schedules'])
+        for r in bundle['metadata']['building_realizations']:
+            key = r['building_realization_id']
+            _require(key not in realizations, 'matrix_context_closure', key, 'Cross-case realization collision')
+            realizations[key] = r
+    # One composed map per case: case-local index -> case offset -> union owner order.
+    order = mapping['full_constituent_order']; maps = {cid: {} for cid in matrix['case_order']}; positions = []
+    for key in order:
+        cid, owner = owners[key]
+        for index in owner['binding_indices']:
+            maps[cid][index] = len(positions); positions.append((cid, index))
+    def private(value, cid):
+        copied = _workspace_copy(value); remap_binding_references(copied, maps[cid]); return copied
+    generations = {cid: private(case_bundles[cid]['generation'], cid) for cid in matrix['case_order']}
+    actual_native = [a for cid in matrix['case_order'] for a in generations[cid]['physical_unit_seed_sequence']]
+    generation = {'master_seed': generations[matrix['case_order'][0]]['master_seed'],
+                  'source_seed_policy': generations[matrix['case_order'][0]]['source_seed_policy'],
+                  'physical_unit_seed_sequence': actual_native,
+                  'residential_unit_order': [a['instance_key'] for a in actual_native],
+                  'unit_seeds': {a['instance_key']: generations[cid]['unit_seeds'][a['instance_key']]
+                                 for cid in matrix['case_order'] for a in generations[cid]['physical_unit_seed_sequence']},
+                  'operating_groups': {k: v for cid in matrix['case_order'] for k, v in generations[cid]['operating_groups'].items()}}
+    if mapping['source_parents']:
+        receipts = {p['parent_instance_key']: p for g in generations.values() for p in g.get('source_compositions', [])}
+        generation.update(request_instance_order=[r['instance']['key'] for r in mapping['requested_owners']],
+                          physical_member_generation_order=mapping['full_physical_member_generation_order'],
+                          source_parent_derivation_order=mapping['full_source_parent_derivation_order'],
+                          source_compositions=[receipts[k] for k in mapping['full_source_parent_derivation_order']])
+    result = {'schema_version': first['schema_version'], 'algorithm_version': first['algorithm_version'],
+              'metadata': {**metadata, 'building_realizations': [
+                  realizations[c['request_realization']['building_realization_id']] for c in mapping['building_contexts']]},
+              'generation': generation,
+              'constituents': [private(owners[key][1], owners[key][0]) for key in order],
+              'bindings': [private(case_bundles[cid]['bindings'][index], cid) for cid, index in positions],
+              'schedules': {sid: schedules[sid] for key in order for sid in owners[key][1]['schedule_ids'].values()}}
+    _graph(result, mapping); _global_consistency(result)
+    return result
+
+
+def _encode(value, path):
+    try:
+        return json.dumps(value, **_CANONICAL_OPTIONS).encode('utf-8')
+    except (ValueError, TypeError, UnicodeError) as error:
+        raise GeneratorError('invalid_json', path or '/', str(error)) from error
+
+
+def _pointer(token):
+    return str(token).replace('~', '~0').replace('/', '~1')
+
+
+def _canonical_pieces(union):
+    """Yield (JSON pointer, bytes); their concatenation is canonical(union).
+
+    Owner and binding lists and the schedule map are split per member; every
+    other top-level value is one piece. Keys follow json's sort_keys order.
+    """
+    _require(isinstance(union, dict) and set(union) == _UNION_KEYS, 'matrix_union_shape', 'union',
+             'Exact seven-member union required')
+    yield '', b'{'
+    for n, key in enumerate(sorted(union)):
+        path = '/'+_pointer(key); head = (b',' if n else b'') + _encode(key, path) + b':'; value = union[key]
+        if key in ('bindings', 'constituents'):
+            yield path, head + b'['
+            for i, item in enumerate(value):
+                yield path+'/'+str(i), (b',' if i else b'') + _encode(item, path+'/'+str(i))
+            yield path, b']'
+        elif key == 'schedules':
+            yield path, head + b'{'
+            for i, sid in enumerate(sorted(value)):
+                member = path+'/'+_pointer(sid)
+                yield member, (b',' if i else b'') + _encode(sid, member) + b':' + _encode(value[sid], member)
+            yield path, b'}'
+        else:
+            yield path, head + _encode(value, path)
+    yield '', b'}\n'
+
+
+def _stream_union_structure(case_bundles: dict[str, dict], matrix: dict, identities: dict):
+    """Run every union check eagerly, then return the lazy canonical piece iterator."""
+    return _canonical_pieces(_union_skeleton(case_bundles, matrix, identities))

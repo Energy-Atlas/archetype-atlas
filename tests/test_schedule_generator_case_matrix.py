@@ -490,6 +490,95 @@ class CaseMatrixTests(unittest.TestCase):
         self.assertCode('matrix_parent_closure', adapter._assemble_union_structure, cases,
                         self.matrix, refreshed(self.desc, cases=cases))
 
+    def streamed(self, cases):
+        pieces = adapter._stream_union_structure(cases, self.matrix, refreshed(self.desc, cases=cases))
+        return list(pieces)
+
+    def test_streamed_union_pieces_concatenate_to_assembled_union(self):
+        before = {k: identity(v) for k, v in self.cases.items()}
+        pieces = self.streamed(self.cases)
+        assembled = adapter._assemble_union_structure(self.cases, self.matrix, refreshed(self.desc, cases=self.cases))
+        joined = b''.join(blob for _, blob in pieces)
+        self.assertEqual(joined, canonical(assembled))
+        self.assertEqual(joined, canonical(self.reference))
+        self.assertEqual(before, {k: identity(v) for k, v in self.cases.items()})
+        paths = [path for path, _ in pieces]
+        self.assertEqual((paths[0], paths[-1]), ('', ''))
+        self.assertEqual([p for p in paths if p.startswith('/constituents/')],
+                         ['/constituents/%d' % n for n in range(len(self.reference['constituents']))])
+        self.assertEqual([p for p in paths if p.startswith('/bindings/')],
+                         ['/bindings/%d' % n for n in range(len(self.reference['bindings']))])
+        self.assertEqual([p for p in paths if p.startswith('/schedules/')],
+                         ['/schedules/'+s.replace('~', '~0').replace('/', '~1') for s in sorted(self.reference['schedules'])])
+        members = ([self.reference[k] for k in ('metadata', 'generation')] + self.reference['constituents'] +
+                   self.reference['bindings'] + list(self.reference['schedules'].values()))
+        self.assertLessEqual(max(len(blob) for _, blob in pieces), max(len(canonical(m)) for m in members) + 256)
+
+    def test_streamed_union_keeps_sourceobjects_and_never_aliases_cases(self):
+        cases = copy.deepcopy(self.cases)
+        obj = {'path': 'labelled-routing-sentinel.json', 'sha256': 'b'*64,
+               'locator': '/', 'value': {'binding_index': 999999, 'binding_indices': [999999]}}
+        cases[COM]['constituents'][-1]['evidence'].append(obj)
+        before = {k: identity(v) for k, v in cases.items()}
+        joined = b''.join(blob for _, blob in self.streamed(cases))
+        assembled = adapter._assemble_union_structure(cases, self.matrix, refreshed(self.desc, cases=cases))
+        self.assertEqual(joined, canonical(assembled))
+        self.assertIn(canonical(obj)[:-1], joined)
+        self.assertEqual(before, {k: identity(v) for k, v in cases.items()})
+
+    def test_streamed_union_runs_every_union_check_before_first_piece(self):
+        def mutate(mode):
+            cases = copy.deepcopy(self.cases)
+            if mode == 'physical':
+                a = next(c for c in cases[UNIT]['constituents'] if c['owner_kind'] == 'physical_service')
+                b = next(c for c in cases[COM]['constituents'] if c['owner_kind'] == 'physical_service')
+                b['physical_id'] = a['physical_id']
+            elif mode in ('revision', 'value'):
+                obj = next(source_objects(cases[UNIT]['constituents'])); other = copy.deepcopy(obj)
+                if mode == 'revision': other['sha256'] = 'f'*64
+                else: other['value'] = {'altered': True}
+                cases[COM]['constituents'][0]['evidence'].append(other)
+            elif mode == 'generation': cases[COM]['generation']['future_rng'] = {}
+            elif mode == 'slot':
+                owner = cases[COM]['constituents'][-1]; owner['schedule_ids'].pop(next(iter(owner['schedule_ids'])))
+            elif mode == 'schedule':
+                sid = next(iter(cases[UNIT]['schedules'])); cases[COM]['schedules'][sid] = cases[UNIT]['schedules'][sid]
+            elif mode == 'metadata': cases[COM]['metadata']['calendar'] = {'changed': True}
+            return cases
+        expected = {'physical': 'matrix_physical_collision', 'revision': 'matrix_source_conflict',
+                    'value': 'matrix_source_conflict', 'generation': 'matrix_generation_fields',
+                    'slot': 'matrix_slot_closure', 'schedule': 'matrix_slot_closure',
+                    'metadata': 'matrix_context_closure'}
+        for mode, code in expected.items():
+            cases = mutate(mode)
+            with self.subTest(mode=mode):
+                self.assertCode(code, adapter._stream_union_structure, cases, self.matrix,
+                                refreshed(self.desc, cases=cases))
+                self.assertCode(code, adapter._assemble_union_structure, cases, self.matrix,
+                                refreshed(self.desc, cases=cases))
+
+    def test_streamed_union_matches_gzip_reference_and_reports_a_changed_value(self):
+        import gzip
+        from scripts import schedule_generator_case_matrix_stream as comparer
+        with tempfile.TemporaryDirectory(prefix='case-matrix-reference-') as folder:
+            path = Path(folder)/'reference.json.gz'
+            path.write_bytes(gzip.compress(canonical(self.reference), mtime=0))
+            declared = {'compressed': bytes_identity(path.read_bytes()), 'decoded': identity(self.reference)}
+            result = comparer.compare_canonical_stream(self.streamed(self.cases), path, **declared)
+            self.assertEqual((result['status'], result['first_difference']), ('MATCH', None))
+            self.assertEqual(result['reference']['decoded'], identity(self.reference))
+            cases = copy.deepcopy(self.cases)
+            sid = sorted(cases[COM]['schedules'])[0]; values = cases[COM]['schedules'][sid]['values']
+            values[100] = values[100] + 1.0
+            result = comparer.compare_canonical_stream(self.streamed(cases), path, **declared)
+            self.assertEqual(result['status'], 'MISMATCH')
+            self.assertEqual(result['first_difference']['path'], '/schedules/'+sid.replace('~', '~0').replace('/', '~1'))
+
+    def test_public_stream_rejects_non_authoritative_fixture(self):
+        self.assertEqual(list(inspect.signature(adapter.stream_original_union).parameters), ['case_bundles', 'matrix'])
+        with patch.object(adapter, '_stream_union_structure', side_effect=AssertionError('admission bypass')):
+            self.assertCode('matrix_admission', adapter.stream_original_union, self.cases, self.matrix)
+
     def test_public_compile_rejects_non_authoritative_fixture(self):
         for altered in ('fixture', 'version', 'identity', 'mapping', 'pin'):
             mapping = copy.deepcopy(self.mapping)
@@ -556,9 +645,10 @@ class ProductionAdmissionTests(unittest.TestCase):
     def test_recompiled_matrix_admission_rejects_changed_provenance_and_inventory(self):
         for field in ('schema_version', 'production_provenance', 'expected', 'case_order', 'input_identities'):
             matrix = copy.deepcopy(self.matrix); matrix[field] = None
-            with self.subTest(field=field), patch.object(adapter, '_route_reference_structure', side_effect=AssertionError('route bypass')), patch.object(adapter, '_assemble_union_structure', side_effect=AssertionError('union bypass')):
+            with self.subTest(field=field), patch.object(adapter, '_route_reference_structure', side_effect=AssertionError('route bypass')), patch.object(adapter, '_assemble_union_structure', side_effect=AssertionError('union bypass')), patch.object(adapter, '_stream_union_structure', side_effect=AssertionError('stream bypass')):
                 self.assertAdmission(adapter.route_reference_case, {}, matrix, 'unit-chain-and-caller-closure')
                 self.assertAdmission(adapter.assemble_original_union, {}, matrix)
+                self.assertAdmission(adapter.stream_original_union, {}, matrix)
 
 
 if __name__ == '__main__': unittest.main()
