@@ -17,6 +17,40 @@ def factor_document():
 
 
 class FoundationContractTests(unittest.TestCase):
+    def test_method_execution_operands_cannot_be_omitted_or_cross_wired(self):
+        from scripts.common import ROOT,load_json
+        for mutation in ('wrong_boundary_input','empty_geometry','wrong_geometry_unit','empty_kiva','empty_airflow'):
+            d=factor_document()
+            if mutation=='wrong_boundary_input':d['foundation_ground']['model_parameters']['boundary']['monthly_temperature_input']='surface_monthly_ground_temperature_C'
+            elif mutation=='empty_geometry':
+                d['foundation_ground']['required_geometry']={};d['foundation_ground']['methods']['fc']['required_geometry']=[]
+            elif mutation=='wrong_geometry_unit':d['foundation_ground']['required_geometry']['exposed_perimeter_m']['unit']='m3'
+            else:
+                d=load_json(ROOT/'docs/examples/construction-foundation-v1/residential-vented-crawlspace.detailed.json')
+                if mutation=='empty_kiva':next(iter(d['foundation_ground']['methods'].values()))['parameters']={}
+                else:
+                    exchange=next(iter(d['foundation_ground']['configuration']['air_exchange'].values()))
+                    model=exchange['model'];exchange.clear();exchange['model']=model
+            with self.subTest(mutation=mutation):
+                with self.assertRaises(ValueError):self.module().validate_foundation_extension(d)
+
+    def test_both_full_schemas_reject_incomplete_native_execution(self):
+        from scripts.common import ROOT,load_json
+        from scripts.validate_construction_foundation import schema,validate_document
+        for representation in ('detailed','unified'):
+            for mutation in ('wrong_boundary_input','empty_geometry','empty_kiva'):
+                name='residential-vented-crawlspace' if mutation=='empty_kiva' else 'medium-office-2019-3B'
+                d=load_json(ROOT/'docs/examples/construction-foundation-v1'/f'{name}.{representation}.json')
+                ground=d['foundation_ground']
+                if mutation=='wrong_boundary_input':next(iter(ground['model_parameters'].values()))['monthly_temperature_input']='surface_monthly_ground_temperature_C'
+                elif mutation=='empty_geometry':
+                    ground['required_geometry']={}
+                    for method in ground['methods'].values():method['required_geometry']=[]
+                else:next(iter(ground['methods'].values()))['parameters']={}
+                with self.subTest(representation=representation,mutation=mutation):
+                    self.assertTrue(list(schema(representation).iter_errors(d)))
+                    with self.assertRaises(ValueError):validate_document(d,representation)
+
     def module(self):
         self.assertIsNotNone(importlib.util.find_spec('scripts.construction_foundation'))
         from scripts import construction_foundation

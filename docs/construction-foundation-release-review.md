@@ -56,3 +56,31 @@ BEMGen must still implement/import these contracts and supply actual geometry,
 foundation groups/hosts, site/weather and applicable controls. Atlas completeness
 does not certify that integration. No generic ground or weather fallback was
 introduced. Publication remains a later review gate; systems remain deferred.
+
+## Final review correction
+
+The independent branch review found one enforcement gap: valid exported records
+contained all execution operands, but the schemas allowed malformed replacements
+to omit Kiva initialization/geometry or cross-wire F/C and BuildingSurface
+temperature selectors. Both full schemas now require the method-specific inputs;
+typed geometry and host-airflow operands are also checked. Negative tests cover
+both representations. No recovered physical value or scientific method changed.
+The unpublished combined candidate was regenerated; all releases predating this
+branch remain unchanged. The previous local v5 packet is immutable; v6 carries
+the corrected schemas. No other concrete source-physics/mass defects were found.
+
+## Execution rulings
+
+| Ruling | Reason | Cost or limit |
+| --- | --- | --- |
+| Use Python/PowerShell equivalents of skill shell scripts | Bash is unavailable in this Windows workspace | Cross-platform producer execution was not established here |
+| Keep native recovery adapters separate from the census generator | Preserve the census input pins; execute original source ground phases and native factories | More recovery modules to maintain; no guessed physics |
+| Store coupled Kiva placement once on the ground method | One wall/slab coupling must not copy parameters into both assemblies; material properties remain in materials | Consumers follow method/material references |
+| Match physical input boundary Ground before IDF translation | Consumers should not require an already translated Foundation/FC boundary | BEMGen must set the native output boundary after matching |
+| Trim the unused global raw receipt inventory from copied detailed metadata | Keep complete selected provenance with a compact consumer JSON | Full source inspection uses the pinned internal inventories |
+| Limit numerical-smoke claims to one-day compatibility and finite output | Transient storage is not a steady-state F×perimeter experiment | Steady-state/annual accuracy is not certified |
+| Regenerate the unpublished combined candidate after schema review | Tighten enforcement without changing source physics; preserve all pre-existing releases and pinned packets | Consumers should use the corrected v6 handover schema, not v5 |
+
+No Minor review findings were deferred. The supported source population has no
+remaining source-recovery blocker. Unsupported new configurations still require
+source evidence or a separately agreed scientific policy; they receive no fallback.

@@ -66,7 +66,7 @@
               },
               "reference_height_m": {
                 "type": "number",
-                "minimum": 0
+                "exclusiveMinimum": 0
               },
               "height_exponent": {
                 "type": "number",
@@ -90,7 +90,7 @@
               },
               "wind_reference_height_m": {
                 "type": "number",
-                "minimum": 0
+                "exclusiveMinimum": 0
               },
               "wind_height_exponent": {
                 "type": "number",
@@ -110,7 +110,61 @@
                   "City"
                 ]
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "model": {
+                      "const": "constant_ach"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "ach_per_s"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "model": {
+                      "const": "source_sla_annual"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "sla",
+                    "reference_height_m",
+                    "height_exponent",
+                    "normalized_leakage_multiplier",
+                    "weather_factor_input"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "model": {
+                      "const": "source_garage_sherman_grimsrud"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "exterior_ach50_per_s",
+                    "ela_volume_coefficient_s_m",
+                    "stack_height_coefficient_m_s2_K",
+                    "wind_reference_height_m",
+                    "wind_height_exponent",
+                    "wind_coefficient_scale",
+                    "engine_site_terrain"
+                  ]
+                }
+              }
+            ]
           }
         }
       }
@@ -154,6 +208,124 @@
           "description": {
             "type": "string"
           }
+        }
+      },
+      "properties": {
+        "surface_area_m2": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m2"
+            },
+            "exclusive_minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "exclusive_minimum"
+          ]
+        },
+        "exposed_perimeter_m": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m"
+            },
+            "minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "minimum"
+          ]
+        },
+        "foundation_wall_height_m": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m"
+            },
+            "exclusive_minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "exclusive_minimum"
+          ]
+        },
+        "foundation_group_topology": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "topology"
+            }
+          },
+          "required": [
+            "unit"
+          ]
+        },
+        "wall_height_above_grade_m": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m"
+            },
+            "minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "minimum"
+          ]
+        },
+        "thermal_host_height_m": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m"
+            },
+            "exclusive_minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "exclusive_minimum"
+          ]
+        },
+        "thermal_host_volume_m3": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m3"
+            },
+            "exclusive_minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "exclusive_minimum"
+          ]
+        },
+        "foundation_top_height_above_grade_m": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "const": "m"
+            },
+            "minimum": {
+              "const": 0
+            }
+          },
+          "required": [
+            "unit",
+            "minimum"
+          ]
         }
       }
     }
@@ -210,6 +382,121 @@
             "properties": {
               "parameters": {
                 "maxProperties": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "FFactor"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "exposed_perimeter_m"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "CFactor"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "foundation_wall_height_m"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "LayeredGround"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "exposed_perimeter_m"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "foundation_group_topology"
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "required": [
+                  "wall_depth_below_slab_m",
+                  "wall_height_above_grade",
+                  "initialization"
+                ]
               }
             }
           }
@@ -490,6 +777,54 @@
               "heating_balance_temperature_C",
               "cooling_balance_temperature_C"
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "FCBoundary"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "monthly_temperature_input": {
+                "const": "fc_monthly_ground_temperature_C"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "LayeredGroundBoundary"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "monthly_temperature_input": {
+                "const": "surface_monthly_ground_temperature_C"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "monthly_temperature_input"
+              ]
+            }
           }
         }
       ]

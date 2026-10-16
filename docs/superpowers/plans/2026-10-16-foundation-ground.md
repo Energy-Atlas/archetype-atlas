@@ -2,7 +2,7 @@
 
 > **For agentic workers:** The owner approved this revised plan for implementation on 2026-10-16. Use `superpowers:executing-plans` task by task. Keep each method parameter authoritative in one location, retain ordinary unified simplifications, and report the small set of physically necessary native multi-assignment exceptions. Do not infer additional assumptions from blank comments.
 
-**Status:** Implemented locally, 2026-10-16; final branch review and owner release review gate apply. Approved for implementation, 2026-10-16. D1–D4 and the five architectural clarifications are accepted, with the two execution constraints below. Execute locally task by task; BEMGen remains view-only and publication remains a later gate.
+**Status:** Implemented locally, 2026-10-16; final branch review corrected; owner release review gate applies. Approved for implementation, 2026-10-16. D1–D4 and the five architectural clarifications are accepted, with the two execution constraints below. Execute locally task by task; BEMGen remains view-only and publication remains a later gate.
 
 **Goal:** Extend each detailed and unified construction suite with its source-supported foundation/ground specification, including foundation-dependent interfaces and the instructions needed to resolve it against a generated BEM and site.
 
@@ -332,7 +332,7 @@ each (15 GroundFloor hosts and five FoundationWall soil/non-soil boundaries).
 Ordinary components remain simplified. Parameter ownership follows the latest
 owner constraint and ADR 0027's refined coupled-method placement rule.
 
-New local BEMGen packet: build/local-handover/bemgen-construction-foundation-v5,
+New local BEMGen packet: build/local-handover/bemgen-construction-foundation-v6,
 18 paired examples, full schemas, SHA-256 manifest and notices. Prior packets
 are unchanged. BEMGen code remains untouched; consumer integration remains open.
 Construction-only refresh updated 177 pages and 3,320 contexts, with zero program
