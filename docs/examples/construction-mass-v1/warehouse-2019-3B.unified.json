@@ -1,0 +1,1544 @@
+{
+  "climate_zone": "3B",
+  "detailed_context_id": "construction-set-8d06e1ae4ed4c1c397f4ae12",
+  "id": "equivalent-construction-85ae8ca0d5d9aa5013bb9bb9",
+  "infiltration": {
+    "method": "fixed_source_reference_natural_ach",
+    "natural_ach": {
+      "evidence_id": "construction-evidence-d2939683d8c737aac4446ed2",
+      "unit": "1/s",
+      "value": 5.6223921187857115e-05
+    },
+    "reference_id": "90.1-2019/Warehouse"
+  },
+  "kind": "building_level_equivalent",
+  "name": "Warehouse construction package / building-level equivalent",
+  "provenance": {
+    "detailed_release": "v2.2.0",
+    "interpretation_note": "Additive approximation, not replacement detailed rules. Reported fit errors are not building energy error bounds.",
+    "original_unit": "source SI layers and archetype reference areas",
+    "profile_release": "construction-weighting-v1.1.0",
+    "transformation": "Source precedence, precomputed area weights, fixed two-parameter thermal approximation; fixed ACH unchanged"
+  },
+  "reference_id": "90.1-2019/Warehouse",
+  "schema_version": "1.2.0",
+  "scope": "building",
+  "source": {
+    "building_type": "Warehouse",
+    "construction_set_id": "construction-4e2c2f32c503c88876ea647d",
+    "definition_release": "v0.1.1",
+    "evidence_view": "source",
+    "source_family": "code_prototype_rules",
+    "source_fixture_id": null,
+    "space_type": null,
+    "template": "90.1-2019",
+    "vintage": {
+      "kind": "source_template",
+      "status": "exact",
+      "value": "90.1-2019"
+    }
+  },
+  "status": "ready",
+  "supporting_profile_id": "90.1-2019/Warehouse",
+  "weighting_policy": "precomputed_source_archetype",
+  "components": {
+    "BuildingShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "ExteriorDoor": {
+      "assembly_id": "equivalent-assembly-6dd5facbc524107e387cbbec",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-selector-0b0968c5f318839f19e72438",
+            "reference_area_m2": 7.8029991,
+            "weight": 0.4444414339098282
+          },
+          {
+            "assembly_id": "construction-selector-0d6866d159c4ad56b418ff69",
+            "reference_area_m2": 9.7538678,
+            "weight": 0.5555585660901718
+          }
+        ],
+        "source_reference_area_m2": 17.5568669,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorFloor": {
+      "assembly_id": "equivalent-assembly-7edad369824b8953ffbf1afc",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-c03f55decd183e4281ca7afb",
+            "reference_area_m2": 0.0,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "unique_source_recipe_without_reference_exposure"
+      },
+      "status": "ready"
+    },
+    "ExteriorRoof": {
+      "assembly_id": "equivalent-assembly-4c3abbbaa0da168e724cc07c",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-79a4399d95f477e4ca40585a",
+            "reference_area_m2": 3157.27592,
+            "weight": 0.6969895851349833
+          },
+          {
+            "assembly_id": "construction-c05c45b29953242cf8a42688",
+            "reference_area_m2": 1372.5994,
+            "weight": 0.3030104148650166
+          }
+        ],
+        "source_reference_area_m2": 4529.87532,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorWall": {
+      "assembly_id": "equivalent-assembly-29b9820ae297395ca2bbbf65",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-6c47c86a0c89755d6222c508",
+            "reference_area_m2": 1471.3482239999998,
+            "weight": 0.6324248682689786
+          },
+          {
+            "assembly_id": "construction-c249da1228a28d6b0e6fea73",
+            "reference_area_m2": 855.1703837,
+            "weight": 0.3675751317310214
+          }
+        ],
+        "source_reference_area_m2": 2326.5186077,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorWindow": {
+      "assembly_id": "equivalent-assembly-a21e89a2907903f95e5ab8c7",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-b911f73f6ddfbfe7a518f30c",
+            "reference_area_m2": 17.661610839999998,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 17.661610839999998,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "FloorDistributedMass": {
+      "assembly_id": "equivalent-assembly-df41c7efa850de71c08fdcc3",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-9e8cc2fa138a91151e99c376",
+            "reference_area_m2": 236.879647,
+            "weight": 1.0
+          }
+        ],
+        "weight_basis": "unique_physical_floor_inventory"
+      },
+      "quantity": {
+        "application": "residual_floor_mass_only; deduct explicitly represented physical slabs once",
+        "area_per_counted_floor_area": 0.04899135447877923,
+        "unit": "m2/m2"
+      },
+      "status": "ready"
+    },
+    "GlassDoor": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "InteriorCeiling": {
+      "assembly_id": "equivalent-assembly-2b415f7c021894ae33c2d1cb",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-405df8974a904ab9e3f3aba8",
+            "reference_area_m2": 236.879647,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 236.879647,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorDoor": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "InteriorFloor": {
+      "assembly_id": "equivalent-assembly-6828bea86454a9760c390af7",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-9e8cc2fa138a91151e99c376",
+            "reference_area_m2": 236.879647,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 236.879647,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorWall": {
+      "assembly_id": "equivalent-assembly-9f4078c06c1ba13a3db45c76",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-3e658e6ca0e3329e40dc24d7",
+            "reference_area_m2": 390.154712,
+            "weight": 0.3614457831771767
+          },
+          {
+            "assembly_id": "construction-a61dec9233951cfec0ff6b48",
+            "reference_area_m2": 539.7140182,
+            "weight": 0.5
+          },
+          {
+            "assembly_id": "construction-dd705e09d98816dbc8efb389",
+            "reference_area_m2": 149.5593062,
+            "weight": 0.1385542168228233
+          }
+        ],
+        "source_reference_area_m2": 1079.4280364,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorWindow": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "InternalMass": {
+      "assembly_id": "equivalent-assembly-a415dabc1c80d76d6899683b",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+            "reference_area_m2": 3260.578674,
+            "weight": 1.0
+          }
+        ],
+        "weight_basis": "source_exposed_added_mass_area"
+      },
+      "quantity": {
+        "application": "additional_source_mass_only",
+        "area_per_counted_floor_area": 0.674351585908442,
+        "unit": "m2/m2"
+      },
+      "status": "ready"
+    },
+    "OverheadDoor": {
+      "assembly_id": "equivalent-assembly-f3ceaef7e16cae54b01899bf",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-selector-2a65de21add963a9ad8f05f4",
+            "reference_area_m2": 105.52707088,
+            "weight": 0.7802194032951074
+          },
+          {
+            "assembly_id": "construction-selector-f9f20ed421b86c75cf4c26c8",
+            "reference_area_m2": 29.7260008,
+            "weight": 0.21978059670489253
+          }
+        ],
+        "source_reference_area_m2": 135.25307168,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "SiteShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "Skylight": {
+      "assembly_id": "equivalent-assembly-54b40b4870a67dc1a8702290",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-selector-4aa8edd366cf96aa13ffffde",
+            "reference_area_m2": 20.81028096,
+            "weight": 0.3043478260869566
+          },
+          {
+            "assembly_id": "construction-selector-794703dc99f918dcec5973ce",
+            "reference_area_m2": 47.56635647999998,
+            "weight": 0.6956521739130433
+          }
+        ],
+        "source_reference_area_m2": 68.37663743999998,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "SpaceShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "TubularDaylightDiffuser": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "TubularDaylightDome": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    }
+  },
+  "consumer_inputs": [
+    "actual component areas and geometry",
+    "actual counted floor area",
+    "physical mass already represented by instantiated interior surfaces"
+  ],
+  "mass_accounting": {
+    "schema_version": "1.0.0",
+    "status": "ready",
+    "reference": {
+      "profile_id": "90.1-2019/Warehouse",
+      "counted_floor_area_m2": 4835.131617,
+      "quantity_basis": "multiply normalized quantities by actual counted building floor area"
+    },
+    "floor_pair_policy": "one physical slab; do not add both floor and ceiling capacity",
+    "paired_surface_policy": {
+      "canonical_side": "InteriorFloor",
+      "adjacent_ceiling": "reverse the same canonical floor assembly",
+      "unpaired_ceiling": "use InteriorCeiling recipe"
+    },
+    "added_mass_policy": "additional source furnishings/partition objects are separate from explicit surfaces",
+    "removed_wall_policy": "Restore only unrepresented InteriorWall capacity using source or equivalent recipes; exchange equivalence remains approximate",
+    "residual_floor_policy": "Restore only unrepresented InteriorFloor capacity; explicit slabs retain their capacity",
+    "residual_policy": "max(0, reference minus represented); report signed difference and excess; never subtract mass",
+    "physical_inventory_profile_id": "90.1-2019/Warehouse",
+    "paired_face_area_policy": "mean_zone_weighted_faces",
+    "reference_area_approximation": {
+      "unequal_multiplier_pair_counts": {
+        "floor_pairs": 0,
+        "wall_pairs": 0
+      },
+      "evidence_profile_id": "90.1-2019/Warehouse",
+      "interpretation": "Mean of multiplied face areas where multipliers differ; preserve the frozen source inventory. Residential inferred adiabatic floor/ceiling object quantities retain their source convention."
+    },
+    "physical_capacity_budgets": {
+      "InteriorFloor": [
+        {
+          "source_assembly_id": "construction-9e8cc2fa138a91151e99c376",
+          "area_per_counted_floor_area": 0.04899135447877923,
+          "capacity_per_counted_floor_area_J_m2_K": 9622.53521682925,
+          "reference_area_m2": 236.87964700000003,
+          "source_areal_capacity_J_m2_K": 196412.9246721946,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1Warehouse/floor_inventory"
+        }
+      ],
+      "InteriorWall": [
+        {
+          "source_assembly_id": "construction-3e658e6ca0e3329e40dc24d7",
+          "area_per_counted_floor_area": 0.08069164252494018,
+          "capacity_per_counted_floor_area_J_m2_K": 1788.4202170537721,
+          "reference_area_m2": 390.15471199999996,
+          "source_areal_capacity_J_m2_K": 22163.63629605144,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1Warehouse/wall_inventory"
+        },
+        {
+          "source_assembly_id": "construction-dd705e09d98816dbc8efb389",
+          "area_per_counted_floor_area": 0.030931796287439098,
+          "capacity_per_counted_floor_area_J_m2_K": 685.5610828983545,
+          "reference_area_m2": 149.5593062,
+          "source_areal_capacity_J_m2_K": 22163.63629605144,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1Warehouse/wall_inventory"
+        }
+      ]
+    },
+    "additional_mass": {
+      "status": "provided",
+      "entries": [
+        {
+          "id": "source-mass-quantity-3336029975fc0d49afbeca5f",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Zone1 Office",
+            "source_story": "Building Story 1",
+            "native_building_type": "Warehouse",
+            "native_space_type": "Office",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 473.759294,
+          "area_per_counted_floor_area": 0.09798270895755846,
+          "capacity_per_counted_floor_area_J_m2_K": 9603.285304930305,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Zone1 Office Mass",
+            "source_space_floor_area_m2": 236.879647,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1Warehouse/spaces/0/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-3980a7852b42e95d2561eb14",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Zone2 Fine Storage",
+            "source_story": "Building Story 1",
+            "native_building_type": "Warehouse",
+            "native_space_type": "Fine",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 2786.81938,
+          "area_per_counted_floor_area": 0.5763688769508836,
+          "capacity_per_counted_floor_area_J_m2_K": 56489.9136299561,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Zone2 Fine Storage Mass",
+            "source_space_floor_area_m2": 1393.40969,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1Warehouse/spaces/1/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        }
+      ],
+      "allocation_policy": "Precomputed source-scope quantities normalized by building counted floor area; preserve source scopes. If absent in consumer geometry, require an explicit consumer allocation policy.",
+      "legacy_partition_selector_policy": "InteriorPartition is a retained material selector. Instantiate additional mass from this inventory only; never instantiate both representations of the same source object."
+    },
+    "recipes": {
+      "reference-mass-recipe-e6ab56ca29794789a98e07b0": {
+        "model": "opaque_layers",
+        "layers": [
+          {
+            "model": "StandardOpaqueMaterial",
+            "properties": {
+              "conductivity_W_m_K": 0.12,
+              "density_kg_m3": 540.0,
+              "name": "Std Wood 6inch",
+              "roughness": "MediumSmooth",
+              "solar_absorptance": 0.7,
+              "specific_heat_J_kg_K": 1210.0,
+              "thermal_absorptance": 0.9,
+              "thickness_m": 0.15,
+              "visible_absorptance": 0.7
+            }
+          }
+        ],
+        "capacity_J_m2_K": 98010.0,
+        "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/mass_recipes/reference-mass-recipe-e6ab56ca29794789a98e07b0",
+        "interpretation": "Original source mass material layers; no equivalent fitting or added air films."
+      }
+    },
+    "provenance": {
+      "source_project": "OpenStudio Standards",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1Warehouse",
+      "source_file_sha256": {
+        "data/program-support/construction-weighting-v1.1.0/profiles.json": "aa2621fdfd837ceacf454070482aa3863de93bf1a5f3c1f85d7ffd607791681c"
+      },
+      "extraction_date": "2026-10-16",
+      "original_unit": "m2, m3, SI material properties, and dimensionless source multipliers/scaling coefficients",
+      "original_value": {
+        "counted_floor_area_m2": 4835.131617,
+        "profile_provenance": {
+          "extraction_date": "2026-10-15",
+          "interpretation_note": "Source thermostat rules evaluate only furnishing applicability; no HVAC or annual energy model.",
+          "original_unit": "m2, m3 and dimensionless",
+          "source_file_sha256": "5ea56a3bd8917b524bff407892ff62468d32957d78bae7d092522b617e770f9e",
+          "source_locator": "data/geometry/ASHRAE90120102013Warehouse.osm",
+          "source_project": "OpenStudio Standards",
+          "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+          "transformation": "Pinned SDK netArea/grossArea, 9 significant digits for derived geometry only; source geometry tweaks; source multipliers exactly once; no consumer BEM."
+        }
+      },
+      "transformation": "Copy frozen source quantities; divide area and capacity by counted reference floor area. Use source multiplier once. Select wall/slab recipes with detailed source precedence.",
+      "interpretation_note": "Quantities describe the selected source archetype, not a population weight or consumer geometry. Additional mass is independent of residual restoration."
+    }
+  },
+  "assemblies": {
+    "equivalent-assembly-29b9820ae297395ca2bbbf65": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.376,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.08,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.00953369192858911,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.0038633801003059584,
+            "transmission_amplitude_error_percent": 0.3386038336756103,
+            "transmission_phase_error_h": 0.0021458840960798474,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.001310381495190837,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.0003432906033856462,
+            "transmission_amplitude_error_percent": 0.02376111131194847,
+            "transmission_phase_error_h": 0.0009523704580614527,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 4.479932936044664e-05,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 3.274686627320138e-05,
+            "transmission_amplitude_error_percent": 0.000488745503313126,
+            "transmission_phase_error_h": 0.000865838259158811,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0038962194542857677,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.0011091641534530865,
+            "transmission_amplitude_error_percent": 0.09280678339138593,
+            "transmission_phase_error_h": 0.0012103151738803782,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.00018152411769457318,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 8.073560102599597e-05,
+            "transmission_amplitude_error_percent": 0.002659008370820004,
+            "transmission_phase_error_h": 0.0008738994125965391,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.005556089405091044,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-29b9820ae297395ca2bbbf65",
+      "layers": [
+        {
+          "C": 4888.857204800004,
+          "R": 0.034197482891825344,
+          "conductivity_W_m_K": 0.14295956285041814,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.004888857204800004
+        },
+        {
+          "C": 0.0,
+          "R": 1.0459336522765732,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 8113.422595200007,
+          "R": 0.05675326948005057,
+          "conductivity_W_m_K": 0.14295956285041814,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.008113422595200008
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.4,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.4
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 13002.279800000011,
+        "resistance_m2_K_W": 1.136884404648449,
+        "u_reference_W_m2_K": 0.7651786159840199
+      }
+    },
+    "equivalent-assembly-2b415f7c021894ae33c2d1cb": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.07,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.1536,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.2808616901260429,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.03887023743047804,
+            "transmission_amplitude_error_percent": 2.0656721708463444,
+            "transmission_phase_error_h": 0.21979341135443314,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.09018446642832273,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.029710443431614008,
+            "transmission_amplitude_error_percent": 4.053262514746803,
+            "transmission_phase_error_h": 0.12216191120503192,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.018310516195809545,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.004040425184744677,
+            "transmission_amplitude_error_percent": 0.2390817057363881,
+            "transmission_phase_error_h": 0.08975456015000076,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.15580217994363096,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.03794962481783553,
+            "transmission_amplitude_error_percent": 4.725406323699666,
+            "transmission_phase_error_h": 0.1979994509285556,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.03775870469361434,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.010596550831971719,
+            "transmission_amplitude_error_percent": 1.114388897741625,
+            "transmission_phase_error_h": 0.04233677890209662,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.17063782500643052,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-2b415f7c021894ae33c2d1cb",
+      "layers": [
+        {
+          "C": 13748.904727053625,
+          "R": 0.002800403194196397,
+          "conductivity_W_m_K": 4.909616142256618,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013748904727053625
+        },
+        {
+          "C": 0.0,
+          "R": 0.22044840620980571,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 182664.019945141,
+          "R": 0.03720535672289499,
+          "conductivity_W_m_K": 4.909616142256617,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18266401994514098
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        },
+        "interior": {
+          "roughness": "MediumRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196412.9246721946,
+        "resistance_m2_K_W": 0.2604541661268971,
+        "u_reference_W_m2_K": 1.921398780303317
+      }
+    },
+    "equivalent-assembly-4c3abbbaa0da168e724cc07c": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.5,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.5376,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.47161739709449624,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.2289285589320504,
+            "transmission_amplitude_error_percent": -1.1613191847108517,
+            "transmission_phase_error_h": 0.22023622556349698,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1646288617995797,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.05786168876620041,
+            "transmission_amplitude_error_percent": -0.0735485726124141,
+            "transmission_phase_error_h": 0.22111851492921974,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.02531739851940848,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.008271911992058222,
+            "transmission_amplitude_error_percent": -0.0015022990435875627,
+            "transmission_phase_error_h": 0.2211767417143274,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.2864741495944874,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.1154688923733785,
+            "transmission_amplitude_error_percent": -0.29341235156863377,
+            "transmission_phase_error_h": 0.2209406636453852,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.058615079126363316,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.019299840078892568,
+            "transmission_amplitude_error_percent": -0.008178523843216379,
+            "transmission_phase_error_h": 0.22117134717293652,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.28877130631199227,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-4c3abbbaa0da168e724cc07c",
+      "layers": [
+        {
+          "C": 1564.7999999999813,
+          "R": 0.5606528379901221,
+          "conductivity_W_m_K": 0.0053509048732450284,
+          "density_kg_m3": 521.5999994783938,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.003000000003
+        },
+        {
+          "C": 0.0,
+          "R": 0.9644563701139601,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 1564.7999999999813,
+          "R": 0.5606528379901221,
+          "conductivity_W_m_K": 0.0053509048732450284,
+          "density_kg_m3": 521.5999994783938,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.003000000003
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 3129.5999999999626,
+        "resistance_m2_K_W": 2.0857620460942043,
+        "u_reference_W_m2_K": 0.4433091698353003
+      }
+    },
+    "equivalent-assembly-54b40b4870a67dc1a8702290": {
+      "fit": null,
+      "id": "equivalent-assembly-54b40b4870a67dc1a8702290",
+      "layers": [
+        {
+          "model": "SimpleGlazing",
+          "properties": {
+            "shgc": 0.4043478260869565,
+            "u_W_m2_K": 4.505578520666138,
+            "visible_transmittance": 0.8099999999999999
+          }
+        }
+      ],
+      "model": "simple_glazing",
+      "quality": "area_weighted_optical_proxy",
+      "solar_modifiers": {},
+      "status": "ready"
+    },
+    "equivalent-assembly-6828bea86454a9760c390af7": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.93,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.1536,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.28086169012604256,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.038870237430478016,
+            "transmission_amplitude_error_percent": 2.0656721708463444,
+            "transmission_phase_error_h": 0.21979341135443295,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0901844664283226,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.029710443431614088,
+            "transmission_amplitude_error_percent": 4.053262514746803,
+            "transmission_phase_error_h": 0.12216191120503253,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.018310516195809517,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.004040425184744584,
+            "transmission_amplitude_error_percent": 0.2390817057363659,
+            "transmission_phase_error_h": 0.0897545601500023,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1558021799436308,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.037949624817835516,
+            "transmission_amplitude_error_percent": 4.725406323699666,
+            "transmission_phase_error_h": 0.1979994509285555,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.03775870469361423,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.010596550831971738,
+            "transmission_amplitude_error_percent": 1.114388897741625,
+            "transmission_phase_error_h": 0.042336778902095966,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.17063782500643032,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-6828bea86454a9760c390af7",
+      "layers": [
+        {
+          "C": 182664.019945141,
+          "R": 0.037205356722894996,
+          "conductivity_W_m_K": 4.909616142256616,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18266401994514098
+        },
+        {
+          "C": 0.0,
+          "R": 0.22044840620980571,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 13748.904727053614,
+          "R": 0.002800403194196395,
+          "conductivity_W_m_K": 4.909616142256618,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013748904727053615
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "MediumRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196412.9246721946,
+        "resistance_m2_K_W": 0.2604541661268971,
+        "u_reference_W_m2_K": 1.921398780303317
+      }
+    },
+    "equivalent-assembly-6dd5facbc524107e387cbbec": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.5,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.004,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.10304596702486628,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.027085586151752435,
+            "transmission_amplitude_error_percent": -0.055778582736698556,
+            "transmission_phase_error_h": 0.02588185389826301,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.027018627467000095,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.00677985321138582,
+            "transmission_amplitude_error_percent": -0.003491081701367804,
+            "transmission_phase_error_h": 0.025898197325874648,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0038731940794045415,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.0009686294778894625,
+            "transmission_amplitude_error_percent": -7.125313447042814e-05,
+            "transmission_phase_error_h": 0.025899266215068262,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.05348281013843179,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.013556319793434772,
+            "transmission_amplitude_error_percent": -0.013960385391564856,
+            "transmission_phase_error_h": 0.02589492504647199,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.009034536986779071,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.002260118374895468,
+            "transmission_amplitude_error_percent": -0.00038793042030915714,
+            "transmission_phase_error_h": 0.025899167235781843,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.06154531984011754,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-6dd5facbc524107e387cbbec",
+      "layers": [
+        {
+          "C": 1564.799999999998,
+          "R": 0.0006525596265633558,
+          "conductivity_W_m_K": 4.597281046636642,
+          "density_kg_m3": 521.5999994783992,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0030000000030000005
+        },
+        {
+          "C": 0.0,
+          "R": 0.32497469402855117,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 1564.799999999998,
+          "R": 0.0006525596265633558,
+          "conductivity_W_m_K": 4.597281046636642,
+          "density_kg_m3": 521.5999994783992,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0030000000030000005
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 3129.599999999996,
+        "resistance_m2_K_W": 0.3262798132816779,
+        "u_reference_W_m2_K": 2.0149922951478607
+      }
+    },
+    "equivalent-assembly-7edad369824b8953ffbf1afc": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.07,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.7040000000000001,
+        "metrics": [
+          {
+            "normalized_response_rms": 3.408467374106114,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.05561835071378964,
+            "transmission_amplitude_error_percent": null,
+            "transmission_phase_error_h": null,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 1.1713731607584652,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.29080292413365766,
+            "transmission_amplitude_error_percent": -30.625562511726933,
+            "transmission_phase_error_h": 6.548920490653842,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.44395397334154746,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.22725954776460652,
+            "transmission_amplitude_error_percent": -0.995608932133285,
+            "transmission_phase_error_h": 7.1997829428298,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 1.924377804666998,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.15531130715760935,
+            "transmission_amplitude_error_percent": -62.98065119781558,
+            "transmission_phase_error_h": 5.678826964937844,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.6804862135898079,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.33973624134249364,
+            "transmission_amplitude_error_percent": -4.998509532836648,
+            "transmission_phase_error_h": 7.108253492707944,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 2.0965733990281104,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-7edad369824b8953ffbf1afc",
+      "layers": [
+        {
+          "C": 13739.701247999892,
+          "R": 0.1078200691244955,
+          "conductivity_W_m_K": 0.12743176070621148,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013739701247999891
+        },
+        {
+          "C": 0.0,
+          "R": 0.6476205450659629,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 182541.74515199853,
+          "R": 1.4324666326540112,
+          "conductivity_W_m_K": 0.1274317607062115,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18254174515199853
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196281.44639999844,
+        "resistance_m2_K_W": 2.18790724684447,
+        "u_reference_W_m2_K": 0.4241048927341293
+      }
+    },
+    "equivalent-assembly-9f4078c06c1ba13a3db45c76": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.5,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.96,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.0017391667385893055,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.0012486080341804276,
+            "transmission_amplitude_error_percent": 0.1259206029592841,
+            "transmission_phase_error_h": 0.0005931786640335402,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0003574218742653847,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.0003346179691167164,
+            "transmission_amplitude_error_percent": 0.010013940933228938,
+            "transmission_phase_error_h": 0.0012304852386606077,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 4.8094986138367014e-05,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 4.801941128882863e-05,
+            "transmission_amplitude_error_percent": 0.00020795229465075948,
+            "transmission_phase_error_h": 0.0012829544387625356,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0007929806828634123,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.0006599726196813272,
+            "transmission_amplitude_error_percent": 0.038031686700379375,
+            "transmission_phase_error_h": 0.0010795643877744563,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.00011294649600842648,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.00011199843067293784,
+            "transmission_amplitude_error_percent": 0.0011303512839289098,
+            "transmission_phase_error_h": 0.0012780261361254061,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0010254697246482368,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-9f4078c06c1ba13a3db45c76",
+      "layers": [
+        {
+          "C": 11081.81814802572,
+          "R": 0.07618526557143392,
+          "conductivity_W_m_K": 0.14545881103000197,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.01108181814802572
+        },
+        {
+          "C": 0.0,
+          "R": 0.006348772130952833,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 11081.81814802572,
+          "R": 0.07618526557143392,
+          "conductivity_W_m_K": 0.14545881103000197,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.01108181814802572
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.5
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.5
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 22163.63629605144,
+        "resistance_m2_K_W": 0.15871930327382067,
+        "u_reference_W_m2_K": 2.388234772510719
+      }
+    },
+    "equivalent-assembly-a21e89a2907903f95e5ab8c7": {
+      "fit": null,
+      "id": "equivalent-assembly-a21e89a2907903f95e5ab8c7",
+      "layers": [
+        {
+          "model": "SimpleGlazing",
+          "properties": {
+            "shgc": 0.25,
+            "u_W_m2_K": 2.38487060326766,
+            "visible_transmittance": 0.81
+          }
+        }
+      ],
+      "model": "simple_glazing",
+      "quality": "unchanged_source_physics",
+      "solar_modifiers": {},
+      "status": "ready"
+    },
+    "equivalent-assembly-a415dabc1c80d76d6899683b": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.59,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.96,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.018267416329185437,
+            "period_h": 6,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.015428279275167446,
+            "period_h": 24,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0013296345566229523,
+            "period_h": 168,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.01972843975979356,
+            "period_h": 12,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.00572894152401812,
+            "period_h": 72,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.013826282083897537,
+        "one_sided": true,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-a415dabc1c80d76d6899683b",
+      "layers": [
+        {
+          "C": 57825.899999999994,
+          "R": 0.7079999999999997,
+          "conductivity_W_m_K": 0.08167500000000003,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.05782589999999999
+        },
+        {
+          "C": 0.0,
+          "R": 0.05000000000000004,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 40184.100000000006,
+          "R": 0.49199999999999994,
+          "conductivity_W_m_K": 0.08167500000000003,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.04018410000000001
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "MediumSmooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "MediumSmooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 98010.0,
+        "resistance_m2_K_W": 1.2499999999999998,
+        "u_reference_W_m2_K": 0.6622516556291391
+      }
+    },
+    "equivalent-assembly-df41c7efa850de71c08fdcc3": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.93,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.16,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.5536935938845555,
+            "period_h": 6,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1625683646292476,
+            "period_h": 24,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.034928883692021837,
+            "period_h": 168,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.2955745144613634,
+            "period_h": 12,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.080979165948643,
+            "period_h": 72,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.33377891685115657,
+        "one_sided": true,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-df41c7efa850de71c08fdcc3",
+      "layers": [
+        {
+          "C": 182664.019945141,
+          "R": 0.038755579919682294,
+          "conductivity_W_m_K": 4.71323149656635,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18266401994514098
+        },
+        {
+          "C": 0.0,
+          "R": 0.21878149954659354,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 13748.904727053614,
+          "R": 0.0029170866606212454,
+          "conductivity_W_m_K": 4.713231496566352,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013748904727053615
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "MediumRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196412.9246721946,
+        "resistance_m2_K_W": 0.2604541661268971,
+        "u_reference_W_m2_K": 1.921398780303317
+      }
+    },
+    "equivalent-assembly-f3ceaef7e16cae54b01899bf": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": null,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": null,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 1.1656744777989185e-16,
+            "transmission_amplitude_error_percent": 2.220446049250313e-14,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 1.1656744777989185e-16,
+            "transmission_amplitude_error_percent": 2.220446049250313e-14,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 1.1656744777989185e-16,
+            "transmission_amplitude_error_percent": 2.220446049250313e-14,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 1.1656744777989185e-16,
+            "transmission_amplitude_error_percent": 2.220446049250313e-14,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 1.1656744777989185e-16,
+            "transmission_amplitude_error_percent": 2.220446049250313e-14,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-f3ceaef7e16cae54b01899bf",
+      "layers": [
+        {
+          "C": 0.0,
+          "R": 0.35497311438505064,
+          "model": "Material:NoMass"
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 0.0,
+        "resistance_m2_K_W": 0.35497311438505064,
+        "u_reference_W_m2_K": 1.9048594539386878
+      }
+    }
+  }
+}

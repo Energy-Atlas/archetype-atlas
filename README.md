@@ -12,7 +12,16 @@ Sources: ComStock, ResStock, OpenStudio Standards, DOE Commercial Reference
 Buildings, and DOE/PNNL Prototype Building Models. Source interpretations and
 coverage will be recorded under `docs/` and `sources/`.
 
-Current construction publication candidate: **detailed distribution v2.2.0**
+The local [shared mass-accounting completion](docs/construction-mass-accounting-v1-contract.md)
+adds detailed JSON **2.1.0** and unified JSON **1.2.0**, with identical source
+wall/slab budgets and native additional-mass quantities in both representations.
+The [normalized mass release](data/construction-mass-releases/v1.0.0/manifest.json)
+covers all 177 suites / 3,320 contexts; seven paired examples are in
+`docs/examples/construction-mass-v1/`. Historical releases and current site delivery
+remain unchanged. Verify locally with
+`python -m scripts.construction_mass_release --check --examples --validate-all`.
+
+The existing construction site publication candidate is **detailed distribution v2.2.0**
 (consumer schema 2.0.0) and separate **unified building construction 1.1.0**.
 Both cover 177 complete sets and 3,320 supported climate/reference contexts.
 The [release notes](docs/release-notes-construction-v2.2.0.md) describe migration,
