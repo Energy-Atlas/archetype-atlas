@@ -161,3 +161,14 @@ original lexical notice order, then runs the original generator with every
 validation and exact byte comparison intact. It changes neither historical
 generator hashes nor frozen artifacts; notice additions, removals or changed
 bytes still fail reproduction.
+
+Unified-fit and shared-mass byte reproduction uses the original producer,
+**CPython 3.14.7**, on both CI platforms. Python 3.12 changed floating-point
+summation and Python 3.14 changed complex summation
+([Python's documented changes](https://docs.python.org/3.14/library/functions.html#sum)). Earlier runtimes can produce
+last-bit differences in full-precision error metrics; because recipe IDs hash
+those metrics, the catalogue bytes can differ even when material layers match.
+The pipeline checks these releases early under the pinned producer, then switches
+to the matrix Python 3.11/3.14 environment for consumer tests and the remaining
+research validation. Every original byte comparison remains mandatory. Frozen
+data, historical generator sources, reported errors and recipe IDs are preserved.
