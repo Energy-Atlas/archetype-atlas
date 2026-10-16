@@ -3,8 +3,8 @@
 On 2026-10-16 the two-case apartment A5 matrix reproduced the retained
 one-call reference exactly on official Windows CPython 3.11.9 and on CPython
 3.14.7. This closes the full-science comparison that R128 (`frame_limit`) and
-R140 (diagnostic only) left open. It is not yet a frozen release: layout-3
-packaging, packaged-CLI timing gates and the final A5 review remain.
+R140 (diagnostic only) left open. The layout-3 release v0.8.0 then passed the
+packaged per-case and full-reproduction gates on both runtimes (below).
 
 ## Method (ruling 145)
 
@@ -32,8 +32,8 @@ set; its 35 `atlas_schedules` modules are byte-identical to the source tree.
 
 | Run | Runtime | Code | Result | Total | Case 1 / case 2 generation | Peak commit |
 | --- | --- | --- | --- | ---: | --- | ---: |
-| run-311-001 | 3.11.9 | d910f11 | MATCH, exact, no normalization | 291.5 s | 116.6 s / 71.2 s | 4.14 GB |
-| run-314-004 | 3.14.7 | b148017 | MATCH; 376 `rng.python_version` values normalized | 274.9 s | 108.2 s / 66.5 s | 4.11 GB |
+| run-311-001 | 3.11.9 | d910f11 | MATCH, exact, no normalization | 291.5 s | 116.6 s / 71.2 s | 4.14 GiB |
+| run-314-004 | 3.14.7 | b148017 | MATCH; 376 `rng.python_version` values normalized | 274.9 s | 108.2 s / 66.5 s | 4.11 GiB |
 
 Both runs streamed 6,007 pieces and matched every byte. The 3.14 run rewrote
 only the interpreter version inside commercial `rng` receipts, a field that
@@ -44,8 +44,8 @@ only the interpreter version inside commercial `rng` receipts, a field that
 
 | Run | Outcome | Cause | Change made |
 | --- | --- | --- | --- |
-| run-314-001 | Watchdog stop (exit 3) | Machine commit fell to 1.04 GB during case re-validation | Runner relies on `generate()` validation; faster `_identity` |
-| run-314-002 | Watchdog stop (exit 3) | Eager union copies added about 2.2 GB to 4.1 GB of cases | Owners and bindings remapped lazily (d910f11) |
+| run-314-001 | Watchdog stop (exit 3) | Machine commit fell to 1.04 GiB during case re-validation | Runner relies on `generate()` validation; faster `_identity` |
+| run-314-002 | Watchdog stop (exit 3) | Eager union copies added about 2.2 GiB to 4.1 GiB of cases | Owners and bindings remapped lazily (d910f11) |
 | run-314-003 | MISMATCH at `/constituents/1` | `rng.python_version` 3.14.7 versus 3.11.9 | Policy-backed normalizer (b148017) |
 
 ## Receipts (ignored local evidence)
@@ -65,9 +65,28 @@ Directory `build/task-10/apartment-a5/route-b/`:
 Receipts record argv, interpreter, UTC times, per-phase seconds and process
 memory, watchdog minima, every `atlas_schedules` module hash and git state.
 
+## Layout-3 release gates (v0.8.0)
+
+The release `data/generator-releases/v0.8.0` is byte-identical to the gated
+candidate `build/task-10/apartment-a5/layout3/candidate-v0.8.0-r2`: manifest
+`85c2370a…`, `generator.zip` 102,322,125 bytes `bb1eb96b…`, `reproduce.py`
+`996a64f2…`, reference `62ccd3e3…`. Each gate ran in its own child process,
+guarded by a 1 GiB commit floor, with nothing else heavy on the machine.
+
+| Receipt | Runtime | Case 1 | Case 2 | Reproduction |
+| --- | --- | --- | --- | --- |
+| profile-314-002.json (16,294 B, `e7af44c6…`) | 3.14.7 | 141.5 s | 98.7 s | 330.3 s MATCH, 376 version rewrites |
+| profile-311-003.json (16,583 B, `0b2eb344…`) | 3.11.9 | 154.3 s | 100.2 s | 377.9 s MATCH, exact |
+
+Superseded or invalid profile runs are retained: the first candidate's
+profile-314-001 passed but preceded review fixes; profile-311-001 and
+profile-311-002 were stopped by the memory floor because other processes
+(an orphaned review `grep`, another session's tests, then editor start-up)
+held the machine's commit. Child peaks in those runs stayed at or below
+3.64 GiB.
+
 ## Limits
 
-- Direct in-process API generation, not the packaged `-I -S generator.zip`
-  CLI boundary; layout-3 packaged gates remain to be run.
 - Windows only; no Linux evidence.
-- Memory was measured on a shared machine with about 7 GB of free commit.
+- Measured on a shared 32 GB machine; the full reproduction needs about
+  4.3 GiB of free commit plus headroom.
