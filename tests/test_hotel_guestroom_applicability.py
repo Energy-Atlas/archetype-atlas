@@ -132,8 +132,12 @@ class HotelGuestRoomTests(unittest.TestCase):
         module,overlay,current=self.prepared()
         self.assertEqual(overlay,module.build_overlay(self.base))
         from scripts.construction_site import packet_for
+        from scripts.construction_mass_release import load_release as load_mass
+        from scripts.construction_mass_accounting import upgrade_detailed
         contexts={i:c for i,c in current['contexts'].items() if c['construction_set_id']==SMALL_2019}
         c=next(iter(contexts.values()));p=hydrate_context(current,c['id']);packet=packet_for(current,SMALL_2019,contexts)
+        mass=load_mass()
+        p=upgrade_detailed(p,mass['contracts'][mass['contexts'][c['id']]['contract_id']])
         with tempfile.TemporaryDirectory() as d:
             path=Path(d)/'parity.json';path.write_text(json.dumps({'packet':packet,'expected':p}),encoding='utf-8')
             js="const fs=require('node:fs'),assert=require('node:assert/strict'),core=require('./website/assets/construction_core.js'); const d=JSON.parse(fs.readFileSync(process.argv[1]));assert.deepEqual(core.hydrate(d.packet,d.expected.id),d.expected);"
