@@ -1,9 +1,15 @@
-# Construction publication candidate: detailed v2.2.0 and unified 1.1.0
+# Construction delivery: detailed v2.2.0 and unified 1.1.0
 
-Prepared: 2026-10-15. Status: local candidate; not pushed or deployed.
+Prepared: 2026-10-15; shared-mass consumer update: 2026-10-16.
 The [construction implementation closure](reviews/construction-milestone-closure.md)
 records completed review and all-context validation. Protected-main publication
 and BEMGen integration testing remain separate gates.
+
+The current site adds shared-mass release **1.0.0**, delivering consumer schemas
+**2.1.0** (detailed) and **1.2.0** (unified) over these unchanged normalized
+releases. See [shared-mass release notes](release-notes-construction-mass-v1.0.0.md).
+Publication is marked by `construction-delivery-2026-10-16` only after successful
+protected-main Pages deployment and live verification.
 
 ## Release identities
 
@@ -96,12 +102,20 @@ Both commands use the same detailed context ID. The Python equivalent is
 `construction_equivalent_release.export_frozen()` for unified data.
 
 ```console
-python -m scripts.construction_set_release --check --quiet
+python -m scripts.construction_base_reproduce --quiet
 python -m scripts.construction_hotel_applicability --check
 python -m scripts.construction_distribution --check
 python -c "from scripts.construction_weighting import load_profiles; load_profiles()"
 python -m scripts.construction_equivalent_release --check
 ```
+
+The unified byte-reproduction command requires the original **Windows x64 /
+CPython 3.14.7** producer. Cross-platform validation of every current detailed/
+unified pair uses `python -m scripts.construction_delivery_validate`. Current
+consumer exports can be generated from frozen data using
+`construction_mass_release --context-id ID --representation detailed|unified
+--output selected.json`. See [site build instructions](site-build.md) for the
+producer pin and exhaustive Linux/Windows consumer checks.
 
 These checks are configured in the existing research matrix. Profile integrity
 verification uses frozen files and declared input hashes. Reproducing normalized

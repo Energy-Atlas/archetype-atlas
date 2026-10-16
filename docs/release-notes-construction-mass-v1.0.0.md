@@ -1,7 +1,9 @@
 # Construction shared-mass completion 1.0.0
 
-Local release prepared 2026-10-16. No push, CI/CD, production publication, site
-build, BEMGen code or BEMGen simulation is part of this release.
+Prepared 2026-10-16; included in the protected-main construction publication.
+The publication marker `construction-delivery-2026-10-16` is created after
+successful Pages deployment and live verification. BEMGen code and simulation
+remain outside this release.
 
 Detailed JSON **2.1.0** and unified JSON **1.2.0** now embed the same shared
 mass-accounting **1.0.0** contract. The normalized overlay covers **177 complete
@@ -46,7 +48,14 @@ python -m unittest tests.test_construction_mass_accounting tests.test_constructi
 python -m scripts.construction_mass_release --check --examples --validate-all
 ```
 
+Exact regeneration uses **Windows x64 / CPython 3.14.7**, the verified producer.
+Both Linux and Windows validate all frozen consumer exports with
+`python -m scripts.construction_delivery_validate`. See
+[the producer and consumer validation policy](site-build.md) for the numerical
+runtime/platform distinction; no frozen materials, fit errors or IDs are changed.
+
 Ground/foundation, systems, Program JSON migration and schedule generators remain
-outside this completion. Existing public-site delivery is unchanged. Retain all
+outside this completion. The site supplies separate direct-copy detailed and
+unified exports with this shared contract. Retain all
 Atlas and upstream licensing/notices; fixture preparation does not relicense
 Atlas original work or authorize a BEMGen fixture commit.
