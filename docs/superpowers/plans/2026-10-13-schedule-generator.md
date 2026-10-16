@@ -1,5 +1,8 @@
 # Pure Python schedule generator implementation plan
 
+> Current continuation/status: [2026-10-16 agent handover](2026-10-16-schedule-generator-handover.md).
+> The extraction remains incomplete and paused; historical milestone text below is not current execution authority.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans or superpowers:subagent-driven-development to implement this plan task by task. Steps use checkbox syntax for tracking. The user has accepted this revised plan for implementation. Execute with subagent-driven development in the isolated worktree, as requested on 2026-10-14. Use GPT-6.1 Sol or lighter models, fresh task implementers and task-scoped reviews, then an independent final review.
 
 **Goal:** Progressively ship a source-faithful pure Python generator and referenced program contract, with seeded temporal variation and conserved known annual residential/commercial targets.
