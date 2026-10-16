@@ -177,6 +177,10 @@ def main(argv=None):
     parser.add_argument('--resources', type=Path, required=True)
     parser.add_argument('--reference', type=Path, required=True)
     parser.add_argument('--receipt', type=Path, required=True)
+    parser.add_argument('--reference-python-version', default=None,
+                        help='Interpreter version recorded in the reference. When it differs from this '
+                             'interpreter, only rng.python_version is normalized (comparison-policy.json '
+                             'ignored_administrative_fields); all other bytes stay exact.')
     args = parser.parse_args(argv)
     receipt = {'schema_version': 'case-matrix-route-b-receipt-1.1.0', 'ruling': 'R145',
                'argv': sys.argv, 'python': sys.version, 'executable': sys.executable, 'platform': platform.platform(),
@@ -223,7 +227,14 @@ def main(argv=None):
         phase('admit_cases', validation='by generate() per case; not repeated (R145)')
         pieces = adapter._stream_union_structure(cases, matrix, identities)
         phase('union_checks')
-        result = comparer.compare_canonical_stream(pieces, args.reference, **REFERENCE)
+        normalize = None
+        if args.reference_python_version and args.reference_python_version != platform.python_version():
+            normalize = comparer.runtime_version_normalizer(platform.python_version(), args.reference_python_version)
+        receipt['normalization'] = None if normalize is None else {
+            'field': 'rng.python_version', 'generated': platform.python_version(),
+            'reference': args.reference_python_version,
+            'authority': 'atlas_schedules/data/reference/comparison-policy.json ignored_administrative_fields'}
+        result = comparer.compare_canonical_stream(pieces, args.reference, normalize=normalize, **REFERENCE)
         phase('stream_and_compare')
         receipt.update(status=result['status'], comparison=result)
     except BaseException as error:  # record, then re-raise: no retry or repair here

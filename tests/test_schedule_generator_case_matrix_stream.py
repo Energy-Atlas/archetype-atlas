@@ -120,6 +120,25 @@ class StreamComparisonTests(unittest.TestCase):
             raise GeneratorError('matrix_slot_closure', '/x', 'raised while streaming')
         self.assertCode('matrix_slot_closure', self.compare, failing(), path)
 
+    def test_runtime_version_normalizer_touches_only_rng_receipts(self):
+        normalize = stream.runtime_version_normalizer('3.14.7', '3.11.9')
+        receipt = b'"rng":{"algorithm":"MT \\"x\\"","python_version":"3.14.7"}'
+        other = b'"python_version":"3.14.7"'
+        foreign = b'"rng":{"algorithm":"a","python_version":"3.12.0"}'
+        blob, count = normalize(b'[' + receipt + b',' + other + b',' + foreign + b',' + receipt + b']')
+        self.assertEqual(count, 2)
+        self.assertEqual(blob, b'[' + receipt.replace(b'3.14.7', b'3.11.9') + b',' + other + b',' + foreign + b','
+                         + receipt.replace(b'3.14.7', b'3.11.9') + b']')
+        decoded = b'{"a":{' + receipt.replace(b'3.14.7', b'3.11.9') + b'}}\n'
+        path = self.reference(decoded)
+        result = stream.compare_canonical_stream([('/a', b'{"a":{' + receipt + b'}}\n')], path,
+                                                 compressed=identity(path.read_bytes()), decoded=identity(decoded),
+                                                 normalize=normalize)
+        self.assertEqual((result['status'], result['normalized_substitutions']), ('MATCH', 1))
+        exact = stream.compare_canonical_stream([('/a', b'{"a":{' + receipt + b'}}\n')], path,
+                                                compressed=identity(path.read_bytes()), decoded=identity(decoded))
+        self.assertEqual((exact['status'], exact['normalized_substitutions']), ('MISMATCH', None))
+
     def test_generated_pieces_must_be_bytes_with_string_paths(self):
         path = self.reference()
         for bad in ([('/p', 'text')], [(None, b'{')], [('/p', b'{', 'extra')]):

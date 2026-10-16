@@ -9,6 +9,7 @@ A first difference is reported, never repaired, retried or tolerated.
 """
 import hashlib
 from pathlib import Path
+import re
 import zlib
 
 from atlas_schedules.errors import GeneratorError
@@ -80,28 +81,56 @@ class _Reference:
         return extra
 
 
+_RNG_VERSION = re.compile(rb'("rng":\{"algorithm":"(?:[^"\\]|\\.)*","python_version":")([^"\\]*)("\})')
+
+
+def runtime_version_normalizer(generated: str, reference: str):
+    """Rewrite only rng.python_version, an administrative field in comparison-policy.json.
+
+    Returns a function mapping a generated piece to (bytes, substitutions). Only
+    the exact two-key rng receipt written by commercial sampling is touched, and
+    only when it carries the generated interpreter version; every other byte,
+    including any other python_version text, is compared unchanged.
+    """
+    old, new = generated.encode('ascii'), reference.encode('ascii')
+    def normalize(blob):
+        count = 0
+        def swap(match):
+            nonlocal count
+            if match.group(2) != old: return match.group(0)
+            count += 1; return match.group(1) + new + match.group(3)
+        return _RNG_VERSION.sub(swap, blob), count
+    return normalize
+
+
 def _window(blob, index):
     return blob[max(0, index-WINDOW_BYTES):index+WINDOW_BYTES].decode('utf-8', 'backslashreplace')
 
 
 def compare_canonical_stream(pieces, reference, *, compressed: dict, decoded: dict,
-                             read_bytes: int = READ_BYTES, output_bytes: int = OUTPUT_BYTES) -> dict:
+                             read_bytes: int = READ_BYTES, output_bytes: int = OUTPUT_BYTES,
+                             normalize=None) -> dict:
     """Compare (pointer, bytes) pieces with the gzip reference's decoded bytes.
 
     Raises source_integrity if the reference is not the declared file. Returns
     status MATCH only if every byte matched, both streams ended together and
-    the decoded reference has the declared size and SHA-256.
+    the decoded reference has the declared size and SHA-256. normalize, if
+    given (see runtime_version_normalizer), rewrites each generated piece first;
+    every substitution is counted in the result. Generated identity is taken
+    after normalization, so a MATCH still means equal bytes end to end.
     """
     reference = Path(reference)
     actual = _file_identity(reference, read_bytes)
     if actual != compressed: _fail('Compressed reference identity differs: '+repr(actual))
-    generated = hashlib.sha256(); generated_size = 0; count = 0; difference = None
+    generated = hashlib.sha256(); generated_size = 0; count = 0; difference = None; substitutions = 0
     with reference.open('rb') as handle:
         ref = _Reference(handle, read_bytes, output_bytes)
         for item in pieces:
             if not (isinstance(item, tuple) and len(item) == 2 and isinstance(item[0], str) and isinstance(item[1], bytes)):
                 raise GeneratorError('invalid_json', '/case_matrix/stream', 'Pieces must be (str pointer, bytes) pairs')
             path, blob = item; count += 1
+            if normalize is not None:
+                blob, swapped = normalize(blob); substitutions += swapped
             expected = ref.take(len(blob))
             if expected != blob:
                 index = next((i for i, (a, b) in enumerate(zip(blob, expected)) if a != b), len(expected))
@@ -121,6 +150,7 @@ def compare_canonical_stream(pieces, reference, *, compressed: dict, decoded: di
             streamed = {'size_bytes': ref.compressed_size, 'sha256': ref.compressed_digest.hexdigest()}
             if streamed != actual: _fail('Reference changed between authentication and comparison: '+repr(streamed))
     return {'status': 'MATCH' if difference is None else 'MISMATCH', 'pieces': count,
+            'normalized_substitutions': substitutions if normalize is not None else None,
             'generated': {'size_bytes': generated_size, 'sha256': generated.hexdigest(), 'complete': difference is None},
             'reference': {'compressed': actual, 'decoded': reference_decoded},
             'first_difference': difference}
