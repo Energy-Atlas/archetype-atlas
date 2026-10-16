@@ -38,16 +38,22 @@ class _Reference:
         self.decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
         self.buffer = bytearray(); self.start = 0; self.ended = False
         self.digest = hashlib.sha256(); self.consumed = 0
+        self.compressed_digest = hashlib.sha256(); self.compressed_size = 0
+
+    def _read(self, count):
+        data = self.handle.read(count)
+        self.compressed_digest.update(data); self.compressed_size += len(data)
+        return data
 
     def _pump(self):
         try:
             if self.decoder.unconsumed_tail:
                 data = self.decoder.unconsumed_tail
             elif self.decoder.eof:
-                if self.decoder.unused_data or self.handle.read(1): _fail('Bytes follow the single gzip member')
+                if self.decoder.unused_data or self._read(1): _fail('Bytes follow the single gzip member')
                 self.ended = True; return
             else:
-                data = self.handle.read(self.read_bytes)
+                data = self._read(self.read_bytes)
                 if not data: _fail('Reference gzip stream is truncated')
             self.buffer += self.decoder.decompress(data, self.output_bytes)
         except zlib.error as error:
@@ -112,6 +118,8 @@ def compare_canonical_stream(pieces, reference, *, compressed: dict, decoded: di
         if difference is None:
             reference_decoded = {'size_bytes': ref.consumed, 'sha256': ref.digest.hexdigest()}
             if reference_decoded != decoded: _fail('Decoded reference identity differs: '+repr(reference_decoded))
+            streamed = {'size_bytes': ref.compressed_size, 'sha256': ref.compressed_digest.hexdigest()}
+            if streamed != actual: _fail('Reference changed between authentication and comparison: '+repr(streamed))
     return {'status': 'MATCH' if difference is None else 'MISMATCH', 'pieces': count,
             'generated': {'size_bytes': generated_size, 'sha256': generated.hexdigest(), 'complete': difference is None},
             'reference': {'compressed': actual, 'decoded': reference_decoded},

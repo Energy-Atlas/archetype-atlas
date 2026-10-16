@@ -17,12 +17,14 @@ decision. The receipt records phases, peak memory and the comparison result.
 import argparse
 import ctypes
 import datetime
+import gc
 import gzip
 import hashlib
 import json
 import os
 from pathlib import Path
 import platform
+import subprocess
 import sys
 import threading
 import time
@@ -64,13 +66,21 @@ class _SystemMemory(ctypes.Structure):
                 ('ullAvailExtendedVirtual', ctypes.c_ulonglong)]
 
 
+if os.name == 'nt':
+    _kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
+    _psapi = ctypes.WinDLL('psapi', use_last_error=True)
+    _kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+    _kernel32.GetCurrentProcess.argtypes = []
+    _kernel32.GlobalMemoryStatusEx.argtypes = [ctypes.c_void_p]
+    _psapi.GetProcessMemoryInfo.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_ulong]
+
+
 def process_memory():
-    """Windows process counters; None elsewhere (unknown, never zero)."""
+    """Windows process counters; None means unknown, never zero."""
     if os.name != 'nt': return None
     counters = _ProcessMemory(); counters.cb = ctypes.sizeof(counters)
-    ok = ctypes.windll.psapi.GetProcessMemoryInfo(ctypes.windll.kernel32.GetCurrentProcess(),
-                                                  ctypes.byref(counters), counters.cb)
-    if not ok: return None
+    if not _psapi.GetProcessMemoryInfo(_kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
+        return None
     return {'working_set_bytes': counters.WorkingSetSize, 'peak_working_set_bytes': counters.PeakWorkingSetSize,
             'commit_bytes': counters.PrivateUsage, 'peak_commit_bytes': counters.PeakPagefileUsage}
 
@@ -78,13 +88,26 @@ def process_memory():
 def system_memory():
     if os.name != 'nt': return None
     status = _SystemMemory(); status.dwLength = ctypes.sizeof(status)
-    if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)): return None
+    if not _kernel32.GlobalMemoryStatusEx(ctypes.byref(status)): return None
     return {'available_physical_bytes': status.ullAvailPhys, 'available_commit_bytes': status.ullAvailPageFile,
             'total_physical_bytes': status.ullTotalPhys, 'commit_limit_bytes': status.ullTotalPageFile}
 
 
+def write_json(path, value):
+    """Write via a temporary sibling and os.replace, so a reader never sees half a receipt."""
+    temporary = Path(str(path)+'.tmp')
+    temporary.write_text(json.dumps(value, indent=2), encoding='utf-8')
+    os.replace(temporary, path)
+
+
 class Watchdog(threading.Thread):
-    """Samples memory; hard-exits before the system floor is crossed."""
+    """Samples system memory; hard-exits (code 3) at the floor or if sampling fails.
+
+    Fails closed: an unreadable sample stops the run, and the stop note is best
+    effort, so a failed note write can never leave the process unguarded. A
+    long C-level call holds the GIL and can delay one sample; the floors keep
+    headroom for that.
+    """
 
     def __init__(self, receipt_path, interval=0.25):
         super().__init__(daemon=True)
@@ -92,19 +115,27 @@ class Watchdog(threading.Thread):
         self.minimum = {'available_physical_bytes': None, 'available_commit_bytes': None}
         self.samples = 0; self.stop = threading.Event()
 
+    def halt(self, reason, current):
+        try:
+            note = {'status': reason, 'utc': utc(), 'system': current, 'process': process_memory(),
+                    'floors': {'physical_bytes': FLOOR_PHYSICAL, 'commit_bytes': FLOOR_COMMIT}}
+            sys.stderr.write(reason+' '+json.dumps(note)+'\n'); sys.stderr.flush()
+            write_json(Path(self.receipt_path).with_suffix('.memory-stop.json'), note)
+        finally:
+            os._exit(3)
+
     def run(self):
         while not self.stop.wait(self.interval):
-            current = system_memory()
-            if current is None: return
+            try:
+                current = system_memory()
+            except Exception:
+                current = None
+            if current is None: self.halt('MEMORY_SAMPLE_FAILED', None)
             self.samples += 1
             for key in self.minimum:
                 if self.minimum[key] is None or current[key] < self.minimum[key]: self.minimum[key] = current[key]
             if current['available_physical_bytes'] < FLOOR_PHYSICAL or current['available_commit_bytes'] < FLOOR_COMMIT:
-                note = {'status': 'MEMORY_FLOOR_STOP', 'utc': utc(), 'system': current, 'process': process_memory(),
-                        'floors': {'physical_bytes': FLOOR_PHYSICAL, 'commit_bytes': FLOOR_COMMIT}}
-                Path(self.receipt_path).with_suffix('.memory-stop.json').write_text(json.dumps(note, indent=2), encoding='utf-8')
-                sys.stderr.write('MEMORY_FLOOR_STOP '+json.dumps(note)+'\n'); sys.stderr.flush()
-                os._exit(3)
+                self.halt('MEMORY_FLOOR_STOP', current)
 
 
 def utc():
@@ -114,6 +145,23 @@ def utc():
 def file_identity(path):
     blob = Path(path).read_bytes()
     return {'size_bytes': len(blob), 'sha256': hashlib.sha256(blob).hexdigest()}
+
+
+def code_identity():
+    """Recorded, not pinned: every runtime module plus the three Route B scripts, and git state."""
+    files = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT/'atlas_schedules').rglob('*.py')) + list(CODE_FILES)
+    rows = [(name, file_identity(ROOT/name)['sha256']) for name in files]
+    aggregate = hashlib.sha256('\n'.join(f'{sha}  {name}' for name, sha in rows).encode('utf-8')).hexdigest()
+    git = {'head': None, 'dirty_paths': None}
+    try:
+        head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True, timeout=30)
+        status = subprocess.run(['git', 'status', '--porcelain'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        if head.returncode == 0 and status.returncode == 0:
+            git = {'head': head.stdout.strip(), 'dirty_paths': [line[3:] for line in status.stdout.splitlines()]}
+    except (OSError, subprocess.SubprocessError):
+        pass  # unknown stays None, never an empty list
+    return {'files': dict(rows), 'aggregate_sha256': aggregate, 'git': git,
+            'note': 'Recorded for audit; no code pin is enforced by this runner.'}
 
 
 def load_inputs(folder):
@@ -130,12 +178,15 @@ def main(argv=None):
     parser.add_argument('--reference', type=Path, required=True)
     parser.add_argument('--receipt', type=Path, required=True)
     args = parser.parse_args(argv)
-    receipt = {'schema_version': 'case-matrix-route-b-receipt-1.0.0', 'ruling': 'R145',
+    receipt = {'schema_version': 'case-matrix-route-b-receipt-1.1.0', 'ruling': 'R145',
                'argv': sys.argv, 'python': sys.version, 'executable': sys.executable, 'platform': platform.platform(),
                'started_utc': utc(), 'phases': [], 'status': 'INCOMPLETE',
-               'code': {name: file_identity(ROOT/name) for name in CODE_FILES},
-               'inputs': {name: file_identity(args.inputs/name) for name in INPUT_FILES},
-               'system_memory_at_start': system_memory()}
+               'system_memory_at_start': system_memory(), 'process_memory_at_start': process_memory()}
+    if receipt['system_memory_at_start'] is None or receipt['process_memory_at_start'] is None:
+        receipt['status'] = 'REFUSED_UNGUARDED'
+        write_json(args.receipt, receipt)
+        sys.stderr.write('Memory counters unavailable; refusing to run without the watchdog\n')
+        return 2
     watchdog = Watchdog(args.receipt); watchdog.start()
     clock = time.perf_counter(); begin = clock
 
@@ -145,9 +196,11 @@ def main(argv=None):
         receipt['phases'].append({'phase': name, 'seconds': round(now-clock, 3), 'utc': utc(),
                                   'process_memory': process_memory(), **details})
         clock = now
-        args.receipt.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+        write_json(args.receipt, receipt)
 
     try:
+        receipt.update(code=code_identity(), inputs={name: file_identity(args.inputs/name) for name in INPUT_FILES})
+        phase('record_identities')
         request, manifest, mapping = load_inputs(args.inputs)
         matrix = adapter.compile_case_matrix(request, manifest, mapping)
         phase('admit_and_compile_matrix')
@@ -158,10 +211,18 @@ def main(argv=None):
             for case in mapping['cases']:
                 case_request = case['request']
                 cases[case['case_id']] = generate(case_request['params'], case_request['seed'])
+                gc.collect()
                 phase('generate:'+case['case_id'], owners=len(cases[case['case_id']]['constituents']),
                       schedules=len(cases[case['case_id']]['schedules']))
-        pieces = adapter.stream_original_union(cases, matrix)
-        phase('admit_cases_and_union_checks')
+        # Same admission as stream_original_union except its repeated validate_bundle:
+        # generate() validated each of these exact objects (atlas_schedules/generator.py)
+        # moments ago, in this process, and nothing has touched them since. Repeating it
+        # while both cases are held would add a whole-case deep copy (service_graph).
+        identities = adapter._admit_matrix(matrix)
+        identities['case_bundles'] = {key: adapter._identity(value) for key, value in cases.items()}
+        phase('admit_cases', validation='by generate() per case; not repeated (R145)')
+        pieces = adapter._stream_union_structure(cases, matrix, identities)
+        phase('union_checks')
         result = comparer.compare_canonical_stream(pieces, args.reference, **REFERENCE)
         phase('stream_and_compare')
         receipt.update(status=result['status'], comparison=result)
@@ -174,7 +235,7 @@ def main(argv=None):
         receipt.update(finished_utc=utc(), total_seconds=round(time.perf_counter()-begin, 3),
                        process_memory_at_end=process_memory(), watchdog_minimum=watchdog.minimum,
                        watchdog_samples=watchdog.samples)
-        args.receipt.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+        write_json(args.receipt, receipt)
     return 0 if receipt['status'] == 'MATCH' else 1
 
 

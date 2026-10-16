@@ -574,6 +574,19 @@ class CaseMatrixTests(unittest.TestCase):
             self.assertEqual(result['status'], 'MISMATCH')
             self.assertEqual(result['first_difference']['path'], '/schedules/'+sid.replace('~', '~0').replace('/', '~1'))
 
+    def test_streamed_union_loop_level_faults_match_assembly(self):
+        cases = copy.deepcopy(self.cases); cases[COM]['algorithm_version'] = 'other-algorithm'
+        checks = [('matrix_context_closure', cases, refreshed(self.desc, cases=cases))]
+        cases = {UNIT: copy.deepcopy(self.cases[UNIT])}
+        checks.append(('matrix_partition', cases, refreshed(self.desc, cases=cases)))
+        stale = refreshed(self.desc, cases=self.cases); changed = copy.deepcopy(self.cases)
+        changed[COM]['schedules'][next(iter(changed[COM]['schedules']))]['values'][0] += 1
+        checks.append(('matrix_identity', changed, stale))
+        for code, value, desc in checks:
+            with self.subTest(code=code):
+                self.assertCode(code, adapter._stream_union_structure, value, self.matrix, desc)
+                self.assertCode(code, adapter._assemble_union_structure, value, self.matrix, desc)
+
     def test_public_stream_rejects_non_authoritative_fixture(self):
         self.assertEqual(list(inspect.signature(adapter.stream_original_union).parameters), ['case_bundles', 'matrix'])
         with patch.object(adapter, '_stream_union_structure', side_effect=AssertionError('admission bypass')):

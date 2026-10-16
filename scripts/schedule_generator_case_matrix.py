@@ -57,16 +57,40 @@ def _fail(code, path, message):
 
 
 def _identity(value):
-    """Canonical content identity without a second full-reference-sized byte tree."""
+    """Canonical content identity without a second full-reference-sized byte tree.
+
+    Containers down to depth two are framed here and every deeper value is
+    encoded whole by json's C encoder: the same bytes as canonical(value), at
+    C speed, while no single chunk exceeds one second-level member.
+    """
     digest = hashlib.sha256(); size = 0
     try:
-        encoder = json.JSONEncoder(ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(',', ':'))
-        for chunk in encoder.iterencode(value):
-            blob = chunk.encode('utf-8'); digest.update(blob); size += len(blob)
+        for blob in _canonical_chunks(value, 2):
+            digest.update(blob); size += len(blob)
         digest.update(b'\n')
     except (ValueError, TypeError, UnicodeError) as error:
         _fail('matrix_identity', 'content', str(error))
     return {'size_bytes': size+1, 'sha256': digest.hexdigest()}
+
+
+def _canonical_chunks(value, depth):
+    """Yield canonical JSON bytes of value (no trailing newline) in bounded chunks."""
+    if depth and isinstance(value, dict):
+        yield b'{'
+        for n, key in enumerate(sorted(value)):
+            if not isinstance(key, str): raise TypeError('Canonical JSON keys must be strings')
+            yield (b',' if n else b'') + json.dumps(key, ensure_ascii=False).encode('utf-8') + b':'
+            yield from _canonical_chunks(value[key], depth-1)
+        yield b'}'
+    elif depth and isinstance(value, (list, tuple)):
+        yield b'['
+        for n, item in enumerate(value):
+            if n: yield b','
+            yield from _canonical_chunks(item, depth-1)
+        yield b']'
+    else:
+        yield json.dumps(value, ensure_ascii=False, allow_nan=False, sort_keys=True,
+                         separators=(',', ':')).encode('utf-8')
 
 
 def _same(left, right):
@@ -144,6 +168,8 @@ def stream_original_union(case_bundles: dict[str, dict], matrix: dict):
     canonical(assemble_original_union(...)). Under R145 the union itself is not
     revalidated here: each case is, and union bytes are compared exactly with
     the authenticated reference that generate() validated when it was made.
+    All checks run before this returns, but encoding is lazy and reads the
+    caller's cases: do not mutate them until the iterator is exhausted.
     """
     identities = _admit_matrix(matrix)
     _require(isinstance(case_bundles, dict) and set(case_bundles) == set(_CASE_ORDER),
@@ -522,6 +548,9 @@ def _union_skeleton(case_bundles, matrix, identities):
     are private remapped workspace copies; schedules, metadata and SourceObjects
     stay shared read-only with the cases. The skeleton never leaves this module:
     it is only encoded, so no caller can mutate the shared case data through it.
+    Single faults raise the same code as _assemble_union_structure; with several
+    simultaneous faults the first code reported may differ, because binding
+    references are remapped after, not during, the per-case collision loop.
     """
     mapping = _matrix_structure(matrix, identities)
     _require(isinstance(case_bundles, dict) and set(case_bundles) == set(matrix['case_order']),
