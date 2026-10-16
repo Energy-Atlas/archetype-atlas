@@ -1,0 +1,2918 @@
+{
+  "climate_zone": "3B",
+  "detailed_context_id": "construction-set-ff95251b6f063fb2c1cdba81",
+  "id": "equivalent-construction-0fb2714026c6ce1bef04417d",
+  "infiltration": {
+    "method": "fixed_source_reference_natural_ach",
+    "natural_ach": {
+      "evidence_id": "construction-evidence-740349d654a31f554a0670dd",
+      "unit": "1/s",
+      "value": 1.4620820265162299e-05
+    },
+    "reference_id": "DOE Ref Pre-1980/Hospital"
+  },
+  "kind": "building_level_equivalent",
+  "name": "Hospital construction package / building-level equivalent",
+  "provenance": {
+    "detailed_release": "v2.2.0",
+    "interpretation_note": "Additive approximation, not replacement detailed rules. Reported fit errors are not building energy error bounds.",
+    "original_unit": "source SI layers and archetype reference areas",
+    "profile_release": "construction-weighting-v1.1.0",
+    "transformation": "Source precedence, precomputed area weights, fixed two-parameter thermal approximation; fixed ACH unchanged",
+    "foundation_ground": {
+      "source_locator": "data/construction-inputs/foundation-execution-v1.json#/commercial/foundation-case-8d734c49bbdce335b783124c",
+      "source_sha256": {
+        "native_capture": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83"
+      }
+    }
+  },
+  "reference_id": "DOE Ref Pre-1980/Hospital",
+  "schema_version": "2.0.0",
+  "scope": "building",
+  "source": {
+    "building_type": "Hospital",
+    "construction_set_id": "construction-199f55910e279f3a5803e0c5",
+    "definition_release": "v0.1.1",
+    "evidence_view": "source",
+    "source_family": "existing_stock_benchmark",
+    "source_fixture_id": null,
+    "space_type": null,
+    "template": "DOE Ref Pre-1980",
+    "vintage": {
+      "kind": "source_template",
+      "status": "exact",
+      "value": "DOE Ref Pre-1980"
+    }
+  },
+  "status": "ready",
+  "supporting_profile_id": "DOE Ref Pre-1980/Hospital",
+  "weighting_policy": "precomputed_source_archetype",
+  "components": {
+    "BuildingShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "ExteriorDoor": {
+      "assembly_id": "equivalent-assembly-97379d3aaa33b215de90594a",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-selector-42e5c5f493d9106a98046e42",
+            "reference_area_m2": 48.774096,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 48.774096,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorFloor": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "ExteriorRoof": {
+      "assembly_id": "equivalent-assembly-f60dad4baae3421921ff8c92",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-1ef134a394097a65cc504621",
+            "reference_area_m2": 4353.129218,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 4353.129218,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorWall": {
+      "assembly_id": "equivalent-assembly-8d1bad3c3ec9636b1c79090b",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-0c25eeacf14423d8b2386b1b",
+            "reference_area_m2": 6468.0767474,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 6468.0767474,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorWindow": {
+      "assembly_id": "equivalent-assembly-d0f415ed0d13a53c15aae8b9",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-8f777a7249258ab7174db50c",
+            "reference_area_m2": 848.3856500000003,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 848.3856500000003,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "FloorDistributedMass": {
+      "assembly_id": "equivalent-assembly-df41c7efa850de71c08fdcc3",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-53c11e6370cbb10d4ed0e31d",
+            "reference_area_m2": 1525.2923520000002,
+            "weight": 0.0815997879160537
+          },
+          {
+            "assembly_id": "construction-7993c4a2fb5cd437454ffb9b",
+            "reference_area_m2": 17167.064465999996,
+            "weight": 0.9184002120839463
+          }
+        ],
+        "weight_basis": "unique_physical_floor_inventory"
+      },
+      "quantity": {
+        "application": "residual_floor_mass_only; deduct explicitly represented physical slabs once",
+        "area_per_counted_floor_area": 0.8331381129032098,
+        "unit": "m2/m2"
+      },
+      "status": "ready"
+    },
+    "GlassDoor": {
+      "assembly_id": "equivalent-assembly-e37d1ef9ff62306fbafb54c6",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-selector-4a6342ae0e2e176ad9c88222",
+            "reference_area_m2": 0.0,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "unique_source_recipe_without_reference_exposure"
+      },
+      "status": "ready"
+    },
+    "InteriorCeiling": {
+      "assembly_id": "equivalent-assembly-1f91bdb1da187a63d6ff3291",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-1802d592feaf175e5659e07a",
+            "reference_area_m2": 1895.2951680000006,
+            "weight": 0.10481114256482366
+          },
+          {
+            "assembly_id": "construction-474a746d14e9551e3a5b448f",
+            "reference_area_m2": 16187.659770000006,
+            "weight": 0.8951888574351764
+          }
+        ],
+        "source_reference_area_m2": 18082.954938000006,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorDoor": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "InteriorFloor": {
+      "assembly_id": "equivalent-assembly-e8c7de5984114f1752160d3c",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-53c11e6370cbb10d4ed0e31d",
+            "reference_area_m2": 1895.2951680000006,
+            "weight": 0.10137037221426912
+          },
+          {
+            "assembly_id": "construction-7993c4a2fb5cd437454ffb9b",
+            "reference_area_m2": 16801.441626,
+            "weight": 0.8986296277857309
+          }
+        ],
+        "source_reference_area_m2": 18696.736794,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorWall": {
+      "assembly_id": "equivalent-assembly-0e29727fc51f38280a1cc39e",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-84972444e488f40ead9c50f5",
+            "reference_area_m2": 12467.243322400003,
+            "weight": 0.7117994936847026
+          },
+          {
+            "assembly_id": "construction-ecb6baeeaa65a2e335eec807",
+            "reference_area_m2": 5047.862312,
+            "weight": 0.2882005063152975
+          }
+        ],
+        "source_reference_area_m2": 17515.105634400003,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorWindow": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "InternalMass": {
+      "assembly_id": "equivalent-assembly-a415dabc1c80d76d6899683b",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+            "reference_area_m2": 44872.16831999999,
+            "weight": 1.0
+          }
+        ],
+        "weight_basis": "source_exposed_added_mass_area"
+      },
+      "quantity": {
+        "application": "additional_source_mass_only",
+        "area_per_counted_floor_area": 1.9999999999999998,
+        "unit": "m2/m2"
+      },
+      "status": "ready"
+    },
+    "OverheadDoor": {
+      "assembly_id": "equivalent-assembly-5ce13ef7e69ba91ec4ab37ce",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "construction-selector-c40048c2695a34829d9bf16a",
+            "reference_area_m2": 7.4322432,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 7.4322432,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "SiteShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "Skylight": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "SpaceShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "TubularDaylightDiffuser": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "TubularDaylightDome": {
+      "assembly_id": null,
+      "derivation": {
+        "contributors": [],
+        "source_reference_area_m2": 0.0,
+        "weight_basis": "source_reference_zero_exposure"
+      },
+      "reason": "source_reference_zero_exposure",
+      "status": "not_applicable"
+    },
+    "GroundFloor": {
+      "status": "ready",
+      "assembly_id": "foundation-assembly-0a03d8cbb708d9e2f3a65077",
+      "when": {
+        "scope": "building_default",
+        "boundary_condition": "Ground"
+      },
+      "ground_method_id": "ground-method-f181ecf923d42ee7f4eb23b1"
+    },
+    "FoundationWall": {
+      "status": "ready",
+      "assembly_id": "foundation-assembly-cb4953ad71f1d548814a1236",
+      "when": {
+        "scope": "building_default",
+        "boundary_condition": "Ground"
+      },
+      "ground_method_id": "ground-method-f181ecf923d42ee7f4eb23b1"
+    },
+    "FloorOverFoundation": {
+      "status": "not_applicable",
+      "assembly_id": null,
+      "reason": "Source configuration has no applicable FloorOverFoundation"
+    },
+    "RimJoist": {
+      "status": "not_applicable",
+      "assembly_id": null,
+      "reason": "Source configuration has no applicable RimJoist"
+    }
+  },
+  "consumer_inputs": [
+    "actual component areas and geometry",
+    "actual counted floor area",
+    "physical mass already represented by instantiated interior surfaces"
+  ],
+  "mass_accounting": {
+    "schema_version": "1.0.0",
+    "status": "ready",
+    "reference": {
+      "profile_id": "DOE Ref Pre-1980/Hospital",
+      "counted_floor_area_m2": 22436.08416,
+      "quantity_basis": "multiply normalized quantities by actual counted building floor area"
+    },
+    "floor_pair_policy": "one physical slab; do not add both floor and ceiling capacity",
+    "paired_surface_policy": {
+      "canonical_side": "InteriorFloor",
+      "adjacent_ceiling": "reverse the same canonical floor assembly",
+      "unpaired_ceiling": "use InteriorCeiling recipe"
+    },
+    "added_mass_policy": "additional source furnishings/partition objects are separate from explicit surfaces",
+    "removed_wall_policy": "Restore only unrepresented InteriorWall capacity using source or equivalent recipes; exchange equivalence remains approximate",
+    "residual_floor_policy": "Restore only unrepresented InteriorFloor capacity; explicit slabs retain their capacity",
+    "residual_policy": "max(0, reference minus represented); report signed difference and excess; never subtract mass",
+    "physical_inventory_profile_id": "DOE Ref Pre-1980/Hospital",
+    "paired_face_area_policy": "mean_zone_weighted_faces",
+    "reference_area_approximation": {
+      "unequal_multiplier_pair_counts": {
+        "floor_pairs": 20,
+        "wall_pairs": 34
+      },
+      "evidence_profile_id": "DOE Ref Pre-1980/Hospital",
+      "interpretation": "Mean of multiplied face areas where multipliers differ; preserve the frozen source inventory. Residential inferred adiabatic floor/ceiling object quantities retain their source convention."
+    },
+    "physical_capacity_budgets": {
+      "InteriorFloor": [
+        {
+          "source_assembly_id": "construction-53c11e6370cbb10d4ed0e31d",
+          "area_per_counted_floor_area": 0.06798389331768313,
+          "capacity_per_counted_floor_area_J_m2_K": 13352.915317128613,
+          "reference_area_m2": 1525.2923520000004,
+          "source_areal_capacity_J_m2_K": 196412.9246721946,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/floor_inventory"
+        },
+        {
+          "source_assembly_id": "construction-7993c4a2fb5cd437454ffb9b",
+          "area_per_counted_floor_area": 0.7651542195855267,
+          "capacity_per_counted_floor_area_J_m2_K": 150286.17809406391,
+          "reference_area_m2": 17167.064465999996,
+          "source_areal_capacity_J_m2_K": 196412.9246721946,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/floor_inventory"
+        }
+      ],
+      "InteriorWall": [
+        {
+          "source_assembly_id": "construction-84972444e488f40ead9c50f5",
+          "area_per_counted_floor_area": 0.3575713248527946,
+          "capacity_per_counted_floor_area_J_m2_K": 7925.080793934599,
+          "reference_area_m2": 8022.500337599999,
+          "source_areal_capacity_J_m2_K": 22163.63629605144,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/wall_inventory"
+        },
+        {
+          "source_assembly_id": "construction-ecb6baeeaa65a2e335eec807",
+          "area_per_counted_floor_area": 0.10509954937698002,
+          "capacity_per_counted_floor_area_J_m2_K": 2329.388187270285,
+          "reference_area_m2": 2358.022334999999,
+          "source_areal_capacity_J_m2_K": 22163.63629605144,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/wall_inventory"
+        }
+      ]
+    },
+    "additional_mass": {
+      "status": "provided",
+      "entries": [
+        {
+          "id": "source-mass-quantity-fa6b3a8d455145ed1f6cb3f2",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Basement",
+            "source_story": "Building Story 1",
+            "native_building_type": "Hospital",
+            "native_space_type": "Basement",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 7478.69472,
+          "area_per_counted_floor_area": 0.33333333333333337,
+          "capacity_per_counted_floor_area_J_m2_K": 32670.000000000004,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Basement Mass",
+            "source_space_floor_area_m2": 3739.34736,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/0/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-de071b9eec76940b2f44be61",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1138.06224,
+          "area_per_counted_floor_area": 0.050724637681159424,
+          "capacity_per_counted_floor_area_J_m2_K": 4971.521739130435,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_Flr_1 Mass",
+            "source_space_floor_area_m2": 569.03112,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/1/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-cdda4993e2c1e130ae255283",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1138.06224,
+          "area_per_counted_floor_area": 0.050724637681159424,
+          "capacity_per_counted_floor_area_J_m2_K": 4971.521739130435,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_Flr_2 Mass",
+            "source_space_floor_area_m2": 569.03112,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/2/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-1b6dc8b924b8a3e44137bd24",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1003.352832,
+          "area_per_counted_floor_area": 0.04472049689440994,
+          "capacity_per_counted_floor_area_J_m2_K": 4383.055900621118,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_Flr_5 Mass",
+            "source_space_floor_area_m2": 501.676416,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/3/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-c77f86a79c6236dcb3193cf4",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_NW_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1133.417088,
+          "area_per_counted_floor_area": 0.0505175983436853,
+          "capacity_per_counted_floor_area_J_m2_K": 4951.229813664596,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_NW_Flr_3 Mass",
+            "source_space_floor_area_m2": 566.708544,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/4/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-758a78acab72d69bd5d9032c",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_NW_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1133.417088,
+          "area_per_counted_floor_area": 0.0505175983436853,
+          "capacity_per_counted_floor_area_J_m2_K": 4951.229813664596,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_NW_Flr_4 Mass",
+            "source_space_floor_area_m2": 566.708544,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/5/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-f3ccbabac28ac41947203918",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_SE_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1133.417088,
+          "area_per_counted_floor_area": 0.0505175983436853,
+          "capacity_per_counted_floor_area_J_m2_K": 4951.229813664596,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_SE_Flr_3 Mass",
+            "source_space_floor_area_m2": 566.708544,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/6/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-e6ed05ade642e938949aa769",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Corridor_SE_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "Corridor",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1133.417088,
+          "area_per_counted_floor_area": 0.0505175983436853,
+          "capacity_per_counted_floor_area_J_m2_K": 4951.229813664596,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Corridor_SE_Flr_4 Mass",
+            "source_space_floor_area_m2": 566.708544,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/7/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-9128d08a458618cc7f9eb266",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Dining_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Dining",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1393.5456,
+          "area_per_counted_floor_area": 0.062111801242236024,
+          "capacity_per_counted_floor_area_J_m2_K": 6087.577639751553,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Dining_Flr_5 Mass",
+            "source_space_floor_area_m2": 696.7728,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/8/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-1f4e1d4929a4dba54b1de5f7",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ER_Exam1_Mult4_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "ER_Exam",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 222.967296,
+          "area_per_counted_floor_area": 0.009937888198757764,
+          "capacity_per_counted_floor_area_J_m2_K": 974.0124223602485,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ER_Exam1_Mult4_Flr_1 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 4
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/9/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-e82934ebadf15ad8aa5ccf7c",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ER_Exam3_Mult4_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "ER_Exam",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 222.967296,
+          "area_per_counted_floor_area": 0.009937888198757764,
+          "capacity_per_counted_floor_area_J_m2_K": 974.0124223602485,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ER_Exam3_Mult4_Flr_1 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 4
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/10/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-761ced2da585443d9095aca0",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ER_NurseStn_Lobby_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "ER_NurseStn",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 2471.22086,
+          "area_per_counted_floor_area": 0.11014492735794766,
+          "capacity_per_counted_floor_area_J_m2_K": 10795.30433035245,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ER_NurseStn_Lobby_Flr_1 Mass",
+            "source_space_floor_area_m2": 1235.61043,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/11/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-aa3729b54ab4ca7d16c1e521",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ER_Trauma1_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "ER_Trauma",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ER_Trauma1_Flr_1 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/12/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-163718a28f435a28b737326a",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ER_Trauma2_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "ER_Trauma",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ER_Trauma2_Flr_1 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/13/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-2b089ab294298a0b6b3cc118",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ER_Triage_Mult4_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "ER_Triage",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 222.967296,
+          "area_per_counted_floor_area": 0.009937888198757764,
+          "capacity_per_counted_floor_area_J_m2_K": 974.0124223602485,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ER_Triage_Mult4_Flr_1 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 4
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/14/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-5442f7c54b5c6695c0dae2ad",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ICU_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "ICU_Open",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1235.928948,
+          "area_per_counted_floor_area": 0.05508666036310679,
+          "capacity_per_counted_floor_area_J_m2_K": 5399.0435821880965,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ICU_Flr_2 Mass",
+            "source_space_floor_area_m2": 617.964474,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/15/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-9a19fc1912acd49d39c7dcd0",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "ICU_NurseStn_Lobby_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "ICU_NurseStn",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1337.535552,
+          "area_per_counted_floor_area": 0.05961537416518588,
+          "capacity_per_counted_floor_area_J_m2_K": 5842.902821929868,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "ICU_NurseStn_Lobby_Flr_2 Mass",
+            "source_space_floor_area_m2": 668.767776,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/16/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-d7f4fc73d85fbcff9280f576",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "IC_PatRoom1_Mult5_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "ICU_PatRm",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 209.03184,
+          "area_per_counted_floor_area": 0.009316770186335404,
+          "capacity_per_counted_floor_area_J_m2_K": 913.1366459627329,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "IC_PatRoom1_Mult5_Flr_2 Mass",
+            "source_space_floor_area_m2": 20.903184,
+            "source_multiplier": 5
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/17/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-71b316f46aadac3e84c84513",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "IC_PatRoom2_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "ICU_PatRm",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "IC_PatRoom2_Flr_2 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/18/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-88d748e7e95eee97784bbf47",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "IC_PatRoom3_Mult6_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "ICU_PatRm",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 250.838208,
+          "area_per_counted_floor_area": 0.011180124223602485,
+          "capacity_per_counted_floor_area_J_m2_K": 1095.7639751552795,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "IC_PatRoom3_Mult6_Flr_2 Mass",
+            "source_space_floor_area_m2": 20.903184,
+            "source_multiplier": 6
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/19/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-8b824b22c07a162cd9d4e2a9",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Kitchen_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Kitchen",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1858.0608,
+          "area_per_counted_floor_area": 0.08281573498964803,
+          "capacity_per_counted_floor_area_J_m2_K": 8116.770186335403,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Kitchen_Flr_5 Mass",
+            "source_space_floor_area_m2": 929.0304,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/20/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-fcfc7ac71cd8f57bae700ba8",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Lab_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "Lab",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 529.547328,
+          "area_per_counted_floor_area": 0.02360248447204969,
+          "capacity_per_counted_floor_area_J_m2_K": 2313.2795031055903,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Lab_Flr_3 Mass",
+            "source_space_floor_area_m2": 264.773664,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/21/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-8202f3f3b2d80729c6fff7fe",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Lab_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "Lab",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 529.547328,
+          "area_per_counted_floor_area": 0.02360248447204969,
+          "capacity_per_counted_floor_area_J_m2_K": 2313.2795031055903,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Lab_Flr_4 Mass",
+            "source_space_floor_area_m2": 264.773664,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/22/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-647d2ffef93e8c1d3a099262",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Lobby_Records_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "Lobby",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 2949.62122,
+          "area_per_counted_floor_area": 0.13146773737186768,
+          "capacity_per_counted_floor_area_J_m2_K": 12885.152939816751,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Lobby_Records_Flr_1 Mass",
+            "source_space_floor_area_m2": 1474.81061,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/23/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-65cc43e526d975b09d5616dc",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "NurseStn_Lobby_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "NurseStn",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1811.60928,
+          "area_per_counted_floor_area": 0.08074534161490683,
+          "capacity_per_counted_floor_area_J_m2_K": 7913.850931677019,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "NurseStn_Lobby_Flr_3 Mass",
+            "source_space_floor_area_m2": 905.80464,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/24/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-2fca41864bcdfeac79cbfc5f",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "NurseStn_Lobby_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "NurseStn",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 1811.60928,
+          "area_per_counted_floor_area": 0.08074534161490683,
+          "capacity_per_counted_floor_area_J_m2_K": 7913.850931677019,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "NurseStn_Lobby_Flr_4 Mass",
+            "source_space_floor_area_m2": 905.80464,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/25/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-c4adcfe53a66bd717ee632a0",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "NurseStn_Lobby_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "NurseStn",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 2081.0281,
+          "area_per_counted_floor_area": 0.09275362336669003,
+          "capacity_per_counted_floor_area_J_m2_K": 9090.78262616929,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "NurseStn_Lobby_Flr_5 Mass",
+            "source_space_floor_area_m2": 1040.51405,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/26/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-1fbff319d82f3f61d8646525",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "OR1_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "OR",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 111.483648,
+          "area_per_counted_floor_area": 0.004968944099378882,
+          "capacity_per_counted_floor_area_J_m2_K": 487.00621118012424,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "OR1_Flr_2 Mass",
+            "source_space_floor_area_m2": 55.741824,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/27/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-2fe721d270f167d60cde4bd6",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "OR2_Mult5_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "OR",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 557.41824,
+          "area_per_counted_floor_area": 0.02484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 2435.031055900621,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "OR2_Mult5_Flr_2 Mass",
+            "source_space_floor_area_m2": 55.741824,
+            "source_multiplier": 5
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/28/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-08fddcc5d604ad226fdfe63f",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "OR3_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "OR",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 111.483648,
+          "area_per_counted_floor_area": 0.004968944099378882,
+          "capacity_per_counted_floor_area_J_m2_K": 487.00621118012424,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "OR3_Flr_2 Mass",
+            "source_space_floor_area_m2": 55.741824,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/29/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-84f407d5620d852653b0b7a6",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "OR4_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "OR",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 445.934592,
+          "area_per_counted_floor_area": 0.01987577639751553,
+          "capacity_per_counted_floor_area_J_m2_K": 1948.024844720497,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "OR4_Flr_2 Mass",
+            "source_space_floor_area_m2": 222.967296,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/30/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-f2a74dc5772da561233e58ba",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "OR_NurseStn_Lobby_Flr_2",
+            "source_story": "Building Story 3",
+            "native_building_type": "Hospital",
+            "native_space_type": "NurseStn",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 2025.28628,
+          "area_per_counted_floor_area": 0.09026915149528482,
+          "capacity_per_counted_floor_area_J_m2_K": 8847.279538052866,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "OR_NurseStn_Lobby_Flr_2 Mass",
+            "source_space_floor_area_m2": 1012.64314,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/31/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-1062a5dc6977027588e6f919",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Office1_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Office",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 139.391136,
+          "area_per_counted_floor_area": 0.006212810355227335,
+          "capacity_per_counted_floor_area_J_m2_K": 608.9175429158312,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Office1_Flr_5 Mass",
+            "source_space_floor_area_m2": 69.695568,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/32/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-fef8ed7a81717ffeb7bb49fc",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Office1_Mult4_Flr_1",
+            "source_story": "Building Story 2",
+            "native_building_type": "Hospital",
+            "native_space_type": "Office",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 139.35456,
+          "area_per_counted_floor_area": 0.006211180124223603,
+          "capacity_per_counted_floor_area_J_m2_K": 608.7577639751553,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Office1_Mult4_Flr_1 Mass",
+            "source_space_floor_area_m2": 13.935456,
+            "source_multiplier": 5
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/33/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-cdf77ae5e9d37719ff348251",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Office2_Mult5_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Office",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 696.58992,
+          "area_per_counted_floor_area": 0.03104774946609935,
+          "capacity_per_counted_floor_area_J_m2_K": 3042.9899251723973,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Office2_Mult5_Flr_5 Mass",
+            "source_space_floor_area_m2": 69.658992,
+            "source_multiplier": 5
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/34/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-e4d95f057d59a179843fd1c2",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Office3_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Office",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 139.35456,
+          "area_per_counted_floor_area": 0.006211180124223603,
+          "capacity_per_counted_floor_area_J_m2_K": 608.7577639751553,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Office3_Flr_5 Mass",
+            "source_space_floor_area_m2": 69.67728,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/35/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-168fceaa4994dd31d275fe12",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Office4_Mult6_Flr_5",
+            "source_story": "Building Story 6",
+            "native_building_type": "Hospital",
+            "native_space_type": "Office",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 167.225472,
+          "area_per_counted_floor_area": 0.007453416149068324,
+          "capacity_per_counted_floor_area_J_m2_K": 730.5093167701864,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Office4_Mult6_Flr_5 Mass",
+            "source_space_floor_area_m2": 13.935456,
+            "source_multiplier": 6
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/36/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-534a397eb0efffe8180b200c",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom1_Mult10_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 418.06368,
+          "area_per_counted_floor_area": 0.018633540372670808,
+          "capacity_per_counted_floor_area_J_m2_K": 1826.2732919254659,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom1_Mult10_Flr_3 Mass",
+            "source_space_floor_area_m2": 20.903184,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/37/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-28409ca69111f6c50593411c",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom1_Mult10_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 418.06368,
+          "area_per_counted_floor_area": 0.018633540372670808,
+          "capacity_per_counted_floor_area_J_m2_K": 1826.2732919254659,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom1_Mult10_Flr_4 Mass",
+            "source_space_floor_area_m2": 20.903184,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/38/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-21d9314a2e54dbdf616ad351",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom2_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 69.67728,
+          "area_per_counted_floor_area": 0.0031055900621118015,
+          "capacity_per_counted_floor_area_J_m2_K": 304.37888198757764,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom2_Flr_3 Mass",
+            "source_space_floor_area_m2": 34.83864,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/39/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-b62f3385d2bfdaf972c0dbdc",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom2_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 69.67728,
+          "area_per_counted_floor_area": 0.0031055900621118015,
+          "capacity_per_counted_floor_area_J_m2_K": 304.37888198757764,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom2_Flr_4 Mass",
+            "source_space_floor_area_m2": 34.83864,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/40/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-55be04eafedcfe580bc1e929",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom3_Mult10_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 404.1648,
+          "area_per_counted_floor_area": 0.018014052591252182,
+          "capacity_per_counted_floor_area_J_m2_K": 1765.5572944686264,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom3_Mult10_Flr_3 Mass",
+            "source_space_floor_area_m2": 20.20824,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/41/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-288465a6f65013af9c3e6fb6",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom3_Mult10_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 404.1648,
+          "area_per_counted_floor_area": 0.018014052591252182,
+          "capacity_per_counted_floor_area_J_m2_K": 1765.5572944686264,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom3_Mult10_Flr_4 Mass",
+            "source_space_floor_area_m2": 20.20824,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/42/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-7ce6b86b0a09edd9bdb4550b",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom4_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 69.67728,
+          "area_per_counted_floor_area": 0.0031055900621118015,
+          "capacity_per_counted_floor_area_J_m2_K": 304.37888198757764,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom4_Flr_3 Mass",
+            "source_space_floor_area_m2": 34.83864,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/43/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-481b23eb5587e47850f59372",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom4_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 69.67728,
+          "area_per_counted_floor_area": 0.0031055900621118015,
+          "capacity_per_counted_floor_area_J_m2_K": 304.37888198757764,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom4_Flr_4 Mass",
+            "source_space_floor_area_m2": 34.83864,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/44/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-ebbe2d1f3253735cc456399a",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom5_Mult10_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 418.06368,
+          "area_per_counted_floor_area": 0.018633540372670808,
+          "capacity_per_counted_floor_area_J_m2_K": 1826.2732919254659,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom5_Mult10_Flr_3 Mass",
+            "source_space_floor_area_m2": 20.903184,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/45/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-77bc15dc30eaaf856d779bf8",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom5_Mult10_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 418.06368,
+          "area_per_counted_floor_area": 0.018633540372670808,
+          "capacity_per_counted_floor_area_J_m2_K": 1826.2732919254659,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom5_Mult10_Flr_4 Mass",
+            "source_space_floor_area_m2": 20.903184,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/46/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-f5dc8f9b1d96cbc9ea0e9084",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom6_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom6_Flr_3 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/47/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-dd76206d81713160b7269a24",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom6_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom6_Flr_4 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/48/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-d56ec5cad7f29039b838410d",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom7_Mult10_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 404.1648,
+          "area_per_counted_floor_area": 0.018014052591252182,
+          "capacity_per_counted_floor_area_J_m2_K": 1765.5572944686264,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom7_Mult10_Flr_3 Mass",
+            "source_space_floor_area_m2": 20.20824,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/49/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-eacacbdfd55beca793007d27",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom7_Mult10_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 404.1648,
+          "area_per_counted_floor_area": 0.018014052591252182,
+          "capacity_per_counted_floor_area_J_m2_K": 1765.5572944686264,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom7_Mult10_Flr_4 Mass",
+            "source_space_floor_area_m2": 20.20824,
+            "source_multiplier": 10
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/50/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-36c8ec495014fea153063efc",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom8_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom8_Flr_3 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/51/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-7aae924b140c39c760b32185",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PatRoom8_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "PatRoom",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 55.741824,
+          "area_per_counted_floor_area": 0.002484472049689441,
+          "capacity_per_counted_floor_area_J_m2_K": 243.50310559006212,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PatRoom8_Flr_4 Mass",
+            "source_space_floor_area_m2": 27.870912,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/52/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-552e410b852b0c8a6ce674fc",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "PhysTherapy_Flr_3",
+            "source_story": "Building Story 4",
+            "native_building_type": "Hospital",
+            "native_space_type": "PhysTherapy",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 975.48192,
+          "area_per_counted_floor_area": 0.043478260869565216,
+          "capacity_per_counted_floor_area_J_m2_K": 4261.304347826087,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "PhysTherapy_Flr_3 Mass",
+            "source_space_floor_area_m2": 487.74096,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/53/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        },
+        {
+          "id": "source-mass-quantity-5d19cec9e5fb22ee81123641",
+          "recipe_id": "reference-mass-recipe-e6ab56ca29794789a98e07b0",
+          "scope": {
+            "kind": "source_space",
+            "source_space_name": "Radiology_Flr_4",
+            "source_story": "Building Story 5",
+            "native_building_type": "Hospital",
+            "native_space_type": "Radiology",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 975.48192,
+          "area_per_counted_floor_area": 0.043478260869565216,
+          "capacity_per_counted_floor_area_J_m2_K": 4261.304347826087,
+          "source_operands": {
+            "area_per_floor_area": 2.0,
+            "area_per_person_m2": null,
+            "direct_area_m2": null,
+            "id": "Radiology_Flr_4 Mass",
+            "source_space_floor_area_m2": 487.74096,
+            "source_multiplier": 1
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital/spaces/54/added_mass/0",
+          "area_convention": "source InternalMass object area; source multiplier applied once"
+        }
+      ],
+      "allocation_policy": "Precomputed source-scope quantities normalized by building counted floor area; preserve source scopes. If absent in consumer geometry, require an explicit consumer allocation policy.",
+      "legacy_partition_selector_policy": "InteriorPartition is a retained material selector. Instantiate additional mass from this inventory only; never instantiate both representations of the same source object."
+    },
+    "recipes": {
+      "reference-mass-recipe-e6ab56ca29794789a98e07b0": {
+        "model": "opaque_layers",
+        "layers": [
+          {
+            "model": "StandardOpaqueMaterial",
+            "properties": {
+              "conductivity_W_m_K": 0.12,
+              "density_kg_m3": 540.0,
+              "name": "Std Wood 6inch",
+              "roughness": "MediumSmooth",
+              "solar_absorptance": 0.7,
+              "specific_heat_J_kg_K": 1210.0,
+              "thermal_absorptance": 0.9,
+              "thickness_m": 0.15,
+              "visible_absorptance": 0.7
+            }
+          }
+        ],
+        "capacity_J_m2_K": 98010.0,
+        "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/mass_recipes/reference-mass-recipe-e6ab56ca29794789a98e07b0",
+        "interpretation": "Original source mass material layers; no equivalent fitting or added air films."
+      }
+    },
+    "provenance": {
+      "source_project": "OpenStudio Standards",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/DOE Ref Pre-1980~1Hospital",
+      "source_file_sha256": {
+        "data/program-support/construction-weighting-v1.1.0/profiles.json": "aa2621fdfd837ceacf454070482aa3863de93bf1a5f3c1f85d7ffd607791681c"
+      },
+      "extraction_date": "2026-10-16",
+      "original_unit": "m2, m3, SI material properties, and dimensionless source multipliers/scaling coefficients",
+      "original_value": {
+        "counted_floor_area_m2": 22436.08416,
+        "profile_provenance": {
+          "extraction_date": "2026-10-15",
+          "interpretation_note": "Source thermostat rules evaluate only furnishing applicability; no HVAC or annual energy model.",
+          "original_unit": "m2, m3 and dimensionless",
+          "source_file_sha256": "464c07c6e760aabeb5aad365c33bdb074c07af5fd661adceb4bb83b5409834d1",
+          "source_locator": "data/geometry/ASHRAEHospital.osm",
+          "source_project": "OpenStudio Standards",
+          "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+          "transformation": "Pinned SDK netArea/grossArea, 9 significant digits for derived geometry only; source geometry tweaks; source multipliers exactly once; no consumer BEM."
+        }
+      },
+      "transformation": "Copy frozen source quantities; divide area and capacity by counted reference floor area. Use source multiplier once. Select wall/slab recipes with detailed source precedence.",
+      "interpretation_note": "Quantities describe the selected source archetype, not a population weight or consumer geometry. Additional mass is independent of residual restoration."
+    }
+  },
+  "assemblies": {
+    "equivalent-assembly-0e29727fc51f38280a1cc39e": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.5,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.96,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.0017391667385894846,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.001248608034180928,
+            "transmission_amplitude_error_percent": 0.1259206029593507,
+            "transmission_phase_error_h": 0.0005931786640335397,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.00035742187426539046,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.0003346179691167371,
+            "transmission_amplitude_error_percent": 0.010013940933228938,
+            "transmission_phase_error_h": 0.0012304852386607842,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 4.8094986138370734e-05,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 4.801941128883152e-05,
+            "transmission_amplitude_error_percent": 0.00020795229465075948,
+            "transmission_phase_error_h": 0.001282954438762691,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0007929806828634732,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.0006599726196814737,
+            "transmission_amplitude_error_percent": 0.03803168670040158,
+            "transmission_phase_error_h": 0.0010795643877745432,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.00011294649600842858,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.00011199843067296641,
+            "transmission_amplitude_error_percent": 0.0011303512839511143,
+            "transmission_phase_error_h": 0.001278026136125539,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0010254697246483387,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-0e29727fc51f38280a1cc39e",
+      "layers": [
+        {
+          "C": 11081.818148025723,
+          "R": 0.07618526557143389,
+          "conductivity_W_m_K": 0.14545881103000205,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.011081818148025722
+        },
+        {
+          "C": 0.0,
+          "R": 0.00634877213095283,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 11081.818148025723,
+          "R": 0.07618526557143389,
+          "conductivity_W_m_K": 0.14545881103000205,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.011081818148025722
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7000000000000001,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.5
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7000000000000001,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.5
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 22163.636296051445,
+        "resistance_m2_K_W": 0.1587193032738206,
+        "u_reference_W_m2_K": 2.3882347725107196
+      }
+    },
+    "equivalent-assembly-1f91bdb1da187a63d6ff3291": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.07,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.1536,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.2808616901260428,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.038870237430478044,
+            "transmission_amplitude_error_percent": 2.065672170846322,
+            "transmission_phase_error_h": 0.21979341135443317,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.09018446642832273,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.029710443431614008,
+            "transmission_amplitude_error_percent": 4.053262514746803,
+            "transmission_phase_error_h": 0.12216191120503192,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.018310516195809555,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.004040425184744677,
+            "transmission_amplitude_error_percent": 0.2390817057363881,
+            "transmission_phase_error_h": 0.08975456015000076,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1558021799436309,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.03794962481783553,
+            "transmission_amplitude_error_percent": 4.725406323699666,
+            "transmission_phase_error_h": 0.1979994509285556,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.03775870469361433,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.01059655083197171,
+            "transmission_amplitude_error_percent": 1.114388897741625,
+            "transmission_phase_error_h": 0.04233677890209791,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.17063782500643046,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-1f91bdb1da187a63d6ff3291",
+      "layers": [
+        {
+          "C": 13748.904727053625,
+          "R": 0.002800403194196397,
+          "conductivity_W_m_K": 4.909616142256618,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013748904727053625
+        },
+        {
+          "C": 0.0,
+          "R": 0.22044840620980571,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 182664.019945141,
+          "R": 0.03720535672289499,
+          "conductivity_W_m_K": 4.909616142256617,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18266401994514098
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        },
+        "interior": {
+          "roughness": "MediumRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196412.9246721946,
+        "resistance_m2_K_W": 0.2604541661268971,
+        "u_reference_W_m2_K": 1.921398780303317
+      }
+    },
+    "equivalent-assembly-5ce13ef7e69ba91ec4ab37ce": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": null,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": null,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.0,
+            "transmission_amplitude_error_percent": 0.0,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.0,
+            "transmission_amplitude_error_percent": 0.0,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.0,
+            "transmission_amplitude_error_percent": 0.0,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.0,
+            "transmission_amplitude_error_percent": 0.0,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.0,
+            "transmission_amplitude_error_percent": 0.0,
+            "transmission_phase_error_h": 0.0,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-5ce13ef7e69ba91ec4ab37ce",
+      "layers": [
+        {
+          "C": 0.0,
+          "R": 0.028222222222222093,
+          "model": "Material:NoMass"
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 0.0,
+        "resistance_m2_K_W": 0.028222222222222093,
+        "u_reference_W_m2_K": 5.0448430493273575
+      }
+    },
+    "equivalent-assembly-8d1bad3c3ec9636b1c79090b": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.93,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.384,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.5831507260605744,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.026544857860857748,
+            "transmission_amplitude_error_percent": null,
+            "transmission_phase_error_h": null,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.2892441495383971,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.06234648522522543,
+            "transmission_amplitude_error_percent": 3.2191614869528484,
+            "transmission_phase_error_h": 0.7490801050535368,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.06762169957535717,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.010834574786354167,
+            "transmission_amplitude_error_percent": 0.9240242093905504,
+            "transmission_phase_error_h": 0.191760701252326,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.4605749192000597,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.05241210235865966,
+            "transmission_amplitude_error_percent": -4.588775713706683,
+            "transmission_phase_error_h": 0.7512883670017582,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.13034643597975973,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.035574510073267056,
+            "transmission_amplitude_error_percent": 3.0387062143912402,
+            "transmission_phase_error_h": 0.4408787008334607,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.37784460721334706,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-8d1bad3c3ec9636b1c79090b",
+      "layers": [
+        {
+          "C": 398508.16860300035,
+          "R": 0.2199869180299342,
+          "conductivity_W_m_K": 1.8115084850126149,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.39850816860300037
+        },
+        {
+          "C": 0.0,
+          "R": 0.3794577215122072,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 29995.238497000006,
+          "R": 0.016558155120532665,
+          "conductivity_W_m_K": 1.811508485012615,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.029995238497000004
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.92
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.4,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.4
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 428503.40710000036,
+        "resistance_m2_K_W": 0.616002794662674,
+        "u_reference_W_m2_K": 1.2722601074582265
+      }
+    },
+    "equivalent-assembly-97379d3aaa33b215de90594a": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.5,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.064,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.010741568208943179,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.005885123525966292,
+            "transmission_amplitude_error_percent": -0.00354404461777591,
+            "transmission_phase_error_h": 0.005622258819406233,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.002704979077932091,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.0014720339565978849,
+            "transmission_amplitude_error_percent": -0.00022162478866549762,
+            "transmission_phase_error_h": 0.005622904376354463,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0003866113127457094,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.00021029759632802575,
+            "transmission_amplitude_error_percent": -4.523117602683868e-06,
+            "transmission_phase_error_h": 0.0056229465696923785,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.005402027369293641,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.002943766511699957,
+            "transmission_amplitude_error_percent": -0.0008864014909293338,
+            "transmission_phase_error_h": 0.005622775185599976,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0009020528995621123,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.0004906928723032336,
+            "transmission_amplitude_error_percent": -2.4625780525866503e-05,
+            "transmission_phase_error_h": 0.005622942662723873,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.006399157957798616,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-97379d3aaa33b215de90594a",
+      "layers": [
+        {
+          "C": 1564.799999999998,
+          "R": 0.0009036764821358423,
+          "conductivity_W_m_K": 3.319772133396114,
+          "density_kg_m3": 521.5999994783992,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0030000000030000005
+        },
+        {
+          "C": 0.0,
+          "R": 0.026432537102473386,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 1564.799999999998,
+          "R": 0.0009036764821358423,
+          "conductivity_W_m_K": 3.319772133396114,
+          "density_kg_m3": 521.5999994783992,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0030000000030000005
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 3129.599999999996,
+        "resistance_m2_K_W": 0.02823989006674507,
+        "u_reference_W_m2_K": 5.0443934349606
+      }
+    },
+    "equivalent-assembly-a415dabc1c80d76d6899683b": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.59,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.96,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.018267416329185437,
+            "period_h": 6,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.015428279275167446,
+            "period_h": 24,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0013296345566229523,
+            "period_h": 168,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.01972843975979356,
+            "period_h": 12,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.00572894152401812,
+            "period_h": 72,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.013826282083897537,
+        "one_sided": true,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-a415dabc1c80d76d6899683b",
+      "layers": [
+        {
+          "C": 57825.899999999994,
+          "R": 0.7079999999999997,
+          "conductivity_W_m_K": 0.08167500000000003,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.05782589999999999
+        },
+        {
+          "C": 0.0,
+          "R": 0.05000000000000004,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 40184.100000000006,
+          "R": 0.49199999999999994,
+          "conductivity_W_m_K": 0.08167500000000003,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.04018410000000001
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "MediumSmooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "MediumSmooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 98010.0,
+        "resistance_m2_K_W": 1.2499999999999998,
+        "u_reference_W_m2_K": 0.6622516556291391
+      }
+    },
+    "equivalent-assembly-d0f415ed0d13a53c15aae8b9": {
+      "fit": null,
+      "id": "equivalent-assembly-d0f415ed0d13a53c15aae8b9",
+      "layers": [
+        {
+          "model": "SimpleGlazing",
+          "properties": {
+            "shgc": 0.54,
+            "u_W_m2_K": 6.92748127615845,
+            "visible_transmittance": 0.81
+          }
+        }
+      ],
+      "model": "simple_glazing",
+      "quality": "unchanged_source_physics",
+      "solar_modifiers": {},
+      "status": "ready"
+    },
+    "equivalent-assembly-df41c7efa850de71c08fdcc3": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.93,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.16,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.5536935938845555,
+            "period_h": 6,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1625683646292476,
+            "period_h": 24,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.034928883692021837,
+            "period_h": 168,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.2955745144613634,
+            "period_h": 12,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.080979165948643,
+            "period_h": 72,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.33377891685115657,
+        "one_sided": true,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-df41c7efa850de71c08fdcc3",
+      "layers": [
+        {
+          "C": 182664.019945141,
+          "R": 0.038755579919682294,
+          "conductivity_W_m_K": 4.71323149656635,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18266401994514098
+        },
+        {
+          "C": 0.0,
+          "R": 0.21878149954659354,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 13748.904727053614,
+          "R": 0.0029170866606212454,
+          "conductivity_W_m_K": 4.713231496566352,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013748904727053615
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "MediumRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196412.9246721946,
+        "resistance_m2_K_W": 0.2604541661268971,
+        "u_reference_W_m2_K": 1.921398780303317
+      }
+    },
+    "equivalent-assembly-e37d1ef9ff62306fbafb54c6": {
+      "fit": null,
+      "id": "equivalent-assembly-e37d1ef9ff62306fbafb54c6",
+      "layers": [
+        {
+          "model": "StandardGlazing",
+          "properties": {
+            "back_side_infrared_hemispherical_emissivity": 0.4,
+            "back_side_solar_reflectance_at_normal_incidence": 0.493,
+            "back_side_visible_reflectance_at_normal_incidence": 0.37,
+            "conductivity_W_m_K": 0.9,
+            "dirt_correction_factor_for_solar_and_visible_transmittance": 1.0,
+            "front_side_infrared_hemispherical_emissivity": 0.84,
+            "front_side_solar_reflectance_at_normal_incidence": 0.341,
+            "front_side_visible_reflectance_at_normal_incidence": 0.41,
+            "infrared_transmittance_at_normal_incidence": 0.0,
+            "optical_data_type": "SpectralAverage",
+            "solar_diffusing": false,
+            "solar_transmittance_at_normal_incidence": 0.066,
+            "thickness_m": 0.00599999999999998,
+            "visible_transmittance_at_normal_incidence": 0.08
+          }
+        }
+      ],
+      "model": "detailed_glazing",
+      "quality": "unchanged_source_physics",
+      "solar_modifiers": {},
+      "status": "ready"
+    },
+    "equivalent-assembly-e8c7de5984114f1752160d3c": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.93,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.1536,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.28086169012604273,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.03887023743047804,
+            "transmission_amplitude_error_percent": 2.0656721708463888,
+            "transmission_phase_error_h": 0.21979341135443295,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.09018446642832263,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.029710443431614088,
+            "transmission_amplitude_error_percent": 4.053262514746803,
+            "transmission_phase_error_h": 0.12216191120503253,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.018310516195809517,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.004040425184744584,
+            "transmission_amplitude_error_percent": 0.2390817057363659,
+            "transmission_phase_error_h": 0.0897545601500023,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1558021799436308,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.03794962481783555,
+            "transmission_amplitude_error_percent": 4.72540632369971,
+            "transmission_phase_error_h": 0.1979994509285555,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.03775870469361421,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.010596550831971842,
+            "transmission_amplitude_error_percent": 1.1143888977416472,
+            "transmission_phase_error_h": 0.042336778902097257,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.1706378250064304,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-e8c7de5984114f1752160d3c",
+      "layers": [
+        {
+          "C": 182664.01994514096,
+          "R": 0.037205356722894996,
+          "conductivity_W_m_K": 4.909616142256615,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.18266401994514095
+        },
+        {
+          "C": 0.0,
+          "R": 0.22044840620980571,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 13748.90472705361,
+          "R": 0.002800403194196395,
+          "conductivity_W_m_K": 4.909616142256616,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013748904727053611
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "MediumRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.8
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 196412.92467219458,
+        "resistance_m2_K_W": 0.2604541661268971,
+        "u_reference_W_m2_K": 1.921398780303317
+      }
+    },
+    "equivalent-assembly-f60dad4baae3421921ff8c92": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.83,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.041600000000000005,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.0039798835476320795,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.0015163920880179199,
+            "transmission_amplitude_error_percent": 0.09317372264996404,
+            "transmission_phase_error_h": 0.0012159839762775906,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0014034486080621094,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.00039459881703749904,
+            "transmission_amplitude_error_percent": 0.006338995521648627,
+            "transmission_phase_error_h": 0.0014915672963137043,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0002255653883245155,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 5.652211844071634e-05,
+            "transmission_amplitude_error_percent": 0.0001301036926637522,
+            "transmission_phase_error_h": 0.0015109682410502977,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.002475179656783909,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.0007827985012234514,
+            "transmission_amplitude_error_percent": 0.024921663322863274,
+            "transmission_phase_error_h": 0.0014332778311034076,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0005131042563014803,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.00013185227160716567,
+            "transmission_amplitude_error_percent": 0.000707969603896963,
+            "transmission_phase_error_h": 0.0015091641242191021,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0024399467748698923,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-f60dad4baae3421921ff8c92",
+      "layers": [
+        {
+          "C": 15505.970608999969,
+          "R": 0.0560643529325242,
+          "conductivity_W_m_K": 0.2765745040821581,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.01550597060899997
+        },
+        {
+          "C": 0.0,
+          "R": 1.5561884803791473,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 3175.9216909999946,
+          "R": 0.011483060239191708,
+          "conductivity_W_m_K": 0.2765745040821581,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0031759216909999946
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "VeryRough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Smooth",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 18681.892299999963,
+        "resistance_m2_K_W": 1.623735893550863,
+        "u_reference_W_m2_K": 0.5574956734686338
+      }
+    },
+    "foundation-assembly-0a03d8cbb708d9e2f3a65077": {
+      "model": "native_opaque_layers",
+      "status": "ready",
+      "evidence_ids": [
+        "foundation-evidence-09af180ae6437fa674984b93"
+      ],
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "foundation-material-023eb964f707b3bc8b928dbb"
+        },
+        {
+          "order": 1,
+          "material_id": "foundation-material-597714ca98d203b8842ec226"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "id": "foundation-assembly-0a03d8cbb708d9e2f3a65077"
+    },
+    "foundation-assembly-cb4953ad71f1d548814a1236": {
+      "model": "native_opaque_layers",
+      "status": "ready",
+      "evidence_ids": [
+        "foundation-evidence-09af180ae6437fa674984b93"
+      ],
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "foundation-material-023eb964f707b3bc8b928dbb"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "id": "foundation-assembly-cb4953ad71f1d548814a1236"
+    }
+  },
+  "foundation_ground": {
+    "configuration": {
+      "type": "source_native_commercial"
+    },
+    "methods": {
+      "ground-method-f181ecf923d42ee7f4eb23b1": {
+        "model": "LayeredGround",
+        "model_parameters_id": "ground-model-parameters-ddb72c681cd607b3d7605e7a",
+        "parameters": {},
+        "required_geometry": [
+          "surface_area_m2"
+        ]
+      }
+    },
+    "model_parameters": {
+      "ground-model-parameters-ddb72c681cd607b3d7605e7a": {
+        "model": "LayeredGroundBoundary",
+        "monthly_temperature_input": "surface_monthly_ground_temperature_C"
+      }
+    },
+    "required_geometry": {
+      "surface_area_m2": {
+        "unit": "m2",
+        "description": "Actual assigned component surface area",
+        "exclusive_minimum": 0
+      }
+    }
+  },
+  "materials": {
+    "foundation-material-023eb964f707b3bc8b928dbb": {
+      "id": "foundation-material-023eb964f707b3bc8b928dbb",
+      "name": "M10 200mm concrete block basement wall",
+      "model": "StandardOpaqueMaterial",
+      "properties": {
+        "roughness": "MediumRough",
+        "thickness_m": 0.2032,
+        "conductivity_W_m_K": 1.326,
+        "density_kg_m3": 1842.0,
+        "specific_heat_J_kg_K": 912.0,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.7
+      },
+      "property_evidence": {
+        "roughness": "foundation-evidence-09af180ae6437fa674984b93",
+        "thickness_m": "foundation-evidence-09af180ae6437fa674984b93",
+        "conductivity_W_m_K": "foundation-evidence-09af180ae6437fa674984b93",
+        "density_kg_m3": "foundation-evidence-09af180ae6437fa674984b93",
+        "specific_heat_J_kg_K": "foundation-evidence-09af180ae6437fa674984b93",
+        "thermal_absorptance": "foundation-evidence-09af180ae6437fa674984b93",
+        "solar_absorptance": "foundation-evidence-09af180ae6437fa674984b93",
+        "visible_absorptance": "foundation-evidence-09af180ae6437fa674984b93"
+      }
+    },
+    "foundation-material-597714ca98d203b8842ec226": {
+      "id": "foundation-material-597714ca98d203b8842ec226",
+      "name": "CP02 CARPET PAD 1",
+      "model": "MasslessOpaqueMaterial",
+      "properties": {
+        "resistance_m2_K_W": 0.21648,
+        "roughness": "VeryRough",
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.8
+      },
+      "property_evidence": {
+        "resistance_m2_K_W": "foundation-evidence-09af180ae6437fa674984b93",
+        "roughness": "foundation-evidence-09af180ae6437fa674984b93",
+        "thermal_absorptance": "foundation-evidence-09af180ae6437fa674984b93",
+        "solar_absorptance": "foundation-evidence-09af180ae6437fa674984b93",
+        "visible_absorptance": "foundation-evidence-09af180ae6437fa674984b93"
+      }
+    }
+  },
+  "evidence": {
+    "foundation-evidence-09af180ae6437fa674984b93": {
+      "id": "foundation-evidence-09af180ae6437fa674984b93",
+      "source_project": "OpenStudio Standards",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "source_locator": "data/construction-inputs/foundation-execution-v1.json#/commercial/foundation-case-8d734c49bbdce335b783124c",
+      "source_file_sha256": {
+        "native_capture": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83"
+      },
+      "original_value": {
+        "frozen_native_capture": "data/construction-inputs/foundation-execution-v1.json#/commercial/foundation-case-8d734c49bbdce335b783124c"
+      },
+      "original_unit": "SI native materials/method parameters; original HPXML/IP evidence retained at the pinned locator",
+      "transformation": "Retain native ground methods, selected source interfaces and SI material recipes; ordinary unified interfaces use the existing two-mass/one-resistance approximation",
+      "extraction_date": "2026-10-16",
+      "interpretation_note": "Consumer supplies actual geometry/environment. Raw inventories, source geometry and verification probes remain internal."
+    }
+  }
+}

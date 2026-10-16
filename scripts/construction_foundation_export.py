@@ -192,6 +192,10 @@ def prepare_foundation_extension(source_context,recovered,profiles,representatio
             surface={}
             for side,index in (('exterior',0),('interior',-1)):
                 surface[side]={k:sum(f['area_m2']*f['recipe']['layers'][index][k] for f in faces)/total for k in ('thermal_absorptance','solar_absorptance','visible_absorptance')}
+                dominant=min(faces,key=lambda f:(-f['area_m2'],face_assemblies[f['name']]))
+                roughness=dominant['recipe']['layers'][index].get('roughness')
+                if not roughness:raise ValueError('Unknown ordinary foundation interface roughness')
+                surface[side]['roughness']=roughness
             result['surface_properties']=surface
             identity=stable_id('equivalent-foundation-assembly',result);result['id']=identity;equivalents[identity]=result
             unified[role]={'status':'ready','assembly_id':identity,'derivation':{'weight_basis':'source_archetype_net_component_area','source_reference_area_m2':total,

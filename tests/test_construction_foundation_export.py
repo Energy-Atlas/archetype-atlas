@@ -43,6 +43,7 @@ class FoundationExportTests(unittest.TestCase):
             self.assertTrue(u['components'][role]['assembly_id'])
             self.assertNotIn('assignments',u['components'][role])
             self.assertLessEqual(len(u['assemblies'][u['components'][role]['assembly_id']]['layers']),3)
+            self.assertEqual(u['assemblies'][u['components'][role]['assembly_id']]['surface_properties']['exterior']['roughness'],'Rough')
         self.assertIn('crawlspace - vented',d['foundation_ground']['configuration']['air_exchange'])
 
     def test_missing_contact_physics_cannot_become_source_absence(self):
