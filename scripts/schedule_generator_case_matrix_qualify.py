@@ -210,23 +210,14 @@ def main(argv=None):
         phase('admit_and_compile_matrix')
         resources = ResourceSet(args.resources, mapping['resource_set_id'])
         phase('authenticate_resource_set', resource_set_id=resources.resource_set_id)
-        cases = {}
+        def generated(case_id, bundle, seconds):
+            gc.collect()
+            phase('generate:'+case_id, owners=len(bundle['constituents']), schedules=len(bundle['schedules']),
+                  generate_seconds=round(seconds, 3))
+        # generate() validates each case it returns; the adapter does not repeat it (R145, R146).
         with patch('atlas_schedules.generator.ResourceSet.load', return_value=resources):
-            for case in mapping['cases']:
-                case_request = case['request']
-                cases[case['case_id']] = generate(case_request['params'], case_request['seed'])
-                gc.collect()
-                phase('generate:'+case['case_id'], owners=len(cases[case['case_id']]['constituents']),
-                      schedules=len(cases[case['case_id']]['schedules']))
-        # Same admission as stream_original_union except its repeated validate_bundle:
-        # generate() validated each of these exact objects (atlas_schedules/generator.py)
-        # moments ago, in this process, and nothing has touched them since. Repeating it
-        # while both cases are held would add a whole-case deep copy (service_graph).
-        identities = adapter._admit_matrix(matrix)
-        identities['case_bundles'] = {key: adapter._identity(value) for key, value in cases.items()}
-        phase('admit_cases', validation='by generate() per case; not repeated (R145)')
-        pieces = adapter._stream_union_structure(cases, matrix, identities)
-        phase('union_checks')
+            pieces = adapter.generate_and_stream_union(matrix, generate, generated)
+        phase('case_identities_and_union_checks')
         normalize = None
         if args.reference_python_version and args.reference_python_version != platform.python_version():
             normalize = comparer.runtime_version_normalizer(platform.python_version(), args.reference_python_version)

@@ -595,6 +595,20 @@ class CaseMatrixTests(unittest.TestCase):
                 self.assertCode(code, adapter._stream_union_structure, value, self.matrix, desc)
                 self.assertCode(code, adapter._assemble_union_structure, value, self.matrix, desc)
 
+    def test_generate_and_stream_uses_only_matrix_requests(self):
+        calls, receipts = [], []
+        def fake_generate(params, seed):
+            case = next(c for c in self.mapping['cases'] if c['request']['params'] == params and c['request']['seed'] == seed)
+            calls.append(case['case_id']); return copy.deepcopy(self.cases[case['case_id']])
+        pieces = adapter._generate_and_stream_structure(self.matrix, fake_generate, refreshed(self.desc),
+                                                        lambda cid, bundle, seconds: receipts.append(cid))
+        self.assertEqual(b''.join(blob for _, blob in pieces), canonical(self.reference))
+        self.assertEqual(receipts, [UNIT, COM]); self.assertEqual(len(calls), 2)
+        self.assertEqual(list(inspect.signature(adapter.generate_and_stream_union).parameters),
+                         ['matrix', 'generate', 'on_generated'])
+        with patch.object(adapter, '_generate_and_stream_structure', side_effect=AssertionError('admission bypass')):
+            self.assertCode('matrix_admission', adapter.generate_and_stream_union, self.matrix, fake_generate)
+
     def test_public_stream_rejects_non_authoritative_fixture(self):
         self.assertEqual(list(inspect.signature(adapter.stream_original_union).parameters), ['case_bundles', 'matrix'])
         with patch.object(adapter, '_stream_union_structure', side_effect=AssertionError('admission bypass')):

@@ -3,13 +3,15 @@
 The private structural descriptor binds canonical content, not source scientific
 qualification. Public wrappers admit only the fixed approved inputs and invoke
 the same engines exercised by bounded qualified fixtures. No file I/O, RNG,
-ResourceSet lookup, runtime change or release builder belongs in this module.
+ResourceSet lookup, runtime change or release builder belongs in this module;
+generate_and_stream_union only calls the public generate() its caller supplies.
 Declared scientific-code pins are provenance, never live-code authentication;
 the controller/runner must authenticate implementation bytes before cold use.
 """
 import copy
 import hashlib
 import json
+import time
 
 from atlas_schedules.canonical import canonical
 from atlas_schedules.contract import validate_bundle
@@ -177,6 +179,34 @@ def stream_original_union(case_bundles: dict[str, dict], matrix: dict):
     identities['case_bundles'] = {key: _identity(value) for key, value in case_bundles.items()}
     for bundle in case_bundles.values(): validate_bundle(bundle)
     return _stream_union_structure(case_bundles, matrix, identities)
+
+
+def generate_and_stream_union(matrix: dict, generate, on_generated=None):
+    """Generate every admitted case request with generate(), then stream the union.
+
+    generate is the public atlas_schedules.generate (callers bind its resources).
+    It validates each bundle it returns, so the bundles are not validated a
+    second time; repeating it while both cases are held adds a whole-case deep
+    copy (R145, R146). The requests come only from the admitted matrix. The
+    byte-exact reference comparison of the returned pieces is the
+    qualification; nothing here trusts a caller digest.
+    on_generated(case_id, bundle, seconds) may record per-case receipts; it must
+    not mutate the bundle, which the lazy pieces read until they are exhausted.
+    """
+    identities = _admit_matrix(matrix)
+    _require([c['case_id'] for c in matrix['mapping']['cases']] == list(_CASE_ORDER),
+             'matrix_admission', 'case_bundles', 'Every exact approved case is required')
+    return _generate_and_stream_structure(matrix, generate, identities, on_generated)
+
+
+def _generate_and_stream_structure(matrix, generate, identities, on_generated=None):
+    cases = {}
+    for case in matrix['mapping']['cases']:
+        started = time.perf_counter()
+        cases[case['case_id']] = generate(copy.deepcopy(case['request']['params']), case['request']['seed'])
+        if on_generated is not None: on_generated(case['case_id'], cases[case['case_id']], time.perf_counter()-started)
+    identities = {**identities, 'case_bundles': {key: _identity(value) for key, value in cases.items()}}
+    return _stream_union_structure(cases, matrix, identities)
 
 
 def _check_identities(identities, **values):
