@@ -81,6 +81,8 @@ class ConstructionSiteTests(unittest.TestCase):
             for c in contexts[:2]:
                 p=hydrate_context(full,c['id']);builder.add(p);cls.expected[c['id']]=upgrade_detailed(p,cls.mass['contracts'][cls.mass['contexts'][c['id']]['contract_id']])
         cls.release=builder.finish();cls.bundle=DefinitionBundle()
+        from scripts.construction_foundation_export import session,compose_foundation_export
+        cls.expected={cid:compose_foundation_export(doc,session().extension(cid),'detailed') for cid,doc in cls.expected.items()}
         for identity,p in cls.release['construction_sets'].items():
             row=record('construction',{'id':identity,**p['source']},p['name']);row['id']=identity
             if p['scope']=='whole_dwelling':row['gate']=['residential']
@@ -100,7 +102,7 @@ class ConstructionSiteTests(unittest.TestCase):
             entries=load_json(root/'catalogue/nonresidential/construction/entries.json')
             self.assertEqual({e['id'] for e in entries},{'construction-93cb2afe2fe44c8e084b9b99'})
             self.assertTrue(entries[0]['applicability'])
-            self.assertEqual(entries[0]['construction_schema'],'2.1.0')
+            self.assertEqual(entries[0]['construction_schema'],'3.0.0')
             self.assertEqual(cached.read_bytes(),b'unchanged program page')
             page=(root/'definitions'/('construction-93cb2afe2fe44c8e084b9b99.md')).read_text(encoding='utf-8')
             self.assertIn('data-construction=',page);self.assertIn('construction-climate',page)
@@ -139,10 +141,11 @@ class ConstructionSiteTests(unittest.TestCase):
                 self.assertNotEqual(descriptor,report['packets'][identity])
                 packets[identity]=json.loads(gzip.decompress((root/descriptor['href']).read_bytes()))
             from scripts.construction_mass_accounting import upgrade_unified
-            expected={i:upgrade_unified(export_frozen(OUTPUT,i),self.mass['contracts'][self.mass['contexts'][i]['contract_id']]) for i in self.release['contexts']}
+            from scripts.construction_foundation_release import export_pair
+            expected={i:export_pair(i)[1] for i in self.release['contexts']}
             payload=root/'unified-parity.json'
             payload.write_text(json.dumps({'packets':packets,'expected':expected,'contexts':self.release['contexts']}),encoding='utf-8')
-            code="const assert=require('node:assert/strict'),fs=require('node:fs'),core=require('./website/assets/construction_core.js'); const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));for(const [id,p] of Object.entries(d.expected)){const packet=d.packets[d.contexts[id].construction_set_id];assert.deepEqual(core.hydrateUnified(packet,id),p);assert.throws(()=>core.hydrateUnified(packet,'unknown'));assert.equal(core.hydrateUnified(packet,id).schema_version,'1.2.0');const broken=structuredClone(packet);delete broken.mass_contracts;assert.throws(()=>core.hydrateUnified(broken,id),/Missing shared mass/);}"
+            code="const assert=require('node:assert/strict'),fs=require('node:fs'),core=require('./website/assets/construction_core.js'); const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));for(const [id,p] of Object.entries(d.expected)){const packet=d.packets[d.contexts[id].construction_set_id];assert.deepEqual(core.hydrateUnified(packet,id),p);assert.throws(()=>core.hydrateUnified(packet,'unknown'));assert.equal(core.hydrateUnified(packet,id).schema_version,'2.0.0');const broken=structuredClone(packet);delete broken.mass_contracts;assert.throws(()=>core.hydrateUnified(broken,id),/Missing shared mass/);}"
             result=subprocess.run(['node','-e',code,str(payload)],cwd=ROOT,capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr[:2500])
 

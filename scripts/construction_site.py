@@ -82,6 +82,7 @@ def context_choices(profile,contexts):
 
 
 def packet_for(release,identity,contexts):
+    from scripts.construction_foundation_site import packet_for as ground_packet
     configs={c['configuration_id']:release['component_configurations'][c['configuration_id']] for c in contexts.values()}
     receipts={c['selector_receipt_id']:release['selector_receipts'][c['selector_receipt_id']] for c in contexts.values()}
     combined={'all':{'assignments':[a for config in configs.values() for comp in config['components'].values() for a in comp['assignments']]}}
@@ -92,7 +93,8 @@ def packet_for(release,identity,contexts):
     from scripts.construction_equivalent_site import mass_fields
     links,contracts=mass_fields(contexts)
     contexts={cid:{**c,'mass_contract_id':links[cid]} for cid,c in contexts.items()}
-    return {'schema_version':'1.1.0','kind':'construction_site_packet','profile':release['construction_sets'][identity],
+    return {'schema_version':'1.2.0','kind':'construction_site_packet','profile':release['construction_sets'][identity],
+        'foundation':ground_packet(contexts),
         'mass_contracts':contracts,
         'contexts':contexts,'component_configurations':configs,'selector_receipts':receipts,
         'assemblies':assemblies,'materials':materials,'evidence':evidence,'metadata':metadata}
@@ -104,7 +106,7 @@ def projection(release,bundle):
         source=p['source'];contexts=[c for c in release['contexts'].values() if c['construction_set_id']==identity]
         row=copy.deepcopy(originals.get(identity,{}))
         row.update(id=identity,name=p['name'],building_type=source['building_type'],template=source['template'],
-            source_family=source['source_family'],evidence_view=source['evidence_view'],construction_schema='2.1.0',
+            source_family=source['source_family'],evidence_view=source['evidence_view'],construction_schema='3.0.0',
             vintage=source['vintage']['value'],scope=p['scope'],derivation='source-ready construction set',
             gate=originals.get(identity,{}).get('gate') or ['residential' if p['scope']=='whole_dwelling' else 'nonresidential'],
             applicability=[{'building_type':c['reference_id'].split('/',1)[-1] if p['scope']!='whole_dwelling' else source['building_type'],
@@ -151,8 +153,8 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
     remove_empty_retired_routes(root,retired)
     from scripts.construction_equivalent_site import load_equivalents,packet_for as equivalent_packet
     equivalents=load_equivalents()
-    report={'schema_version':'1.0.0','construction_schema':'2.1.0','definitions':len(release['construction_sets']),
-        'contexts':len(release['contexts']),'packets':{},'unified_schema':'1.2.0','unified_packets':{},
+    report={'schema_version':'1.0.0','construction_schema':'3.0.0','definitions':len(release['construction_sets']),
+        'contexts':len(release['contexts']),'packets':{},'unified_schema':'2.0.0','unified_packets':{},
         'resources':{k:{} for k in ('assemblies','materials','evidence')}}
     for identity,profile in release['construction_sets'].items():
         if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*',identity):raise ValueError('Unsafe construction identity')
@@ -165,17 +167,18 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
         controls+=''.join(f'<option value="{esc(v)}">{esc(v)}</option>' for v in sorted({c['climate_zone'] for c in contexts.values()}))
         controls+='</select></label><label>Source reference<select class="construction-reference"><option value="">Choose source reference</option></select></label>'
         controls+='<label>JSON representation<select class="construction-representation"><option value="detailed">Detailed construction set</option><option value="unified">Unified building construction</option></select></label></div>'
-        controls+='<p class="construction-description">Detailed JSON retains original assemblies and program/story assignment rules. Unified JSON provides one assembly per semantic with approximation evidence.</p>'
+        controls+='<p class="construction-description">Both exports include the selected suite’s source-supported foundation and ground methods.</p>'
         markup=(f'<section class="object-json" data-construction="{esc(json.dumps(descriptor,separators=(",",":")))}" '
             f'data-unified="{esc(json.dumps(unified,separators=(",",":")))}" '
             f'data-contexts="{esc(json.dumps(choices,separators=(",",":")))}" data-root="../../">'+controls+
             '<button type="button" class="object-copy" disabled>Copy detailed JSON</button>'+
             '<button type="button" class="construction-copy-unified" disabled>Copy unified JSON</button>'+
             '<details class="object-source"><summary>JSON</summary><pre tabindex="0">Expand to load the selected construction JSON.</pre></details>'+
-            '<p class="object-status" role="status" aria-live="polite"></p></section>')
+            '<p class="object-status" role="status" aria-live="polite"></p>'+
+            '<div class="construction-ground-summary" aria-live="polite"></div></section>')
         page=f'# {esc(profile["name"])}\n\n[Construction catalogue](../catalogue/{"residential" if profile["scope"]=="whole_dwelling" else "nonresidential"}/construction/index.md) · [Construction JSON contract](../guides/construction-json.md)\n\n'
         page+=f'`{identity}` · Construction set · {esc(profile["scope"])} · {esc(source["template"])} · {esc(source["source_family"])}\n\n'
-        page+='One set contains its source-supported exterior and interior components. Select a climate and source reference, then copy **Detailed** or **Unified** JSON using its own button. The representation selector controls the preview. Both copies use the same selected context. Fixed reference ACH remains explicit. BEMGen supplies actual model geometry.\n\n'
+        page+='One set contains its source-supported exterior, interior and foundation components. Select a climate and source reference, then copy **Detailed** or **Unified** JSON using its own button. The representation selector controls the preview. Both copies use the same selected context. Fixed reference ACH remains explicit. BEMGen supplies actual model geometry, foundation hosts and weather inputs.\n\n'
         if profile['scope']=='space_type':page+='This is a partial source space set; it is not a complete building set.\n\n'
         additions=[d['atlas_added_applicability'] for rows in packet['selector_receipts'].values() for d in rows if 'atlas_added_applicability' in d]
         if additions:
@@ -259,16 +262,18 @@ def install_contract(root,include_resources=True):
     root=Path(root)
     guide='''# Construction JSON for simulation import
 
-Contract **2.1.0**. One construction set supplies all source-supported above-ground
-component types, fixed reference infiltration, materials and provenance.
+Detailed contract **3.0.0**, unified **2.0.0**. One construction set supplies its
+source-supported above-ground and foundation components, native ground methods,
+fixed reference infiltration, materials and provenance.
 
 Each definition page offers two separate JSON exports for the same selected
 climate and source reference:
 
-- **Detailed construction set (2.1.0):** original assemblies, materials,
+- **Detailed construction set (3.0.0):** original assemblies, materials,
   program/story assignment rules and provenance.
-- **Unified building construction (1.2.0):** one assembly per applicable semantic,
-  precomputed archetype weights, mass budgets, fixed reference ACH and fit errors.
+- **Unified building construction (2.0.0):** simplified ordinary components,
+  precomputed archetype weights, mass budgets, fixed reference ACH and fit errors;
+  native ground recipes where physical equivalence is unjustified.
 
 The unified export is additive. It does not replace detailed source rules. Its
 fixed two-mass-layer plus massless-resistance approximation may inadequately
@@ -280,8 +285,9 @@ profiles, with unequal-multiplier approximation flags and affected pair counts.
 
 Current distribution **v2.2.0** ships 177 complete building/dwelling sets and
 3,320 supported contexts. Room-specific rules are embedded in building sets.
-The detailed consumer schema is **2.1.0** and the unified consumer schema is
-**1.2.0**, supported by shared mass release **1.0.0**. The frozen unified
+The combined construction delivery **1.0.0** extends that distribution. Its
+detailed consumer schema is **3.0.0** and unified consumer schema is
+**2.0.0**, supported by shared mass release **1.0.0**. The frozen unified
 thermal-assembly release remains **1.1.0**. Release versions and schema versions identify
 different artifacts and must not be inferred from each other.
 Standalone space-type sets are retained in frozen source releases rather than
@@ -295,11 +301,11 @@ building/story rules. Selector receipts mark `atlas_added_applicability`, with
 origin, mode, original source-instantiation status and an evidence reference.
 No program loads, physics or infiltration values are changed.
 
-- [Construction-set schema](../contracts/construction-json-v2.1.schema.json)
+- [Construction-set schema](../contracts/construction-json-v3.schema.json)
 - [Normalized catalogue schema](../contracts/construction-catalogue-v2.schema.json)
 - [Complete Medium Office example](../examples/construction/medium-office.json)
 - [Complete residential example](../examples/construction/residential.json)
-- [Unified construction schema](../contracts/construction-equivalent-v1.2.schema.json)
+- [Unified construction schema](../contracts/construction-equivalent-v2.schema.json)
 - [Unified Medium Office example](../examples/construction/unified-medium-office.json)
 - [Unified residential example](../examples/construction/unified-residential.json)
 - [Source coverage](../construction/coverage.json)
@@ -322,6 +328,39 @@ mass. Do not remove actual walls/slabs or rescale source materials silently.
 Additional furnishings/partition objects remain separate from explicit surfaces.
 
 - [Shared mass schema](../contracts/construction-mass-accounting-v1.schema.json)
+
+## Foundation and ground
+
+The same suite/climate/reference selection includes GroundFloor, FoundationWall,
+FloorOverFoundation and RimJoist through ordinary components and assignments.
+`foundation_ground` holds configuration, methods, required geometry and model-wide
+parameters. F/C factors live only on assemblies, material properties only in
+materials, and coupled Kiva placement/settings are referenced without duplicates.
+There is no separate ground suite, download, filter or matching service.
+
+All 177 suites / 3,320 contexts have complete source-supported content: 3,308
+contact cases and 12 explicitly without direct ground contact. A source upper
+apartment or ambient configuration cannot supply a generic ground slab for a
+different whole building. Unsupported requests fail instead of guessing physics.
+
+Unified preserves 20 native residential suite/role exceptions, exactly two
+assignments each: 15 GroundFloor host/coupling differences and five FoundationWall
+soil versus non-soil differences. Ordinary components retain their simplified
+representation. Actual geometry, exposed external edges, foundation hosts and
+method-specific weather/site/control inputs remain BEMGen responsibilities.
+
+F/C methods use native GroundFCfactorMethod boundaries. Layered ground uses the
+declared BuildingSurface temperature input; finite-R recipes named Adiabatic
+remain finite-R. Kiva retains source soil/edge coupling, insulation, initialization
+and global settings. Conflicting model-wide requests must fail. Zero exposed
+perimeter uses native engine handling. Cancel shared zone edges; never sum zone
+perimeters or invent positive exposure. Ground/soil capacity does not enter
+ordinary interior-mass restoration.
+
+- [Embedded ground-method schema](../contracts/construction-foundation-ground-v1.schema.json)
+- [Residential basement detailed example](../examples/construction/basement.detailed.json)
+- [Residential basement unified example](../examples/construction/basement.unified.json)
+- [Supported no-contact example](../examples/construction/no-contact.detailed.json)
 
 ## Select and copy
 
@@ -366,8 +405,7 @@ recipes have complete physics/provenance but no recovered prototype mapping.
 They remain accessible and explicitly identified; their applicability is not
 invented. Unsupported source climates remain unsupported.
 
-Foundation-dependent assemblies, ground and systems remain separate deferred
-work. Program JSON stays independent. Ready exports establish contract completeness
+Systems remain deferred. Program JSON stays independent. Ready exports establish contract completeness
 under the documented policies, not annual building-energy accuracy. Preserve
 source license notices when reusing artifacts.
 '''
@@ -377,12 +415,15 @@ source license notices when reusing artifacts.
     write(root,'guides/construction-json.md',guide)
     for name in ('construction-json-v2.schema.json','construction-catalogue-v2.schema.json'):
         write(root,'contracts/'+name,(OUTPUT/'schemas'/name).read_text(encoding='utf-8'))
-    from scripts.construction_mass_release import EXAMPLES
-    for name in ('construction-json-v2.1.schema.json','construction-equivalent-v1.2.schema.json','construction-mass-accounting-v1.schema.json'):
+    from scripts.construction_foundation_release import EXAMPLES
+    for name in ('construction-json-v3.schema.json','construction-equivalent-v2.schema.json','construction-foundation-ground-v1.schema.json','construction-mass-accounting-v1.schema.json'):
         write(root,'contracts/'+name,(ROOT/'schemas'/name).read_text(encoding='utf-8'))
-    for source,target in (('medium-office-2019-3B','medium-office'),('residential-5A','residential')):
+    for source,target in (('medium-office-2019-3B','medium-office'),('residential-slab','residential')):
         for mode,prefix in (('detailed',''),('unified','unified-')):
             write(root,'examples/construction/'+prefix+target+'.json',(EXAMPLES/(source+'.'+mode+'.json')).read_text(encoding='utf-8'))
+    for source,target in (('residential-conditioned-basement','basement'),('residential-above-apartment','no-contact')):
+        for mode in ('detailed','unified'):
+            write(root,'examples/construction/'+target+'.'+mode+'.json',(EXAMPLES/(source+'.'+mode+'.json')).read_text(encoding='utf-8'))
     write(root,'construction/source-lock.json',(OUTPUT/'sources/construction-v2-source-lock.json').read_text(encoding='utf-8'))
     for path in (OUTPUT/'sources/licenses').glob('*.txt'):
         write(root,'notices/construction/'+path.name,path.read_text(encoding='utf-8'))
@@ -459,12 +500,12 @@ def integrate_existing(bundle,root):
 
 def library_guide():
     return ('# Library definitions\n\nPrograms supply loads and determined schedules. '
-            'A construction set groups its source-supported above-ground components, materials, fixed reference infiltration and provenance. '
+            'A construction set groups its source-supported above-ground and foundation components, native ground methods, materials, fixed reference infiltration and provenance. '
             'Choose its climate and source reference, then preview either representation and use its own Copy detailed JSON or Copy unified JSON button. '
-            'Unified JSON uses precomputed archetype shares and one assembly per semantic, retaining approximation evidence and mass-budget rules. '
+            'Unified JSON uses precomputed archetype shares and simplified ordinary components, retaining native ground methods, approximation evidence and mass-budget rules. '
             'Room-specific construction rules are embedded in complete building sets. Independent assembly resources and unsupported contexts retain their source evidence. '
             'BEMGen owns component matching and translation using actual model geometry. '
-            'Ground and systems completion remain deferred; existing HVAC pages retain source evidence.\n\n'
+            'Systems completion remains deferred; existing HVAC pages retain source evidence.\n\n'
             '[Construction JSON contract](construction-json.md) · [Program JSON contract](program-json.md) · [Sources](../sources.md)\n')
 
 

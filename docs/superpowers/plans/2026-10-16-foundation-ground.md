@@ -2,7 +2,7 @@
 
 > **For agentic workers:** The owner approved this revised plan for implementation on 2026-10-16. Use `superpowers:executing-plans` task by task. Keep each method parameter authoritative in one location, retain ordinary unified simplifications, and report the small set of physically necessary native multi-assignment exceptions. Do not infer additional assumptions from blank comments.
 
-**Status:** Approved for implementation, 2026-10-16. D1–D4 and the five architectural clarifications are accepted, with the two execution constraints below. Execute locally task by task; BEMGen remains view-only and publication remains a later gate.
+**Status:** Implemented locally, 2026-10-16; final branch review and owner release review gate apply. Approved for implementation, 2026-10-16. D1–D4 and the five architectural clarifications are accepted, with the two execution constraints below. Execute locally task by task; BEMGen remains view-only and publication remains a later gate.
 
 **Goal:** Extend each detailed and unified construction suite with its source-supported foundation/ground specification, including foundation-dependent interfaces and the instructions needed to resolve it against a generated BEM and site.
 
@@ -14,7 +14,7 @@
 
 ## Global constraints
 
-- Each method parameter has one authoritative executable location. Assemblies/materials own physical F/C factors, material properties and assembly-specific Kiva insulation; `foundation_ground` owns solver/environment configuration and references assemblies without copying their physics. Internal original-value evidence is not another executable parameter source.
+- Each method parameter has one authoritative executable location. Assemblies own F/C factors; materials own layer/insulation/soil properties; `foundation_ground` owns coupled Kiva placement, initialization and solver/environment configuration without copying material physics. Internal original-value evidence is not another executable parameter source.
 - Ordinary unified construction components retain their existing simplified representation. Multiple native foundation assignments are exceptions only where physical equivalence/homogenization is unjustified; deduplicate equivalent recipes and warn with the affected suites/roles and reasons in the summary.
 
 - Baseline: `construction-delivery-2026-10-16`, commit `0a7b86fd5cda8dd990d0fed1cfdbb4e31d580801`; branch `codex/foundation-ground`.
@@ -117,9 +117,9 @@ Reserve `foundation_ground` for:
 | Foundation configuration | Effective foundation/contact type and required thermal hosts; express source-supported absence without inventing contact |
 | Ground-transfer methods | F-factor, C-factor, layered ground-temperature, Kiva or source-proven adiabatic instructions associated with existing assembly references |
 | Required geometry | Typed SI area, exposed perimeter, grade/depth and grouping operands required to instantiate the selected method |
-| Method-specific parameters | F/C values, Kiva insulation placement/settings, soil, boundary-temperature resolution and initialization inputs; identify model-wide versus per-foundation parameters |
+| Method-specific parameters | References to assembly F/C values and insulation/soil materials; Kiva placement/settings, boundary-temperature resolution and initialization inputs; identify model-wide versus per-foundation parameters |
 
-Any method entry links to an assembly already selected through the normal component/assignment path. It creates no second recipe identity, component target or assignment precedence. Layered floor/rim-joist materials remain in the ordinary assembly/material locations. Ordinary assignment geometry remains there; the foundation section adds only the operands required by ground transfer, without duplicating values.
+An ordinary component assignment references its assembly and, where needed, a ground method. It creates no second recipe identity, component target or assignment precedence. Layered floor/rim-joist materials remain in the ordinary assembly/material locations. Ordinary assignment geometry remains there; the foundation section adds only the operands required by ground transfer, without duplicating values.
 
 ### 2.2 Compact public payload
 
@@ -186,7 +186,7 @@ D1–D4 and the revised plan are **accepted by the owner for implementation**, w
 **Review comments:**
 
 <!-- decision:D1:begin -->
-Accepted by owner, 2026-10-16; revised-plan review pending.
+Accepted by owner with architectural revisions, 2026-10-16; revised plan subsequently approved for implementation.
 <!-- decision:D1:end -->
 
 ### D2 — Limit initial readiness to source-supported foundation conditions
@@ -196,7 +196,7 @@ Accepted by owner, 2026-10-16; revised-plan review pending.
 **Review comments:**
 
 <!-- decision:D2:begin -->
-Accepted by owner, 2026-10-16; revised-plan review pending.
+Accepted by owner with architectural revisions, 2026-10-16; revised plan subsequently approved for implementation.
 <!-- decision:D2:end -->
 
 ### D3 — Use method-specific source/environment policies
@@ -208,7 +208,7 @@ The Standards weather helper uses STAT-derived lagged monthly air temperatures f
 **Review comments:**
 
 <!-- decision:D3:begin -->
-Accepted by owner, 2026-10-16; revised-plan review pending.
+Accepted by owner with architectural revisions, 2026-10-16; revised plan subsequently approved for implementation.
 <!-- decision:D3:end -->
 
 ### D4 — Preserve unconditioned foundation hosts
@@ -220,7 +220,7 @@ Conditioned foundation hosts obtain their controls/program from the consumer's n
 **Review comments:**
 
 <!-- decision:D4:begin -->
-Accepted by owner, 2026-10-16; revised-plan review pending.
+Accepted by owner with architectural revisions, 2026-10-16; revised plan subsequently approved for implementation.
 <!-- decision:D4:end -->
 
 No decision is needed yet on an imputed perimeter weighting, a universal soil value or extra equivalent layers: none is proposed. If source execution exposes a case requiring one, report its affected contexts and options before implementing it.
@@ -235,12 +235,12 @@ The file/interface names below are proposed extension points. No historical self
 
 **Interfaces:** `inventory_foundation_sources(definitions, contexts, geometry) -> dict` produces internal suite/context/source-role links and census dispositions for Task 2. Its output separates selected stock option from effective configuration and table candidate from executed assignment; it is not a public compatibility object.
 
-- [ ] Test the fixed 177/3,320 denominator, the 136 floor/124 wall selector counts, all seven effective residential categories, absence versus unknown, and the eight already unsupported source contexts remaining evidence-only.
-- [ ] Test that executable-contact, source-supported-no-contact and missing-physics context counts sum to 3,320 without counting missing physics as absence or dropping no-contact suites.
-- [ ] Run the focused test and observe failure before adding the inventory implementation.
-- [ ] Pin every new source file/caller and runtime dependency; preserve original identities and historical source notices. Normalize the census with per-field evidence and input hashes.
-- [ ] Verify every context has a disposition; enumerate missing dependencies instead of narrowing eligibility. Reconcile the planning counts above and document any source-execution correction.
-- [ ] Inspect staged diff, run `python -m scripts.audit --staged`, and commit a reversible census/ADR unit with neutral agent identity and model trailer.
+- [x] Test the fixed 177/3,320 denominator, the 136 floor/124 wall selector counts, all seven effective residential categories, absence versus unknown, and the eight already unsupported source contexts remaining evidence-only.
+- [x] Test that executable-contact, source-supported-no-contact and missing-physics context counts sum to 3,320 without counting missing physics as absence or dropping no-contact suites.
+- [x] Run the focused test and observe failure before adding the inventory implementation.
+- [x] Pin every new source file/caller and runtime dependency; preserve original identities and historical source notices. Normalize the census with per-field evidence and input hashes.
+- [x] Verify every context has a disposition; enumerate missing dependencies instead of narrowing eligibility. Reconcile the planning counts above and document any source-execution correction.
+- [x] Inspect staged diff, run `python -m scripts.audit --staged`, and commit a reversible census/ADR unit with neutral agent identity and model trailer.
 
 ### Task 2 — Recover native physics and final assignment paths
 
@@ -248,12 +248,12 @@ The file/interface names below are proposed extension points. No historical self
 
 **Interfaces:** `normalize_foundation_execution(native: dict, source_receipts: dict) -> dict` yields final method, materials, boundary instructions, typed geometry/environment operands and host rules. Source execution is opt-in; ordinary export later consumes frozen output.
 
-- [ ] Test Medium Office first: source F target, assigned object type, area/perimeter operands and boundary; then a residential slab and vented crawlspace.
-- [ ] Observe the focused failures, implement construction-only native captures, and compare normalized operands/materials with source objects and setter outcomes.
-- [ ] Cover SmallDataCenter targetless finite-R behavior; legacy U-based walls; Hospital/LargeHotel/LargeOffice other-side paths; Tall/SuperTall walls; conditioned/unconditioned basement and no-contact residential cases.
-- [ ] Recover source venting/exchange and Kiva initial-temperature dependencies without sizing HVAC, expanding annual schedules or running the whole source workflow. Capture source minimum/perimeter approximations explicitly.
-- [ ] Run `python -m unittest tests.test_construction_foundation_recovery -v`; require complete active physics, boundary and dependency evidence per declared model, or emit a concrete blocker report.
-- [ ] Audit and commit the source recovery unit.
+- [x] Test Medium Office first: source F target, assigned object type, area/perimeter operands and boundary; then a residential slab and vented crawlspace.
+- [x] Observe the focused failures, implement construction-only native captures, and compare normalized operands/materials with source objects and setter outcomes.
+- [x] Cover SmallDataCenter targetless finite-R behavior; legacy U-based walls; Hospital/LargeHotel/LargeOffice other-side paths; Tall/SuperTall walls; conditioned/unconditioned basement and no-contact residential cases.
+- [x] Recover source venting/exchange and Kiva initial-temperature dependencies without sizing HVAC, expanding annual schedules or running the whole source workflow. Capture source minimum/perimeter approximations explicitly.
+- [x] Run `python -m unittest tests.test_construction_foundation_recovery -v`; require complete active physics, boundary and dependency evidence per declared model, or emit a concrete blocker report.
+- [x] Audit and commit the source recovery unit.
 
 ### Task 3 — Extend the existing construction structures and ground-method metadata
 
@@ -261,13 +261,13 @@ The file/interface names below are proposed extension points. No historical self
 
 **Interfaces:** `prepare_foundation_extension(source_context: dict, recovered: dict, profiles: dict, representation: str) -> dict` produces extensions to the representation's existing component/assignment, assembly/material and evidence/provenance fields, plus the restricted `foundation_ground` method metadata. `validate_foundation_extension(document: dict) -> None` validates those additions against the complete construction document and existing registries. The ground-method schema is an embedded schema fragment, not a standalone suite or component contract.
 
-- [ ] Test the four roles in the existing top-level `components`, normal assignment/assembly/evidence references, each native model's operands, source-proven absence/adiabatic and model-wide setting conflicts. Reject nested component/material/assignment/evidence registries or public compatibility objects inside `foundation_ground`.
-- [ ] Observe failures, implement SI/provenance/reference/physical validation and deterministic identities, then pass the tests.
-- [ ] Encode accepted D1–D4 and the owner's five revisions. Reuse existing assignment precedence and suite/climate selection; no new matching service. Keep source physics self-contained while raw inventories/recovery reports remain internal.
-- [ ] Test climate selection end to end: selecting the suite's climate filters both above-ground and foundation recipes/parameters, with no second foundation selector or all-climate foundation candidate collection in the consumer document.
-- [ ] Test public resource closure and compactness: include required execution parameters and reproducibility references; exclude audit-only source inventories, recovery traces and detailed validation metadata. Preserve full evidence internally and the existing public mass-accounting operands required for execution.
-- [ ] Reject a source blocker mislabeled as a consumer geometry requirement. Keep weather/grade inputs separate from missing material properties.
-- [ ] Audit and commit contract/schema/validator together.
+- [x] Test the four roles in the existing top-level `components`, normal assignment/assembly/evidence references, each native model's operands, source-proven absence/adiabatic and model-wide setting conflicts. Reject nested component/material/assignment/evidence registries or public compatibility objects inside `foundation_ground`.
+- [x] Observe failures, implement SI/provenance/reference/physical validation and deterministic identities, then pass the tests.
+- [x] Encode accepted D1–D4 and the owner's five revisions. Reuse existing assignment precedence and suite/climate selection; no new matching service. Keep source physics self-contained while raw inventories/recovery reports remain internal.
+- [x] Test climate selection end to end: selecting the suite's climate filters both above-ground and foundation recipes/parameters, with no second foundation selector or all-climate foundation candidate collection in the consumer document.
+- [x] Test public resource closure and compactness: include required execution parameters and reproducibility references; exclude audit-only source inventories, recovery traces and detailed validation metadata. Preserve full evidence internally and the existing public mass-accounting operands required for execution.
+- [x] Reject a source blocker mislabeled as a consumer geometry requirement. Keep weather/grade inputs separate from missing material properties.
+- [x] Audit and commit contract/schema/validator together.
 
 ### Task 4 — Add ground support profiles and both combined exports
 
@@ -275,11 +275,11 @@ The file/interface names below are proposed extension points. No historical self
 
 **Interfaces:** `build_foundation_profile(source_reference: dict) -> dict` builds internal derivation support. `compose_foundation_export(base_document: dict, extension: dict, representation: str) -> dict` merges Task 3's additions into the existing construction fields and adds only the restricted method metadata under `foundation_ground`. Both wrappers use the same selected suite/climate context and internal source inventory; the inventory is not embedded automatically.
 
-- [ ] Test footprint/shared-edge and zero-perimeter core cases, source multipliers, grade splits, supported absence versus requested unsupported interfaces, exclusive mass/interface ownership and rejection through the existing assignment path.
-- [ ] Observe failures, recover normalized internal support profiles and compose over the current exports. Detailed extends existing assignments; unified keeps native F/C/Kiva recipes where equivalent-layer homogenization is unjustified. Reuse the existing assignment form for native cases that cannot use its ordinary single-assembly shorthand.
-- [ ] Audit actual heterogeneous assignments before any blend. Reuse identical native recipes and preserve distinct native cases through existing assignments. Test that absence of an equivalent-layer fit does not block a complete native export. Escalate only missing executable physics or an unrepresentable required native case; do not average incompatible models.
-- [ ] Ensure no change to old base materials, equivalent fit errors, fixed ACH, program outputs, source mass budgets or old consumer schemas. New required ground semantics justify major consumer versions and explicit BEMGen version dispatch.
-- [ ] Run the focused new profile/export tests and current mass/export regression tests, then audit and commit.
+- [x] Test footprint/shared-edge and zero-perimeter core cases, source multipliers, grade splits, supported absence versus requested unsupported interfaces, exclusive mass/interface ownership and rejection through the existing assignment path.
+- [x] Observe failures, recover normalized internal support profiles and compose over the current exports. Detailed extends existing assignments; unified keeps native F/C/Kiva recipes where equivalent-layer homogenization is unjustified. Reuse the existing assignment form for native cases that cannot use its ordinary single-assembly shorthand.
+- [x] Audit actual heterogeneous assignments before any blend. Reuse identical native recipes and preserve distinct native cases through existing assignments. Test that absence of an equivalent-layer fit does not block a complete native export. Escalate only missing executable physics or an unrepresentable required native case; do not average incompatible models.
+- [x] Ensure no change to old base materials, equivalent fit errors, fixed ACH, program outputs, source mass budgets or old consumer schemas. New required ground semantics justify major consumer versions and explicit BEMGen version dispatch.
+- [x] Run the focused new profile/export tests and current mass/export regression tests, then audit and commit.
 
 ### Task 5 — Freeze the combined delivery and focused validation
 
@@ -287,33 +287,58 @@ The file/interface names below are proposed extension points. No historical self
 
 **Interfaces:** `export_pair(context_id: str, ...) -> tuple[dict, dict]`; CLI `python -m scripts.construction_foundation_release --check --examples`; validator `python -m scripts.validate_construction_foundation`.
 
-- [ ] Test manifest tampering, orphan contexts/resources, partial recovery, deterministic bytes, complete new exports and identical shared configuration/provenance across each pair.
-- [ ] Test that each standalone export contains executable selected resources only, uses the suite's climate selection, has no parallel foundation registry/compatibility object, and does not leak internal inventories or validation traces.
-- [ ] Observe failures, implement normalized internal storage and complete standalone exports. This internal release is an overlay/build artifact, not a separate public foundation-suite product.
-- [ ] Validate all 177 suites / 3,320 contexts with zero unresolved active source physics. Count source-supported no-ground-contact cases as supported completions with explicit absence reasons; count missing executable physics as blocked. Report unsupported external geometry requests separately. Keep the full denominator and verify the context-category sum.
-- [ ] Supply paired pilots for Medium Office, Warehouse, SmallDataCenter, a legacy basement, Tall/SuperTall, residential slab, conditioned basement, unconditioned basement, vented/unvented crawlspace, ambient and above-apartment cases. Reuse recipes to keep fixtures compact.
-- [ ] Check native object serialization and small local heat-transfer/initialization smoke cases for each active method, including core/perimeter and split-zone geometry. Compare F-factor steady-state `F × exposed perimeter` behavior where applicable; do not demand full annual parity or a systematic zoning-error study.
-- [ ] Pin the original source recovery runtime and separately validate target EnergyPlus 26.2 object fields/compatibility. Do not replace older source defaults with newer engine defaults silently.
-- [ ] Audit and commit the verified release unit only when the readiness gate is actually met.
+- [x] Test manifest tampering, orphan contexts/resources, partial recovery, deterministic bytes, complete new exports and identical shared configuration/provenance across each pair.
+- [x] Test that each standalone export contains executable selected resources only, uses the suite's climate selection, has no parallel foundation registry/compatibility object, and does not leak internal inventories or validation traces.
+- [x] Observe failures, implement normalized internal storage and complete standalone exports. This internal release is an overlay/build artifact, not a separate public foundation-suite product.
+- [x] Validate all 177 suites / 3,320 contexts with zero unresolved active source physics. Count source-supported no-ground-contact cases as supported completions with explicit absence reasons; count missing executable physics as blocked. Report unsupported external geometry requests separately. Keep the full denominator and verify the context-category sum.
+- [x] Supply paired pilots for Medium Office, Warehouse, SmallDataCenter, a legacy basement, Tall/SuperTall, residential slab, conditioned basement, unconditioned basement, vented/unvented crawlspace, ambient and above-apartment cases. Reuse recipes to keep fixtures compact.
+- [x] Check native object serialization and small local heat-transfer/initialization smoke cases for each active method, including core/perimeter and split-zone geometry. Compare F-factor steady-state `F × exposed perimeter` behavior where applicable; do not demand full annual parity or a systematic zoning-error study.
+- [x] Pin the original source recovery runtime and separately validate target EnergyPlus 26.2 object fields/compatibility. Do not replace older source defaults with newer engine defaults silently.
+- [x] Audit and commit the verified release unit only when the readiness gate is actually met.
 
 ### Task 6 — Prepare the BEMGen handover
 
 **Files:** Prepare a new ignored packet and prompt under `build/local-handover/` and `build/local-plans/`; update tracked Atlas contract/examples/release notes. Never mutate previously pinned packets.
 
-- [ ] Include new schemas and paired examples, manifests/checksums, notices and a human-readable supported/unsupported-case table; do not add public JSON compatibility objects.
-- [ ] Specify extension of BEMGen's existing construction assignment path: consume the already climate-selected suite, map its four foundation roles, instantiate F/C/Kiva with actual geometry/environment inputs and reject unsupported cases. Include global-setting checks, hosts/airflow, grade ownership and mass accounting. Invalid imports must not fall back to an example envelope.
-- [ ] Require a separate BEMGen worker to implement/test importer, GH ports and IDF writing. Preserve its old legacy ground policy on the legacy path; imported native methods need their own valid environment objects.
-- [ ] State that successful Atlas schema/source validation is not successful BEMGen integration or simulation. Test acceptance and unsupported combinations must be reported by that worker.
-- [ ] Retain original-work and upstream licensing terms; copying a fixture packet does not grant an MIT relicensing permission.
+- [x] Include new schemas and paired examples, manifests/checksums, notices and a human-readable supported/unsupported-case table; do not add public JSON compatibility objects.
+- [x] Specify extension of BEMGen's existing construction assignment path: consume the already climate-selected suite, map its four foundation roles, instantiate F/C/Kiva with actual geometry/environment inputs and reject unsupported cases. Include global-setting checks, hosts/airflow, grade ownership and mass accounting. Invalid imports must not fall back to an example envelope.
+- [x] Require a separate BEMGen worker to implement/test importer, GH ports and IDF writing. Preserve its old legacy ground policy on the legacy path; imported native methods need their own valid environment objects.
+- [x] State that successful Atlas schema/source validation is not successful BEMGen integration or simulation. Test acceptance and unsupported combinations must be reported by that worker.
+- [x] Retain original-work and upstream licensing terms; copying a fixture packet does not grant an MIT relicensing permission.
 
 ### Task 7 — Site integration and later publication
 
 **Files:** Update `scripts/construction_site.py`, `scripts/construction_equivalent_site.py`, `scripts/construction_site_refresh.py`, `website/assets/construction_core.js`, related smoke/Node tests and the construction guide.
 
-- [ ] Test both direct-copy buttons producing complete new-version documents; verify preview/copy parity and no source chooser or separate foundation download.
-- [ ] Add compact method/required-input and source-supported absence information to existing construction pages. Current climate/reference selection filters the foundation content in both exports; no independent foundation filter, matching UI or catalogue.
-- [ ] Use construction-only local refresh and focused desktop/mobile/browser checks. Check packet resource closure and size; no program/schedule regeneration unless a demonstrated dependency requires it.
-- [ ] Stop for release review. A later authorized PR/main deployment uses the repository's required checks, successful main-only Pages artifact and live verification. Do not run publication as part of this plan request.
+- [x] Test both direct-copy buttons producing complete new-version documents; verify preview/copy parity and no source chooser or separate foundation download.
+- [x] Add compact method/required-input and source-supported absence information to existing construction pages. Current climate/reference selection filters the foundation content in both exports; no independent foundation filter, matching UI or catalogue.
+- [x] Use construction-only local refresh and focused desktop/mobile/browser checks. Check packet resource closure and size; no program/schedule regeneration unless a demonstrated dependency requires it.
+- [x] Stop for release review. A later authorized PR/main deployment uses the repository's required checks, successful main-only Pages artifact and live verification. Do not run publication as part of this plan request.
+
+## Local execution receipt — 2026-10-16
+
+Tasks 1–7 are implemented locally. The fixed gate is 177 suites / 3,320 contexts:
+3,308 contact, 12 supported absence, zero missing executable physics. All paired
+schemas and focused physical/reference/ownership checks passed; 588 source
+initialization probes and six pinned EnergyPlus 26.2 one-day cells passed.
+
+Task 5 qualification: native numerical smoke verifies serialization and finite
+short-run behavior, not steady-state F×perimeter flux or annual accuracy. Source
+shared-edge cancellation/core handling are checked independently. The narrower
+verification claim is recorded in construction-foundation-release-review.md.
+
+Native unified exceptions are 20 residential suite/role entries, two assignments
+each (15 GroundFloor hosts and five FoundationWall soil/non-soil boundaries).
+Ordinary components remain simplified. Parameter ownership follows the latest
+owner constraint and ADR 0027's refined coupled-method placement rule.
+
+New local BEMGen packet: build/local-handover/bemgen-construction-foundation-v5,
+18 paired examples, full schemas, SHA-256 manifest and notices. Prior packets
+are unchanged. BEMGen code remains untouched; consumer integration remains open.
+Construction-only refresh updated 177 pages and 3,320 contexts, with zero program
+pages regenerated. Both direct-copy buttons retain the same selected context.
+Local method and no-contact displays were checked at desktop/mobile widths.
+Publication, push and CI/CD remain outside this execution; stop for owner review.
 
 ## 6. Source and audit locators
 

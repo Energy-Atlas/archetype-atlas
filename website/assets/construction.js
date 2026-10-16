@@ -10,8 +10,8 @@
     representation.value = params.get('representation') === 'unified' ? 'unified' : 'detailed';
     const label = () => representation.value === 'unified' ? 'Unified' : 'Detailed';
     const descriptions = {
-      unified: 'Unified building construction: one assembly per component type, using precomputed source-archetype shares. Fit errors and mass-budget approximations remain explicit. BEMGen supplies actual geometry, including overhangs.',
-      detailed: 'Detailed construction set: original assemblies, materials, program/story assignment rules and source evidence. BEMGen resolves assignments using actual model geometry.'
+      unified: 'Unified building construction: simplified ordinary components using precomputed archetype shares, with native foundation methods where needed. Physical host/boundary differences remain explicit. BEMGen supplies actual geometry and weather.',
+      detailed: 'Detailed construction set: original assemblies, materials and program/story rules, including the selected foundation configuration. BEMGen resolves assignments using actual model geometry, hosts and weather.'
     };
     function describe() {
       trigger.disabled = !selected || copying;unifiedCopy.disabled = !selected || copying;
@@ -40,6 +40,7 @@
       } catch (error) {status.textContent = error.message;}
       describe();previewToken++;details.querySelector('pre').textContent = 'Expand to load the complete selected ' + label().toLowerCase() + ' construction JSON.';
       if (details.open) preview();
+      groundSummary();
     }
     async function ready(mode = representation.value) {
       const identity = selected, version = revision;
@@ -53,6 +54,34 @@
       status.textContent = 'Loading verified construction JSON…';
       try {const value = await ready();if (token !== previewToken) return;details.querySelector('pre').textContent = JSON.stringify(value, null, 2);status.textContent = label() + ' JSON verified; fixed reference ACH and provenance retained.';}
       catch (error) {if (token === previewToken) status.textContent = error.message;}
+    }
+    async function groundSummary() {
+      const target = section.querySelector('.construction-ground-summary');
+      if (!target) return;
+      const version = revision;
+      target.replaceChildren(node('p', selected ? 'Loading selected foundation…' : 'Select a context to see its foundation configuration and required inputs.'));
+      if (!selected) return;
+      try {
+        const doc = await ready();if (version !== revision) return;
+        const ground = doc.foundation_ground;
+        if (!ground) throw new Error('Selected construction is missing foundation content.');
+        target.replaceChildren(node('h2', 'Foundation and ground'));
+        target.append(node('p', 'Configuration: ' + ground.configuration.type));
+        if (ground.configuration.reason) target.append(node('p', ground.configuration.reason));
+        const methods = [...new Set(Object.values(ground.methods).map(m => m.model))];
+        if (methods.length) target.append(node('p', 'Native methods: ' + methods.join(', ') + '. Material and method parameters are included in both JSON copies.'));
+        else target.append(node('p', 'This source configuration has no direct ground contact. It does not supply a generic soil-contact slab for a different building configuration.'));
+        const exceptions = Object.entries(doc.components).filter(([,c]) => c.native_exception_reason);
+        for (const [role, c] of exceptions) target.append(node('p', role + ': ' + c.native_exception_reason));
+        const inputs = Object.entries(ground.required_geometry);
+        if (inputs.length) {
+          target.append(node('h3', 'Required BEM inputs'));
+          const list = node('ul', '');
+          for (const [name, spec] of inputs) list.append(node('li', name + ' (' + spec.unit + '): ' + spec.description));
+          target.append(list);
+          target.append(node('p', 'BEMGen also supplies the method-specific weather, site and applicable program controls. Unsupported interfaces or missing inputs must be reported.'));
+        }
+      } catch (error) {if (version === revision) target.replaceChildren(node('p', error.message));}
     }
     climate.addEventListener('change', () => update(''));
     reference.addEventListener('change', () => update());

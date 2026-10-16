@@ -9,8 +9,43 @@
     if (!id || !packet.mass_contracts || !Object.hasOwn(packet.mass_contracts, id)) throw new Error('Missing shared mass contract.');
     return packet.mass_contracts[id];
   }
+  function withFoundation(base, packet, contextId, unified) {
+    const f = packet.foundation, eid = f?.contexts?.[contextId], ext = f?.extensions?.[eid];
+    if (!ext) throw new Error('Missing selected foundation extension.');
+    const take = (table, ids) => Object.fromEntries(ids.map(id => {
+      if (!Object.hasOwn(f[table], id)) throw new Error('Missing foundation resource: ' + id);
+      return [id, f[table][id]];
+    }));
+    const refs = (value, keys, found = new Set()) => {
+      if (Array.isArray(value)) value.forEach(v => refs(v, keys, found));
+      else if (value && typeof value === 'object') for (const [k, v] of Object.entries(value)) {
+        if (keys.includes(k)) found.add(v);else refs(v, keys, found);
+      }
+      return found;
+    };
+    const doc = structuredClone(base);
+    doc.schema_version = unified ? '2.0.0' : '3.0.0';doc.foundation_ground = structuredClone(ext.foundation_ground);
+    Object.assign(doc.components, structuredClone(unified ? ext.unified_components : ext.components));
+    Object.assign(doc.assemblies, take('assemblies', ext.assemblies), unified ? take('unified_assemblies', ext.unified_assemblies) : {});
+    const used = refs(doc.components, ['assembly_id']);used.delete(null);
+    refs(doc.foundation_ground, ['assembly_thickness_id']).forEach(id => used.add(id));
+    doc.assemblies = Object.fromEntries(Object.entries(doc.assemblies).filter(([id]) => used.has(id)));
+    const materials = {...doc.materials, ...take('materials', ext.materials)};
+    const mids = refs(doc.assemblies, ['material_id']);
+    refs(doc.foundation_ground, ['material_id', 'material_thickness_id', 'soil_material_id']).forEach(id => mids.add(id));
+    doc.materials = Object.fromEntries(Object.entries(materials).filter(([id]) => mids.has(id)));
+    doc.evidence = {...doc.evidence, ...take('evidence', ext.evidence)};
+    const proof = f.evidence[ext.evidence[0]];
+    if (unified) doc.provenance.foundation_ground = {source_locator:proof.source_locator, source_sha256:proof.source_file_sha256};
+    else {
+      const needed = new Set(Object.values(doc.evidence).flatMap(p => typeof p.source_file_sha256 === 'object' ? Object.values(p.source_file_sha256) : [p.source_file_sha256]));
+      doc.metadata.source_files = Object.fromEntries(Object.entries(doc.metadata.source_files).filter(([,v]) => needed.has(v.sha256)));
+      for (const [key, hash] of Object.entries(proof.source_file_sha256)) doc.metadata.source_files['atlas-foundation-' + key] = {sha256:hash, source_revision:'foundation-execution/1.0.0'};
+    }
+    return doc;
+  }
   function hydrate(packet, contextId) {
-    if (packet.kind !== 'construction_site_packet' || !['1.0.0', '1.1.0'].includes(packet.schema_version)) throw new Error('Unsupported construction delivery.');
+    if (packet.kind !== 'construction_site_packet' || !['1.0.0', '1.1.0', '1.2.0'].includes(packet.schema_version)) throw new Error('Unsupported construction delivery.');
     const c = packet.contexts[contextId];
     if (!c || c.construction_set_id !== packet.profile.id) throw new Error('Unsupported construction context.');
     const config = packet.component_configurations[c.configuration_id], decisions = packet.selector_receipts[c.selector_receipt_id];
@@ -42,20 +77,21 @@
         if (!evidenceIds.has(id)) {evidenceIds.add(id);pending.push(id);}
       }
     }
-    return structuredClone({schema_version: packet.schema_version === '1.1.0' ? '2.1.0' : '2.0.0',
-      ...(packet.schema_version === '1.1.0' ? {mass_accounting: massFor(packet, c)} : {}), kind: 'construction_set', export_mode: 'source_ready',
+    const doc = structuredClone({schema_version: packet.schema_version !== '1.0.0' ? '2.1.0' : '2.0.0',
+      ...(packet.schema_version !== '1.0.0' ? {mass_accounting: massFor(packet, c)} : {}), kind: 'construction_set', export_mode: 'source_ready',
       id: contextId, name: packet.profile.name, scope: packet.profile.scope,
       source: {...packet.profile.source, climate: {status: 'exact', value: c.climate_zone},
         reference_variant_id: c.reference_id, evidence: c.source_evidence_ids.map(id => required('evidence', id))},
       components: config.components, infiltration: c.infiltration, assemblies, materials,
       evidence: select('evidence', evidenceIds), metadata: {...packet.metadata,
         source_definition_ids: config.source_definition_ids, selection_decisions: decisions, variant_selections: {}}});
+    return packet.schema_version === '1.2.0' ? withFoundation(doc, packet, contextId, false) : doc;
   }
   function hydrateUnified(packet, contextId) {
-    if (packet.kind !== 'construction_equivalent_site_packet' || !['1.0.0', '1.1.0'].includes(packet.schema_version)) throw new Error('Unsupported unified construction delivery.');
+    if (packet.kind !== 'construction_equivalent_site_packet' || !['1.0.0', '1.1.0', '1.2.0'].includes(packet.schema_version)) throw new Error('Unsupported unified construction delivery.');
     if (!Object.hasOwn(packet.contexts, contextId)) throw new Error('Unsupported unified construction context.');
     const context = structuredClone(packet.contexts[contextId]);
-    if (context.detailed_context_id !== contextId || context.kind !== 'building_level_equivalent' || context.schema_version !== (packet.schema_version === '1.1.0' ? '1.2.0' : '1.1.0')) throw new Error('Invalid unified context.');
+    if (context.detailed_context_id !== contextId || context.kind !== 'building_level_equivalent' || context.schema_version !== (packet.schema_version !== '1.0.0' ? '1.2.0' : '1.1.0')) throw new Error('Invalid unified context.');
     if (!Object.hasOwn(packet.component_sets, context.component_set_id)) throw new Error('Missing unified component set.');
     const body = packet.component_sets[context.component_set_id];delete context.component_set_id;
     const ids = new Set(Object.values(body.components).filter(c => c.status === 'ready').map(c => c.assembly_id));
@@ -63,9 +99,10 @@
       if (!Object.hasOwn(packet.assemblies, id)) throw new Error('Missing unified assembly: ' + id);
       return [id, packet.assemblies[id]];
     }));
-    const mass = packet.schema_version === '1.1.0' ? {mass_accounting: massFor(packet, context)} : {};
+    const mass = packet.schema_version !== '1.0.0' ? {mass_accounting: massFor(packet, context)} : {};
     delete context.mass_contract_id;
-    return structuredClone({...context, ...body, assemblies, ...mass});
+    const doc = structuredClone({...context, ...body, assemblies, ...mass});
+    return packet.schema_version === '1.2.0' ? withFoundation(doc, packet, contextId, true) : doc;
   }
   function select(contexts, climate = '', reference = '', building = '') {
     const climates = [...new Set(contexts.map(c => c.climate))];
