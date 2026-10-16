@@ -153,3 +153,11 @@ source/runtime retrieval for re-execution. These publication checks run on both
 required platforms. No native source recovery or annual construction simulation
 is introduced. Lighter artifact delivery remains deferred until BEMGen testing
 is accepted; this change does not decouple generation from CI.
+
+The immutable v2 base generator enumerates source license notices in filesystem
+order when serializing its manifest. Use `python -m scripts.construction_base_reproduce
+--quiet` for cross-platform reproduction. This check-only adapter supplies the
+original lexical notice order, then runs the original generator with every
+validation and exact byte comparison intact. It changes neither historical
+generator hashes nor frozen artifacts; notice additions, removals or changed
+bytes still fail reproduction.
