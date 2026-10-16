@@ -12,7 +12,10 @@ def active_smoke(browser, base, screenshot_dir=None):
     def screenshot(name):
         if screenshot_dir: page.screenshot(path=str(screenshot_dir / (name + '.png')), full_page=True)
     try:
-        page.goto(base);query = page.locator('[data-md-component="search-query"]');query.fill('Office')
+        page.goto(base);query = page.locator('[data-md-component="search-query"]');query.click()
+        # The worker initializes after page load; type only once it is ready.
+        expect(page.locator('.md-search-result__meta')).to_have_text('Type to start searching',ignore_case=True,timeout=15000)
+        query.fill('Office')
         expect(page.locator('.md-search-result__list')).to_contain_text('Office');query.press('Escape')
         screenshot('home')
         page.goto(base + 'catalogue/');expect(page.locator('.definition-gate')).to_have_count(2)
