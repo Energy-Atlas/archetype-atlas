@@ -12,6 +12,29 @@ Sources: ComStock, ResStock, OpenStudio Standards, DOE Commercial Reference
 Buildings, and DOE/PNNL Prototype Building Models. Source interpretations and
 coverage will be recorded under `docs/` and `sources/`.
 
+The [shared mass-accounting completion](docs/construction-mass-accounting-v1-contract.md)
+adds detailed JSON **2.1.0** and unified JSON **1.2.0**, with identical source
+wall/slab budgets and native additional-mass quantities in both representations.
+The [normalized mass release](data/construction-mass-releases/v1.0.0/manifest.json)
+covers all 177 suites / 3,320 contexts; seven paired examples are in
+`docs/examples/construction-mass-v1/`. Historical releases remain unchanged;
+the site offers both upgraded consumer exports. Validate all frozen pairs with
+`python -m scripts.construction_delivery_validate`. Exact fit/mass regeneration
+uses the verified **Windows x64 / CPython 3.14.7** producer; see
+[reproduction requirements](docs/site-build.md).
+
+The construction delivery combines **detailed distribution v2.2.0**, separate
+**unified building construction 1.1.0** and **shared mass release 1.0.0**.
+Current consumer schemas are **2.1.0** (detailed) and **1.2.0** (unified).
+Both cover 177 complete sets and 3,320 supported climate/reference contexts.
+The [release notes](docs/release-notes-construction-v2.2.0.md) describe migration,
+exact artifact identities, accepted approximation limits and consumer geometry/
+mass responsibilities. [Implementation closure](docs/reviews/construction-milestone-closure.md)
+is complete. The publication marker `construction-delivery-2026-10-16` is created
+only after protected-main deployment and live verification. Ground and systems are
+deferred, and Program JSON remains independent. The historical source-input
+release description below is not the current construction readiness status.
+
 Layout: `schemas/` contracts; `sources/` pinned retrieval and selection;
 `scripts/` reproducible tooling; `tests/` validation regressions; `data/raw/`
 immutable local downloads; `data/interim/` intermediate diagnostics;

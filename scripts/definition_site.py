@@ -20,7 +20,7 @@ def write(root,path,text):
     target.write_text(text,encoding='utf-8',newline='\n')
 
 
-def generate(bundle,target,publish=True,history=None,pages=True):
+def generate(bundle,target,publish=True,history=None,pages=True,only_kinds=None):
     root=Path(target);refs={}
     if publish:
         from scripts.query_v2 import generate_delivery
@@ -44,10 +44,11 @@ def generate(bundle,target,publish=True,history=None,pages=True):
         for kind,label in KINDS.items():page+=f'<a class="definition-kind" href="{kind}/">{label} →</a>'
         page+='</div>\n\n[Change building family](../../catalogue.md)\n';write(root,f'catalogue/{gate_key}/index.md',page)
         for kind,table in PRIMARY.items():
+            if only_kinds is not None and kind not in only_kinds:continue
             rows=[r for r in bundle[table] if gate_key in r['gate']]
             entries=[]
             for r in rows:
-                entries.append({k:r.get(k) for k in ('id','name','building_type','template','source_family','climate','detail','system_type','role','derivation','evidence_view','source_definition_id','available_details')} |
+                entries.append({k:r.get(k) for k in ('id','name','building_type','template','source_family','climate','detail','system_type','role','scope','construction_schema','derivation','evidence_view','source_definition_id','available_details')} |
                     {'building':building_label(r['building_type']) if r['building_type'] else 'Shared elements',
                      'applicability':[{**c,'building':building_label(c['building_type'])} for c in r.get('applicability',[])],
                      'vintage':r.get('vintage') or r['template'],'path':'../../../definitions/'+r['id']+'/'})
@@ -57,8 +58,8 @@ def generate(bundle,target,publish=True,history=None,pages=True):
             fields.append(('vintage','Vintage / standard / source'))
             if kind!='program' or any(r.get('climate') for r in rows):fields.append(('climate','Climate'))
             if kind=='hvac_system':fields.append(('system_type','System type'))
-            if kind=='construction':fields.append(('role','Element role'))
-            fields.append(('evidence_view','Evidence view'))
+            if kind=='construction' and not any(r.get('construction_schema') for r in rows):fields.append(('role','Element role'))
+            if kind!='construction':fields.append(('evidence_view','Evidence view'))
             page=f'# {gate_label} / {KINDS[kind]}\n\n[Change kind](../index.md) · [Change building family](../../../catalogue.md)\n\n'
             page+='<section class="definition-finder" data-index="entries.json"><form class="definition-filters">'
             for key,label in fields:

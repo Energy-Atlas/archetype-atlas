@@ -82,6 +82,25 @@ class ObjectBrowserTests(unittest.TestCase):
         from scripts.active_smoke import active_smoke
         active_smoke(self.browser, self.base)
 
+    def test_search_after_worker_ready_and_focus_settled(self):
+        from scripts.active_smoke import search_smoke
+        self.page.add_init_script("""
+            window.Worker = class extends Worker {
+              constructor(...args) {
+                super(...args);
+                this.addEventListener('message', event => {
+                  if (event.data.type === 1) window.__searchReady = true;
+                });
+              }
+            };
+        """)
+        self.page.goto(self.base)
+        self.page.wait_for_function('window.__searchReady === true')
+        self.page.locator('[data-md-component="search-query"]').click()
+        self.page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
+        search_smoke(self.page)
+        self.assertEqual(self.errors, [])
+
     def test_clipboard_denial_offers_selectable_complete_json(self):
         self.page.add_init_script("Object.defineProperty(navigator,'clipboard',{value:{writeText:async()=>{throw new Error('denied')}}});")
         self.program();page=self.page

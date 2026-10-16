@@ -27,7 +27,7 @@
       results.replaceChildren();
       for (const row of matches.slice(0, limit)) {
         const card = text('div', ''); card.className = 'definition-result';
-        const a = text('a', row.name); a.href = row.path;
+        const a = text('a', row.name); a.href = DefinitionCore.href(row, filters);
         card.append(a, text('p', [row.building, row.vintage, row.climate, row.evidence_view, row.derivation].filter(Boolean).join(' · ')));
         results.append(card);
       }

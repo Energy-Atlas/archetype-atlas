@@ -1,0 +1,482 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:construction-equivalent:1.1.0",
+  "title": "Additional building-level equivalent construction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "name",
+    "scope",
+    "source",
+    "detailed_context_id",
+    "climate_zone",
+    "reference_id",
+    "supporting_profile_id",
+    "weighting_policy",
+    "status",
+    "components",
+    "assemblies",
+    "infiltration",
+    "consumer_inputs",
+    "mass_accounting",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "kind": {
+      "const": "building_level_equivalent"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "enum": [
+        "building",
+        "whole_dwelling"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "description": "Unchanged detailed construction source metadata."
+    },
+    "detailed_context_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "climate_zone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reference_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supporting_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "weighting_policy": {
+      "const": "precomputed_source_archetype"
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "blocked"
+      ]
+    },
+    "components": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "ExteriorWall",
+          "ExteriorRoof",
+          "ExteriorFloor",
+          "ExteriorWindow",
+          "ExteriorDoor",
+          "GlassDoor",
+          "OverheadDoor",
+          "Skylight",
+          "InteriorWall",
+          "InteriorFloor",
+          "InteriorCeiling",
+          "InteriorDoor",
+          "InteriorWindow",
+          "InternalMass",
+          "FloorDistributedMass",
+          "TubularDaylightDome",
+          "TubularDaylightDiffuser",
+          "SpaceShading",
+          "BuildingShading",
+          "SiteShading"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "assemblies": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/assembly"
+      }
+    },
+    "infiltration": {
+      "type": "object",
+      "description": "Unchanged selected fixed reference natural ACH, in 1/s, with source evidence."
+    },
+    "consumer_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mass_accounting": {
+      "type": "object",
+      "required": [
+        "paired_surface_policy"
+      ],
+      "properties": {
+        "paired_surface_policy": {
+          "const": {
+            "canonical_side": "InteriorFloor",
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "assembly_id"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ready",
+            "blocked",
+            "not_applicable"
+          ]
+        },
+        "assembly_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "area_per_counted_floor_area",
+            "unit",
+            "application"
+          ],
+          "properties": {
+            "area_per_counted_floor_area": {
+              "type": "number",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "m2/m2"
+            },
+            "application": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "derivation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contributors",
+            "weight_basis"
+          ],
+          "properties": {
+            "weight_basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_reference_area_m2": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "assembly_id",
+                  "weight",
+                  "reference_area_m2"
+                ],
+                "properties": {
+                  "assembly_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "weight": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "reference_area_m2": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "geometry_policy": {
+              "const": "consumer_overhang_geometry_by_BEMGen"
+            },
+            "geometry_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source_assembly_id",
+                  "overhang_geometry"
+                ],
+                "properties": {
+                  "source_assembly_id": {
+                    "type": "string"
+                  },
+                  "overhang_geometry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ready"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "derivation"
+            ],
+            "properties": {
+              "assembly_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "reason"
+            ],
+            "properties": {
+              "assembly_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "R": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Layer resistance, m2 K/W; excludes boundary films."
+        },
+        "C": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Areal heat capacity, J/(m2 K)."
+        },
+        "thickness_m": {
+          "type": "number",
+          "minimum": 0.003
+        },
+        "conductivity_W_m_K": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5
+        },
+        "density_kg_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "specific_heat_J_kg_K": {
+          "type": "number",
+          "minimum": 100
+        },
+        "properties": {
+          "type": "object",
+          "description": "Source or area-weighted glazing material properties in the detailed SI convention."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Material"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "R",
+              "C",
+              "thickness_m",
+              "conductivity_W_m_K",
+              "density_kg_m3",
+              "specific_heat_J_kg_K"
+            ],
+            "properties": {
+              "C": {
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Material:NoMass"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "R",
+              "C"
+            ],
+            "properties": {
+              "C": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assembly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "model",
+        "layers",
+        "quality",
+        "fit"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "ready"
+        },
+        "model": {
+          "enum": [
+            "opaque_layers",
+            "simple_glazing",
+            "detailed_glazing"
+          ]
+        },
+        "layers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/layer"
+          }
+        },
+        "targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resistance_m2_K_W": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "capacity_J_m2_K": {
+              "type": "number",
+              "minimum": 0
+            },
+            "u_reference_W_m2_K": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        },
+        "quality": {
+          "enum": [
+            "within_initial_screen",
+            "approximation_review",
+            "unchanged_source_physics",
+            "area_weighted_optical_proxy"
+          ]
+        },
+        "fit": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "surface_properties": {
+          "type": "object"
+        },
+        "solar_modifiers": {
+          "type": "object"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "opaque_layers"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "targets",
+              "surface_properties"
+            ],
+            "properties": {
+              "layers": {
+                "maxItems": 3
+              },
+              "fit": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

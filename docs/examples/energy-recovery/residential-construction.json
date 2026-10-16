@@ -1,0 +1,900 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "construction",
+  "stage": "source_recovery_pilot",
+  "source_context": {
+    "name": "Dwelling enclosure / source_building_101526",
+    "template": "ResStock SDR source fixture",
+    "climate": "5A",
+    "source_family": "existing_stock_source_fixture",
+    "building_type": "SingleFamilyDetached",
+    "role": "dwelling_enclosure"
+  },
+  "objects": [
+    {
+      "definition": {
+        "building_type": "SingleFamilyDetached",
+        "climate": "5A",
+        "derivation": "normalized",
+        "evidence_ids": [
+          "evidence-a2dcde88cff2ec9b3ba38b2e"
+        ],
+        "evidence_view": "source",
+        "gate": [
+          "residential"
+        ],
+        "id": "construction-0079ce7b163bdb1bd0154dbe",
+        "kind": "construction",
+        "layers": [],
+        "name": "Dwelling enclosure / source_building_101526",
+        "parameters": {
+          "nominal_ceiling_insulation_r": {
+            "evidence_id": "evidence-4e06418c0187a8753ebee467",
+            "required_inputs": [],
+            "status": "known",
+            "unit": "m2*K/W",
+            "value": 1.2327712865999998
+          }
+        },
+        "required_inputs": [
+          "assembly_layers",
+          "geometry",
+          "ground_boundary"
+        ],
+        "role": "dwelling_enclosure",
+        "source_family": "existing_stock_source_fixture",
+        "source_id": "residential_archetype-0157cd8578ba44bf8a77",
+        "source_options": {
+          "Geometry Foundation Type": "Vented Crawlspace",
+          "Infiltration": "15 ACH50",
+          "Insulation Ceiling": "R-7",
+          "Insulation Floor": "Uninsulated",
+          "Insulation Foundation Wall": "Uninsulated",
+          "Insulation Rim Joist": "Uninsulated",
+          "Insulation Roof": "Unfinished, Uninsulated",
+          "Insulation Slab": "None",
+          "Insulation Wall": "Wood Stud, Uninsulated",
+          "Windows": "Double, Clear, Metal, Air"
+        },
+        "template": "ResStock SDR source fixture",
+        "unresolved_reason": "Options define nominal properties; complete assemblies and natural infiltration are unresolved",
+        "vintage": "<1940"
+      },
+      "source_recovery": {
+        "id": "construction-0079ce7b163bdb1bd0154dbe",
+        "source_id": "residential_archetype-0157cd8578ba44bf8a77",
+        "representation": "dwelling_enclosure",
+        "source_context": {
+          "name": "Dwelling enclosure / source_building_101526",
+          "template": "ResStock SDR source fixture",
+          "climate": "5A",
+          "source_family": "existing_stock_source_fixture",
+          "building_type": "SingleFamilyDetached",
+          "role": "dwelling_enclosure"
+        },
+        "recovered": {
+          "source_options": {
+            "enclosure_air_leakage.tsv": {
+              "selected_option": "15 ACH50",
+              "fields": {
+                "enclosure_air_leakage_house_pressure": {
+                  "value": 50,
+                  "unit": "Pa",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "ea28221963f4caac44674f4654d3c987e34717f96161ec6c420e725a5ab3ebb1",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_air_leakage.tsv#option=15 ACH50/enclosure_air_leakage_house_pressure",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 50,
+                    "original_unit": "Pa",
+                    "transformation": "identity"
+                  }
+                },
+                "enclosure_air_leakage_value": {
+                  "value": 0.004166666666666667,
+                  "unit": "1/s",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "ea28221963f4caac44674f4654d3c987e34717f96161ec6c420e725a5ab3ebb1",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_air_leakage.tsv#option=15 ACH50/enclosure_air_leakage_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 15.0,
+                    "original_unit": "1/h",
+                    "transformation": "value / 3600"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "ea28221963f4caac44674f4654d3c987e34717f96161ec6c420e725a5ab3ebb1",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_air_leakage.tsv#option=15 ACH50",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_air_leakage_leakiness_description": null,
+                  "enclosure_air_leakage_units": "ACH",
+                  "enclosure_air_leakage_house_pressure": 50,
+                  "enclosure_air_leakage_value": 15.0
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_ceiling.tsv": {
+              "selected_option": "R-7",
+              "fields": {
+                "enclosure_ceiling_assembly_r_value": {
+                  "value": 1.532158599145998,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "b14c5083799472da2585e3394f2d5c269be58df9041d47d950b367af75f8f3f7",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_ceiling.tsv#option=R-7/enclosure_ceiling_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 8.7,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "b14c5083799472da2585e3394f2d5c269be58df9041d47d950b367af75f8f3f7",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_ceiling.tsv#option=R-7",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_ceiling_assembly_r_value": 8.7
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_door.tsv": {
+              "selected_option": "Insulated Fiberglass/Steel, R-5",
+              "fields": {
+                "enclosure_door_r_value": {
+                  "value": 0.8805509190494242,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "d003bc53d38a8ca1f9086a2bc4b9734377ba8b7c54f47f3a76464217ddc13139",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_door.tsv#option=Insulated Fiberglass/Steel, R-5/enclosure_door_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 5.0,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d003bc53d38a8ca1f9086a2bc4b9734377ba8b7c54f47f3a76464217ddc13139",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_door.tsv#option=Insulated Fiberglass/Steel, R-5",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_door_r_value": 5.0
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_floor_over_foundation.tsv": {
+              "selected_option": "Wood Frame, Uninsulated",
+              "fields": {
+                "enclosure_floor_over_foundation_assembly_r_value": {
+                  "value": 0.9333839741923896,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "800a352e016138f7b5fd4317b50713137fe3efcde56c7c516f2fcad34ef8a57b",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_floor_over_foundation.tsv#option=Wood Frame, Uninsulated/enclosure_floor_over_foundation_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 5.3,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "800a352e016138f7b5fd4317b50713137fe3efcde56c7c516f2fcad34ef8a57b",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_floor_over_foundation.tsv#option=Wood Frame, Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_floor_over_foundation_type": "WoodFrame",
+                  "enclosure_floor_over_foundation_assembly_r_value": 5.3
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_floor_over_garage.tsv": {
+              "selected_option": "Wood Frame, Uninsulated",
+              "fields": {
+                "enclosure_floor_over_garage_assembly_r_value": {
+                  "value": 0.9333839741923896,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "4c2a1ed22be298e15e72775346d5ed74d2a63749859dd81b054856fb88fa13a1",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_floor_over_garage.tsv#option=Wood Frame, Uninsulated/enclosure_floor_over_garage_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 5.3,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "4c2a1ed22be298e15e72775346d5ed74d2a63749859dd81b054856fb88fa13a1",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_floor_over_garage.tsv#option=Wood Frame, Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_floor_over_garage_type": "WoodFrame",
+                  "enclosure_floor_over_garage_assembly_r_value": 5.3
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_foundation_wall.tsv": {
+              "selected_option": "Solid Concrete, Uninsulated",
+              "fields": {
+                "enclosure_foundation_wall_insulation_nominal_r_value": {
+                  "value": 0.0,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "76f2f7fd904554a52c4caf80c3da51828e778dfe2ed5ff26f84935a3c140f9bc",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_foundation_wall.tsv#option=Solid Concrete, Uninsulated/enclosure_foundation_wall_insulation_nominal_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0.0,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                },
+                "enclosure_foundation_wall_assembly_r_value": {
+                  "value": null,
+                  "unit": "m2*K/W",
+                  "status": "unknown",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "76f2f7fd904554a52c4caf80c3da51828e778dfe2ed5ff26f84935a3c140f9bc",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_foundation_wall.tsv#option=Solid Concrete, Uninsulated/enclosure_foundation_wall_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": null,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "76f2f7fd904554a52c4caf80c3da51828e778dfe2ed5ff26f84935a3c140f9bc",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_foundation_wall.tsv#option=Solid Concrete, Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_foundation_wall_type": "solid concrete",
+                  "enclosure_foundation_wall_thickness": null,
+                  "enclosure_foundation_wall_insulation_nominal_r_value": 0.0,
+                  "enclosure_foundation_wall_insulation_location": null,
+                  "enclosure_foundation_wall_insulation_distance_to_top": null,
+                  "enclosure_foundation_wall_insulation_distance_to_bottom": null,
+                  "enclosure_foundation_wall_assembly_r_value": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_radiant_barrier.tsv": {
+              "selected_option": "None",
+              "fields": {},
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "b492beb587a2ca8319149728a2cbf20a4a9792ef95a5d03641e88a6171e3916d",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_radiant_barrier.tsv#option=None",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_radiant_barrier_location": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_rim_joist.tsv": {
+              "selected_option": "Uninsulated",
+              "fields": {
+                "enclosure_rim_joist_assembly_r_value": {
+                  "value": 0.4402754595247121,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "2c1d905fb73458e1cd77b4bdb86c88a5a48caf7a49b4485f4f4ceffaf13d138e",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_rim_joist.tsv#option=Uninsulated/enclosure_rim_joist_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 2.5,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "2c1d905fb73458e1cd77b4bdb86c88a5a48caf7a49b4485f4f4ceffaf13d138e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_rim_joist.tsv#option=Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_rim_joist_assembly_r_value": 2.5
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_roof.tsv": {
+              "selected_option": "Uninsulated",
+              "fields": {
+                "enclosure_roof_unconditioned_assembly_r_value": {
+                  "value": 0.4050534227627351,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "4c4d94b16ede8485d9ae9612ed8a54f7a7ff340a2d7de2abefa00e90ad81e182",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_roof.tsv#option=Uninsulated/enclosure_roof_unconditioned_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 2.3,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                },
+                "enclosure_roof_conditioned_assembly_r_value": {
+                  "value": 0.6516076800965739,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "4c4d94b16ede8485d9ae9612ed8a54f7a7ff340a2d7de2abefa00e90ad81e182",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_roof.tsv#option=Uninsulated/enclosure_roof_conditioned_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 3.7,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "4c4d94b16ede8485d9ae9612ed8a54f7a7ff340a2d7de2abefa00e90ad81e182",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_roof.tsv#option=Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_roof_unconditioned_assembly_r_value": 2.3,
+                  "enclosure_roof_conditioned_assembly_r_value": 3.7
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_roof_material.tsv": {
+              "selected_option": "Asphalt/Fiberglass Shingles, Medium",
+              "fields": {
+                "enclosure_roof_material_solar_absorptance": {
+                  "value": null,
+                  "unit": "1",
+                  "status": "unknown",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "2c355700f51c2048502a36e21e19219d3eeb91aace07d69c62fe0506dfc3add0",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_roof_material.tsv#option=Asphalt/Fiberglass Shingles, Medium/enclosure_roof_material_solar_absorptance",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": null,
+                    "original_unit": "1",
+                    "transformation": "identity"
+                  }
+                },
+                "enclosure_roof_material_emittance": {
+                  "value": null,
+                  "unit": "1",
+                  "status": "unknown",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "2c355700f51c2048502a36e21e19219d3eeb91aace07d69c62fe0506dfc3add0",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_roof_material.tsv#option=Asphalt/Fiberglass Shingles, Medium/enclosure_roof_material_emittance",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": null,
+                    "original_unit": "1",
+                    "transformation": "identity"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "2c355700f51c2048502a36e21e19219d3eeb91aace07d69c62fe0506dfc3add0",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_roof_material.tsv#option=Asphalt/Fiberglass Shingles, Medium",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_roof_material_type": "asphalt or fiberglass shingles",
+                  "enclosure_roof_material_color": "medium",
+                  "enclosure_roof_material_solar_absorptance": null,
+                  "enclosure_roof_material_emittance": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_slab.tsv": {
+              "selected_option": "Uninsulated",
+              "fields": {
+                "enclosure_slab_under_slab_insulation_nominal_r_value": {
+                  "value": 0.0,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "a0f3399cc492075145333506b71134d0f85e3c2ea400f2d00ca07f9803c6b9c7",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_slab.tsv#option=Uninsulated/enclosure_slab_under_slab_insulation_nominal_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                },
+                "enclosure_slab_perimeter_insulation_nominal_r_value": {
+                  "value": 0.0,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "a0f3399cc492075145333506b71134d0f85e3c2ea400f2d00ca07f9803c6b9c7",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_slab.tsv#option=Uninsulated/enclosure_slab_perimeter_insulation_nominal_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                },
+                "enclosure_slab_carpet_r_value": {
+                  "value": null,
+                  "unit": "m2*K/W",
+                  "status": "unknown",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "a0f3399cc492075145333506b71134d0f85e3c2ea400f2d00ca07f9803c6b9c7",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_slab.tsv#option=Uninsulated/enclosure_slab_carpet_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": null,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "a0f3399cc492075145333506b71134d0f85e3c2ea400f2d00ca07f9803c6b9c7",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_slab.tsv#option=Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_slab_under_slab_insulation_nominal_r_value": 0,
+                  "enclosure_slab_under_slab_insulation_width": 0,
+                  "enclosure_slab_perimeter_insulation_nominal_r_value": 0,
+                  "enclosure_slab_perimeter_insulation_depth": 0,
+                  "enclosure_slab_thickness": null,
+                  "enclosure_slab_carpet_fraction": null,
+                  "enclosure_slab_carpet_r_value": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_wall.tsv": {
+              "selected_option": "Wood Stud, Uninsulated",
+              "fields": {
+                "enclosure_wall_assembly_r_value": {
+                  "value": 0.5987746249536084,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "514efbbe2cd30550cc5863d1d667d40e024bdc71bc81713beb44aec1aa29d612",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall.tsv#option=Wood Stud, Uninsulated/enclosure_wall_assembly_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 3.4,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "514efbbe2cd30550cc5863d1d667d40e024bdc71bc81713beb44aec1aa29d612",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall.tsv#option=Wood Stud, Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_wall_type": "WoodStud",
+                  "enclosure_wall_assembly_r_value": 3.4
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_wall_continuous_insulation.tsv": {
+              "selected_option": "Uninsulated",
+              "fields": {
+                "enclosure_wall_continuous_insulation_r_value": {
+                  "value": 0.0,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "c09b85a26ef38d60d36a1d8cf8d5e38534995775b38b5ffbdfc0f78124a29d20",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall_continuous_insulation.tsv#option=Uninsulated/enclosure_wall_continuous_insulation_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0.0,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "c09b85a26ef38d60d36a1d8cf8d5e38534995775b38b5ffbdfc0f78124a29d20",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall_continuous_insulation.tsv#option=Uninsulated",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_wall_continuous_insulation_r_value": 0.0
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_wall_siding.tsv": {
+              "selected_option": "Asbestos, Medium",
+              "fields": {
+                "enclosure_wall_siding_solar_absorptance": {
+                  "value": null,
+                  "unit": "1",
+                  "status": "unknown",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "796e500cc0f2ce6b5635bd6eae4b1acf13e7a403bf38801c2a2b22ad56ae9bd4",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall_siding.tsv#option=Asbestos, Medium/enclosure_wall_siding_solar_absorptance",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": null,
+                    "original_unit": "1",
+                    "transformation": "identity"
+                  }
+                },
+                "enclosure_wall_siding_emittance": {
+                  "value": null,
+                  "unit": "1",
+                  "status": "unknown",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "796e500cc0f2ce6b5635bd6eae4b1acf13e7a403bf38801c2a2b22ad56ae9bd4",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall_siding.tsv#option=Asbestos, Medium/enclosure_wall_siding_emittance",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": null,
+                    "original_unit": "1",
+                    "transformation": "identity"
+                  }
+                },
+                "enclosure_wall_siding_r_value": {
+                  "value": 0.1056661102859309,
+                  "unit": "m2*K/W",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "796e500cc0f2ce6b5635bd6eae4b1acf13e7a403bf38801c2a2b22ad56ae9bd4",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall_siding.tsv#option=Asbestos, Medium/enclosure_wall_siding_r_value",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0.6,
+                    "original_unit": "ft2*h*degF/Btu",
+                    "transformation": "value / 5.678263337"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "796e500cc0f2ce6b5635bd6eae4b1acf13e7a403bf38801c2a2b22ad56ae9bd4",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_wall_siding.tsv#option=Asbestos, Medium",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_wall_siding_type": "asbestos siding",
+                  "enclosure_wall_siding_color": "medium",
+                  "enclosure_wall_siding_solar_absorptance": null,
+                  "enclosure_wall_siding_emittance": null,
+                  "enclosure_wall_siding_r_value": 0.6
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_window.tsv": {
+              "selected_option": "Double, Clear, Metal, Air",
+              "fields": {
+                "enclosure_window_u_factor": {
+                  "value": 4.31548013612,
+                  "unit": "W/m2/K",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "8862b442338109db41e6f9d9763c319ce80b0ba5ce9bf93e02a64eb31f7206d1",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window.tsv#option=Double, Clear, Metal, Air/enclosure_window_u_factor",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0.76,
+                    "original_unit": "Btu/h/ft2/degF",
+                    "transformation": "value * 5.678263337"
+                  }
+                },
+                "enclosure_window_shgc": {
+                  "value": 0.67,
+                  "unit": "1",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "8862b442338109db41e6f9d9763c319ce80b0ba5ce9bf93e02a64eb31f7206d1",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window.tsv#option=Double, Clear, Metal, Air/enclosure_window_shgc",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0.67,
+                    "original_unit": "1",
+                    "transformation": "identity"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "8862b442338109db41e6f9d9763c319ce80b0ba5ce9bf93e02a64eb31f7206d1",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window.tsv#option=Double, Clear, Metal, Air",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_window_u_factor": 0.76,
+                  "enclosure_window_shgc": 0.67
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_window_exterior_shading.tsv": {
+              "selected_option": "None",
+              "fields": {},
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "63eb5a730c707be409dcc81e0f0ed27d7771c9a248f4eaa59a1ef29c4abf0038",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window_exterior_shading.tsv#option=None",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_window_exterior_shading_type": "none",
+                  "enclosure_window_exterior_shading_summer_coefficient": null,
+                  "enclosure_window_exterior_shading_winter_coefficient": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_window_insect_screens.tsv": {
+              "selected_option": "None",
+              "fields": {},
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "29c812de57d5c8c5bc96f8e9a524f90f1a69a910f5edee8cc075b07a5dd30e1f",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window_insect_screens.tsv#option=None",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_window_insect_screens_location": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_window_interior_shading.tsv": {
+              "selected_option": "Curtains, Light",
+              "fields": {},
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "ecae7eee81756a09a4f61074fbe48c549e04bc7b3f1d912e4d4af913e3dbb97e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window_interior_shading.tsv#option=Curtains, Light",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_window_interior_shading_type": "light curtains",
+                  "enclosure_window_interior_shading_summer_coefficient": null,
+                  "enclosure_window_interior_shading_winter_coefficient": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_window_natural_ventilation.tsv": {
+              "selected_option": "67% Operable Windows",
+              "fields": {
+                "enclosure_window_natural_ventilation_fraction_operable": {
+                  "value": 0.67,
+                  "unit": "1",
+                  "status": "known",
+                  "origin": "source",
+                  "evidence": {
+                    "source_project": "resstock",
+                    "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                    "source_file_sha256": "d0d88aa6b099b4ff8f904a7306773793674e7992004155bce8e76b341ae6f5fc",
+                    "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window_natural_ventilation.tsv#option=67% Operable Windows/enclosure_window_natural_ventilation_fraction_operable",
+                    "extraction_date": "2026-10-12",
+                    "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                    "original_value": 0.67,
+                    "original_unit": "1",
+                    "transformation": "identity"
+                  }
+                }
+              },
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d0d88aa6b099b4ff8f904a7306773793674e7992004155bce8e76b341ae6f5fc",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window_natural_ventilation.tsv#option=67% Operable Windows",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_window_natural_ventilation_fraction_operable": 0.67,
+                  "enclosure_window_natural_ventilation_availability": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            },
+            "enclosure_window_storm.tsv": {
+              "selected_option": "None",
+              "fields": {},
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "2a9e2b17584504af599501acbd85b2854257120cb400374e6798ffe9e8347875",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/enclosure_window_storm.tsv#option=None",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": {
+                  "enclosure_window_storm_glass_type": null
+                },
+                "original_unit": "native source option columns",
+                "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+              }
+            }
+          }
+        },
+        "unresolved": [
+          "assembly_layers_and_thermal_mass",
+          "geometry_dependent_enclosure_translation"
+        ],
+        "required_bindings": [
+          "geometry",
+          "ground_boundary",
+          "pressure_to_natural_infiltration_model",
+          "weather"
+        ],
+        "readiness": "blocked"
+      }
+    }
+  ],
+  "material_default_recovery": {},
+  "unresolved": [
+    "assembly_layers_and_thermal_mass",
+    "geometry_dependent_enclosure_translation"
+  ],
+  "required_bindings": [
+    "geometry",
+    "ground_boundary",
+    "pressure_to_natural_infiltration_model",
+    "weather"
+  ],
+  "boundary": "Independent pilot; source definitions plus recovery, not final ready export. Program loads/ventilation and consumer geometry are outside this payload."
+}
