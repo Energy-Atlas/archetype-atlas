@@ -579,6 +579,14 @@ class CaseMatrixTests(unittest.TestCase):
         checks = [('matrix_context_closure', cases, refreshed(self.desc, cases=cases))]
         cases = {UNIT: copy.deepcopy(self.cases[UNIT])}
         checks.append(('matrix_partition', cases, refreshed(self.desc, cases=cases)))
+        cases = copy.deepcopy(self.cases)
+        parent = next(c for c in cases[COM]['constituents'] if c['instance_key'] == 'source-parent')
+        parent['demands'][0]['evidence']['components'][0]['binding_index'] = 999999
+        with self.assertRaises(GeneratorError) as streamed:
+            adapter._stream_union_structure(cases, self.matrix, refreshed(self.desc, cases=cases))
+        with self.assertRaises(GeneratorError) as assembled:
+            adapter._assemble_union_structure(cases, self.matrix, refreshed(self.desc, cases=cases))
+        self.assertEqual(streamed.exception.code, assembled.exception.code)
         stale = refreshed(self.desc, cases=self.cases); changed = copy.deepcopy(self.cases)
         changed[COM]['schedules'][next(iter(changed[COM]['schedules']))]['values'][0] += 1
         checks.append(('matrix_identity', changed, stale))

@@ -542,12 +542,14 @@ _CANONICAL_OPTIONS = {'ensure_ascii': False, 'allow_nan': False, 'sort_keys': Tr
 
 
 def _union_skeleton(case_bundles, matrix, identities):
-    """The exact _assemble_union_structure value without its whole-union deep copy.
+    """Check the exact _assemble_union_structure value without materializing it.
 
-    Every check and order is unchanged. Owners, bindings and generation receipts
-    are private remapped workspace copies; schedules, metadata and SourceObjects
-    stay shared read-only with the cases. The skeleton never leaves this module:
-    it is only encoded, so no caller can mutate the shared case data through it.
+    Returns (view, members). Every check and order is unchanged and runs here,
+    before any byte is emitted. Generation receipts are private remapped copies;
+    schedules, metadata and SourceObjects stay shared read-only with the cases;
+    owners and bindings are remapped one private copy at a time by the members
+    generators while they are encoded, so peak memory stays near the two cases.
+    Nothing here leaves this module except as encoded bytes.
     Single faults raise the same code as _assemble_union_structure; with several
     simultaneous faults the first code reported may differ, because binding
     references are remapped after, not during, the per-case collision loop.
@@ -597,15 +599,45 @@ def _union_skeleton(case_bundles, matrix, identities):
                           physical_member_generation_order=mapping['full_physical_member_generation_order'],
                           source_parent_derivation_order=mapping['full_source_parent_derivation_order'],
                           source_compositions=[receipts[k] for k in mapping['full_source_parent_derivation_order']])
-    result = {'schema_version': first['schema_version'], 'algorithm_version': first['algorithm_version'],
-              'metadata': {**metadata, 'building_realizations': [
-                  realizations[c['request_realization']['building_realization_id']] for c in mapping['building_contexts']]},
-              'generation': generation,
-              'constituents': [private(owners[key][1], owners[key][0]) for key in order],
-              'bindings': [private(case_bundles[cid]['bindings'][index], cid) for cid, index in positions],
-              'schedules': {sid: schedules[sid] for key in order for sid in owners[key][1]['schedule_ids'].values()}}
-    _graph(result, mapping); _global_consistency(result)
-    return result
+    # Every owner and binding must remap; check read-only now so failure precedes any byte.
+    for key in order:
+        cid, owner = owners[key]
+        if not _remappable(owner, maps[cid]): private(owner, cid)  # raises remap's own error
+    for cid, index in positions:
+        if not _remappable(case_bundles[cid]['bindings'][index], maps[cid]): private(case_bundles[cid]['bindings'][index], cid)
+    # The checked view differs from the emitted union only below binding references that
+    # _graph never reads: owners carry their remapped binding_indices, bindings are shared.
+    view = {'schema_version': first['schema_version'], 'algorithm_version': first['algorithm_version'],
+            'metadata': {**metadata, 'building_realizations': [
+                realizations[c['request_realization']['building_realization_id']] for c in mapping['building_contexts']]},
+            'generation': generation,
+            'constituents': [dict(owners[key][1], binding_indices=[maps[owners[key][0]][i] for i in owners[key][1]['binding_indices']])
+                             for key in order],
+            'bindings': [case_bundles[cid]['bindings'][index] for cid, index in positions],
+            'schedules': {sid: schedules[sid] for key in order for sid in owners[key][1]['schedule_ids'].values()}}
+    _graph(view, mapping); _global_consistency(view)
+    # Emitted owners and bindings are remapped private copies made one at a time.
+    members = {'constituents': (private(owners[key][1], owners[key][0]) for key in order),
+               'bindings': (private(case_bundles[cid]['bindings'][index], cid) for cid, index in positions)}
+    return view, members
+
+
+def _remappable(value, index_map):
+    """Read-only mirror of remap_binding_references' walk: True if it would succeed."""
+    seen = set(); stack = [value]
+    while stack:
+        current = stack.pop()
+        if not isinstance(current, (dict, list)) or id(current) in seen: continue
+        seen.add(id(current))
+        if isinstance(current, list): stack.extend(current); continue
+        if set(current) == {'path', 'sha256', 'locator', 'value'}: continue
+        for key, child in current.items():
+            if key == 'binding_index':
+                if type(child) is not int or child not in index_map: return False
+            elif key == 'binding_indices':
+                if not isinstance(child, list) or any(type(i) is not int or i not in index_map for i in child): return False
+            else: stack.append(child)
+    return True
 
 
 def _encode(value, path):
@@ -619,20 +651,22 @@ def _pointer(token):
     return str(token).replace('~', '~0').replace('/', '~1')
 
 
-def _canonical_pieces(union):
+def _canonical_pieces(union, members=None):
     """Yield (JSON pointer, bytes); their concatenation is canonical(union).
 
     Owner and binding lists and the schedule map are split per member; every
     other top-level value is one piece. Keys follow json's sort_keys order.
+    members may supply the owner/binding items lazily in place of union's lists.
     """
     _require(isinstance(union, dict) and set(union) == _UNION_KEYS, 'matrix_union_shape', 'union',
              'Exact seven-member union required')
+    members = members or {}
     yield '', b'{'
     for n, key in enumerate(sorted(union)):
         path = '/'+_pointer(key); head = (b',' if n else b'') + _encode(key, path) + b':'; value = union[key]
         if key in ('bindings', 'constituents'):
             yield path, head + b'['
-            for i, item in enumerate(value):
+            for i, item in enumerate(members.get(key, value)):
                 yield path+'/'+str(i), (b',' if i else b'') + _encode(item, path+'/'+str(i))
             yield path, b']'
         elif key == 'schedules':
@@ -648,4 +682,5 @@ def _canonical_pieces(union):
 
 def _stream_union_structure(case_bundles: dict[str, dict], matrix: dict, identities: dict):
     """Run every union check eagerly, then return the lazy canonical piece iterator."""
-    return _canonical_pieces(_union_skeleton(case_bundles, matrix, identities))
+    view, members = _union_skeleton(case_bundles, matrix, identities)
+    return _canonical_pieces(view, members)
