@@ -2,7 +2,7 @@
 
 This fragment extends complete detailed construction JSON 3.0.0 and unified
 construction JSON 2.0.0. It is not independently selected or exported. Those
-consumer versions are under implementation; frozen detailed 2.1.0, unified
+consumer versions are available in the combined 1.0.0 release; frozen detailed 2.1.0, unified
 1.2.0 and shared mass 1.0.0 remain unchanged.
 
 Select the ordinary Construction Suite, climate and reference context. Its four
@@ -62,6 +62,10 @@ must fail explicitly. A source blocker cannot be relabelled as a consumer input.
 - Model-wide Kiva or ground-temperature requests must agree within one IDF.
   Conflicting requests fail; do not silently pick one source's settings.
 
+C-factor wall vertices must follow the declared GlobalGeometryRules starting
+corner/order. The target engine derives vertical height using that convention;
+an inconsistent ordering can instead expose a horizontal edge as wall height.
+
 Unconditioned crawlspace/basement hosts retain their source thermal interface and
 base air-exchange rules. Source duct imbalance and mechanical operation are not
 new construction loads. Whole-enclosure catalogue ACH is preserved. BEMGen owns
@@ -93,3 +97,8 @@ helper artefacts are not catalogue geometry defaults.
 
 See ADR 0027 and the approved implementation plan for source pins, coverage and
 release gates. BEMGen code remains a separate worker's responsibility.
+
+The local release review records complete coverage, the 20 two-assignment native
+exceptions, and numerical verification limits. No source-recovery blocker is
+being hidden as a consumer default. Required actual BEM/site/weather/control
+inputs are part of execution and remain BEMGen responsibilities.
