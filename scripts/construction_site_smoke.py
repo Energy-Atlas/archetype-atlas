@@ -6,13 +6,14 @@ from urllib.parse import urlencode
 
 from playwright.sync_api import sync_playwright,expect
 from scripts.common import ROOT
-from scripts.construction_distribution import load_current_release,hydrate_context
-from scripts.construction_equivalent_release import export_frozen,OUTPUT
+from scripts.construction_distribution import load_current_release
+from scripts.construction_mass_release import export_pair,load_release,unified_index
+from scripts.construction_mass_accounting import BatchMassValidationCache
 from scripts.site_smoke import serve
 
 
 def run(site,screenshots):
-    release=load_current_release()
+    release=load_current_release();mass=load_release();index_data=unified_index();cache=BatchMassValidationCache()
     commercial=[next(c for c in release['contexts'].values() if c['reference_id']=='90.1-2019/'+b
                      and c['climate_zone']=='3B' and release['construction_sets'][c['construction_set_id']]['source']['building_type']==b)
                 for b in ('MediumOffice','Warehouse')]
@@ -30,7 +31,7 @@ def run(site,screenshots):
                 page.goto(base+route,wait_until='networkidle')
                 expect(page.locator('.construction-reference')).to_have_value(c['reference_id'])
                 assert not requests,'Construction packets should not load on page entry'
-                detailed=hydrate_context(release,c['id']);unified=export_frozen(OUTPUT,c['id'])
+                detailed,unified=export_pair(c['id'],release,mass,index=index_data,cache=cache)
                 for mode,expected in (('detailed',detailed),('unified',unified)):
                     page.locator('.construction-representation').select_option(mode)
                     if not page.locator('.object-source').evaluate('(el)=>el.open'):

@@ -4,8 +4,13 @@
   else root.ConstructionCore = api;
 })(typeof globalThis === 'undefined' ? this : globalThis, function () {
   'use strict';
+  function massFor(packet, context) {
+    const id = context.mass_contract_id;
+    if (!id || !packet.mass_contracts || !Object.hasOwn(packet.mass_contracts, id)) throw new Error('Missing shared mass contract.');
+    return packet.mass_contracts[id];
+  }
   function hydrate(packet, contextId) {
-    if (packet.kind !== 'construction_site_packet' || packet.schema_version !== '1.0.0') throw new Error('Unsupported construction delivery.');
+    if (packet.kind !== 'construction_site_packet' || !['1.0.0', '1.1.0'].includes(packet.schema_version)) throw new Error('Unsupported construction delivery.');
     const c = packet.contexts[contextId];
     if (!c || c.construction_set_id !== packet.profile.id) throw new Error('Unsupported construction context.');
     const config = packet.component_configurations[c.configuration_id], decisions = packet.selector_receipts[c.selector_receipt_id];
@@ -37,7 +42,8 @@
         if (!evidenceIds.has(id)) {evidenceIds.add(id);pending.push(id);}
       }
     }
-    return structuredClone({schema_version: '2.0.0', kind: 'construction_set', export_mode: 'source_ready',
+    return structuredClone({schema_version: packet.schema_version === '1.1.0' ? '2.1.0' : '2.0.0',
+      ...(packet.schema_version === '1.1.0' ? {mass_accounting: massFor(packet, c)} : {}), kind: 'construction_set', export_mode: 'source_ready',
       id: contextId, name: packet.profile.name, scope: packet.profile.scope,
       source: {...packet.profile.source, climate: {status: 'exact', value: c.climate_zone},
         reference_variant_id: c.reference_id, evidence: c.source_evidence_ids.map(id => required('evidence', id))},
@@ -46,10 +52,10 @@
         source_definition_ids: config.source_definition_ids, selection_decisions: decisions, variant_selections: {}}});
   }
   function hydrateUnified(packet, contextId) {
-    if (packet.kind !== 'construction_equivalent_site_packet' || packet.schema_version !== '1.0.0') throw new Error('Unsupported unified construction delivery.');
+    if (packet.kind !== 'construction_equivalent_site_packet' || !['1.0.0', '1.1.0'].includes(packet.schema_version)) throw new Error('Unsupported unified construction delivery.');
     if (!Object.hasOwn(packet.contexts, contextId)) throw new Error('Unsupported unified construction context.');
     const context = structuredClone(packet.contexts[contextId]);
-    if (context.detailed_context_id !== contextId || context.kind !== 'building_level_equivalent' || context.schema_version !== '1.1.0') throw new Error('Invalid unified context.');
+    if (context.detailed_context_id !== contextId || context.kind !== 'building_level_equivalent' || context.schema_version !== (packet.schema_version === '1.1.0' ? '1.2.0' : '1.1.0')) throw new Error('Invalid unified context.');
     if (!Object.hasOwn(packet.component_sets, context.component_set_id)) throw new Error('Missing unified component set.');
     const body = packet.component_sets[context.component_set_id];delete context.component_set_id;
     const ids = new Set(Object.values(body.components).filter(c => c.status === 'ready').map(c => c.assembly_id));
@@ -57,7 +63,9 @@
       if (!Object.hasOwn(packet.assemblies, id)) throw new Error('Missing unified assembly: ' + id);
       return [id, packet.assemblies[id]];
     }));
-    return structuredClone({...context, ...body, assemblies});
+    const mass = packet.schema_version === '1.1.0' ? {mass_accounting: massFor(packet, context)} : {};
+    delete context.mass_contract_id;
+    return structuredClone({...context, ...body, assemblies, ...mass});
   }
   function select(contexts, climate = '', reference = '', building = '') {
     const climates = [...new Set(contexts.map(c => c.climate))];

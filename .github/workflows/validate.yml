@@ -50,5 +50,6 @@ jobs:
           python -m scripts.construction_distribution --check
           python -c "from scripts.construction_weighting import load_profiles; load_profiles(); print('Frozen construction profiles and input checksums verified')"
           python -m scripts.construction_equivalent_release --check
+          python -m scripts.construction_mass_release --check --examples
       - run: python -m scripts.schedule_coverage --report build/schedule-coverage.json
       - run: python -m scripts.audit

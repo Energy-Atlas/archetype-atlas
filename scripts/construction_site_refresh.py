@@ -131,7 +131,7 @@ def refresh(docs,site,release=None,bundle=None):
         for source in (docs/directory).iterdir():
             if source.is_file():
                 target=site/directory/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
-    for source in (docs/'examples/construction').glob('unified-*.json'):
+    for source in (docs/'examples/construction').glob('*.json'):
         target=site/'examples/construction'/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
     # Only construction interaction assets change; cached program pages and
     # schedule assets remain untouched by this focused renderer.

@@ -89,7 +89,11 @@ def packet_for(release,identity,contexts):
     assemblies,materials,evidence=dependency_closure(release,combined,{'evidence':[release['evidence'][i] for i in eids]},
         [c['infiltration'] for c in contexts.values()],[d for rows in receipts.values() for d in rows])
     metadata={k:v for k,v in release['metadata'].items() if k!='source_table_only_assembly_ids'}
-    return {'schema_version':'1.0.0','kind':'construction_site_packet','profile':release['construction_sets'][identity],
+    from scripts.construction_equivalent_site import mass_fields
+    links,contracts=mass_fields(contexts)
+    contexts={cid:{**c,'mass_contract_id':links[cid]} for cid,c in contexts.items()}
+    return {'schema_version':'1.1.0','kind':'construction_site_packet','profile':release['construction_sets'][identity],
+        'mass_contracts':contracts,
         'contexts':contexts,'component_configurations':configs,'selector_receipts':receipts,
         'assemblies':assemblies,'materials':materials,'evidence':evidence,'metadata':metadata}
 
@@ -100,7 +104,7 @@ def projection(release,bundle):
         source=p['source'];contexts=[c for c in release['contexts'].values() if c['construction_set_id']==identity]
         row=copy.deepcopy(originals.get(identity,{}))
         row.update(id=identity,name=p['name'],building_type=source['building_type'],template=source['template'],
-            source_family=source['source_family'],evidence_view=source['evidence_view'],construction_schema='2.0.0',
+            source_family=source['source_family'],evidence_view=source['evidence_view'],construction_schema='2.1.0',
             vintage=source['vintage']['value'],scope=p['scope'],derivation='source-ready construction set',
             gate=originals.get(identity,{}).get('gate') or ['residential' if p['scope']=='whole_dwelling' else 'nonresidential'],
             applicability=[{'building_type':c['reference_id'].split('/',1)[-1] if p['scope']!='whole_dwelling' else source['building_type'],
@@ -147,8 +151,8 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
     remove_empty_retired_routes(root,retired)
     from scripts.construction_equivalent_site import load_equivalents,packet_for as equivalent_packet
     equivalents=load_equivalents()
-    report={'schema_version':'1.0.0','construction_schema':'2.0.0','definitions':len(release['construction_sets']),
-        'contexts':len(release['contexts']),'packets':{},'unified_schema':'1.1.0','unified_packets':{},
+    report={'schema_version':'1.0.0','construction_schema':'2.1.0','definitions':len(release['construction_sets']),
+        'contexts':len(release['contexts']),'packets':{},'unified_schema':'1.2.0','unified_packets':{},
         'resources':{k:{} for k in ('assemblies','materials','evidence')}}
     for identity,profile in release['construction_sets'].items():
         if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*',identity):raise ValueError('Unsafe construction identity')
@@ -226,7 +230,9 @@ def generate_constructions(release,bundle,root,reuse_resources=False):
     page+=''.join(f'<li><a href="{PREFIX}{entry["path"]}">{esc(release["assemblies"][i]["name"])} · {esc(release["assemblies"][i]["role"])} · {esc(i)}</a></li>' for i,entry in rows.items())+'</ul></details>\n'
     write(root,'construction/assemblies/index.md',page)
     write(root,'construction/coverage.json',canonical({'definitions':report['definitions'],'contexts':report['contexts'],
-        'unified_release':'1.1.0','unified_contexts':report['contexts'],
+        'unified_release':'1.1.0','unified_schema':report['unified_schema'],
+        'construction_schema':report['construction_schema'],'shared_mass_release':'1.0.0',
+        'unified_contexts':report['contexts'],
         'assemblies':len(rows),'source_table_only_assembly_ids':release['metadata'].get('source_table_only_assembly_ids',[])}).decode())
     write(root,'object-index.json',canonical(registry).decode());write(root,'construction-site.json',canonical(report).decode())
     repair_retired_references(root,bundle,release)
@@ -253,15 +259,15 @@ def install_contract(root,include_resources=True):
     root=Path(root)
     guide='''# Construction JSON for simulation import
 
-Contract **2.0.0**. One construction set supplies all source-supported above-ground
+Contract **2.1.0**. One construction set supplies all source-supported above-ground
 component types, fixed reference infiltration, materials and provenance.
 
 Each definition page offers two separate JSON exports for the same selected
 climate and source reference:
 
-- **Detailed construction set (2.0.0):** original assemblies, materials,
+- **Detailed construction set (2.1.0):** original assemblies, materials,
   program/story assignment rules and provenance.
-- **Unified building construction (1.1.0):** one assembly per applicable semantic,
+- **Unified building construction (1.2.0):** one assembly per applicable semantic,
   precomputed archetype weights, mass budgets, fixed reference ACH and fit errors.
 
 The unified export is additive. It does not replace detailed source rules. Its
@@ -274,8 +280,9 @@ profiles, with unequal-multiplier approximation flags and affected pair counts.
 
 Current distribution **v2.2.0** ships 177 complete building/dwelling sets and
 3,320 supported contexts. Room-specific rules are embedded in building sets.
-The detailed consumer schema is **2.0.0**; the separate additive unified release
-and consumer schema are **1.1.0**. Release versions and schema versions identify
+The detailed consumer schema is **2.1.0** and the unified consumer schema is
+**1.2.0**, supported by shared mass release **1.0.0**. The frozen unified
+thermal-assembly release remains **1.1.0**. Release versions and schema versions identify
 different artifacts and must not be inferred from each other.
 Standalone space-type sets are retained in frozen source releases rather than
 offered as independent consumer choices. Eight legacy office plenum contexts
@@ -288,11 +295,11 @@ building/story rules. Selector receipts mark `atlas_added_applicability`, with
 origin, mode, original source-instantiation status and an evidence reference.
 No program loads, physics or infiltration values are changed.
 
-- [Construction-set schema](../contracts/construction-json-v2.schema.json)
+- [Construction-set schema](../contracts/construction-json-v2.1.schema.json)
 - [Normalized catalogue schema](../contracts/construction-catalogue-v2.schema.json)
 - [Complete Medium Office example](../examples/construction/medium-office.json)
 - [Complete residential example](../examples/construction/residential.json)
-- [Unified construction schema](../contracts/construction-equivalent-v1.1.schema.json)
+- [Unified construction schema](../contracts/construction-equivalent-v1.2.schema.json)
 - [Unified Medium Office example](../examples/construction/unified-medium-office.json)
 - [Unified residential example](../examples/construction/unified-residential.json)
 - [Source coverage](../construction/coverage.json)
@@ -302,6 +309,19 @@ No program loads, physics or infiltration values are changed.
 - [Applicability receipt extension schema](../contracts/construction-applicability-v1.schema.json)
 - [Current distribution and embedding coverage](../construction/distribution/selection.json)
 - [Eight unsupported source contexts](../construction/distribution/source-evidence.json)
+
+## Shared mass accounting
+
+Both exports include the same `mass_accounting` contract (1.0.0): reference
+wall/slab capacity budgets, source additional-mass quantities and scaling,
+recipe materials, original operands and provenance. Use one representation's
+ledger once. Subtract explicit modeled surface capacity from the corresponding
+reference budget before restoring omitted mass. A negative residual means
+explicit modeled capacity exceeds the reference; report it and add no negative
+mass. Do not remove actual walls/slabs or rescale source materials silently.
+Additional furnishings/partition objects remain separate from explicit surfaces.
+
+- [Shared mass schema](../contracts/construction-mass-accounting-v1.schema.json)
 
 ## Select and copy
 
@@ -357,12 +377,12 @@ source license notices when reusing artifacts.
     write(root,'guides/construction-json.md',guide)
     for name in ('construction-json-v2.schema.json','construction-catalogue-v2.schema.json'):
         write(root,'contracts/'+name,(OUTPUT/'schemas'/name).read_text(encoding='utf-8'))
-    for name in ('medium-office.json','residential.json'):
-        write(root,'examples/construction/'+name,(OUTPUT/'examples'/name).read_text(encoding='utf-8'))
-    from scripts.construction_equivalent_release import OUTPUT as equivalent_output,SCHEMA as equivalent_schema
-    write(root,'contracts/'+equivalent_schema.name,equivalent_schema.read_text(encoding='utf-8'))
-    for source,target in (('medium-office-2019-3B.json','unified-medium-office.json'),('residential.json','unified-residential.json')):
-        write(root,'examples/construction/'+target,(equivalent_output/'examples'/source).read_text(encoding='utf-8'))
+    from scripts.construction_mass_release import EXAMPLES
+    for name in ('construction-json-v2.1.schema.json','construction-equivalent-v1.2.schema.json','construction-mass-accounting-v1.schema.json'):
+        write(root,'contracts/'+name,(ROOT/'schemas'/name).read_text(encoding='utf-8'))
+    for source,target in (('medium-office-2019-3B','medium-office'),('residential-5A','residential')):
+        for mode,prefix in (('detailed',''),('unified','unified-')):
+            write(root,'examples/construction/'+prefix+target+'.json',(EXAMPLES/(source+'.'+mode+'.json')).read_text(encoding='utf-8'))
     write(root,'construction/source-lock.json',(OUTPUT/'sources/construction-v2-source-lock.json').read_text(encoding='utf-8'))
     for path in (OUTPUT/'sources/licenses').glob('*.txt'):
         write(root,'notices/construction/'+path.name,path.read_text(encoding='utf-8'))

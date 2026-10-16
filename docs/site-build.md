@@ -47,11 +47,13 @@ Programs offer raw or default-filled self-contained DTOs under the
 [v3 connector contract](program-json-v3-contract.md). Other library objects
 retain explicit unknowns; program defaults do not manufacture HVAC performance.
 
-Constructions provide separate detailed schema 2.0.0 and additive unified schema
-1.1.0 exports for all 177 current sets / 3,320 supported contexts. Both named copy
+Constructions provide separate detailed schema 2.1.0 and additive unified schema
+1.2.0 exports for all 177 current sets / 3,320 supported contexts. Both named copy
 buttons act directly without a chooser; preview mode does not change their
 representation. Source-record copying is absent on construction definition pages.
-See [construction release notes](release-notes-construction-v2.2.0.md).
+Both include the same source mass-accounting contract 1.0.0.
+See [construction release notes](release-notes-construction-v2.2.0.md) and
+[shared mass release notes](release-notes-construction-mass-v1.0.0.md).
 
 Schedules show unique daily step profiles, an annual day × hour heatmap, exact
 tables and selected-day inspection. Rules use an explicit preview year and holiday
@@ -141,8 +143,9 @@ Artifact generation remains part of site CI pending roadmap item 5's discussion.
 
 The research matrix additionally reproduces frozen construction base v2.0.0,
 applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with
-their existing `--check` commands. Supporting profile 1.1.0 files and declared
-input hashes are verified by `construction_weighting.load_profiles()`; this does
+their existing `--check` commands. Shared mass release 1.0.0 and its seven paired
+examples are reproduced with `construction_mass_release --check --examples`.
+Supporting profile 1.1.0 files and declared input hashes are verified by `construction_weighting.load_profiles()`; this does
 not require the ignored native-recovery cache. Reproducing profiles with
 `construction_weighting --check` is a separate maintenance check requiring the
 previously recovered `build/equivalent-work/commercial-weights.json` and pinned
