@@ -15,9 +15,11 @@ unsupported configurations.
 
 Each parameter has one authoritative location. Assembly physics (including F/C
 factors and layer material properties) belongs to assemblies/material resources.
-Kiva solver/environment configuration belongs to `foundation_ground`; an assembly
-references that configuration rather than copying it. Assembly-specific Kiva
-insulation recipes stay with their assembly. Shared settings use references;
+Kiva solver/environment and coupled-foundation parameters belong to
+`foundation_ground`; an existing assignment references that method configuration
+rather than copying it into the slab and wall assemblies. Kiva insulation
+placement uses existing material references; material properties remain in the
+material resources. Shared settings use references;
 neither section carries a shadow copy of the other's operands. Provenance may
 preserve original values internally without creating a second executable input.
 
