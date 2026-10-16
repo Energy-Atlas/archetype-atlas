@@ -11,6 +11,9 @@ and RimJoist. They reuse component targets, assignments, assembly references and
 the existing provenance structures. The assignment's optional `ground_method_id`
 references its execution instructions under `foundation_ground.methods`.
 Ordinary construction components do not acquire ground-method references.
+Assignment `when.boundary_condition: Ground` denotes physical soil contact in
+the input BEM. It does not require an already translated `GroundFCfactorMethod`
+or `Foundation` IDF boundary; the selected method determines that output.
 
 ## Parameter ownership
 

@@ -3,106 +3,495 @@
   "title": "Embedded foundation configuration and native ground methods",
   "type": "object",
   "additionalProperties": false,
-  "required": ["configuration", "methods", "model_parameters", "required_geometry"],
+  "required": [
+    "configuration",
+    "methods",
+    "model_parameters",
+    "required_geometry"
+  ],
   "properties": {
     "configuration": {
-      "type": "object", "additionalProperties": false, "required": ["type"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
       "properties": {
-        "type": {"enum": ["source_native_commercial", "Slab-on-Grade", "Basement, Conditioned", "Basement, Unconditioned", "Crawlspace, Vented", "Crawlspace, Unvented", "no_direct_ground_contact"]},
-        "reason": {"type": "string", "minLength": 1},
-        "thermal_hosts": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+        "type": {
+          "enum": [
+            "source_native_commercial",
+            "Slab-on-Grade",
+            "Basement, Conditioned",
+            "Basement, Unconditioned",
+            "Crawlspace, Vented",
+            "Crawlspace, Unvented",
+            "no_direct_ground_contact"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thermal_hosts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "air_exchange": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "enum": [
+                  "constant_ach",
+                  "source_sla_annual",
+                  "source_garage_sherman_grimsrud"
+                ]
+              },
+              "ach_per_s": {
+                "type": "number",
+                "minimum": 0
+              },
+              "sla": {
+                "type": "number",
+                "minimum": 0
+              },
+              "reference_height_m": {
+                "type": "number",
+                "minimum": 0
+              },
+              "height_exponent": {
+                "type": "number",
+                "minimum": 0
+              },
+              "normalized_leakage_multiplier": {
+                "type": "number",
+                "minimum": 0
+              },
+              "exterior_ach50_per_s": {
+                "type": "number",
+                "minimum": 0
+              },
+              "ela_volume_coefficient_s_m": {
+                "type": "number",
+                "minimum": 0
+              },
+              "stack_height_coefficient_m_s2_K": {
+                "type": "number",
+                "minimum": 0
+              },
+              "wind_reference_height_m": {
+                "type": "number",
+                "minimum": 0
+              },
+              "wind_height_exponent": {
+                "type": "number",
+                "minimum": 0
+              },
+              "wind_coefficient_scale": {
+                "type": "number",
+                "minimum": 0
+              },
+              "weather_factor_input": {
+                "const": "actual_weather_ashrae_622_wsf"
+              },
+              "engine_site_terrain": {
+                "enum": [
+                  "Country",
+                  "Suburbs",
+                  "City"
+                ]
+              }
+            }
+          }
+        }
       }
     },
-    "methods": {"type": "object", "additionalProperties": {"$ref": "#/$defs/method"}},
-    "model_parameters": {"type": "object", "additionalProperties": {"$ref": "#/$defs/modelParameters"}},
+    "methods": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/method"
+      }
+    },
+    "model_parameters": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/modelParameters"
+      }
+    },
     "required_geometry": {
-      "type": "object", "additionalProperties": {
-        "type": "object", "additionalProperties": false, "required": ["unit"],
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unit"
+        ],
         "properties": {
-          "unit": {"enum": ["m", "m2", "m3", "1", "topology"]},
-          "minimum": {"type": "number"}, "exclusive_minimum": {"type": "number"},
-          "description": {"type": "string"}
+          "unit": {
+            "enum": [
+              "m",
+              "m2",
+              "m3",
+              "1",
+              "topology"
+            ]
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "exclusive_minimum": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
         }
       }
     }
   },
   "$defs": {
     "method": {
-      "type": "object", "additionalProperties": false,
-      "required": ["model", "model_parameters_id", "parameters", "required_geometry"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "model_parameters_id",
+        "parameters",
+        "required_geometry"
+      ],
       "properties": {
-        "model": {"enum": ["FFactor", "CFactor", "LayeredGround", "Kiva"]},
-        "model_parameters_id": {"type": "string", "minLength": 1},
-        "required_geometry": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
-        "parameters": {"$ref": "#/$defs/kivaParameters"}
+        "model": {
+          "enum": [
+            "FFactor",
+            "CFactor",
+            "LayeredGround",
+            "Kiva"
+          ]
+        },
+        "model_parameters_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_geometry": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "parameters": {
+          "$ref": "#/$defs/kivaParameters"
+        }
       },
-      "allOf": [{"if": {"properties": {"model": {"enum": ["FFactor", "CFactor", "LayeredGround"]}}}, "then": {"properties": {"parameters": {"maxProperties": 0}}}}]
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": [
+                  "FFactor",
+                  "CFactor",
+                  "LayeredGround"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parameters": {
+                "maxProperties": 0
+              }
+            }
+          }
+        }
+      ]
     },
     "kivaParameters": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "wall_depth_below_slab_m": {"type": "number", "minimum": 0},
-        "wall_height_above_grade": {"$ref": "#/$defs/dimension"},
-        "interior_horizontal_insulation": {"$ref": "#/$defs/insulation"},
-        "interior_vertical_insulation": {"$ref": "#/$defs/insulation"},
-        "exterior_horizontal_insulation": {"$ref": "#/$defs/insulation"},
-        "exterior_vertical_insulation": {"$ref": "#/$defs/insulation"},
-        "custom_blocks": {"type": "array", "items": {"$ref": "#/$defs/block"}},
-        "footing": {"$ref": "#/$defs/insulation"},
+        "wall_depth_below_slab_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "wall_height_above_grade": {
+          "$ref": "#/$defs/dimension"
+        },
+        "interior_horizontal_insulation": {
+          "$ref": "#/$defs/insulation"
+        },
+        "interior_vertical_insulation": {
+          "$ref": "#/$defs/insulation"
+        },
+        "exterior_horizontal_insulation": {
+          "$ref": "#/$defs/insulation"
+        },
+        "exterior_vertical_insulation": {
+          "$ref": "#/$defs/insulation"
+        },
+        "custom_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/block"
+          }
+        },
+        "footing": {
+          "$ref": "#/$defs/insulation"
+        },
         "initialization": {
-          "type": "object", "additionalProperties": false,
-          "required": ["outdoor", "ground", "indoor", "offset_K"],
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outdoor",
+            "ground",
+            "indoor",
+            "offset_K"
+          ],
           "properties": {
-            "outdoor": {"type": "number", "minimum": 0, "maximum": 1},
-            "ground": {"type": "number", "minimum": 0, "maximum": 1},
-            "indoor": {"type": "number", "minimum": 0, "maximum": 1},
-            "offset_K": {"type": "number"}
+            "outdoor": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "ground": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "indoor": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "offset_K": {
+              "type": "number"
+            }
           }
         }
       }
     },
     "dimension": {
       "oneOf": [
-        {"type": "number"},
-        {"type": "object", "additionalProperties": false, "required": ["geometry_input"], "properties": {"geometry_input": {"type": "string", "minLength": 1}}}
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "geometry_input": {
+              "type": "string",
+              "minLength": 1
+            },
+            "material_thickness_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "assembly_thickness_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "offset_m": {
+              "type": "number"
+            },
+            "scale": {
+              "type": "number"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "geometry_input"
+              ]
+            },
+            {
+              "required": [
+                "material_thickness_id"
+              ]
+            },
+            {
+              "required": [
+                "assembly_thickness_id"
+              ]
+            }
+          ]
+        }
       ]
     },
     "insulation": {
-      "type": "object", "additionalProperties": false, "required": ["material_id"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id"
+      ],
       "properties": {
-        "material_id": {"type": "string", "minLength": 1},
-        "depth_m": {"$ref": "#/$defs/dimension"}, "width_m": {"$ref": "#/$defs/dimension"}
+        "material_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depth_m": {
+          "$ref": "#/$defs/dimension"
+        },
+        "width_m": {
+          "$ref": "#/$defs/dimension"
+        }
       }
     },
     "block": {
-      "type": "object", "additionalProperties": false, "required": ["material_id", "depth_m", "x_m", "z_m"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id",
+        "depth_m",
+        "x_m",
+        "z_m"
+      ],
       "properties": {
-        "material_id": {"type": "string", "minLength": 1}, "depth_m": {"$ref": "#/$defs/dimension"},
-        "x_m": {"$ref": "#/$defs/dimension"}, "z_m": {"$ref": "#/$defs/dimension"}
+        "material_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depth_m": {
+          "$ref": "#/$defs/dimension"
+        },
+        "x_m": {
+          "$ref": "#/$defs/dimension"
+        },
+        "z_m": {
+          "$ref": "#/$defs/dimension"
+        }
       }
     },
     "modelParameters": {
-      "type": "object", "additionalProperties": false, "required": ["model"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
       "properties": {
-        "model": {"enum": ["FCBoundary", "LayeredGroundBoundary", "Kiva"]},
-        "monthly_temperature_input": {"enum": ["fc_monthly_ground_temperature_C", "surface_monthly_ground_temperature_C"]},
-        "soil_material_id": {"type": "string", "minLength": 1},
-        "ground_solar_absorptivity": {"type": "number", "minimum": 0, "maximum": 1},
-        "ground_thermal_absorptivity": {"type": "number", "minimum": 0, "maximum": 1},
-        "ground_surface_roughness_m": {"type": "number", "minimum": 0},
-        "far_field_width_m": {"type": "number", "exclusiveMinimum": 0},
-        "deep_ground_boundary_condition": {"enum": ["ZeroFlux", "GroundWater"]},
-        "deep_ground_depth_m": {"type": "number", "exclusiveMinimum": 0},
-        "minimum_cell_dimension_m": {"type": "number", "exclusiveMinimum": 0},
-        "maximum_cell_growth_coefficient": {"type": "number", "minimum": 1},
-        "simulation_timestep": {"enum": ["Timestep", "Hourly"]},
-        "initialization_policy": {"const": "resstock_source_start_month_1.0.0"},
-        "heating_balance_temperature_C": {"type": "number"},
-        "cooling_balance_temperature_C": {"type": "number"}
+        "model": {
+          "enum": [
+            "FCBoundary",
+            "LayeredGroundBoundary",
+            "Kiva"
+          ]
+        },
+        "monthly_temperature_input": {
+          "enum": [
+            "fc_monthly_ground_temperature_C",
+            "surface_monthly_ground_temperature_C"
+          ]
+        },
+        "soil_material_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ground_solar_absorptivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ground_thermal_absorptivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ground_surface_roughness_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "far_field_width_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "deep_ground_boundary_condition": {
+          "enum": [
+            "ZeroFlux",
+            "GroundWater"
+          ]
+        },
+        "deep_ground_depth_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minimum_cell_dimension_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_cell_growth_coefficient": {
+          "type": "number",
+          "minimum": 1
+        },
+        "simulation_timestep": {
+          "enum": [
+            "Timestep",
+            "Hourly"
+          ]
+        },
+        "initialization_policy": {
+          "const": "resstock_source_start_month_1.0.0"
+        },
+        "heating_balance_temperature_C": {
+          "type": "number"
+        },
+        "cooling_balance_temperature_C": {
+          "type": "number"
+        }
       },
       "allOf": [
-        {"if": {"properties": {"model": {"enum": ["FCBoundary", "LayeredGroundBoundary"]}}}, "then": {"required": ["monthly_temperature_input"]}},
-        {"if": {"properties": {"model": {"const": "Kiva"}}}, "then": {"required": ["soil_material_id", "ground_solar_absorptivity", "ground_thermal_absorptivity", "ground_surface_roughness_m", "far_field_width_m", "deep_ground_boundary_condition", "deep_ground_depth_m", "minimum_cell_dimension_m", "maximum_cell_growth_coefficient", "simulation_timestep", "initialization_policy", "heating_balance_temperature_C", "cooling_balance_temperature_C"]}}
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": [
+                  "FCBoundary",
+                  "LayeredGroundBoundary"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "monthly_temperature_input"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "soil_material_id",
+              "ground_solar_absorptivity",
+              "ground_thermal_absorptivity",
+              "ground_surface_roughness_m",
+              "far_field_width_m",
+              "deep_ground_boundary_condition",
+              "deep_ground_depth_m",
+              "minimum_cell_dimension_m",
+              "maximum_cell_growth_coefficient",
+              "simulation_timestep",
+              "initialization_policy",
+              "heating_balance_temperature_C",
+              "cooling_balance_temperature_C"
+            ]
+          }
+        }
       ]
     }
   }

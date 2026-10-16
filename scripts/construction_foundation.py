@@ -46,6 +46,10 @@ def validate_foundation_extension(document:dict)->None:
             if name not in geometry:raise ValueError('Orphan method geometry input')
         for mid in _references(method,'material_id'):
             if mid not in materials:raise ValueError('Orphan Kiva material reference')
+        for mid in _references(method,'material_thickness_id'):
+            if mid not in materials or materials[mid]['properties'].get('thickness_m') is None:raise ValueError('Orphan material thickness expression')
+        for aid in _references(method,'assembly_thickness_id'):
+            if aid not in assemblies:raise ValueError('Orphan assembly thickness expression')
         init=method['parameters'].get('initialization')
         if init and not math.isclose(sum(init[k] for k in ('outdoor','ground','indoor')),1.,abs_tol=1e-12):
             raise ValueError('Invalid initialization weights')
@@ -54,7 +58,7 @@ def validate_foundation_extension(document:dict)->None:
     for setting in settings.values():
         if setting['model']=='Kiva' and setting['soil_material_id'] not in materials:raise ValueError('Orphan Kiva soil material')
     used_methods=set()
-    unified=document.get('kind')=='construction_equivalent_set'
+    unified=document.get('kind')=='building_level_equivalent'
     no_contact=ground['configuration']['type']=='no_direct_ground_contact'
     for role,component in document['components'].items():
         if role not in ROLES:
@@ -62,7 +66,7 @@ def validate_foundation_extension(document:dict)->None:
             continue
         rules=component.get('assignments',[])
         if unified and component.get('assembly_id'):
-            rules=[{'assembly_id':component['assembly_id'],'ground_method_id':component.get('ground_method_id')}]
+            rules=[{'assembly_id':component['assembly_id'],'ground_method_id':component.get('ground_method_id'),'when':component.get('when',{})}]
         if unified and len(rules)>1 and not component.get('native_exception_reason'):
             raise ValueError('Native unified assignment exception requires a physical reason')
         if unified and len(rules)>1 and role not in {'GroundFloor','FoundationWall'}:
@@ -75,11 +79,15 @@ def validate_foundation_extension(document:dict)->None:
             if aid not in assemblies:raise ValueError('Orphan foundation assembly')
             a=assemblies[aid];model=a['model'];method_id=rule.get('ground_method_id')
             if role in {'GroundFloor','FoundationWall'}:
-                if method_id not in methods:raise ValueError('Missing native ground method')
-                used_methods.add(method_id)
-                kind=methods[method_id]['model']
-                expected={'FFactor':'FFactorGroundFloorConstruction','CFactor':'CFactorUndergroundWallConstruction','LayeredGround':'native_opaque_layers','Kiva':'native_opaque_layers'}[kind]
-                if model!=expected:raise ValueError('Ground method/assembly model mismatch')
+                ordinary_wall=role=='FoundationWall' and rule.get('when',{}).get('boundary_condition') in {'Surface','Adiabatic','Outdoors'}
+                if ordinary_wall:
+                    if method_id or model!='native_opaque_layers':raise ValueError('Non-soil wall has invalid native method')
+                else:
+                    if method_id not in methods:raise ValueError('Missing native ground method')
+                    used_methods.add(method_id)
+                    kind=methods[method_id]['model']
+                    expected={'FFactor':'FFactorGroundFloorConstruction','CFactor':'CFactorUndergroundWallConstruction','LayeredGround':'native_opaque_layers','Kiva':'native_opaque_layers'}[kind]
+                    if model!=expected:raise ValueError('Ground method/assembly model mismatch')
             elif method_id:raise ValueError('Ordinary foundation interface cannot own a soil-transfer method')
             if model in {'FFactorGroundFloorConstruction','CFactorUndergroundWallConstruction'}:
                 key='f_W_m_K' if model.startswith('F') else 'c_W_m2_K'

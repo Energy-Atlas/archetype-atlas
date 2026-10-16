@@ -53,7 +53,7 @@ class FoundationContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):m.validate_foundation_extension(d)
 
     def test_native_unified_exception_requires_reason_and_ordinary_components_stay_simple(self):
-        m=self.module();d=factor_document();d['kind']='construction_equivalent_set'
+        m=self.module();d=factor_document();d['kind']='building_level_equivalent'
         rule=d['components']['GroundFloor']['assignments'][0]
         d['components']['GroundFloor']={'status':'ready','assembly_id':None,'assignments':[rule,dict(rule,assembly_id='floor2')],
             'native_exception_reason':'Distinct native methods cannot be physically homogenized'}
@@ -61,7 +61,7 @@ class FoundationContractTests(unittest.TestCase):
         m.validate_foundation_extension(d)
         del d['components']['GroundFloor']['native_exception_reason']
         with self.assertRaisesRegex(ValueError,'exception'):m.validate_foundation_extension(d)
-        d=factor_document();d['kind']='construction_equivalent_set'
+        d=factor_document();d['kind']='building_level_equivalent'
         d['components']['ExteriorWall']={'status':'ready','assembly_id':None,'assignments':[rule]}
         with self.assertRaisesRegex(ValueError,'ordinary'):m.validate_foundation_extension(d)
 

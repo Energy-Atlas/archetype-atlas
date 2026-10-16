@@ -1,0 +1,2234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:construction-equivalent:1.2.0",
+  "title": "Additional building-level equivalent construction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "name",
+    "scope",
+    "source",
+    "detailed_context_id",
+    "climate_zone",
+    "reference_id",
+    "supporting_profile_id",
+    "weighting_policy",
+    "status",
+    "components",
+    "assemblies",
+    "infiltration",
+    "consumer_inputs",
+    "mass_accounting",
+    "provenance",
+    "foundation_ground",
+    "materials",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "kind": {
+      "const": "building_level_equivalent"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "enum": [
+        "building",
+        "whole_dwelling"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "description": "Unchanged detailed construction source metadata."
+    },
+    "detailed_context_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "climate_zone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reference_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supporting_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "weighting_policy": {
+      "const": "precomputed_source_archetype"
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "blocked"
+      ]
+    },
+    "components": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "ExteriorWall",
+          "ExteriorRoof",
+          "ExteriorFloor",
+          "ExteriorWindow",
+          "ExteriorDoor",
+          "GlassDoor",
+          "OverheadDoor",
+          "Skylight",
+          "InteriorWall",
+          "InteriorFloor",
+          "InteriorCeiling",
+          "InteriorDoor",
+          "InteriorWindow",
+          "InternalMass",
+          "FloorDistributedMass",
+          "TubularDaylightDome",
+          "TubularDaylightDiffuser",
+          "SpaceShading",
+          "BuildingShading",
+          "SiteShading",
+          "GroundFloor",
+          "FoundationWall",
+          "FloorOverFoundation",
+          "RimJoist"
+        ]
+      },
+      "additionalProperties": false,
+      "properties": {
+        "ExteriorWall": {
+          "$ref": "#/$defs/component"
+        },
+        "ExteriorRoof": {
+          "$ref": "#/$defs/component"
+        },
+        "ExteriorFloor": {
+          "$ref": "#/$defs/component"
+        },
+        "ExteriorWindow": {
+          "$ref": "#/$defs/component"
+        },
+        "ExteriorDoor": {
+          "$ref": "#/$defs/component"
+        },
+        "GlassDoor": {
+          "$ref": "#/$defs/component"
+        },
+        "OverheadDoor": {
+          "$ref": "#/$defs/component"
+        },
+        "Skylight": {
+          "$ref": "#/$defs/component"
+        },
+        "InteriorWall": {
+          "$ref": "#/$defs/component"
+        },
+        "InteriorFloor": {
+          "$ref": "#/$defs/component"
+        },
+        "InteriorCeiling": {
+          "$ref": "#/$defs/component"
+        },
+        "InteriorDoor": {
+          "$ref": "#/$defs/component"
+        },
+        "InteriorWindow": {
+          "$ref": "#/$defs/component"
+        },
+        "InternalMass": {
+          "$ref": "#/$defs/component"
+        },
+        "FloorDistributedMass": {
+          "$ref": "#/$defs/component"
+        },
+        "TubularDaylightDome": {
+          "$ref": "#/$defs/component"
+        },
+        "TubularDaylightDiffuser": {
+          "$ref": "#/$defs/component"
+        },
+        "SpaceShading": {
+          "$ref": "#/$defs/component"
+        },
+        "BuildingShading": {
+          "$ref": "#/$defs/component"
+        },
+        "SiteShading": {
+          "$ref": "#/$defs/component"
+        },
+        "GroundFloor": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "assembly_id",
+                "reason"
+              ],
+              "properties": {
+                "status": {
+                  "const": "not_applicable"
+                },
+                "assembly_id": {
+                  "type": "null"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "assembly_id",
+                "when"
+              ],
+              "properties": {
+                "status": {
+                  "const": "ready"
+                },
+                "assembly_id": {
+                  "type": "string"
+                },
+                "when": {
+                  "$ref": "#/$defs/when"
+                },
+                "ground_method_id": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "assembly_id",
+                "assignments",
+                "native_exception_reason"
+              ],
+              "properties": {
+                "status": {
+                  "const": "ready"
+                },
+                "assembly_id": {
+                  "type": "null"
+                },
+                "assignments": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/assignment"
+                  }
+                },
+                "native_exception_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        },
+        "FoundationWall": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "assembly_id",
+                "reason"
+              ],
+              "properties": {
+                "status": {
+                  "const": "not_applicable"
+                },
+                "assembly_id": {
+                  "type": "null"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "assembly_id",
+                "when"
+              ],
+              "properties": {
+                "status": {
+                  "const": "ready"
+                },
+                "assembly_id": {
+                  "type": "string"
+                },
+                "when": {
+                  "$ref": "#/$defs/when"
+                },
+                "ground_method_id": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "assembly_id",
+                "assignments",
+                "native_exception_reason"
+              ],
+              "properties": {
+                "status": {
+                  "const": "ready"
+                },
+                "assembly_id": {
+                  "type": "null"
+                },
+                "assignments": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/assignment"
+                  }
+                },
+                "native_exception_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        },
+        "FloorOverFoundation": {
+          "$ref": "#/$defs/component"
+        },
+        "RimJoist": {
+          "$ref": "#/$defs/component"
+        }
+      },
+      "required": [
+        "GroundFloor",
+        "FoundationWall",
+        "FloorOverFoundation",
+        "RimJoist"
+      ]
+    },
+    "assemblies": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/assembly"
+      }
+    },
+    "infiltration": {
+      "type": "object",
+      "description": "Unchanged selected fixed reference natural ACH, in 1/s, with source evidence."
+    },
+    "consumer_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mass_accounting": {
+      "$ref": "#/$defs/massAccounting"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "foundation_ground": {
+      "$ref": "#/$defs/foundationGround"
+    },
+    "materials": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/material"
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/evidence"
+      }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "assembly_id"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ready",
+            "blocked",
+            "not_applicable"
+          ]
+        },
+        "assembly_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "area_per_counted_floor_area",
+            "unit",
+            "application"
+          ],
+          "properties": {
+            "area_per_counted_floor_area": {
+              "type": "number",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "m2/m2"
+            },
+            "application": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "derivation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contributors",
+            "weight_basis"
+          ],
+          "properties": {
+            "weight_basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_reference_area_m2": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "assembly_id",
+                  "weight",
+                  "reference_area_m2"
+                ],
+                "properties": {
+                  "assembly_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "weight": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "reference_area_m2": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "geometry_policy": {
+              "const": "consumer_overhang_geometry_by_BEMGen"
+            },
+            "geometry_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source_assembly_id",
+                  "overhang_geometry"
+                ],
+                "properties": {
+                  "source_assembly_id": {
+                    "type": "string"
+                  },
+                  "overhang_geometry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ready"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "derivation"
+            ],
+            "properties": {
+              "assembly_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "reason"
+            ],
+            "properties": {
+              "assembly_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "R": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Layer resistance, m2 K/W; excludes boundary films."
+        },
+        "C": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Areal heat capacity, J/(m2 K)."
+        },
+        "thickness_m": {
+          "type": "number",
+          "minimum": 0.003
+        },
+        "conductivity_W_m_K": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5
+        },
+        "density_kg_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "specific_heat_J_kg_K": {
+          "type": "number",
+          "minimum": 100
+        },
+        "properties": {
+          "type": "object",
+          "description": "Source or area-weighted glazing material properties in the detailed SI convention."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Material"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "R",
+              "C",
+              "thickness_m",
+              "conductivity_W_m_K",
+              "density_kg_m3",
+              "specific_heat_J_kg_K"
+            ],
+            "properties": {
+              "C": {
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Material:NoMass"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "R",
+              "C"
+            ],
+            "properties": {
+              "C": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assembly": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "status",
+            "model",
+            "layers",
+            "quality",
+            "fit"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "const": "ready"
+            },
+            "model": {
+              "enum": [
+                "opaque_layers",
+                "simple_glazing",
+                "detailed_glazing"
+              ]
+            },
+            "layers": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/layer"
+              }
+            },
+            "targets": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "resistance_m2_K_W": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "capacity_J_m2_K": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "u_reference_W_m2_K": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              }
+            },
+            "quality": {
+              "enum": [
+                "within_initial_screen",
+                "approximation_review",
+                "unchanged_source_physics",
+                "area_weighted_optical_proxy"
+              ]
+            },
+            "fit": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "surface_properties": {
+              "type": "object"
+            },
+            "solar_modifiers": {
+              "type": "object"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "model": {
+                    "const": "opaque_layers"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "targets",
+                  "surface_properties"
+                ],
+                "properties": {
+                  "layers": {
+                    "maxItems": 3
+                  },
+                  "fit": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "$ref": "#/$defs/nativeAssembly"
+        }
+      ]
+    },
+    "massLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "properties"
+      ],
+      "properties": {
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
+    },
+    "massRecipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "layers",
+        "capacity_J_m2_K",
+        "source_locator",
+        "interpretation"
+      ],
+      "properties": {
+        "model": {
+          "const": "opaque_layers"
+        },
+        "layers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/massLayer"
+          }
+        },
+        "capacity_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interpretation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "massScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "counted_floor_area"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "source_space",
+            "whole_dwelling"
+          ]
+        },
+        "counted_floor_area": {
+          "type": "boolean"
+        },
+        "source_space_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_story": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_building_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_space_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "massEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "recipe_id",
+        "scope",
+        "reference_area_m2",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "source_operands",
+        "source_locator",
+        "area_convention"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recipe_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/massScope"
+        },
+        "reference_area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "area_per_counted_floor_area": {
+          "type": "number",
+          "minimum": 0
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_operands": {
+          "type": "object"
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "area_convention": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "massBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_assembly_id",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "reference_area_m2",
+        "source_areal_capacity_J_m2_K",
+        "source_locator"
+      ],
+      "properties": {
+        "source_assembly_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "area_per_counted_floor_area": {
+          "type": "number",
+          "minimum": 0
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reference_area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_areal_capacity_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "massAccounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "reference",
+        "floor_pair_policy",
+        "added_mass_policy",
+        "removed_wall_policy",
+        "residual_floor_policy",
+        "residual_policy",
+        "physical_inventory_profile_id",
+        "paired_surface_policy",
+        "paired_face_area_policy",
+        "reference_area_approximation",
+        "physical_capacity_budgets",
+        "additional_mass",
+        "recipes",
+        "provenance"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "status": {
+          "const": "ready"
+        },
+        "reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile_id",
+            "counted_floor_area_m2",
+            "quantity_basis"
+          ],
+          "properties": {
+            "profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "counted_floor_area_m2": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "quantity_basis": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "floor_pair_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "added_mass_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removed_wall_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "residual_floor_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "residual_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "physical_inventory_profile_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paired_surface_policy": {
+          "const": {
+            "canonical_side": "InteriorFloor",
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          }
+        },
+        "paired_face_area_policy": {
+          "const": "mean_zone_weighted_faces"
+        },
+        "reference_area_approximation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unequal_multiplier_pair_counts",
+            "evidence_profile_id",
+            "interpretation"
+          ],
+          "properties": {
+            "unequal_multiplier_pair_counts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "floor_pairs",
+                "wall_pairs"
+              ],
+              "properties": {
+                "floor_pairs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wall_pairs": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "evidence_profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interpretation": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "physical_capacity_budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "InteriorWall",
+            "InteriorFloor"
+          ],
+          "properties": {
+            "InteriorWall": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              }
+            },
+            "InteriorFloor": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              }
+            }
+          }
+        },
+        "additional_mass": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "entries",
+            "allocation_policy",
+            "legacy_partition_selector_policy"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "provided",
+                "known_zero"
+              ]
+            },
+            "entries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/massEntry"
+              }
+            },
+            "allocation_policy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "legacy_partition_selector_policy": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "recipes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/massRecipe"
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_project",
+            "source_revision",
+            "source_locator",
+            "source_file_sha256",
+            "extraction_date",
+            "original_unit",
+            "original_value",
+            "transformation",
+            "interpretation_note"
+          ],
+          "properties": {
+            "source_project": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_locator": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_file_sha256": {
+              "type": "object"
+            },
+            "extraction_date": {
+              "type": "string",
+              "minLength": 1
+            },
+            "original_unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "original_value": {
+              "type": "object"
+            },
+            "transformation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interpretation_note": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "foundation_method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "model_parameters_id",
+        "parameters",
+        "required_geometry"
+      ],
+      "properties": {
+        "model": {
+          "enum": [
+            "FFactor",
+            "CFactor",
+            "LayeredGround",
+            "Kiva"
+          ]
+        },
+        "model_parameters_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_geometry": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "parameters": {
+          "$ref": "#/$defs/foundation_kivaParameters"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": [
+                  "FFactor",
+                  "CFactor",
+                  "LayeredGround"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parameters": {
+                "maxProperties": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "foundation_kivaParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wall_depth_below_slab_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "wall_height_above_grade": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "interior_horizontal_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "interior_vertical_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "exterior_horizontal_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "exterior_vertical_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "custom_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/foundation_block"
+          }
+        },
+        "footing": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "initialization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outdoor",
+            "ground",
+            "indoor",
+            "offset_K"
+          ],
+          "properties": {
+            "outdoor": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "ground": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "indoor": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "offset_K": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "foundation_dimension": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "geometry_input": {
+              "type": "string",
+              "minLength": 1
+            },
+            "material_thickness_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "assembly_thickness_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "offset_m": {
+              "type": "number"
+            },
+            "scale": {
+              "type": "number"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "geometry_input"
+              ]
+            },
+            {
+              "required": [
+                "material_thickness_id"
+              ]
+            },
+            {
+              "required": [
+                "assembly_thickness_id"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "foundation_insulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id"
+      ],
+      "properties": {
+        "material_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depth_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "width_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        }
+      }
+    },
+    "foundation_block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_id",
+        "depth_m",
+        "x_m",
+        "z_m"
+      ],
+      "properties": {
+        "material_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depth_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "x_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "z_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        }
+      }
+    },
+    "foundation_modelParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "enum": [
+            "FCBoundary",
+            "LayeredGroundBoundary",
+            "Kiva"
+          ]
+        },
+        "monthly_temperature_input": {
+          "enum": [
+            "fc_monthly_ground_temperature_C",
+            "surface_monthly_ground_temperature_C"
+          ]
+        },
+        "soil_material_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ground_solar_absorptivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ground_thermal_absorptivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ground_surface_roughness_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "far_field_width_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "deep_ground_boundary_condition": {
+          "enum": [
+            "ZeroFlux",
+            "GroundWater"
+          ]
+        },
+        "deep_ground_depth_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minimum_cell_dimension_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_cell_growth_coefficient": {
+          "type": "number",
+          "minimum": 1
+        },
+        "simulation_timestep": {
+          "enum": [
+            "Timestep",
+            "Hourly"
+          ]
+        },
+        "initialization_policy": {
+          "const": "resstock_source_start_month_1.0.0"
+        },
+        "heating_balance_temperature_C": {
+          "type": "number"
+        },
+        "cooling_balance_temperature_C": {
+          "type": "number"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": [
+                  "FCBoundary",
+                  "LayeredGroundBoundary"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "monthly_temperature_input"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "soil_material_id",
+              "ground_solar_absorptivity",
+              "ground_thermal_absorptivity",
+              "ground_surface_roughness_m",
+              "far_field_width_m",
+              "deep_ground_boundary_condition",
+              "deep_ground_depth_m",
+              "minimum_cell_dimension_m",
+              "maximum_cell_growth_coefficient",
+              "simulation_timestep",
+              "initialization_policy",
+              "heating_balance_temperature_C",
+              "cooling_balance_temperature_C"
+            ]
+          }
+        }
+      ]
+    },
+    "foundationGround": {
+      "title": "Embedded foundation configuration and native ground methods",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configuration",
+        "methods",
+        "model_parameters",
+        "required_geometry"
+      ],
+      "properties": {
+        "configuration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "source_native_commercial",
+                "Slab-on-Grade",
+                "Basement, Conditioned",
+                "Basement, Unconditioned",
+                "Crawlspace, Vented",
+                "Crawlspace, Unvented",
+                "no_direct_ground_contact"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "thermal_hosts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "air_exchange": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "model"
+                ],
+                "properties": {
+                  "model": {
+                    "enum": [
+                      "constant_ach",
+                      "source_sla_annual",
+                      "source_garage_sherman_grimsrud"
+                    ]
+                  },
+                  "ach_per_s": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "sla": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "reference_height_m": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "height_exponent": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "normalized_leakage_multiplier": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "exterior_ach50_per_s": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "ela_volume_coefficient_s_m": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "stack_height_coefficient_m_s2_K": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "wind_reference_height_m": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "wind_height_exponent": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "wind_coefficient_scale": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "weather_factor_input": {
+                    "const": "actual_weather_ashrae_622_wsf"
+                  },
+                  "engine_site_terrain": {
+                    "enum": [
+                      "Country",
+                      "Suburbs",
+                      "City"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "methods": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/foundation_method"
+          }
+        },
+        "model_parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/foundation_modelParameters"
+          }
+        },
+        "required_geometry": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unit"
+            ],
+            "properties": {
+              "unit": {
+                "enum": [
+                  "m",
+                  "m2",
+                  "m3",
+                  "1",
+                  "topology"
+                ]
+              },
+              "minimum": {
+                "type": "number"
+              },
+              "exclusive_minimum": {
+                "type": "number"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "nativeAssembly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "model",
+        "status",
+        "evidence_ids"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "const": "ready"
+        },
+        "model": {
+          "enum": [
+            "FFactorGroundFloorConstruction",
+            "CFactorUndergroundWallConstruction",
+            "native_opaque_layers"
+          ]
+        },
+        "f_W_m_K": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "c_W_m2_K": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "order": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "material_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "order",
+              "material_id"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "layer_orientation": {
+          "const": "exterior_to_interior"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "native_opaque_layers"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "layers",
+              "layer_orientation"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "f_W_m_K"
+                  ]
+                },
+                {
+                  "required": [
+                    "c_W_m2_K"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "FFactorGroundFloorConstruction"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "f_W_m_K"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "c_W_m2_K"
+                  ]
+                },
+                {
+                  "required": [
+                    "layers"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "CFactorUndergroundWallConstruction"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "c_W_m2_K"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "f_W_m_K"
+                  ]
+                },
+                {
+                  "required": [
+                    "layers"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "material": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap",
+            "Gas",
+            "StandardGlazing",
+            "SimpleGlazing",
+            "BulkMaterial"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "property_evidence": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "model",
+        "properties",
+        "property_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "when": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "enum": [
+            "building_default",
+            "space_type",
+            "whole_dwelling",
+            "story"
+          ]
+        },
+        "space_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "window_operation": {
+          "enum": [
+            "fixed",
+            "operable"
+          ]
+        },
+        "interior_space_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exterior_space_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "boundary_condition": {
+          "enum": [
+            "Outdoors",
+            "Surface",
+            "Adiabatic",
+            "Ground"
+          ]
+        },
+        "source_story_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thermal_host": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "scope"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "space_type"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "space_type"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "space_type"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "story"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_story_id"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "source_story_id"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assembly_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_definition_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_selector": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "when": {
+          "$ref": "#/$defs/when"
+        },
+        "source_element_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "geometry": {
+          "$ref": "#/$defs/geometry"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "ground_method_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "assembly_id",
+        "source_definition_id",
+        "source_selector",
+        "when",
+        "source_element_ids",
+        "geometry",
+        "evidence_ids"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_project": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_file_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          ]
+        },
+        "original_value": {},
+        "original_unit": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "transformation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extraction_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "interpretation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "source_project",
+        "source_revision",
+        "source_locator",
+        "source_file_sha256",
+        "original_value",
+        "original_unit",
+        "transformation",
+        "extraction_date",
+        "interpretation_note"
+      ],
+      "additionalProperties": true
+    },
+    "area": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "enum": [
+            "bem_surface_area",
+            "source_partition_cfa_scaling",
+            "source_ordinary_interstory_scaling"
+          ]
+        },
+        "unit": {
+          "const": "m2"
+        },
+        "area_per_conditioned_floor_area": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "area_convention": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_area_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paired_floor_and_ceiling": {
+          "const": true
+        },
+        "source_activation_threshold_m2": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "method",
+        "unit"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "source_partition_cfa_scaling"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "area_per_conditioned_floor_area",
+              "area_convention"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "source_ordinary_interstory_scaling"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_area_rule",
+              "paired_floor_and_ceiling",
+              "source_activation_threshold_m2"
+            ]
+          }
+        }
+      ]
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "area": {
+          "$ref": "#/$defs/area"
+        },
+        "layers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "orientation": {
+              "const": "exterior_to_interior"
+            },
+            "paired_surface_policy": {
+              "const": "reverse_order"
+            },
+            "source_reference_reversed": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "orientation",
+            "paired_surface_policy",
+            "source_reference_reversed"
+          ]
+        },
+        "roof": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source_pitch_rad": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.5707963267948966
+            },
+            "unit": {
+              "const": "rad"
+            },
+            "applicability": {
+              "const": "source_pitch_only"
+            },
+            "different_pitch_policy": {
+              "const": "source_recipe_reevaluation_required"
+            },
+            "source_film_rule": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "source_pitch_rad",
+            "unit",
+            "applicability",
+            "different_pitch_policy",
+            "source_film_rule"
+          ]
+        },
+        "overhang": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "depth_m": {
+              "type": "number"
+            },
+            "distance_to_top_of_window_m": {
+              "type": "number"
+            },
+            "distance_to_bottom_of_window_m": {
+              "type": "number"
+            },
+            "evidence_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "depth_m",
+            "distance_to_top_of_window_m",
+            "distance_to_bottom_of_window_m",
+            "evidence_id"
+          ]
+        }
+      },
+      "required": [
+        "area",
+        "layers"
+      ]
+    }
+  }
+}
