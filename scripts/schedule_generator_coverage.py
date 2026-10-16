@@ -329,6 +329,10 @@ def _required_link_coverage(resources,entries,record,service_cases):
 
 def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
     scope = scope if scope is not None else resources.get('reference', 'm1-scope')
+    if scope.get('milestone_id') in {'A1','A4'}:
+        # A compiled A4 resource scope is reported as the cumulative A1 apartment scope.
+        from scripts.schedule_generator_apartment_certification import build_apartment_coverage
+        return build_apartment_coverage(resources,scope if scope['milestone_id']=='A1' else None)
     index = resources.get('reference', 'catalogue-index')
     programmed = {row['id']: row for row in index['programs']}
     resource_entries = {(entry['kind'], entry['key']): entry for entry in resources.manifest['resources']}
@@ -443,6 +447,9 @@ def build_coverage(resources: ResourceSet, scope: dict | None = None) -> dict:
 
 
 def coverage_errors(report: dict, resources: ResourceSet | None = None) -> list[str]:
+    if report.get('scope',{}).get('milestone_id')=='A1':
+        from scripts.schedule_generator_apartment_certification import apartment_coverage_errors
+        return apartment_coverage_errors(report,resources)
     errors = []
     inventory = {(entry['resource_kind'], entry['resource_key'], entry['pointer']): entry
                  for entry in report.get('evidence_inventory', [])}
@@ -576,7 +583,13 @@ def main(argv=None):
     parser.add_argument('--inventory', action='store_true')
     parser.add_argument('--report', type=Path, default=ROOT / 'docs/validation/schedule-generator-coverage.json')
     args = parser.parse_args(argv)
-    if args.scope != 'm1':
+    if args.scope == 'a1':
+        from scripts.schedule_generator_apartment_certification import apartment_scope
+        scope=apartment_scope()
+        if args.resources_root is None:args.resources_root=ROOT/'build/task-10/apartment-a5/resources'
+        if args.report==ROOT/'docs/validation/schedule-generator-coverage.json':
+            args.report=ROOT/'docs/validation/schedule-generator-apartment-coverage.json'
+    elif args.scope != 'm1':
         scope_path = ROOT/'sources/schedule-generator-residential-scope.json' if args.scope == 'residential' else Path(args.scope)
         scope = json.loads(scope_path.read_text(encoding='utf-8'))
     else:

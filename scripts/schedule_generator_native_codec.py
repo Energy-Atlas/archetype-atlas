@@ -14,6 +14,15 @@ LEGACY_GZIP_COMPONENTS=frozenset({'residential-native-lock','commercial-native-l
 # prefix or a format guessing rule; no other lock/path may use it.
 LEGACY_WATER_LOCK='2d3203d06c9f6cb5cb8f999d3d6ce0e88cf2f825c4ae545e55d02e26846e3a61'
 LEGACY_WATER_PATH='data/schedule-generator/reference/restaurant-water-native.json.gz'
+# R61: original reviewed A3 capture only; neither a prefix nor codec fallback.
+APARTMENT_FIXED_LOCK='6165bfbfbec59caa59d09e2c754c3d7a7e29e305f7053331165cc32c5bd51f87'
+APARTMENT_FIXED_FIELDS={
+    'inputs':('data/schedule-generator/apartment/fixed-native-inputs.json.gz',119563,
+        '78e09460e3e2beca10230f959831a6b0047bba94f931c18279a28bf4e8aa9e9a',905273,
+        '574aba86a15bda47dea43bfcb97deb79120829a785c050b4bc4068b3bf578443'),
+    'vectors':('data/schedule-generator/apartment/fixed-native.json.gz',259382,
+        'f3d541a178caa1e8ae6e072f1d6371537ee0d6007a6090e478443280e4de539d',11412795,
+        '84d3171bd254d5492cb1379f4a521a37ba3ad2589738360ca3ccdc2a9324c7a0')}
 
 
 def decode_native_component(content,component,field='vectors'):
@@ -26,7 +35,14 @@ def decode_native_component(content,component,field='vectors'):
         lock=component['lock'];identity=hashlib.sha256(canonical(lock)).hexdigest()
         if component['reference_resource_sha256']!=identity:fail('Native source-lock identity differs')
         entry=lock[field];name=str(safe_path(entry['source_path']));fmt=entry.get('format')
-        if key=='retail-programme-native-lock':
+        if key=='apartment-fixed-native-lock':
+            actual=(name,entry.get('size_bytes'),entry.get('sha256'),
+                    entry.get('payload_size_bytes'),entry.get('payload_sha256'))
+            if (identity!=APARTMENT_FIXED_LOCK or fmt!='gzip JSON actual native capture' or
+                    actual!=APARTMENT_FIXED_FIELDS[field]):
+                fail('Apartment native requires the exact reviewed A3 lock/field/format/path identity')
+            decode=gzip.decompress
+        elif key=='retail-programme-native-lock':
             expected='data/schedule-generator/reference/retail-programme-'+('inputs' if field=='inputs' else 'native')+'.json.xz'
             if fmt!='xz-json' or name!=expected:fail('New Retail native requires explicit xz-json and exact matching path')
             decode=lzma.decompress
