@@ -12,7 +12,9 @@ import struct
 
 from ..calendar import evaluate_rules
 from ..errors import GeneratorError
-from .source_models import RETAIL_CONFIGURATIONS,validate_retail_people
+from .source_models import (RETAIL_CONFIGURATIONS,STRIPMALL_CONFIGURATIONS,STRIPMALL_PENDING,
+                            ruby_float_sum as _ruby_float_sum,validate_retail_people,validate_stripmall_local_people,
+                            validate_stripmall_people)
 
 
 def _error(path, message):
@@ -173,14 +175,49 @@ def _close_gaps(points):
     return [[time,value] for time,value in sorted(result.items())]
 
 
+def stripmall_people_groups(context):
+    """Ordered source People Ruleset groups and their Ruby Array#sum total."""
+    _,groups,total=validate_stripmall_people(context)
+    return groups,total
+
+
+def stripmall_combined_fraction(context):
+    """space.rb spaces_get_occupancy_schedule for several Ruleset groups.
+
+    Each group's hourly values times its design People, rounded to six places,
+    are summed per hour with Ruby Array#sum in group order, then divided by
+    the Array#sum of group People. No fsum, area weights or single-type proxy.
+    """
+    groups,total=stripmall_people_groups(context)
+    if total==0:_error('occupancy_aggregation/nominal_people','Positive source design People required')
+    weighted=[[_round(v*g['weight'],6) for v in evaluate_rules(g['schedule'],context['year'],[])['values']] for g in groups]
+    return [_ruby_float_sum(list(hour))/total for hour in zip(*weighted)]
+
+
 def _infer(context):
     aggregation=context['occupancy_aggregation']
     if not isinstance(aggregation,dict): _error('occupancy_aggregation','Explicit aggregation object required')
     parts=aggregation.get('constituents')
     source_model=aggregation.get('policy')=='explicit_source_model_nonresidential_people'
+    stripmall=str(context.get('source_hoo_configuration_id')) in STRIPMALL_CONFIGURATIONS|STRIPMALL_PENDING
+    fraction=None
     if source_model and context.get('source_hoo_configuration_id') in RETAIL_CONFIGURATIONS:
         configuration=context['source_hoo_configuration_id']
         scope,weight=validate_retail_people(context)
+    elif source_model and stripmall:
+        configuration=context['source_hoo_configuration_id']
+        scope,strip_groups,weight=validate_stripmall_people(context)
+        fraction=stripmall_combined_fraction(context)
+    elif stripmall and aggregation.get('policy')=='explicit_source_local_space_people':
+        # The first-registered space resolves the building HoursofOperation
+        # schedule (LOCAL_HOO_RESOLUTION), produced by the model People groups.
+        configuration=context['source_hoo_configuration_id']
+        registration,strip_groups,weight=validate_stripmall_local_people(context)
+        model=dict(context,occupancy_aggregation=aggregation['model_aggregation'])
+        fraction=stripmall_combined_fraction(model);source_model=True
+        parts=aggregation['model_aggregation']['constituents']
+        scope={'local_space':aggregation['space'],'registration':copy.deepcopy(registration),
+               'resolution':copy.deepcopy(aggregation['resolution'])}
     elif source_model:
         configuration=context.get('source_hoo_configuration_id')
         if (configuration not in _RESTAURANT_CONFIGURATIONS or configuration!=context.get('configuration_id') or
@@ -214,7 +251,7 @@ def _infer(context):
             # space multiplier before its one weighted-hour round6 operation.
             weight+=part['nominal_people']
     else:
-        if context.get('configuration_id') in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS:
+        if context.get('configuration_id') in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS|STRIPMALL_CONFIGURATIONS|STRIPMALL_PENDING:
             _error('occupancy_aggregation/policy','Source/view model configuration cannot substitute a normalized reference carrier')
         if aggregation.get('policy')!='explicit_single_nonresidential_reference_carrier':
             _error('occupancy_aggregation/policy','Only audited explicit nonresidential carrier policies supported')
@@ -225,10 +262,11 @@ def _infer(context):
     if not isinstance(part,dict) or part.get('residential') is not False or not part.get('evidence'):
         _error('occupancy_aggregation/constituents','Explicit nonresidential classification and source evidence required')
     if weight==0: _error('occupancy_aggregation/nominal_people','Positive normalized inference weight required')
-    raw=evaluate_rules(part.get('schedule'),context['year'],[])['values']
+    raw=None if fraction is not None else evaluate_rules(part.get('schedule'),context['year'],[])['values']
     profiles=[];groups={};storage_receipts=[]
     for day in range(365):
-        values=[_round(v*weight,6)/weight for v in raw[24*day:24*(day+1)]]
+        values=(fraction[24*day:24*(day+1)] if fraction is not None else
+                [_round(v*weight,6)/weight for v in raw[24*day:24*(day+1)]])
         threshold=min(values)+(max(values)-min(values))*.25
         binary=[1.0 if value!=0 and value>=threshold else 0.0 for value in values]
         points=_close_gaps(_points(binary))
@@ -257,6 +295,11 @@ def _infer(context):
             'method':'Ordered native same-ScheduleRuleset nominal People sum before weighted-hour round6; no extra multiplier',
             'source_nominal_people':[p['nominal_people'] for p in parts],'combined_nominal_people':weight,
             'source_model_scope':copy.deepcopy(scope),'population_or_whole_prototype_equivalent':False}
+        if fraction is not None:
+            result['source_model_people_receipt'].update(
+                method='Ordered native People Ruleset groups: per-group += nominal People, weighted-hour round6, '
+                       'Ruby Array#sum across groups per hour, divided by Array#sum of group People',
+                groups=[{'schedule_identity':g['schedule_identity'],'weight':g['weight'],'spaces':list(g['spaces'])} for g in strip_groups])
         if storage_receipts:result['source_storage_receipts']=storage_receipts
     return result
 
@@ -404,9 +447,18 @@ def transform_commercial(channels: dict, operating: dict, source_context: dict) 
                       'small_office_doe_ref_1980_2004','small_office_doe_ref_pre_1980',
                       'warehouse_90_1_2007','warehouse_90_1_2013','warehouse_90_1_2019',
                       'warehouse_doe_ref_1980_2004','warehouse_doe_ref_pre_1980'}
-    if context['configuration_id'] not in configurations|_RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS or context['standards_version']!='0.8.6':
+    if context['configuration_id'] in STRIPMALL_PENDING:
+        raise GeneratorError('requires_binding','/commercial/configuration_id','This Stripmall template/view awaits its own native evidence')
+    if (context['configuration_id'] not in configurations|_RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS|STRIPMALL_CONFIGURATIONS or
+            context['standards_version']!='0.8.6'):
         _error('configuration_id','Only explicitly audited commercial/Standards0.8.6 configurations supported')
-    if context['configuration_id'] in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS:
+    if context['configuration_id'] in STRIPMALL_CONFIGURATIONS:
+        # Water uses only the explicit local first-registration carrier; the model
+        # carrier never stands in for it, even where the pilot observed them equal.
+        local=isinstance(context['occupancy_aggregation'],dict) and context['occupancy_aggregation'].get('policy')=='explicit_source_local_space_people'
+        if ('hot_water_volume' in context['slot_sources'])!=local or (local and set(context['slot_sources'])!={'hot_water_volume'}):
+            _error('occupancy_aggregation','Stripmall water needs its own local first-registration carrier, and only water may use it')
+    if context['configuration_id'] in _RESTAURANT_CONFIGURATIONS|RETAIL_CONFIGURATIONS|STRIPMALL_CONFIGURATIONS:
         policy=context.get('parametric_apply')
         if (not isinstance(policy,dict) or policy.get('error_on_out_of_order') is not False or
                 policy.get('source_method')!='create_typical.rb:766' or not policy.get('source_member')):

@@ -12,7 +12,7 @@ from scripts import schedule_generator_runtime_cut as cut
 class RuntimeCut(unittest.TestCase):
     def setUp(self):
         self.covering=cut._read(cut.ROOT,cut.CUT)
-        self.lock=cut._read(cut.ROOT,cut.LOCK)
+        self.lock=cut._read(cut.ROOT,cut.R70_LOCK)
         self.retention=cut._read(cut.ROOT,cut.THEN+'retention.json')
 
     def check(self,**kwargs):return cut.verify_r70_transition(**kwargs)
@@ -61,15 +61,18 @@ class RuntimeCut(unittest.TestCase):
         paths.add(cut.THEN+'retention.json')
         paths.add(self.retention['historical_unavailability']['source_path'])
         paths.update(cut.UNAVAILABLE_RECORD[k]['source_path'] for k in ('document','transition','amended_test'))
+        paths.update(cut.LATER_RETAINED.values())
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             for path in paths:
                 destination=root/path;destination.parent.mkdir(parents=True,exist_ok=True)
                 destination.write_bytes((cut.ROOT/path).read_bytes())
             cut.verify_r70_retention(root)
-            path=root/(cut.BASE+'qualification-code/a5-r70-current-then/atlas_schedules/service_graph.py')
-            path.write_bytes(path.read_bytes()+b'\n')
-            with self.assertRaises(GeneratorError):cut.verify_r70_retention(root)
+            for retained in (cut.BASE+'qualification-code/a5-r70-current-then/atlas_schedules/service_graph.py',
+                             cut.LATER_RETAINED['scripts/schedule_generator_coverage.py']):
+                path=root/retained;blob=path.read_bytes();path.write_bytes(blob+b'\n')
+                with self.subTest(retained=retained),self.assertRaises(GeneratorError):cut.verify_r70_retention(root)
+                path.write_bytes(blob)
 
     def test_only_exact_unknown_test_edge_is_an_availability_limit(self):
         result=self.check()

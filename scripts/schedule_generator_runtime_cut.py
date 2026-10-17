@@ -16,6 +16,18 @@ BASE='data/schedule-generator/apartment/'
 THEN=BASE+'evidence/a5-r70-current-then/'
 CUT=BASE+'evidence/a5-r70/code-cut.json'
 LOCK='sources/schedule-generator-apartment-authority-lock.json'
+# The R70-activated lock, retained when the Retail/Office S1 transition moved the
+# live lock on. Every check of a file changed after R70 reads its retained copy.
+R70_LOCK=BASE+'evidence/ro-s1-current-then/authority-lock.json'
+LATER_RETAINED={p:BASE+'qualification-code/ro-s1-current-then/'+p for p in (
+    'atlas_schedules/commercial/parametric.py','atlas_schedules/commercial/source_models.py',
+    'scripts/schedule_generator_runtime_cut.py','tests/test_schedule_generator_runtime_cut.py')}
+# Historical edges R70 resolved to live files that later commits moved on
+# (coverage drafts settled in 8d5619a; v0.8.0 release docs); their exact
+# R70-era bytes are retained here and still checked by hash.
+LATER_RETAINED.update({
+    'scripts/schedule_generator_coverage.py':BASE+'qualification-code/a5-r67-current-then/scripts/schedule_generator_coverage.py',
+    'docs/schedule-generator.md':BASE+'qualification-code/ro-s1-current-then/docs/schedule-generator.md'})
 CHANGED={'atlas_schedules/service_graph.py','atlas_schedules/commercial/parametric.py'}
 ADDED={'scripts/schedule_generator_runtime_cut.py',
        'tests/test_schedule_generator_runtime_workspaces.py',
@@ -54,7 +66,8 @@ def _read(root,path):return json.loads((root/str(safe_path(path))).read_bytes())
 
 
 def _check(root,row,path_key='source_path'):
-    path=str(safe_path(row[path_key]));blob=(root/path).read_bytes()
+    path=str(safe_path(row[path_key]))
+    blob=(root/LATER_RETAINED.get(path,path)).read_bytes()
     if hashlib.sha256(blob).hexdigest()!=row['sha256'] or len(blob)!=row['size_bytes']:
         _fail(path,'Exact R70 current or historical bytes differ')
 
@@ -139,7 +152,7 @@ def verify_r70_retention(root=ROOT,retention=None):
 
 def verify_r70_transition(root=ROOT,cut=None,lock=None,retention=None):
     root=Path(root);old,retained=verify_r70_retention(root,retention)
-    current=_read(root,LOCK) if lock is None else lock
+    current=_read(root,R70_LOCK) if lock is None else lock
     covering=_read(root,CUT) if cut is None else cut
     if covering['predecessors']!=ANCHORS:_fail('/cut/predecessors','Original predecessor anchors required')
     current_rows=_rows([current['current_producer'],*current['current_dependencies']])
