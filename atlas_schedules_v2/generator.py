@@ -195,7 +195,7 @@ def _caller_water_owner(item: Planned) -> Owner:
     shape = evaluate_rules(schedules()[water["schedule"]])[0]
     total = annual_target(water["density"], water["density_unit"], shape)
     load = Load("hot_water_volume", "hot_water_volume", water["density_unit"], "floor_area", "water",
-                "assigned_zone", total, fit_amplitude(total, water["density_unit"], shape))
+                "building_service", total, fit_amplitude(total, water["density_unit"], shape))
     schedules_out = {"hot_water_volume": ("fraction", shape)}
     controls = []
     for slot, (quantity, unit, value) in water["controls"].items():
