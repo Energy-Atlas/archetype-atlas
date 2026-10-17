@@ -17,9 +17,11 @@ from tests.v2.test_commercial_families import FRACTION_TOLERANCE, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/family-pilots.json.gz"
 DEFINITIONS = Path(__file__).resolve().parents[2] / "data/definition-releases/v0.1.1/schedules.json"
+GEOMETRY = Path(__file__).resolve().parents[2] / "data/raw/openstudio-standards/data/geometry"
 
 
-@unittest.skipUnless(DEFINITIONS.exists(), "frozen definitions not present")
+@unittest.skipUnless(DEFINITIONS.exists() and GEOMETRY.exists(),
+                     "frozen definitions or locked prototype geometry (python -m scripts.fetch) not present")
 class FamilyPilots(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

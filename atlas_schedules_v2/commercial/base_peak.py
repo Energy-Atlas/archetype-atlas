@@ -16,7 +16,8 @@ def adjust_day(points, ratio: float, weekday_base: float | None = None):
     base = min(v for _, v in points)
     if peak == base:
         # The scale is 0/0, so every new value is NaN; OpenStudio rejects NaN
-        # values and the cleared day reads as [[24, 0]].
+        # values and the cleared day reads as [[24, 0]]. Required by
+        # answer_keys/commercial (287 family checks fail without it).
         return [(24.0, 0.0)], 0.0
     new_base = ratio * peak
     if weekday_base is not None and weekday_base < new_base:

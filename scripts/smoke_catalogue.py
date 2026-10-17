@@ -1,13 +1,19 @@
 """Generate every packaged programme, composition parent and shared-service variant once.
 
 Reports failures by error code; programmes with no slots (unconditioned attics,
-plenums) are counted as inactive. Writes docs/validation/schedule-generator-catalogue-smoke.json.
+plenums) are counted as inactive. Commercial `zero_generated_integral` is a known
+upstream outcome, not a failure: ComStock's base-to-peak measures clear any day
+whose values are all equal (0/0 scale, NaN rejected by OpenStudio), so flat
+data-centre plug loads become zero when a weekday ratio is sampled, and a
+positive annual target cannot bind them. Exits 1 on any other failure.
+Writes docs/validation/generator-catalogue-smoke.json.
 
 Usage: python -m scripts.smoke_catalogue
 """
 import collections
 import json
 from pathlib import Path
+import sys
 import time
 
 from atlas_schedules_v2.errors import GeneratorError
@@ -15,7 +21,7 @@ from atlas_schedules_v2.generator import generate
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "atlas_schedules_v2/data"
-OUTPUT = ROOT / "docs/validation/schedule-generator-catalogue-smoke.json"
+OUTPUT = ROOT / "docs/validation/generator-catalogue-smoke.json"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5}
 
 
@@ -32,6 +38,7 @@ def main() -> None:
     started = time.time()
     counts = collections.Counter()
     failures = collections.defaultdict(list)
+    upstream_zeroed = []
     for path in sorted((DATA / "recipes").glob("*.json")):
         recipe = json.loads(path.read_text(encoding="utf-8"))
         if not recipe["slots"] and recipe["kind"] not in ("composition",):
@@ -39,13 +46,24 @@ def main() -> None:
             continue
         instances = [_instance(recipe)]
         if recipe.get("required_services"):
-            counts["needs_service_links"] += 1
-            continue
+            configuration = recipe["commercial"]["configuration_id"]
+            links = {}
+            for index, service_id in enumerate(recipe["required_services"]):
+                service = json.loads((DATA / "services" / f"{service_id}.json").read_text(encoding="utf-8"))
+                key = f"service-{index}"
+                links[service_id] = key
+                instances.append({"key": key, "service_id": service_id, "configuration_id": configuration,
+                                  "physical_id": key, "extent": {service["demand"]["basis"]: 1.0},
+                                  "operating_group": "building"})
+            instances[0]["service_links"] = links
         try:
             generate({"schema_version": "2.0.0", "seed": 1, "instances": instances})
             counts[recipe["kind"]] += 1
         except GeneratorError as error:
-            failures[error.code].append(recipe["program_id"])
+            if error.code == "zero_generated_integral" and recipe["kind"] == "commercial":
+                upstream_zeroed.append(recipe["program_id"])
+            else:
+                failures[error.code].append(recipe["program_id"])
     for path in sorted((DATA / "services").glob("*.json")):
         service = json.loads(path.read_text(encoding="utf-8"))
         basis = service["demand"]["basis"]
@@ -58,11 +76,15 @@ def main() -> None:
             except GeneratorError as error:
                 failures[error.code].append(f"{service['service_id']}@{configuration_id}")
     report = {"generated": dict(counts), "failures": {k: v for k, v in failures.items()},
+              "upstream_zeroed": upstream_zeroed,
               "failure_count": sum(len(v) for v in failures.values()), "seconds": round(time.time() - started)}
     OUTPUT.write_text(json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    print(json.dumps({k: report[k] for k in ("generated", "failure_count", "seconds")}))
+    print(json.dumps({k: report[k] for k in ("generated", "failure_count", "seconds")}),
+          f"upstream_zeroed={len(upstream_zeroed)}")
     for code, items in failures.items():
         print(code, len(items), items[:5])
+    if report["failure_count"]:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
