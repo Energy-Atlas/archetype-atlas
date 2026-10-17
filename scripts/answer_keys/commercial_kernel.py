@@ -32,8 +32,9 @@ def main() -> None:
             "configuration_id": context["configuration_id"],
             "slot_modes": context["slot_modes"],
             "schedules": {name: _rules(case["schedules"][name]) for name in context["slot_modes"]},
-            "people_groups": [{"schedule": _rules(p["schedule"]), "people": p["nominal_people"]}
-                              for p in context["occupancy_aggregation"]["constituents"]],
+            "people": [{"schedule_id": p["schedule"]["id"], "schedule": _rules(p["schedule"]),
+                        "people": p["nominal_people"]}
+                       for p in context["occupancy_aggregation"]["constituents"]],
             "operating": case["operating"]["effective_values"],
             "expected": case["channels"],
         })

@@ -22,8 +22,8 @@ class NativeCases(unittest.TestCase):
     def test_every_slot_matches_native_output(self):
         for case in load_cases():
             slots = {name: Slot(case["schedules"][name], mode) for name, mode in case["slot_modes"].items()}
-            groups = [(g["schedule"], g["people"]) for g in case["people_groups"]]
-            result = transform(slots, groups, case["operating"])
+            people = [(p["schedule_id"], p["schedule"], p["people"]) for p in case["people"]]
+            result = transform(slots, people, case["operating"])
             for name in slots:
                 with self.subTest(case=case["case_id"], slot=name):
                     expected = np.asarray(case["expected"][name])

@@ -48,9 +48,13 @@ def _floor_and_ceiling(rules: dict) -> tuple[float, float]:
     return min(values), max(values)
 
 
-def _transform_days(slot: Slot, original_hours, new_hours, year: int) -> list[list]:
-    raw, _ = evaluate_rules(slot.rules, year)
-    floor, ceiling = _floor_and_ceiling(slot.rules)
+def transform_days(raw: np.ndarray, floor: float, ceiling: float, mode: str,
+                   original_hours, new_hours, year: int = 2007) -> list[list]:
+    """Day profiles of one slot after moving them from the original to the new hours.
+
+    raw: original 8760 values; floor/ceiling: the rule set's value range;
+    original_hours: 365 inferred Hours; new_hours: {"weekday": Hours, "weekend": Hours}.
+    """
     cache = {}
     days = []
     for day in range(365):
@@ -58,10 +62,21 @@ def _transform_days(slot: Slot, original_hours, new_hours, year: int) -> list[li
         points = points_from_hourly(raw[24 * day:24 * (day + 1)])
         key = (tuple(points), original_hours[day], kind)
         if key not in cache:
-            relative = to_relative(points, original_hours[day], floor, ceiling, slot.mode)
+            relative = to_relative(points, original_hours[day], floor, ceiling, mode)
             cache[key] = apply(relative, new_hours[kind], floor, ceiling)
         days.append(cache[key])
     return days
+
+
+def hourly_values(days: list) -> np.ndarray:
+    cache = {}
+    values = []
+    for points in days:
+        key = tuple(points)
+        if key not in cache:
+            cache[key] = hourly_from_points(points)
+        values.extend(cache[key])
+    return np.asarray(values)
 
 
 def _base_peak(days: list, prefix: str, operating: dict, year: int) -> list:
@@ -84,15 +99,26 @@ def _base_peak(days: list, prefix: str, operating: dict, year: int) -> list:
     return days
 
 
-def transform(slots: dict[str, Slot], people_groups: list[tuple[dict, float]],
+def merge_people(people: list[tuple[str, dict, float]]) -> list[tuple[dict, float]]:
+    """Sum design people per People Ruleset, in first-seen order (space.rb)."""
+    merged = {}
+    for schedule_id, rules, count in people:
+        if schedule_id in merged:
+            merged[schedule_id] = (rules, merged[schedule_id][1] + count)
+        else:
+            merged[schedule_id] = (rules, count)
+    return list(merged.values())
+
+
+def transform(slots: dict[str, Slot], people: list[tuple[str, dict, float]],
               operating: dict, year: int = 2007) -> dict[str, np.ndarray]:
     """Transformed 8,760-hour arrays for every slot.
 
-    people_groups: (People schedule rule set, design people) pairs used to
-    infer the original hours of operation.
+    people: (People Ruleset id, rule set, design people) for each space, in
+    native space order; used to infer the original hours of operation.
     operating: sampled parameters from `sampler.sample_operating_parameters`.
     """
-    groups = [(evaluate_rules(rules, year)[0], weight) for rules, weight in people_groups]
+    groups = [(evaluate_rules(rules, year)[0], count) for rules, count in merge_people(people)]
     original_hours = daily_hours(occupancy_fraction(groups))
     new_hours = {
         "weekday": sampled_hours(operating["weekday_start_time"]["value"], operating["weekday_duration"]["value"]),
@@ -100,17 +126,12 @@ def transform(slots: dict[str, Slot], people_groups: list[tuple[dict, float]],
     }
     output = {}
     for name, slot in slots.items():
-        days = _transform_days(slot, original_hours, new_hours, year)
+        raw, _ = evaluate_rules(slot.rules, year)
+        floor, ceiling = _floor_and_ceiling(slot.rules)
+        days = transform_days(raw, floor, ceiling, slot.mode, original_hours, new_hours, year)
         if name == "occupancy":
             days = [[(t, stored_value(v * PEAK_OCCUPANCY_FRACTION)) for t, v in points] for points in days]
         if name in BASE_PEAK_PREFIX:
             days = _base_peak(days, BASE_PEAK_PREFIX[name], operating, year)
-        hourly_cache = {}
-        values = []
-        for points in days:
-            key = tuple(points)
-            if key not in hourly_cache:
-                hourly_cache[key] = hourly_from_points(points)
-            values.extend(hourly_cache[key])
-        output[name] = np.asarray(values)
+        output[name] = hourly_values(days)
     return output

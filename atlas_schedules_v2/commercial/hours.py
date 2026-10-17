@@ -23,10 +23,11 @@ class Hours:
 
 
 def occupancy_fraction(groups: list[tuple[np.ndarray, float]]) -> np.ndarray:
-    """People-weighted occupancy fraction from (hourly schedule, design people) groups.
+    """People-weighted occupancy fraction from one (hourly schedule, people) pair per Ruleset.
 
-    Each group's hourly value times its people is rounded to 6 places, summed
-    over groups, then divided by the total people.
+    Callers merge spaces that share a People Ruleset first (space.rb sums their
+    people per Ruleset). Each Ruleset's hourly value times its people is
+    rounded to 6 places, summed over Rulesets, then divided by the total people.
     """
     total = sum(weight for _, weight in groups)
     weighted = [[round_half_up(v * weight, 6) for v in values] for values, weight in groups]
