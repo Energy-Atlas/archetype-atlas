@@ -6,9 +6,14 @@ option whose cumulative probability is strictly greater than the draw. Later
 tables may be conditioned on options chosen earlier. A draw beyond a table's
 cumulative total is an error (no tail filling).
 """
+from functools import lru_cache
+import json
+from pathlib import Path
 import random
 
 from ..errors import GeneratorError
+
+TABLES = Path(__file__).resolve().parents[1] / "data/commercial/sampling"
 
 DRAW_ORDER = (
     "weekday_start_time", "weekend_start_time", "weekday_duration", "weekend_duration",
@@ -16,6 +21,16 @@ DRAW_ORDER = (
     "plugload_sch_weekend_base_peak_ratio",
     "ltg_sch_base_peak_ratio_type", "ltg_sch_weekday_base_peak_ratio", "ltg_sch_weekend_base_peak_ratio",
 )
+
+
+@lru_cache(maxsize=None)
+def load_tables(building_type: str) -> dict:
+    """The ten conditional tables (ComStock tsvs-v33) for one building type."""
+    path = TABLES / f"{building_type}.json"
+    if not path.exists():
+        raise GeneratorError("unsupported_binding", "/commercial/building_type",
+                             f"No sampling tables for building type {building_type!r}")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def select_option(table: dict, selectors: dict, uniform: float) -> int:
