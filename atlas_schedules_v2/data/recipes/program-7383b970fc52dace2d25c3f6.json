@@ -1,0 +1,99 @@
+{
+ "commercial": {
+  "building_type": "warehouse",
+  "configuration_id": "warehouse_90_1_2019",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  },
+  "people": [
+   [
+    "schedule-7d8d9ceeb28b4fd1696e",
+    1.0
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 3.5520904375142086
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 2.5584161508600793
+  }
+ ],
+ "kind": "commercial",
+ "name": "Bulk_Warehouse",
+ "program_id": "program-7383b970fc52dace2d25c3f6",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-e835a1fc044f1272c47f",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-c431d0e745513b1cc0fa",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-053b4ef4d5c88ef3a4c9",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-9298842d8bee10b6d197",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "Warehouse",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/896",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-dfe7ba6d3c334529a571",
+  "template": "90.1-2019",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

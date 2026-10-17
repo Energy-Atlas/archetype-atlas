@@ -1,0 +1,132 @@
+{
+ "commercial": {
+  "building_type": "full_service_restaurant",
+  "configuration_id": "full_service_restaurant__90_1_2007__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  },
+  "people": [
+   [
+    "schedule-7721bc575c41621510fb",
+    280.10240573720745
+   ],
+   [
+    "schedule-7721bc575c41621510fb",
+    7.502727800941711
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.7534737291696806,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 22.604211875090417
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.25,
+    "lost": 0.0,
+    "radiant": 0.3
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 64.92790763359304
+  }
+ ],
+ "kind": "commercial",
+ "name": "Dining_FullServiceRestaurant",
+ "program_id": "program-6b9b0dc4d7234255b06df042",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-7721bc575c41621510fb",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-6c9d09e780192b5e9b23",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-4dcb5944397edb16e9e3",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-cf75792864a0da6b8f82",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-e1b8f668bc45988883c8",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-694e7fef03f2631de20e",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "FullServiceRestaurant",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/827",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-afad0f7b2a135ceb16e5",
+  "template": "90.1-2007",
+  "view": "source",
+  "vintage": null
+ }
+}

@@ -1,0 +1,111 @@
+{
+ "commercial": {
+  "building_type": "retail",
+  "configuration_id": "retail__90_1_2007__source",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  },
+  "people": [
+   [
+    "schedule-8072a7199d10309cda12",
+    61.33652892305792
+   ],
+   [
+    "schedule-8072a7199d10309cda12",
+    258.41181838613704
+   ],
+   [
+    "schedule-8072a7199d10309cda12",
+    24.349579949159924
+   ],
+   [
+    "schedule-8072a7199d10309cda12",
+    24.349579949159924
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 13.993083541722639
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 3.2291731250129163
+  }
+ ],
+ "kind": "commercial",
+ "name": "Entry_RetailStandalone",
+ "program_id": "program-fa48bee26950878e7ed40fec",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-6922480bffd2b2287957",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-25ff8ce1bf0a296d16f2",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-ca83244275d74c7cc761",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-d3cefd4bf5e25d0a41a2",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1867",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-f47e006d92cd9ed4326b",
+  "template": "90.1-2007",
+  "view": "source",
+  "vintage": null
+ }
+}

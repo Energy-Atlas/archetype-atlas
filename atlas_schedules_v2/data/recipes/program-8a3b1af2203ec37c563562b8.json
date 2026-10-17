@@ -1,0 +1,100 @@
+{
+ "companions": {},
+ "composition": {
+  "composition_id": "composition-772e9872c29f7d8133c84d22",
+  "members": [
+   [
+    "program-4ce19a8a4245428f185f2432",
+    3204.8422772668932
+   ],
+   [
+    "program-aab48cefee36b03351523f8c",
+    1393.4096857682193
+   ]
+  ]
+ },
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "annual_total": 32218.43391287794,
+   "annual_unit": "Wh/m2",
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "load/lighting/W/electricity/assigned_zone",
+   "unit": "W/m2",
+   "value": null
+  },
+  {
+   "annual_total": 7046.517683506367,
+   "annual_unit": "Wh/m2",
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "load/electric_equipment/W/electricity/assigned_zone",
+   "unit": "W/m2",
+   "value": null
+  }
+ ],
+ "kind": "composition",
+ "name": "Storage_Mixed_Warehouse",
+ "program_id": "program-8a3b1af2203ec37c563562b8",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "load/lighting/W/electricity/assigned_zone",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "load/electric_equipment/W/electricity/assigned_zone",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "Warehouse",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1075",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "composition-source-3f62e444251c4f337ff00f5b",
+  "template": "90.1-2007",
+  "view": "source",
+  "vintage": null
+ }
+}

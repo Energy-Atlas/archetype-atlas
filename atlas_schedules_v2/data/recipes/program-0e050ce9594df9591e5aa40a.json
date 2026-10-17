@@ -1,0 +1,119 @@
+{
+ "companions": {
+  "activity": {
+   "method": "source_rules",
+   "schedule": "schedule-9168589155d787ab538a"
+  },
+  "cooling_setpoint": {
+   "method": "source_rules",
+   "schedule": "schedule-687a81a212f2ef1c5483"
+  },
+  "heating_setpoint": {
+   "method": "source_rules",
+   "schedule": "schedule-2463c3e76b328fdc85f7"
+  }
+ },
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.02271185097925751,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting_interior",
+   "unit": "W/m2",
+   "value": 21.958377250087832
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 12.916692500051665
+  }
+ ],
+ "kind": "fixed",
+ "name": "Office_MidriseApartment",
+ "program_id": "program-0e050ce9594df9591e5aa40a",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "control",
+   "schedule": "schedule-dc86366db870542cf0a3",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-1db59686ddb9182296b2",
+   "slot": "lighting_interior",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-d2c9cfcbd91e18484104",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-9168589155d787ab538a",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-2463c3e76b328fdc85f7",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-687a81a212f2ef1c5483",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "MidriseApartment",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/112",
+  "family": "existing_stock_benchmark",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-eadefde2e7a124ab6b95",
+  "template": "DOE Ref 1980-2004",
+  "view": "source",
+  "vintage": null
+ }
+}

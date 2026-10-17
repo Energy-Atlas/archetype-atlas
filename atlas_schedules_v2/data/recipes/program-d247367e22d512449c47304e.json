@@ -1,0 +1,317 @@
+{
+ "companions": {
+  "activity": {
+   "method": "constant",
+   "value": 117.22842806888889
+  },
+  "cooling_setpoint": {
+   "method": "translated_thermostat"
+  },
+  "freezer": {
+   "method": "fixed_background",
+   "source_slot": "freezer"
+  },
+  "heating_setpoint": {
+   "method": "translated_thermostat"
+  },
+  "hot_water_fixtures_target_temperature": {
+   "method": "constant",
+   "value": 40.55555555555556
+  },
+  "lighting_exterior": {
+   "method": "fixed_background",
+   "source_slot": "lighting_exterior"
+  },
+  "refrigerator": {
+   "method": "fixed_background",
+   "source_slot": "refrigerator"
+  }
+ },
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "hot_water_fixtures_target_temperature",
+   "unit": "C"
+  },
+  {
+   "people": {
+    "basis": "dwelling_unit",
+    "density": 1.0
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "annual_total": 237844.88,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0799999999999999,
+    "lost": 0.2,
+    "radiant": 0.43200000000000005
+   },
+   "host": "assigned_zone",
+   "quantity": "cooking_range",
+   "slot": "cooking_range",
+   "unit": "W/dwelling",
+   "value": 2033.8704657009457
+  },
+  {
+   "annual_total": 456000.0,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.6
+   },
+   "host": "assigned_zone",
+   "quantity": "refrigerator",
+   "slot": "refrigerator",
+   "unit": "W/dwelling",
+   "value": 68.33322702754032
+  },
+  {
+   "annual_total": 1000450.0,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.6
+   },
+   "host": "basement - unconditioned",
+   "quantity": "freezer",
+   "slot": "freezer",
+   "unit": "W/dwelling",
+   "value": 149.92100214847085
+  },
+  {
+   "annual_total": 237442.99999999997,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.6
+   },
+   "host": "assigned_zone",
+   "quantity": "plug_loads_tv",
+   "slot": "plug_loads_tv",
+   "unit": "W/dwelling",
+   "value": 148.15788674014274
+  },
+  {
+   "annual_total": 681121.5,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.04500000000000001,
+    "lost": 0.1,
+    "radiant": 0.513
+   },
+   "host": "assigned_zone",
+   "quantity": "plug_loads_other",
+   "slot": "plug_loads_other",
+   "unit": "W/dwelling",
+   "value": 124.11789059820713
+  },
+  {
+   "annual_total": 376831.8918918919,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "radiant": 0.6,
+    "return_air": 0,
+    "visible": 0.2
+   },
+   "host": "assigned_zone",
+   "quantity": "lighting_interior",
+   "slot": "lighting_interior",
+   "unit": "W/dwelling",
+   "value": 164.17371816550522
+  },
+  {
+   "annual_total": 26900.0,
+   "annual_unit": "Wh/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "radiant": 0.6,
+    "return_air": 0,
+    "visible": 0.2
+   },
+   "host": "outside",
+   "quantity": "lighting_exterior",
+   "slot": "lighting_exterior",
+   "unit": "W/dwelling",
+   "value": 6.19407894736842
+  },
+  {
+   "annual_total": 11.40711128637696,
+   "annual_unit": "m3/dwelling",
+   "basis": "dwelling_unit",
+   "fuel": "water",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "hot_water_fixtures",
+   "slot": "hot_water_fixtures",
+   "unit": "m3/s/dwelling",
+   "value": 6.9930071385584e-06
+  }
+ ],
+ "dwelling": {
+  "installed": {
+   "ceiling_fan": false,
+   "clothes_dryer": false,
+   "clothes_washer": false,
+   "cooking_range": true,
+   "dishwasher": false,
+   "garage": false,
+   "plug_loads_other": true,
+   "plug_loads_tv": true
+  },
+  "latitude": 37.1074,
+  "longitude": -94.5218,
+  "residents": 1.0,
+  "state": "MO",
+  "utc_offset": -6.0,
+  "weather_id": "USA_MO_Joplin.Muni.AP.723495_TMY3"
+ },
+ "kind": "residential",
+ "name": "Whole dwelling / source_building_66378",
+ "program_id": "program-d247367e22d512449c47304e",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "cooking_range",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "refrigerator",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "freezer",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "plug_loads_tv",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "plug_loads_other",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "lighting_interior",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "lighting_exterior",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "hot_water_fixtures",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "hot_water_fixtures_target_temperature",
+   "unit": "C"
+  },
+  {
+   "kind": "resident_count",
+   "schedule": null,
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "SingleFamilyDetached",
+  "climate": "4A",
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1589",
+  "family": "existing_stock_source_fixture",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "residential_archetype-6c882dbfcd92f9047b4b",
+  "template": "ResStock SDR source fixture",
+  "view": "source",
+  "vintage": "<1940"
+ },
+ "thermostat": {
+  "hvac_control_cooling_season_period": "Jan 1 - Dec 31",
+  "hvac_control_cooling_weekday_setpoint_offset_magnitude": "9",
+  "hvac_control_cooling_weekday_setpoint_schedule": "-1, -1, -1, -1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1",
+  "hvac_control_cooling_weekday_setpoint_temp": "78",
+  "hvac_control_cooling_weekend_setpoint_offset_magnitude": "9",
+  "hvac_control_cooling_weekend_setpoint_schedule": "-1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1",
+  "hvac_control_cooling_weekend_setpoint_temp": "78",
+  "hvac_control_heating_season_period": "Jan 1 - Dec 31",
+  "hvac_control_heating_weekday_setpoint_offset_magnitude": "3",
+  "hvac_control_heating_weekday_setpoint_schedule": "-1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1",
+  "hvac_control_heating_weekday_setpoint_temp": "75",
+  "hvac_control_heating_weekend_setpoint_offset_magnitude": "3",
+  "hvac_control_heating_weekend_setpoint_schedule": "-1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1",
+  "hvac_control_heating_weekend_setpoint_temp": "75"
+ }
+}

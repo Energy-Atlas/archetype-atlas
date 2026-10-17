@@ -1,0 +1,161 @@
+{
+ "commercial": {
+  "building_type": "medium_office",
+  "configuration_id": "medium_office_90_1_2019",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "hot_water_volume": "hours",
+   "lighting": "hours",
+   "occupancy": "hours"
+  },
+  "people": [
+   [
+    "schedule-db120b43964b8b666cd8",
+    1.0
+   ]
+  ]
+ },
+ "companions": {
+  "hot_water_volume_target_temperature": {
+   "method": "source_rules",
+   "schedule": "source-water-target-16d063588b4dae45cbe18a5e"
+  }
+ },
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.05381955208354861,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "hot_water_volume_target_temperature",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 6.888902666694222
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 8.072932812532292
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "water",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "hot_water_volume",
+   "slot": "hot_water_volume",
+   "unit": "m3/s/m2",
+   "value": 1.0763642852524885e-08
+  }
+ ],
+ "kind": "commercial",
+ "name": "WholeBuilding - Md Office_MediumOffice",
+ "program_id": "program-196e9c3966432873fac13960",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-db120b43964b8b666cd8",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-4f028eec18f19916e7d2",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-4082e09c5f9727640add",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-1a7eda5cfd8f681cc7d7",
+   "slot": "hot_water_volume",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "hot_water_volume_target_temperature",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-7c3bd1014eed8de1237a",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-e1ba079905225f741119",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-904d44133907f0dbfbbe",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "MediumOffice",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/211",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-20ec302d75e7aefcdaac",
+  "template": "90.1-2019",
+  "view": "source",
+  "vintage": null
+ }
+}

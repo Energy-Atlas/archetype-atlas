@@ -1,0 +1,115 @@
+{
+ "companions": {},
+ "composition": {
+  "composition_id": "composition-0fe035ebdc2546fa95b6abd0",
+  "members": [
+   [
+    "program-7612bbd920e2a9d0419dd452",
+    150.81
+   ],
+   [
+    "program-43c557018d5d0a1904c2e4db",
+    1600.4829
+   ],
+   [
+    "program-d9fa2815b33bb36a9118829f",
+    150.81
+   ]
+  ]
+ },
+ "controls": [
+  {
+   "quantity": "people_heat",
+   "slot": "people_heat",
+   "unit": "W/m2"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "annual_total": 55891.80086317913,
+   "annual_unit": "Wh/m2",
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "load/lighting/W/electricity/assigned_zone",
+   "unit": "W/m2",
+   "value": null
+  },
+  {
+   "annual_total": 21323.658348736273,
+   "annual_unit": "Wh/m2",
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "load/electric_equipment/W/electricity/assigned_zone",
+   "unit": "W/m2",
+   "value": null
+  }
+ ],
+ "kind": "composition",
+ "name": "Sales_Mixed_RetailStandalone",
+ "program_id": "program-735daba3045acfd23b31974a",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "load/lighting/W/electricity/assigned_zone",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": null,
+   "slot": "load/electric_equipment/W/electricity/assigned_zone",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "people_heat",
+   "unit": "W/m2"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": null,
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/894",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "composition-source-7f9cc6f69eda038c8303a77d",
+  "template": "90.1-2013",
+  "view": "source",
+  "vintage": null
+ }
+}

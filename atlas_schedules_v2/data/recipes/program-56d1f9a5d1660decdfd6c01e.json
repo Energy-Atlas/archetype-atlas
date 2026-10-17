@@ -1,0 +1,128 @@
+{
+ "commercial": {
+  "building_type": "warehouse",
+  "configuration_id": "warehouse_90_1_2007",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  },
+  "people": [
+   [
+    "schedule-7d8d9ceeb28b4fd1696e",
+    1.0
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.021097264416751055,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 10.763910416709722
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 8.072932812532292
+  }
+ ],
+ "kind": "commercial",
+ "name": "Office_Warehouse",
+ "program_id": "program-56d1f9a5d1660decdfd6c01e",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-7d8d9ceeb28b4fd1696e",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-6b60d880e3c438577dc8",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-e8313ab5bb9d68e60d83",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-8fc628626367ff75b38b",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-fc180943adbbc8f45ea8",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-7d813b86b25c33ca912a",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "Warehouse",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/691",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-65bd88ae87b8dcde2f24",
+  "template": "90.1-2007",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

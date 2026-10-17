@@ -1,0 +1,151 @@
+{
+ "caller_water": {
+  "controls": {
+   "water_latent_fraction": [
+    "latent_fraction",
+    "fraction",
+    0.05
+   ],
+   "water_sensible_fraction": [
+    "sensible_fraction",
+    "fraction",
+    0.2
+   ],
+   "water_target_temperature": [
+    "temperature",
+    "C",
+    60.0
+   ]
+  },
+  "density": 4.146067251759837e-08,
+  "density_unit": "m3/s/m2",
+  "schedule": "schedule-91ecb5143fd1beddfead",
+  "service_id": "service-cbd724bc458e380e280779cb",
+  "source": {
+   "demand": "data/definition-releases/v0.1.1/programs.json#/1078/loads/5",
+   "service": "data/definition-releases/v0.1.1/services.json#/178"
+  }
+ },
+ "companions": {
+  "activity": {
+   "method": "source_rules",
+   "schedule": "schedule-9168589155d787ab538a"
+  },
+  "cooling_setpoint": {
+   "method": "source_rules",
+   "schedule": "schedule-0e1850ea21d8c5e19ca0"
+  },
+  "heating_setpoint": {
+   "method": "source_rules",
+   "schedule": "schedule-46e9e60506080832acfb"
+  }
+ },
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.02830908439594657,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting_interior",
+   "unit": "W/m2",
+   "value": 3.8750077500154996
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 5.381955208354861
+  }
+ ],
+ "kind": "apartment_unit",
+ "name": "Apartment_MidriseApartment",
+ "program_id": "program-8a519e542f467db9f5ca19cf",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "control",
+   "schedule": "schedule-aa3e46444671bd39ab7b",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-0a50ef9e4ccf64b038ae",
+   "slot": "lighting_interior",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-128ca4820555fd75a13e",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-9168589155d787ab538a",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-46e9e60506080832acfb",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-0e1850ea21d8c5e19ca0",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "MidriseApartment",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1078",
+  "family": "existing_stock_benchmark",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-9c83128cc2eee8833fad",
+  "template": "DOE Ref 1980-2004",
+  "view": "source",
+  "vintage": null
+ },
+ "unit_timing": {
+  "additional_lighting": "lighting_interior",
+  "lighting_interior": "lighting_interior",
+  "occupants": "occupants"
+ }
+}

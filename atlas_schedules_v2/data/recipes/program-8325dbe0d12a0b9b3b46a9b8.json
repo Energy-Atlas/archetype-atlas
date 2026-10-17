@@ -1,0 +1,90 @@
+{
+ "commercial": {
+  "building_type": "retail",
+  "configuration_id": "retail__90_1_2019__reviewed",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  },
+  "people": [
+   [
+    "schedule-e24cf68826b18281bb8a",
+    61.33652892305792
+   ],
+   [
+    "schedule-e24cf68826b18281bb8a",
+    258.41181838613704
+   ],
+   [
+    "schedule-e24cf68826b18281bb8a",
+    24.349579949159924
+   ],
+   [
+    "schedule-e24cf68826b18281bb8a",
+    24.349579949159924
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 9.041684750036167
+  }
+ ],
+ "kind": "commercial",
+ "name": "Entry_RetailStandalone",
+ "program_id": "program-8325dbe0d12a0b9b3b46a9b8",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-ed283834acadd37c7440",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-17e706cd87b26b093233",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-d3cefd4bf5e25d0a41a2",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1011",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-af060ae4231dfb36b820",
+  "template": "90.1-2019",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

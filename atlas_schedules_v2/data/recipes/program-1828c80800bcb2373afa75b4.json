@@ -1,0 +1,140 @@
+{
+ "commercial": {
+  "building_type": "retail",
+  "configuration_id": "retail__90_1_2013__reviewed",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  },
+  "people": [
+   [
+    "schedule-e24cf68826b18281bb8a",
+    61.33652892305792
+   ],
+   [
+    "schedule-e24cf68826b18281bb8a",
+    258.41181838613704
+   ],
+   [
+    "schedule-e24cf68826b18281bb8a",
+    24.349579949159924
+   ],
+   [
+    "schedule-e24cf68826b18281bb8a",
+    24.349579949159924
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.16145865625064584,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 6.7812635625271245
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 8.072932812532292
+  }
+ ],
+ "kind": "commercial",
+ "name": "Back_Space_RetailStandalone",
+ "program_id": "program-1828c80800bcb2373afa75b4",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-e24cf68826b18281bb8a",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-a2d520c53c8fadfb8cd8",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-7205106e6579c8674d9b",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-ca83244275d74c7cc761",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-8491f9ad6b280d037e55",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-4ecdab7191a694d3bb14",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/197",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-1499aab7d5a69159860a",
+  "template": "90.1-2013",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

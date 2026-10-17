@@ -1,0 +1,57 @@
+{
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.0,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupants",
+   "unit": "fraction"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting_interior",
+   "unit": "W/m2",
+   "value": 4.413203270850985
+  }
+ ],
+ "kind": "fixed",
+ "name": "Corridor_topfloor_HighriseApartment",
+ "program_id": "program-f504eddd36d6cc86800d7ac5",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "control",
+   "schedule": "schedule-00aecf15e8271c513a34",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-809263ba952922695e58",
+   "slot": "lighting_interior",
+   "unit": "fraction"
+  }
+ ],
+ "source": {
+  "building_type": "HighriseApartment",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1820",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-48acf095cf6d68639533",
+  "template": "90.1-2019",
+  "view": "source",
+  "vintage": null
+ }
+}

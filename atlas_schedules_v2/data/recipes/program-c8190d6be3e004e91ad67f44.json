@@ -1,0 +1,155 @@
+{
+ "commercial": {
+  "building_type": "full_service_restaurant",
+  "configuration_id": "full_service_restaurant__doe_ref_pre_1980__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "gas_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  },
+  "people": [
+   [
+    "schedule-616fb33ba79eef5a29d8",
+    268.0980169198982
+   ],
+   [
+    "schedule-616fb33ba79eef5a29d8",
+    7.502727800941711
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.05381955208354861,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 16.361143833398778
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.25,
+    "lost": 0.2,
+    "radiant": 0.3
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 376.73686458484025
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "natural gas",
+   "heat_fractions": {
+    "latent": 0.1,
+    "lost": 0.7,
+    "radiant": 0.2
+   },
+   "host": "assigned_zone",
+   "quantity": "gas_equipment",
+   "slot": "gas_equipment",
+   "unit": "W/m2",
+   "value": 1194.8012446926296
+  }
+ ],
+ "kind": "commercial",
+ "name": "Kitchen_FullServiceRestaurant",
+ "program_id": "program-c8190d6be3e004e91ad67f44",
+ "required_services": [
+  "service-818680b91c14e0260af81f7d"
+ ],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-616fb33ba79eef5a29d8",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-2e0ba0fe702239fbab7c",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-05b9ecc78396c55f8e2d",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-1495ed18d0917cabbe33",
+   "slot": "gas_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-45e5c853a00a57f753f9",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-37478d4c403f9f363c6e",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-dfc6b6656d43de2932bc",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "FullServiceRestaurant",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/1529",
+  "family": "existing_stock_benchmark",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-dd654cb2a12761deb832",
+  "template": "DOE Ref Pre-1980",
+  "view": "source",
+  "vintage": null
+ }
+}

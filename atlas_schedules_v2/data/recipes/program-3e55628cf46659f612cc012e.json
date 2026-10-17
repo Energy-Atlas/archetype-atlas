@@ -1,0 +1,78 @@
+{
+ "commercial": {
+  "building_type": "warehouse",
+  "configuration_id": "warehouse_90_1_2013",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  },
+  "people": [
+   [
+    "schedule-7d8d9ceeb28b4fd1696e",
+    1.0
+   ]
+  ]
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 10.225714895874235
+  }
+ ],
+ "kind": "commercial",
+ "name": "Fine_Warehouse",
+ "program_id": "program-3e55628cf46659f612cc012e",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-e835a1fc044f1272c47f",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-621b0e0c547c8410461d",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-38038d03da433ceecc85",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "Warehouse",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#/485",
+  "family": "code_prototype_rules",
+  "migrated_from": "v0.8.0 compiled recipe",
+  "source_id": "program-78552767069bf36b17fe",
+  "template": "90.1-2013",
+  "view": "reviewed",
+  "vintage": null
+ }
+}
