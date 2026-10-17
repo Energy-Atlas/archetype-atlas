@@ -93,7 +93,7 @@ def _finite(document) -> None:
             _finite(value)
 
 
-def parse_request(document: dict) -> Request:
+def parse_request(document: dict, residential_rng: str = "pcg64") -> Request:
     _finite(document)
     _schema_errors(document)
     instances = []
@@ -115,7 +115,7 @@ def parse_request(document: dict) -> Request:
         mixture = Mixture(raw["program_id"], [Member(m["instance"], float(m["weight"])) for m in raw["members"]],
                           list(raw.get("services", [])), raw.get("result_basis"), raw.get("denominator"))
         _check_mixture(mixture, set(keys))
-    return Request(document["seed"], document.get("residential_rng", "pcg64"), instances, mixture)
+    return Request(document["seed"], residential_rng, instances, mixture)
 
 
 def _check_mixture(mixture: Mixture, keys: set) -> None:

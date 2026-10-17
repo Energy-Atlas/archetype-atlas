@@ -68,9 +68,14 @@ class Behaviour(unittest.TestCase):
         values = np.asarray(bundle["schedules"]["schedule:office:lighting"]["values"])
         self.assertAlmostEqual(lighting["amplitude"] * values.sum(), lighting["annual_total"], delta=1e-6)
 
+    def test_requests_cannot_choose_the_ruby_stream(self):
+        with self.assertRaises(GeneratorError) as caught:
+            generate(request({"key": "home", "program_id": DWELLING}, residential_rng="ruby_mt"))
+        self.assertEqual(caught.exception.code, "invalid_request")
+
     def test_both_residential_modes_run(self):
         for mode in ("pcg64", "ruby_mt"):
-            bundle = generate(request({"key": "home", "program_id": DWELLING}, residential_rng=mode))
+            bundle = generate(request({"key": "home", "program_id": DWELLING}), residential_rng=mode)
             occupants = np.asarray(bundle["schedules"]["schedule:home:occupants"]["values"])
             self.assertTrue(0 < occupants.max() <= 1)
 

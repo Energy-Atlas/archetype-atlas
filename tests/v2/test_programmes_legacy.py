@@ -38,7 +38,7 @@ def request_for(program_id: str) -> dict:
     instance = {"key": "unit", "program_id": program_id}
     if recipe["kind"] == "commercial":
         instance["operating_group"] = "group"
-    return {"schema_version": "2.0.0", "seed": 42, "residential_rng": "ruby_mt", "instances": [instance]}
+    return {"schema_version": "2.0.0", "seed": 42, "instances": [instance]}
 
 
 @unittest.skipUnless(ANSWER_KEY.exists(), "legacy programme answer key not extracted")
@@ -47,7 +47,7 @@ class LegacyProgrammes(unittest.TestCase):
         cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["cases"]
         for case in cases:
             with self.subTest(program=case["program_id"]):
-                bundle = generate(request_for(case["program_id"]))
+                bundle = generate(request_for(case["program_id"]), residential_rng="ruby_mt")
                 owner = bundle["owners"][0]
                 for slot, packed in case["slots"].items():
                     values = np.asarray(bundle["schedules"][owner["schedules"][slot]]["values"])

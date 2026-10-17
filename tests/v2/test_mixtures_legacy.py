@@ -37,7 +37,7 @@ class LegacyMixtures(unittest.TestCase):
     def test_every_scenario(self):
         for scenario in json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["scenarios"]:
             with self.subTest(scenario=scenario["scenario"]):
-                bundle = generate(translate_mixture(scenario["request"], scenario["seed"]))
+                bundle = generate(translate_mixture(scenario["request"], scenario["seed"]), residential_rng="ruby_mt")
                 mixed = bundle["mixture"]
                 self.assertEqual(sorted(mixed["schedules"]), sorted(scenario["schedules"]))
                 for slot, packed in scenario["schedules"].items():

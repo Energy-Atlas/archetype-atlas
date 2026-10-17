@@ -59,7 +59,7 @@ def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
         if "composition_basis_mode" in inputs:
             v2["composition_basis"] = COMPOSITION_BASIS[inputs["composition_basis_mode"]]
         instances.append(v2)
-    return {"schema_version": "2.0.0", "seed": seed, "residential_rng": "ruby_mt", "instances": instances}, keys
+    return {"schema_version": "2.0.0", "seed": seed, "instances": instances}, keys
 
 
 @unittest.skipUnless(ANSWER_KEY.exists(), "legacy case-matrix answer key not extracted")
@@ -77,7 +77,7 @@ class LegacyCaseMatrix(unittest.TestCase):
         cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["cases"]
         for case in cases:
             request, keys = translate(case["request"], case["seed"])
-            bundle = generate(request)
+            bundle = generate(request, residential_rng="ruby_mt")
             owners = {o["key"]: o for o in bundle["owners"]}
             for legacy in case["owners"]:
                 key = keys.get(legacy["instance_key"], legacy["instance_key"])

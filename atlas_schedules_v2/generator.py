@@ -286,8 +286,15 @@ def _owner_record(owner: Owner) -> dict:
     }
 
 
-def generate(document: dict) -> dict:
-    request = parse_request(document)
+def generate(document: dict, *, residential_rng: str = "pcg64") -> dict:
+    """Generate the bundle for a request document.
+
+    residential_rng is validation-only: "ruby_mt" (R1) replays Ruby streams so
+    native ResStock captures and the legacy generator can be checked draw for
+    draw. Requests always use "pcg64" (R2); see
+    docs/validation/residential-rng-equivalence.md.
+    """
+    request = parse_request(document, residential_rng)
     planned, parents = _expand(request)
     seeds = _unit_seeds(request.seed, planned)
     operating = _group_operating(request.seed, planned)
