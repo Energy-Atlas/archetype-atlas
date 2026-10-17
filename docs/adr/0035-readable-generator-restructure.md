@@ -79,3 +79,11 @@ has been released, so there is no compatibility obligation.
   `sources/generator-source-lock.json`, which `scripts.fetch --lock` can use.
   The per-family and reference locks of the legacy generator were deleted
   with it.
+- **Mixture weights follow ADR 0023's text.** With a denominator, member
+  weights are participation multipliers on explicit extents and need not sum
+  to 1. Normalised shares apply only to mixtures without a denominator. The
+  legacy code required sum-to-1 everywhere, which made a multi-member physical
+  building lose energy whenever area shares were combined with extents.
+- **Shared services must be linked.** A programme, or a composition parent
+  through its members, that requires shared services must link exactly those
+  services. Previously the water load was dropped silently.

@@ -38,22 +38,33 @@ The schema is `atlas_schedules/schemas/request-v2.schema.json`.
 | `instances[]` | Programme instances and shared services, in order. |
 | `mixture` | Optional: combine instances into one result. |
 
-A **programme instance** has a `key` and a `program_id` (a recipe in
+Every instance has a unique `key`. Keys cannot contain `/`, which is reserved
+for owners the generator derives.
+
+A **programme instance** has a `program_id` (a recipe in
 `atlas_schedules/data/recipes/`). It can also have the following fields:
 
 - `extent`: the amount of each basis it represents. The bases are
   `floor_area` (m²), `dwelling_unit`, `person` and `absolute`.
-- `multiplicity`.
+- `multiplicity`: identical copies this instance stands for (default 1). It
+  multiplies the instance's extent in a mixture.
 - `operating_group`: commercial instances in one group share one sampled set of
   operating hours. Without it, each instance is its own group.
-- `residents` and `location` (`state`, `latitude`, `longitude`, `utc_offset`):
-  for apartment units. A unit with 0 residents keeps its fixed rules.
-- `reference_location`: for ResStock dwellings, one of the 16 DOE Commercial
-  Reference climate cases (`1A` ... `8`, NREL/TP-5500-46861 Table 2). It
-  replaces the dwelling's own location and TMY3 weather with the case's
-  representative city (`atlas_schedules/data/weather/reference-locations.json`;
-  5B uses Boulder as a labelled proxy).
-- `service_links`: maps each required shared-service id to a service instance.
+- `residents` (0–20) and `location` (`state`, `latitude`, `longitude`,
+  `utc_offset`): for apartment units. A unit with 0 residents keeps its fixed
+  rules. An apartment unit with `extent.floor_area` also gets a caller-water
+  owner, `<key>/water`.
+- `reference_location`: for ResStock dwellings and apartment units, one of the
+  16 DOE Commercial Reference climate cases (`1A` ... `8`, NREL/TP-5500-46861
+  Table 2). It takes precedence over `location` and over the dwelling's own
+  location and TMY3 weather. It uses the case's representative city
+  (`atlas_schedules/data/weather/reference-locations.json`; 5B uses Boulder as
+  a labelled proxy).
+- `service_links`: required when the programme needs shared services (its
+  recipe's `required_services`; for a composition parent, the union of its
+  members'). Map each such service id to the key of a shared-service instance
+  of that service. Missing or extra links are rejected rather than dropping
+  the water load.
 - `composition_basis`: for composition parents. `reference_area` keeps the
   members' source areas; `caller_area` shares the parent's `extent.floor_area`.
 
@@ -63,14 +74,28 @@ mixture.
 
 A **mixture** has these fields:
 
-- `members` (`instance`, `weight`). Weights sum to 1.
-- `services`: shared services listed explicitly.
-- `result_basis` and `denominator`.
+- `members` (`instance`, `weight`).
+- `services`: shared-service instances listed explicitly.
+- `result_basis` and `denominator`. They go together.
 
-For each load (quantity, carrier, fuel, host), the mixed annual target is the sum
-of `weight × extent × multiplicity × target / denominator`. The mixed shape is
-the amplitude-weighted sum of the member shapes. People heat is density ×
-occupancy × activity. Heating and cooling setpoints are weight-averaged.
+There are two kinds of mixture ([ADR 0023](adr/0023-generated-constituents-and-physical-mixtures.md)):
+
+- **Physical** (with a denominator). Each member gives its real `extent`, and
+  `weight` is a participation multiplier, normally 1. For each load (quantity,
+  carrier, fuel, host), the mixed annual target per result-basis unit is the
+  sum of `weight × extent × multiplicity × target / denominator`. A 400 m²
+  office and a 100 m² shop with weight 1 each and a denominator of 500 give the
+  building's per-m² totals (`office-and-retail.json`). Shared services, whether
+  listed, linked through `service_links` or apartment caller water, are counted
+  once, whole, as `extent / denominator`. A composition parent joins only with
+  `composition_basis: caller_area`.
+- **Share** (no denominator, no extents). Weights are shares that must sum to
+  1, and the result is the weighted average per source basis unit. Shared
+  services need a denominator, so they cannot join.
+
+In both, the mixed shape is the amplitude-weighted sum of the member shapes,
+people heat is density × occupancy × activity, and heating and cooling
+setpoints are weight-averaged.
 
 ## Bundle
 
@@ -78,8 +103,9 @@ occupancy × activity. Heating and cooling setpoints are weight-averaged.
 - `owners[]`: one per instance, plus each apartment unit's caller-water owner
   (`<key>/water`) and each composition member (`source-member/...`). Each owner
   lists its schedule ids and its controls. Its `loads` record the annual total
-  per basis unit and the fitted amplitude, so `amplitude × Σ values` equals the
-  annual total.
+  per basis unit and the fitted amplitude, so `amplitude × Σ values × s` equals
+  the annual total. `s` is 1 for power (W → Wh) and 3600 for volume flow
+  (m³/s → m³).
 - `mixture`: the mixed owner, if requested.
 - `operating_groups`: the sampled ComStock parameters per group.
 - `unit_seeds`: the residential seed chain.
@@ -134,14 +160,21 @@ Tests compare the generator with native answer keys (`tests/answer_keys/`)
 captured from real OpenStudio 3.10 / Ruby 3.2.2 runs. Fractions must agree within
 1e-6, annual totals within 0.01 %, and discrete outcomes exactly.
 
-- **ComStock kernel**: every slot of 11 controlled cases, 926 family programme
-  cases, 40 restaurant water cases and the Stripmall pilot match the native
-  output.
+- **ComStock kernel**: every slot matches the native output for 11 controlled
+  cases, 926 programme cases (Medium and Small Office, Warehouse, Retail and
+  both restaurant families), 40 restaurant water cases and the Stripmall pilot.
+- **New families**: 8 native 90.1-2013 pilots (source and reviewed views of
+  Large Office, Large Hotel, Hospital and Outpatient) check the People topology
+  per space and every shared water service. Small Hotel, the schools and
+  Supermarket use the same builder and kernel without a pilot of their own. No
+  new family has a native key for its programme slots yet.
+  `python -m scripts.build_family_recipes --check` rebuilds every builder-owned
+  recipe and service from the frozen definitions.
 - **ComStock sampling**: 6,660 native `tsv_sampling.py` draws.
 - **ResStock (R1)**: 57 native units (channels, occupant types, offsets), plus
   8,250 raw Ruby draws.
-- **Orchestration**: every programme, both A5 case-matrix requests (463 owners)
-  and six mixture scenarios match the frozen v0.8.0 generator.
+- **Orchestration**: 189 single-programme cases, both A5 case-matrix requests
+  (463 owners) and six mixture scenarios match the frozen v0.8.0 generator.
 
 An upstream detail is kept only when dropping it breaks an answer key. Each such
 detail names its answer key in its docstring.

@@ -16,7 +16,8 @@ generator and cannot be rerun.
 package's sampling tables and recipes into `atlas_schedules/data/`.
 `scripts/build_sampling_tables.py` (pinned ComStock TSVs) and
 `scripts/build_family_recipes.py` (frozen definitions plus prototype geometry)
-built the nine new families; `--check` also reproduces the migrated Retail,
-restaurant and sampling data. The office, warehouse, ResStock dwelling,
+built the nine new families. `--check` reproduces every recipe and service the
+builder owns, including the migrated Retail and restaurant data, and the
+sampling tables. The office, warehouse, ResStock dwelling,
 apartment and fixed recipes remain migrated and are checked by the legacy
 answer keys.
