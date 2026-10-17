@@ -1,0 +1,36 @@
+{
+  "schema_version": "2.0.0",
+  "seed": 42,
+  "instances": [
+    {
+      "key": "office",
+      "program_id": "program-0e670d8dc556f7f5bdd7f1a9",
+      "extent": {
+        "floor_area": 400
+      },
+      "operating_group": "building"
+    },
+    {
+      "key": "shop",
+      "program_id": "program-00580f0dc4ea1a369a6f1400",
+      "extent": {
+        "floor_area": 100
+      }
+    }
+  ],
+  "mixture": {
+    "program_id": "office-over-shop",
+    "members": [
+      {
+        "instance": "office",
+        "weight": 0.8
+      },
+      {
+        "instance": "shop",
+        "weight": 0.2
+      }
+    ],
+    "result_basis": "floor_area",
+    "denominator": 500
+  }
+}

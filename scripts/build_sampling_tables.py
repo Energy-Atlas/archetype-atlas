@@ -1,9 +1,10 @@
 """Build ComStock operating-parameter sampling tables for one or more building types.
 
 Source: data/raw/comstock/sampling/tsvs/tsvs-v33.zip (ComStock revision
-3c103063, pinned in sources/schedule-generator-lock.json; fetched with
-`python -m scripts.fetch`). Each of the ten tables keeps the rows for the
-building type with their original probabilities and 1-based source line.
+3c103063, pinned in sources/generator-source-lock.json; fetched with
+`python -m scripts.fetch --lock sources/generator-source-lock.json`). Each of
+the ten tables keeps the rows for the building type with their original
+probabilities and 1-based source line.
 Start times and durations are converted from hours to seconds; base-to-peak
 ratios are fractions, with NA (do not modify) as null.
 
@@ -18,11 +19,11 @@ from pathlib import Path
 import sys
 import zipfile
 
-from atlas_schedules_v2.commercial.sampler import DRAW_ORDER
+from atlas_schedules.commercial.sampler import DRAW_ORDER
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "data/raw/comstock/sampling/tsvs/tsvs-v33.zip"
-TARGET = ROOT / "atlas_schedules_v2/data/commercial/sampling"
+TARGET = ROOT / "atlas_schedules/data/commercial/sampling"
 SOURCE_REVISION = "3c103063c0debb177a200dd1df8406b8d0f8d515"
 HOURS = {"weekday_start_time", "weekend_start_time", "weekday_duration", "weekend_duration"}
 RATIOS = {"plugload_sch_weekday_base_peak_ratio", "plugload_sch_weekend_base_peak_ratio",

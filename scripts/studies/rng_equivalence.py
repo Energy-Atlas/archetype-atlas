@@ -36,11 +36,11 @@ import time
 
 import numpy as np
 
-from atlas_schedules_v2.residential.activity import simulate_activities
-from atlas_schedules_v2.residential.events import EventGenerator
-from atlas_schedules_v2.residential.generate import Dwelling, _step_months, dwelling_channels
-from atlas_schedules_v2.residential.rng import END_USES, unit_streams
-from atlas_schedules_v2.residential.tables import load_tables
+from atlas_schedules.residential.activity import simulate_activities
+from atlas_schedules.residential.events import EventGenerator
+from atlas_schedules.residential.generate import Dwelling, _step_months, dwelling_channels
+from atlas_schedules.residential.rng import END_USES, unit_streams
+from atlas_schedules.residential.tables import load_tables
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "docs/validation/residential-rng-equivalence.json"

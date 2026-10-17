@@ -1,5 +1,3 @@
-"""Offline source-backed hourly schedules and conserved physical mixtures."""
-from .generator import generate
-from .mixtures import compose_constituents
+"""Readable ComStock/ResStock schedule generator (ADR 0035)."""
 
-__all__ = ['generate', 'compose_constituents']
+__version__ = "2.0.0.dev0"

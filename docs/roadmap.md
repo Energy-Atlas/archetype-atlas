@@ -67,18 +67,13 @@ unknowns. Geometry, assignment and sizing remain consumer responsibilities.
 
 ## 3. Discuss shipping schedule generators
 
-The [independent v0.1.1 generator](../data/generator-releases/v0.1.1/manifest.json)
-delivers the exact ten cases in the [versioned M1 scope](../sources/schedule-generator-m1-scope.json):
-six residential fixtures, two active Medium Office source/reviewed cases and two
-source-backed inactive Plenum source/reviewed cases. The [contract](schedule-generator.md)
-and [coverage report](validation/schedule-generator-coverage.json) record its
-source-certified channels, reproduction policy and unsupported catalogue records.
-Expanding remaining families, templates and weather bindings remains open and
-requires new immutable releases. Site design and production publication remain
-separate work.
-The immutable v0.1.0 artifact remains historically verifiable and reproducible
-with its own runtime, while v0.1.1 supersedes its incomplete channel-evidence
-coverage metadata.
+The readable [schedule generator](schedule-generator.md) (`atlas_schedules`,
+unreleased; [ADR 0035](adr/0035-readable-generator-restructure.md)) covers all
+1,900 catalogue programmes across 15 ComStock building types, ResStock dwellings,
+apartment units and common areas, 176 shared hot-water services and the 16 DOE
+reference locations. Native OpenStudio / Ruby answer keys validate it. The
+earlier bit-exact v0.1.0–v0.8.0 builds were never published and are retired. Site
+design and production publication remain separate work.
 
 - [x] Compare a versioned executable generator with a compact parametric recipe
   and the current fixed realization. Identify which schedule families each

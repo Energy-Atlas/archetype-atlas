@@ -34,44 +34,16 @@ defines its semantics and excludes sampled HVAC unavailability from the schedule
 release. [Schedule coverage](docs/validation/schedule-coverage.json) inventories
 523 active commercial schedule gaps and 101 residential gaps across 14 assessed
 columns; EV/exterior lighting and specialized uses are listed separately.
-The independent [offline schedule generator v0.1.1](data/generator-releases/v0.1.1/manifest.json)
-ships the exact ten-case source-certified M1 milestone. Its [consumer contract and
-invocation guide](docs/schedule-generator.md) explains the request, seed, annual
-normalization, physical bindings and hybrid source interpretation. The [M1
-coverage report](docs/validation/schedule-generator-coverage.json) lists every
-outside-scope catalogue identity; broad coverage remains open.
-The immutable [v0.1.0 artifact](data/generator-releases/v0.1.0/manifest.json)
-remains available for historical integrity and own-runtime reproduction; its
-channel-coverage metadata is superseded by v0.1.1.
-
-The separate [residential generator v0.2.0](data/generator-releases/v0.2.0/manifest.json)
-covers all 41 source fixtures and 37 locked station proxies, with 766 source-backed
-channels. Its [guide](docs/schedule-generator-residential.md) and
-[coverage](docs/validation/schedule-generator-coverage-residential.json) describe
-this intermediate family milestone.
-
-The cumulative [generator v0.3.0](data/generator-releases/v0.3.0/manifest.json)
-combines these 41 fixtures with all 20 Medium Office records across five templates,
-covering 846 channels. Its [guide](docs/schedule-generator-medium-office.md) and
-[coverage](docs/validation/schedule-generator-coverage-medium-office.json) include
-a runnable generated residential/DOE Office mixture within one resource identity.
-Other catalogue families remain open; different releases cannot be composed.
-
-The cumulative [generator v0.4.0](data/generator-releases/v0.4.0/manifest.json)
-adds all 18 Small Office records, for 79 cases and 906 channels. Its
-[guide](docs/schedule-generator-small-office.md) and
-[coverage](docs/validation/schedule-generator-coverage-small-office.json) include
-an actual residential/Medium Office/Small Office mixture in one resource set.
-
-The cumulative [generator v0.5.1](data/generator-releases/v0.5.1/manifest.json)
-adds all 40 Warehouse records and their 10 actual compositions, for 119 requested
-programmes and 1,076 declared channels. Its [guide](docs/schedule-generator-warehouse.md)
-and [coverage](docs/validation/schedule-generator-coverage-warehouse.json) explain
-the actual ordered member generation, explicit reference/caller area modes and
-generated four-family mixture. The complete request indexes 1,146 schedules,
-including the actual members inside source parents. Full extraction remains open.
-Patch v0.5.1 corrects nested reference ownership when publicly composing
-separately generated source-parent bundles; v0.5.0 remains immutable.
+The offline [schedule generator](docs/schedule-generator.md) (`atlas_schedules`,
+unreleased) turns programmes, extents and a seed into 8,760-hour schedules with
+each annual load target bound to its generated shape. It is a readable port of
+ComStock / openstudio-standards 0.8.6 hours-of-operation sampling and of
+OpenStudio-HPXML's ResStock occupant model
+([ADR 0035](docs/adr/0035-readable-generator-restructure.md)). It covers 1,900
+programmes: 15 ComStock building types, 41 ResStock dwellings, 40 apartment units,
+44 apartment common areas and 378 composition parents. It also covers 176 shared
+hot-water services and the 16 DOE reference locations. Native OpenStudio / Ruby
+answer keys in `tests/answer_keys/` validate it to 1e-6.
 
 | Canonical table | Records |
 | --- | ---: |
@@ -219,7 +191,7 @@ python -m scripts.query_v2 --input data/definition-releases/v0.1.1 --output buil
 ```
 
 The library does not size consumer models. Residential definitions reuse existing
-determined profiles; stochastic generators remain deferred. Unknown load
+determined profiles; stochastic schedules come from the separate generator. Unknown load
 magnitudes, infiltration and HVAC details remain explicit. Only the documented
 internal/ground construction fallbacks introduce generic construction assumptions.
 The explicitly selected program copy defaults are separately recorded and never

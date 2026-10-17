@@ -16,11 +16,11 @@ from pathlib import Path
 import sys
 import time
 
-from atlas_schedules_v2.errors import GeneratorError
-from atlas_schedules_v2.generator import generate
+from atlas_schedules.errors import GeneratorError
+from atlas_schedules.generator import generate
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "atlas_schedules_v2/data"
+DATA = ROOT / "atlas_schedules/data"
 OUTPUT = ROOT / "docs/validation/generator-catalogue-smoke.json"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5}
 

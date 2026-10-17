@@ -31,7 +31,7 @@ from scripts.family_sources.osm import read_spaces
 ROOT = Path(__file__).resolve().parents[1]
 DEFINITIONS = ROOT / "data/definition-releases/v0.1.1"
 STANDARDS = ROOT / "data/raw/openstudio-standards"
-TARGET = ROOT / "atlas_schedules_v2/data/recipes"
+TARGET = ROOT / "atlas_schedules/data/recipes"
 SAMPLING = {
     "MediumOffice": "medium_office", "SmallOffice": "small_office", "Warehouse": "warehouse",
     "RetailStandalone": "retail", "FullServiceRestaurant": "full_service_restaurant",
@@ -209,7 +209,7 @@ WATER_CONTROLS = [{"slot": "water_target_temperature", "quantity": "temperature"
 
 def service_record(service: dict, building_type: str) -> dict:
     """One shared hot-water service with a variant per view of its template."""
-    from atlas_schedules_v2.commercial.profiles import round_half_up, stored_value
+    from atlas_schedules.commercial.profiles import round_half_up, stored_value
     load = service["load"]
     template = service["template"]
     companions = {"water_target_temperature": {"method": "constant",

@@ -5,21 +5,10 @@ data/definition-releases/** -text whitespace=cr-at-eol
 # Preserve exact Windows upstream execution CSV bytes and their frozen hashes.
 data/resolution-releases/**/profiles/*.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 # Executed native capture sources retain their exact locked bytes, including CRLF.
-data/schedule-generator/reference/*-driver.py -text whitespace=cr-at-eol
-data/schedule-generator/reference/*-harness.rb -text whitespace=cr-at-eol
 # Apartment proof sources and capture-time code are immutable byte-locked copies.
-data/schedule-generator/apartment/capture-sources/** -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof,-space-before-tab
-data/schedule-generator/apartment/capture-code/** -text whitespace=cr-at-eol
-data/schedule-generator/apartment/qualification-code/** -text whitespace=cr-at-eol
-data/schedule-generator/apartment/evidence/a1-*.json -text whitespace=cr-at-eol
-data/schedule-generator/apartment/evidence/a1-*.rb -text whitespace=cr-at-eol
-data/schedule-generator/apartment/evidence/a3-reviewed-lock.json -text whitespace=cr-at-eol
-data/schedule-generator/apartment/evidence/a4-current/selected-comparison.json -text whitespace=cr-at-eol
-data/schedule-generator/apartment/evidence/*-harness.rb -text whitespace=cr-at-eol
 
 # Preserve byte-locked independent compatibility report receipts.
 .superpowers/sdd/2026-10-13-schedule-generator/python311-c5-*-compatibility-report.md -text whitespace=cr-at-eol,-blank-at-eof
 .superpowers/sdd/2026-10-13-schedule-generator/python311-c6-current-compatibility-report.md -text whitespace=cr-at-eol,-blank-at-eof
 .superpowers/sdd/2026-10-13-schedule-generator/python311-c6-resource-reuse-compatibility-report.md -text whitespace=cr-at-eol,-blank-at-eof
 # Locked upstream geometry copies keep their exact source bytes.
-data/schedule-generator/*/geometry/*.osm -text whitespace=cr-at-eol,-blank-at-eol,-blank-at-eof,-space-before-tab

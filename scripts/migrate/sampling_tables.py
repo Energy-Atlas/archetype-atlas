@@ -1,4 +1,4 @@
-"""Copy the ComStock v33 conditional sampling tables into atlas_schedules_v2/data.
+"""Copy the ComStock v33 conditional sampling tables into atlas_schedules/data.
 
 Input: the compiled v0.8.0 generator package (data/generator-releases/v0.8.0/
 generator.zip, sha256 bb1eb96b..., unpacked to build/task-10/v080-package).
@@ -12,14 +12,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "build/task-10/v080-package/atlas_schedules/data/commercial"
-TARGET = ROOT / "atlas_schedules_v2/data/commercial/sampling"
+TARGET = ROOT / "atlas_schedules/data/commercial/sampling"
 BUILDING_TYPES = ("medium_office", "small_office", "warehouse", "retail",
                   "full_service_restaurant", "quick_service_restaurant")
 KEEP = ("dependencies", "options", "option_values", "option_unit", "provenance")
 
 
 def main() -> None:
-    from atlas_schedules_v2.commercial.sampler import DRAW_ORDER
+    from atlas_schedules.commercial.sampler import DRAW_ORDER
     for building_type in BUILDING_TYPES:
         prefix = "" if building_type == "medium_office" else building_type + "__"
         tables = {}

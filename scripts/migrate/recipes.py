@@ -7,8 +7,8 @@ legacy recipe already resolved its frozen definition record
 kernel context; this keeps the fields that change output, plus a compact
 source block pointing back to the definition record.
 
-Output: atlas_schedules_v2/data/recipes/<program_id>.json and
-atlas_schedules_v2/data/schedules.json (rule sets by id).
+Output: atlas_schedules/data/recipes/<program_id>.json and
+atlas_schedules/data/schedules.json (rule sets by id).
 
 Usage: python -m scripts.migrate.recipes
 """
@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "build/task-10/v080-package/atlas_schedules/data/program"
-TARGET = ROOT / "atlas_schedules_v2/data"
+TARGET = ROOT / "atlas_schedules/data"
 RULE_FIELDS = ("day_types", "start_date", "end_date", "values")
 KINDS = {
     "prototype_budget_preserving_commercial_hybrid": "commercial",

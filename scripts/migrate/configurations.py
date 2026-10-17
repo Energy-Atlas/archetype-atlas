@@ -1,7 +1,7 @@
 """Move each commercial configuration's People topology out of the recipes.
 
 Every recipe of one configuration (building type, template, view) carried the
-same People list. This writes atlas_schedules_v2/data/configurations/<id>.json
+same People list. This writes atlas_schedules/data/configurations/<id>.json
 (sampling building type, People, rule-day inversion) once, and leaves recipes
 and shared-service variants with only the configuration id. It refuses to run
 if two recipes disagree about a configuration.
@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "atlas_schedules_v2/data"
+DATA = ROOT / "atlas_schedules/data"
 
 
 def _record(spec: dict) -> dict:

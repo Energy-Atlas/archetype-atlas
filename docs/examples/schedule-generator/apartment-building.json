@@ -1,0 +1,61 @@
+{
+  "schema_version": "2.0.0",
+  "seed": 42,
+  "instances": [
+    {
+      "key": "unit-1",
+      "program_id": "program-60b1063b9fe00c5c29654bb9",
+      "extent": {
+        "floor_area": 80
+      },
+      "residents": 2,
+      "location": {
+        "state": "NC",
+        "latitude": 35.741,
+        "longitude": -81.389,
+        "utc_offset": -5
+      }
+    },
+    {
+      "key": "unit-2",
+      "program_id": "program-1b7f33e001e0df34014c5912",
+      "extent": {
+        "floor_area": 120
+      },
+      "residents": 3,
+      "location": {
+        "state": "NC",
+        "latitude": 35.741,
+        "longitude": -81.389,
+        "utc_offset": -5
+      }
+    },
+    {
+      "key": "unit-3",
+      "program_id": "program-435ffa8ee22ea253ae639ddd",
+      "extent": {
+        "floor_area": 80
+      },
+      "residents": 0
+    }
+  ],
+  "mixture": {
+    "program_id": "building",
+    "members": [
+      {
+        "instance": "unit-1",
+        "weight": 0.2857142857142857
+      },
+      {
+        "instance": "unit-2",
+        "weight": 0.42857142857142855
+      },
+      {
+        "instance": "unit-3",
+        "weight": 0.2857142857142857
+      }
+    ],
+    "result_basis": "floor_area",
+    "denominator": 280
+  }
+}

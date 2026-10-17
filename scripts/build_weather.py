@@ -11,7 +11,7 @@ locations; this binds each to a TMY3 file:
 - 5B Boulder: the only Boulder-area TMY3 file (Boulder-Broomfield-Jefferson
   County AP), labelled as a proxy for the TMY2 Boulder station.
 
-Writes atlas_schedules_v2/data/weather/<station>.json (dry-bulb, location, time
+Writes atlas_schedules/data/weather/<station>.json (dry-bulb, location, time
 zone, as the existing station records) and data/weather/reference-locations.json.
 
 Usage: python -m scripts.build_weather         (write)
@@ -27,7 +27,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "data/raw/weather/usa-tmy3-epw.zip"
-TARGET = ROOT / "atlas_schedules_v2/data/weather"
+TARGET = ROOT / "atlas_schedules/data/weather"
 LOCATIONS = [
     ("1A", "Miami, FL", "Miami, Florida", "USA_FL_Miami.Intl.AP.722020", "primary airport"),
     ("2A", "Houston, TX", "Houston, Texas", "USA_TX_Houston-Bush.Intercontinental.AP.722430", "primary airport"),

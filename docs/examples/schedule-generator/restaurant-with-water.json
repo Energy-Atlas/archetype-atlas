@@ -1,0 +1,38 @@
+{
+  "schema_version": "2.0.0",
+  "seed": 42,
+  "instances": [
+    {
+      "key": "restaurant",
+      "program_id": "program-080dc08cd2d7af6c7d419d0a",
+      "extent": {
+        "floor_area": 200
+      },
+      "operating_group": "restaurant",
+      "service_links": {
+        "service-1981fa97b9fd7d47efcf39dd": "kitchen-water"
+      }
+    },
+    {
+      "key": "kitchen-water",
+      "service_id": "service-1981fa97b9fd7d47efcf39dd",
+      "configuration_id": "quick_service_restaurant__90_1_2013__source",
+      "physical_id": "kitchen-fixture",
+      "extent": {
+        "floor_area": 116.17147592
+      },
+      "operating_group": "restaurant"
+    }
+  ],
+  "mixture": {
+    "program_id": "restaurant",
+    "members": [
+      {
+        "instance": "restaurant",
+        "weight": 1.0
+      }
+    ],
+    "result_basis": "floor_area",
+    "denominator": 200
+  }
+}

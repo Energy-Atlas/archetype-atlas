@@ -59,3 +59,23 @@ has been released, so there is no compatibility obligation.
   restructure design (`docs/superpowers/plans/2026-10-17-generator-restructure.md`).
 - New families need a native answer key (an offline OpenStudio run) but no
   bit-level reproduction.
+
+## Outcome (2026-10-17)
+
+- **Residential RNG.** R1 and R2 were found equivalent: nine dwelling
+  configurations passed all pre-registered checks, with worst permutation
+  z 2.44 (limit 4) and worst effect 0.20 SD (limit 0.25). Details are in
+  `docs/validation/residential-rng-equivalence.md`. R1 was retired from the request schema;
+  requests always use PCG64. The Ruby stream stays as validation-only code
+  (`generate(..., residential_rng="ruby_mt")`) so native captures and the
+  legacy answer keys still check the port draw for draw.
+- **Upstream outcome reported, not generated.** ComStock's base-to-peak
+  measures clear every equal-valued day (0/0 scale, NaN rejected by
+  OpenStudio). The native family keys require this (287 checks fail without
+  it). Flat Large Office data-centre plug loads therefore become zero when a
+  weekday ratio is sampled. Those 16 programmes raise
+  `zero_generated_integral` rather than invent a shape.
+- **Download pins.** The generator's upstream files are pinned in one lock,
+  `sources/generator-source-lock.json`, which `scripts.fetch --lock` can use.
+  The per-family and reference locks of the legacy generator were deleted
+  with it.
