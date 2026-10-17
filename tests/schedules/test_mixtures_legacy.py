@@ -12,7 +12,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.test_case_matrix_legacy import TOLERANCE, translate
+from tests.schedules.test_case_matrix_legacy import translate
 from tests.schedules.test_programmes_legacy import assert_schedule
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/mixtures.json.gz"

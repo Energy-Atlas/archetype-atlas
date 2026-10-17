@@ -22,12 +22,6 @@ ANNUAL_UNITS = {
 }
 
 
-def annual_unit(magnitude_unit: str) -> str:
-    if magnitude_unit not in ANNUAL_UNITS:
-        raise GeneratorError("invalid_unit", "/demand/unit", f"Unsupported magnitude unit {magnitude_unit!r}")
-    return ANNUAL_UNITS[magnitude_unit][0]
-
-
 def annual_target(magnitude: float, magnitude_unit: str, reference_shape: np.ndarray) -> float:
     """Annual total = magnitude x sum of the hourly reference fractions x seconds per sample."""
     seconds = ANNUAL_UNITS[magnitude_unit][1]

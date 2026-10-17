@@ -14,6 +14,7 @@ Steps:
 from dataclasses import dataclass
 from functools import lru_cache
 import json
+import math
 from pathlib import Path
 from urllib.parse import quote
 
@@ -26,9 +27,9 @@ from .commercial.sampler import load_tables, sample_operating_parameters
 from .commercial.transform import Slot, transform
 from .companions import companion_channels
 from .errors import GeneratorError
-from .mixtures import Load, Owner, mix, scale
+from .mixtures import Load, Owner, mix
 from .programmes import (annual_targets, configuration_people, instance_channels, load_configuration,
-                         load_recipe, reference_locations, schedules)
+                         load_recipe, reference_locations, required_services, schedules)
 from .request import Instance, Request, parse_request
 from .residential.generate import Dwelling, generate_occupancy_and_lighting
 from .seeds import commercial_group_seed
@@ -45,7 +46,8 @@ def load_service(service_id: str) -> dict:
 
 
 def schedule_id(key: str, slot: str) -> str:
-    return "schedule:" + quote(key, safe="") + ":" + quote(slot, safe="")
+    # Mixed load slots are already quoted part by part ("load/<quantity>/m3%2Fs/...").
+    return "schedule:" + quote(key, safe="") + ":" + quote(slot, safe="/%")
 
 
 # ----------------------------------------------------------------- expansion
@@ -66,6 +68,7 @@ def _expand(request: Request) -> tuple[list, dict]:
             planned.append(Planned(instance, service=load_service(instance.service_id)))
             continue
         recipe = load_recipe(instance.program_id)
+        _check_links(instance, recipe)
         if recipe["kind"] == "composition":
             children = _composition_children(instance, recipe)
             parents[instance.key] = (instance, recipe, children)
@@ -77,6 +80,17 @@ def _expand(request: Request) -> tuple[list, dict]:
                              physical_id=instance.key)
             planned.append(Planned(water, recipe=recipe, caller_water_of=instance.key))
     return planned, parents
+
+
+def _check_links(instance: Instance, recipe: dict) -> None:
+    """Every required shared service is linked, and nothing else is."""
+    required = required_services(recipe)
+    missing = [s for s in required if s not in instance.service_links]
+    extra = [s for s in instance.service_links if s not in required]
+    if missing or extra:
+        raise GeneratorError("service_links", f"/instances/{instance.key}/service_links",
+                             f"Link exactly the required shared services {required}; missing {missing}, "
+                             f"not required {extra}")
 
 
 def _composition_children(parent: Instance, recipe: dict) -> list:
@@ -124,13 +138,15 @@ def _group_operating(master: int, planned: list) -> dict:
     building_types = {}
     for item in planned:
         if item.service:
-            configuration = item.service["configurations"][item.instance.configuration_id]
-            building_types.setdefault(item.instance.group, load_configuration(item.instance.configuration_id)["building_type"])
+            configuration_id = item.instance.configuration_id
         elif item.recipe and item.recipe["kind"] == "commercial" and not item.caller_water_of:
-            building_type = load_configuration(item.recipe["commercial"]["configuration_id"])["building_type"]
-            if building_types.setdefault(item.instance.group, building_type) != building_type:
-                raise GeneratorError("operating_group_conflict", f"/instances/{item.instance.key}/operating_group",
-                                     "One operating group cannot mix sampling building types")
+            configuration_id = item.recipe["commercial"]["configuration_id"]
+        else:
+            continue
+        building_type = load_configuration(configuration_id)["building_type"]
+        if building_types.setdefault(item.instance.group, building_type) != building_type:
+            raise GeneratorError("operating_group_conflict", f"/instances/{item.instance.key}/operating_group",
+                                 "One operating group cannot mix sampling building types")
     return {group: sample_operating_parameters(load_tables(bt), bt, commercial_group_seed(master, group))
             for group, bt in building_types.items()}
 
@@ -249,8 +265,19 @@ def _linked_services(member: Owner, instances: dict, owners: dict) -> list:
 
 def _request_mixture(request: Request, owners: dict, instances: dict, water_by_unit: dict) -> Owner:
     spec = request.mixture
-    if spec.members and abs(sum(m.weight for m in spec.members) - 1) > 1e-12:
-        raise GeneratorError("invalid_mixture", "/mixture/members", "Member weights must sum to one")
+    # ADR 0023: with a denominator, weights are participation multipliers on
+    # explicit extents; without one, they are normalised shares.
+    if spec.denominator is None and spec.members and abs(math.fsum(m.weight for m in spec.members) - 1) > 1e-12:
+        raise GeneratorError("invalid_mixture", "/mixture/members",
+                             "Without a denominator, member weights are shares and must sum to one")
+    for member in spec.members:
+        instance = instances[member.instance]
+        if (spec.denominator is not None and instance.program_id
+                and load_recipe(instance.program_id)["kind"] == "composition"
+                and (instance.composition_basis or "reference_area") == "reference_area"):
+            raise GeneratorError("invalid_mixture", f"/instances/{instance.key}/composition_basis",
+                                 "A reference_area parent has no caller extent; "
+                                 "use caller_area to mix it with a denominator")
     members = [(owners[m.instance], m.weight) for m in spec.members]
     services = [owners[key] for key in spec.services]
     for owner, weight in members:
@@ -258,6 +285,9 @@ def _request_mixture(request: Request, owners: dict, instances: dict, water_by_u
             services.extend(_linked_services(owner, instances, owners))
             if owner.key in water_by_unit:
                 services.append(water_by_unit[owner.key])
+    if services and spec.denominator is None:
+        raise GeneratorError("invalid_mixture", "/mixture",
+                             "Shared services (listed, linked or apartment water) need a result basis and denominator")
     return mix("mixture/" + spec.program_id, spec.program_id, members, services, spec.result_basis, spec.denominator)
 
 

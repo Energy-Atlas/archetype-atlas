@@ -71,11 +71,13 @@ def _numeric_view(tables: dict) -> dict:
 
 def main() -> None:
     if sys.argv[1:] == ["--check"]:
+        different = 0
         for path in sorted(TARGET.glob("*.json")):
             packaged = json.loads(path.read_text(encoding="utf-8"))
             same = _numeric_view(build(path.stem)) == _numeric_view(packaged)
+            different += not same
             print(path.stem, "identical" if same else "DIFFERENT")
-        return
+        raise SystemExit(1 if different else 0)
     for building_type in sys.argv[1:]:
         tables = build(building_type)
         if not all(t["rows"] for t in tables.values()):

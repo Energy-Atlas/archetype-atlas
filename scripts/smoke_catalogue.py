@@ -18,6 +18,7 @@ import time
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
+from atlas_schedules.programmes import load_recipe, required_services
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "atlas_schedules/data"
@@ -25,9 +26,16 @@ OUTPUT = ROOT / "docs/validation/generator-catalogue-smoke.json"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5}
 
 
+def _configuration(recipe: dict) -> str:
+    """The building configuration a programme's shared services follow."""
+    if recipe["kind"] == "composition":
+        recipe = load_recipe(recipe["composition"]["members"][0][0])
+    return recipe["commercial"]["configuration_id"]
+
+
 def _instance(recipe: dict) -> dict:
     instance = {"key": "unit", "program_id": recipe["program_id"]}
-    if recipe["kind"] == "commercial":
+    if recipe["kind"] in ("commercial", "composition"):
         instance["operating_group"] = "building"
     if recipe["kind"] == "apartment_unit":
         instance.update(residents=2, location=LOCATION, extent={"floor_area": 80})
@@ -45,10 +53,11 @@ def main() -> None:
             counts["inactive"] += 1
             continue
         instances = [_instance(recipe)]
-        if recipe.get("required_services"):
-            configuration = recipe["commercial"]["configuration_id"]
+        linked = required_services(recipe)
+        if linked:
+            configuration = _configuration(recipe)
             links = {}
-            for index, service_id in enumerate(recipe["required_services"]):
+            for index, service_id in enumerate(linked):
                 service = json.loads((DATA / "services" / f"{service_id}.json").read_text(encoding="utf-8"))
                 key = f"service-{index}"
                 links[service_id] = key
@@ -77,10 +86,10 @@ def main() -> None:
                 failures[error.code].append(f"{service['service_id']}@{configuration_id}")
     report = {"generated": dict(counts), "failures": {k: v for k, v in failures.items()},
               "upstream_zeroed": upstream_zeroed,
-              "failure_count": sum(len(v) for v in failures.values()), "seconds": round(time.time() - started)}
+              "failure_count": sum(len(v) for v in failures.values())}
     OUTPUT.write_text(json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-    print(json.dumps({k: report[k] for k in ("generated", "failure_count", "seconds")}),
-          f"upstream_zeroed={len(upstream_zeroed)}")
+    print(json.dumps({k: report[k] for k in ("generated", "failure_count")}),
+          f"upstream_zeroed={len(upstream_zeroed)}", f"{time.time() - started:.0f} s")
     for code, items in failures.items():
         print(code, len(items), items[:5])
     if report["failure_count"]:

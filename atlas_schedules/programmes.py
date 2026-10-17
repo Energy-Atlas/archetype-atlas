@@ -3,8 +3,9 @@
 A recipe (data/recipes/<program_id>.json) lists the programme's slots (loads,
 controls, resident counts), its demands (annual magnitude per basis unit), its
 companions and, per kind, the kernel inputs:
-- "commercial": ComStock transform (configuration, sampling building type,
-  slot modes, People per space);
+- "commercial": ComStock transform (slot modes and a configuration id; the
+  configuration in data/configurations/ holds the sampling building type,
+  People per space and rule-day inversion);
 - "residential": ResStock dwelling (residents, location, weather, installed
   appliances, thermostat arguments);
 - "fixed": source rule sets used as they are.
@@ -12,14 +13,13 @@ companions and, per kind, the kernel inputs:
 Annual targets come from the original source shape before any transform, so a
 transform moves energy in time without changing the annual total.
 """
-from dataclasses import dataclass
 from functools import lru_cache
 import json
 from pathlib import Path
 
 import numpy as np
 
-from .budgets import ANNUAL_UNITS, annual_target, annual_unit, fit_amplitude
+from .budgets import annual_target
 from .calendar import evaluate_rules
 from .commercial.transform import Slot, transform
 from .companions import companion_channels
@@ -57,17 +57,15 @@ def load_recipe(program_id: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-@dataclass
-class Binding:
-    """One demand bound to its generated shape: amplitude x shape integrates to the target."""
-    slot: str
-    quantity: str
-    unit: str            # magnitude unit, e.g. W/m2
-    basis: str
-    fuel: str
-    host: str
-    annual_total: float  # per basis unit, in annual_unit(unit)
-    amplitude: float
+def required_services(recipe: dict) -> list:
+    """Shared services an instance must link: its own, or for a composition parent
+    the ordered union of its members' (members are generated without links)."""
+    if recipe["kind"] != "composition":
+        return list(recipe["required_services"])
+    services = []
+    for program_id, _ in recipe["composition"]["members"]:
+        services.extend(s for s in load_recipe(program_id)["required_services"] if s not in services)
+    return services
 
 
 def _reference_shapes(recipe: dict) -> dict:
@@ -143,17 +141,3 @@ def instance_channels(recipe: dict, *, operating: dict | None = None, unit_seed:
         if name not in selected and name in channels:
             selected[name] = np.asarray(channels[name], dtype=float)
     return selected
-
-
-def bind_demands(recipe: dict, channels: dict, targets: list) -> list[Binding]:
-    bindings = []
-    for demand, total in zip(recipe["demands"], targets):
-        slot = demand["slot"]
-        amplitude = fit_amplitude(total, demand["unit"], channels[slot])
-        bindings.append(Binding(slot, demand["quantity"], demand["unit"], demand["basis"], demand["fuel"],
-                                demand["host"], total, amplitude))
-    return bindings
-
-
-__all__ = ["ANNUAL_UNITS", "Binding", "annual_targets", "annual_unit", "bind_demands", "instance_channels",
-           "load_recipe", "schedules"]

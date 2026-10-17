@@ -93,19 +93,21 @@
       "properties": {
         "key": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^[^/]+$",
+          "description": "Unique instance key. '/' is reserved for owners the generator derives (apartment water, composition members)."
         },
         "program_id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^program-[0-9a-f]{24}$"
         },
         "service_id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^service-[0-9a-f]{24}$"
         },
         "configuration_id": {
           "type": "string",
-          "minLength": 1,
+          "pattern": "^[a-z0-9]+(_[a-z0-9]+)*(__[a-z0-9_]+)*$",
           "description": "Shared services: the ComStock configuration whose hours of operation they follow."
         },
         "physical_id": {
@@ -131,18 +133,22 @@
         "residents": {
           "type": "integer",
           "minimum": 0,
-          "description": "Apartment units: residents N."
+          "maximum": 20,
+          "description": "Apartment units: residents N (0-20)."
         },
         "location": {
           "$ref": "#/$defs/location"
         },
         "service_links": {
           "type": "object",
+          "propertyNames": {
+            "pattern": "^service-[0-9a-f]{24}$"
+          },
           "additionalProperties": {
             "type": "string",
             "minLength": 1
           },
-          "description": "Programmes: required service id -> shared service instance key."
+          "description": "Programmes: each required service id -> the key of a shared-service instance of that service."
         },
         "composition_basis": {
           "enum": [
@@ -181,14 +187,38 @@
         {
           "required": [
             "program_id"
-          ]
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "service_id"
+                ]
+              },
+              {
+                "required": [
+                  "configuration_id"
+                ]
+              },
+              {
+                "required": [
+                  "physical_id"
+                ]
+              }
+            ]
+          }
         },
         {
           "required": [
             "service_id",
             "configuration_id",
             "physical_id"
-          ]
+          ],
+          "not": {
+            "required": [
+              "program_id"
+            ]
+          }
         }
       ]
     },

@@ -11,6 +11,8 @@ from pathlib import Path
 import jsonschema
 
 from .errors import GeneratorError
+from .residential.rng import MODES
+from .seeds import check_master_seed
 
 SCHEMA = Path(__file__).resolve().parent / "schemas" / "request-v2.schema.json"
 BASIS_UNITS = {"floor_area": "m2", "dwelling_unit": "dwelling", "person": "person", "absolute": "1"}
@@ -94,8 +96,11 @@ def _finite(document) -> None:
 
 
 def parse_request(document: dict, residential_rng: str = "pcg64") -> Request:
+    if residential_rng not in MODES:
+        raise GeneratorError("invalid_request", "/residential_rng", f"Unknown stream mode {residential_rng!r}")
     _finite(document)
     _schema_errors(document)
+    check_master_seed(document["seed"])  # JSON Schema accepts 42.0 as an integer
     instances = []
     for raw in document["instances"]:
         location = Location(**raw["location"]) if "location" in raw else None
@@ -109,22 +114,28 @@ def parse_request(document: dict, residential_rng: str = "pcg64") -> Request:
     keys = [i.key for i in instances]
     if len(set(keys)) != len(keys):
         raise GeneratorError("duplicate_instance", "/instances", "Instance keys must be unique")
+    services = {i.key: i for i in instances if i.service_id}
+    for instance in instances:
+        for service_id, target in instance.service_links.items():
+            if target not in services or services[target].service_id != service_id:
+                raise GeneratorError("invalid_request", f"/instances/{instance.key}/service_links/{service_id}",
+                                     f"{target!r} is not a shared-service instance of {service_id}")
     mixture = None
     if "mixture" in document:
         raw = document["mixture"]
         mixture = Mixture(raw["program_id"], [Member(m["instance"], float(m["weight"])) for m in raw["members"]],
                           list(raw.get("services", [])), raw.get("result_basis"), raw.get("denominator"))
-        _check_mixture(mixture, set(keys))
+        _check_mixture(mixture, set(keys), set(services))
     return Request(document["seed"], residential_rng, instances, mixture)
 
 
-def _check_mixture(mixture: Mixture, keys: set) -> None:
+def _check_mixture(mixture: Mixture, keys: set, service_keys: set) -> None:
     for member in mixture.members:
         if member.instance not in keys:
             raise GeneratorError("invalid_request", "/mixture/members", f"Unknown instance {member.instance!r}")
     for service in mixture.services:
-        if service not in keys:
-            raise GeneratorError("invalid_request", "/mixture/services", f"Unknown instance {service!r}")
+        if service not in service_keys:
+            raise GeneratorError("invalid_request", "/mixture/services", f"{service!r} is not a shared-service instance")
     if (mixture.result_basis is None) != (mixture.denominator is None):
         raise GeneratorError("invalid_request", "/mixture", "result_basis and denominator go together")
     if mixture.services and mixture.denominator is None:

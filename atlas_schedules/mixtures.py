@@ -20,7 +20,6 @@ import numpy as np
 
 from .budgets import fit_amplitude
 from .errors import GeneratorError
-from .request import BASIS_UNITS
 
 SUFFIXES = {"floor_area": "/m2", "dwelling_unit": "/dwelling", "person": "/person", "absolute": ""}
 SETPOINTS = ("heating_setpoint", "cooling_setpoint")
@@ -208,4 +207,4 @@ def mix(key: str, program_id: str, members: list, services: list, result_basis: 
                              "services": [o.key for o in unique_services]})
 
 
-__all__ = ["BASIS_UNITS", "Load", "Owner", "SUFFIXES", "carrier_of", "mix", "scale"]
+__all__ = ["Load", "Owner", "SUFFIXES", "carrier_of", "mix", "scale"]

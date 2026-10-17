@@ -17,17 +17,6 @@ def check_master_seed(master: int) -> None:
         raise GeneratorError("invalid_seed", "/seed", "Unsigned 64-bit integer required")
 
 
-def unit_seeds(master: int, count: int) -> list[int]:
-    """Cumulative unit seeds for `count` units in order."""
-    check_master_seed(master)
-    seeds = []
-    seed = master
-    for position in range(1, count + 1):
-        seed *= position
-        seeds.append(seed)
-    return seeds
-
-
 def commercial_group_seed(master: int, operating_group: str) -> int:
     """Seed policy `atlas_conditional_seeded_v1`."""
     check_master_seed(master)

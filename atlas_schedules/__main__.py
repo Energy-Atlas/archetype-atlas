@@ -14,13 +14,18 @@ def main(argv=None) -> int:
     parser.add_argument("-o", "--output", type=Path, help="write the bundle here instead of standard output")
     args = parser.parse_args(argv)
     try:
-        bundle = generate(json.loads(args.request.read_text(encoding="utf-8")))
+        document = json.loads(args.request.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"error: cannot read {args.request}: {error}", file=sys.stderr)
+        return 2
+    try:
+        bundle = generate(document)
     except GeneratorError as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
     text = json.dumps(bundle, separators=(",", ":"))
     if args.output:
-        args.output.write_text(text + "\n", encoding="utf-8")
+        args.output.write_text(text + "\n", encoding="utf-8", newline="\n")
     else:
         sys.stdout.write(text + "\n")
     return 0

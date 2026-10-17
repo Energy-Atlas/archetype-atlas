@@ -18,7 +18,7 @@ For each template and view of the family:
 - one composition recipe per department or general mix (members by area).
 
 Usage: python -m scripts.build_family_recipes LargeOffice Hospital ...   (write recipes)
-       python -m scripts.build_family_recipes --check                    (compare with migrated families)
+       python -m scripts.build_family_recipes --check                    (compare with the packaged recipes)
 """
 from functools import lru_cache
 import json
@@ -293,8 +293,9 @@ def _service_summary(record: dict) -> dict:
     return {"demand": record["demand"], "variants": variants}
 
 
-def check_services(building_types) -> None:
+def check_services(building_types) -> int:
     folder = TARGET.parent / "services"
+    total = 0
     for building_type in building_types:
         same = differ = missing = 0
         for record in build_services(building_type):
@@ -311,9 +312,12 @@ def check_services(building_types) -> None:
                 if differ <= 2:
                     print("  ", record["service_id"], {k: (a[k], b[k]) for k in a if a[k] != b[k]})
         print(f"{building_type} services: identical {same}, different {differ}, not migrated {missing}")
+        total += differ
+    return total
 
 
-def check(building_types) -> None:
+def check(building_types) -> int:
+    total = 0
     for building_type in building_types:
         built = {r["program_id"]: r for r in build_family(building_type)}
         same = differ = missing = 0
@@ -333,15 +337,16 @@ def check(building_types) -> None:
                         if a.get(key) != b.get(key):
                             print(f"  {building_type} {recipe['name']} {key}: built {str(a.get(key))[:160]} | migrated {str(b.get(key))[:160]}")
         print(f"{building_type}: built {len(built)}, identical {same}, different {differ}, not migrated {missing}")
+        total += differ
+    return total
 
 
 def main() -> None:
     if sys.argv[1:2] == ["--check"]:
-        families = sys.argv[2:] or ["RetailStandalone", "FullServiceRestaurant", "QuickServiceRestaurant",
-                                    "MediumOffice", "SmallOffice", "Warehouse"]
-        check(families)
-        check_services(families)
-        return
+        # Offices and Warehouse stay migrated from the legacy package (different People carrier).
+        families = sys.argv[2:] or [bt for bt in SAMPLING if bt not in ("MediumOffice", "SmallOffice", "Warehouse")]
+        different = check(families) + check_services(families)
+        raise SystemExit(1 if different else 0)
     table_path = TARGET.parent / "schedules.json"
     table = json.loads(table_path.read_text(encoding="utf-8"))
     definitions = {s["id"]: s for s in json.loads((DEFINITIONS / "schedules.json").read_text(encoding="utf-8"))}

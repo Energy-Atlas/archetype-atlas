@@ -5,7 +5,6 @@ as a fraction of residents). Annual magnitudes are bound later by budgets.
 """
 from dataclasses import dataclass
 from datetime import date, timedelta
-import math
 
 import numpy as np
 

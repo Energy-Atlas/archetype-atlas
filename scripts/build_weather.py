@@ -71,14 +71,16 @@ def station_record(archive: zipfile.ZipFile, station: str) -> dict:
 def main() -> None:
     with zipfile.ZipFile(ARCHIVE) as archive:
         if sys.argv[1:] == ["--check"]:
+            different = 0
             for path in sorted(TARGET.glob("USA_*.json")):
                 existing = json.loads(path.read_text(encoding="utf-8"))
                 station = path.stem.removesuffix("_TMY3")
                 rebuilt = station_record(archive, station)
                 same = rebuilt["drybulb_C"] == existing["drybulb_C"] and all(
                     rebuilt[k] == existing[k] for k in ("latitude", "longitude", "time_zone_utc_offset"))
+                different += not same
                 print(station, "identical" if same else "DIFFERENT")
-            return
+            raise SystemExit(1 if different else 0)
         table = []
         for case, city, tmy2, station, rule in LOCATIONS:
             path = TARGET / f"{station}_TMY3.json"
