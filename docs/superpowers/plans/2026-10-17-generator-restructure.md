@@ -156,3 +156,57 @@ answer keys.
 Total about 100–175 h. Work stops only for repeated resource failures (about
 three of one kind), destructive or outward steps, or a finding that contradicts
 a user decision.
+
+## 7. Status and open items (2026-10-17, after M9)
+
+M1–M5, M8 and M9 are done. M6 is done except the release build, which the user
+deferred. M7 built every family, but native answer keys exist only for some of
+them (O1).
+
+User decisions on the gap review, 2026-10-17:
+
+| # | Item | Decision |
+|---|---|---|
+| O1 | Native programme-slot keys for the nine newer families | Explained; awaiting go-ahead |
+| O2 | Large Office data-centre plug loads zeroed by ComStock's base-to-peak step | Explained; awaiting decision |
+| O3 | Offices and Warehouse still use recipes migrated from the legacy package | User wants all families from the builder; awaiting go-ahead |
+| O4 | Release build and checksum manifest | Not yet (user) |
+| O5 | Run the updated CI on GitHub | Not now (user) |
+| O6 | Review hygiene: unused `holidays` argument, cross-module test helpers, legacy-key tests that skip silently | Fix (user) |
+| O7 | Answer-key extraction scripts cannot be rerun (inputs purged) | Accepted (user) |
+| O8 | Apartment `residents` capped at 20 per dwelling unit | Explained; awaiting decision |
+| O9 | Pre-rewrite objects may persist on GitHub until its garbage collection | Accepted (user) |
+| O10 | Local copies of the pre-purge history | Deferred (user), see below |
+
+O1 needs, per family, a native capture with the OpenStudio 3.10 harness
+(`scripts/capture/commercial.rb`) running pinned openstudio-standards 0.8.6
+and the ComStock measures: occupancy inference, the hours transform, the
+occupancy adjustment and base-to-peak. It needs fixed seeds for every
+programme slot, compact keys from those captures, and a test like
+`tests/schedules/test_commercial_families.py`. The capture also confirms O2
+natively.
+
+O2: code reading and the native family keys show that ComStock clears every
+equal-valued day after the hours transform. Every sampled Large Office modifies
+the weekday plug-load ratio (2,000 of 2,000 draws), so its flat data-centre
+equipment schedule becomes zero. No native run of a data-centre schedule has
+confirmed this yet.
+
+O3: the migrated office and warehouse recipes carry one configuration per
+template (no source/reviewed split) and a single normalised People entry.
+Medium Office keeps hot water as a programme slot (the legacy water-pilot
+design) rather than a linked shared service. Rebuilding them changes
+configuration ids and the water model, so the legacy orchestration keys must
+be re-baselined for those owners. The native family keys (926 cases) still
+check the schedules.
+
+O8: the cap applies to one dwelling unit, not a building. A building is many
+unit instances, and commercial occupancy comes from definitions × floor area,
+not `residents`. ResStock samples occupants 0–9 and "10+" (mapped to 11). A
+unit with more than 20 residents is rejected with `invalid_request`.
+
+O10 (deferred): the pre-purge history still exists locally in
+`refs/backup/stochastic-schedule-extraction-pre-purge`, `refs/original/` (codex
+worktree) and the Claude handover branch
+`claude/stochastic-schedule-extraction-handover-324832` (dd406bf). Deleting
+them and running `git gc` frees the space; do it only when the user asks.
