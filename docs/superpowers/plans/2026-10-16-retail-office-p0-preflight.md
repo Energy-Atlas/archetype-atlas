@@ -174,8 +174,8 @@ union, because its children are absolute), `source_compositions.py:335–390`
 affects directly requested leaf programmes (all LargeOffice programmes and
 standalone Stripmall members); union children already use source areas
 (`source_compositions.py:323`), so `source_compositions.py` is not a B
-consumer. Proposed policy (option 1, reviewer-recommended, pending user
-sign-off):
+consumer. Policy (option 1, reviewer-recommended, approved by the user on
+2026-10-17, ruling 149):
 
 | Requirement kind | Programme energy area | Fixture extent |
 | --- | --- | --- |
