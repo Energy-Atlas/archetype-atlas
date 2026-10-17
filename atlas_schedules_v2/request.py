@@ -38,6 +38,7 @@ class Instance:
     location: Location | None = None
     service_links: dict = field(default_factory=dict)
     composition_basis: str | None = None
+    reference_location: str | None = None
 
     @property
     def group(self) -> str:
@@ -103,7 +104,8 @@ def parse_request(document: dict) -> Request:
             configuration_id=raw.get("configuration_id"), physical_id=raw.get("physical_id"),
             extent=dict(raw.get("extent", {})), multiplicity=float(raw.get("multiplicity", 1)),
             operating_group=raw.get("operating_group"), residents=raw.get("residents"), location=location,
-            service_links=dict(raw.get("service_links", {})), composition_basis=raw.get("composition_basis")))
+            service_links=dict(raw.get("service_links", {})), composition_basis=raw.get("composition_basis"),
+            reference_location=raw.get("reference_location")))
     keys = [i.key for i in instances]
     if len(set(keys)) != len(keys):
         raise GeneratorError("duplicate_instance", "/instances", "Instance keys must be unique")

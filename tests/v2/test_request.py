@@ -89,3 +89,13 @@ class CommandLine(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReferenceLocations(unittest.TestCase):
+    def test_dwelling_follows_the_reference_climate(self):
+        lighting = {}
+        for case in ("1A", "8"):
+            bundle = generate(request({"key": "home", "program_id": DWELLING, "reference_location": case}))
+            lighting[case] = np.asarray(bundle["schedules"]["schedule:home:lighting_interior"]["values"])
+        # Interior lighting follows the location's sunset times (same seed, same occupants).
+        self.assertGreater(float(np.abs(lighting["1A"] - lighting["8"]).max()), 0.01)

@@ -98,8 +98,19 @@ def _commercial_channels(recipe: dict, operating: dict) -> dict:
                      invert_rule_days=configuration["invert_rule_days"])
 
 
-def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str) -> dict:
-    d = recipe["dwelling"]
+@lru_cache(maxsize=1)
+def reference_locations() -> dict:
+    """DOE Commercial Reference locations (NREL/TP-5500-46861 Table 2) bound to TMY3 stations."""
+    table = json.loads((DATA / "weather" / "reference-locations.json").read_text(encoding="utf-8"))
+    return {row["climate_case"]: row for row in table["locations"]}
+
+
+def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str, reference_location: str | None = None) -> dict:
+    d = dict(recipe["dwelling"])
+    if reference_location:
+        where = reference_locations()[reference_location]
+        d.update(state=where["state"], latitude=where["latitude"], longitude=where["longitude"],
+                 utc_offset=where["utc_offset"], weather_id=where["weather_id"])
     dwelling = Dwelling(d["residents"], d["state"], d["latitude"], d["longitude"], d["utc_offset"],
                         d["weather_id"], d["installed"])
     return generate_dwelling(dwelling, unit_seed, rng_mode)
@@ -110,13 +121,13 @@ def _fixed_channels(recipe: dict) -> dict:
 
 
 def instance_channels(recipe: dict, *, operating: dict | None = None, unit_seed: int | None = None,
-                      rng_mode: str = "pcg64") -> dict:
+                      rng_mode: str = "pcg64", reference_location: str | None = None) -> dict:
     """Hourly channels for every slot of the recipe."""
     kind = recipe["kind"]
     if kind == "commercial":
         channels = _commercial_channels(recipe, operating)
     elif kind == "residential":
-        channels = _residential_channels(recipe, unit_seed, rng_mode)
+        channels = _residential_channels(recipe, unit_seed, rng_mode, reference_location)
     elif kind == "fixed":
         channels = _fixed_channels(recipe)
     else:

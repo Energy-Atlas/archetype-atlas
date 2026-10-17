@@ -28,7 +28,7 @@ from .companions import companion_channels
 from .errors import GeneratorError
 from .mixtures import Load, Owner, mix, scale
 from .programmes import (annual_targets, configuration_people, instance_channels, load_configuration,
-                         load_recipe, schedules)
+                         load_recipe, reference_locations, schedules)
 from .request import Instance, Request, parse_request
 from .residential.generate import Dwelling, generate_occupancy_and_lighting
 from .seeds import commercial_group_seed
@@ -160,7 +160,7 @@ def _programme_owner(item: Planned, request: Request, seeds: dict, operating: di
     else:
         group_operating = operating.get(instance.group) if kind == "commercial" else None
         channels = instance_channels(recipe, operating=group_operating, unit_seed=seeds.get(instance.key),
-                                     rng_mode=request.residential_rng)
+                                     rng_mode=request.residential_rng, reference_location=instance.reference_location)
         if kind == "commercial":
             generation["operating_group"] = instance.group
         if kind == "residential":
@@ -178,11 +178,15 @@ def _apartment_channels(instance: Instance, recipe: dict, unit_seed: int | None,
     if instance.residents is None:
         raise GeneratorError("missing_input", f"/instances/{instance.key}/residents", "Apartment units need residents")
     if instance.residents > 0:
-        if instance.location is None:
+        if instance.reference_location:
+            row = reference_locations()[instance.reference_location]
+            dwelling = Dwelling(instance.residents, row["state"], row["latitude"], row["longitude"], row["utc_offset"])
+        elif instance.location is None:
             raise GeneratorError("missing_input", f"/instances/{instance.key}/location",
-                                 "Occupied apartment units need a location")
-        where = instance.location
-        dwelling = Dwelling(instance.residents, where.state, where.latitude, where.longitude, where.utc_offset)
+                                 "Occupied apartment units need a location or reference_location")
+        else:
+            where = instance.location
+            dwelling = Dwelling(instance.residents, where.state, where.latitude, where.longitude, where.utc_offset)
         timing = generate_occupancy_and_lighting(dwelling, unit_seed, rng_mode)
         for slot, kernel_channel in recipe["unit_timing"].items():
             channels[slot] = timing[kernel_channel]
