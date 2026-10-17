@@ -79,7 +79,7 @@ def _commercial_channels(recipe: dict, operating: dict) -> dict:
     slots = {s["slot"]: Slot(table[s["schedule"]], spec["modes"][s["slot"]])
              for s in recipe["slots"] if s["slot"] in spec["modes"]}
     people = [(schedule_id, table[schedule_id], count) for schedule_id, count in spec["people"]]
-    return transform(slots, people, operating)
+    return transform(slots, people, operating, invert_rule_days=spec.get("invert_rule_days", False))
 
 
 def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str) -> dict:

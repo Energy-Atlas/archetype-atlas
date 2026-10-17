@@ -22,6 +22,7 @@ Usage: python -m scripts.build_family_recipes LargeOffice Hospital ...   (write 
 """
 from functools import lru_cache
 import json
+import re
 from pathlib import Path
 import sys
 
@@ -86,19 +87,50 @@ def source_programmes(building_type: str, template: str, view: str) -> dict:
             and p["detail"] == "SourcePrograms" and p["name"].endswith(suffix)}
 
 
-def people(building_type: str, template: str, view: str) -> list:
-    """[(occupancy schedule id, design people)] for every occupied geometry space, by space name."""
+RESIDENTIAL_SPACE_TYPES = re.compile(r"\sApartment|GuestRoom|PatRoom|ResBedroom|ResLiving")
+
+
+def _residential(space) -> bool:
+    """openstudio-standards space.rb `space_residential?`: by space type name."""
+    return bool(space.space_type and RESIDENTIAL_SPACE_TYPES.search(space.space_type))
+
+
+@lru_cache(maxsize=None)
+def occupancy_carrier(building_type: str, template: str, view: str) -> tuple:
+    """(occupied spaces of the dominant group, residential dominant?).
+
+    parametric.rb model_infer_hours_of_operation_building compares design people
+    (number of people x zone multiplier) in residential and non-residential
+    spaces and infers hours from the larger group; each entry is
+    (space name, occupancy schedule id, floor area, design people without multiplier).
+    """
     by_type = source_programmes(building_type, template, view)
-    result = []
+    groups = {True: [], False: []}
+    totals = {True: 0.0, False: 0.0}
     for space in sorted(read_spaces(geometry_file(building_type, template)), key=lambda s: s.name):
         programme = by_type.get(space.standards_space_type)
         occupancy = _load(programme, "occupancy") if programme else None
-        if _known_positive(occupancy):
-            result.append([occupancy["schedule_id"], space.floor_area_m2 * occupancy["value"]])
-    return result
+        if not _known_positive(occupancy):
+            continue
+        count = space.floor_area_m2 * occupancy["value"]
+        residential = _residential(space)
+        groups[residential].append((space.name, occupancy["schedule_id"], space.floor_area_m2, count))
+        totals[residential] += count * space.multiplier
+    residential_dominant = totals[True] > totals[False]
+    return tuple(groups[residential_dominant]), residential_dominant
 
 
-def programme_recipe(programme: dict, people_list: list, configuration: str, sampling: str) -> dict:
+def people_by_space(building_type: str, template: str, view: str) -> list:
+    return list(occupancy_carrier(building_type, template, view)[0])
+
+
+def people(building_type: str, template: str, view: str) -> list:
+    """[(occupancy schedule id, design people)] of the dominant group, by space name."""
+    return [[schedule_id, count] for _, schedule_id, _, count in people_by_space(building_type, template, view)]
+
+
+def programme_recipe(programme: dict, people_list: list, configuration: str, sampling: str,
+                     invert: bool = False) -> dict:
     slots, demands, controls, companions, modes = [], [], [], {}, {}
     occupancy = _load(programme, "occupancy")
     if _known_positive(occupancy):
@@ -144,7 +176,8 @@ def programme_recipe(programme: dict, people_list: list, configuration: str, sam
                    "definition": "data/definition-releases/v0.1.1/programs.json#" + programme["id"]},
         "slots": slots, "demands": demands, "controls": controls, "companions": companions,
         "required_services": required_services,
-        "commercial": {"configuration_id": configuration, "building_type": sampling, "modes": modes, "people": people_list},
+        "commercial": {"configuration_id": configuration, "building_type": sampling, "modes": modes, "people": people_list,
+                       "invert_rule_days": invert},
     }
 
 
@@ -188,7 +221,8 @@ def service_record(service: dict, building_type: str) -> dict:
             continue
         configurations[configuration_id(building_type, template, view)] = {
             "schedule": load["schedule_id"], "building_type": SAMPLING[building_type],
-            "people": people(building_type, template, view), "companions": companions}
+            "people": people(building_type, template, view), "companions": companions,
+            "invert_rule_days": occupancy_carrier(building_type, template, view)[1]}
     return {
         "schema_version": "2.0.0", "service_id": service["id"], "kind": "physical_service",
         "source": {"definition": "data/definition-releases/v0.1.1/services.json#" + service["id"]},
@@ -213,10 +247,11 @@ def build_family(building_type: str) -> list:
             if not selected:
                 continue
             people_list = people(building_type, template, view)
+            invert = occupancy_carrier(building_type, template, view)[1]
             configuration = configuration_id(building_type, template, view)
             for programme in selected:
                 if programme["detail"] == "SourcePrograms":
-                    recipes.append(programme_recipe(programme, people_list, configuration, sampling))
+                    recipes.append(programme_recipe(programme, people_list, configuration, sampling, invert))
                 elif programme.get("composition_id"):
                     recipes.append(composition_recipe(programme))
     return recipes

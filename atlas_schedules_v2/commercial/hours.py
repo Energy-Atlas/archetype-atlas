@@ -6,6 +6,7 @@ Ports openstudio-standards 0.8.6:
   daily on/off profile from a 25 % threshold, keeping only the largest gap.
 """
 from dataclasses import dataclass
+from datetime import date, timedelta
 import math
 
 import numpy as np
@@ -75,15 +76,41 @@ def _close_gaps(points):
     return sorted(closed.items())
 
 
-def daily_hours(fraction: np.ndarray) -> list[Hours]:
-    """Inferred hours of operation for each of the 365 days."""
+def _on_off(fraction: np.ndarray, day: int) -> tuple:
+    values = fraction[24 * day:24 * (day + 1)]
+    low = values.min()
+    threshold = low + (values.max() - low) * THRESHOLD_FRACTION
+    return tuple(1.0 if v != 0 and v >= threshold else 0.0 for v in values)
+
+
+def _default_days(profiles: list, year: int) -> set:
+    """Days on the schedule's default profile: weekdays with the most used weekday on/off profile.
+
+    spaces_get_occupancy_schedule keeps that profile as the default day and turns
+    every other weekday profile and all weekend profiles into rules.
+    """
+    counts = {}
+    for day, profile in enumerate(profiles):
+        if (date(year, 1, 1) + timedelta(days=day)).weekday() < 5:
+            counts[profile] = counts.get(profile, 0) + 1
+    most_used = max(counts, key=counts.get)
+    return {day for day, profile in enumerate(profiles)
+            if profile == most_used and (date(year, 1, 1) + timedelta(days=day)).weekday() < 5}
+
+
+def daily_hours(fraction: np.ndarray, invert_rule_days: bool = False, year: int = 2007) -> list[Hours]:
+    """Inferred hours of operation for each of the 365 days.
+
+    invert_rule_days: residential spaces dominate, so model_infer_hours_of_operation_building
+    swaps on and off on every rule day (not on default-profile days).
+    """
+    profiles = [_on_off(fraction, day) for day in range(365)]
+    default = _default_days(profiles, year) if invert_rule_days else set()
     result = []
-    for day in range(365):
-        values = fraction[24 * day:24 * (day + 1)]
-        low = values.min()
-        threshold = low + (values.max() - low) * THRESHOLD_FRACTION
-        on_off = [1.0 if v != 0 and v >= threshold else 0.0 for v in values]
+    for day, on_off in enumerate(profiles):
         points = _close_gaps(points_from_hourly(on_off))
+        if invert_rule_days and day not in default:
+            points = [(t, 1.0 - v) if v in (0.0, 1.0) else (t, v) for t, v in points]
         # OpenStudio rejects a point at time 0 when the profile is stored.
         points = [(t, v) for t, v in points if t > 0]
         result.append(hours_from_points(points))

@@ -111,15 +111,16 @@ def merge_people(people: list[tuple[str, dict, float]]) -> list[tuple[dict, floa
 
 
 def transform(slots: dict[str, Slot], people: list[tuple[str, dict, float]],
-              operating: dict, year: int = 2007) -> dict[str, np.ndarray]:
+              operating: dict, year: int = 2007, invert_rule_days: bool = False) -> dict[str, np.ndarray]:
     """Transformed 8,760-hour arrays for every slot.
 
     people: (People Ruleset id, rule set, design people) for each space, in
     native space order; used to infer the original hours of operation.
+    invert_rule_days: residential spaces dominate (see hours.daily_hours).
     operating: sampled parameters from `sampler.sample_operating_parameters`.
     """
     groups = [(evaluate_rules(rules, year)[0], count) for rules, count in merge_people(people)]
-    original_hours = daily_hours(occupancy_fraction(groups))
+    original_hours = daily_hours(occupancy_fraction(groups), invert_rule_days, year)
     new_hours = {
         "weekday": sampled_hours(operating["weekday_start_time"]["value"], operating["weekday_duration"]["value"]),
         "weekend": sampled_hours(operating["weekend_start_time"]["value"], operating["weekend_duration"]["value"]),

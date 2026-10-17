@@ -219,7 +219,7 @@ def _service_owner(item: Planned, operating: dict) -> Owner:
     total = annual_target(demand["value"], demand["unit"], reference)
     people = [(sid, table[sid], count) for sid, count in configuration["people"]]
     channels = transform({"hot_water_volume": Slot(table[configuration["schedule"]], "hours")}, people,
-                         operating[instance.group])
+                         operating[instance.group], invert_rule_days=configuration.get("invert_rule_days", False))
     channels.update(companion_channels(configuration["companions"], table, None))
     if demand["basis"] not in instance.extent:
         raise GeneratorError("invalid_request", f"/instances/{instance.key}/extent", f"Needs a {demand['basis']} extent")
