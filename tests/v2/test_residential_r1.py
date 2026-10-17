@@ -13,7 +13,6 @@ from atlas_schedules_v2.residential.rng import RubyStream, unit_streams
 from atlas_schedules_v2.residential.tables import load_tables
 
 KEYS = Path(__file__).resolve().parents[1] / "answer_keys/residential"
-REFERENCE_VECTORS = Path(__file__).resolve().parents[2] / "data/schedule-generator/reference-vectors.json"
 TOLERANCE = 1e-6
 
 
@@ -85,14 +84,13 @@ class DiscreteOutcomes(unittest.TestCase):
 
 
 class RubyStreamDraws(unittest.TestCase):
-    @unittest.skipUnless(REFERENCE_VECTORS.exists(), "native draw vectors not present")
     def test_draws_match_ruby(self):
-        data = json.loads(REFERENCE_VECTORS.read_text(encoding="utf-8"))
-        for vector in data["random_vectors"]:
-            stream = RubyStream(int(vector["seed"]))
-            for draw in vector["draws"]:
-                value = stream.random() if draw["limit"] is None else stream.randbelow(draw["limit"])
-                self.assertEqual(value, draw["value"])
+        data = json.loads((KEYS / "ruby-draws.json").read_text(encoding="utf-8"))
+        for vector in data["vectors"]:
+            stream = RubyStream(vector["seed"])
+            for limit, expected in vector["draws"]:
+                value = stream.random() if limit is None else stream.randbelow(limit)
+                self.assertEqual(value, expected)
 
 
 if __name__ == "__main__":
