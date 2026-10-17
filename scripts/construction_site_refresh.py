@@ -16,6 +16,7 @@ from scripts.common import ROOT,load_json
 from scripts.definition_contract import canonical
 from scripts.construction_site import update_existing,install_contract,verify_delivery,PREFIX
 from scripts.site_asset_versions import version_asset_urls
+from website.hooks.card_icons import on_page_content as inline_card_icons
 
 
 @lru_cache(maxsize=1)
@@ -33,6 +34,7 @@ def render_page(source,existing,source_path,docs):
     """Use the configured Markdown renderer and retain the verified theme shell."""
     if source.startswith('---\n'):source=source.split('\n---\n',1)[1]
     names,settings=extensions();body=markdown.markdown(source,extensions=names,extension_configs=settings)
+    body=inline_card_icons(body,page=None,config=None,files=None)
     root=Path(docs).resolve()
     def link(match):
         href=html.unescape(match[1]);u=urlsplit(href)

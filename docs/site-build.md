@@ -40,6 +40,23 @@ python -m scripts.definition_release --reproduce
 
 ## Active output
 
+### Local UI-only display preview
+
+To review card styling without generating the research catalogue, run:
+
+```console
+python -m scripts.card_preview
+python -m scripts.card_preview --serve
+```
+
+Open <http://127.0.0.1:8766/archetype-atlas/>. The strict MkDocs build uses
+the current landing and catalogue overview generators, shared theme and hooks.
+Finders are explicitly empty and guide pages are labelled typography specimens.
+Only UI assets and preview pages are written under `build/card-preview/`;
+no record pages, research packets, release bundles or deployment artifacts are
+generated. Re-run the first command after editing styles or templates.
+This display build does not replace the full publication checks below.
+
 The catalogue has two family gates and three object kinds. Programs, constructions
 and HVAC systems link to designated schedules, materials, components and evidence.
 Every object has lazy, bounded, checksum-verified JSON inspection and copying.
