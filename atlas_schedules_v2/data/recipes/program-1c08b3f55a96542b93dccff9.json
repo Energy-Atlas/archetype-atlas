@@ -1,0 +1,135 @@
+{
+ "commercial": {
+  "configuration_id": "large_hotel__90_1_2019__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "gas_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.21527820833419445,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 11.732662354213598
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 508.0565716686989
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "natural gas",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "gas_equipment",
+   "slot": "gas_equipment",
+   "unit": "W/m2",
+   "value": 2419.571101463358
+  }
+ ],
+ "kind": "commercial",
+ "name": "Kitchen_LargeHotel",
+ "program_id": "program-1c08b3f55a96542b93dccff9",
+ "required_services": [
+  "service-7bc1fb3e3446d819cb4d0e0d"
+ ],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-6707c41fc5b72015d593",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-1700156301c082d0fd7d",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-6330a21603c37534f02d",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-cf384481ff30a92c7d7b",
+   "slot": "gas_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-36909774f2dd7a4ce150",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-a9fd0231af0d67f52bd5",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-de5f68b776cfce8c03ad",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "LargeHotel",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-1c08b3f55a96542b93dccff9",
+  "family": "code_prototype_rules",
+  "source_id": "program-957ada978b1569f37b62",
+  "template": "90.1-2019",
+  "view": "source",
+  "vintage": null
+ }
+}

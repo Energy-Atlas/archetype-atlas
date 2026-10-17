@@ -1,0 +1,133 @@
+{
+ "commercial": {
+  "configuration_id": "primary_school__90_1_2013__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "gas_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.16070518252147614,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 13.024331604218764
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 190.4501725670118
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "natural gas",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "gas_equipment",
+   "slot": "gas_equipment",
+   "unit": "W/m2",
+   "value": 1431.237821035105
+  }
+ ],
+ "kind": "commercial",
+ "name": "Kitchen_PrimarySchool",
+ "program_id": "program-9e37e3c89d21d1b136ab1359",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-4832e0b6df6183ecb46f",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-73d598d20177286e892c",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-4e892f46b2e427713b67",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-ef5e42883a4bedcbfa16",
+   "slot": "gas_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-21d935b7a248dbe852f8",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-3e8949d2826ca6108f3b",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-3230be84ea2655fbeae9",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "PrimarySchool",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-9e37e3c89d21d1b136ab1359",
+  "family": "code_prototype_rules",
+  "source_id": "program-e05a1334c8cb11f25dcb",
+  "template": "90.1-2013",
+  "view": "source",
+  "vintage": null
+ }
+}

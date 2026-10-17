@@ -1,0 +1,99 @@
+{
+ "commercial": {
+  "configuration_id": "large_hotel__90_1_2007__reviewed",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.010763910416709722,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 5.381955208354861
+  }
+ ],
+ "kind": "commercial",
+ "name": "Corridor_LargeHotel",
+ "program_id": "program-3ebebdcba9844f39feb5b78d",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-6707c41fc5b72015d593",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-dbf5e0f216884535d853",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-36909774f2dd7a4ce150",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-a9fd0231af0d67f52bd5",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-de5f68b776cfce8c03ad",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "LargeHotel",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-3ebebdcba9844f39feb5b78d",
+  "family": "code_prototype_rules",
+  "source_id": "program-a71f8618469c29430b0e",
+  "template": "90.1-2007",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

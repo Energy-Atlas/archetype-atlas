@@ -1,0 +1,69 @@
+{
+ "configurations": {
+  "outpatient__doe_ref_1980_2004__reviewed": {
+   "companions": {
+    "water_latent_fraction": {
+     "method": "constant",
+     "value": 0.05
+    },
+    "water_sensible_fraction": {
+     "method": "constant",
+     "value": 0.2
+    },
+    "water_target_temperature": {
+     "method": "constant",
+     "value": 60.0
+    }
+   },
+   "schedule": "schedule-e1ec7250f449c4122758"
+  },
+  "outpatient__doe_ref_1980_2004__source": {
+   "companions": {
+    "water_latent_fraction": {
+     "method": "constant",
+     "value": 0.05
+    },
+    "water_sensible_fraction": {
+     "method": "constant",
+     "value": 0.2
+    },
+    "water_target_temperature": {
+     "method": "constant",
+     "value": 60.0
+    }
+   },
+   "schedule": "schedule-e1ec7250f449c4122758"
+  }
+ },
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "water_target_temperature",
+   "unit": "C"
+  },
+  {
+   "quantity": "sensible_fraction",
+   "slot": "water_sensible_fraction",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "latent_fraction",
+   "slot": "water_latent_fraction",
+   "unit": "fraction"
+  }
+ ],
+ "demand": {
+  "basis": "floor_area",
+  "fuel": "water",
+  "host": "building_service",
+  "quantity": "hot_water_volume",
+  "unit": "m3/s/m2",
+  "value": 6.737075616852777e-08
+ },
+ "kind": "physical_service",
+ "schema_version": "2.0.0",
+ "service_id": "service-13d84197e60b68edd500cbcc",
+ "source": {
+  "definition": "data/definition-releases/v0.1.1/services.json#service-13d84197e60b68edd500cbcc"
+ }
+}

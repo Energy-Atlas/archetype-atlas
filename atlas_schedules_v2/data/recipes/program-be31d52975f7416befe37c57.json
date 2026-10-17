@@ -1,0 +1,70 @@
+{
+ "commercial": {
+  "configuration_id": "supermarket__doe_ref_1980_2004__source",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 11.840301458380695
+  }
+ ],
+ "kind": "commercial",
+ "name": "Elec/MechRoom_SuperMarket",
+ "program_id": "program-be31d52975f7416befe37c57",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-37d69162117ff667effd",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-6030096b1a6c23dc1eb0",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-7e41a125e54d5cad289a",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "SuperMarket",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-be31d52975f7416befe37c57",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-98bda65452dc66458d95",
+  "template": "DOE Ref 1980-2004",
+  "view": "source",
+  "vintage": null
+ }
+}

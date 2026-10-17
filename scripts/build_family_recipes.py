@@ -233,8 +233,10 @@ def service_record(service: dict, building_type: str) -> dict:
 
 
 def build_services(building_type: str) -> list:
+    """Shared water services with a known rate and schedule (unknown schedules stay unknown, not generated)."""
     return [service_record(s, building_type) for s in services()
-            if s["building_type"] == building_type and s["template"] in TEMPLATES and s["load"]["value"]]
+            if s["building_type"] == building_type and s["template"] in TEMPLATES and s["load"]["value"]
+            and s["load"]["schedule_id"]]
 
 
 def build_family(building_type: str) -> list:
@@ -266,7 +268,8 @@ def _summary(recipe: dict) -> dict:
                "required_services": recipe.get("required_services", [])}
     if recipe["kind"] == "commercial":
         totals = {}
-        for schedule_id, count in recipe["commercial"]["people"]:
+        people_list = recipe["commercial"].get("people") or _configuration(recipe["commercial"]["configuration_id"])["people"]
+        for schedule_id, count in people_list:
             totals[schedule_id] = totals.get(schedule_id, 0) + count
         summary["people"] = {k: round(v, 9) for k, v in totals.items()}
         summary["modes"] = recipe["commercial"]["modes"]
@@ -274,13 +277,18 @@ def _summary(recipe: dict) -> dict:
     return summary
 
 
+def _configuration(configuration_id: str) -> dict:
+    return json.loads((TARGET.parent / "configurations" / f"{configuration_id}.json").read_text(encoding="utf-8"))
+
+
 def _service_summary(record: dict) -> dict:
     variants = {}
     for key, variant in record["configurations"].items():
+        building = variant if "people" in variant else _configuration(key)
         totals = {}
-        for schedule_id, count in variant["people"]:
+        for schedule_id, count in building["people"]:
             totals[schedule_id] = round(totals.get(schedule_id, 0) + count, 9)
-        variants[key] = (variant["schedule"], variant["building_type"], totals,
+        variants[key] = (variant["schedule"], building["building_type"], totals,
                          {k: v["value"] for k, v in variant["companions"].items()})
     return {"demand": record["demand"], "variants": variants}
 
@@ -334,12 +342,43 @@ def main() -> None:
         check(families)
         check_services(families)
         return
+    table_path = TARGET.parent / "schedules.json"
+    table = json.loads(table_path.read_text(encoding="utf-8"))
+    definitions = {s["id"]: s for s in json.loads((DEFINITIONS / "schedules.json").read_text(encoding="utf-8"))}
+
+    def keep(schedule_id):
+        if schedule_id and schedule_id not in table:
+            table[schedule_id] = {"rules": [{k: r[k] for k in ("day_types", "start_date", "end_date", "values")}
+                                            for r in definitions[schedule_id]["rules"]]}
+
+    configurations = TARGET.parent / "configurations"
     for building_type in sys.argv[1:]:
         recipes = build_family(building_type)
         for recipe in recipes:
+            for slot in recipe["slots"]:
+                keep(slot["schedule"])
+            spec = recipe.get("commercial")
+            if spec:
+                for schedule_id, _ in spec["people"]:
+                    keep(schedule_id)
+                record = {"configuration_id": spec["configuration_id"], "building_type": spec["building_type"],
+                          "people": spec["people"], "invert_rule_days": spec["invert_rule_days"]}
+                (configurations / f"{spec['configuration_id']}.json").write_text(
+                    json.dumps(record, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+                recipe["commercial"] = {"configuration_id": spec["configuration_id"], "modes": spec["modes"]}
             path = TARGET / f"{recipe['program_id']}.json"
             path.write_text(json.dumps(recipe, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
-        print(building_type, len(recipes), "recipes")
+        records = build_services(building_type)
+        for record in records:
+            for variant in record["configurations"].values():
+                keep(variant["schedule"])
+                for key in ("people", "building_type", "invert_rule_days"):
+                    variant.pop(key)
+            path = TARGET.parent / "services" / f"{record['service_id']}.json"
+            path.write_text(json.dumps(record, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+        print(building_type, len(recipes), "recipes", len(records), "services")
+    table_path.write_text(json.dumps(table, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    print(len(table), "rule sets")
 
 
 if __name__ == "__main__":

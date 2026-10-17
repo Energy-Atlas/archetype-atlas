@@ -1,0 +1,118 @@
+{
+ "commercial": {
+  "configuration_id": "outpatient__doe_ref_pre_1980__reviewed",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.1999934555424666,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 17.222256666735557
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 16.145865625064584
+  }
+ ],
+ "kind": "commercial",
+ "name": "PhysicalTherapy_Outpatient",
+ "program_id": "program-9e9b2d1aa56de29aa6686049",
+ "required_services": [
+  "service-93e7c6642e280afccf6d13d7"
+ ],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-8fc433969f514488ab44",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-a0d7d0af4d77512563db",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-eeeec3b4f6ddf8dda8fd",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-27aac06c0a22da218665",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-99b28d1428247cebfff6",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-9337ed0800f572bac227",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "Outpatient",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-9e9b2d1aa56de29aa6686049",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-5e3294ff071b601411e5",
+  "template": "DOE Ref Pre-1980",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

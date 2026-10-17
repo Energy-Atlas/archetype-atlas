@@ -1,0 +1,99 @@
+{
+ "commercial": {
+  "configuration_id": "supermarket__90_1_2007__reviewed",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.08611128333367778,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 9.68751937503875
+  }
+ ],
+ "kind": "commercial",
+ "name": "Restroom_SuperMarket",
+ "program_id": "program-f2d8e8c2c41f4b6792477a8e",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-918b685cae81f1f11010",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-37d69162117ff667effd",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-6030096b1a6c23dc1eb0",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-7e41a125e54d5cad289a",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-fe4a3e5210deb24d8bf1",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "SuperMarket",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-f2d8e8c2c41f4b6792477a8e",
+  "family": "code_prototype_rules",
+  "source_id": "program-f7bd26c7bb1452953508",
+  "template": "90.1-2007",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

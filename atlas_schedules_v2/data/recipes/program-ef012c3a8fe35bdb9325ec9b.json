@@ -1,0 +1,99 @@
+{
+ "commercial": {
+  "configuration_id": "hospital__doe_ref_1980_2004__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.21527820833419445,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 41.34417991058204
+  }
+ ],
+ "kind": "commercial",
+ "name": "ER_Triage_Hospital",
+ "program_id": "program-ef012c3a8fe35bdb9325ec9b",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-59197faccd1c55bc182e",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-07000196a12dd3ceaa15",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-ad04522d70d654799159",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-ad04522d70d654799159",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-3446d60d760b8280cf72",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "Hospital",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-ef012c3a8fe35bdb9325ec9b",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-a4ffe6755aa603f0cfcd",
+  "template": "DOE Ref 1980-2004",
+  "view": "source",
+  "vintage": null
+ }
+}

@@ -1,0 +1,69 @@
+{
+ "configurations": {
+  "strip_mall__90_1_2007__reviewed": {
+   "companions": {
+    "water_latent_fraction": {
+     "method": "constant",
+     "value": 0.05
+    },
+    "water_sensible_fraction": {
+     "method": "constant",
+     "value": 0.2
+    },
+    "water_target_temperature": {
+     "method": "constant",
+     "value": 48.88889
+    }
+   },
+   "schedule": "schedule-5bb4024e7f3ac53c22b8"
+  },
+  "strip_mall__90_1_2007__source": {
+   "companions": {
+    "water_latent_fraction": {
+     "method": "constant",
+     "value": 0.05
+    },
+    "water_sensible_fraction": {
+     "method": "constant",
+     "value": 0.2
+    },
+    "water_target_temperature": {
+     "method": "constant",
+     "value": 48.88889
+    }
+   },
+   "schedule": "schedule-5bb4024e7f3ac53c22b8"
+  }
+ },
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "water_target_temperature",
+   "unit": "C"
+  },
+  {
+   "quantity": "sensible_fraction",
+   "slot": "water_sensible_fraction",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "latent_fraction",
+   "slot": "water_latent_fraction",
+   "unit": "fraction"
+  }
+ ],
+ "demand": {
+  "basis": "absolute",
+  "fuel": "water",
+  "host": "building_service",
+  "quantity": "hot_water_volume",
+  "unit": "m3/s",
+  "value": 1.8927058919999999e-06
+ },
+ "kind": "physical_service",
+ "schema_version": "2.0.0",
+ "service_id": "service-83177c924e781f1a56310f75",
+ "source": {
+  "definition": "data/definition-releases/v0.1.1/services.json#service-83177c924e781f1a56310f75"
+ }
+}

@@ -1,0 +1,99 @@
+{
+ "commercial": {
+  "configuration_id": "small_hotel__90_1_2019__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.03067714468762271,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 6.7812635625271245
+  }
+ ],
+ "kind": "commercial",
+ "name": "PublicRestroom_SmallHotel",
+ "program_id": "program-51093267a82e79404b34f6cd",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-6d17b237de28aab5f614",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-cd210bcb9562854e69d4",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-f4a64da626168a0504ef",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-bb75e9b77558cacc6391",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-8c49822deb91dd187e13",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "SmallHotel",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-51093267a82e79404b34f6cd",
+  "family": "code_prototype_rules",
+  "source_id": "program-cb02543935b5666ad6ec",
+  "template": "90.1-2019",
+  "view": "source",
+  "vintage": null
+ }
+}

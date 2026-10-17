@@ -1,0 +1,99 @@
+{
+ "commercial": {
+  "configuration_id": "hospital__90_1_2013__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.010763910416709722,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 10.656271312542625
+  }
+ ],
+ "kind": "commercial",
+ "name": "Corridor_Hospital",
+ "program_id": "program-b0cb2613be79a595be271646",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "schedule-5eb5d81977991b16bd52",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-2ce6ec98b03c763f5289",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-6b4a8cbc9d2acbd945e9",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-0537c9d383ab593f2a85",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-a6e94885fa8c9427d621",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "Hospital",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-b0cb2613be79a595be271646",
+  "family": "code_prototype_rules",
+  "source_id": "program-cbacd251de6905706ee8",
+  "template": "90.1-2013",
+  "view": "source",
+  "vintage": null
+ }
+}

@@ -1,0 +1,70 @@
+{
+ "commercial": {
+  "configuration_id": "small_hotel__90_1_2007__reviewed",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 5.381955208354861
+  }
+ ],
+ "kind": "commercial",
+ "name": "Corridor_SmallHotel",
+ "program_id": "program-debe10fc6e6990d063ee2c17",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-f0ada0d5d48c1dac7e95",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-f4a64da626168a0504ef",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-bb75e9b77558cacc6391",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "SmallHotel",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-debe10fc6e6990d063ee2c17",
+  "family": "code_prototype_rules",
+  "source_id": "program-4929de104c2fd6ee53ec",
+  "template": "90.1-2007",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

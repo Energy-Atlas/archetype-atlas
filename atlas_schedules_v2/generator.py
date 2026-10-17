@@ -27,7 +27,8 @@ from .commercial.transform import Slot, transform
 from .companions import companion_channels
 from .errors import GeneratorError
 from .mixtures import Load, Owner, mix, scale
-from .programmes import annual_targets, instance_channels, load_recipe, schedules
+from .programmes import (annual_targets, configuration_people, instance_channels, load_configuration,
+                         load_recipe, schedules)
 from .request import Instance, Request, parse_request
 from .residential.generate import Dwelling, generate_occupancy_and_lighting
 from .seeds import commercial_group_seed
@@ -124,9 +125,9 @@ def _group_operating(master: int, planned: list) -> dict:
     for item in planned:
         if item.service:
             configuration = item.service["configurations"][item.instance.configuration_id]
-            building_types.setdefault(item.instance.group, configuration["building_type"])
+            building_types.setdefault(item.instance.group, load_configuration(item.instance.configuration_id)["building_type"])
         elif item.recipe and item.recipe["kind"] == "commercial" and not item.caller_water_of:
-            building_type = item.recipe["commercial"]["building_type"]
+            building_type = load_configuration(item.recipe["commercial"]["configuration_id"])["building_type"]
             if building_types.setdefault(item.instance.group, building_type) != building_type:
                 raise GeneratorError("operating_group_conflict", f"/instances/{item.instance.key}/operating_group",
                                      "One operating group cannot mix sampling building types")
@@ -217,9 +218,10 @@ def _service_owner(item: Planned, operating: dict) -> Owner:
     demand = service["demand"]
     reference = evaluate_rules(table[configuration["schedule"]])[0]
     total = annual_target(demand["value"], demand["unit"], reference)
-    people = [(sid, table[sid], count) for sid, count in configuration["people"]]
-    channels = transform({"hot_water_volume": Slot(table[configuration["schedule"]], "hours")}, people,
-                         operating[instance.group], invert_rule_days=configuration.get("invert_rule_days", False))
+    building = load_configuration(instance.configuration_id)
+    channels = transform({"hot_water_volume": Slot(table[configuration["schedule"]], "hours")},
+                         configuration_people(building), operating[instance.group],
+                         invert_rule_days=building["invert_rule_days"])
     channels.update(companion_channels(configuration["companions"], table, None))
     if demand["basis"] not in instance.extent:
         raise GeneratorError("invalid_request", f"/instances/{instance.key}/extent", f"Needs a {demand['basis']} extent")

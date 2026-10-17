@@ -35,6 +35,21 @@ def schedules() -> dict:
 
 
 @lru_cache(maxsize=None)
+def load_configuration(configuration_id: str) -> dict:
+    """A commercial building configuration: sampling building type, People per space
+    (occupancy Ruleset id, design people) and rule-day inversion."""
+    path = DATA / "configurations" / f"{configuration_id}.json"
+    if not path.exists():
+        raise GeneratorError("unsupported_binding", "/configuration_id", f"No configuration {configuration_id!r}")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def configuration_people(configuration: dict) -> list:
+    table = schedules()
+    return [(schedule_id, table[schedule_id], count) for schedule_id, count in configuration["people"]]
+
+
+@lru_cache(maxsize=None)
 def load_recipe(program_id: str) -> dict:
     path = DATA / "recipes" / f"{program_id}.json"
     if not path.exists():
@@ -78,8 +93,9 @@ def _commercial_channels(recipe: dict, operating: dict) -> dict:
     spec = recipe["commercial"]
     slots = {s["slot"]: Slot(table[s["schedule"]], spec["modes"][s["slot"]])
              for s in recipe["slots"] if s["slot"] in spec["modes"]}
-    people = [(schedule_id, table[schedule_id], count) for schedule_id, count in spec["people"]]
-    return transform(slots, people, operating, invert_rule_days=spec.get("invert_rule_days", False))
+    configuration = load_configuration(spec["configuration_id"])
+    return transform(slots, configuration_people(configuration), operating,
+                     invert_rule_days=configuration["invert_rule_days"])
 
 
 def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str) -> dict:

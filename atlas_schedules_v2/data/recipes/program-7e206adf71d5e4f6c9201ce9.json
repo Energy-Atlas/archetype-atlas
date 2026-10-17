@@ -1,0 +1,87 @@
+{
+ "commercial": {
+  "configuration_id": "large_office__90_1_2019__reviewed",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 6.888902666694222
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 484.3759687519375
+  }
+ ],
+ "kind": "commercial",
+ "name": "OfficeLarge Main Data Center_LargeOffice",
+ "program_id": "program-7e206adf71d5e4f6c9201ce9",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-5d15bceca03f659e1a83",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-202c9398290fc3e56f8f",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-e262716f049189466043",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-20e5b7ead501307ccba8",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "LargeOffice",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-7e206adf71d5e4f6c9201ce9",
+  "family": "code_prototype_rules",
+  "source_id": "program-1583fc69e18bcd6315a0",
+  "template": "90.1-2019",
+  "view": "reviewed",
+  "vintage": null
+ }
+}

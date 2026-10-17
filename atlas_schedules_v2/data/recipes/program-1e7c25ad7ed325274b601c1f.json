@@ -1,0 +1,87 @@
+{
+ "commercial": {
+  "configuration_id": "primary_school__doe_ref_pre_1980__reviewed",
+  "modes": {
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 12.270857875049082
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": null,
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 3.982646854182597
+  }
+ ],
+ "kind": "commercial",
+ "name": "Lobby_PrimarySchool",
+ "program_id": "program-1e7c25ad7ed325274b601c1f",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "load",
+   "schedule": "schedule-ad136666d43b86a7fb43",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "schedule-455c1bb550fa0bf13960",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-617ff0002adf328fcccc",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "schedule-e60c635d1f373d9ea1bc",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "PrimarySchool",
+  "climate": null,
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-1e7c25ad7ed325274b601c1f",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-728afdcf3826c883358e",
+  "template": "DOE Ref Pre-1980",
+  "view": "reviewed",
+  "vintage": null
+ }
+}
