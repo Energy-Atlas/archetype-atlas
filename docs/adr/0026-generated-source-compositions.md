@@ -1,5 +1,7 @@
 # ADR 0026: Generate actual members of source compositions
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: accepted by the Task 10 controller for the Warehouse C4 scope.
 
 A packaged source composition identifies an exact parent programme, source view,

@@ -1,5 +1,7 @@
 # ADR 0024: Progressive source family shipments
 
+> Superseded by ADR 0035 (2026-10-17): verification and release ceremony removed.
+
 Status: accepted for Task 10's explicit R1 residential milestone.
 
 The default M1 resource tree and immutable v0.1.0/v0.1.1 ZIPs remain independent reference cases. New source families compile from their own versioned scope and lock into a separate development resource root. The release builder accepts that explicit root and installs it as the ZIP's own `atlas_schedules/data`; the public interface stays `generate(params, seed)` and uses the packaged resource identity. No repository scripts or native runtime are required for generation.

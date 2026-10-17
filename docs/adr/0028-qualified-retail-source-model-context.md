@@ -1,5 +1,7 @@
 # ADR 0028: Qualified Retail source-model context
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: bounded implementation accepted by the Task10 controller as Ruling21; exact scope/transport gates accepted as Ruling22, and bounded validation optimization as Ruling23. Native method and public integration evidence are complete; current certification and immutable shipment gates remain pending. Existing immutable artifacts, Program JSONv3 and v1.0 request semantics are unchanged.
 
 RetailStandalone needs its actual source People context. A generic Office carrier, a unit normalized carrier and independent People objects attached to repeated spaces cannot establish source equivalence. The pinned c8 source factories create shared SpaceType People inherited by actual assigned spaces, while the selected Standards0.8.6 inference accumulates each sorted space occurrence. Original Back_Space participates in model HOO even when a Sales/General parent excludes it.

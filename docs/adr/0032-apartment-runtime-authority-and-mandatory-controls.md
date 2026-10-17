@@ -1,5 +1,7 @@
 # 0032: Independent apartment runtime authority and mandatory caller controls
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: accepted for A4 integration under controller R55–R60; A5 release certification remains separate.
 
 The atlas adapts exact prototype/DOE programme timing without assigning geometry,

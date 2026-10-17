@@ -1,5 +1,7 @@
 # ADR 0033: Explicit local reference sidecar for release layout 2
 
+> Superseded by ADR 0035 (2026-10-17): verification and release ceremony removed.
+
 Status: accepted for the R67 packaging implementation; full A5 shipment gates remain closed.
 
 The cumulative reference cannot be transported inside the generator ZIP within

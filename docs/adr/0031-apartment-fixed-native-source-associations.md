@@ -1,5 +1,7 @@
 # ADR 0031: Apartment fixed native source associations
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Accepted 2026-10-15 for the bounded A3 proof producer. Public apartment runtime
 admission, caller control bindings and selected dwelling timing admission remain
 separate A4 work.

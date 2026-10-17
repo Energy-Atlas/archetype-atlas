@@ -1,5 +1,7 @@
 # ADR 0017: Portable Python schedule resources and explicit sampling context
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: Accepted for the M1 source foundation, 2026-10-14. Kernel and shipment
 validation remain separate gates.
 

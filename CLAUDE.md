@@ -7,3 +7,5 @@ nulls. Pin downloads and script transformations. Validate before extending and
 releasing. Inspect staged changes and audit secrets before every commit. Use
 Conventional Commits and truthful automated model metadata. Retain upstream
 notices; original work remains unlicensed. Work autonomously on routine choices.
+The schedule generator follows ADR 0035: readable port, tolerance acceptance
+against native answer keys, no bit-level reproduction or runtime lock ceremony.

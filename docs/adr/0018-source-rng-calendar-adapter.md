@@ -1,5 +1,7 @@
 # ADR 0018: Preserve source RNG and bounded calendar semantics
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 - Status: Accepted for the source-gated schedule-generator pilot
 - Date: 2026-10-14
 

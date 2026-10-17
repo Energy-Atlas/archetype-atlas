@@ -18,6 +18,15 @@ referential, schedule, provenance, and reproducibility checks before releasing.
 Keep raw downloads immutable; untracked large sources require locked retrieval.
 Retain upstream license notices; original work is unlicensed by user choice.
 
+Schedule generator (`atlas_schedules`, ADR 0035): a faithful but readable port
+of the upstream ComStock/ResStock schedule code. Validate against native answer
+keys at engineering tolerance (fractions 1e-6, annual totals 0.01 %, discrete
+outcomes identical with flips reported), never bit for bit. Keep an upstream
+quirk only if dropping it breaks that bar. Validate requests once at the
+boundary; keep verification in tests, not runtime locks or proofs. Write small
+single-purpose modules with family behaviour in data, plain names and one
+statement per line.
+
 Before EVERY commit inspect the staged diff and run the staged security audit.
 Never commit credentials, PII, local authentication, or restricted source data.
 Use `<type>(<scope>): <imperative description>` Conventional Commits. Use a

@@ -1,5 +1,7 @@
 # 0019: Residential activity and coordinated shape checkpoints
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: Accepted for the source-faithful Python schedule kernel, 2026-10-14.
 
 The residential generator ports ResStock revision

@@ -1,5 +1,7 @@
 # ADR 0023: Generated constituents and explicit physical mixtures
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Accepted 2026-10-14. Implements public M1 generation without changing frozen
 Program JSON v3 or source/reviewed case meanings. Shipment remains a later gate.
 

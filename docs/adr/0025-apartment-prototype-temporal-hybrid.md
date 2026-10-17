@@ -1,5 +1,7 @@
 # ADR 0025: Apartment prototype temporal hybrid
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: accepted architecture boundary for progressive Task 10. A1 selected timing and A2 source recipes are build-only components; production qualification remains closed.
 
 The controller approved the source proposal documented in `.superpowers/sdd/2026-10-13-schedule-generator/apartment-method-audit.md` on 2026-10-14. The exact 84 HighriseApartment/MidriseApartment records remain separate by room, template and source/reviewed view. There are 40 dwelling records, 28 corridors and 16 support offices. No source-defined apartment composition or ComStock v33 apartment selector exists in the pinned evidence.

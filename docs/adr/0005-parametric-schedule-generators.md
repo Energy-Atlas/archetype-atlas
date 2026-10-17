@@ -1,5 +1,7 @@
 # ADR 0005: Preserve parametric upstream schedule mechanisms
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Date: 2026-10-04. Status: accepted direction; implementation contract deferred to
 the next design discussion. This decision follows the user's annotation review.
 

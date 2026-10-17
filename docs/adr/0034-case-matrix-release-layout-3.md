@@ -1,5 +1,7 @@
 # ADR 0034: Case-matrix release layout 3 with a streaming reproducer
 
+> Superseded by ADR 0035 (2026-10-17): verification and release ceremony removed.
+
 Status: accepted (rulings 145–147); first used by v0.8.0.
 
 The cumulative apartment request (313 programmes, 385 requested owners) cannot

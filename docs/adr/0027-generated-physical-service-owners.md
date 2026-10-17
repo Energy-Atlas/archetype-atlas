@@ -65,6 +65,8 @@ After actual source/native/public two-seed and cumulative mixed qualification, t
 The exact denominator is165programme recipes (119inherited+23Full+23Quick),26physical service/configuration cases (16Full+10Quick from13source definitions),1370owned slots and10separate required programme aliases. The aliases do not create local slots/demands or extra catalogue programmes. Both restaurants cover five templates and both actual source/reviewed contexts; reviewed external services remain labelled adaptations. Source-inactive Attics and all remaining catalogue gaps remain explicit. Source method qualification and declared recipes do not establish a fully bound example by themselves: coverage, actual association certification and fresh own-runtime all/mixed references must close before shipment. The final complete ZIP is measured before staging; resource-only size does not establish transport feasibility.
 
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 ## Original requirement authority at bundle validation
 
 A bound alias is not the authority for whether a programme requires a source service. Every non-physical v1.1 owner retains a mandatory independent `required_service_links` inventory copied from its compiled original recipe before alias binding. Original requirements preserve exact source SID, channel, required flag, original programme demand and evidence. Programmes without external requirements and derived results carry explicit empty inventories. Only a validated v1.0 input can receive an empty inventory during version upgrade; an absent or malformed v1.1 inventory is rejected. Physical owners do not invent programme requirements.

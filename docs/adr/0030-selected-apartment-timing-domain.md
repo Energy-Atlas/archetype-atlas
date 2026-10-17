@@ -1,5 +1,7 @@
 # ADR 0030: Locked selected apartment timing domain
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: bounded A1 component decision. Apartment production selection and programme qualification remain closed.
 
 The selected dwelling occupancy and interior-lighting method receives only the 2007 non-leap local-standard calendar, positive integer resident count, USPS state, latitude, longitude, physical UTC offset, explicit source unit seed and a verified ResourceSet. The timing domain is the exact 37 ordered four-field tuples in positive M1 then R1 native capture encounter order. It is stored as schema-versioned canonical JSON at `data/schedule-generator/apartment/timing-domain.json`. Numeric coordinate equality admits integer or float representations; the tuple cannot be recombined field by field. These locations are controlled native arguments, not stock prevalence, DOE geography, prototype defaults or a basis for arbitrary weather choice. N=0 has a distinct source skip contract and never enters the selected positive method or source streams.

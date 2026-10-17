@@ -1,5 +1,7 @@
 # ADR 0022: Source-gated generator recipes and nominal companions
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Status: accepted for the exact M1 experiment, 2026-10-14.
 
 Frozen definitions and Program JSON v3 remain immutable reference artifacts.

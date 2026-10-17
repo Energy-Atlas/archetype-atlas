@@ -1,5 +1,7 @@
 # ADR 0021: Commercial conditional sampling and native transformation boundary
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Date: 2026-10-14. Status: accepted for the bounded M1 generator implementation.
 
 Commercial generation uses the passed Task 1 audit: exact `medium_office`

@@ -1,5 +1,7 @@
 # ADR 0020: Native residential event shapes and controlled calendar reference
 
+> Amended by ADR 0035 (2026-10-17): the semantic decisions stand; bit-level exactness, authority locks and certification ceremony are superseded.
+
 Date: 2026-10-14. Status: accepted for the schedule-generator implementation.
 
 Task 5 resumes the serialized native main and six end-use checkpoints produced
