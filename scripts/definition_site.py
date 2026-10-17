@@ -9,6 +9,8 @@ from scripts.catalogue_names import building_label
 
 GATES={'residential':'Residential','nonresidential':'Non Residential'}
 KINDS={'program':'Programs','construction':'Constructions','hvac_system':'HVAC systems'}
+GATE_ICONS={'residential':'house','nonresidential':'office'}
+KIND_ICONS={'program':'program','construction':'layers','hvac_system':'fan'}
 DETAILS={'SourcePrograms':'Finest','DepartmentMixes':'Intermediate','GeneralMix':'Coarse'}
 
 
@@ -37,11 +39,11 @@ def generate(bundle,target,publish=True,history=None,pages=True,only_kinds=None)
     for name in ('definition.js','definition_core.js'):
         shutil.copyfile(Path(__file__).resolve().parents[1]/'website/assets'/name,root/'assets'/name) if (root/'assets').exists() else None
     gate='# Catalogue\n\nChoose a building family.\n\n<div class="definition-gates">'
-    for key,label in GATES.items():gate+=f'<a class="definition-gate" href="{key}/">{label}<span>Browse programs, constructions and HVAC systems →</span></a>'
+    for key,label in GATES.items():gate+=f'<a class="definition-gate" href="{key}/"><span class="ea-card-icon" data-icon="{GATE_ICONS[key]}"></span>{label}<span class="definition-gate-description">Browse programs, constructions and HVAC systems →</span></a>'
     gate+='</div>\n';write(root,'catalogue.md',gate)
     for gate_key,gate_label in GATES.items():
         page=f'# {gate_label}\n\n<div class="definition-kinds">'
-        for kind,label in KINDS.items():page+=f'<a class="definition-kind" href="{kind}/">{label} →</a>'
+        for kind,label in KINDS.items():page+=f'<a class="definition-kind" href="{kind}/"><span class="ea-card-icon" data-icon="{KIND_ICONS[kind]}"></span>{label} →</a>'
         page+='</div>\n\n[Change building family](../../catalogue.md)\n';write(root,f'catalogue/{gate_key}/index.md',page)
         for kind,table in PRIMARY.items():
             if only_kinds is not None and kind not in only_kinds:continue
