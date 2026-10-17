@@ -1,0 +1,2475 @@
+{
+ "cases": [
+  {
+   "case_id": "one",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "multiple",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 3,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    3,
+    0
+   ],
+   "offset_minutes": -21,
+   "undefined": [],
+   "unit_seed": 84
+  },
+  {
+   "case_id": "sparse",
+   "channels": [
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": false,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": false,
+     "plug_loads_tv": false
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "zero",
+   "channels": [
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 0,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [],
+   "offset_minutes": null,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "without_dishwasher",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "without_clothes_washer",
+   "channels": [
+    "ceiling_fan",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "without_clothes_dryer",
+   "channels": [
+    "ceiling_fan",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": false,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "without_cooking_range",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": false,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "residential_archetype-16b2dae7d144a14640bf",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 1,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 61.2169,
+    "longitude": -149.868,
+    "residents": 2.0,
+    "state": "AK",
+    "time_zone_utc_offset": -9.0,
+    "weather_id": "USA_AK_Anchorage-Merrill.Field.702735_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    0
+   ],
+   "offset_minutes": 8,
+   "undefined": [],
+   "unit_seed": 143851
+  },
+  {
+   "case_id": "residential_archetype-579950323e90f744b1ad",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 36.0389,
+    "longitude": -86.6391,
+    "residents": 2.0,
+    "state": "TN",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_TN_Nashville.Intl.AP.723270_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1
+   ],
+   "offset_minutes": 1,
+   "undefined": [],
+   "unit_seed": 428680
+  },
+  {
+   "case_id": "residential_archetype-86fae2427a5cc0916a50",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 37.4486,
+    "longitude": -121.859,
+    "residents": 2.0,
+    "state": "CA",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_CA_San.Jose.Intl.AP.724945_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2,
+    0
+   ],
+   "offset_minutes": -10,
+   "undefined": [],
+   "unit_seed": 331250
+  },
+  {
+   "case_id": "residential_archetype-0a534568a3277a749ab0",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 40.5144,
+    "longitude": -112.033,
+    "residents": 2.0,
+    "state": "UT",
+    "time_zone_utc_offset": -7.0,
+    "weather_id": "USA_UT_Salt.Lake.City.Intl.AP.725720_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    3,
+    3
+   ],
+   "offset_minutes": 28,
+   "undefined": [],
+   "unit_seed": 2289
+  },
+  {
+   "case_id": "residential_archetype-28457c00121833f065f2",
+   "channels": [
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 38.1221,
+    "longitude": -79.0825,
+    "residents": 0.0,
+    "state": "VA",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_VA_Staunton-Shenandoah.Valley.Rgnl.AP.724105_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [],
+   "offset_minutes": null,
+   "undefined": [],
+   "unit_seed": 494980
+  },
+  {
+   "case_id": "residential_archetype-74d83a7105b6797f301c",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.7628,
+    "longitude": -81.3219,
+    "residents": 2.0,
+    "state": "NC",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1
+   ],
+   "offset_minutes": 16,
+   "undefined": [],
+   "unit_seed": 121706
+  },
+  {
+   "case_id": "residential_archetype-0157cd8578ba44bf8a77",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 42.5209,
+    "longitude": -71.7716,
+    "residents": 2.0,
+    "state": "MA",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_MA_Worcester.Rgnl.AP.725095_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1
+   ],
+   "offset_minutes": -23,
+   "undefined": [],
+   "unit_seed": 101526
+  },
+  {
+   "case_id": "residential_archetype-afa636ba09caa9f9e65c",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 4,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 30.4821,
+    "longitude": -96.3027,
+    "residents": 3.0,
+    "state": "TX",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_TX_College.Station-Easterwood.Field.722445_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    2,
+    1
+   ],
+   "offset_minutes": 22,
+   "undefined": [],
+   "unit_seed": 75531
+  },
+  {
+   "case_id": "residential_archetype-85e2fb9d853bb01b9a62",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 44.4872,
+    "longitude": -73.2278,
+    "residents": 1.0,
+    "state": "VT",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_VT_Burlington.Intl.AP.726170_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2
+   ],
+   "offset_minutes": 0,
+   "undefined": [],
+   "unit_seed": 175364
+  },
+  {
+   "case_id": "residential_archetype-1072d2739d4a01375b1d",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 61.2169,
+    "longitude": -149.868,
+    "residents": 5.0,
+    "state": "AK",
+    "time_zone_utc_offset": -9.0,
+    "weather_id": "USA_AK_Anchorage-Merrill.Field.702735_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2,
+    0,
+    0,
+    3,
+    0
+   ],
+   "offset_minutes": 22,
+   "undefined": [],
+   "unit_seed": 300265
+  },
+  {
+   "case_id": "residential_archetype-48b913daef16e4a0d395",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 41.6504,
+    "longitude": -83.6702,
+    "residents": 3.0,
+    "state": "OH",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_OH_Toledo.Express.AP.725360_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1,
+    3
+   ],
+   "offset_minutes": -20,
+   "undefined": [],
+   "unit_seed": 342177
+  },
+  {
+   "case_id": "residential_archetype-ca56512c8a583227b5d4",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 4,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 33.8878,
+    "longitude": -117.453,
+    "residents": 6.0,
+    "state": "CA",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_CA_Riverside.Muni.AP.722869_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2,
+    1,
+    2,
+    1,
+    1,
+    0
+   ],
+   "offset_minutes": -5,
+   "undefined": [],
+   "unit_seed": 350595
+  },
+  {
+   "case_id": "residential_archetype-3432edeeb8c2e19f2a8b",
+   "channels": [
+    "ceiling_fan",
+    "cooking_range",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 45.4813,
+    "longitude": -122.599,
+    "residents": 3.0,
+    "state": "OR",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_OR_Portland.Intl.AP.726980_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    2,
+    0
+   ],
+   "offset_minutes": -5,
+   "undefined": [],
+   "unit_seed": 177055
+  },
+  {
+   "case_id": "residential_archetype-ecfe7293c2d436ef552d",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 1,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 21.3175,
+    "longitude": -157.843,
+    "residents": 2.0,
+    "state": "HI",
+    "time_zone_utc_offset": -10.0,
+    "weather_id": "USA_HI_Honolulu.Intl.AP.911820_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    3
+   ],
+   "offset_minutes": 16,
+   "undefined": [],
+   "unit_seed": 349905
+  },
+  {
+   "case_id": "residential_archetype-71cf018572bd7e3b4938",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 4,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 21.3175,
+    "longitude": -157.843,
+    "residents": 3.0,
+    "state": "HI",
+    "time_zone_utc_offset": -10.0,
+    "weather_id": "USA_HI_Honolulu.Intl.AP.911820_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    1,
+    3
+   ],
+   "offset_minutes": -14,
+   "undefined": [],
+   "unit_seed": 402849
+  },
+  {
+   "case_id": "residential_archetype-37c6452a128338a2087d",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 4,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 44.7924,
+    "longitude": -88.6722,
+    "residents": 2.0,
+    "state": "WI",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_WI_Ephraim.AWOS.726626_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1
+   ],
+   "offset_minutes": 12,
+   "undefined": [],
+   "unit_seed": 257217
+  },
+  {
+   "case_id": "residential_archetype-08a27444abac71d3b335",
+   "channels": [
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 44.6651,
+    "longitude": -68.3944,
+    "residents": 0.0,
+    "state": "ME",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_ME_Bar.Harbor.AWOS.726077_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [],
+   "offset_minutes": null,
+   "undefined": [],
+   "unit_seed": 165449
+  },
+  {
+   "case_id": "residential_archetype-0cdf5294fee8424d976f",
+   "channels": [
+    "ceiling_fan",
+    "cooking_range",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 56.9471,
+    "longitude": -135.043,
+    "residents": 2.0,
+    "state": "AK",
+    "time_zone_utc_offset": -9.0,
+    "weather_id": "USA_AK_Sitka-Japonski.Island.AP.703710_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    0
+   ],
+   "offset_minutes": 11,
+   "undefined": [],
+   "unit_seed": 116109
+  },
+  {
+   "case_id": "residential_archetype-1b992d1fcb6cc50776dc",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 26.9089,
+    "longitude": -82.0431,
+    "residents": 2.0,
+    "state": "FL",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_FL_Fort.Myers-Page.Field.722106_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1
+   ],
+   "offset_minutes": 16,
+   "undefined": [],
+   "unit_seed": 269564
+  },
+  {
+   "case_id": "residential_archetype-768f9cf7b44f7669c314",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 25.9339,
+    "longitude": -80.1467,
+    "residents": 1.0,
+    "state": "FL",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_FL_Miami-Opa.Locka.AP.722024_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1
+   ],
+   "offset_minutes": 1,
+   "undefined": [],
+   "unit_seed": 400161
+  },
+  {
+   "case_id": "residential_archetype-1ee4bb65a4b0e6186133",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 39.9842,
+    "longitude": -75.6084,
+    "residents": 2.0,
+    "state": "PA",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_DE_Wilmington-New.Castle.County.AP.724089_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    1
+   ],
+   "offset_minutes": -29,
+   "undefined": [],
+   "unit_seed": 311638
+  },
+  {
+   "case_id": "residential_archetype-b17e87485621f4cb1857",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 5,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 40.8129,
+    "longitude": -73.3611,
+    "residents": 3.0,
+    "state": "NY",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_NY_Republic.AP.744864_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2,
+    1,
+    3
+   ],
+   "offset_minutes": 6,
+   "undefined": [],
+   "unit_seed": 298856
+  },
+  {
+   "case_id": "residential_archetype-874d109c8e9d3952afd2",
+   "channels": [
+    "cooking_range",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 40.6463,
+    "longitude": -73.9564,
+    "residents": 3.0,
+    "state": "NY",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_NY_New.York-Central.Park.725033_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    1,
+    3
+   ],
+   "offset_minutes": 21,
+   "undefined": [],
+   "unit_seed": 509305
+  },
+  {
+   "case_id": "residential_archetype-74b97cc51f5826a5c19b",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 5,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 21.3175,
+    "longitude": -157.843,
+    "residents": 3.0,
+    "state": "HI",
+    "time_zone_utc_offset": -10.0,
+    "weather_id": "USA_HI_Honolulu.Intl.AP.911820_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    2,
+    0
+   ],
+   "offset_minutes": -23,
+   "undefined": [],
+   "unit_seed": 452273
+  },
+  {
+   "case_id": "residential_archetype-aa1f864c610bf3d98e2e",
+   "channels": [
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 55.131,
+    "longitude": -131.493,
+    "residents": 0.0,
+    "state": "AK",
+    "time_zone_utc_offset": -9.0,
+    "weather_id": "USA_AK_Annette.Island.AP.703980_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [],
+   "offset_minutes": null,
+   "undefined": [],
+   "unit_seed": 447245
+  },
+  {
+   "case_id": "residential_archetype-5e56afc07bafb83e6944",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 34.608,
+    "longitude": -120.365,
+    "residents": 5.0,
+    "state": "CA",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_CA_Lompoc.AWOS.722895_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    1,
+    0,
+    3,
+    0
+   ],
+   "offset_minutes": 14,
+   "undefined": [],
+   "unit_seed": 400013
+  },
+  {
+   "case_id": "residential_archetype-51683c54b7032669f881",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 5,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 38.7844,
+    "longitude": -121.388,
+    "residents": 2.0,
+    "state": "CA",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_CA_Sacramento.Metro.AP.724839_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    1
+   ],
+   "offset_minutes": -11,
+   "undefined": [],
+   "unit_seed": 128082
+  },
+  {
+   "case_id": "residential_archetype-98217661e854820f9475",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 4,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 34.7447,
+    "longitude": -82.2574,
+    "residents": 1.0,
+    "state": "SC",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_SC_Greenville-Downtown.AP.723119_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2
+   ],
+   "offset_minutes": 7,
+   "undefined": [],
+   "unit_seed": 491364
+  },
+  {
+   "case_id": "residential_archetype-c8d3068d080573fb73c9",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 5,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 39.8266,
+    "longitude": -75.1276,
+    "residents": 4.0,
+    "state": "NJ",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_PA_Philadelphia.Intl.AP.724080_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1,
+    1,
+    0,
+    0
+   ],
+   "offset_minutes": 11,
+   "undefined": [],
+   "unit_seed": 94420
+  },
+  {
+   "case_id": "residential_archetype-b782a597642c3b89c217",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 41.7654,
+    "longitude": -88.3772,
+    "residents": 3.0,
+    "state": "IL",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_IL_Aurora.Muni.AP.744655_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    3,
+    0,
+    1
+   ],
+   "offset_minutes": -27,
+   "undefined": [],
+   "unit_seed": 290025
+  },
+  {
+   "case_id": "residential_archetype-a3d3772f8a0380587cd9",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 65.0735,
+    "longitude": -148.449,
+    "residents": 3.0,
+    "state": "AK",
+    "time_zone_utc_offset": -9.0,
+    "weather_id": "USA_AK_Fairbanks.Intl.AP.702610_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    0,
+    1
+   ],
+   "offset_minutes": 16,
+   "undefined": [],
+   "unit_seed": 461465
+  },
+  {
+   "case_id": "residential_archetype-db43453d149b552e630b",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": false,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 28.304,
+    "longitude": -82.7021,
+    "residents": 1.0,
+    "state": "FL",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_FL_Tampa.Intl.AP.722110_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1
+   ],
+   "offset_minutes": -26,
+   "undefined": [],
+   "unit_seed": 217680
+  },
+  {
+   "case_id": "residential_archetype-06edaac3a928a261e3ca",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 39.4944,
+    "longitude": -119.747,
+    "residents": 5.0,
+    "state": "NV",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_NV_Reno-Tahoe.Intl.AP.724880_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0,
+    2,
+    1,
+    0,
+    1
+   ],
+   "offset_minutes": -14,
+   "undefined": [],
+   "unit_seed": 452189
+  },
+  {
+   "case_id": "residential_archetype-edbfbf23a84d49be9ca6",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 34.6071,
+    "longitude": -112.317,
+    "residents": 1.0,
+    "state": "AZ",
+    "time_zone_utc_offset": -7.0,
+    "weather_id": "USA_AZ_Prescott-Love.Field.723723_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    1
+   ],
+   "offset_minutes": -23,
+   "undefined": [],
+   "unit_seed": 542837
+  },
+  {
+   "case_id": "residential_archetype-0edd1022990bf8c099ee",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 4,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 33.8418,
+    "longitude": -114.1,
+    "residents": 3.0,
+    "state": "AZ",
+    "time_zone_utc_offset": -7.0,
+    "weather_id": "USA_CA_Blythe-Riverside.County.AP.747188_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2,
+    0,
+    3
+   ],
+   "offset_minutes": 12,
+   "undefined": [],
+   "unit_seed": 181626
+  },
+  {
+   "case_id": "residential_archetype-c167523c69dac59ce636",
+   "channels": [
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "hot_water_clothes_washer",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 42.2256,
+    "longitude": -83.2685,
+    "residents": 5.0,
+    "state": "MI",
+    "time_zone_utc_offset": -5.0,
+    "weather_id": "USA_MI_Detroit.Metro.AP.725370_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    3,
+    1,
+    1,
+    3,
+    2
+   ],
+   "offset_minutes": -4,
+   "undefined": [],
+   "unit_seed": 149911
+  },
+  {
+   "case_id": "residential_archetype-b63cc449a2fa34bf3bb0",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 61.772,
+    "longitude": -148.182,
+    "residents": 1.0,
+    "state": "AK",
+    "time_zone_utc_offset": -9.0,
+    "weather_id": "USA_AK_Palmer.Muni.AP.702740_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": -7,
+   "undefined": [],
+   "unit_seed": 493473
+  },
+  {
+   "case_id": "residential_archetype-a6ba30fe6187ca0384a2",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.2662,
+    "longitude": -91.8491,
+    "residents": 1.0,
+    "state": "AR",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_AR_Little.Rock.AFB.723405_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": -10,
+   "undefined": [],
+   "unit_seed": 53460
+  },
+  {
+   "case_id": "residential_archetype-6c882dbfcd92f9047b4b",
+   "channels": [
+    "cooking_range",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 2,
+    "installed": {
+     "ceiling_fan": false,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": false,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 37.1074,
+    "longitude": -94.5218,
+    "residents": 1.0,
+    "state": "MO",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_MO_Joplin.Muni.AP.723495_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 5,
+   "undefined": [],
+   "unit_seed": 66378
+  },
+  {
+   "case_id": "residential_archetype-6304c2e6e1f5a94661a4",
+   "channels": [
+    "ceiling_fan",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 1,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": false,
+     "clothes_washer": false,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": false,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 32.5215,
+    "longitude": -97.3032,
+    "residents": 1.0,
+    "state": "TX",
+    "time_zone_utc_offset": -6.0,
+    "weather_id": "USA_TX_Fort.Worth.NAS.722595_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": -9,
+   "undefined": [],
+   "unit_seed": 449307
+  },
+  {
+   "case_id": "residential_archetype-7b43ef491bfd6a6d7b2a",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "bedrooms": 3,
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 38.7844,
+    "longitude": -121.388,
+    "residents": 2.0,
+    "state": "CA",
+    "time_zone_utc_offset": -8.0,
+    "weather_id": "USA_CA_Sacramento.Metro.AP.724839_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    2,
+    0
+   ],
+   "offset_minutes": 16,
+   "undefined": [],
+   "unit_seed": 24892
+  },
+  {
+   "case_id": "component_no_events",
+   "channels": [
+    "ceiling_fan",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": "comparison of Float with NaN failed",
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "state_runs": [
+    [
+     [
+      35040,
+      6
+     ]
+    ]
+   ],
+   "undefined": [
+    "hot_water_dishwasher",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "clothes_washer",
+    "clothes_dryer",
+    "cooking_range"
+   ],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "component_boundary",
+   "channels": [
+    "ceiling_fan",
+    "clothes_dryer",
+    "clothes_washer",
+    "cooking_range",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "hot_water_dishwasher",
+    "hot_water_fixtures",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": null,
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "state_runs": [
+    [
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      35031,
+      6
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      6
+     ]
+    ]
+   ],
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "component_all_absent",
+   "channels": [
+    "ceiling_fan",
+    "lighting_garage",
+    "lighting_interior",
+    "occupants",
+    "plug_loads_other",
+    "plug_loads_tv"
+   ],
+   "error": "comparison of Float with NaN failed",
+   "inputs": {
+    "installed": {
+     "ceiling_fan": true,
+     "clothes_dryer": true,
+     "clothes_washer": true,
+     "cooking_range": true,
+     "dishwasher": true,
+     "garage": true,
+     "plug_loads_other": true,
+     "plug_loads_tv": true
+    },
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "weather_id": "USA_NC_Hickory.Rgnl.AP.723145_TMY3",
+    "year": 2007
+   },
+   "kind": "dwelling",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "state_runs": [
+    [
+     [
+      35040,
+      5
+     ]
+    ]
+   ],
+   "undefined": [
+    "hot_water_dishwasher",
+    "dishwasher",
+    "hot_water_clothes_washer",
+    "clothes_washer",
+    "clothes_dryer",
+    "cooking_range"
+   ],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "master_42_unit_01_N1",
+   "channels": [
+    "lighting_interior",
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "year": 2007
+   },
+   "kind": "occupancy_and_lighting",
+   "occupant_types": [
+    0
+   ],
+   "offset_minutes": 15,
+   "undefined": [],
+   "unit_seed": 42
+  },
+  {
+   "case_id": "master_42_unit_02_N2",
+   "channels": [
+    "lighting_interior",
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 2,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "year": 2007
+   },
+   "kind": "occupancy_and_lighting",
+   "occupant_types": [
+    0,
+    3
+   ],
+   "offset_minutes": -22,
+   "undefined": [],
+   "unit_seed": 84
+  },
+  {
+   "case_id": "master_51_unit_01_N1",
+   "channels": [
+    "lighting_interior",
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 1,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "year": 2007
+   },
+   "kind": "occupancy_and_lighting",
+   "occupant_types": [
+    1
+   ],
+   "offset_minutes": -14,
+   "undefined": [],
+   "unit_seed": 51
+  },
+  {
+   "case_id": "master_51_unit_02_N2",
+   "channels": [
+    "lighting_interior",
+    "occupants"
+   ],
+   "error": null,
+   "inputs": {
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 2,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "year": 2007
+   },
+   "kind": "occupancy_and_lighting",
+   "occupant_types": [
+    1,
+    0
+   ],
+   "offset_minutes": -14,
+   "undefined": [],
+   "unit_seed": 102
+  },
+  {
+   "case_id": "master_42_unit_01_N0",
+   "channels": [],
+   "error": null,
+   "inputs": {
+    "latitude": 35.741,
+    "longitude": -81.389,
+    "residents": 0,
+    "state": "NC",
+    "time_zone_utc_offset": -5,
+    "year": 2007
+   },
+   "kind": "occupancy_and_lighting",
+   "occupant_types": null,
+   "offset_minutes": null,
+   "undefined": [],
+   "unit_seed": 42
+  }
+ ],
+ "source": {
+  "files": [
+   "data/schedule-generator/residential-family-native.json.gz",
+   "data/schedule-generator/apartment/selected-native.json.gz"
+  ],
+  "resstock_revision": "dd25369",
+  "ruby": "3.2.2"
+ }
+}

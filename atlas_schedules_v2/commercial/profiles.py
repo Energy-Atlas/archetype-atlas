@@ -10,7 +10,7 @@ Point = tuple[float, float]
 
 
 def round_half_up(value: float, places: int) -> float:
-    """Ruby 3.2 `Float#round(places)` (numeric.c `round_half_up`).
+    """Ruby 3.2 `Float#round(places)` (numeric.c `round_half_up`; notice: data/notices/notice-ruby-float.json).
 
     Halves round away from zero, and the result is nudged when `value * scale`
     lost a half in binary. Without the nudge, 5- and 6-decimal results differ
@@ -18,7 +18,13 @@ def round_half_up(value: float, places: int) -> float:
     """
     scale = 10.0 ** places
     scaled = value * scale
-    rounded = math.floor(scaled + 0.5) if scaled > 0 else math.ceil(scaled - 0.5)
+    # C round(): compare the fraction itself, since x + 0.5 can round up in binary.
+    if scaled > 0:
+        whole = math.floor(scaled)
+        rounded = whole + (scaled - whole >= 0.5)
+    else:
+        whole = math.ceil(scaled)
+        rounded = whole - (whole - scaled >= 0.5)
     if scale != 1:
         if value > 0 and (rounded + 0.5) / scale <= value:
             rounded += 1
