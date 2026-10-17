@@ -221,3 +221,18 @@ exemption is implemented; (4) whether the NaN values fail the workflow or
 survive into simulation; (5) whether data-centre IT loads are invalid all year.
 O3 is approved. O8 aligns the cap with ResStock (0-11, "10+" -> 11), with
 documentation. Implementation waits for the user's go-ahead.
+
+O2 investigation result (separate session, `C:/Users/cl2749/comstock-bpr-investigation/REPORT.md`):
+- Claims 1, 2 and 5 confirmed by native OpenStudio 3.10 runs of the pinned code.
+  A generated ComStock Large Office with a data centre runs hours
+  modification, then both BPR measures. Its data-centre equipment (215 and
+  484 W/m²) reads 0.0 for all 8,760 hours. Design days stay at 1.0.
+- Claim 3 refuted: no data-centre exemption was found in the code read.
+  About 55 other upstream measures were not text-searched.
+- Claim 4 refuted: the workflow does not fail. OpenStudio rejects each NaN
+  value with only a WARN, the measure ignores the return value, and the
+  translated IDF has 0. EnergyPlus was not run.
+- Correction for this repo: ComStock templates use `OfficeLarge ALWAYS_ON` for
+  data centres, while the atlas recipe comes from the plain 90.1-2007
+  `DataCenter_EQUIP_SCH`. The mechanism is the same, the source schedule
+  differs. Still deferred here.
