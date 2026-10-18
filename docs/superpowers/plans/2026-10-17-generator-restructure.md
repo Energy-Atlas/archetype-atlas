@@ -168,7 +168,7 @@ User decisions on the gap review, 2026-10-17:
 | # | Item | Decision |
 |---|---|---|
 | O1 | Native programme-slot keys for the nine newer families | Done: 534 native cases, 2,834 slots exact (`test_family_programmes_native.py`) |
-| O2 | Large Office data-centre plug loads zeroed by ComStock's base-to-peak step | Deferred in this repo (user); separate upstream investigation running |
+| O2 | Flat-day zeroing by ComStock's base-to-peak step (data centres, flat weekend days) | Fix in the generator by the documented method (user, 2026-10-18); method under review by the investigation session; not started |
 | O3 | Offices and Warehouse still use recipes migrated from the legacy package | Done: all 15 families builder-made; `test_recipes_native.py`; heat fractions restored |
 | O4 | Release build and checksum manifest | Not yet (user) |
 | O5 | Run the updated CI on GitHub | Not now (user) |
@@ -307,3 +307,15 @@ Decisions and findings, 2026-10-18 (second round):
   schedules, so its weekend exposure (offices, schools) matches the 90.1-2004
   case and overstates real ComStock for DOE Ref and 90.1-2007+. The Sunday
   zeros in published models are explained: inferred hours differ by template.
+
+Decision, 2026-10-18 (third round): O2 is no longer deferred. The generators
+fix the flat-day BPR defect by following the documented ComStock/ResStock
+method rather than the code. Working reading: a day whose values are all
+equal has no defined base-to-peak ratio, so BPR leaves it unchanged, as for
+one-value days. Data-centre IT equipment stays constant (reference doc
+section 4.6.3). Native-matching behaviour stays available only for
+validating against the answer keys. This is recorded as a deliberate
+deviation from native ComStock, overriding the ADR 0035 quirk rule for this
+case. The investigation session is checking the documented method, the
+energy implications and the comparison with published results before
+implementation.
