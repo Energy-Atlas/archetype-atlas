@@ -343,3 +343,22 @@ unchanged by base-to-peak, and native mode is kept for the keys. O11 done:
 native dominance matches all 150 configurations, and 20 residential-dominant
 cases match exactly, including the default-profile stress cases. The
 heuristic `_default_days` needed no change.
+
+Residential review decisions, 2026-10-18:
+- Seed and stream structure (master seed -> unit seed chain -> seven streams
+  per unit; R1 MT19937 replay versus R2 PCG64): reviewed, no change (user).
+- O13 (new, approved, later): southern-hemisphere fix for residential
+  interior lighting. Keep the astronomical sunset, which already flips
+  seasons. Shift the month-indexed empirical terms by six months when the
+  latitude is negative: the April-October +1 h offset, the monthly lighting,
+  plug-load and appliance multipliers, and the month term of the evening
+  width. Document it as a deviation from upstream, which models the US only.
+  Not started.
+- O14 (new, under discussion): occupancy tables for local models (state or
+  multi-state region) derived from ATUS microdata. Upstream ships national
+  tables only: 4 occupant-type probabilities, time-inhomogeneous transitions
+  (95 steps x 7 states per type and day type, about 32,000 free
+  probabilities) and duration tables. Its only regional input is the
+  per-state monthly time shift. No derivation tooling is in the pinned
+  sources. The user requires local derivation and expects small states (CT,
+  RI, even NY) to need regional pooling, e.g. Northeast.
