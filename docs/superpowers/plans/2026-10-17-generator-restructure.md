@@ -236,3 +236,5 @@ O2 investigation result (separate session, `C:/Users/cl2749/comstock-bpr-investi
   data centres, while the atlas recipe comes from the plain 90.1-2007
   `DataCenter_EQUIP_SCH`. The mechanism is the same, the source schedule
   differs. Still deferred here.
+
+Upstream report of the O2 bug: deferred (user, 2026-10-17).
