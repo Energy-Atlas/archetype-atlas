@@ -9,7 +9,9 @@ key was derived: which source file, which cases, and how values were packed.
 
 The answer keys are now the fixtures. To add or refresh a native key, capture it
 with the OpenStudio 3.10 / Ruby 3.2.2 harnesses in `scripts/capture/` and adapt
-the matching extractor here. `legacy_*.py` compared against the retired
+the matching extractor here. `scripts/capture/commercial_families.py` and
+`family_programmes.py` are the current, rerunnable pair: they capture packaged
+commercial programmes for chosen templates and extract the key. `legacy_*.py` compared against the retired
 generator and cannot be rerun.
 
 `scripts/migrate/` is the same kind of one-time record. It converted the legacy

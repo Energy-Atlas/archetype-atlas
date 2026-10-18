@@ -65,9 +65,14 @@ cases = JSON.parse(File.read(input_path)).map do |item|
   # Direct absolute People weights carry inference only; no surface/area facts.
   carrier = OpenStudio::Model::Space.new(model)
   st = OpenStudio::Model::SpaceType.new(model)
-  st.setName('Office inference carrier'); carrier.setSpaceType(st)
+  # Standards treats a space as residential by space-type name (space.rb
+  # space_residential?); a residential carrier makes inference take the
+  # residential branch and invert rule days (residential-dominant buildings;
+  # no packaged configuration is one today).
+  residential = context.fetch('residential_carrier', false)
+  st.setName(residential ? 'GuestRoom inference carrier' : 'Office inference carrier'); carrier.setSpaceType(st)
   context.fetch('occupancy_aggregation').fetch('constituents').each do |part|
-    raise 'Only explicitly nonresidential capture carrier supported' unless part.fetch('residential') == false
+    raise 'Every constituent must match the carrier residential flag' unless part.fetch('residential') == residential
     definition = OpenStudio::Model::PeopleDefinition.new(model)
     definition.setNumberofPeople(part.fetch('nominal_people'))
     people = OpenStudio::Model::People.new(definition)
@@ -172,6 +177,9 @@ cases = JSON.parse(File.read(input_path)).map do |item|
       {hour: 8, minute: minute, value: day.getValue(OpenStudio::Time.new(0,8,minute,0))}
     end
   end
+  # Compact output for answer keys: final channels and the inferred hours only.
+  next {case_id: item.fetch('case_id'), inference: inference, modified_hoo: modified_hoo,
+        channels: channels} if context.fetch('channels_only', false)
   {case_id: item.fetch('case_id'), source_context: context, schedules: item.fetch('schedules'),
    operating: operation, inference: inference, modified_hoo: modified_hoo, setup: setup,
    original_channels: original, pre_adjustment: pre_adjustment, final: final,

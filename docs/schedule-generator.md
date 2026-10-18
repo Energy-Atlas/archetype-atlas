@@ -175,11 +175,16 @@ captured from real OpenStudio 3.10 / Ruby 3.2.2 runs. Fractions must agree withi
   frozen definitions and prototype geometry, and `--check` reproduces every
   recipe and service. Heat-gain fractions are carried wherever the definitions
   know them all.
-- **New families**: 8 native 90.1-2013 pilots (source and reviewed views of
-  Large Office, Large Hotel, Hospital and Outpatient) check the People topology
-  per space and every shared water service. Small Hotel, the schools and
-  Supermarket use the same builder and kernel without a pilot of their own. No
-  new family has a native key for its programme slots yet.
+- **Newer families**: 534 native cases cover Large Office, Large and Small
+  Hotel, Hospital, Outpatient, Primary and Secondary School, Supermarket and
+  Strip Mall. Each family uses one template (varied across families), both
+  views and seeds 42 and 51. Every packaged programme slot and every shared
+  water service of those configurations matches (2,834 slots;
+  `tests/schedules/test_family_programmes_native.py`, captured by
+  `scripts/capture/commercial_families.py`). Eight further 90.1-2013 pilots
+  check the People topology per space against real prototype geometry. No
+  packaged configuration is residential-dominant, so the inverted rule-day
+  path is not exercised.
 - **ComStock sampling**: 6,660 native `tsv_sampling.py` draws.
 - **ResStock (R1)**: 57 native units (channels, occupant types, offsets), plus
   8,250 raw Ruby draws.

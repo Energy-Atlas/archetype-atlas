@@ -167,14 +167,14 @@ User decisions on the gap review, 2026-10-17:
 
 | # | Item | Decision |
 |---|---|---|
-| O1 | Native programme-slot keys for the nine newer families | Scope set (user): one template, both views, two seeds per family; not started |
+| O1 | Native programme-slot keys for the nine newer families | Done: 534 native cases, 2,834 slots exact (`test_family_programmes_native.py`) |
 | O2 | Large Office data-centre plug loads zeroed by ComStock's base-to-peak step | Deferred in this repo (user); separate upstream investigation running |
-| O3 | Offices and Warehouse still use recipes migrated from the legacy package | Rebuild approved (user); not started |
+| O3 | Offices and Warehouse still use recipes migrated from the legacy package | Done: all 15 families builder-made; `test_recipes_native.py`; heat fractions restored |
 | O4 | Release build and checksum manifest | Not yet (user) |
 | O5 | Run the updated CI on GitHub | Not now (user) |
-| O6 | Review hygiene: unused `holidays` argument, cross-module test helpers, legacy-key tests that skip silently | Fix approved (user); not started |
+| O6 | Review hygiene: unused `holidays` argument, cross-module test helpers, legacy-key tests that skip silently | Done |
 | O7 | Answer-key extraction scripts cannot be rerun (inputs purged) | Accepted (user) |
-| O8 | Apartment `residents` capped at 20 per dwelling unit | Align with ResStock at 11 and document (user); not started |
+| O8 | Apartment `residents` capped at 20 per dwelling unit | Done: cap 11, documented |
 | O9 | Pre-rewrite objects may persist on GitHub until its garbage collection | Accepted (user) |
 | O10 | Local copies of the pre-purge history | Deferred (user), see below |
 
