@@ -257,3 +257,11 @@ pushing.
 | Secondary School | DOE Ref 1980-2004 |
 | Supermarket | 90.1-2007 |
 | Strip Mall | DOE Ref Pre-1980 |
+
+Decisions, 2026-10-18:
+- One native template per newer family is sufficient (user).
+- Possible zeroing of Medium Office data centres in ComStock is deferred
+  (user). The atlas catalogue has no Medium Office data-centre programme.
+- Open for discussion: testing the residential-dominant (inverted rule-day)
+  path, and retiring the answer-key extraction and migration scripts that can
+  no longer run.
