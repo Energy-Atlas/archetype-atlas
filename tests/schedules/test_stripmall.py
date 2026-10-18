@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.commercial.transform import Slot, transform
-from tests.schedules.test_commercial_families import FRACTION_TOLERANCE, unpack_days
+from tests.schedules.helpers import TOLERANCE as FRACTION_TOLERANCE, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/stripmall.json.gz"
 

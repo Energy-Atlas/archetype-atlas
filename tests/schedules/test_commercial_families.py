@@ -12,13 +12,9 @@ import numpy as np
 
 from atlas_schedules.commercial.hours import Hours
 from atlas_schedules.commercial.transform import Slot, hourly_values, transform, transform_days
+from tests.schedules.helpers import TOLERANCE as FRACTION_TOLERANCE, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/families.json.gz"
-FRACTION_TOLERANCE = 1e-6
-
-
-def unpack_days(packed: dict) -> np.ndarray:
-    return np.asarray([packed["days"][i] for i in packed["index"]], dtype=float).reshape(8760)
 
 
 def hours_by_day(table: list) -> list:

@@ -14,23 +14,10 @@ import numpy as np
 
 from atlas_schedules.generator import generate
 from atlas_schedules.programmes import load_recipe
+from tests.schedules.helpers import assert_schedule
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/programmes.json.gz"
-TOLERANCE = 1e-6
 UNIT_EXTENT = {"floor_area": 1, "dwelling_unit": 1, "person": 1, "absolute": 1}
-
-
-SAMPLE_HOURS = np.arange(0, 8760, 37)
-
-
-def assert_schedule(test, label, values, packed):
-    if "days" in packed:
-        expected = np.asarray([packed["days"][i] for i in packed["index"]], dtype=float).reshape(8760)
-        test.assertLessEqual(float(np.abs(values - expected).max()), TOLERANCE, label)
-        return
-    daily = values.reshape(365, 24).sum(axis=1)
-    test.assertLessEqual(float(np.abs(daily - np.asarray(packed["daily"])).max()), 24 * TOLERANCE, label)
-    test.assertLessEqual(float(np.abs(values[SAMPLE_HOURS] - np.asarray(packed["sample"])).max()), TOLERANCE, label)
 
 
 def request_for(program_id: str) -> dict:
@@ -41,7 +28,6 @@ def request_for(program_id: str) -> dict:
     return {"schema_version": "2.0.0", "seed": 42, "instances": [instance]}
 
 
-@unittest.skipUnless(ANSWER_KEY.exists(), "legacy programme answer key not extracted")
 class LegacyProgrammes(unittest.TestCase):
     def test_every_programme(self):
         cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["cases"]

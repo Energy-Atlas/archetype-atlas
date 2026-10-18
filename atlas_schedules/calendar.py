@@ -55,11 +55,13 @@ def _active(start: tuple, end: tuple, month_day: tuple) -> bool:
     return month_day >= start or month_day <= end
 
 
-def evaluate_rules(schedule: dict, year: int = 2007, holidays: tuple[str, ...] = ()) -> tuple[np.ndarray, dict]:
-    """Return (8760 hourly values, design-day profiles keyed by WntrDsn/SmrDsn)."""
+def evaluate_rules(schedule: dict, year: int = 2007) -> tuple[np.ndarray, dict]:
+    """Return (8760 hourly values, design-day profiles keyed by WntrDsn/SmrDsn).
+
+    No holidays are applied, as in the ComStock and ResStock runs being ported.
+    """
     if _calendar.isleap(year):
         raise GeneratorError("leap_year", "/calendar/year", "Non-leap year required")
-    holiday_dates = {date.fromisoformat(h) for h in holidays}
     compiled = []
     default = None
     design = {}
@@ -82,10 +84,9 @@ def evaluate_rules(schedule: dict, year: int = 2007, holidays: tuple[str, ...] =
     for index in range(365):
         day = date(year, 1, 1) + timedelta(days=index)
         selected = default
-        if day not in holiday_dates:
-            month_day = (day.month, day.day)
-            for tokens, start, end, profile in compiled:
-                if _active(start, end, month_day) and _applies(tokens, day.weekday()):
-                    selected = profile
+        month_day = (day.month, day.day)
+        for tokens, start, end, profile in compiled:
+            if _active(start, end, month_day) and _applies(tokens, day.weekday()):
+                selected = profile
         days.append(selected)
     return np.asarray(days, dtype=float).reshape(8760), design

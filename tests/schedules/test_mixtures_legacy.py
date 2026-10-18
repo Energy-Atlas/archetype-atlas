@@ -12,8 +12,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.test_case_matrix_legacy import translate
-from tests.schedules.test_programmes_legacy import assert_schedule
+from tests.schedules.helpers import assert_schedule, translate
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/mixtures.json.gz"
 
@@ -32,7 +31,6 @@ def translate_mixture(legacy: dict, seed: int) -> dict:
     return request
 
 
-@unittest.skipUnless(ANSWER_KEY.exists(), "legacy mixture answer key not extracted")
 class LegacyMixtures(unittest.TestCase):
     def test_every_scenario(self):
         for scenario in json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["scenarios"]:

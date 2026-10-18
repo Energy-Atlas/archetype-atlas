@@ -13,7 +13,7 @@ import numpy as np
 
 from atlas_schedules.commercial.transform import Slot, transform
 from scripts.build_family_recipes import occupancy_carrier, services
-from tests.schedules.test_commercial_families import FRACTION_TOLERANCE, unpack_days
+from tests.schedules.helpers import TOLERANCE as FRACTION_TOLERANCE, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/family-pilots.json.gz"
 DEFINITIONS = Path(__file__).resolve().parents[2] / "data/definition-releases/v0.1.1/schedules.json"
