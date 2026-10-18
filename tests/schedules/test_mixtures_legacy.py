@@ -37,7 +37,7 @@ class LegacyMixtures(unittest.TestCase):
             if any(rebuilt(i.get("program_id")) for i in scenario["request"]["instances"]):
                 continue
             with self.subTest(scenario=scenario["scenario"]):
-                bundle = generate(translate_mixture(scenario["request"], scenario["seed"]), residential_rng="ruby_mt")
+                bundle = generate(translate_mixture(scenario["request"], scenario["seed"]), residential_rng="ruby_mt", flat_days="native")
                 mixed = bundle["mixture"]
                 self.assertEqual(sorted(mixed["schedules"]), sorted(scenario["schedules"]))
                 for slot, packed in scenario["schedules"].items():

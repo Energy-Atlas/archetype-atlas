@@ -14,6 +14,7 @@ from atlas_schedules.generator import generate
 COMMERCIAL = "program-b910ee0c34e9eeb3ecd573c4"  # Warehouse office area 90.1-2013 (no shared services)
 DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling (2 residents, Anchorage)
 APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # apartment dwelling unit
+DATA_CENTRE = "program-0d0d5461f1cee89d04d148eb"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
 RESTAURANT = "program-080dc08cd2d7af6c7d419d0a"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
 WATER = "service-1981fa97b9fd7d47efcf39dd"
 RESTAURANT_CONFIGURATION = "quick_service_restaurant__90_1_2013__source"
@@ -136,6 +137,15 @@ class Behaviour(unittest.TestCase):
         bundle = generate(request({"key": "office", "program_id": COMMERCIAL}))
         values = np.asarray(bundle["schedules"]["schedule:office:lighting"]["values"])
         self.assertAlmostEqual(lighting["amplitude"] * values.sum(), lighting["annual_total"], delta=1e-6)
+
+    def test_data_centre_plug_loads_stay_constant(self):
+        # Documented: base-to-peak leaves flat days unchanged (section 4.6.3).
+        document = request({"key": "dc", "program_id": DATA_CENTRE, "operating_group": "office"})
+        values = np.asarray(generate(document)["schedules"]["schedule:dc:electric_equipment"]["values"])
+        self.assertGreater(float(values.min()), 0)
+        with self.assertRaises(GeneratorError) as caught:
+            generate(document, flat_days="native")
+        self.assertEqual(caught.exception.code, "zero_generated_integral")
 
     def test_requests_cannot_choose_the_ruby_stream(self):
         with self.assertRaises(GeneratorError) as caught:

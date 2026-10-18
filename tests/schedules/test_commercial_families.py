@@ -35,7 +35,7 @@ class FamilyCases(unittest.TestCase):
         for case in self.data["programme_cases"]:
             slots = {name: Slot(schedules[sid], mode) for name, (sid, mode) in case["slots"].items()}
             people = [(sid, schedules[sid], count) for sid, count in case["people"]]
-            result = transform(slots, people, case["operating"])
+            result = transform(slots, people, case["operating"], flat_days="native")
             for name in slots:
                 with self.subTest(case=case["case_id"], slot=name):
                     difference = np.abs(result[name] - unpack_days(case["expected"][name])).max()

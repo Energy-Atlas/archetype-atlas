@@ -46,7 +46,7 @@ class RecipesAgainstNative(unittest.TestCase):
             slots = {s["slot"]: Slot(table[s["schedule"]], modes[s["slot"]])
                      for s in recipe["slots"] if s["slot"] in modes and s["slot"] in case["expected"]}
             result = transform(slots, configuration_people(configuration), case["operating"],
-                               invert_rule_days=configuration["invert_rule_days"])
+                               invert_rule_days=configuration["invert_rule_days"], flat_days="native")
             for name in slots:
                 with self.subTest(case=case["case_id"], slot=name):
                     difference = np.abs(result[name] - unpack_days(case["expected"][name])).max()
@@ -65,7 +65,7 @@ class RecipesAgainstNative(unittest.TestCase):
                 variant = load_service(service_id)["configurations"][configuration_id]
                 result = transform({"hot_water_volume": Slot(table[variant["schedule"]], "hours")},
                                    configuration_people(configuration), case["operating"],
-                                   invert_rule_days=configuration["invert_rule_days"])
+                                   invert_rule_days=configuration["invert_rule_days"], flat_days="native")
                 with self.subTest(case=case["case_id"], service=service_id):
                     difference = np.abs(result["hot_water_volume"] - unpack_days(case["expected"]["hot_water_volume"])).max()
                     self.assertLessEqual(float(difference), TOLERANCE)

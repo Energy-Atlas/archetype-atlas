@@ -35,7 +35,7 @@ class LegacyProgrammes(unittest.TestCase):
             if rebuilt(case["program_id"]):
                 continue
             with self.subTest(program=case["program_id"]):
-                bundle = generate(request_for(case["program_id"]), residential_rng="ruby_mt")
+                bundle = generate(request_for(case["program_id"]), residential_rng="ruby_mt", flat_days="native")
                 owner = bundle["owners"][0]
                 for slot, packed in case["slots"].items():
                     values = np.asarray(bundle["schedules"][owner["schedules"][slot]]["values"])

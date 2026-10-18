@@ -197,16 +197,42 @@ source, test and extractor.
   native keys check them instead.
 
 An upstream detail is kept only when dropping it breaks an answer key. Each such
-detail names its answer key in its docstring.
+detail names its answer key in its docstring. There is one deliberate
+exception, described next.
 
 `python -m scripts.smoke_catalogue` generates every programme, composition parent
 and service variant once (`docs/validation/generator-catalogue-smoke.json`).
-One upstream outcome is reported rather than generated. ComStock's base-to-peak
-measures clear any day whose values are all equal: the scale is 0/0 and
-OpenStudio rejects the NaN values. Dropping this breaks 287 native family checks.
-Large Office data-centre plug loads are flat, so they become zero whenever a
-weekday ratio is sampled. Their positive annual target then cannot bind, and
-those 16 programmes raise `zero_generated_integral`.
+### Deviation from native ComStock: flat days under base-to-peak
+
+ComStock's base-to-peak measures leave a one-value day unaltered. The hours
+transform turns a constant day into two equal points, though, and for those
+the measure's scale is 0/0. OpenStudio rejects the NaN values with only a
+warning, and the day is silently cleared to 0. In ComStock this zeroes
+data-centre plug loads all year, which contradicts its reference
+documentation (section 4.6.3 keeps data-centre IT equipment constant). It also
+zeroes flat weekend days of plain-template offices and schools. Upstream has
+not fixed it (checked against `main`, 2026-10-18).
+
+The generator follows the documented method instead: a day whose values are
+all equal, with any number of points, is left unchanged, as a one-value day
+is. Consequences:
+
+- Large Office data-centre programmes generate; they no longer raise
+  `zero_generated_integral`.
+- Weekend lighting and plug loads in offices (Sunday) and schools (Saturday
+  and Sunday) keep their flat level; they are no longer moved onto weekdays.
+- Energy for those loads is higher than native or published ComStock. A
+  data-centre Large Office uses about 8 kWh/ft² per year more.
+- Covering flat weekend days extends the documented one-value rule; no
+  document states it for them.
+- The atlas data-centre schedule is the plain 90.1 `DataCenter_EQUIP_SCH`
+  (monthly steps, mean 0.625), not ComStock's constant 1.0 `ALWAYS_ON`, so it
+  will not equal ComStock's data-centre load either way.
+
+`generate(document, flat_days="native")` reproduces ComStock for the native
+answer keys; requests cannot select it. Evidence:
+`C:/Users/cl2749/comstock-bpr-investigation/REPORT.md` (outside this repository)
+and plan section 7 (O2).
 
 ## Adding a family
 

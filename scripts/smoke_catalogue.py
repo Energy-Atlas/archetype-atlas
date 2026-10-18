@@ -1,11 +1,7 @@
 """Generate every packaged programme, composition parent and shared-service variant once.
 
 Reports failures by error code; programmes with no slots (unconditioned attics,
-plenums) are counted as inactive. Commercial `zero_generated_integral` is a known
-upstream outcome, not a failure: ComStock's base-to-peak measures clear any day
-whose values are all equal (0/0 scale, NaN rejected by OpenStudio), so flat
-data-centre plug loads become zero when a weekday ratio is sampled, and a
-positive annual target cannot bind them. Exits 1 on any other failure.
+plenums) are counted as inactive. Exits 1 on any failure.
 Writes docs/validation/generator-catalogue-smoke.json.
 
 Usage: python -m scripts.smoke_catalogue
@@ -46,7 +42,6 @@ def main() -> None:
     started = time.time()
     counts = collections.Counter()
     failures = collections.defaultdict(list)
-    upstream_zeroed = []
     for path in sorted((DATA / "recipes").glob("*.json")):
         recipe = json.loads(path.read_text(encoding="utf-8"))
         if not recipe["slots"] and recipe["kind"] not in ("composition",):
@@ -69,10 +64,7 @@ def main() -> None:
             generate({"schema_version": "2.0.0", "seed": 1, "instances": instances})
             counts[recipe["kind"]] += 1
         except GeneratorError as error:
-            if error.code == "zero_generated_integral" and recipe["kind"] == "commercial":
-                upstream_zeroed.append(recipe["program_id"])
-            else:
-                failures[error.code].append(recipe["program_id"])
+            failures[error.code].append(recipe["program_id"])
     for path in sorted((DATA / "services").glob("*.json")):
         service = json.loads(path.read_text(encoding="utf-8"))
         basis = service["demand"]["basis"]
@@ -85,11 +77,10 @@ def main() -> None:
             except GeneratorError as error:
                 failures[error.code].append(f"{service['service_id']}@{configuration_id}")
     report = {"generated": dict(counts), "failures": {k: v for k, v in failures.items()},
-              "upstream_zeroed": upstream_zeroed,
               "failure_count": sum(len(v) for v in failures.values())}
     OUTPUT.write_text(json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({k: report[k] for k in ("generated", "failure_count")}),
-          f"upstream_zeroed={len(upstream_zeroed)}", f"{time.time() - started:.0f} s")
+          f"{time.time() - started:.0f} s")
     for code, items in failures.items():
         print(code, len(items), items[:5])
     if report["failure_count"]:

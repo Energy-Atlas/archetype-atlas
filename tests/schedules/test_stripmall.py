@@ -19,7 +19,7 @@ class StripmallPilot(unittest.TestCase):
         for case in data["cases"]:
             people = [(sid, schedules[sid], count) for sid, count in case["people"]]
             slots = {name: Slot(schedules[w["schedule_id"]], "hours") for name, w in case["water"].items()}
-            result = transform(slots, people, case["operating"])
+            result = transform(slots, people, case["operating"], flat_days="native")
             for name, water in case["water"].items():
                 with self.subTest(case=case["case_id"], schedule=name):
                     difference = np.abs(result[name] - unpack_days(water["expected"])).max()

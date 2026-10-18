@@ -23,7 +23,7 @@ class LegacyCaseMatrix(unittest.TestCase):
         cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["cases"]
         for case in cases:
             request, keys = translate(without_rebuilt(case["request"]), case["seed"])
-            bundle = generate(request, residential_rng="ruby_mt")
+            bundle = generate(request, residential_rng="ruby_mt", flat_days="native")
             owners = {o["key"]: o for o in bundle["owners"]}
             compared = 0
             for legacy in case["owners"]:

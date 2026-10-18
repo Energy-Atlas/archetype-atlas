@@ -10,6 +10,7 @@ from pathlib import Path
 
 import jsonschema
 
+from .commercial.base_peak import FLAT_DAY_MODES
 from .errors import GeneratorError
 from .residential.rng import MODES
 from .seeds import check_master_seed
@@ -67,6 +68,7 @@ class Mixture:
 class Request:
     seed: int
     residential_rng: str
+    flat_days: str
     instances: list
     mixture: Mixture | None
 
@@ -95,9 +97,11 @@ def _finite(document) -> None:
             _finite(value)
 
 
-def parse_request(document: dict, residential_rng: str = "pcg64") -> Request:
+def parse_request(document: dict, residential_rng: str = "pcg64", flat_days: str = "documented") -> Request:
     if residential_rng not in MODES:
         raise GeneratorError("invalid_request", "/residential_rng", f"Unknown stream mode {residential_rng!r}")
+    if flat_days not in FLAT_DAY_MODES:
+        raise GeneratorError("invalid_request", "/flat_days", f"Unknown flat-day mode {flat_days!r}")
     _finite(document)
     _schema_errors(document)
     check_master_seed(document["seed"])  # JSON Schema accepts 42.0 as an integer
@@ -126,7 +130,7 @@ def parse_request(document: dict, residential_rng: str = "pcg64") -> Request:
         mixture = Mixture(raw["program_id"], [Member(m["instance"], float(m["weight"])) for m in raw["members"]],
                           list(raw.get("services", [])), raw.get("result_basis"), raw.get("denominator"))
         _check_mixture(mixture, set(keys), set(services))
-    return Request(document["seed"], residential_rng, instances, mixture)
+    return Request(document["seed"], residential_rng, flat_days, instances, mixture)
 
 
 def _check_mixture(mixture: Mixture, keys: set, service_keys: set) -> None:

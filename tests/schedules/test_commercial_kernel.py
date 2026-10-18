@@ -23,7 +23,7 @@ class NativeCases(unittest.TestCase):
         for case in load_cases():
             slots = {name: Slot(case["schedules"][name], mode) for name, mode in case["slot_modes"].items()}
             people = [(p["schedule_id"], p["schedule"], p["people"]) for p in case["people"]]
-            result = transform(slots, people, case["operating"])
+            result = transform(slots, people, case["operating"], flat_days="native")
             for name in slots:
                 with self.subTest(case=case["case_id"], slot=name):
                     expected = np.asarray(case["expected"][name])
@@ -38,8 +38,12 @@ class Pieces(unittest.TestCase):
     def test_always_on_profile_has_24_hours(self):
         self.assertEqual(hours_from_points([(24.0, 1.0)]).hours, 24.0)
 
-    def test_equal_valued_day_reads_as_cleared(self):
+    def test_flat_day_is_unchanged_by_documented_base_to_peak(self):
         points, base = adjust_day([(8.0, 0.5), (24.0, 0.5)], 0.2)
+        self.assertEqual((points, base), ([(8.0, 0.5), (24.0, 0.5)], 1.0))
+
+    def test_native_mode_clears_a_flat_day_like_comstock(self):
+        points, base = adjust_day([(8.0, 0.5), (24.0, 0.5)], 0.2, flat_days="native")
         self.assertEqual((points, base), ([(24.0, 0.0)], 0.0))
 
     def test_weekend_base_is_capped_by_weekday_base(self):

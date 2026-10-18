@@ -86,14 +86,14 @@ def annual_targets(recipe: dict) -> list:
     return targets
 
 
-def _commercial_channels(recipe: dict, operating: dict) -> dict:
+def _commercial_channels(recipe: dict, operating: dict, flat_days: str) -> dict:
     table = schedules()
     spec = recipe["commercial"]
     slots = {s["slot"]: Slot(table[s["schedule"]], spec["modes"][s["slot"]])
              for s in recipe["slots"] if s["slot"] in spec["modes"]}
     configuration = load_configuration(spec["configuration_id"])
     return transform(slots, configuration_people(configuration), operating,
-                     invert_rule_days=configuration["invert_rule_days"])
+                     invert_rule_days=configuration["invert_rule_days"], flat_days=flat_days)
 
 
 @lru_cache(maxsize=1)
@@ -119,11 +119,12 @@ def _fixed_channels(recipe: dict) -> dict:
 
 
 def instance_channels(recipe: dict, *, operating: dict | None = None, unit_seed: int | None = None,
-                      rng_mode: str = "pcg64", reference_location: str | None = None) -> dict:
+                      rng_mode: str = "pcg64", reference_location: str | None = None,
+                      flat_days: str = "documented") -> dict:
     """Hourly channels for every slot of the recipe."""
     kind = recipe["kind"]
     if kind == "commercial":
-        channels = _commercial_channels(recipe, operating)
+        channels = _commercial_channels(recipe, operating, flat_days)
     elif kind == "residential":
         channels = _residential_channels(recipe, unit_seed, rng_mode, reference_location)
     elif kind == "fixed":

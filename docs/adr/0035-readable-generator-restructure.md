@@ -69,12 +69,14 @@ has been released, so there is no compatibility obligation.
   requests always use PCG64. The Ruby stream stays as validation-only code
   (`generate(..., residential_rng="ruby_mt")`) so native captures and the
   legacy answer keys still check the port draw for draw.
-- **Upstream outcome reported, not generated.** ComStock's base-to-peak
-  measures clear every equal-valued day (0/0 scale, NaN rejected by
-  OpenStudio). The native family keys require this (287 checks fail without
-  it). Flat Large Office data-centre plug loads therefore become zero when a
-  weekday ratio is sampled. Those 16 programmes raise
-  `zero_generated_integral` rather than invent a shape.
+- **Deliberate deviation: flat days under base-to-peak (user decision
+  2026-10-18).** ComStock clears every multi-point equal-valued day (0/0
+  scale, NaN rejected by OpenStudio), which zeroes data-centre plug loads
+  against its own documentation. The generator follows the documented method
+  and leaves flat days unchanged. This overrides decision 2's quirk rule for
+  this one case. The native behaviour remains available as
+  `generate(..., flat_days="native")` for the answer keys, which still
+  require it (287 family checks). See the guide's deviation section.
 - **Download pins.** The generator's upstream files are pinned in one lock,
   `sources/generator-source-lock.json`, which `scripts.fetch --lock` can use.
   The per-family and reference locks of the legacy generator were deleted

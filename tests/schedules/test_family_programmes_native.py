@@ -64,7 +64,7 @@ class FamilyProgrammes(unittest.TestCase):
             slots = _slots(case)
             self.assertEqual(sorted(slots), sorted(case["expected"]), case["case_id"])
             result = transform(slots, configuration_people(configuration), case["operating"],
-                               invert_rule_days=configuration["invert_rule_days"])
+                               invert_rule_days=configuration["invert_rule_days"], flat_days="native")
             for name in slots:
                 with self.subTest(case=case["case_id"], slot=name):
                     difference = np.abs(result[name] - unpack_days(case["expected"][name])).max()

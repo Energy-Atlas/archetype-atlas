@@ -176,7 +176,8 @@ def _programme_owner(item: Planned, request: Request, seeds: dict, operating: di
     else:
         group_operating = operating.get(instance.group) if kind == "commercial" else None
         channels = instance_channels(recipe, operating=group_operating, unit_seed=seeds.get(instance.key),
-                                     rng_mode=request.residential_rng, reference_location=instance.reference_location)
+                                     rng_mode=request.residential_rng, reference_location=instance.reference_location,
+                                     flat_days=request.flat_days)
         if kind == "commercial":
             generation["operating_group"] = instance.group
         if kind == "residential":
@@ -316,15 +317,18 @@ def _owner_record(owner: Owner) -> dict:
     }
 
 
-def generate(document: dict, *, residential_rng: str = "pcg64") -> dict:
+def generate(document: dict, *, residential_rng: str = "pcg64", flat_days: str = "documented") -> dict:
     """Generate the bundle for a request document.
 
-    residential_rng is validation-only: "ruby_mt" (R1) replays Ruby streams so
-    native ResStock captures and the legacy generator can be checked draw for
-    draw. Requests always use "pcg64" (R2); see
-    docs/validation/residential-rng-equivalence.md.
+    The keyword arguments are validation-only; requests cannot choose them.
+    residential_rng "ruby_mt" (R1) replays Ruby streams, so native ResStock
+    captures and the legacy generator can be checked draw for draw. Requests
+    always use "pcg64" (R2); see docs/validation/residential-rng-equivalence.md.
+    flat_days "native" reproduces ComStock clearing flat days in base-to-peak,
+    for the native answer keys. Requests always use "documented"; see
+    commercial/base_peak.py.
     """
-    request = parse_request(document, residential_rng)
+    request = parse_request(document, residential_rng, flat_days)
     planned, parents = _expand(request)
     seeds = _unit_seeds(request.seed, planned)
     operating = _group_operating(request.seed, planned)
@@ -353,6 +357,7 @@ def generate(document: dict, *, residential_rng: str = "pcg64") -> dict:
         "generator_version": __version__,
         "seed": request.seed,
         "residential_rng": request.residential_rng,
+        "flat_days": request.flat_days,
         "calendar": {"year": 2007, "clock": "local_standard_time", "timestep_minutes": 60},
         "schedules": bundle_schedules,
         "owners": [_owner_record(o) for o in owners.values()],

@@ -79,14 +79,14 @@ def hourly_values(days: list) -> np.ndarray:
     return np.asarray(values)
 
 
-def _base_peak(days: list, prefix: str, operating: dict, year: int) -> list:
+def _base_peak(days: list, prefix: str, operating: dict, year: int, flat_days: str) -> list:
     weekday_ratio = operating[prefix + "_weekday_base_peak_ratio"]
     weekend_ratio = operating[prefix + "_weekend_base_peak_ratio"]
     bases = []
     if weekday_ratio["modify"]:
         for day in range(365):
             if _is_weekday(day, year):
-                days[day], base = adjust_day(days[day], weekday_ratio["value"])
+                days[day], base = adjust_day(days[day], weekday_ratio["value"], flat_days=flat_days)
                 bases.append(base)
     if weekend_ratio["modify"]:
         if not bases:
@@ -95,7 +95,7 @@ def _base_peak(days: list, prefix: str, operating: dict, year: int) -> list:
         lowest_weekday_base = min(bases)
         for day in range(365):
             if not _is_weekday(day, year):
-                days[day], _ = adjust_day(days[day], weekend_ratio["value"], lowest_weekday_base)
+                days[day], _ = adjust_day(days[day], weekend_ratio["value"], lowest_weekday_base, flat_days)
     return days
 
 
@@ -111,13 +111,16 @@ def merge_people(people: list[tuple[str, dict, float]]) -> list[tuple[dict, floa
 
 
 def transform(slots: dict[str, Slot], people: list[tuple[str, dict, float]],
-              operating: dict, year: int = 2007, invert_rule_days: bool = False) -> dict[str, np.ndarray]:
+              operating: dict, year: int = 2007, invert_rule_days: bool = False,
+              flat_days: str = "documented") -> dict[str, np.ndarray]:
     """Transformed 8,760-hour arrays for every slot.
 
     people: (People Ruleset id, rule set, design people) for each space, in
     native space order; used to infer the original hours of operation.
     invert_rule_days: residential spaces dominate (see hours.daily_hours).
     operating: sampled parameters from `sampler.sample_operating_parameters`.
+    flat_days: "documented" leaves flat days unchanged by base-to-peak;
+    "native" clears them as ComStock does (validation only, see base_peak).
     """
     groups = [(evaluate_rules(rules, year)[0], count) for rules, count in merge_people(people)]
     original_hours = daily_hours(occupancy_fraction(groups), invert_rule_days, year)
@@ -133,6 +136,6 @@ def transform(slots: dict[str, Slot], people: list[tuple[str, dict, float]],
         if name == "occupancy":
             days = [[(t, stored_value(v * PEAK_OCCUPANCY_FRACTION)) for t, v in points] for points in days]
         if name in BASE_PEAK_PREFIX:
-            days = _base_peak(days, BASE_PEAK_PREFIX[name], operating, year)
+            days = _base_peak(days, BASE_PEAK_PREFIX[name], operating, year, flat_days)
         output[name] = hourly_values(days)
     return output
