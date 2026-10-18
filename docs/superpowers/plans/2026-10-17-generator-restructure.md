@@ -297,3 +297,13 @@ Decisions and findings, 2026-10-18 (second round):
   weekdays instead of being lost. Only an all-year zero (data centres)
   raises `zero_generated_integral`. The upstream blast-radius question was
   sent to the separate investigation session. The O2 decision stays deferred.
+- O2 upstream result (investigation `REPORT.md` section 8, 3,072 native runs).
+  In real ComStock, only data-centre schedules lose whole loads: all
+  templates, every sampled data-centre Large and Medium Office. Weekend
+  partial-load zeroing appears only under `ComStock 90.1-2004`, which falls
+  back to plain 90.1-2004 schedules. Other ComStock templates use non-flat
+  15-minute EndUseData schedules. Hospitals, hotels, outpatient and warehouse
+  never sample BPR. The atlas catalogue builds from the plain prototype
+  schedules, so its weekend exposure (offices, schools) matches the 90.1-2004
+  case and overstates real ComStock for DOE Ref and 90.1-2007+. The Sunday
+  zeros in published models are explained: inferred hours differ by template.
