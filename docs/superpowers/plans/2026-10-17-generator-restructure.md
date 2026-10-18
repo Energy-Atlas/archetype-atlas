@@ -362,3 +362,13 @@ Residential review decisions, 2026-10-18:
   per-state monthly time shift. No derivation tooling is in the pinned
   sources. The user requires local derivation and expects small states (CT,
   RI, even NY) to need regional pooling, e.g. Northeast.
+- O14 evaluation (2026-10-18). Option 1, re-weighting the national type mix
+  (3 local parameters), is robust to state and county level through
+  MRP/shrinkage but misses within-type timing. Option 2, regional chains, is
+  higher fidelity only where data are dense and risks noise. Proposed:
+  option 1 as the default, option 2 gated by evidence. A
+  composition-versus-behaviour decomposition experiment (ATUS 2003-2019,
+  census regions, replicate-weight CIs, CT/RI/NY illustration) was delegated
+  to a separate session working outside git in
+  `D:/atus-composition-behaviour-study` (`REPORT.md`). The O14 method waits
+  for its verdict.
