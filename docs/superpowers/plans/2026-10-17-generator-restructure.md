@@ -265,3 +265,35 @@ Decisions, 2026-10-18:
 - Open for discussion: testing the residential-dominant (inverted rule-day)
   path, and retiring the answer-key extraction and migration scripts that can
   no longer run.
+
+Decisions and findings, 2026-10-18 (second round):
+- O11 (new): native test of the residential-dominant (inverted rule-day)
+  path. The user agreed to this plan:
+  1. Natively check the dominance decision for all 150 configurations on
+     real prototype geometry.
+  2. Capture synthetic residential-dominant cases built from real guest-room,
+     patient-room and apartment occupancy.
+  3. Stress the default-profile choice: weekends dominant, tied weekday
+     profiles, seasonal rules.
+  4. Add a compact answer key and test. If our default-day heuristic
+     disagrees, port `schedule_ruleset_cleanup_profiles` faithfully.
+  Not started.
+- O12 (new): retire the answer-key extractors and migration scripts that
+  can no longer run. Keep the capture harnesses and the runnable
+  `family_programmes.py` pair, and add `tests/answer_keys/README.md` with
+  provenance per key and the last commit holding each retired script. The
+  user approved this; not started.
+- O2 widened. A scan of the packaged catalogue (`build/task-10/bpr_blast_radius.py`;
+  all templates and views, seeds 42 and 51) finds the flat-day BPR zeroing
+  well beyond data centres. It hits flat weekend profiles: Sunday in Small,
+  Medium and Large Office, and Saturday plus Sunday in Primary and Secondary
+  School (52 or 104 days a year). 488 programme-slot pairs are affected.
+  Measured against the same programme without BPR, the zeroed days hold 2–3 %
+  of annual Office lighting, 9–14 % of Small and Medium Office plug loads and
+  13–26 % of School lighting and plug loads. Large Office data-centre plug
+  loads lose 71–100 %. No other family was affected at these seeds.
+  The generator keeps the annual target. Where only some days are zeroed,
+  the fitted amplitude raises the remaining days, so weekend load moves onto
+  weekdays instead of being lost. Only an all-year zero (data centres)
+  raises `zero_generated_integral`. The upstream blast-radius question was
+  sent to the separate investigation session. The O2 decision stays deferred.
