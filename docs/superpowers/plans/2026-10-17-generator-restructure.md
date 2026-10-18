@@ -372,3 +372,20 @@ Residential review decisions, 2026-10-18:
   to a separate session working outside git in
   `D:/atus-composition-behaviour-study` (`REPORT.md`). The O14 method waits
   for its verdict.
+- O14 decomposition result (`D:/atus-composition-behaviour-study/REPORT.md`,
+  ATUS 2003-2019, 210,586 diaries):
+  - The national clustering reproduces ResStock only moderately: profile
+    L1 distance about 0.2, and type shares differ by 4-6 points. K-modes
+    has many near-equal optima.
+  - Composition explains 80-92 % of weekday time at home in the South and
+    West, but only about 61 % pooled and 13-44 % at weekends. Within-type
+    behaviour, mostly wake and return timing, is above the noise floor in
+    the Midwest and Northeast and at weekends, yet small in absolute terms
+    (under 0.5 pp of at-home share, about 10 min), against 17-20 pp between
+    types.
+  - Verdict: option 1 alone is not general; full regional chains are not
+    justified. Proposed middle path (inference, untested): option 1 plus a
+    few regional timing parameters fitted on region-sized pools, and type
+    shares for small states shrunk toward the region (RI about 23-37 %
+    direct).
+  - Not yet decided by the user.
