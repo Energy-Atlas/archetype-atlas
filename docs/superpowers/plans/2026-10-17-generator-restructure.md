@@ -238,3 +238,22 @@ O2 investigation result (separate session, `C:/Users/cl2749/comstock-bpr-investi
   differs. Still deferred here.
 
 Upstream report of the O2 bug: deferred (user, 2026-10-17).
+
+Execution decisions, 2026-10-17 (third round). Proceed autonomously with O6,
+O8, O3 and O1. O2, O4, O5 and O10 stay out. Commit locally and ask before
+pushing.
+- O3: legacy-generator comparisons are dropped for the rebuilt office and
+  warehouse owners; the native family keys check them instead.
+- O1: templates vary per family, with both views and seeds 42 and 51:
+
+| Family | Template |
+|---|---|
+| Large Office | 90.1-2019 |
+| Large Hotel | DOE Ref 1980-2004 |
+| Small Hotel | 90.1-2007 |
+| Hospital | DOE Ref Pre-1980 |
+| Outpatient | 90.1-2019 |
+| Primary School | 90.1-2013 |
+| Secondary School | DOE Ref 1980-2004 |
+| Supermarket | 90.1-2007 |
+| Strip Mall | DOE Ref Pre-1980 |
