@@ -319,3 +319,21 @@ deviation from native ComStock, overriding the ADR 0035 quirk rule for this
 case. The investigation session is checking the documented method, the
 energy implications and the comparison with published results before
 implementation.
+
+O2 method review (investigation `REPORT.md` section 9):
+- The documented method is complete only for data centres. Section 4.6.3
+  keeps them constant, and the measure leaves one-value days unaltered.
+- Leaving flat weekend rules unchanged extends the one-value rule by
+  inference; no document states it.
+- Upstream `main` still has the defect, and no issue exists. Whether
+  ComStock was calibrated around the bug is unresolved: the EULP report
+  could not be fetched.
+- Recommended rule: in `adjust_day`, a day whose values are all equal (any
+  number of points) stays unchanged with sentinel base 1.0. No name-based
+  data-centre special case. Keep a native-match mode for the answer keys.
+- Deviations to document: data-centre and flat weekend loads are no longer
+  zeroed, so energy exceeds native/published ComStock (data-centre Large
+  Office about +8 kWh/ft²·yr). Flat weekends are covered by extension, not
+  documentation. The atlas data-centre schedule is the plain monthly-step
+  `DataCenter_EQUIP_SCH` (mean 0.625), not ComStock's constant 1.0. The
+  deviation is against current upstream.
