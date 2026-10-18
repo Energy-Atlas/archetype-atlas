@@ -164,6 +164,8 @@ results are in [residential-rng-equivalence.md](validation/residential-rng-equiv
 Tests compare the generator with native answer keys (`tests/answer_keys/`)
 captured from real OpenStudio 3.10 / Ruby 3.2.2 runs. Fractions must agree within
 1e-6, annual totals within 0.01 %, and discrete outcomes exactly.
+[tests/answer_keys/README.md](../tests/answer_keys/README.md) lists every key with its
+source, test and extractor.
 
 - **ComStock kernel**: every slot matches the native output for 11 controlled
   cases, 926 programme cases (Medium and Small Office, Warehouse, Retail and

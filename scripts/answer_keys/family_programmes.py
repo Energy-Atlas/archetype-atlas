@@ -13,12 +13,23 @@ import gzip
 import json
 from pathlib import Path
 
-from scripts.answer_keys.commercial_families import pack_days
 from scripts.capture.commercial_families import FAMILIES, cases_for
 
 ROOT = Path(__file__).resolve().parents[2]
 CAPTURE = ROOT / "build/task-10/native-family-programmes-20261017"
 TARGET = ROOT / "tests/answer_keys/commercial/family-programmes.json.gz"
+
+
+def pack_days(values: list) -> dict:
+    """8760 values -> {"days": distinct 24-value days, "index": 365 day indices}."""
+    days, lookup, index = [], {}, []
+    for day in range(365):
+        key = tuple(values[24 * day:24 * (day + 1)])
+        if key not in lookup:
+            lookup[key] = len(days)
+            days.append(list(key))
+        index.append(lookup[key])
+    return {"days": days, "index": index}
 
 
 def main() -> None:
