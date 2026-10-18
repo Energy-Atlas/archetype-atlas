@@ -11,7 +11,7 @@ import numpy as np
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
 
-OFFICE = "program-0e670d8dc556f7f5bdd7f1a9"      # Medium Office 90.1-2013
+COMMERCIAL = "program-b910ee0c34e9eeb3ecd573c4"  # Warehouse office area 90.1-2013 (no shared services)
 DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling (2 residents, Anchorage)
 APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # apartment dwelling unit
 RESTAURANT = "program-080dc08cd2d7af6c7d419d0a"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
@@ -31,13 +31,13 @@ class Validation(unittest.TestCase):
 
     def test_schema_errors_name_the_field(self):
         with self.assertRaises(GeneratorError) as caught:
-            generate(request({"key": "a", "program_id": OFFICE, "extent": {"floor_area": -1}}))
+            generate(request({"key": "a", "program_id": COMMERCIAL, "extent": {"floor_area": -1}}))
         self.assertEqual(caught.exception.code, "invalid_request")
         self.assertIn("/instances/0/extent/floor_area", caught.exception.path)
 
     def test_duplicate_keys(self):
-        self.assert_code("duplicate_instance", request({"key": "a", "program_id": OFFICE},
-                                                       {"key": "a", "program_id": OFFICE}))
+        self.assert_code("duplicate_instance", request({"key": "a", "program_id": COMMERCIAL},
+                                                       {"key": "a", "program_id": COMMERCIAL}))
 
     def test_unknown_programme(self):
         self.assert_code("unsupported_binding", request({"key": "a", "program_id": "program-" + "0" * 24}))
@@ -55,10 +55,10 @@ class Validation(unittest.TestCase):
         self.assert_code("unsupported_binding", request(water))
 
     def test_an_instance_is_a_programme_or_a_service(self):
-        self.assert_code("invalid_request", request({"key": "a", "program_id": OFFICE, "service_id": WATER}))
+        self.assert_code("invalid_request", request({"key": "a", "program_id": COMMERCIAL, "service_id": WATER}))
 
     def test_keys_cannot_contain_a_slash(self):
-        self.assert_code("invalid_request", request({"key": "u/water", "program_id": OFFICE}))
+        self.assert_code("invalid_request", request({"key": "u/water", "program_id": COMMERCIAL}))
 
     def test_residents_follow_the_resstock_range(self):
         unit = {"key": "u", "program_id": APARTMENT, "location": {"state": "NC", "latitude": 35.741,
@@ -83,12 +83,12 @@ class Validation(unittest.TestCase):
             {"key": "r", "program_id": RESTAURANT, "service_links": {WATER: "missing"}}))
         self.assert_code("invalid_request", request(
             {"key": "r", "program_id": RESTAURANT, "service_links": {WATER: "office"}},
-            {"key": "office", "program_id": OFFICE}))
+            {"key": "office", "program_id": COMMERCIAL}))
 
     def test_mixture_services_must_be_service_instances(self):
         self.assert_code("invalid_request", request(
-            {"key": "a", "program_id": OFFICE, "extent": {"floor_area": 1}},
-            {"key": "b", "program_id": OFFICE, "extent": {"floor_area": 1}},
+            {"key": "a", "program_id": COMMERCIAL, "extent": {"floor_area": 1}},
+            {"key": "b", "program_id": COMMERCIAL, "extent": {"floor_area": 1}},
             mixture={"program_id": "m", "members": [{"instance": "a", "weight": 1}], "services": ["b"],
                      "result_basis": "floor_area", "denominator": 1}))
 
@@ -100,7 +100,7 @@ class Validation(unittest.TestCase):
             restaurant, water, mixture={"program_id": "m", "members": [{"instance": "r", "weight": 1}]}))
 
     def test_operating_group_conflict_in_either_order(self):
-        office = {"key": "o", "program_id": OFFICE, "operating_group": "g"}
+        office = {"key": "o", "program_id": COMMERCIAL, "operating_group": "g"}
         water = {"key": "w", "service_id": WATER, "configuration_id": RESTAURANT_CONFIGURATION, "physical_id": "f",
                  "extent": {"floor_area": 1}, "operating_group": "g"}
         for instances in ((office, water), (water, office)):
@@ -108,32 +108,32 @@ class Validation(unittest.TestCase):
                 self.assert_code("operating_group_conflict", request(*instances))
 
     def test_mixture_weights_must_sum_to_one(self):
-        document = request({"key": "a", "program_id": OFFICE},
+        document = request({"key": "a", "program_id": COMMERCIAL},
                            mixture={"program_id": "m", "members": [{"instance": "a", "weight": 0.5}]})
         self.assert_code("invalid_mixture", document)
 
     def test_extents_need_a_denominator(self):
-        document = request({"key": "a", "program_id": OFFICE, "extent": {"floor_area": 10}},
+        document = request({"key": "a", "program_id": COMMERCIAL, "extent": {"floor_area": 10}},
                            mixture={"program_id": "m", "members": [{"instance": "a", "weight": 1}]})
         self.assert_code("invalid_mixture", document)
 
 
 class Behaviour(unittest.TestCase):
     def test_same_request_same_bundle(self):
-        document = request({"key": "office", "program_id": OFFICE, "operating_group": "b"})
+        document = request({"key": "office", "program_id": COMMERCIAL, "operating_group": "b"})
         self.assertEqual(generate(document)["schedules"], generate(document)["schedules"])
 
     def test_shared_operating_group_shares_hours(self):
-        bundle = generate(request({"key": "a", "program_id": OFFICE, "operating_group": "b"},
-                                  {"key": "b2", "program_id": OFFICE, "operating_group": "b"}))
+        bundle = generate(request({"key": "a", "program_id": COMMERCIAL, "operating_group": "b"},
+                                  {"key": "b2", "program_id": COMMERCIAL, "operating_group": "b"}))
         a = bundle["schedules"]["schedule:a:occupancy"]["values"]
         b = bundle["schedules"]["schedule:b2:occupancy"]["values"]
         self.assertEqual(a, b)
 
     def test_annual_target_survives_the_transform(self):
-        owner = generate(request({"key": "office", "program_id": OFFICE}))["owners"][0]
+        owner = generate(request({"key": "office", "program_id": COMMERCIAL}))["owners"][0]
         lighting = next(load for load in owner["loads"] if load["slot"] == "lighting")
-        bundle = generate(request({"key": "office", "program_id": OFFICE}))
+        bundle = generate(request({"key": "office", "program_id": COMMERCIAL}))
         values = np.asarray(bundle["schedules"]["schedule:office:lighting"]["values"])
         self.assertAlmostEqual(lighting["amplitude"] * values.sum(), lighting["annual_total"], delta=1e-6)
 
@@ -154,7 +154,7 @@ class CommandLine(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "request.json"
             out = Path(folder) / "bundle.json"
-            path.write_text(json.dumps(request({"key": "office", "program_id": OFFICE})), encoding="utf-8")
+            path.write_text(json.dumps(request({"key": "office", "program_id": COMMERCIAL})), encoding="utf-8")
             result = subprocess.run([sys.executable, "-m", "atlas_schedules", str(path), "-o", str(out)],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)

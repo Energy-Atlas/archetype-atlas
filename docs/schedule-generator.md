@@ -127,13 +127,14 @@ sampling moves energy in time without changing the annual total.
 | `fixed` | 44 apartment common areas | source rules unchanged |
 | `composition` | 378 source parents (Retail, Strip Mall, Warehouse, Supermarket, schools, hotels, Hospital, Outpatient) | members mixed by area |
 
-The 135 configurations in `atlas_schedules/data/configurations/` carry each
+The 150 configurations in `atlas_schedules/data/configurations/` (15 families ×
+5 templates × source and reviewed views) carry each
 building's People inventory (prototype geometry floor area × definition density)
 and its sampling building type. A building where residential spaces (guest
 rooms, patient rooms, apartments) hold most of the people uses the inverted
 rule-day convention for hours of operation.
 
-The 176 shared hot-water services (one per family, template and fixture) are in
+The 186 shared hot-water services (one per family, template and fixture) are in
 `atlas_schedules/data/services/`.
 
 Each recipe's `source` block names its frozen definition record
@@ -167,18 +168,26 @@ captured from real OpenStudio 3.10 / Ruby 3.2.2 runs. Fractions must agree withi
 - **ComStock kernel**: every slot matches the native output for 11 controlled
   cases, 926 programme cases (Medium and Small Office, Warehouse, Retail and
   both restaurant families), 40 restaurant water cases and the Stripmall pilot.
+- **Packaged recipes**: the same 926 native cases, rebuilt from the packaged
+  recipe, its configuration and (for Medium Office water) its linked service,
+  match the native output (`tests/schedules/test_recipes_native.py`). All 15
+  commercial families are built by `scripts/build_family_recipes.py` from the
+  frozen definitions and prototype geometry, and `--check` reproduces every
+  recipe and service. Heat-gain fractions are carried wherever the definitions
+  know them all.
 - **New families**: 8 native 90.1-2013 pilots (source and reviewed views of
   Large Office, Large Hotel, Hospital and Outpatient) check the People topology
   per space and every shared water service. Small Hotel, the schools and
   Supermarket use the same builder and kernel without a pilot of their own. No
   new family has a native key for its programme slots yet.
-  `python -m scripts.build_family_recipes --check` rebuilds every builder-owned
-  recipe and service from the frozen definitions.
 - **ComStock sampling**: 6,660 native `tsv_sampling.py` draws.
 - **ResStock (R1)**: 57 native units (channels, occupant types, offsets), plus
   8,250 raw Ruby draws.
-- **Orchestration**: 189 single-programme cases, both A5 case-matrix requests
-  (463 owners) and six mixture scenarios match the frozen v0.8.0 generator.
+- **Orchestration**: 121 single-programme cases, both A5 case-matrix requests
+  (365 owners) and four mixture scenarios match the frozen v0.8.0 generator.
+  Office and Warehouse owners are excluded. They were rebuilt after those keys
+  were captured, with new configurations and water as linked services, so the
+  native keys check them instead.
 
 An upstream detail is kept only when dropping it breaks an answer key. Each such
 detail names its answer key in its docstring.

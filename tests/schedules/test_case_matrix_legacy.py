@@ -13,7 +13,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.helpers import assert_schedule, translate
+from tests.schedules.helpers import assert_schedule, rebuilt, translate, without_rebuilt
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/case-matrix.json.gz"
 
@@ -22,10 +22,14 @@ class LegacyCaseMatrix(unittest.TestCase):
     def test_both_cases(self):
         cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["cases"]
         for case in cases:
-            request, keys = translate(case["request"], case["seed"])
+            request, keys = translate(without_rebuilt(case["request"]), case["seed"])
             bundle = generate(request, residential_rng="ruby_mt")
             owners = {o["key"]: o for o in bundle["owners"]}
+            compared = 0
             for legacy in case["owners"]:
+                if rebuilt(legacy.get("program_id")):
+                    continue
+                compared += 1
                 key = keys.get(legacy["instance_key"], legacy["instance_key"])
                 with self.subTest(case=case["case_id"], owner=legacy["instance_key"]):
                     owner = owners[key]
@@ -38,6 +42,7 @@ class LegacyCaseMatrix(unittest.TestCase):
                     for binding, load in zip(expected, owner["loads"]):
                         self.assertAlmostEqual(load["amplitude"] / binding["amplitude"], 1, delta=1e-9)
                         self.assertAlmostEqual(load["annual_total"] / binding["annual_total"], 1, delta=1e-9)
+            self.assertGreater(compared, 0, case["case_id"])
 
 
 if __name__ == "__main__":

@@ -1,22 +1,16 @@
 {
  "commercial": {
-  "configuration_id": "medium_office_doe_ref_pre_1980",
+  "configuration_id": "medium_office__doe_ref_pre_1980__reviewed",
   "modes": {
    "activity": "hours",
    "cooling_setpoint": "tstat",
    "electric_equipment": "hours",
    "heating_setpoint": "tstat",
-   "hot_water_volume": "hours",
    "lighting": "hours",
    "occupancy": "hours"
   }
  },
- "companions": {
-  "hot_water_volume_target_temperature": {
-   "method": "source_rules",
-   "schedule": "source-water-target-365964361452837c209a5028"
-  }
- },
+ "companions": {},
  "controls": [
   {
    "people": {
@@ -27,11 +21,6 @@
    "quantity": "occupancy_fraction",
    "slot": "occupancy",
    "unit": "fraction"
-  },
-  {
-   "quantity": "temperature",
-   "slot": "hot_water_volume_target_temperature",
-   "unit": "C"
   },
   {
    "quantity": "temperature",
@@ -53,7 +42,11 @@
   {
    "basis": "floor_area",
    "fuel": "electricity",
-   "heat_fractions": null,
+   "heat_fractions": {
+    "radiant": 0.4,
+    "to_return_air": 0.4,
+    "visible": 0.2
+   },
    "host": "assigned_zone",
    "quantity": "lighting",
    "slot": "lighting",
@@ -73,22 +66,14 @@
    "slot": "electric_equipment",
    "unit": "W/m2",
    "value": 10.763910416709722
-  },
-  {
-   "basis": "floor_area",
-   "fuel": "water",
-   "heat_fractions": null,
-   "host": "assigned_zone",
-   "quantity": "hot_water_volume",
-   "slot": "hot_water_volume",
-   "unit": "m3/s/m2",
-   "value": 6.26190751807882e-09
   }
  ],
  "kind": "commercial",
  "name": "WholeBuilding - Md Office_MediumOffice",
  "program_id": "program-d8107cc2682eace72882a053",
- "required_services": [],
+ "required_services": [
+  "service-a89d6117b2106e6964a20e07"
+ ],
  "schema_version": "2.0.0",
  "slots": [
   {
@@ -108,18 +93,6 @@
    "schedule": "schedule-ecb3332a334e01697ab1",
    "slot": "electric_equipment",
    "unit": "fraction"
-  },
-  {
-   "kind": "load",
-   "schedule": "schedule-1a7eda5cfd8f681cc7d7",
-   "slot": "hot_water_volume",
-   "unit": "fraction"
-  },
-  {
-   "kind": "control",
-   "schedule": null,
-   "slot": "hot_water_volume_target_temperature",
-   "unit": "C"
   },
   {
    "kind": "control",
@@ -143,9 +116,8 @@
  "source": {
   "building_type": "MediumOffice",
   "climate": null,
-  "definition": "data/definition-releases/v0.1.1/programs.json#/1640",
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-d8107cc2682eace72882a053",
   "family": "existing_stock_benchmark",
-  "migrated_from": "v0.8.0 compiled recipe",
   "source_id": "program-9dc46bf366d0557c9f5a",
   "template": "DOE Ref Pre-1980",
   "view": "reviewed",

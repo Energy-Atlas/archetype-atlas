@@ -1,6 +1,6 @@
 {
  "commercial": {
-  "configuration_id": "small_office_doe_ref_1980_2004",
+  "configuration_id": "small_office__doe_ref_1980_2004__source",
   "modes": {
    "activity": "hours",
    "cooling_setpoint": "tstat",
@@ -42,7 +42,11 @@
   {
    "basis": "floor_area",
    "fuel": "electricity",
-   "heat_fractions": null,
+   "heat_fractions": {
+    "radiant": 0.7,
+    "to_return_air": 0.0,
+    "visible": 0.2
+   },
    "host": "assigned_zone",
    "quantity": "lighting",
    "slot": "lighting",
@@ -110,9 +114,8 @@
  "source": {
   "building_type": "SmallOffice",
   "climate": null,
-  "definition": "data/definition-releases/v0.1.1/programs.json#/1636",
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-d7eba231f8651d8cf29b62ad",
   "family": "existing_stock_benchmark",
-  "migrated_from": "v0.8.0 compiled recipe",
   "source_id": "program-8687a7e6526fe1f15fdf",
   "template": "DOE Ref 1980-2004",
   "view": "source",

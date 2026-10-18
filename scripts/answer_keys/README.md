@@ -13,11 +13,9 @@ the matching extractor here. `legacy_*.py` compared against the retired
 generator and cannot be rerun.
 
 `scripts/migrate/` is the same kind of one-time record. It converted the legacy
-package's sampling tables and recipes into `atlas_schedules/data/`.
+package's sampling tables and recipes into `atlas_schedules/data/`. Today
 `scripts/build_sampling_tables.py` (pinned ComStock TSVs) and
 `scripts/build_family_recipes.py` (frozen definitions plus prototype geometry)
-built the nine new families. `--check` reproduces every recipe and service the
-builder owns, including the migrated Retail and restaurant data, and the
-sampling tables. The office, warehouse, ResStock dwelling,
-apartment and fixed recipes remain migrated and are checked by the legacy
-answer keys.
+build all commercial data, and `--check` reproduces it. Only the ResStock
+dwelling, apartment and fixed recipes remain migrated; the legacy answer keys
+check them.

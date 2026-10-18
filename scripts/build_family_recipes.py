@@ -129,6 +129,15 @@ def people(building_type: str, template: str, view: str) -> list:
     return [[schedule_id, count] for _, schedule_id, _, count in people_by_space(building_type, template, view)]
 
 
+def heat_fractions(load: dict) -> dict | None:
+    """The load's thermal effects (e.g. radiant, latent, lost) when every one is
+    known in the definitions; otherwise null, so unknowns stay explicit."""
+    effects = load.get("thermal_effects") or {}
+    if not effects or any(e["status"] != "known" for e in effects.values()):
+        return None
+    return {name: effects[name]["value"] for name in sorted(effects)}
+
+
 def programme_recipe(programme: dict, people_list: list, configuration: str, sampling: str,
                      invert: bool = False) -> dict:
     slots, demands, controls, companions, modes = [], [], [], {}, {}
@@ -149,7 +158,8 @@ def programme_recipe(programme: dict, people_list: list, configuration: str, sam
             continue
         slots.append({"slot": quantity, "kind": "load", "unit": "fraction", "schedule": load["schedule_id"]})
         demands.append({"slot": quantity, "quantity": quantity, "unit": load["unit"], "value": load["value"],
-                        "basis": load["basis"], "fuel": fuel, "host": "assigned_zone", "heat_fractions": None})
+                        "basis": load["basis"], "fuel": fuel, "host": "assigned_zone",
+                        "heat_fractions": heat_fractions(load)})
         modes[quantity] = "hours"
         if quantity == "hot_water_volume":
             slot = "hot_water_volume_target_temperature"
@@ -260,11 +270,11 @@ def build_family(building_type: str) -> list:
 
 
 def _summary(recipe: dict) -> dict:
-    """What must agree with a migrated recipe."""
+    """What must agree with a packaged recipe."""
     if recipe["kind"] == "composition":
         return {"kind": "composition", "members": recipe["composition"]["members"]}
     summary = {"kind": recipe["kind"], "slots": [(s["slot"], s["kind"], s["schedule"]) for s in recipe["slots"]],
-               "demands": [(d["slot"], d["unit"], d["value"]) for d in recipe["demands"]],
+               "demands": [(d["slot"], d["unit"], d["value"], d.get("heat_fractions")) for d in recipe["demands"]],
                "required_services": recipe.get("required_services", [])}
     if recipe["kind"] == "commercial":
         totals = {}
@@ -343,8 +353,7 @@ def check(building_types) -> int:
 
 def main() -> None:
     if sys.argv[1:2] == ["--check"]:
-        # Offices and Warehouse stay migrated from the legacy package (different People carrier).
-        families = sys.argv[2:] or [bt for bt in SAMPLING if bt not in ("MediumOffice", "SmallOffice", "Warehouse")]
+        families = sys.argv[2:] or list(SAMPLING)
         different = check(families) + check_services(families)
         raise SystemExit(1 if different else 0)
     table_path = TARGET.parent / "schedules.json"

@@ -1,6 +1,6 @@
 {
  "commercial": {
-  "configuration_id": "small_office_90_1_2019",
+  "configuration_id": "small_office__90_1_2019__reviewed",
   "modes": {
    "activity": "hours",
    "cooling_setpoint": "tstat",
@@ -42,7 +42,11 @@
   {
    "basis": "floor_area",
    "fuel": "electricity",
-   "heat_fractions": null,
+   "heat_fractions": {
+    "radiant": 0.7,
+    "to_return_air": 0.0,
+    "visible": 0.2
+   },
    "host": "assigned_zone",
    "quantity": "lighting",
    "slot": "lighting",
@@ -110,9 +114,8 @@
  "source": {
   "building_type": "SmallOffice",
   "climate": null,
-  "definition": "data/definition-releases/v0.1.1/programs.json#/1513",
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-c5dc0aa4be8d93fadd0beab0",
   "family": "code_prototype_rules",
-  "migrated_from": "v0.8.0 compiled recipe",
   "source_id": "program-e5077aa72bff117646a0",
   "template": "90.1-2019",
   "view": "reviewed",

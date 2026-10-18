@@ -43,7 +43,11 @@
   {
    "basis": "floor_area",
    "fuel": "electricity",
-   "heat_fractions": null,
+   "heat_fractions": {
+    "radiant": 0.7,
+    "to_return_air": 0.0,
+    "visible": 0.2
+   },
    "host": "assigned_zone",
    "quantity": "lighting",
    "slot": "lighting",
@@ -133,9 +137,8 @@
  "source": {
   "building_type": "FullServiceRestaurant",
   "climate": null,
-  "definition": "data/definition-releases/v0.1.1/programs.json#/1179",
+  "definition": "data/definition-releases/v0.1.1/programs.json#program-973c08e2a0373b28f908397b",
   "family": "code_prototype_rules",
-  "migrated_from": "v0.8.0 compiled recipe",
   "source_id": "program-570fc2db946090b2364b",
   "template": "90.1-2019",
   "view": "source",

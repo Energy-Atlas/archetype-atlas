@@ -70,7 +70,7 @@ unknowns. Geometry, assignment and sizing remain consumer responsibilities.
 The readable [schedule generator](schedule-generator.md) (`atlas_schedules`,
 unreleased; [ADR 0035](adr/0035-readable-generator-restructure.md)) covers all
 1,900 catalogue programmes across 15 ComStock building types, ResStock dwellings,
-apartment units and common areas, 176 shared hot-water services and the 16 DOE
+apartment units and common areas, 186 shared hot-water services and the 16 DOE
 reference locations. Native OpenStudio / Ruby answer keys validate it. The
 earlier bit-exact v0.1.0–v0.8.0 builds were never published and are retired. Site
 design and production publication remain separate work.

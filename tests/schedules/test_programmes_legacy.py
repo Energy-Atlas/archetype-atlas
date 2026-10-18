@@ -14,7 +14,7 @@ import numpy as np
 
 from atlas_schedules.generator import generate
 from atlas_schedules.programmes import load_recipe
-from tests.schedules.helpers import assert_schedule
+from tests.schedules.helpers import assert_schedule, rebuilt
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/programmes.json.gz"
 UNIT_EXTENT = {"floor_area": 1, "dwelling_unit": 1, "person": 1, "absolute": 1}
@@ -32,6 +32,8 @@ class LegacyProgrammes(unittest.TestCase):
     def test_every_programme(self):
         cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["cases"]
         for case in cases:
+            if rebuilt(case["program_id"]):
+                continue
             with self.subTest(program=case["program_id"]):
                 bundle = generate(request_for(case["program_id"]), residential_rng="ruby_mt")
                 owner = bundle["owners"][0]

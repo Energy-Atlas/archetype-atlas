@@ -1,8 +1,13 @@
 """Shared helpers for the schedule generator tests."""
 import numpy as np
 
+from atlas_schedules.programmes import load_recipe
+
 TOLERANCE = 1e-6                      # fraction tolerance (ADR 0035)
 SAMPLE_HOURS = np.arange(0, 8760, 37)
+# Rebuilt from the definitions after the legacy keys were captured (new configuration
+# ids, water as linked services); the native family keys check them instead.
+REBUILT_BUILDING_TYPES = frozenset({"MediumOffice", "SmallOffice", "Warehouse"})
 COMPOSITION_BASIS = {"source_reference_area_normalized": "reference_area", "caller_parent_floor_area": "caller_area"}
 
 
@@ -60,3 +65,13 @@ def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
             v2["composition_basis"] = COMPOSITION_BASIS[inputs["composition_basis_mode"]]
         instances.append(v2)
     return {"schema_version": "2.0.0", "seed": seed, "instances": instances}, keys
+
+
+def rebuilt(program_id: str | None) -> bool:
+    """Whether a programme belongs to a family the legacy keys no longer describe."""
+    return program_id is not None and load_recipe(program_id)["source"].get("building_type") in REBUILT_BUILDING_TYPES
+
+
+def without_rebuilt(legacy_request: dict) -> dict:
+    """The legacy request without instances of rebuilt families."""
+    return {**legacy_request, "instances": [i for i in legacy_request["instances"] if not rebuilt(i.get("program_id"))]}

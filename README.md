@@ -41,7 +41,7 @@ ComStock / openstudio-standards 0.8.6 hours-of-operation sampling and of
 OpenStudio-HPXML's ResStock occupant model
 ([ADR 0035](docs/adr/0035-readable-generator-restructure.md)). It covers 1,900
 programmes: 15 ComStock building types, 41 ResStock dwellings, 40 apartment units,
-44 apartment common areas and 378 composition parents. It also covers 176 shared
+44 apartment common areas and 378 composition parents. It also covers 186 shared
 hot-water services and the 16 DOE reference locations. Native OpenStudio / Ruby
 answer keys in `tests/answer_keys/` validate the kernels to 1e-6 and cover six
 families' programmes in full. The nine newer families are checked at native
