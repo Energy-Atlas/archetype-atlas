@@ -39,6 +39,76 @@ source inventory or compatibility object. Component conditions remain the
 existing assignment path; unsupported BEM interfaces or missing required inputs
 must fail explicitly. A source blocker cannot be relabelled as a consumer input.
 
+## Reference identity and instantiated scope
+
+`assembly_id` and `ground_method_id` resolve independently inside the selected
+document. A method ID identifies reusable execution instructions, not a
+construction identity or physical foundation. The Medium Office and Midrise
+Apartment examples share an FFactor method while their assembly IDs and F-values
+differ. Resolve both references before instantiating an IDF construction.
+
+Every executable assembly, material, method, model-parameter and dimension-expression
+reference must resolve in that same standalone document. Provenance/source-map
+identifiers remain source locators, rather than requests for additional executable
+resources. Importing another
+document must not repair a missing reference. If a consumer interns resources
+across documents, equal IDs require equal resolved definitions; conflicting
+payloads must fail rather than overwrite each other.
+
+IDF object reuse requires equivalent effective definitions and compatible object
+scope. For F-factor constructions, compare the resolved F-value, actual area and
+exposed perimeter; for C-factor constructions compare the C-value and actual
+height. Check method/environment compatibility as well. A method ID, assembly
+ID or coincidentally equal nominal conductance is insufficient on its own.
+Reuse of equivalent stateless construction/material definitions is optional.
+
+Kiva coupling is physical and geometry-dependent. One valid foundation group can
+associate its slab and wall interfaces through the selected method. Repeated use
+of that method does not authorize merging different foundations, thermal hosts,
+topologies or solver domains, even when their numeric parameters match. BEMGen
+must retain foundation-group identity and resolve each group's geometry and
+initial conditions independently. Equal model-wide Kiva settings may be shared
+only within their model-wide scope; conflicting requests fail. These are
+consumer instantiation rules, not another public registry or suite selector.
+
+## Explicit dimension operands and initialization weights
+
+An expression such as `wall_height_above_grade.material_thickness_id` requests
+one specific Kiva method operand from the referenced material. In the retained
+5A detached-dwelling example, the referenced thickness is 0.1016 m. Resolve the
+expression, including any declared scale/offset, without treating the layer stack
+as a source for actual slab dimensions, perimeter, grade datum, basement depth
+or foundation topology. Explicit method operands still have geometric meaning:
+if the BEM/site configuration contradicts one, report the conflict instead of
+silently rewriting the recipe or geometry. An override requires an explicitly
+accepted policy and a recorded diagnostic; none is implied by ID reuse.
+
+`parameters.initialization.outdoor`, `ground` and `indoor` are dimensionless
+affine weights; `offset_K` is a temperature increment. First follow
+`resstock_source_start_month_1.0.0` to obtain the temperature operands. The source
+outdoor operand is the mean outdoor dry-bulb temperature of the simulation-start
+month. With applicable thermostat controls, obtain heating/cooling setpoints for
+the simulation start and derive approximate indoor temperature using the declared
+balance thresholds and linear interpolation between them. Without thermostat
+controls, the source policy uses that outdoor operand as indoor temperature.
+Missing controls on an explicitly controlled host are an error, not permission
+to switch to the no-controls branch.
+
+Then apply:
+
+```text
+T_initial_C = outdoor * T_outdoor_C + ground * T_ground_C
+            + indoor * T_indoor_C + offset_K
+```
+
+For the retained dwelling's weights (0, 0, 1) and zero offset, the result is the
+derived indoor temperature, not 1 degree Celsius. Shared method IDs do not imply
+shared weather/start dates, program controls or resolved initialization values.
+
+The focused BEMGen acceptance cases are specified in
+[the instantiation test requirements](bemgen-foundation-instantiation-tests.md).
+Atlas reference checks do not establish that those consumer tests have passed.
+
 ## Native methods and environment
 
 - F/C-factor assemblies instantiate the native EnergyPlus construction objects
