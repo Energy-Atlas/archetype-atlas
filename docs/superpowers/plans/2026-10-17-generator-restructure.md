@@ -337,3 +337,9 @@ O2 method review (investigation `REPORT.md` section 9):
   documentation. The atlas data-centre schedule is the plain monthly-step
   `DataCenter_EQUIP_SCH` (mean 0.625), not ComStock's constant 1.0. The
   deviation is against current upstream.
+
+Status, 2026-10-18: O12 done (2ab3861). O2 done (466d796): flat days are
+unchanged by base-to-peak, and native mode is kept for the keys. O11 done:
+native dominance matches all 150 configurations, and 20 residential-dominant
+cases match exactly, including the default-profile stress cases. The
+heuristic `_default_days` needed no change.

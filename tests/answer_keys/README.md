@@ -15,8 +15,9 @@ prove it matches upstream without OpenStudio or Ruby installed, and they catch
 regressions immediately.
 
 To add or refresh a key, capture it with a harness in `scripts/capture/` and
-extract it. `scripts/capture/commercial_families.py` with
-`scripts/answer_keys/family_programmes.py` is the current rerunnable pair.
+extract it. The current rerunnable captures are `scripts/capture/commercial_families.py`,
+`occupancy_dominance.py` and `residential_dominant.py`, extracted by
+`scripts/answer_keys/family_programmes.py` and `residential_dominance.py`.
 The other extractors ran once during the 2026-10-17 restructure. Their inputs
 (`data/schedule-generator/`, `data/generator-releases/`) were deleted and
 purged from history, so the extractors were retired. They remain readable in
@@ -29,6 +30,8 @@ commit `779f9fb` under `scripts/answer_keys/`, with the migration scripts under
 | `commercial/families.json.gz` | 926 programme cases and 40 restaurant water cases of Medium/Small Office, Warehouse, Retail and both restaurants | native family captures, OpenStudio 3.10 | `test_commercial_families`, `test_recipes_native` | `commercial_families.py` (779f9fb) |
 | `commercial/family-programmes.json.gz` | 534 cases, 2,834 slots of the nine newer families (one template each, both views, seeds 42/51) | `build/task-10/native-family-programmes-20261017` | `test_family_programmes_native` | `family_programmes.py` (live) |
 | `commercial/family-pilots.json.gz` | People per space on real prototype geometry and water, 8 pilots (Large Office, Large Hotel, Hospital, Outpatient, 90.1-2013) | native pilots `build/task-10/native-*-pilot-20261014-01` | `test_family_pilots` | `family_pilots.py` (779f9fb) |
+| `commercial/occupancy-dominance.json` | residential/non-residential design people per configuration (150) on real prototype geometry | `scripts/capture/occupancy_dominance.py` | `test_residential_dominance_native` | `residential_dominance.py` (live) |
+| `commercial/residential-dominant.json.gz` | 20 inverted rule-day cases: real guest/patient-room carriers and crafted default-profile stress cases | `scripts/capture/residential_dominant.py` | `test_residential_dominance_native` | `residential_dominance.py` (live) |
 | `commercial/stripmall.json.gz` | Strip Mall 2013 source pilot, seeds 42/51 | native Strip Mall pilot extract | `test_stripmall` | `stripmall.py` (779f9fb) |
 | `commercial/sampling-draws.json` | 6,660 operating-parameter draws | ComStock `sampling/tsv_sampling.py` (3c103063) on supplied uniforms | `test_sampler` | `sampling.py` (779f9fb) |
 | `residential/cases.json`, `channels.npz` | 57 ResStock units: channels, occupant types, offsets | Ruby 3.2.2 running OpenStudio-HPXML `BuildResidentialScheduleFile` (dd25369) | `test_residential_r1` | `residential.py` (779f9fb) |

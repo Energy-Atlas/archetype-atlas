@@ -184,9 +184,16 @@ source, test and extractor.
   water service of those configurations matches (2,834 slots;
   `tests/schedules/test_family_programmes_native.py`, captured by
   `scripts/capture/commercial_families.py`). Eight further 90.1-2013 pilots
-  check the People topology per space against real prototype geometry. No
-  packaged configuration is residential-dominant, so the inverted rule-day
-  path is not exercised.
+  check the People topology per space against real prototype geometry.
+- **Residential-dominant hours**: native totals on real prototype geometry
+  confirm every packaged configuration's dominance decision and
+  dominant-group people, for all 150. None is residential-dominant; Small
+  Hotel comes closest at 44–47 % residential. The inverted rule-day path is
+  checked on 20 native cases: guest- and patient-room carriers, and crafted
+  rule sets that stress which day profile stays the uninverted default.
+  These are weekends more frequent than any weekday profile, a near tie, one
+  profile per weekday, and default-only. All match exactly
+  (`tests/schedules/test_residential_dominance_native.py`).
 - **ComStock sampling**: 6,660 native `tsv_sampling.py` draws.
 - **ResStock (R1)**: 57 native units (channels, occupant types, offsets), plus
   8,250 raw Ruby draws.
