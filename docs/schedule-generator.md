@@ -50,9 +50,13 @@ A **programme instance** has a `program_id` (a recipe in
   multiplies the instance's extent in a mixture.
 - `operating_group`: commercial instances in one group share one sampled set of
   operating hours. Without it, each instance is its own group.
-- `residents` (0–20) and `location` (`state`, `latitude`, `longitude`,
-  `utc_offset`): for apartment units. A unit with 0 residents keeps its fixed
-  rules. An apartment unit with `extent.floor_area` also gets a caller-water
+- `residents` and `location` (`state`, `latitude`, `longitude`,
+  `utc_offset`): for apartment units. `residents` counts the people in one
+  dwelling unit, not a building, and ranges 0–11. ResStock samples 0–9
+  occupants plus "10+", which it runs as 11, so larger households are outside
+  the occupant model's data. Model a larger building as more unit instances;
+  commercial occupancy comes from the definitions and floor area instead. A
+  unit with 0 residents keeps its fixed rules. An apartment unit with `extent.floor_area` also gets a caller-water
   owner, `<key>/water`.
 - `reference_location`: for ResStock dwellings and apartment units, one of the
   16 DOE Commercial Reference climate cases (`1A` ... `8`, NREL/TP-5500-46861

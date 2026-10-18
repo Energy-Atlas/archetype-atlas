@@ -13,6 +13,7 @@ from atlas_schedules.generator import generate
 
 OFFICE = "program-0e670d8dc556f7f5bdd7f1a9"      # Medium Office 90.1-2013
 DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling (2 residents, Anchorage)
+APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # apartment dwelling unit
 RESTAURANT = "program-080dc08cd2d7af6c7d419d0a"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
 WATER = "service-1981fa97b9fd7d47efcf39dd"
 RESTAURANT_CONFIGURATION = "quick_service_restaurant__90_1_2013__source"
@@ -58,6 +59,13 @@ class Validation(unittest.TestCase):
 
     def test_keys_cannot_contain_a_slash(self):
         self.assert_code("invalid_request", request({"key": "u/water", "program_id": OFFICE}))
+
+    def test_residents_follow_the_resstock_range(self):
+        unit = {"key": "u", "program_id": APARTMENT, "location": {"state": "NC", "latitude": 35.741,
+                                                                 "longitude": -81.389, "utc_offset": -5}}
+        self.assert_code("invalid_request", request({**unit, "residents": 12}))
+        bundle = generate(request({**unit, "residents": 11}))
+        self.assertTrue(bundle["schedules"])
 
     def test_seed_must_be_an_integer(self):
         self.assert_code("invalid_seed", request({"key": "home", "program_id": DWELLING}, seed=42.0))
