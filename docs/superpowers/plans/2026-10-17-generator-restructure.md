@@ -445,3 +445,9 @@ Residential review decisions, 2026-10-18:
   resolution comes later. The cell structure leans toward 16 cells (age x
   employed x enrolled); the role of the state with 16 cells is under
   discussion.
+- O14 DECISION (user, 2026-10-19): 16 cells (age 15-24/25-44/45-64/65+ x
+  employed x enrolled), with national cell probabilities and composition
+  only (no state adjustment). A location's mix is its residents across the
+  cells. The stray re-serialised `constants_rb.json` (values unchanged,
+  written during the ATUS study) was restored. Implementation of O13 and O14
+  started.
