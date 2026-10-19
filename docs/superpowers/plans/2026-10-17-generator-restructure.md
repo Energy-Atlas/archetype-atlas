@@ -407,3 +407,6 @@ Residential review decisions, 2026-10-18:
     rank last. No region shows earlier mornings plus later returns. The
     Midwest's later returns are captured only by regional means.
   - All options remain open; no decision yet.
+- O14 DECISION (user, 2026-10-18): option 1. Localize the occupant-type mix
+  only; chains, durations and lead shifts stay national. The spatial
+  resolution (state, finer or coarser) is under discussion.
