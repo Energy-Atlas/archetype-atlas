@@ -423,3 +423,20 @@ Residential review decisions, 2026-10-18:
   classification; age x employment x enrolment cells; ACS PUMS residents
   per dwelling), whose occupancy tilt and time shift were not identifiable
   from group meters.
+- O14 attribute result (`REPORT.md` section 8):
+  - The chain-likelihood classifier reproduces ResStock's weekday shares
+    within 0.8 points (mean top probability 0.88). Weekend diaries are off
+    by 7 points and their labels mean something different.
+  - Weekday attribute ranking over age x employment x enrolment: full- or
+    part-time (+11.9 milli-nats), education (+6.2), children (+3.0),
+    partner (+2.6). Tenure, household size, income, sex and metro status
+    are negligible; principal city is not in the extract.
+  - Attributes explain about 77 % of weekday between-state variance; the
+    state adds only about +1 milli-nat.
+  - Recommended (inference): national cell probabilities from weekday
+    diaries 2003-2019; cells age x employment-4 x enrolment x education x
+    partner (256, shrunk hierarchically, pseudo-count about 100); location
+    mix = ACS residents x cell probabilities, plus an optional shrunk state
+    offset; the same mix applied at weekends. State-specific cells are
+    infeasible for small states.
+  - Pending user decision.
