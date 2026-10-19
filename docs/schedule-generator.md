@@ -241,6 +241,25 @@ answer keys; requests cannot select it. Evidence:
 `C:/Users/cl2749/comstock-bpr-investigation/REPORT.md` (outside this repository)
 and plan section 7 (O2).
 
+### Deviation from upstream ResStock: southern hemisphere
+
+OpenStudio-HPXML models the United States only, and its empirical monthly
+terms follow northern seasons. For a dwelling or apartment unit at a negative
+latitude, the generator takes those terms from the month six months away
+(`atlas_schedules/residential/seasons.py`). The affected terms:
+- the lighting, plug-load, TV and appliance monthly multipliers;
+- the refrigerator, freezer and exterior-lighting background multipliers;
+- the lighting equation's extra hour, which gives summer sunsets in
+  daylight-saving clock time;
+- the month term of the evening-peak width.
+
+Astronomical sunset already follows the real latitude. Northern results are
+unchanged. Not covered:
+- the monthly time shifts still need a US state code;
+- thermostat seasons are not shifted;
+- latitudes beyond the polar circles have no defined sunset, and the
+  generator rejects them.
+
 ## Adding a family
 
 1. Capture a native answer key with OpenStudio 3.10 (`scripts/capture/`).

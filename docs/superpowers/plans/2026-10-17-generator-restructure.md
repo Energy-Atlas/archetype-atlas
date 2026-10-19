@@ -451,3 +451,4 @@ Residential review decisions, 2026-10-18:
   cells. The stray re-serialised `constants_rb.json` (values unchanged,
   written during the ATUS study) was restored. Implementation of O13 and O14
   started.
+- O13 done (2026-10-19): southern-hemisphere season shift in `residential/seasons.py`, applied to residential monthly multipliers, fixed-background multipliers, the lighting hour and the evening width; tests in `test_seasons.py`.

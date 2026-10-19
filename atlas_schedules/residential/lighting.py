@@ -9,6 +9,7 @@ not a daylight-saving conversion.
 import math
 
 from ..errors import GeneratorError
+from .seasons import season_month
 
 HIGH_LATITUDE_SUNSET = (16.22214058, 17.08642353, 17.98324493, 19.83547864, 20.65149672, 21.20662992,
                         21.12124777, 20.37458274, 19.25834757, 18.08155615, 16.14359164, 15.75571306)
@@ -34,7 +35,7 @@ def sunset_hours(latitude: float, longitude: float, utc_offset: float) -> list:
         except ValueError as error:
             raise GeneratorError("source_undefined", "/inputs/latitude",
                                  "The upstream sunset equation is undefined here") from error
-        offset = 1 if 4 <= month <= 10 else 0
+        offset = 1 if 4 <= season_month(month, latitude) <= 10 else 0
         sunset.append(offset + 12.0 + hour_angle / 15.0 - equation_of_time - (-utc_offset * 15 + longitude) / 15)
     return sunset
 
@@ -73,8 +74,12 @@ def _month_profile(month: int, sunset: float, seasonal: float) -> list:
 
 
 def monthly_profiles(latitude: float, longitude: float, utc_offset: float, seasonal: list) -> list:
-    """Twelve 24-hour profiles, normalised to the annual peak."""
+    """Twelve 24-hour profiles, normalised to the annual peak.
+
+    `seasonal` must already follow the hemisphere (seasons.for_hemisphere); the
+    evening-width month term uses the season month.
+    """
     sunsets = sunset_hours(latitude, longitude, utc_offset)
-    profiles = [_month_profile(m, sunsets[m - 1], seasonal[m - 1]) for m in range(1, 13)]
+    profiles = [_month_profile(season_month(m, latitude), sunsets[m - 1], seasonal[m - 1]) for m in range(1, 13)]
     peak = max(max(p) for p in profiles)
     return [[v / peak for v in p] for p in profiles]

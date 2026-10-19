@@ -14,6 +14,7 @@ from .events import EventGenerator
 from .rng import unit_streams
 from .shapes import interior_lighting, occupants, plug_and_fan_shapes
 from .shift import normalize, shift_and_normalize, state_shifts
+from .seasons import for_hemisphere
 from .tables import load_drybulb, load_tables
 
 INSTALLED_KEYS = ("dishwasher", "clothes_washer", "clothes_dryer", "cooking_range",
@@ -83,7 +84,7 @@ def generate_dwelling(dwelling: Dwelling, unit_seed: int, rng_mode: str, year: i
 
 def dwelling_channels(dwelling: Dwelling, activities, streams: dict, year: int = 2007) -> dict:
     """Channels from given activity traces; events draw from the end-use streams."""
-    tables = load_tables()
+    tables = for_hemisphere(load_tables(), dwelling.latitude)
     shifts = state_shifts(tables, dwelling.state)
     drybulb = load_drybulb(dwelling.weather_id)
     channels = {"occupants": occupants(activities, shifts, year)}
@@ -101,7 +102,7 @@ def generate_occupancy_and_lighting(dwelling: Dwelling, unit_seed: int, rng_mode
     count = resident_count(dwelling.residents)
     if count == 0:
         raise GeneratorError("unsupported_input", "/inputs/residents", "Zero-resident units are skipped by the caller")
-    tables = load_tables()
+    tables = for_hemisphere(load_tables(), dwelling.latitude)
     shifts = state_shifts(tables, dwelling.state)
     streams = unit_streams(rng_mode, unit_seed)
     activities = simulate_activities(count, streams["main"], tables, year)

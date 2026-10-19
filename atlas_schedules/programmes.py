@@ -103,15 +103,18 @@ def reference_locations() -> dict:
     return {row["climate_case"]: row for row in table["locations"]}
 
 
-def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str, reference_location: str | None = None) -> dict:
+def _dwelling(recipe: dict, reference_location: str | None = None) -> Dwelling:
     d = dict(recipe["dwelling"])
     if reference_location:
         where = reference_locations()[reference_location]
         d.update(state=where["state"], latitude=where["latitude"], longitude=where["longitude"],
                  utc_offset=where["utc_offset"], weather_id=where["weather_id"])
-    dwelling = Dwelling(d["residents"], d["state"], d["latitude"], d["longitude"], d["utc_offset"],
-                        d["weather_id"], d["installed"])
-    return generate_dwelling(dwelling, unit_seed, rng_mode)
+    return Dwelling(d["residents"], d["state"], d["latitude"], d["longitude"], d["utc_offset"],
+                    d["weather_id"], d["installed"])
+
+
+def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str, reference_location: str | None = None) -> dict:
+    return generate_dwelling(_dwelling(recipe, reference_location), unit_seed, rng_mode)
 
 
 def _fixed_channels(recipe: dict) -> dict:
@@ -131,7 +134,9 @@ def instance_channels(recipe: dict, *, operating: dict | None = None, unit_seed:
         channels = _fixed_channels(recipe)
     else:
         raise GeneratorError("unsupported_binding", "/program_id", f"Recipe kind {kind!r} is generated elsewhere")
-    channels.update(companion_channels(recipe["companions"], schedules(), recipe.get("thermostat")))
+    latitude = _dwelling(recipe, reference_location).latitude if kind == "residential" else None
+    channels.update(companion_channels(recipe["companions"], schedules(), recipe.get("thermostat"),
+                                       latitude=latitude))
     selected = {}
     for slot in recipe["slots"]:
         name = slot["slot"]

@@ -18,6 +18,7 @@ import numpy as np
 
 from .calendar import evaluate_rules
 from .errors import GeneratorError
+from .residential.seasons import seasonal
 
 DATA = Path(__file__).resolve().parent / "data"
 
@@ -32,13 +33,15 @@ def _is_weekend(day: int, year: int) -> bool:
     return (date(year, 1, 1) + timedelta(days=day)).weekday() > 4
 
 
-def fixed_background(slot: str, year: int = 2007) -> np.ndarray:
+def fixed_background(slot: str, year: int = 2007, latitude: float | None = None) -> np.ndarray:
+    """latitude: a negative value shifts the monthly multipliers six months (residential/seasons.py)."""
     shape = _fixed_backgrounds()[slot]
+    multipliers = seasonal(shape["monthly_multipliers"], latitude)
     values = []
     for day in range(365):
         month = (date(year, 1, 1) + timedelta(days=day)).month
         profile = shape["weekend_fractions"] if _is_weekend(day, year) else shape["weekday_fractions"]
-        scale = shape["monthly_multipliers"][month - 1] / shape["peak_divisor"]
+        scale = multipliers[month - 1] / shape["peak_divisor"]
         values.extend(v * scale for v in profile)
     return np.asarray(values)
 
@@ -72,10 +75,12 @@ def thermostat_setpoints(arguments: dict, year: int = 2007) -> dict:
     return {"heating_setpoint": np.asarray(heating_values), "cooling_setpoint": np.asarray(cooling_values)}
 
 
-def companion_channels(rules: dict, schedules: dict, thermostat_arguments: dict | None, year: int = 2007) -> dict:
+def companion_channels(rules: dict, schedules: dict, thermostat_arguments: dict | None, year: int = 2007,
+                       latitude: float | None = None) -> dict:
     """Channels for every companion rule of a recipe.
 
-    rules: {slot: {"method": ..., ...}}; schedules: rule sets by id.
+    rules: {slot: {"method": ..., ...}}; schedules: rule sets by id; latitude:
+    the dwelling's, for the hemisphere of fixed background multipliers.
     """
     channels = {}
     for slot, rule in rules.items():
@@ -85,7 +90,7 @@ def companion_channels(rules: dict, schedules: dict, thermostat_arguments: dict 
         elif method == "source_rules":
             channels[slot] = evaluate_rules(schedules[rule["schedule"]], year)[0]
         elif method == "fixed_background":
-            channels[slot] = fixed_background(rule["source_slot"], year)
+            channels[slot] = fixed_background(rule["source_slot"], year, latitude)
         elif method == "translated_thermostat":
             if slot not in channels:
                 channels.update(thermostat_setpoints(thermostat_arguments, year))
