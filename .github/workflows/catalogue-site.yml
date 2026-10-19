@@ -99,12 +99,13 @@ jobs:
           python -m unittest tests.test_water_reporting_site tests.test_site -q
       - name: Verify presentation contracts
         run: |
+          python -c "from scripts.construction_foundation_release import load_release; load_release(); print('Combined construction manifest, resources and input checksums verified')"
           python -m scripts.definition_release --verify
           python -m unittest tests.test_definition_site -q
           python -m unittest tests.test_site_delivery tests.test_html_delivery -q
           python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
           python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_completion tests.test_program_recovery tests.test_program_completeness tests.test_er_triage tests.test_active_site tests.test_object_browser -q
-          python -m unittest tests.test_construction_site tests.test_construction_site_refresh tests.test_site_asset_versions -q
+          python -m unittest tests.test_construction_site tests.test_construction_site_refresh tests.test_construction_foundation_site tests.test_construction_publication tests.test_site_asset_versions -q
           node --test tests/*.test.js
       - name: Generate the current definition catalogue and build
         run: |
