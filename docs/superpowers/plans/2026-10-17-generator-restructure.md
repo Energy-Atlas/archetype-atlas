@@ -394,3 +394,16 @@ Residential review decisions, 2026-10-18:
   (separate morning/evening shifts, new mechanism), and option 2 (regional
   chains). A hybrid-lite test, with every option compared out of sample on
   one metric, was sent to session atus-decomposition.
+- O14 hybrid-lite result (`REPORT.md` section 7, profile space, 5x5-fold
+  out of sample):
+  - Fitted annual leads are tiny (-2 to +3 min); only West fits upstream's
+    non-negative convention.
+  - Midwest and South: nothing beats option 1 beyond noise.
+  - Northeast and West: removed out of sample, share of the behaviour gap:
+    annual lead 0.13-0.30, two-shift warp 0.37-0.56, option 2 profile means
+    0.72-0.88. Option 2's intervals are wide (+-0.4-0.8) and it is an upper
+    bound for real regional chains.
+  - Monthly leads overfit, a seasonal pattern that is not regional, and
+    rank last. No region shows earlier mornings plus later returns. The
+    Midwest's later returns are captured only by regional means.
+  - All options remain open; no decision yet.
