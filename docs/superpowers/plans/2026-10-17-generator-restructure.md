@@ -440,3 +440,8 @@ Residential review decisions, 2026-10-18:
     offset; the same mix applied at weekends. State-specific cells are
     infeasible for small states.
   - Pending user decision.
+- O14 decisions (user, 2026-10-19): the ATUS calibration window is
+  selectable (pre-COVID 2003-2019, or recent years). Finer-than-state
+  resolution comes later. The cell structure leans toward 16 cells (age x
+  employed x enrolled); the role of the state with 16 cells is under
+  discussion.
