@@ -410,3 +410,6 @@ Residential review decisions, 2026-10-18:
 - O14 DECISION (user, 2026-10-18): option 1. Localize the occupant-type mix
   only; chains, durations and lead shifts stay national. The spatial
   resolution (state, finer or coarser) is under discussion.
+- O14 resolution (user, 2026-10-18): the state is the default resolution
+  (shrunk toward its census division or region). Grouping ATUS by further
+  attributes and user-specified custom mixes are under discussion.
