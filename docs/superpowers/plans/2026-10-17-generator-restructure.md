@@ -389,3 +389,8 @@ Residential review decisions, 2026-10-18:
     shares for small states shrunk toward the region (RI about 23-37 %
     direct).
   - Not yet decided by the user.
+- O14 scope (user, 2026-10-18): all options stay open: option 1, hybrid-lite
+  (option 1 plus re-fitted regional lead table, data only), full hybrid
+  (separate morning/evening shifts, new mechanism), and option 2 (regional
+  chains). A hybrid-lite test, with every option compared out of sample on
+  one metric, was sent to session atus-decomposition.
