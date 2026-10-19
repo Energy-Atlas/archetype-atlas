@@ -12,28 +12,35 @@ Sources: ComStock, ResStock, OpenStudio Standards, DOE Commercial Reference
 Buildings, and DOE/PNNL Prototype Building Models. Source interpretations and
 coverage will be recorded under `docs/` and `sources/`.
 
-The [shared mass-accounting completion](docs/construction-mass-accounting-v1-contract.md)
-adds detailed JSON **2.1.0** and unified JSON **1.2.0**, with identical source
-wall/slab budgets and native additional-mass quantities in both representations.
-The [normalized mass release](data/construction-mass-releases/v1.0.0/manifest.json)
-covers all 177 suites / 3,320 contexts; seven paired examples are in
-`docs/examples/construction-mass-v1/`. Historical releases remain unchanged;
-the site offers both upgraded consumer exports. Validate all frozen pairs with
-`python -m scripts.construction_delivery_validate`. Exact fit/mass regeneration
-uses the verified **Windows x64 / CPython 3.14.7** producer; see
-[reproduction requirements](docs/site-build.md).
+The current construction candidate is **Combined Construction Suite 1.0.0**:
+**detailed JSON 3.0.0** and **unified JSON 2.0.0**, with integrated source-supported
+foundation/ground physics. It covers **177 suites / 3,320 contexts**: 3,308 contact
+cases and 12 legitimate no-contact cases. Missing executable physics within that
+source population: zero. Both exports retain above-ground content, fixed reference
+ACH and the unchanged shared mass contract 1.0.0. Unified preserves 20 small
+native assignment exceptions while ordinary components remain simplified.
 
-The construction delivery combines **detailed distribution v2.2.0**, separate
-**unified building construction 1.1.0** and **shared mass release 1.0.0**.
-Current consumer schemas are **2.1.0** (detailed) and **1.2.0** (unified).
-Both cover 177 complete sets and 3,320 supported climate/reference contexts.
-The [release notes](docs/release-notes-construction-v2.2.0.md) describe migration,
-exact artifact identities, accepted approximation limits and consumer geometry/
-mass responsibilities. [Implementation closure](docs/reviews/construction-milestone-closure.md)
-is complete. The publication marker `construction-delivery-2026-10-16` is created
-only after protected-main deployment and live verification. Ground and systems are
-deferred, and Program JSON remains independent. The historical source-input
-release description below is not the current construction readiness status.
+See the [foundation release notes](docs/release-notes-construction-foundation-v1.0.0.md),
+[consumer contract](docs/construction-foundation-ground-v1-contract.md) and
+[combined release manifest](data/construction-foundation-releases/v1.0.0/manifest.json).
+Complete paired examples are in `docs/examples/construction-foundation-v1/`.
+Validate all current frozen pairs with
+`python -m scripts.validate_construction_foundation --all`.
+Exact byte/example reproduction uses **Windows x64 / CPython 3.14.7**:
+`python -m scripts.construction_foundation_release --check --examples`.
+See [reproduction requirements](docs/site-build.md).
+
+Historical detailed distribution v2.2.0, unified thermal-assembly release 1.1.0,
+shared mass release 1.0.0 and their schemas/recipes remain unchanged. The older
+mass-complete consumer versions 2.1.0/1.2.0 are still checked with
+`python -m scripts.construction_delivery_validate`.
+The above-ground delivery is recorded by `construction-delivery-2026-10-16`;
+foundation/ground publication still requires protected-main checks, deployment
+and live verification. BEMGen v7 integration acceptance remains pending; the
+[required tests](docs/bemgen-foundation-instantiation-tests.md) distinguish recipe
+identity from physical instantiation. Systems remain deferred, and Program JSON
+stays independent. The historical source-input description below is not the
+current construction readiness status.
 
 Layout: `schemas/` contracts; `sources/` pinned retrieval and selection;
 `scripts/` reproducible tooling; `tests/` validation regressions; `data/raw/`

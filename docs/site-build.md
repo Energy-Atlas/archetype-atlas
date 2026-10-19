@@ -64,13 +64,17 @@ Programs offer raw or default-filled self-contained DTOs under the
 [v3 connector contract](program-json-v3-contract.md). Other library objects
 retain explicit unknowns; program defaults do not manufacture HVAC performance.
 
-Constructions provide separate detailed schema 2.1.0 and additive unified schema
-1.2.0 exports for all 177 current sets / 3,320 supported contexts. Both named copy
+The foundation candidate provides separate detailed schema 3.0.0 and additive
+unified schema 2.0.0 exports for all 177 current sets / 3,320 supported contexts,
+including 3,308 contact and 12 source-supported no-contact cases. Both named copy
 buttons act directly without a chooser; preview mode does not change their
 representation. Source-record copying is absent on construction definition pages.
 Both include the same source mass-accounting contract 1.0.0.
-See [construction release notes](release-notes-construction-v2.2.0.md) and
-[shared mass release notes](release-notes-construction-mass-v1.0.0.md).
+See [combined construction release notes](release-notes-construction-foundation-v1.0.0.md)
+and [shared mass release notes](release-notes-construction-mass-v1.0.0.md).
+Both exports include source-native foundation methods with single parameter
+ownership. Ordinary unified components stay simplified; 20 native suite/role
+exceptions retain two assignments each. BEMGen consumer acceptance remains pending.
 
 Schedules show unique daily step profiles, an annual day × hour heatmap, exact
 tables and selected-day inspection. Rules use an explicit preview year and holiday
@@ -100,8 +104,10 @@ frozen input releases remain available for scientific verification.
 - `scripts/active_smoke.py`: Chromium gates, search, filters, copying, plots,
   mobile layout and no-JS catalogue fallback.
 - `scripts/construction_site_smoke.py`: separate detailed/unified preview and
-  clipboard parity for Medium Office, Warehouse and residential examples, lazy
-  loading, unsupported contexts and desktop/mobile themes.
+  clipboard parity for Medium Office, Warehouse, basement, upper apartment,
+  data centre and Hospital examples. The selected foundation summary loads one
+  verified detailed packet on entry; preview/copy reuses each representation's
+  packet. Unsupported contexts and desktop/mobile themes remain checked.
 - `build/site-docs/`, `build/site/`: ignored generated documents and HTML.
 
 Energy pages use a compact document shell. Evidence/coverage records use compact
@@ -195,3 +201,39 @@ Both retain the full consumer-test suite and all other research checks. Every
 original producer byte comparison remains mandatory. Frozen data, historical
 generator sources, reported errors and recipe IDs are preserved. Consumers do
 not need to regenerate fit metrics or their hashed IDs when loading a release.
+
+## Combined foundation publication checks
+
+The foundation candidate adds explicit gates without changing required job names,
+automatic events or main-only deployment. The pinned Windows x64 / CPython 3.14.7
+producer runs `python -m scripts.construction_foundation_release --check --examples`
+to reproduce the combined freeze and its paired examples exactly. Both required
+matrix platforms run `python -m scripts.validate_construction_foundation --all`
+over all 3,320 pairs from the frozen extension, alongside the older mass-complete
+consumer validator. Consumers do not refit ordinary foundation interfaces when
+loading the frozen delivery.
+
+Both platforms also verify the frozen source execution/airflow and native-smoke
+receipts:
+
+```console
+python -m scripts.recover_construction_foundations --check
+python -m scripts.construction_foundation_airflow --check
+python -m scripts.construction_foundation_smoke
+```
+
+These commands verify committed records and declared hashes/source probes. They
+must not invoke `--recover`, native-smoke `--run`, runtime downloads or annual
+simulation. Actual native extraction and EnergyPlus execution remain separate,
+explicit maintenance operations. The build job verifies combined manifest/resource/
+input closure and runs the foundation hydration/publication tests before site
+build/browser verification and Pages artifact upload. A local handover packet or
+ignored recovery cache is not a build input.
+
+For local maintenance, a focused construction refresh and these targeted checks
+can validate changes without regenerating program/schedule pages. They do not
+replace the eventual clean production build, hosted required checks and live
+verification. No foundation production deployment is claimed by the local
+publication-preparation receipt. See the
+[release notes](release-notes-construction-foundation-v1.0.0.md) for migration and
+remaining publication gates.
