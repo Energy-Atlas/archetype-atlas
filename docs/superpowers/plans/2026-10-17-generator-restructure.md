@@ -413,3 +413,13 @@ Residential review decisions, 2026-10-18:
 - O14 resolution (user, 2026-10-18): the state is the default resolution
   (shrunk toward its census division or region). Grouping ATUS by further
   attributes and user-specified custom mixes are under discussion.
+- O14 attribute experiment requested (user, 2026-10-18; only this one run).
+  It replaces k-modes with chain-likelihood classification (ResStock chains,
+  national prior, optional EM). It ranks person, household and geography
+  attributes by out-of-sample log-loss of the type mix, and tests whether
+  the state adds information beyond attributes. Primary window 2003-2019,
+  sensitivity 2022-2024. Session atus-decomposition, `REPORT.md` section 8.
+  Informed by an external Tompkins County case study (chain-likelihood
+  classification; age x employment x enrolment cells; ACS PUMS residents
+  per dwelling), whose occupancy tilt and time shift were not identifiable
+  from group meters.
