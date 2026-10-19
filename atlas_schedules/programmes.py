@@ -25,6 +25,8 @@ from .commercial.transform import Slot, transform
 from .companions import companion_channels
 from .errors import GeneratorError
 from .residential.generate import Dwelling, generate_dwelling
+from .residential.occupancy import type_probabilities
+from .residential.tables import load_tables
 
 DATA = Path(__file__).resolve().parent / "data"
 
@@ -103,7 +105,7 @@ def reference_locations() -> dict:
     return {row["climate_case"]: row for row in table["locations"]}
 
 
-def _dwelling(recipe: dict, reference_location: str | None = None) -> Dwelling:
+def dwelling_for(recipe: dict, reference_location: str | None = None) -> Dwelling:
     d = dict(recipe["dwelling"])
     if reference_location:
         where = reference_locations()[reference_location]
@@ -113,8 +115,18 @@ def _dwelling(recipe: dict, reference_location: str | None = None) -> Dwelling:
                     d["weather_id"], d["installed"])
 
 
-def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str, reference_location: str | None = None) -> dict:
-    return generate_dwelling(_dwelling(recipe, reference_location), unit_seed, rng_mode)
+def occupant_type_probabilities(state: str, occupancy: tuple | None) -> list:
+    """The dwelling's occupant-type shares: the state mix, or ResStock's national shares."""
+    mix, window = occupancy or ("national", None)
+    national = list(load_tables().occupant_type_probabilities)
+    return national if mix == "national" else type_probabilities(state, window, national)
+
+
+def _residential_channels(recipe: dict, unit_seed: int, rng_mode: str, reference_location: str | None = None,
+                          occupancy: tuple | None = None) -> dict:
+    dwelling = dwelling_for(recipe, reference_location)
+    return generate_dwelling(dwelling, unit_seed, rng_mode,
+                             type_probabilities=occupant_type_probabilities(dwelling.state, occupancy))
 
 
 def _fixed_channels(recipe: dict) -> dict:
@@ -123,18 +135,18 @@ def _fixed_channels(recipe: dict) -> dict:
 
 def instance_channels(recipe: dict, *, operating: dict | None = None, unit_seed: int | None = None,
                       rng_mode: str = "pcg64", reference_location: str | None = None,
-                      flat_days: str = "documented") -> dict:
-    """Hourly channels for every slot of the recipe."""
+                      flat_days: str = "documented", occupancy: tuple | None = None) -> dict:
+    """Hourly channels for every slot of the recipe; occupancy = (mix, window) for residential."""
     kind = recipe["kind"]
     if kind == "commercial":
         channels = _commercial_channels(recipe, operating, flat_days)
     elif kind == "residential":
-        channels = _residential_channels(recipe, unit_seed, rng_mode, reference_location)
+        channels = _residential_channels(recipe, unit_seed, rng_mode, reference_location, occupancy)
     elif kind == "fixed":
         channels = _fixed_channels(recipe)
     else:
         raise GeneratorError("unsupported_binding", "/program_id", f"Recipe kind {kind!r} is generated elsewhere")
-    latitude = _dwelling(recipe, reference_location).latitude if kind == "residential" else None
+    latitude = dwelling_for(recipe, reference_location).latitude if kind == "residential" else None
     channels.update(companion_channels(recipe["companions"], schedules(), recipe.get("thermostat"),
                                        latitude=latitude))
     selected = {}

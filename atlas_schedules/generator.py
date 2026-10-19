@@ -28,8 +28,8 @@ from .commercial.transform import Slot, transform
 from .companions import companion_channels
 from .errors import GeneratorError
 from .mixtures import Load, Owner, mix
-from .programmes import (annual_targets, configuration_people, instance_channels, load_configuration,
-                         load_recipe, reference_locations, required_services, schedules)
+from .programmes import (annual_targets, configuration_people, dwelling_for, instance_channels, load_configuration,
+                         load_recipe, occupant_type_probabilities, reference_locations, required_services, schedules)
 from .request import Instance, Request, parse_request
 from .residential.generate import Dwelling, generate_occupancy_and_lighting
 from .seeds import commercial_group_seed
@@ -171,17 +171,22 @@ def _programme_owner(item: Planned, request: Request, seeds: dict, operating: di
     targets = annual_targets(recipe)
     generation = {}
     if kind == "apartment_unit":
-        channels = _apartment_channels(instance, recipe, seeds.get(instance.key), request.residential_rng)
+        channels, shares = _apartment_channels(instance, recipe, seeds.get(instance.key), request.residential_rng,
+                                               request.occupancy)
         generation["unit_seed"] = seeds.get(instance.key)
+        if shares is not None:
+            generation["occupant_type_probabilities"] = shares
     else:
         group_operating = operating.get(instance.group) if kind == "commercial" else None
         channels = instance_channels(recipe, operating=group_operating, unit_seed=seeds.get(instance.key),
                                      rng_mode=request.residential_rng, reference_location=instance.reference_location,
-                                     flat_days=request.flat_days)
+                                     flat_days=request.flat_days, occupancy=request.occupancy)
         if kind == "commercial":
             generation["operating_group"] = instance.group
         if kind == "residential":
             generation["unit_seed"] = seeds.get(instance.key)
+            shares = occupant_type_probabilities(dwelling_for(recipe, instance.reference_location).state, request.occupancy)
+            generation["occupant_type_probabilities"] = shares
     units = _slot_units(recipe)
     schedules_out = {slot: (units.get(slot, "C"), values) for slot, values in channels.items()}
     return Owner(key=instance.key, kind="program", program_id=instance.program_id, schedules=schedules_out,
@@ -189,7 +194,9 @@ def _programme_owner(item: Planned, request: Request, seeds: dict, operating: di
                  extent=instance.extent, multiplicity=instance.multiplicity, generation=generation)
 
 
-def _apartment_channels(instance: Instance, recipe: dict, unit_seed: int | None, rng_mode: str) -> dict:
+def _apartment_channels(instance: Instance, recipe: dict, unit_seed: int | None, rng_mode: str,
+                        occupancy: tuple) -> tuple[dict, list | None]:
+    """(channels, occupant-type shares used, or None for an empty unit)."""
     table = schedules()
     channels = {s["slot"]: evaluate_rules(table[s["schedule"]])[0] for s in recipe["slots"] if s["schedule"]}
     if instance.residents is None:
@@ -204,11 +211,14 @@ def _apartment_channels(instance: Instance, recipe: dict, unit_seed: int | None,
         else:
             where = instance.location
             dwelling = Dwelling(instance.residents, where.state, where.latitude, where.longitude, where.utc_offset)
-        timing = generate_occupancy_and_lighting(dwelling, unit_seed, rng_mode)
+        shares = occupant_type_probabilities(dwelling.state, occupancy)
+        timing = generate_occupancy_and_lighting(dwelling, unit_seed, rng_mode, type_probabilities=shares)
         for slot, kernel_channel in recipe["unit_timing"].items():
             channels[slot] = timing[kernel_channel]
+    else:
+        shares = None
     channels.update(companion_channels(recipe["companions"], table, None))
-    return channels
+    return channels, shares
 
 
 def _caller_water_owner(item: Planned) -> Owner:
@@ -358,6 +368,7 @@ def generate(document: dict, *, residential_rng: str = "pcg64", flat_days: str =
         "seed": request.seed,
         "residential_rng": request.residential_rng,
         "flat_days": request.flat_days,
+        "occupancy": {"mix": request.occupancy[0], "window": request.occupancy[1]},
         "calendar": {"year": 2007, "clock": "local_standard_time", "timestep_minutes": 60},
         "schedules": bundle_schedules,
         "owners": [_owner_record(o) for o in owners.values()],

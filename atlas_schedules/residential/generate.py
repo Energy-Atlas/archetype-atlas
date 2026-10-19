@@ -71,14 +71,15 @@ def _events(activities, streams, tables, shifts, installed, year) -> dict:
     return channels
 
 
-def generate_dwelling(dwelling: Dwelling, unit_seed: int, rng_mode: str, year: int = 2007) -> dict:
-    """All residential channels for one unit."""
+def generate_dwelling(dwelling: Dwelling, unit_seed: int, rng_mode: str, year: int = 2007,
+                      type_probabilities=None) -> dict:
+    """All residential channels for one unit; type_probabilities as in simulate_activities."""
     count = resident_count(dwelling.residents)
     if count == 0:
         # Upstream skips the unit before creating any random stream.
         return {"occupants": np.zeros(8760)}
     streams = unit_streams(rng_mode, unit_seed)
-    activities = simulate_activities(count, streams["main"], load_tables(), year)
+    activities = simulate_activities(count, streams["main"], load_tables(), year, type_probabilities)
     return dwelling_channels(dwelling, activities, streams, year)
 
 
@@ -97,7 +98,8 @@ def dwelling_channels(dwelling: Dwelling, activities, streams: dict, year: int =
     return channels
 
 
-def generate_occupancy_and_lighting(dwelling: Dwelling, unit_seed: int, rng_mode: str, year: int = 2007) -> dict:
+def generate_occupancy_and_lighting(dwelling: Dwelling, unit_seed: int, rng_mode: str, year: int = 2007,
+                                    type_probabilities=None) -> dict:
     """Only occupants and interior lighting (apartment units); no weather or events needed."""
     count = resident_count(dwelling.residents)
     if count == 0:
@@ -105,7 +107,7 @@ def generate_occupancy_and_lighting(dwelling: Dwelling, unit_seed: int, rng_mode
     tables = for_hemisphere(load_tables(), dwelling.latitude)
     shifts = state_shifts(tables, dwelling.state)
     streams = unit_streams(rng_mode, unit_seed)
-    activities = simulate_activities(count, streams["main"], tables, year)
+    activities = simulate_activities(count, streams["main"], tables, year, type_probabilities)
     return {
         "occupants": occupants(activities, shifts, year),
         "lighting_interior": interior_lighting(activities, tables, shifts, dwelling.latitude,

@@ -18,6 +18,27 @@
       "minimum": 0,
       "maximum": 18446744073709551615
     },
+    "occupancy": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Residential occupant-type mix: 'state' (default) weights ATUS cell probabilities by the dwelling state's household population (ACS); 'national' uses ResStock's national shares. window selects the ATUS years.",
+      "properties": {
+        "mix": {
+          "enum": [
+            "state",
+            "national"
+          ],
+          "default": "state"
+        },
+        "window": {
+          "enum": [
+            "2003-2019",
+            "2022-2024"
+          ],
+          "default": "2003-2019"
+        }
+      }
+    },
     "instances": {
       "type": "array",
       "minItems": 1,

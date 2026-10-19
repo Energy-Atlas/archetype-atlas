@@ -71,6 +71,7 @@ class Request:
     flat_days: str
     instances: list
     mixture: Mixture | None
+    occupancy: tuple = ("state", "2003-2019")   # (mix, ATUS window), residential/occupancy.py
 
 
 @lru_cache(maxsize=1)
@@ -130,7 +131,9 @@ def parse_request(document: dict, residential_rng: str = "pcg64", flat_days: str
         mixture = Mixture(raw["program_id"], [Member(m["instance"], float(m["weight"])) for m in raw["members"]],
                           list(raw.get("services", [])), raw.get("result_basis"), raw.get("denominator"))
         _check_mixture(mixture, set(keys), set(services))
-    return Request(document["seed"], residential_rng, flat_days, instances, mixture)
+    occupancy = document.get("occupancy", {})
+    return Request(document["seed"], residential_rng, flat_days, instances, mixture,
+                   (occupancy.get("mix", "state"), occupancy.get("window", "2003-2019")))
 
 
 def _check_mixture(mixture: Mixture, keys: set, service_keys: set) -> None:

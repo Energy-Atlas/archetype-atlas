@@ -64,7 +64,8 @@ def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
         if "composition_basis_mode" in inputs:
             v2["composition_basis"] = COMPOSITION_BASIS[inputs["composition_basis_mode"]]
         instances.append(v2)
-    return {"schema_version": "2.0.0", "seed": seed, "instances": instances}, keys
+    # Native and legacy keys used ResStock's national occupant-type shares.
+    return {"schema_version": "2.0.0", "seed": seed, "occupancy": {"mix": "national"}, "instances": instances}, keys
 
 
 def rebuilt(program_id: str | None) -> bool:

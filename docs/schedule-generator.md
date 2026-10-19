@@ -35,6 +35,7 @@ The schema is `atlas_schedules/schemas/request-v2.schema.json`.
 | Field | Meaning |
 |---|---|
 | `seed` | Unsigned 64-bit master seed. The same request always gives the same bundle. |
+| `occupancy` | Optional residential occupant-type mix: `{"mix": "state" \| "national", "window": "2003-2019" \| "2022-2024"}`. Default state, 2003-2019; see [Residential occupant types](#residential-occupant-types). |
 | `instances[]` | Programme instances and shared services, in order. |
 | `mixture` | Optional: combine instances into one result. |
 
@@ -141,6 +142,41 @@ Each recipe's `source` block names its frozen definition record
 (`data/definition-releases/v0.1.1/...`). Rule sets are shared in
 `atlas_schedules/data/schedules.json`. Upstream licence notices are in
 `atlas_schedules/data/notices/`.
+
+## Residential occupant types
+
+ResStock gives every resident one of four occupant types (mostly home, early
+regular worker, mostly away, regular worker), drawn from one national share
+vector (0.381, 0.297, 0.165, 0.157). The generator localises only that mix,
+by composition. The chains, durations and events stay ResStock's (plan
+section 7, O14).
+
+- **Cells.** Each ATUS weekday diary is scored under ResStock's four weekday
+  chains, with the national shares as the prior. The resulting type
+  probabilities are averaged per cell of age band (15-24, 25-44, 45-64, 65+)
+  × employed × enrolled in school, with sparse cells shrunk toward their
+  parents. This reproduces the national shares within 0.8 points
+  (2003-2019).
+- **State mix.** The dwelling's state weights the cells by its household
+  population from ACS PUMS 2024. Residents under 15, absent from ATUS, keep
+  the national shares. States differ by a few points; Florida, for example,
+  is more home-based.
+- **Window.** `2003-2019` (default, pre-COVID) or `2022-2024`, which is
+  markedly more home-based (mostly home about 0.47).
+- **`"mix": "national"`** reproduces ResStock exactly; the native and legacy
+  answer keys use it.
+- **Provenance.** Each residential owner records its
+  `occupant_type_probabilities`. The tables are
+  `atlas_schedules/data/residential/occupancy-mix.json`, rebuilt by
+  `python -m scripts.derive_occupancy_mix` from the inputs pinned in
+  `sources/occupancy-mix-lock.json` (ATUS 2003-2024 and ACS 2024 PUMS,
+  public domain; see `sources/licenses/`).
+- **Not covered:**
+  - finer than state (county or PUMA) and custom resident compositions;
+  - weekend diaries, whose type labels do not match the weekday ones.
+
+  These are later work, under evidence in the decomposition study
+  (outside the repository).
 
 ## Residential random streams
 

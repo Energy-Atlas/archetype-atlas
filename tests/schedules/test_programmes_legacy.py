@@ -25,7 +25,7 @@ def request_for(program_id: str) -> dict:
     instance = {"key": "unit", "program_id": program_id}
     if recipe["kind"] == "commercial":
         instance["operating_group"] = "group"
-    return {"schema_version": "2.0.0", "seed": 42, "instances": [instance]}
+    return {"schema_version": "2.0.0", "seed": 42, "occupancy": {"mix": "national"}, "instances": [instance]}
 
 
 class LegacyProgrammes(unittest.TestCase):

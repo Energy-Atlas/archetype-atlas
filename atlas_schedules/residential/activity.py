@@ -55,12 +55,18 @@ def _resident_trace(stream, tables: Tables, occupant_type: int, year: int) -> li
     return trace[-16:] + trace[:-16]
 
 
-def simulate_activities(residents: int, main_stream, tables: Tables, year: int = 2007) -> Activities:
-    """Activity traces for `residents` people (residents >= 1) from the main stream."""
+def simulate_activities(residents: int, main_stream, tables: Tables, year: int = 2007,
+                        type_probabilities=None) -> Activities:
+    """Activity traces for `residents` people (residents >= 1) from the main stream.
+
+    type_probabilities: the occupant-type shares to draw from (residential/occupancy.py);
+    None uses ResStock's national shares.
+    """
+    shares = tables.occupant_type_probabilities if type_probabilities is None else type_probabilities
     types = []
     traces = []
     for _ in range(residents):
-        occupant_type = weighted_choice(main_stream, tables.occupant_type_probabilities)
+        occupant_type = weighted_choice(main_stream, shares)
         types.append(occupant_type)
         traces.append(_resident_trace(main_stream, tables, occupant_type, year))
     offset = int(main_stream.random() * 2 * 30) - 30

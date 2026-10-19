@@ -452,3 +452,4 @@ Residential review decisions, 2026-10-18:
   written during the ATUS study) was restored. Implementation of O13 and O14
   started.
 - O13 done (2026-10-19): southern-hemisphere season shift in `residential/seasons.py`, applied to residential monthly multipliers, fixed-background multipliers, the lighting hour and the evening width; tests in `test_seasons.py`.
+- O14 implemented (2026-10-19): `scripts/derive_occupancy_mix.py` (pinned ATUS 2003-2024 and ACS 2024 PUMS, `sources/occupancy-mix-lock.json`) writes `occupancy-mix.json`, with 16 cells x 2 windows and 51 state compositions. `residential/occupancy.py` gives the state mix (children keep national shares). The request option `occupancy` (mix state/national, window 2003-2019/2022-2024) defaults to the state mix, 2003-2019. Native and legacy keys use national. Tests are in `test_occupancy_mix.py`.

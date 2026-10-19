@@ -89,3 +89,10 @@ has been released, so there is no compatibility obligation.
 - **Shared services must be linked.** A programme, or a composition parent
   through its members, that requires shared services must link exactly those
   services. Previously the water load was dropped silently.
+- **Residential extensions beyond upstream (user decisions 2026-10-18/19).**
+  Southern-hemisphere dwellings shift ResStock's month-indexed empirical
+  terms by six months (O13). The occupant-type mix is localised by
+  composition: ATUS-derived probabilities per age × employment × enrolment
+  cell, weighted by the state's ACS household population, with a selectable
+  ATUS window (O14). `occupancy: {"mix": "national"}` keeps ResStock's
+  national shares and the native validation path.
