@@ -1,0 +1,1858 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "system",
+  "stage": "source_recovery_pilot",
+  "source_context": {
+    "name": "Dwelling HVAC / source_building_101526",
+    "template": "ResStock SDR source fixture",
+    "climate": "5A",
+    "source_family": "existing_stock_source_fixture",
+    "building_type": "SingleFamilyDetached",
+    "system_type": "Residential fixture equipment"
+  },
+  "hvac_source_recovery": {
+    "id": "hvac_system-0079ce7b163bdb1bd0154dbe",
+    "source_id": "residential_archetype-0157cd8578ba44bf8a77",
+    "source_context": {
+      "name": "Dwelling HVAC / source_building_101526",
+      "template": "ResStock SDR source fixture",
+      "climate": "5A",
+      "source_family": "existing_stock_source_fixture",
+      "building_type": "SingleFamilyDetached",
+      "system_type": "Residential fixture equipment"
+    },
+    "recovered": {
+      "equipment": [
+        {
+          "role": "heating",
+          "fields": {
+            "location": {
+              "value": null,
+              "unit": "category",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/location",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "distribution_system_idref": {
+              "value": null,
+              "unit": "category",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/distribution_system_idref",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "heating_system_type": {
+              "value": "Furnace",
+              "unit": "category",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/heating_system_type",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": "Furnace",
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "pilot_light_btuh": {
+              "value": 0.0,
+              "unit": "W",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/pilot_light_btuh",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": 0.0,
+                "original_unit": "Btu/h",
+                "transformation": "value * 0.2930710701722222"
+              }
+            },
+            "heating_system_fuel": {
+              "value": "fuel oil",
+              "unit": "category",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/heating_system_fuel",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": "fuel oil",
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "heating_capacity": {
+              "value": null,
+              "unit": "W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/heating_capacity",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "Btu/h",
+                "transformation": "value * 0.2930710701722222"
+              }
+            },
+            "heating_efficiency_afue": {
+              "value": 0.8,
+              "unit": "1",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/heating_efficiency_afue",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": 0.8,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "heating_efficiency_percent": {
+              "value": null,
+              "unit": "1",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/heating_efficiency_percent",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "fraction_heat_load_served": {
+              "value": 1.0,
+              "unit": "1",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/fraction_heat_load_served",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": 1.0,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "fan_watts_per_cfm": {
+              "value": null,
+              "unit": "W/(m3/s)",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/fan_watts_per_cfm",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "W/cfm",
+                "transformation": "value / 0.00047194745"
+              }
+            },
+            "fan_watts": {
+              "value": null,
+              "unit": "W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/fan_watts",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "W",
+                "transformation": "identity"
+              }
+            },
+            "airflow_defect_ratio": {
+              "value": null,
+              "unit": "1",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/airflow_defect_ratio",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "heating_autosizing_factor": {
+              "value": null,
+              "unit": "1",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_heating_systems/heating_autosizing_factor",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            }
+          },
+          "required_bindings": [
+            "equipment_host",
+            "sizing.heating_capacity"
+          ],
+          "native_source_fields": {
+            "primary_system": true,
+            "id": "HeatingSystem1",
+            "attached_to_zone_idref": null,
+            "location": null,
+            "year_installed": null,
+            "third_party_certification": null,
+            "distribution_system_idref": null,
+            "is_shared_system": null,
+            "number_of_units_served": null,
+            "heating_system_type": "Furnace",
+            "pilot_light": null,
+            "pilot_light_btuh": 0.0,
+            "electric_resistance_distribution": null,
+            "heating_system_fuel": "fuel oil",
+            "heating_capacity": null,
+            "heating_efficiency_afue": 0.8,
+            "heating_efficiency_percent": null,
+            "fraction_heat_load_served": 1.0,
+            "electric_auxiliary_energy": null,
+            "shared_loop_watts": null,
+            "shared_loop_motor_efficiency": null,
+            "fan_coil_watts": null,
+            "fan_watts_per_cfm": null,
+            "fan_watts": null,
+            "airflow_defect_ratio": null,
+            "heating_design_airflow_cfm": null,
+            "heating_autosizing_factor": null,
+            "heating_autosizing_limit": null,
+            "fan_motor_type": null,
+            "htg_seed_id": null,
+            "primary_system_isdefaulted": null,
+            "id_isdefaulted": null,
+            "attached_to_zone_idref_isdefaulted": null,
+            "location_isdefaulted": null,
+            "year_installed_isdefaulted": null,
+            "third_party_certification_isdefaulted": null,
+            "distribution_system_idref_isdefaulted": null,
+            "is_shared_system_isdefaulted": null,
+            "number_of_units_served_isdefaulted": null,
+            "heating_system_type_isdefaulted": null,
+            "pilot_light_isdefaulted": null,
+            "pilot_light_btuh_isdefaulted": null,
+            "electric_resistance_distribution_isdefaulted": null,
+            "heating_system_fuel_isdefaulted": null,
+            "heating_capacity_isdefaulted": null,
+            "heating_efficiency_afue_isdefaulted": null,
+            "heating_efficiency_percent_isdefaulted": null,
+            "fraction_heat_load_served_isdefaulted": null,
+            "electric_auxiliary_energy_isdefaulted": null,
+            "shared_loop_watts_isdefaulted": null,
+            "shared_loop_motor_efficiency_isdefaulted": null,
+            "fan_coil_watts_isdefaulted": null,
+            "fan_watts_per_cfm_isdefaulted": null,
+            "fan_watts_isdefaulted": null,
+            "airflow_defect_ratio_isdefaulted": null,
+            "heating_design_airflow_cfm_isdefaulted": null,
+            "heating_autosizing_factor_isdefaulted": null,
+            "heating_autosizing_limit_isdefaulted": null,
+            "fan_motor_type_isdefaulted": null,
+            "htg_seed_id_isdefaulted": null
+          },
+          "interpretation": "Seasonal/integrated ratings retain their metric names; source defaults are not Atlas assumptions.",
+          "id": "recovered-equipment-f5b30a23472aa481da7422fb"
+        },
+        {
+          "role": "cooling",
+          "fields": {
+            "location": {
+              "value": null,
+              "unit": "category",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/location",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "distribution_system_idref": {
+              "value": null,
+              "unit": "category",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/distribution_system_idref",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "cooling_system_type": {
+              "value": "central air conditioner",
+              "unit": "category",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_system_type",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": "central air conditioner",
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "cooling_system_fuel": {
+              "value": "electricity",
+              "unit": "category",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_system_fuel",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": "electricity",
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "cooling_capacity": {
+              "value": null,
+              "unit": "W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_capacity",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "Btu/h",
+                "transformation": "value * 0.2930710701722222"
+              }
+            },
+            "compressor_type": {
+              "value": "single stage",
+              "unit": "category",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/compressor_type",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": "single stage",
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            },
+            "fraction_cool_load_served": {
+              "value": 1.0,
+              "unit": "1",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/fraction_cool_load_served",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": 1.0,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "cooling_efficiency_seer": {
+              "value": null,
+              "unit": "W/W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_efficiency_seer",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "Btu/Wh",
+                "transformation": "value * 0.2930710701722222; retain rating metric"
+              }
+            },
+            "cooling_efficiency_seer2": {
+              "value": 3.634081270135556,
+              "unit": "W/W",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_efficiency_seer2",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": 12.4,
+                "original_unit": "Btu/Wh",
+                "transformation": "value * 0.2930710701722222; retain rating metric"
+              }
+            },
+            "cooling_efficiency_eer": {
+              "value": null,
+              "unit": "W/W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_efficiency_eer",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "Btu/Wh",
+                "transformation": "value * 0.2930710701722222; retain rating metric"
+              }
+            },
+            "cooling_efficiency_eer2": {
+              "value": null,
+              "unit": "W/W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_efficiency_eer2",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "Btu/Wh",
+                "transformation": "value * 0.2930710701722222; retain rating metric"
+              }
+            },
+            "cooling_efficiency_ceer": {
+              "value": null,
+              "unit": "W/W",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_efficiency_ceer",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "Btu/Wh",
+                "transformation": "value * 0.2930710701722222; retain rating metric"
+              }
+            },
+            "airflow_defect_ratio": {
+              "value": null,
+              "unit": "1",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/airflow_defect_ratio",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "charge_defect_ratio": {
+              "value": null,
+              "unit": "1",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/charge_defect_ratio",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "fan_watts_per_cfm": {
+              "value": null,
+              "unit": "W/(m3/s)",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/fan_watts_per_cfm",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "W/cfm",
+                "transformation": "value / 0.00047194745"
+              }
+            },
+            "cooling_autosizing_factor": {
+              "value": null,
+              "unit": "1",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/cooling_autosizing_factor",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "1",
+                "transformation": "identity"
+              }
+            },
+            "equipment_type": {
+              "value": null,
+              "unit": "category",
+              "status": "unknown",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_cooling_systems/equipment_type",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+                "supporting_source_locators": [
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+                  "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+                ],
+                "original_value": null,
+                "original_unit": "source category",
+                "transformation": "identity; retain source category"
+              }
+            }
+          },
+          "required_bindings": [
+            "equipment_host",
+            "sizing.cooling_capacity"
+          ],
+          "native_source_fields": {
+            "primary_system": true,
+            "id": "CoolingSystem1",
+            "attached_to_zone_idref": null,
+            "location": null,
+            "year_installed": null,
+            "third_party_certification": null,
+            "distribution_system_idref": null,
+            "is_shared_system": null,
+            "number_of_units_served": null,
+            "cooling_system_type": "central air conditioner",
+            "cooling_system_fuel": "electricity",
+            "cooling_capacity": null,
+            "compressor_type": "single stage",
+            "fraction_cool_load_served": 1.0,
+            "cooling_efficiency_seer": null,
+            "cooling_efficiency_seer2": 12.4,
+            "cooling_efficiency_eer": null,
+            "cooling_efficiency_eer2": null,
+            "cooling_efficiency_ceer": null,
+            "cooling_efficiency_kw_per_ton": null,
+            "integrated_heating_system_fuel": null,
+            "integrated_heating_system_capacity": null,
+            "integrated_heating_system_efficiency_percent": null,
+            "integrated_heating_system_fraction_heat_load_served": null,
+            "airflow_defect_ratio": null,
+            "charge_defect_ratio": null,
+            "fan_motor_type": null,
+            "fan_watts_per_cfm": null,
+            "cooling_design_airflow_cfm": null,
+            "integrated_heating_system_airflow_cfm": null,
+            "shared_loop_watts": null,
+            "shared_loop_motor_efficiency": null,
+            "fan_coil_watts": null,
+            "crankcase_heater_watts": null,
+            "cooling_autosizing_factor": null,
+            "cooling_autosizing_limit": null,
+            "equipment_type": null,
+            "clg_seed_id": null,
+            "htg_seed_id": null,
+            "primary_system_isdefaulted": null,
+            "id_isdefaulted": null,
+            "attached_to_zone_idref_isdefaulted": null,
+            "location_isdefaulted": null,
+            "year_installed_isdefaulted": null,
+            "third_party_certification_isdefaulted": null,
+            "distribution_system_idref_isdefaulted": null,
+            "is_shared_system_isdefaulted": null,
+            "number_of_units_served_isdefaulted": null,
+            "cooling_system_type_isdefaulted": null,
+            "cooling_system_fuel_isdefaulted": null,
+            "cooling_capacity_isdefaulted": null,
+            "compressor_type_isdefaulted": null,
+            "fraction_cool_load_served_isdefaulted": null,
+            "cooling_efficiency_seer_isdefaulted": null,
+            "cooling_efficiency_seer2_isdefaulted": null,
+            "cooling_efficiency_eer_isdefaulted": null,
+            "cooling_efficiency_eer2_isdefaulted": null,
+            "cooling_efficiency_ceer_isdefaulted": null,
+            "cooling_efficiency_kw_per_ton_isdefaulted": null,
+            "integrated_heating_system_fuel_isdefaulted": null,
+            "integrated_heating_system_capacity_isdefaulted": null,
+            "integrated_heating_system_efficiency_percent_isdefaulted": null,
+            "integrated_heating_system_fraction_heat_load_served_isdefaulted": null,
+            "airflow_defect_ratio_isdefaulted": null,
+            "charge_defect_ratio_isdefaulted": null,
+            "fan_motor_type_isdefaulted": null,
+            "fan_watts_per_cfm_isdefaulted": null,
+            "cooling_design_airflow_cfm_isdefaulted": null,
+            "integrated_heating_system_airflow_cfm_isdefaulted": null,
+            "shared_loop_watts_isdefaulted": null,
+            "shared_loop_motor_efficiency_isdefaulted": null,
+            "fan_coil_watts_isdefaulted": null,
+            "crankcase_heater_watts_isdefaulted": null,
+            "cooling_autosizing_factor_isdefaulted": null,
+            "cooling_autosizing_limit_isdefaulted": null,
+            "equipment_type_isdefaulted": null,
+            "clg_seed_id_isdefaulted": null,
+            "htg_seed_id_isdefaulted": null
+          },
+          "interpretation": "Seasonal/integrated ratings retain their metric names; source defaults are not Atlas assumptions.",
+          "id": "recovered-equipment-c6560c8c676cd507bbe08ca2"
+        }
+      ],
+      "selected_option_expansions": {
+        "hvac_cooling_system.tsv": {
+          "selected_option": "Central AC, SEER2 12.4",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "65631709da3c06eb5ef13cd4958c917b6e10a39f80fd3c0ad6249d30c1322aee",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_cooling_system.tsv#option=Central AC, SEER2 12.4",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_cooling_system_type": "central air conditioner",
+              "hvac_cooling_system_cooling_efficiency_type": "SEER2",
+              "hvac_cooling_system_cooling_efficiency": 12.4,
+              "hvac_cooling_system_cooling_compressor_type": "single stage",
+              "hvac_cooling_system_detailed_performance_data_capacity_type": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_outdoor_temperatures": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_min_speed_capacities": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_nom_speed_capacities": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_max_speed_capacities": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_min_speed_cops": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_nom_speed_cops": null,
+              "hvac_cooling_system_detailed_performance_data_cooling_max_speed_cops": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_cooling_system_capacity.tsv": {
+          "selected_option": "Autosize",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "18448cbb3e5df0e870d61b0fce3eb7efab57318833244daaf788b56b9cb9607d",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_cooling_system_capacity.tsv#option=Autosize",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_cooling_system_capacity_capacity": null,
+              "hvac_cooling_system_capacity_autosizing_factor": null,
+              "hvac_cooling_system_capacity_autosizing_limit": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_cooling_system_cooling_load_served.tsv": {
+          "selected_option": "100%",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c7514b1f2d704207388a021b3cb0faa4a6099ac8475f685fbefeb4ef76a07bac",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_cooling_system_cooling_load_served.tsv#option=100%",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_cooling_system_cooling_load_served_fraction": 1.0
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_ducts.tsv": {
+          "selected_option": "20% Leakage, Uninsulated",
+          "fields": {
+            "hvac_ducts_supply_insulation_r_value": {
+              "value": 0.0,
+              "unit": "m2*K/W",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "a7ad57ce3e493f59948d9d43e8b3c605811e32380ee82b43dcf4a2e13a481f38",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_ducts.tsv#option=20% Leakage, Uninsulated/hvac_ducts_supply_insulation_r_value",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": 0,
+                "original_unit": "ft2*h*degF/Btu",
+                "transformation": "value / 5.678263337"
+              }
+            },
+            "hvac_ducts_return_insulation_r_value": {
+              "value": 0.0,
+              "unit": "m2*K/W",
+              "status": "known",
+              "origin": "source",
+              "evidence": {
+                "source_project": "resstock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "source_file_sha256": "a7ad57ce3e493f59948d9d43e8b3c605811e32380ee82b43dcf4a2e13a481f38",
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_ducts.tsv#option=20% Leakage, Uninsulated/hvac_ducts_return_insulation_r_value",
+                "extraction_date": "2026-10-12",
+                "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+                "original_value": 0,
+                "original_unit": "ft2*h*degF/Btu",
+                "transformation": "value / 5.678263337"
+              }
+            }
+          },
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "a7ad57ce3e493f59948d9d43e8b3c605811e32380ee82b43dcf4a2e13a481f38",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_ducts.tsv#option=20% Leakage, Uninsulated",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_ducts_leakage_units": "Percent",
+              "hvac_ducts_leakage_to_outside_value": 0.2,
+              "hvac_ducts_supply_insulation_r_value": 0,
+              "hvac_ducts_return_insulation_r_value": 0,
+              "hvac_ducts_supply_leakage_fraction": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_ducts_return_location.tsv": {
+          "selected_option": "Crawlspace",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "5f6a6a9f0c463a4945813ae2e63cc93e333ed69a911d3258684fd644e0f916df",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_ducts_return_location.tsv#option=Crawlspace",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_ducts_return_location_location": "crawlspace",
+              "hvac_ducts_return_location_location_fraction": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_ducts_supply_location.tsv": {
+          "selected_option": "Crawlspace",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "41248be920d9b482f3fe2ddce8c0db8ca3a26de139f78c74876322cdd76d1f9e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_ducts_supply_location.tsv#option=Crawlspace",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_ducts_supply_location_location": "crawlspace",
+              "hvac_ducts_supply_location_location_fraction": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_geothermal_loop.tsv": {
+          "selected_option": "Default",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "9554f5cc732beefef47cf1111af969efdd50bccca31b0b784ff08458d17d8f2d",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_geothermal_loop.tsv#option=Default",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_geothermal_loop_configuration": null,
+              "hvac_geothermal_loop_borefield_configuration": null,
+              "hvac_geothermal_loop_loop_flow": null,
+              "hvac_geothermal_loop_boreholes_count": null,
+              "hvac_geothermal_loop_boreholes_length": null,
+              "hvac_geothermal_loop_boreholes_spacing": null,
+              "hvac_geothermal_loop_boreholes_diameter": null,
+              "hvac_geothermal_loop_grout_type": null,
+              "hvac_geothermal_loop_pipe_type": null,
+              "hvac_geothermal_loop_pipe_diameter": null,
+              "hvac_geothermal_loop_pipe_shank_spacing": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump.tsv": {
+          "selected_option": "None",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "368803aae49c23fbb85cb05ed8b368f18ad33c1c82479ceaeb7c9c6cce815c10",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump.tsv#option=None",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_type": "none",
+              "hvac_heat_pump_cooling_efficiency_type": null,
+              "hvac_heat_pump_cooling_efficiency": null,
+              "hvac_heat_pump_cooling_compressor_type": null,
+              "hvac_heat_pump_heating_efficiency_type": null,
+              "hvac_heat_pump_heating_efficiency": null,
+              "hvac_heat_pump_detailed_performance_data_capacity_type": null,
+              "hvac_heat_pump_detailed_performance_data_heating_outdoor_temperatures": null,
+              "hvac_heat_pump_detailed_performance_data_heating_min_speed_capacities": null,
+              "hvac_heat_pump_detailed_performance_data_heating_nom_speed_capacities": null,
+              "hvac_heat_pump_detailed_performance_data_heating_max_speed_capacities": null,
+              "hvac_heat_pump_detailed_performance_data_heating_min_speed_cops": null,
+              "hvac_heat_pump_detailed_performance_data_heating_nom_speed_cops": null,
+              "hvac_heat_pump_detailed_performance_data_heating_max_speed_cops": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_outdoor_temperatures": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_min_speed_capacities": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_nom_speed_capacities": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_max_speed_capacities": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_min_speed_cops": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_nom_speed_cops": null,
+              "hvac_heat_pump_detailed_performance_data_cooling_max_speed_cops": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump_backup.tsv": {
+          "selected_option": "None",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c0c71bbe1d4f789fa1f8e97130ead67244585c955b7061cb69eda950437cb571",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump_backup.tsv#option=None",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_backup_type": "none",
+              "hvac_heat_pump_backup_fuel": null,
+              "hvac_heat_pump_backup_heating_efficiency": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump_backup_capacity.tsv": {
+          "selected_option": "Autosize",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "3c9edbf58b8930260370ae9fe1099d50453e0e5992fbe8b61d53fee442b5da8a",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump_backup_capacity.tsv#option=Autosize",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_backup_capacity_capacity": null,
+              "hvac_heat_pump_backup_capacity_autosizing_methodology": null,
+              "hvac_heat_pump_backup_capacity_autosizing_factor": null,
+              "hvac_heat_pump_backup_capacity_autosizing_limit": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump_capacity.tsv": {
+          "selected_option": "Autosize (ACCA)",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c76236af13f6a1637a1c5238f29711e399a7fd28a4677e6ac7c250fdddbc50b0",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump_capacity.tsv#option=Autosize (ACCA)",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_capacity_capacity": null,
+              "hvac_heat_pump_capacity_autosizing_methodology": "ACCA",
+              "hvac_heat_pump_capacity_autosizing_factor": null,
+              "hvac_heat_pump_capacity_autosizing_limit": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump_cooling_load_served.tsv": {
+          "selected_option": "100%",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c7514b1f2d704207388a021b3cb0faa4a6099ac8475f685fbefeb4ef76a07bac",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump_cooling_load_served.tsv#option=100%",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_cooling_load_served_fraction": 1.0
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump_heating_load_served.tsv": {
+          "selected_option": "100%",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c7514b1f2d704207388a021b3cb0faa4a6099ac8475f685fbefeb4ef76a07bac",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump_heating_load_served.tsv#option=100%",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_heating_load_served_fraction": 1.0
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heat_pump_temperatures.tsv": {
+          "selected_option": "Default",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "4981136f786936577a08c58a2efbd8ef2009070757931dfed238f2f9331848bb",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heat_pump_temperatures.tsv#option=Default",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heat_pump_temperatures_compressor_lockout": null,
+              "hvac_heat_pump_temperatures_backup_lockout": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system.tsv": {
+          "selected_option": "Central Furnace, 80% AFUE",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "b3f003e44efad6b1e00cb040c91c25399531bf759220444c236c73f8f3852e88",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system.tsv#option=Central Furnace, 80% AFUE",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_type": "Furnace",
+              "hvac_heating_system_heating_efficiency": 0.8,
+              "hvac_heating_system_pilot_light": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_2.tsv": {
+          "selected_option": "None",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "b3f003e44efad6b1e00cb040c91c25399531bf759220444c236c73f8f3852e88",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_2.tsv#option=None",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_2_type": "none",
+              "hvac_heating_system_2_heating_efficiency": null,
+              "hvac_heating_system_2_pilot_light": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_2_capacity.tsv": {
+          "selected_option": "Autosize",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "eff89369d4731656cc46ed2044f10b09fc95c3f5377666bc72b1e5f60c54ffaa",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_2_capacity.tsv#option=Autosize",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_2_capacity_capacity": null,
+              "hvac_heating_system_2_capacity_autosizing_factor": null,
+              "hvac_heating_system_2_capacity_autosizing_limit": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_2_fuel.tsv": {
+          "selected_option": "Electricity",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "37f54b24b6aa96df195477ae30640d6137058e0e894e039a4af35a8d26378bdb",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_2_fuel.tsv#option=Electricity",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_2_fuel_type": "electricity"
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_2_heating_load_served.tsv": {
+          "selected_option": "0%",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c7514b1f2d704207388a021b3cb0faa4a6099ac8475f685fbefeb4ef76a07bac",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_2_heating_load_served.tsv#option=0%",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_2_heating_load_served_fraction": 0.0
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_capacity.tsv": {
+          "selected_option": "Autosize",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "eff89369d4731656cc46ed2044f10b09fc95c3f5377666bc72b1e5f60c54ffaa",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_capacity.tsv#option=Autosize",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_capacity_capacity": null,
+              "hvac_heating_system_capacity_autosizing_factor": null,
+              "hvac_heating_system_capacity_autosizing_limit": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_fuel.tsv": {
+          "selected_option": "Fuel Oil",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "37f54b24b6aa96df195477ae30640d6137058e0e894e039a4af35a8d26378bdb",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_fuel.tsv#option=Fuel Oil",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_fuel_type": "fuel oil"
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "hvac_heating_system_heating_load_served.tsv": {
+          "selected_option": "100%",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c7514b1f2d704207388a021b3cb0faa4a6099ac8475f685fbefeb4ef76a07bac",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/hvac_heating_system_heating_load_served.tsv#option=100%",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "hvac_heating_system_heating_load_served_fraction": 1.0
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "ventilation_bathroom.tsv": {
+          "selected_option": "Default",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "b27018d678d7bfa0942cb818b452c4e947d3c823c0029ada47810748bfb2921f",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/ventilation_bathroom.tsv#option=Default",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "ventilation_bathroom_flow_rate": null,
+              "ventilation_bathroom_hours_in_operation": null,
+              "ventilation_bathroom_fan_power": null,
+              "ventilation_bathroom_start_hour": null,
+              "ventilation_bathroom_count": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "ventilation_kitchen.tsv": {
+          "selected_option": "Default",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "779cf7d3855d66251a179b773ccbed211e064cf01989a2214fe96ab07cd36dbf",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/ventilation_kitchen.tsv#option=Default",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "ventilation_kitchen_flow_rate": null,
+              "ventilation_kitchen_hours_in_operation": null,
+              "ventilation_kitchen_fan_power": null,
+              "ventilation_kitchen_start_hour": null,
+              "ventilation_kitchen_count": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "ventilation_mechanical.tsv": {
+          "selected_option": "None",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "c31c16a3db92a98d58c0d55202867599d3fb666615dd9fe93423f2397c8cad04",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/ventilation_mechanical.tsv#option=None",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "ventilation_mechanical_fan_type": null,
+              "ventilation_mechanical_sensible_recovery_efficiency": null,
+              "ventilation_mechanical_total_recovery_efficiency": null,
+              "ventilation_mechanical_flow_rate": null,
+              "ventilation_mechanical_fan_power": null,
+              "ventilation_mechanical_hours_in_operation": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        },
+        "ventilation_whole_house_fan.tsv": {
+          "selected_option": "None",
+          "fields": {},
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "956db805bea37afbd457552a9aba379576e0df52124f10f08e1d72df1ea3002d",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/resources/options/ventilation_whole_house_fan.tsv#option=None",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Exact selected TSV option expansion. Native arguments are evidence; only explicit normalized fields are executable operands.",
+            "original_value": {
+              "ventilation_whole_house_fan_rated_flow_rate": null,
+              "ventilation_whole_house_fan_power": null
+            },
+            "original_unit": "native source option columns",
+            "transformation": "Execute pinned get_option_properties; retain exact column/argument names"
+          }
+        }
+      },
+      "executed_methods": [
+        "BuildResidentialHPXML.set_heating_systems",
+        "BuildResidentialHPXML.set_cooling_systems",
+        "BuildResidentialHPXML.set_heat_pumps",
+        "BuildResidentialHPXML.set_secondary_heating_systems",
+        "BuildResidentialHPXML.set_water_heating_systems",
+        "BuildResidentialHPXML.set_solar_thermal",
+        "Defaults.apply_water_heaters",
+        "Defaults.apply_solar_thermal_systems"
+      ]
+    },
+    "unresolved": [
+      "performance_curves_and_fan_defaults",
+      "distribution_and_control_translation"
+    ],
+    "required_bindings": [
+      "serving_assignment",
+      "consumer_sizing"
+    ],
+    "equipment_status": "selected_source_equipment",
+    "readiness": "blocked"
+  },
+  "dhw_solar_source_recovery": [
+    {
+      "role": "water_heater",
+      "fields": {
+        "fuel_type": {
+          "value": "fuel oil",
+          "unit": "category",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/fuel_type",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": "fuel oil",
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "water_heater_type": {
+          "value": "storage water heater",
+          "unit": "category",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/water_heater_type",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": "storage water heater",
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "location": {
+          "value": "conditioned space",
+          "unit": "category",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/location",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": "conditioned space",
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "performance_adjustment": {
+          "value": null,
+          "unit": "1",
+          "status": "unknown",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/performance_adjustment",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": null,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "tank_volume": {
+          "value": 0.15141647136,
+          "unit": "m3",
+          "status": "known",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/tank_volume",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": 40.0,
+            "original_unit": "US gal",
+            "transformation": "value * 0.003785411784"
+          }
+        },
+        "fraction_dhw_load_served": {
+          "value": 1.0,
+          "unit": "1",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/fraction_dhw_load_served",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": 1.0,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "heating_capacity": {
+          "value": 10550.5585262,
+          "unit": "W",
+          "status": "known",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/heating_capacity",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": 36000,
+            "original_unit": "Btu/h",
+            "transformation": "value * 0.2930710701722222"
+          }
+        },
+        "backup_heating_capacity": {
+          "value": null,
+          "unit": "W",
+          "status": "unknown",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/backup_heating_capacity",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": null,
+            "original_unit": "Btu/h",
+            "transformation": "value * 0.2930710701722222"
+          }
+        },
+        "energy_factor": {
+          "value": null,
+          "unit": "1",
+          "status": "unknown",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/energy_factor",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": null,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "uniform_energy_factor": {
+          "value": 0.64,
+          "unit": "1",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/uniform_energy_factor",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": 0.64,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "operating_mode": {
+          "value": null,
+          "unit": "category",
+          "status": "unknown",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/operating_mode",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": null,
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "usage_bin": {
+          "value": "medium",
+          "unit": "category",
+          "status": "known",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/usage_bin",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": "medium",
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "recovery_efficiency": {
+          "value": 0.772,
+          "unit": "1",
+          "status": "known",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/recovery_efficiency",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": 0.772,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "temperature": {
+          "value": 51.666666666666664,
+          "unit": "degC",
+          "status": "known",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/temperature",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": 125.0,
+            "original_unit": "degF",
+            "transformation": "(value - 32) * 5/9"
+          }
+        },
+        "related_hvac_idref": {
+          "value": null,
+          "unit": "category",
+          "status": "unknown",
+          "origin": "source",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#BuildResidentialHPXML.set_water_heating_systems/related_hvac_idref",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed selected source options. Heater/solar defaults and loss calculations use pinned Defaults/Waterheater routines; no HVAC sizing or simulation.",
+            "supporting_source_locators": [
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters; Defaults.apply_solar_thermal_systems",
+              "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency"
+            ],
+            "original_value": null,
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "tank_model_type": {
+          "value": "mixed",
+          "unit": "category",
+          "status": "known",
+          "origin": "source_default",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_water_heaters/tank_model_type",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source defaults with selected fuel, bedroom/occupant counts and source fixture context; not an Atlas fallback.",
+            "original_value": "mixed",
+            "original_unit": "source category",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "actual_tank_volume": {
+          "value": 0.14384564779200001,
+          "unit": "m3",
+          "status": "known",
+          "origin": "source_calculation",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "127d0cad488605417c5ec8b1748022dbb9696be7bd9a60e894bb1f155db5cdde",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.calc_storage_tank_actual_vol/actual_tank_volume",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source heater loss/conversion calculation. Solar is a separate record; pre-solar tank losses must be adjusted exactly once downstream.",
+            "original_value": 38.0,
+            "original_unit": "US gal",
+            "transformation": "value * 0.003785411784"
+          }
+        },
+        "tank_loss_coefficient": {
+          "value": 2.5525003856655024,
+          "unit": "W/K",
+          "status": "known",
+          "origin": "source_calculation",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "127d0cad488605417c5ec8b1748022dbb9696be7bd9a60e894bb1f155db5cdde",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency/tank_loss_coefficient",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source heater loss/conversion calculation. Solar is a separate record; pre-solar tank losses must be adjusted exactly once downstream.",
+            "original_value": 4.8386071302802165,
+            "original_unit": "Btu/h/degF",
+            "transformation": "value * 0.2930710701722222 * 1.8"
+          }
+        },
+        "heating_input_conversion_efficiency": {
+          "value": 0.7797283308330865,
+          "unit": "1",
+          "status": "known",
+          "origin": "source_calculation",
+          "evidence": {
+            "source_project": "resstock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "source_file_sha256": "127d0cad488605417c5ec8b1748022dbb9696be7bd9a60e894bb1f155db5cdde",
+            "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/waterheater.rb#Waterheater.disaggregate_tank_losses_and_burner_efficiency/heating_input_conversion_efficiency",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Executed source heater loss/conversion calculation. Solar is a separate record; pre-solar tank losses must be adjusted exactly once downstream.",
+            "original_value": 0.7797283308330865,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        }
+      },
+      "required_bindings": [
+        "loss_host",
+        "water_demand_assignment",
+        "water_mains_temperature"
+      ],
+      "native_source_fields": {
+        "id": "WaterHeatingSystem1",
+        "fuel_type": "fuel oil",
+        "water_heater_type": "storage water heater",
+        "location": "conditioned space",
+        "year_installed": null,
+        "is_shared_system": false,
+        "performance_adjustment": null,
+        "third_party_certification": null,
+        "tank_volume": 40.0,
+        "fraction_dhw_load_served": 1.0,
+        "heating_capacity": 36000,
+        "backup_heating_capacity": null,
+        "energy_factor": null,
+        "uniform_energy_factor": 0.64,
+        "operating_mode": null,
+        "first_hour_rating": null,
+        "usage_bin": "medium",
+        "recovery_efficiency": 0.772,
+        "jacket_r_value": null,
+        "standby_loss_units": null,
+        "standby_loss_value": null,
+        "temperature": 125.0,
+        "uses_desuperheater": null,
+        "related_hvac_idref": null,
+        "tank_model_type": "mixed",
+        "number_of_bedrooms_served": null,
+        "id_isdefaulted": null,
+        "fuel_type_isdefaulted": null,
+        "water_heater_type_isdefaulted": null,
+        "location_isdefaulted": null,
+        "year_installed_isdefaulted": null,
+        "is_shared_system_isdefaulted": true,
+        "performance_adjustment_isdefaulted": true,
+        "third_party_certification_isdefaulted": null,
+        "tank_volume_isdefaulted": true,
+        "fraction_dhw_load_served_isdefaulted": null,
+        "heating_capacity_isdefaulted": true,
+        "backup_heating_capacity_isdefaulted": null,
+        "energy_factor_isdefaulted": null,
+        "uniform_energy_factor_isdefaulted": null,
+        "operating_mode_isdefaulted": null,
+        "first_hour_rating_isdefaulted": null,
+        "usage_bin_isdefaulted": true,
+        "recovery_efficiency_isdefaulted": true,
+        "jacket_r_value_isdefaulted": null,
+        "standby_loss_units_isdefaulted": null,
+        "standby_loss_value_isdefaulted": null,
+        "temperature_isdefaulted": true,
+        "uses_desuperheater_isdefaulted": null,
+        "related_hvac_idref_isdefaulted": null,
+        "tank_model_type_isdefaulted": true,
+        "number_of_bedrooms_served_isdefaulted": null,
+        "actual_tank_volume": 38.0,
+        "tank_loss_coefficient": 4.8386071302802165,
+        "heating_input_conversion_efficiency": 0.7797283308330865
+      },
+      "interpretation": "Seasonal/integrated ratings retain their metric names; source defaults are not Atlas assumptions.",
+      "id": "recovered-equipment-cc898ff4644341d63eb02de3",
+      "source_id": "residential_archetype-0157cd8578ba44bf8a77",
+      "source_context": {
+        "name": "Dwelling HVAC / source_building_101526",
+        "template": "ResStock SDR source fixture",
+        "climate": "5A",
+        "source_family": "existing_stock_source_fixture",
+        "building_type": "SingleFamilyDetached",
+        "system_type": "Residential fixture equipment"
+      },
+      "unresolved": [
+        "engine_controls_and_performance_translation"
+      ],
+      "readiness": "blocked"
+    }
+  ],
+  "unresolved": [
+    "distribution_and_control_translation",
+    "engine_controls_and_performance_translation",
+    "performance_curves_and_fan_defaults"
+  ],
+  "required_bindings": [
+    "consumer_sizing",
+    "loss_host",
+    "serving_assignment",
+    "water_demand_assignment",
+    "water_mains_temperature"
+  ],
+  "boundary": "Independent nominal source equipment pilot; no program demand, geometry or sizing is embedded. Unknown performance/controls blocks ready export."
+}

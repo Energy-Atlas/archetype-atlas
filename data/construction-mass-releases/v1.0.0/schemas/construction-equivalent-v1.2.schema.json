@@ -1,0 +1,891 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:construction-equivalent:1.2.0",
+  "title": "Additional building-level equivalent construction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "name",
+    "scope",
+    "source",
+    "detailed_context_id",
+    "climate_zone",
+    "reference_id",
+    "supporting_profile_id",
+    "weighting_policy",
+    "status",
+    "components",
+    "assemblies",
+    "infiltration",
+    "consumer_inputs",
+    "mass_accounting",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "kind": {
+      "const": "building_level_equivalent"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "enum": [
+        "building",
+        "whole_dwelling"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "description": "Unchanged detailed construction source metadata."
+    },
+    "detailed_context_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "climate_zone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reference_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supporting_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "weighting_policy": {
+      "const": "precomputed_source_archetype"
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "blocked"
+      ]
+    },
+    "components": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "ExteriorWall",
+          "ExteriorRoof",
+          "ExteriorFloor",
+          "ExteriorWindow",
+          "ExteriorDoor",
+          "GlassDoor",
+          "OverheadDoor",
+          "Skylight",
+          "InteriorWall",
+          "InteriorFloor",
+          "InteriorCeiling",
+          "InteriorDoor",
+          "InteriorWindow",
+          "InternalMass",
+          "FloorDistributedMass",
+          "TubularDaylightDome",
+          "TubularDaylightDiffuser",
+          "SpaceShading",
+          "BuildingShading",
+          "SiteShading"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "assemblies": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/assembly"
+      }
+    },
+    "infiltration": {
+      "type": "object",
+      "description": "Unchanged selected fixed reference natural ACH, in 1/s, with source evidence."
+    },
+    "consumer_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mass_accounting": {
+      "$ref": "#/$defs/massAccounting"
+    },
+    "provenance": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "assembly_id"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ready",
+            "blocked",
+            "not_applicable"
+          ]
+        },
+        "assembly_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "area_per_counted_floor_area",
+            "unit",
+            "application"
+          ],
+          "properties": {
+            "area_per_counted_floor_area": {
+              "type": "number",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "m2/m2"
+            },
+            "application": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "derivation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contributors",
+            "weight_basis"
+          ],
+          "properties": {
+            "weight_basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_reference_area_m2": {
+              "type": "number",
+              "minimum": 0
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "assembly_id",
+                  "weight",
+                  "reference_area_m2"
+                ],
+                "properties": {
+                  "assembly_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "weight": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "reference_area_m2": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "geometry_policy": {
+              "const": "consumer_overhang_geometry_by_BEMGen"
+            },
+            "geometry_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source_assembly_id",
+                  "overhang_geometry"
+                ],
+                "properties": {
+                  "source_assembly_id": {
+                    "type": "string"
+                  },
+                  "overhang_geometry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ready"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "derivation"
+            ],
+            "properties": {
+              "assembly_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "reason"
+            ],
+            "properties": {
+              "assembly_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "R": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Layer resistance, m2 K/W; excludes boundary films."
+        },
+        "C": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Areal heat capacity, J/(m2 K)."
+        },
+        "thickness_m": {
+          "type": "number",
+          "minimum": 0.003
+        },
+        "conductivity_W_m_K": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5
+        },
+        "density_kg_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "specific_heat_J_kg_K": {
+          "type": "number",
+          "minimum": 100
+        },
+        "properties": {
+          "type": "object",
+          "description": "Source or area-weighted glazing material properties in the detailed SI convention."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Material"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "R",
+              "C",
+              "thickness_m",
+              "conductivity_W_m_K",
+              "density_kg_m3",
+              "specific_heat_J_kg_K"
+            ],
+            "properties": {
+              "C": {
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Material:NoMass"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "R",
+              "C"
+            ],
+            "properties": {
+              "C": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assembly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "model",
+        "layers",
+        "quality",
+        "fit"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "ready"
+        },
+        "model": {
+          "enum": [
+            "opaque_layers",
+            "simple_glazing",
+            "detailed_glazing"
+          ]
+        },
+        "layers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/layer"
+          }
+        },
+        "targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resistance_m2_K_W": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "capacity_J_m2_K": {
+              "type": "number",
+              "minimum": 0
+            },
+            "u_reference_W_m2_K": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        },
+        "quality": {
+          "enum": [
+            "within_initial_screen",
+            "approximation_review",
+            "unchanged_source_physics",
+            "area_weighted_optical_proxy"
+          ]
+        },
+        "fit": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "surface_properties": {
+          "type": "object"
+        },
+        "solar_modifiers": {
+          "type": "object"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "opaque_layers"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "targets",
+              "surface_properties"
+            ],
+            "properties": {
+              "layers": {
+                "maxItems": 3
+              },
+              "fit": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "massLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "properties"
+      ],
+      "properties": {
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
+    },
+    "massRecipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "layers",
+        "capacity_J_m2_K",
+        "source_locator",
+        "interpretation"
+      ],
+      "properties": {
+        "model": {
+          "const": "opaque_layers"
+        },
+        "layers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/massLayer"
+          }
+        },
+        "capacity_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interpretation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "massScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "counted_floor_area"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "source_space",
+            "whole_dwelling"
+          ]
+        },
+        "counted_floor_area": {
+          "type": "boolean"
+        },
+        "source_space_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_story": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_building_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_space_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "massEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "recipe_id",
+        "scope",
+        "reference_area_m2",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "source_operands",
+        "source_locator",
+        "area_convention"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recipe_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/massScope"
+        },
+        "reference_area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "area_per_counted_floor_area": {
+          "type": "number",
+          "minimum": 0
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_operands": {
+          "type": "object"
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "area_convention": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "massBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_assembly_id",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "reference_area_m2",
+        "source_areal_capacity_J_m2_K",
+        "source_locator"
+      ],
+      "properties": {
+        "source_assembly_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "area_per_counted_floor_area": {
+          "type": "number",
+          "minimum": 0
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reference_area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_areal_capacity_J_m2_K": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_locator": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "massAccounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "reference",
+        "floor_pair_policy",
+        "added_mass_policy",
+        "removed_wall_policy",
+        "residual_floor_policy",
+        "residual_policy",
+        "physical_inventory_profile_id",
+        "paired_surface_policy",
+        "paired_face_area_policy",
+        "reference_area_approximation",
+        "physical_capacity_budgets",
+        "additional_mass",
+        "recipes",
+        "provenance"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "status": {
+          "const": "ready"
+        },
+        "reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile_id",
+            "counted_floor_area_m2",
+            "quantity_basis"
+          ],
+          "properties": {
+            "profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "counted_floor_area_m2": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "quantity_basis": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "floor_pair_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "added_mass_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removed_wall_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "residual_floor_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "residual_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "physical_inventory_profile_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paired_surface_policy": {
+          "const": {
+            "canonical_side": "InteriorFloor",
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          }
+        },
+        "paired_face_area_policy": {
+          "const": "mean_zone_weighted_faces"
+        },
+        "reference_area_approximation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unequal_multiplier_pair_counts",
+            "evidence_profile_id",
+            "interpretation"
+          ],
+          "properties": {
+            "unequal_multiplier_pair_counts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "floor_pairs",
+                "wall_pairs"
+              ],
+              "properties": {
+                "floor_pairs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wall_pairs": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "evidence_profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interpretation": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "physical_capacity_budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "InteriorWall",
+            "InteriorFloor"
+          ],
+          "properties": {
+            "InteriorWall": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              }
+            },
+            "InteriorFloor": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              }
+            }
+          }
+        },
+        "additional_mass": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "entries",
+            "allocation_policy",
+            "legacy_partition_selector_policy"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "provided",
+                "known_zero"
+              ]
+            },
+            "entries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/massEntry"
+              }
+            },
+            "allocation_policy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "legacy_partition_selector_policy": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "recipes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/massRecipe"
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_project",
+            "source_revision",
+            "source_locator",
+            "source_file_sha256",
+            "extraction_date",
+            "original_unit",
+            "original_value",
+            "transformation",
+            "interpretation_note"
+          ],
+          "properties": {
+            "source_project": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_locator": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_file_sha256": {
+              "type": "object"
+            },
+            "extraction_date": {
+              "type": "string",
+              "minLength": 1
+            },
+            "original_unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "original_value": {
+              "type": "object"
+            },
+            "transformation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interpretation_note": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

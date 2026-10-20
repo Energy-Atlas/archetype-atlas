@@ -2,6 +2,14 @@
 import json
 
 
+def search_smoke(page):
+    from playwright.sync_api import expect
+    query = page.locator('[data-md-component="search-query"]');query.click()
+    # Material watches keyup, so fill() can miss a query after worker setup.
+    query.press_sequentially('Office')
+    expect(page.locator('.md-search-result__list')).to_contain_text('Office');query.press('Escape')
+
+
 def active_smoke(browser, base, screenshot_dir=None):
     from playwright.sync_api import expect
     context = browser.new_context(viewport={'width': 1440, 'height': 960}, permissions=['clipboard-read', 'clipboard-write'])
@@ -12,8 +20,7 @@ def active_smoke(browser, base, screenshot_dir=None):
     def screenshot(name):
         if screenshot_dir: page.screenshot(path=str(screenshot_dir / (name + '.png')), full_page=True)
     try:
-        page.goto(base);query = page.locator('[data-md-component="search-query"]');query.fill('Office')
-        expect(page.locator('.md-search-result__list')).to_contain_text('Office');query.press('Escape')
+        page.goto(base);search_smoke(page)
         screenshot('home')
         page.goto(base + 'catalogue/');expect(page.locator('.definition-gate')).to_have_count(2)
         page.locator('.definition-gate').nth(1).focus();page.keyboard.press('Enter')

@@ -1,5 +1,19 @@
 # Changelog
 
+## Construction publication candidate — 2026-10-15
+
+Prepare detailed distribution v2.2.0 (consumer schema 2.0.0) and additive unified
+construction 1.1.0 for publication: 177 complete sets, 3,320 supported contexts,
+embedded space rules, explicit generic hotel applicability, fixed reference ACH,
+precomputed construction shares and mass budgets. Retain detailed source physics,
+all fitting errors and accepted approximation flags. Both construction copy
+actions are direct; other object copy behavior is unchanged.
+
+Add required construction presence, frozen-release reproduction and separate
+construction browser checks to the existing publication pipeline. No deployment
+or remote check run is claimed. [Release notes](docs/release-notes-construction-v2.2.0.md)
+record contract versions, migration, consumer inputs and deferred ground/systems.
+
 ## Site UI and release gate — 2026-10-07
 
 Restyle the catalogue site into the EnergyAtlas family design

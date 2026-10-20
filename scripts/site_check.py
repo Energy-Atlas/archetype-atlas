@@ -27,19 +27,22 @@ class Links(HTMLParser):
         for key in ['href', 'src']:
             if attrs.get(key):
                 self.links.append(attrs[key])
-        for key in ['data-raw', 'data-defaulted']:
+        for key in ['data-raw', 'data-defaulted', 'data-construction', 'data-unified']:
             if attrs.get(key):
                 descriptor = json.loads(attrs[key])
                 self.links.append('/archetype-atlas/' + descriptor['href'])
 
 
-def check_links(root, prefix='/archetype-atlas/'):
+def check_links(root, prefix='/archetype-atlas/',paths=None):
     root = Path(root).resolve()
     if not (root/'index.html').is_file():
         return ['Missing site index.html; build is empty or incomplete']
     parsed = {}
     errors = []
-    for p in root.rglob('*.html'):
+    for p in root.rglob('*.html') if paths is None else paths:
+        p=Path(p).resolve()
+        if not p.is_relative_to(root):
+            errors.append('Selected link-check path escapes site');continue
         doc = Links()
         doc.feed(p.read_text(encoding='utf-8'))
         parsed[p.resolve()] = doc
@@ -127,11 +130,13 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--site', type=Path, default=ROOT/'build/site')
     p.add_argument('--prefix', default='/archetype-atlas/')
+    p.add_argument('--require-construction',action='store_true',help='Reject a publication build without the frozen construction catalogue')
     args = p.parse_args()
-    errors = check_links(args.site, args.prefix)+check_size(args.site)+check_active(args.site)
+    from scripts.construction_site import verify_delivery
+    errors = check_links(args.site, args.prefix)+check_size(args.site)+check_active(args.site)+verify_delivery(args.site,require_construction=args.require_construction)
     if errors:
         raise SystemExit('\n'.join(errors[:50]) + f'\n{len(errors)} broken references')
-    print('All built links, fragments, assets, publication size, retirement and complete program exports passed')
+    print('All built links, fragments, assets, publication size, retirement, program exports and frozen construction delivery passed')
 
 
 if __name__ == '__main__':

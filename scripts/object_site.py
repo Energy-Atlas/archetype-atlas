@@ -55,8 +55,8 @@ def references(value, registry):
     return found
 
 
-def json_markup(raw, defaulted=None, count=0, reason='Program defaults do not apply to this object kind.'):
-    attributes = f'data-raw="{esc(json.dumps(raw,separators=(",",":")))}" data-root="../../"'
+def json_markup(raw, defaulted=None, count=0, reason='Program defaults do not apply to this object kind.',relative_root='../../'):
+    attributes = f'data-raw="{esc(json.dumps(raw,separators=(",",":")))}" data-root="{esc(relative_root)}"'
     if defaulted: attributes += f' data-defaulted="{esc(json.dumps(defaulted,separators=(",",":")))}"'
     attributes += f' data-assumptions="{count}" data-default-reason="{esc(reason)}"'
     return ('<section class="object-json" ' + attributes + '><button type="button" class="object-copy">Copy JSON</button>'
@@ -99,7 +99,7 @@ def static_schedule(record):
     return text + '</table></div></details>'
 
 
-def generate_objects(bundle, root):
+def generate_objects(bundle, root, only_tables=None):
     root = Path(root); store = JSONStore(root); exporter = ProgramExporter(bundle)
     records = {r['id']: (table, r) for table in TABLES for r in bundle[table]}
     registry = {}
@@ -111,6 +111,7 @@ def generate_objects(bundle, root):
     failures = []
     for identity, (table, row) in records.items():
         info = registry[identity]; path = info['path']; defaulted = None; count = 0
+        if only_tables is not None and table not in only_tables:continue
         reason = 'Defaults are defined for program imports; this library object retains its explicit unknowns.'
         if table == 'programs':
             raw = exporter.export(identity, 'raw')

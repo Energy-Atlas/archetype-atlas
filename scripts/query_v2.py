@@ -30,8 +30,12 @@ def matches(row,filters):
         same_scalar(row.get(key),val) for key,val in filters.items())
 
 
-def generate_delivery(bundle,target):
+def generate_delivery(bundle,target,only_kind=None):
     target=checked_target(target);target.mkdir(parents=True,exist_ok=True)
+    previous=None
+    if only_kind is not None:
+        if only_kind not in PRIMARY:raise ValueError('Unknown primary delivery kind')
+        previous=QueryClient(target)
     def write(value,compressed=True):
         decoded=canonical(value)
         content=gzip.compress(decoded,mtime=0) if compressed else decoded
@@ -44,16 +48,18 @@ def generate_delivery(bundle,target):
         ref=descriptor(href,content)
         if compressed:ref.update(encoding='gzip',decoded_size_bytes=len(decoded))
         return ref
-    supporting={}
+    supporting=dict(previous.manifest['supporting_tables']) if previous else {}
     for table in TABLES:
+        if previous:continue
         if table in PRIMARY.values():continue
         refs={}
         for row in bundle.get(table,[]):
             refs[row['id']]=write({'schema_version':VERSION,'kind':'resource','table':table,'record':row})
         supporting[table]=write({'schema_version':VERSION,'kind':'resource_index','table':table,'resources':refs})
-    types={}
-    details={}
+    types=dict(previous.manifest['record_types']) if previous else {}
+    details=dict(previous.fetch(supporting['details'])['resources']) if previous else {}
     for kind,table in PRIMARY.items():
+        if only_kind is not None and kind!=only_kind:continue
         groups={};fields=set()
         for original in sorted(bundle.get(table,[]),key=lambda r:r['id']):
             row=copy.deepcopy(original)
@@ -89,7 +95,7 @@ def generate_delivery(bundle,target):
     schema=write({'schema_version':VERSION,'kind':'resource','record':load_json(ROOT/'schemas/query-v2.schema.json')})
     manifest={'schema_version':VERSION,'kind':'manifest','definition_schema_version':'1.0.0',
               'max_packet_bytes':MAX_PACKET_BYTES,'record_types':types,'supporting_tables':supporting,
-              'schema':schema,'dependencies':bundle.get('dependencies',{}),
+              'schema':schema,'dependencies':previous.manifest['dependencies'] if previous else bundle.get('dependencies',{}),
               'interpretation':'Fixed library definitions; null and required consumer inputs stay explicit.'}
     manifest['snapshot_id']=hashlib.sha256(canonical(manifest)).hexdigest()
     content=canonical(manifest);href='snapshots/'+manifest['snapshot_id']+'/manifest.json'

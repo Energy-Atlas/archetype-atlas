@@ -873,27 +873,27 @@ html {
  * A cell whose title is a link is a link as a whole: the title link stretches over the cell. Other links in the cell
  * (a button, a link in the description) stay above it and keep their own targets.
  */
-.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-child::after {
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-of-type::after {
   content: "";
   inset: 0;
   position: absolute;
 }
 
-.md-typeset .grid.cards > :is(ul, ol) > li a:not(p:first-of-type > a:only-child) {
+.md-typeset .grid.cards > :is(ul, ol) > li a:not(p:first-of-type > a:only-of-type) {
   position: relative;
   z-index: 1;
 }
 
-.md-typeset .grid.cards > :is(ul, ol) > li:has(> p:first-of-type > a:only-child):hover > p:first-of-type > a {
+.md-typeset .grid.cards > :is(ul, ol) > li:has(> p:first-of-type > a:only-of-type):hover > p:first-of-type > a {
   color: var(--ea-accent);
 }
 
 /* The stretched link gives the cell its focus ring, so a keyboard user sees the whole cell selected. */
-.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-child:focus-visible {
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-of-type:focus-visible {
   outline: none;
 }
 
-.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-child:focus-visible::after {
+.md-typeset .grid.cards > :is(ul, ol) > li > p:first-of-type > a:only-of-type:focus-visible::after {
   outline: 1px solid var(--ea-accent);
   outline-offset: -2px;
 }
@@ -1084,6 +1084,7 @@ html {
 .definition-copy,
 .definition-resource button,
 .object-copy,
+.construction-copy-unified,
 .schedule-load,
 .schedule-update,
 .object-dialog button {
@@ -1104,7 +1105,7 @@ html {
 }
 
 :is(.definition-filters button, .definition-more, .definition-copy, .definition-resource button, .schedule-update,
-  .object-dialog button):is(:hover, :focus-visible):not(:disabled) {
+  .object-dialog button, .construction-copy-unified):is(:hover, :focus-visible):not(:disabled) {
   border-color: var(--ea-accent);
   color: var(--ea-accent);
 }
@@ -1130,7 +1131,7 @@ html {
 
 :is(.definition-filters, .schedule-controls, .object-dialog, .object-json, .object-references, .schedule-static,
   .definition-static, .definition-resource, .definition-header, .definition-results) :focus-visible,
-:is(.object-copy, .schedule-load, .definition-more):focus-visible {
+:is(.object-copy, .construction-copy-unified, .schedule-load, .definition-more):focus-visible {
   outline: 2px solid var(--ea-accent);
   outline-offset: 2px;
 }
@@ -1192,7 +1193,7 @@ html {
   outline-offset: -2px;
 }
 
-.md-typeset .definition-gate span {
+.md-typeset .definition-gate-description {
   color: var(--ea-text-secondary);
   display: block;
   font-size: 0.8rem;
@@ -1206,6 +1207,225 @@ html {
   .md-typeset :is(.definition-gates, .definition-kinds) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* Icon cards (spec 0.13): the same shared-border cells, with a quiet hover/focus backdrop. */
+.md-typeset :is(.grid.cards.icon-cards > :is(ul, ol) > li, .definition-gate, .definition-kind) {
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+.md-typeset :is(.grid.cards.icon-cards > :is(ul, ol) > li, .definition-gate, .definition-kind)::before {
+  background: linear-gradient(140deg, transparent 30%, color-mix(in srgb, var(--ea-accent) 16%, transparent) 100%);
+  content: "";
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity var(--ea-transition);
+  z-index: -1;
+}
+
+.md-typeset :is(.grid.cards.icon-cards > :is(ul, ol) > li, .definition-gate, .definition-kind):is(:hover, :focus-within) {
+  background-color: transparent;
+}
+
+.md-typeset :is(.grid.cards.icon-cards > :is(ul, ol) > li, .definition-gate, .definition-kind):is(:hover, :focus-within)::before {
+  opacity: 1;
+}
+
+.md-typeset .ea-card-icon {
+  display: block;
+  flex: none;
+  height: 2rem;
+  margin: 0 0 0.8rem;
+  pointer-events: none;
+  width: 2rem;
+}
+
+.md-typeset :is(.ea-card-icon, .ea-card-backdrop) svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.md-typeset .ea-card-icon .ink {
+  fill: var(--ea-text-primary);
+}
+
+.md-typeset .ea-card-icon .accent,
+.md-typeset .ea-card-backdrop :is(.ink, .accent) {
+  fill: var(--ea-accent);
+}
+
+/* Subject-specific marks move once per hover/focus entry, as on the reference wiki.
+ * Paths follow drawing order in design/icons/atlas_cards.py. The SVG and backdrop stay still. */
+.md-typeset .ea-card-icon path {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.md-typeset :is(.grid.cards.icon-cards > :is(ul, ol) > li, .definition-gate, .definition-kind):is(:hover, :focus-within) .ea-card-icon path {
+  animation: var(--ea-mark-animation, none);
+}
+
+/* House: the entrance hinges; the single roof-and-walls stroke is fixed. */
+.ea-card-icon[data-card-icon="house"] .accent path {
+  --ea-mark-animation: ea-door-hinge 420ms ease-in-out;
+  transform-origin: 0% 100%;
+}
+
+/* Office: four windows illuminate in source order, followed by the entrance. */
+.ea-card-icon[data-card-icon="office"] .ink path:nth-of-type(n+2) {
+  --ea-mark-animation: ea-window-light 260ms ease-out var(--ea-window-delay, 0ms) backwards;
+}
+.ea-card-icon[data-card-icon="office"] .ink path:nth-of-type(3) { --ea-window-delay: 50ms; }
+.ea-card-icon[data-card-icon="office"] .ink path:nth-of-type(4) { --ea-window-delay: 100ms; }
+.ea-card-icon[data-card-icon="office"] .ink path:nth-of-type(5) { --ea-window-delay: 150ms; }
+.ea-card-icon[data-card-icon="office"] .accent path { --ea-mark-animation: ea-mark-pop 430ms ease-out; }
+
+/* Constructions: the three layers separate briefly and settle back into place. */
+.ea-card-icon[data-card-icon="layers"] .ink path:first-of-type { --ea-mark-animation: ea-layer-up 380ms ease-in-out; }
+.ea-card-icon[data-card-icon="layers"] .ink path:nth-of-type(2) { --ea-mark-animation: ea-layer-middle 380ms ease-in-out; }
+.ea-card-icon[data-card-icon="layers"] .accent path { --ea-mark-animation: ea-layer-down 380ms ease-in-out; }
+
+/* Fan: only the three blades turn about the hub; the housing stays fixed. */
+.md-typeset .ea-card-icon[data-card-icon="fan"] .ink path:nth-of-type(n+2) {
+  --ea-mark-animation: ea-fan-turn 640ms cubic-bezier(0.3, 0.1, 0.3, 1);
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+.ea-card-icon[data-card-icon="fan"] .accent path { --ea-mark-animation: ea-mark-pop 430ms ease-out; }
+
+/* Programs: the two zone dividers draw in, then the selected zone responds. */
+.ea-card-icon[data-card-icon="program"] .ink path:nth-of-type(2) { --ea-mark-animation: ea-draw-down 250ms ease-out; }
+.ea-card-icon[data-card-icon="program"] .ink path:nth-of-type(3) { --ea-mark-animation: ea-draw-right 320ms ease-out; }
+.ea-card-icon[data-card-icon="program"] .accent path { --ea-mark-animation: ea-mark-pop 430ms ease-out; }
+
+/* Copying: the two sheets separate, then the selection check is traced. */
+.ea-card-icon[data-card-icon="select-copy"] .ink path:first-of-type { --ea-mark-animation: ea-sheet-back 360ms ease-in-out; }
+.ea-card-icon[data-card-icon="select-copy"] .ink path:nth-of-type(2) { --ea-mark-animation: ea-sheet-front 360ms ease-in-out; }
+.ea-card-icon[data-card-icon="select-copy"] .accent path { --ea-mark-animation: ea-check-draw 410ms ease-out; }
+
+/* Schedule: the calendar remains fixed while its daily step profile draws across. */
+.ea-card-icon[data-card-icon="schedule"] .accent path { --ea-mark-animation: ea-draw-right 420ms ease-out; }
+
+/* JSON: the braces spread and the folded corner flexes inside a fixed document. */
+.ea-card-icon[data-card-icon="json-document"] .ink path:nth-of-type(2) { --ea-mark-animation: ea-brace-left 320ms ease-in-out; }
+.ea-card-icon[data-card-icon="json-document"] .ink path:nth-of-type(3) { --ea-mark-animation: ea-brace-right 320ms ease-in-out; }
+.ea-card-icon[data-card-icon="json-document"] .accent path {
+  --ea-mark-animation: ea-paper-fold 360ms ease-in-out;
+  transform-origin: 0% 0%;
+}
+
+/* Definitions: the right page flutters at the spine and its index ribbon drops. */
+.ea-card-icon[data-card-icon="definitions"] .ink path:nth-of-type(2) {
+  --ea-mark-animation: ea-book-page 360ms ease-in-out;
+  transform-origin: 0% 50%;
+}
+.ea-card-icon[data-card-icon="definitions"] .accent path {
+  --ea-mark-animation: ea-book-ribbon 320ms ease-out;
+  transform-origin: 50% 0%;
+}
+
+@keyframes ea-door-hinge {
+  0%, 100% { transform: none; }
+  45% { transform: scaleX(0.25) skewY(-8deg); }
+  75% { transform: scaleX(1.06); }
+}
+
+@keyframes ea-window-light {
+  from { opacity: 0.15; }
+  to { opacity: 1; }
+}
+
+@keyframes ea-mark-pop {
+  0%, 45%, 100% { transform: none; }
+  75% { transform: scale(1.22); }
+}
+
+@keyframes ea-layer-up {
+  0%, 100% { transform: none; }
+  45% { transform: translateY(-1.6px); }
+}
+@keyframes ea-layer-middle {
+  0%, 100% { transform: none; }
+  45% { transform: translateY(-0.4px); }
+}
+@keyframes ea-layer-down {
+  0%, 100% { transform: none; }
+  45% { transform: translateY(1.3px); }
+}
+
+@keyframes ea-draw-down {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
+}
+@keyframes ea-draw-right {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+
+@keyframes ea-sheet-back {
+  0%, 100% { transform: none; }
+  45% { transform: translate(-1.3px, -1.3px); }
+}
+@keyframes ea-sheet-front {
+  0%, 100% { transform: none; }
+  45% { transform: translate(0.7px, 0.7px); }
+}
+@keyframes ea-check-draw {
+  0%, 25% { clip-path: inset(100% 100% 0 0); }
+  100% { clip-path: inset(0); }
+}
+
+@keyframes ea-brace-left {
+  0%, 100% { transform: none; }
+  45% { transform: translateX(-1.2px); }
+}
+@keyframes ea-brace-right {
+  0%, 100% { transform: none; }
+  45% { transform: translateX(1.2px); }
+}
+@keyframes ea-paper-fold {
+  0%, 100% { transform: none; }
+  45% { transform: scaleY(0.55) skewX(-8deg); }
+}
+
+@keyframes ea-book-page {
+  0%, 100% { transform: none; }
+  45% { transform: scaleX(0.82) skewY(-4deg); }
+}
+@keyframes ea-book-ribbon {
+  0% { transform: scaleY(0.2); }
+  65% { transform: scaleY(1.1); }
+  100% { transform: none; }
+}
+
+@keyframes ea-fan-turn {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.md-typeset .ea-card-backdrop {
+  aspect-ratio: 1;
+  display: block;
+  left: 70%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 72%;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--ea-transition);
+  width: 105%;
+  z-index: -1;
+}
+
+.md-typeset :is(.grid.cards.icon-cards > :is(ul, ol) > li, .definition-gate, .definition-kind):is(:hover, :focus-within) .ea-card-backdrop {
+  opacity: 0.14;
 }
 
 /* ---------------------------------------------------------------------------------------------------------------------
@@ -1451,6 +1671,16 @@ body:has(> .definition-document) {
   border-radius: 0;
   margin: 1.6rem 0;
   padding: 1rem;
+}
+
+.construction-manual-copy textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 12rem;
+  background: var(--ea-bg-base);
+  color: var(--ea-text-primary);
+  border: 1px solid var(--ea-border-interactive);
+  font-family: var(--font-mono);
 }
 
 /*
@@ -1783,6 +2013,7 @@ body:has(> .definition-document) {
   .definition-filters,
   .schedule-controls,
   .object-copy,
+  .construction-copy-unified,
   .schedule-load {
     display: none;
   }
@@ -1793,7 +2024,10 @@ body:has(> .definition-document) {
  * ------------------------------------------------------------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
     transition: none !important;
   }
 }

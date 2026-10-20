@@ -1,0 +1,260 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "system",
+  "stage": "source_recovery_pilot",
+  "source_context": {
+    "name": "PVAV",
+    "template": "90.1-2019",
+    "climate": null,
+    "source_family": "code_prototype_rules",
+    "building_type": "MediumOffice",
+    "system_type": "PVAV"
+  },
+  "hvac_source_recovery": {
+    "id": "hvac_system-391c926cf557a50df9f3d0f8",
+    "source_id": "system-052e783e2424def3495b",
+    "source_context": {
+      "name": "PVAV",
+      "template": "90.1-2019",
+      "climate": null,
+      "source_family": "code_prototype_rules",
+      "building_type": "MediumOffice",
+      "system_type": "PVAV"
+    },
+    "recovered": {
+      "source_descriptor": {
+        "heating_type": "Gas",
+        "oa_damper_schedule": "OfficeMedium MinOA_MotorizedDamper_Sched",
+        "operation_schedule": "OfficeMedium HVACOperationSchd",
+        "return_plenum": "FirstFloor_Plenum",
+        "type": "PVAV"
+      },
+      "source_recipe": {
+        "fan_factory": "create_typical_fan(VAV_default)",
+        "main_heat_factory": "create_coil_heating_gas",
+        "cooling_factory": "create_coil_cooling_dx_two_speed(OS default)",
+        "terminal_factory": "AirTerminalSingleDuctVAVReheat/electric_reheat",
+        "outdoor_air_method": "ZoneSum",
+        "night_cycle_control": "CycleOnAny",
+        "evidence": [
+          {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "1b9fc4859a44310b8a15f5aa29426b8591a97cc19fdef156117bc5b84f90d5b6",
+            "source_locator": "lib/openstudio-standards/prototypes/common/objects/Prototype.hvac_systems.rb#Standard.model_add_pvav",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Source factory recipe; helper performance and later template adjustments remain unresolved."
+          },
+          {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "abc6053d1adda03d791adbd1b54050b2e3e64a1a72a502754d7033885836f40e",
+            "source_locator": "lib/openstudio-standards/prototypes/common/objects/Prototype.Model.hvac.rb#Standard.model_add_hvac/PVAV",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "MediumOffice skips hot-water-loop creation; caller does not forward heating_type."
+          }
+        ]
+      }
+    },
+    "unresolved": [
+      "factory_performance_and_template_adjustments",
+      "performance_curve_assignment"
+    ],
+    "required_bindings": [
+      "serving_assignment",
+      "consumer_sizing"
+    ],
+    "readiness": "blocked"
+  },
+  "dhw_solar_source_recovery": [
+    {
+      "id": "source-water-heater-2b753f8cda82006e3d8bbf6f",
+      "role": "water_heater",
+      "fields": {
+        "water_heater_volume": {
+          "value": 0.3785411784,
+          "unit": "m3",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_water_heater_volume",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 100.0,
+            "original_unit": "US gal",
+            "transformation": "value * 0.003785411784"
+          }
+        },
+        "water_heater_capacity": {
+          "value": 29307.10701722222,
+          "unit": "W",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_water_heater_capacity",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 100000.0,
+            "original_unit": "Btu/h",
+            "transformation": "value * 0.2930710701722222"
+          }
+        },
+        "water_heater_fuel": {
+          "value": "Natural Gas",
+          "unit": "category",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_water_heater_fuel",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": "Natural Gas",
+            "original_unit": "source fuel",
+            "transformation": "identity; retain source category"
+          }
+        },
+        "service_water_temperature": {
+          "value": 60.0,
+          "unit": "degC",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_service_water_temperature",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 140.0,
+            "original_unit": "degF",
+            "transformation": "(value - 32) * 5/9"
+          }
+        },
+        "service_water_pump_head": {
+          "value": 29891.0,
+          "unit": "Pa",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_service_water_pump_head",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 29891.0,
+            "original_unit": "Pa",
+            "transformation": "identity"
+          }
+        },
+        "service_water_pump_motor_efficiency": {
+          "value": 0.3,
+          "unit": "1",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_service_water_pump_motor_efficiency",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 0.3,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "service_water_parasitic_fuel_consumption_rate": {
+          "value": 1886.440202688575,
+          "unit": "W",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_service_water_parasitic_fuel_consumption_rate",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 6436.801154,
+            "original_unit": "Btu/h",
+            "transformation": "value * 0.2930710701722222"
+          }
+        },
+        "off_cycle_parasitic_heat_fraction_to_tank": {
+          "value": 0.8,
+          "unit": "1",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_off_cycle_parasitic_heat_fraction_to_tank",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": 0.8,
+            "original_unit": "1",
+            "transformation": "identity"
+          }
+        },
+        "water_heater_space_name": {
+          "value": "Core_bottom",
+          "unit": "category",
+          "status": "known",
+          "origin": "source",
+          "evidence": {
+            "source_project": "openstudio-standards",
+            "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+            "source_file_sha256": "7f730530735f076d5eb530bda59f62f75a6cc6358d24f01047d8aca24bb904fe",
+            "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.prototype_inputs.json#prototype_inputs/12/main_water_heater_space_name",
+            "extraction_date": "2026-10-12",
+            "interpretation_note": "Prototype nominal equipment input, not geometry-independent sizing or executed heater efficiency. Host names require consumer assignment.",
+            "original_value": "Core_bottom",
+            "original_unit": "source host name",
+            "transformation": "identity; retain source category"
+          }
+        }
+      },
+      "source_context": {
+        "template": "90.1-2019",
+        "building_type": "MediumOffice"
+      },
+      "source_channel": "main",
+      "unresolved": [
+        "heater_efficiency_and_loss_model",
+        "source_factory_template_adjustments"
+      ],
+      "required_bindings": [
+        "water_demand_assignment",
+        "loss_host",
+        "water_mains_temperature",
+        "consumer_sizing"
+      ],
+      "readiness": "blocked"
+    }
+  ],
+  "unresolved": [
+    "factory_performance_and_template_adjustments",
+    "heater_efficiency_and_loss_model",
+    "performance_curve_assignment",
+    "source_factory_template_adjustments"
+  ],
+  "required_bindings": [
+    "consumer_sizing",
+    "loss_host",
+    "serving_assignment",
+    "water_demand_assignment",
+    "water_mains_temperature"
+  ],
+  "boundary": "Independent nominal source equipment pilot; no program demand, geometry or sizing is embedded. Unknown performance/controls blocks ready export."
+}
