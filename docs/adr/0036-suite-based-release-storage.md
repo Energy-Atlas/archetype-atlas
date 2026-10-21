@@ -89,13 +89,20 @@ A program is one record; there are no source/reviewed twins.
   rows, of which 1,426 are the approved gas-equipment absence) and values from
   executing upstream code (`executed_upstream`, 19 rows). Every commercial
   filling sets an unknown to zero or off.
-- **Unresolved fields** keep an explicit null with a reason ID (313 fields).
+- **Unresolved fields** keep an explicit null with a reason ID (313 fields). When
+  the program has no such load at all (289 water-heating schedules), the reason
+  is kept on the record, keyed by field.
 - Rule and reason texts live once in the evidence glossary.
+- **Mixes** follow the same model. A mix keeps one identity (its source view's
+  demand, evidence and schedule IDs; the reviewed twin differed only in these and
+  in member-derived values). Its source-backed values are actual, and where its
+  members carry fillings, the filled values are stored as a filling classified by
+  those members' changes: the same field first, otherwise all member changes.
 
 Two consumer exports ship: **source-backed** (actual values only) and **filled**
 (actual values plus fillings), each filling tagged with rule and basis. The site
-shows both; BEMGen consumes the filled export. Mixes are stored in filled form and
-recomputed from members for the source-backed export.
+shows both; BEMGen consumes the filled export. Both exports are read straight from
+storage; nothing is recomputed.
 
 ### 5. Schedules
 
