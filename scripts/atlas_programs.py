@@ -237,14 +237,18 @@ def constant(schedule):
 
 
 def schedule_table(sources, stored, prefix, building_type):
-    days, table, ids = {}, {}, {}
     labels = schedule_labels(stored, building_type)
-    for old in sorted(labels):
-        schedule = sources.schedules[old]
-        literal = constant(schedule)
-        if literal is not None:
-            ids[old] = literal
-            continue
+    literals = {old: constant(sources.schedules[old]) for old in labels}
+    tabled = {old: sources.schedules[old] for old, literal in literals.items() if literal is None}
+    days, table, ids = tabulate(tabled, labels, prefix)
+    return days, table, {**ids, **{old: v for old, v in literals.items() if v is not None}}
+
+
+def tabulate(schedules, labels, prefix):
+    """A folder schedules table: each day profile once, schedules with readable content-hashed IDs."""
+    days, table, ids = {}, {}, {}
+    for old in sorted(schedules):
+        schedule = schedules[old]
         rules = []
         for rule in schedule['rules']:
             day = 'd-'+hashlib.sha256(canonical(rule['values']).encode()).hexdigest()[:8]
@@ -259,6 +263,23 @@ def schedule_table(sources, stored, prefix, building_type):
         table[new] = content if 'source_name' in schedule else {**content, 'name': labels[old]}
         ids[old] = new
     return days, table, ids
+
+
+def encode_evidence(sources, evidence_ids):
+    """Definition evidence rows with their repeated texts and source files moved to the glossary."""
+    evidence, terms = {}, {'interpretations': {}, 'transformations': {}, 'source_files': {}}
+    for eid in sorted(set(evidence_ids)):
+        row = sources.evidence[eid]
+        interpretation, transformation = 'i-'+h6(row['interpretation']), 't-'+h6(row['transformation'])
+        terms['interpretations'][interpretation] = row['interpretation']
+        terms['transformations'][transformation] = row['transformation']
+        if row.get('source_file_id'):
+            terms['source_files'][row['source_file_id']] = {k: v for k, v in sources.source_files[row['source_file_id']].items() if k != 'id'}
+        evidence[eid] = {'extraction_date': row['extraction_date'], 'locator': row['locator'],
+                         'original_unit': row['original_unit'], 'original_value': row['original_value'],
+                         'source_file': row.get('source_file_id'), 'interpretation': interpretation,
+                         'transformation': transformation}
+    return evidence, terms
 
 
 def program_id(prefix, program, building_type):
@@ -291,19 +312,7 @@ def build_folder(sources, template, building_type):
         files[f'commercial/{tslug}/{bslug}/programs/{program["mode"]}/{new}.json'] = program
     files = {path: suite_bytes(program) for path, program in files.items()}
     files[f'commercial/{tslug}/{bslug}/schedules.json'] = table_bytes({'days': days, 'schedules': table}, sections=True)
-    text = b''.join(files.values()).decode()
-    evidence, terms = {}, {'interpretations': {}, 'transformations': {}, 'source_files': {}}
-    for eid in sorted(set(EVIDENCE.findall(text))):
-        row = sources.evidence[eid]
-        interpretation, transformation = 'i-'+h6(row['interpretation']), 't-'+h6(row['transformation'])
-        terms['interpretations'][interpretation] = row['interpretation']
-        terms['transformations'][transformation] = row['transformation']
-        if row.get('source_file_id'):
-            terms['source_files'][row['source_file_id']] = {k: v for k, v in sources.source_files[row['source_file_id']].items() if k != 'id'}
-        evidence[eid] = {'extraction_date': row['extraction_date'], 'locator': row['locator'],
-                         'original_unit': row['original_unit'], 'original_value': row['original_value'],
-                         'source_file': row.get('source_file_id'), 'interpretation': interpretation,
-                         'transformation': transformation}
+    evidence, terms = encode_evidence(sources, EVIDENCE.findall(b''.join(files.values()).decode()))
     files[f'evidence/commercial/{tslug}/{bslug}.json'] = table_bytes(evidence)
     # Notes are content-addressed so folders merge without conflict: a rule's note text varies by record.
     rule_notes = {'n-'+h6([rule, note]): {'rule': rule, 'note': note}

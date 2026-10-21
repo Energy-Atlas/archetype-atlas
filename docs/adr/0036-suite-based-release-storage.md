@@ -142,10 +142,16 @@ copied into every folder):
 | Foundation assemblies and materials | 0.6 MB | 0.7 MB |
 | HVAC components, curves and rules | 14.3 MB | 27.4 MB |
 
-The HVAC row covers the 3,281 components systems reach; 707 of them, mostly
-performance curves and rules, are shared between building types and go to the
-library, the rest stay with their systems. HVAC systems, services, water reporting
-and completion records are local to their folder. The definition-release `constructions` and
+The HVAC row covers the 3,281 components systems reach. The 707 shared between
+building types are exactly the performance curves and rules; they go to the
+template library (`curves.json`, `performance-rules.json`), and every other
+component stays in its folder's `components.json`. HVAC systems (`systems.json`),
+services (`services.json`) and water-reporting records (`water.json`, with
+programs, references and services sections) are local to their folder and cite
+programs and schedules by their new IDs. Ancillary components cite their system,
+which lists them, so components hash with system references as a placeholder.
+References into frozen earlier releases that are not records here (completion
+schedules, upstream system and efficiency IDs) stay as they are. The definition-release `constructions` and
 `materials` tables are superseded by the combined construction suite.
 
 ### 7. Evidence

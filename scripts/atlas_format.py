@@ -8,7 +8,7 @@ import hashlib
 import json
 import re
 
-SECTIONED = ('glossary.json', 'schedules.json')  # tables grouped into named sections
+SECTIONED = ('glossary.json', 'schedules.json', 'water.json')  # tables grouped into named sections
 
 
 def slug(text):
