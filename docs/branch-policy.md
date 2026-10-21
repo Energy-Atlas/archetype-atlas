@@ -14,16 +14,18 @@ human approval count is required. Force pushes and deletion of `main` are blocke
 Automatically delete the working branch after merging. Preserve historical
 milestones with tags and immutable research bundles rather than active branches.
 
-The required checks are the catalogue `build` and both Linux/Python 3.11 and
-Windows/Python 3.14 jobs in the reusable research validation matrix. GitHub
-branch-protection settings use the observed check names and bind them to GitHub
-Actions. Do not bypass protection to publish.
+The required checks are the catalogue `build` and the two research checks
+`research / atlas (ubuntu-latest, 3.11)` and `research / atlas (windows-latest, 3.14)`
+from reusable `validate.yml`. The Linux check passes only when all parallel Linux
+research jobs pass; the Windows check runs the pinned-producer reproductions and
+Windows consumer-document validation. GitHub branch-protection settings use these
+check names and bind them to GitHub Actions. Do not bypass protection to publish.
 
 ## CI and production
 
 `catalogue-site.yml` is the sole event-driven pipeline: pushes to `main`, pull
 requests targeting `main`, and manual dispatch. Every qualifying run executes
-the research matrix from reusable `validate.yml` and the catalogue build. The
+the research jobs from reusable `validate.yml` and the catalogue build. The
 deployment job needs both to succeed for the same commit. Required workflows
 have no path filters, so documentation-only PRs still report their checks and
 new schema versions cannot silently miss CI. There is no duplicate feature-push
