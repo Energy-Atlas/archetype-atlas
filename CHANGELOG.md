@@ -1,5 +1,26 @@
 # Changelog
 
+## Foundation/ground publication candidate — 2026-10-19
+
+Prepare combined construction delivery 1.0.0, detailed schema 3.0.0 and unified
+schema 2.0.0: 177 suites / 3,320 contexts, with 3,308 executable contact cases and
+12 source-supported no-contact cases. Reuse component/assignment and provenance
+structures for four foundation roles. Preserve native F/C, layered-ground and Kiva
+methods, single parameter ownership and 20 narrow unified native exceptions.
+Above-ground recipes, fixed ACH, shared mass, program/schedule outputs and earlier
+frozen releases are unchanged.
+
+Update the browser harness to compare current preview/copy exports and selected
+foundation summaries, and add combined frozen-output/recovery-receipt checks to
+the existing publication pipeline. Native recovery and engine execution remain
+opt-in. Document recipe-versus-instance scope, explicit geometry operands and
+source-policy initialization, with required BEMGen v7 tests.
+
+This is a local publication candidate; no hosted checks or deployment are claimed.
+BEMGen acceptance remains pending. Systems and schedule-generator packaging are
+outside this milestone; lighter artifact delivery remains deferred. See the
+[release and migration notes](docs/release-notes-construction-foundation-v1.0.0.md).
+
 ## Construction publication candidate — 2026-10-15
 
 Prepare detailed distribution v2.2.0 (consumer schema 2.0.0) and additive unified

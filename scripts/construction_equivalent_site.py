@@ -35,6 +35,7 @@ def mass_fields(context_ids):
 
 
 def packet_for(tables,identity,context_ids):
+    from scripts.construction_foundation_site import packet_for as ground_packet
     contexts={i:copy.deepcopy(tables['catalogue']['contexts'][i]) for i in sorted(context_ids)}
     links,contracts=mass_fields(context_ids)
     for cid,context in contexts.items():
@@ -46,7 +47,8 @@ def packet_for(tables,identity,context_ids):
         raise ValueError('Equivalent context does not match construction set')
     sets={c['component_set_id']:tables['component_sets'][c['component_set_id']] for c in contexts.values()}
     ids={v['assembly_id'] for s in sets.values() for v in s['components'].values() if v['status']=='ready'}
-    return {'schema_version':'1.1.0','kind':'construction_equivalent_site_packet',
+    return {'schema_version':'1.2.0','kind':'construction_equivalent_site_packet',
+            'foundation':ground_packet(context_ids),
             'mass_contracts':contracts,
             'construction_set_id':identity,'contexts':contexts,'component_sets':sets,
             'assemblies':{i:tables['assemblies'][i] for i in sorted(ids)}}

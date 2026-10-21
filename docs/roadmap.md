@@ -1,7 +1,8 @@
 # Remaining atlas tasks
 
-Updated: 2026-10-20, following the user's construction closure and BEMGen-test priority
-decision (2026-10-15) and the merge of the readable schedule generator (unreleased).
+Updated: 2026-10-21, for the integrated construction foundation/ground publication
+candidate, parallel BEMGen v7 testing and the merge of the readable schedule
+generator (unreleased).
 
 This is the current roadmap for remaining work. The
 [Program JSON completion plan](superpowers/plans/2026-10-11-program-completion.md)
@@ -13,40 +14,38 @@ open design topics, not accepted designs.
 
 ## Current execution order
 
-1. **Complete:** review and close the above-ground construction implementation,
-   with fresh coverage, reproducibility and consumer-boundary evidence. See the
-   [milestone closure record](reviews/construction-milestone-closure.md).
-2. **Prepared locally:** construction site and release candidate for protected-main
-   publication; see the [preparation record](reviews/construction-publication-preparation.md).
-   Publication and its required checks are a separate gate from implementation
-   closure; closing construction does not claim production deployment.
-3. Prepare the BEMGen test handoff using existing schedule contracts. Include
-   both construction representations, program/schema integration, component
-   assignment, geometry responsibilities, infiltration and mass accounting.
-4. Support BEMGen integration testing and resolve Atlas contract/data issues;
-   record the acceptance results and remaining limitations.
+1. **Complete:** above-ground construction was published and tagged
+   `construction-delivery-2026-10-16`. Its frozen artifacts remain unchanged.
+2. **Implemented locally:** integrated foundation/ground in detailed JSON 3.0.0
+   and unified JSON 2.0.0. All 177 suites / 3,320 source-supported contexts are
+   complete; release documentation and foundation-aware publication gates are
+   prepared. Clean-checkout verification, protected-main PR checks, deployment
+   and live verification remain pending. See the
+   [foundation release notes](release-notes-construction-foundation-v1.0.0.md).
+3. **Handed off locally:** BEMGen packet v7 contains 19 detailed/unified pairs,
+   source/method clarifications and [required consumer tests](bemgen-foundation-instantiation-tests.md).
+   BEMGen integration testing/acceptance remains a separate consumer gate.
+4. Support BEMGen testing and resolve any Atlas contract/data defects it finds.
+   Its completion is not required to prepare/publish Atlas independently, but
+   consumer acceptance must not be claimed before the tests pass.
 5. Revisit lighter artifact delivery only after the BEMGen test is accepted.
 
-Schedule-generator packaging does not block publication or BEMGen testing.
-Ground/foundation and systems remain deferred. Items 1 and 2 have been carried
-out locally. Push/PR checks, production publication and the BEMGen handoff/test
-have not started.
-
-The [JSON completion discovery and delivery plan](superpowers/plans/2026-10-12-json-completion.md)
-details tasks 2-5 on `feature/json-completion`. Its first deliverables are separate
-construction and system field reviews with coverage patterns and annotation space.
-The independent above-ground construction consumer export is frozen at 100%
-source coverage. Its detailed/unified implementation and local integration are
-reviewed and closed in the [closure record](reviews/construction-milestone-closure.md).
-Production publication remains open. Ground and systems are deferred.
+Systems remain deferred. Schedule-generator packaging does not block this
+construction milestone; no program/schedule generation changes are included.
+The branch, rebased onto `main` after the schedule-generator merge, is integrated
+through a protected-main pull request whose required checks gate the merge.
+Production foundation deployment and live verification follow that merge and are
+not yet recorded. Older plans/review receipts below document historical stages
+and do not supersede this current order.
 
 | Order | Task | Status |
 | --- | --- | --- |
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
-| 2 | Include constructions and systems, with separate JSON exports and pages | Above-ground JSON frozen at 100%; publication pending; ground/foundation and systems deferred |
-| Deferred | Ship schedule generators instead of a single generated schedule | Readable generator merged, unreleased ([ADR 0035](adr/0035-readable-generator-restructure.md)); release deferred; not a publication or BEMGen-test prerequisite |
-| 3–4 | Prepare BEMGen schema/typology handoff and support integration testing | Next after publication preparation; use existing schedule contracts |
-| 5 | Discuss a lighter deployed site and decoupled artifact generation | Deferred until BEMGen testing is accepted |
+| 2 | Publish integrated construction foundation/ground JSON and pages | Implemented and locally validated; publication preparation complete; clean-checkout/PR/main deployment gates pending |
+| Deferred | Complete systems JSON and simulation-ready variants | Deferred; not a foundation publication prerequisite |
+| Deferred | Package schedule generators | Readable generator merged, unreleased ([ADR 0035](adr/0035-readable-generator-restructure.md)); release deferred; not a construction publication or BEMGen-test prerequisite |
+| 3–4 | BEMGen handoff and integration testing | v7 prepared; consumer acceptance pending; resolve reported Atlas defects; use existing schedule contracts |
+| 5 | Lighter site and decoupled artifact generation | Deferred until BEMGen testing is accepted |
 
 ## 1. Publish Program JSON v3
 
@@ -76,15 +75,22 @@ Medium Office and residential pages. The program-consistency branch was retired.
 
 ## 2. Constructions and systems: separate JSONs and pages
 
-Current milestone: publish above-ground construction at 100% coverage, independently
-of deferred ground/foundation and systems. Foundation/basement owns its below-grade
-and foundation-dependent interface assemblies. Construction includes infiltration;
-mechanical outdoor/total-air requirements are deferred. Fixed catalogue ACH per
-construction and climate zone is selected, derived using source archetype
-reference geometry. The 2013 climate map, residential source annual-average
-helper and commercial passive-envelope reference are accepted.
-[ADR 0020](adr/0020-above-ground-construction-first-release.md)
-supersedes the earlier all-kind publication gate for this first milestone.
+Current milestone: publish the combined Construction Suite with source-supported
+foundation/ground content. [ADR 0027](adr/0027-combined-construction-foundation.md)
+and the [embedded contract](construction-foundation-ground-v1-contract.md) extend
+the published above-ground delivery prospectively, preserving its frozen data.
+GroundFloor, FoundationWall, FloorOverFoundation and RimJoist now reuse existing
+component/assignment structures. Detailed 3.0.0 / unified 2.0.0 cover 3,308 contact
+and 12 no-contact contexts; native methods remain native where required.
+Systems and mechanical outdoor/total-air requirements remain deferred. Fixed
+catalogue ACH and the existing shared mass contract remain unchanged.
+
+### Historical above-ground milestone
+
+The first milestone published above-ground construction independently of ground
+and systems under [ADR 0020](adr/0020-above-ground-construction-first-release.md).
+The accepted source-reference geometry, 2013 climate map, residential annual-average
+helper and commercial passive-envelope ACH policy remain applicable.
 
 Source reference geometry/exposure is recovered for 41 residential and 129
 commercial cases. All 15 generic packages have reference matches; the full
@@ -107,18 +113,21 @@ immutable evidence, including 592 deferred ground-contact elements.
 - [x] Freeze the independent above-ground schema, JSON, examples and 100% receipt.
 - [x] Integrate the construction v2 contract into local site pages, filters,
   complete JSON copying and linked resource pages.
-- [ ] Publish through protected-main checks after review. The current task
-  authorizes local building only; no push, GitHub workflow or Pages deployment.
-- [ ] Resume ground/system work only when its deferred scope is reopened.
+- [x] Publish the above-ground milestone through protected-main checks; preserve
+  its `construction-delivery-2026-10-16` marker and frozen artifacts.
+- [x] Reopen and implement foundation/ground under the accepted integrated design.
+- [ ] Finish clean-checkout verification and publish the combined foundation release
+  through protected-main checks, deployment and live verification.
+- [ ] Resume systems work only when its deferred scope is reopened.
 
 A unified construction-set v2 schema/exporter and both accepted examples are
 now frozen in `data/construction-releases/v2.0.0/`, with all 224 definitions,
 4,798 supported contexts and 4,868 assemblies retained and validated. The
 [review entry](reviews/construction-set-v2-review.md) records acceptance and
 the complete migration. The [local site integration record](superpowers/plans/2026-10-14-construction-site-integration.md)
-tracks step 4 of the construction-set delivery sequence; production publication
-remains pending.
-BEMGen owns the future translator. The combined step-2 checklist below stays open where systems or
+tracks the historical construction-set delivery sequence. Combined foundation
+publication remains pending as recorded above.
+BEMGen owns the translator and its current integration tests. The combined step-2 checklist below stays open where systems or
 publication are still required.
 
 - [x] Inventory current construction/material and system/component exports,

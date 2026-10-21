@@ -1,0 +1,1467 @@
+{
+  "climate_zone": "3B",
+  "detailed_context_id": "construction-set-13643cf52493118778e9ebb5",
+  "id": "equivalent-construction-93acb3901c07bbed59e0b6bb",
+  "infiltration": {
+    "method": "fixed_source_annual_average_natural_ach",
+    "natural_ach": {
+      "evidence_id": "construction-evidence-83706e4b4540cb92b86ace4f",
+      "unit": "1/s",
+      "value": 2.0625937466666666e-05
+    },
+    "reference_id": "residential_archetype-ca56512c8a583227b5d4"
+  },
+  "kind": "building_level_equivalent",
+  "name": "Dwelling enclosure / source_building_350595 / building-level equivalent",
+  "provenance": {
+    "detailed_release": "v2.2.0",
+    "interpretation_note": "Additive approximation, not replacement detailed rules. Reported fit errors are not building energy error bounds.",
+    "original_unit": "source SI layers and archetype reference areas",
+    "profile_release": "construction-weighting-v1.1.0",
+    "transformation": "Source precedence, precomputed area weights, fixed two-parameter thermal approximation; fixed ACH unchanged",
+    "foundation_ground": {
+      "source_locator": "data/construction-inputs/foundation-execution-v1.json#/residential/residential_archetype-ca56512c8a583227b5d4",
+      "source_sha256": {
+        "native_capture": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83",
+        "host_airflow": "1f73fe7461655a235f1a017b4e4ca8ed1f820763891fdf404381c125b3d28e6f"
+      }
+    }
+  },
+  "reference_id": "residential_archetype-ca56512c8a583227b5d4",
+  "schema_version": "2.0.0",
+  "scope": "whole_dwelling",
+  "source": {
+    "building_type": "SingleFamilyDetached",
+    "construction_set_id": "construction-0aa2e44b70a6dfbbbb8c5f46",
+    "definition_release": "v0.1.1",
+    "evidence_view": "source",
+    "source_climate_label": "3B",
+    "source_family": "existing_stock_source_fixture",
+    "source_fixture_id": "residential_archetype-ca56512c8a583227b5d4",
+    "space_type": null,
+    "template": "ResStock SDR source fixture",
+    "vintage": {
+      "kind": "stock_vintage",
+      "status": "exact",
+      "value": "1990s"
+    }
+  },
+  "status": "ready",
+  "supporting_profile_id": "residential_archetype-ca56512c8a583227b5d4",
+  "weighting_policy": "precomputed_source_archetype",
+  "components": {
+    "BuildingShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "ExteriorDoor": {
+      "assembly_id": "equivalent-assembly-5cc09308ae96da45e34d4bb9",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-cc140815ee677b302b66",
+            "reference_area_m2": 1.8580607999999939,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 1.8580607999999939,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorFloor": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "ExteriorRoof": {
+      "assembly_id": "equivalent-assembly-413637d2420e641a46ae12d9",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-007a0fc06267da5691db",
+            "reference_area_m2": 368.7340851425767,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 368.7340851425767,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorWall": {
+      "assembly_id": "equivalent-assembly-9aac253dfaf63a4c6e2db7cd",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-6ef745d760e072576d2e",
+            "reference_area_m2": 148.59581404514523,
+            "weight": 0.6582566178165385
+          },
+          {
+            "assembly_id": "residential-assembly-9e9a3fc3af716ab90e5c",
+            "reference_area_m2": 31.21542144,
+            "weight": 0.1382795193313427
+          },
+          {
+            "assembly_id": "residential-assembly-b7a45f49de91e854e69e",
+            "reference_area_m2": 45.93023071999983,
+            "weight": 0.2034638628521187
+          }
+        ],
+        "source_reference_area_m2": 225.74146620514506,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "ExteriorWindow": {
+      "assembly_id": "equivalent-assembly-375ffb5589daba6baeeaf13d",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-149eddd2e5d8a22e7970",
+            "reference_area_m2": 0.7503444724353102,
+            "weight": 0.19298321842091679
+          },
+          {
+            "assembly_id": "residential-assembly-59251d1f7ea074bc9182",
+            "reference_area_m2": 0.9733117684353144,
+            "weight": 0.2503288083005033
+          },
+          {
+            "assembly_id": "residential-assembly-a5ff590e38fd16ba5653",
+            "reference_area_m2": 1.1133003209876686,
+            "weight": 0.2863328603140511
+          },
+          {
+            "assembly_id": "residential-assembly-af89f66d0cc929de03dc",
+            "reference_area_m2": 1.0511767099100822,
+            "weight": 0.2703551129645288
+          }
+        ],
+        "geometry_evidence": [
+          {
+            "overhang_geometry": {
+              "depth_m": 0.6096,
+              "distance_to_bottom_of_window_m": 1.31064,
+              "distance_to_top_of_window_m": 0.3048,
+              "evidence_id": "construction-evidence-83471cb3882cd330cd9cca9b"
+            },
+            "source_assembly_id": "residential-assembly-149eddd2e5d8a22e7970"
+          },
+          {
+            "overhang_geometry": {
+              "depth_m": 0.6096,
+              "distance_to_bottom_of_window_m": 1.43256,
+              "distance_to_top_of_window_m": 0.3048,
+              "evidence_id": "construction-evidence-6416e41f0547a39494a7ce6c"
+            },
+            "source_assembly_id": "residential-assembly-59251d1f7ea074bc9182"
+          },
+          {
+            "overhang_geometry": {
+              "depth_m": 0.6096,
+              "distance_to_bottom_of_window_m": 1.524,
+              "distance_to_top_of_window_m": 0.3048,
+              "evidence_id": "construction-evidence-abafed6e8ec7790dec5e345c"
+            },
+            "source_assembly_id": "residential-assembly-a5ff590e38fd16ba5653"
+          },
+          {
+            "overhang_geometry": {
+              "depth_m": 0.6096,
+              "distance_to_bottom_of_window_m": 1.4935200000000002,
+              "distance_to_top_of_window_m": 0.3048,
+              "evidence_id": "construction-evidence-90733f10e4f2171f77b7a3bb"
+            },
+            "source_assembly_id": "residential-assembly-af89f66d0cc929de03dc"
+          }
+        ],
+        "geometry_policy": "consumer_overhang_geometry_by_BEMGen",
+        "source_reference_area_m2": 3.8881332717683756,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "FloorDistributedMass": {
+      "assembly_id": null,
+      "reason": "source_has_no_above_ground_interstory_inventory",
+      "status": "not_applicable"
+    },
+    "GlassDoor": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "InteriorCeiling": {
+      "assembly_id": "equivalent-assembly-297e9d0914f1d3d4788664f0",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-3bf592de31e881ecdcde",
+            "reference_area_m2": 22.296729599999992,
+            "weight": 0.06760563380281717
+          },
+          {
+            "assembly_id": "residential-assembly-9f85c8b526080f263df8",
+            "reference_area_m2": 307.5090623999986,
+            "weight": 0.9323943661971829
+          }
+        ],
+        "source_reference_area_m2": 329.8057919999986,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorDoor": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "InteriorFloor": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "InteriorWall": {
+      "assembly_id": "equivalent-assembly-50156639c3273a90e31a5eae",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-d55ee96d47e16a5d9765",
+            "reference_area_m2": 16.350935039999996,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 16.350935039999996,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "status": "ready"
+    },
+    "InteriorWindow": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "InternalMass": {
+      "assembly_id": "equivalent-assembly-be36a83ecc99e5e77b2db462",
+      "derivation": {
+        "contributors": [
+          {
+            "assembly_id": "residential-assembly-bf2d4bbcc2c037cd976a",
+            "reference_area_m2": 307.5090624,
+            "weight": 1.0
+          }
+        ],
+        "source_reference_area_m2": 307.5090624,
+        "weight_basis": "source_archetype_net_component_area"
+      },
+      "quantity": {
+        "application": "additional_source_mass_only",
+        "area_per_counted_floor_area": 1.0,
+        "unit": "m2/m2"
+      },
+      "status": "ready"
+    },
+    "OverheadDoor": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "SiteShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "Skylight": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "SpaceShading": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "TubularDaylightDiffuser": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "TubularDaylightDome": {
+      "assembly_id": null,
+      "reason": "source_absent",
+      "status": "not_applicable"
+    },
+    "GroundFloor": {
+      "status": "ready",
+      "assembly_id": null,
+      "assignments": [
+        {
+          "assembly_id": "foundation-assembly-2010b6847785e091e7c108db",
+          "source_definition_id": "construction-0aa2e44b70a6dfbbbb8c5f46",
+          "source_selector": "GroundFloor",
+          "when": {
+            "scope": "whole_dwelling",
+            "boundary_condition": "Ground",
+            "thermal_host": "garage"
+          },
+          "source_element_ids": [
+            "Slab1"
+          ],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "foundation-evidence-930b67e1998bb93b19c08476"
+          ],
+          "ground_method_id": "ground-method-0313e485a24bf743da07ace8",
+          "id": "construction-assignment-c2f2a4bf98c94bc5f0cad33b"
+        },
+        {
+          "assembly_id": "foundation-assembly-ffa0f8599778fe0f8c5ad3d6",
+          "source_definition_id": "construction-0aa2e44b70a6dfbbbb8c5f46",
+          "source_selector": "GroundFloor",
+          "when": {
+            "scope": "whole_dwelling",
+            "boundary_condition": "Ground",
+            "thermal_host": "conditioned space"
+          },
+          "source_element_ids": [
+            "Slab2"
+          ],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "foundation-evidence-930b67e1998bb93b19c08476"
+          ],
+          "ground_method_id": "ground-method-f6d11928346eebb42997a7d2",
+          "id": "construction-assignment-7dcd4193e021bd8ec448d987"
+        }
+      ],
+      "native_exception_reason": "Distinct native coupling, insulation, thermal hosts or soil/interzone boundaries; homogenization is not physically justified"
+    },
+    "FoundationWall": {
+      "status": "not_applicable",
+      "assembly_id": null,
+      "reason": "Source configuration has no applicable FoundationWall"
+    },
+    "FloorOverFoundation": {
+      "status": "not_applicable",
+      "assembly_id": null,
+      "reason": "Source configuration has no applicable FloorOverFoundation"
+    },
+    "RimJoist": {
+      "status": "not_applicable",
+      "assembly_id": null,
+      "reason": "Source configuration has no applicable RimJoist"
+    }
+  },
+  "consumer_inputs": [
+    "actual component areas and geometry",
+    "actual counted floor area",
+    "physical mass already represented by instantiated interior surfaces",
+    "actual overhang geometry resolved by BEMGen; source dimensions are evidence only"
+  ],
+  "mass_accounting": {
+    "schema_version": "1.0.0",
+    "status": "ready",
+    "reference": {
+      "profile_id": "residential_archetype-ca56512c8a583227b5d4",
+      "counted_floor_area_m2": 307.5090624,
+      "quantity_basis": "multiply normalized quantities by actual counted building floor area"
+    },
+    "floor_pair_policy": "one physical slab; do not add both floor and ceiling capacity",
+    "paired_surface_policy": {
+      "canonical_side": "InteriorFloor",
+      "adjacent_ceiling": "reverse the same canonical floor assembly",
+      "unpaired_ceiling": "use InteriorCeiling recipe"
+    },
+    "added_mass_policy": "additional source furnishings/partition objects are separate from explicit surfaces",
+    "removed_wall_policy": "Restore only unrepresented InteriorWall capacity using source or equivalent recipes; exchange equivalence remains approximate",
+    "residual_floor_policy": "Restore only unrepresented InteriorFloor capacity; explicit slabs retain their capacity",
+    "residual_policy": "max(0, reference minus represented); report signed difference and excess; never subtract mass",
+    "physical_inventory_profile_id": "residential_archetype-ca56512c8a583227b5d4",
+    "paired_face_area_policy": "mean_zone_weighted_faces",
+    "reference_area_approximation": {
+      "unequal_multiplier_pair_counts": {
+        "floor_pairs": 0,
+        "wall_pairs": 0
+      },
+      "evidence_profile_id": "residential_archetype-ca56512c8a583227b5d4",
+      "interpretation": "Mean of multiplied face areas where multipliers differ; preserve the frozen source inventory. Residential inferred adiabatic floor/ceiling object quantities retain their source convention."
+    },
+    "physical_capacity_budgets": {
+      "InteriorFloor": [],
+      "InteriorWall": [
+        {
+          "source_assembly_id": "residential-assembly-d55ee96d47e16a5d9765",
+          "area_per_counted_floor_area": 0.05317220543806645,
+          "capacity_per_counted_floor_area_J_m2_K": 2189.234223506213,
+          "reference_area_m2": 16.350935039999996,
+          "source_areal_capacity_J_m2_K": 41172.52999889526,
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-ca56512c8a583227b5d4/assembly_areas/residential-assembly-d55ee96d47e16a5d9765"
+        }
+      ]
+    },
+    "additional_mass": {
+      "status": "provided",
+      "entries": [
+        {
+          "id": "source-mass-quantity-d952938698f8aa147bd3c5f6",
+          "recipe_id": "residential-assembly-bf2d4bbcc2c037cd976a",
+          "scope": {
+            "kind": "whole_dwelling",
+            "counted_floor_area": true
+          },
+          "reference_area_m2": 307.5090624,
+          "area_per_counted_floor_area": 1.0,
+          "capacity_per_counted_floor_area_J_m2_K": 25981.48957561821,
+          "source_operands": {
+            "source_area_per_conditioned_floor_area": 1.0,
+            "source_conditioned_floor_area_m2": 307.5090624
+          },
+          "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-ca56512c8a583227b5d4/assembly_areas/residential-assembly-bf2d4bbcc2c037cd976a",
+          "area_convention": "source exposed partition area, both sides"
+        }
+      ],
+      "allocation_policy": "Precomputed source-scope quantities normalized by building counted floor area; preserve source scopes. If absent in consumer geometry, require an explicit consumer allocation policy.",
+      "legacy_partition_selector_policy": "InteriorPartition is a retained material selector. Instantiate additional mass from this inventory only; never instantiate both representations of the same source object."
+    },
+    "recipes": {
+      "residential-assembly-bf2d4bbcc2c037cd976a": {
+        "model": "opaque_layers",
+        "layers": [
+          {
+            "model": "StandardOpaqueMaterial",
+            "properties": {
+              "thickness_m": 0.0127,
+              "conductivity_W_m_K": 0.1602906,
+              "density_kg_m3": 801.0,
+              "specific_heat_J_kg_K": 837.4,
+              "roughness": "Rough",
+              "thermal_absorptance": 0.9,
+              "solar_absorptance": 0.6,
+              "visible_absorptance": 0.6
+            }
+          },
+          {
+            "model": "StandardOpaqueMaterial",
+            "properties": {
+              "thickness_m": 0.0889,
+              "conductivity_W_m_K": 0.391763531157105,
+              "density_kg_m3": 83.034082224,
+              "specific_heat_J_kg_K": 1211.67419087611,
+              "roughness": "Rough",
+              "thermal_absorptance": 0.9,
+              "solar_absorptance": 0.7,
+              "visible_absorptance": 0.7
+            }
+          },
+          {
+            "model": "StandardOpaqueMaterial",
+            "properties": {
+              "thickness_m": 0.0127,
+              "conductivity_W_m_K": 0.1602906,
+              "density_kg_m3": 801.0,
+              "specific_heat_J_kg_K": 837.4,
+              "roughness": "Rough",
+              "thermal_absorptance": 0.9,
+              "solar_absorptance": 0.6,
+              "visible_absorptance": 0.6
+            }
+          }
+        ],
+        "capacity_J_m2_K": 25981.48957561821,
+        "source_locator": "data/construction-inputs/residential-assemblies-v1.json#/records/residential_archetype-ca56512c8a583227b5d4/assemblies/12/layers",
+        "interpretation": "Original source mass material layers; no equivalent fitting or added air films."
+      }
+    },
+    "provenance": {
+      "source_project": "ResStock",
+      "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-ca56512c8a583227b5d4",
+      "source_file_sha256": {
+        "data/program-support/construction-weighting-v1.1.0/profiles.json": "aa2621fdfd837ceacf454070482aa3863de93bf1a5f3c1f85d7ffd607791681c",
+        "data/construction-inputs/residential-assemblies-v1.json": "1163f41618296a464c31457a7255122655199402c7204c77686504034370619b"
+      },
+      "extraction_date": "2026-10-16",
+      "original_unit": "m2, m3, SI material properties, and dimensionless source multipliers/scaling coefficients",
+      "original_value": {
+        "counted_floor_area_m2": 307.5090624,
+        "profile_provenance": {
+          "extraction_date": "2026-10-14",
+          "interpretation_note": "Geometry and native HPXML values are source reference evidence only; normalized executable SI engine materials are in assemblies[].layers[].properties.",
+          "original_unit": {
+            "area": "ft2",
+            "azimuth": "degree",
+            "insulation_assembly_r_value": "h*ft2*F/Btu",
+            "interior_finish_thickness": "in",
+            "overhangs_depth": "ft",
+            "overhangs_distance_to_bottom_of_window": "ft",
+            "overhangs_distance_to_top_of_window": "ft",
+            "pitch": "inch rise per 12 inch run",
+            "r_value": "h*ft2*F/Btu",
+            "shading_factors_coverage_shgc_absorptance_emittance": "1",
+            "source_types_ids_flags": "categorical identifiers and boolean default flags",
+            "ufactor": "Btu/(h*ft2*F)"
+          },
+          "original_value": "source_surface_attributes and partition_wall_mass hold original HPXML field values",
+          "source_file_sha256": {
+            "resstock/resources/hpxml-measures/BuildResidentialHPXML/measure.rb": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+            "resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6"
+          },
+          "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_roofs; set_walls; set_floors; set_windows; set_skylights; set_doors; resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#apply_roofs; apply_walls; apply_floors; apply_windows; apply_skylights; apply_doors; apply_partition_wall_mass",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "transformation": "Original expanded/defaulted HPXML values, with *_isdefaulted flags. No geometry delivered; deterministic Index/vertex secondary sort only stabilizes generated evidence names."
+        }
+      },
+      "transformation": "Copy frozen source quantities; divide area and capacity by counted reference floor area. Use source multiplier once. Select wall/slab recipes with detailed source precedence.",
+      "interpretation_note": "Quantities describe the selected source archetype, not a population weight or consumer geometry. Additional mass is independent of residual restoration."
+    }
+  },
+  "assemblies": {
+    "equivalent-assembly-297e9d0914f1d3d4788664f0": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.15,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.1728,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.5340051396286928,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.4230702859646105,
+            "transmission_amplitude_error_percent": 48.28955230550929,
+            "transmission_phase_error_h": 0.7076115294479312,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.15319561770535883,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.10850977565895352,
+            "transmission_amplitude_error_percent": 12.263094414644682,
+            "transmission_phase_error_h": 0.1251605625026029,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.02072120085328137,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.012465021349060796,
+            "transmission_amplitude_error_percent": 0.28283201406562597,
+            "transmission_phase_error_h": 0.3254375855729439,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.3097291878127019,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.24253582757134184,
+            "transmission_amplitude_error_percent": 36.000609904123834,
+            "transmission_phase_error_h": 0.23562931795105596,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.04853599448433857,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.03011547666821731,
+            "transmission_amplitude_error_percent": 1.5213074367434798,
+            "transmission_phase_error_h": 0.30371570911708134,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.32096716062487773,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-297e9d0914f1d3d4788664f0",
+      "layers": [
+        {
+          "C": 3209.167136796583,
+          "R": 0.06618139733559429,
+          "conductivity_W_m_K": 0.048490471129273044,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.003209167136796583
+        },
+        {
+          "C": 0.0,
+          "R": 2.1120853347223605,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 18185.280441847302,
+          "R": 0.3750279182350343,
+          "conductivity_W_m_K": 0.04849047112927305,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.018185280441847303
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.6067605633802817,
+          "thermal_absorptance": 0.9000000000000001,
+          "visible_absorptance": 0.6067605633802817
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 21394.447578643885,
+        "resistance_m2_K_W": 2.5532946502929894,
+        "u_reference_W_m2_K": 0.3554551244377675
+      }
+    },
+    "equivalent-assembly-375ffb5589daba6baeeaf13d": {
+      "fit": null,
+      "id": "equivalent-assembly-375ffb5589daba6baeeaf13d",
+      "layers": [
+        {
+          "model": "SimpleGlazing",
+          "properties": {
+            "shgc": 0.603,
+            "u_W_m2_K": 2.40883472,
+            "visible_transmittance_mode": "energyplus_autocalculate_from_shgc"
+          }
+        }
+      ],
+      "model": "simple_glazing",
+      "quality": "unchanged_source_physics",
+      "solar_modifiers": {
+        "incident_solar_multiplier": {
+          "engine_object": "SurfaceProperty:IncidentSolarMultiplier",
+          "evidence_id": "construction-evidence-0e76e150aff7cb63aff8d95b",
+          "model": "constant",
+          "value": 0.7793
+        }
+      },
+      "status": "ready"
+    },
+    "equivalent-assembly-413637d2420e641a46ae12d9": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.864,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.1856,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.017949309078134284,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.013063823159908368,
+            "transmission_amplitude_error_percent": -0.8224801682868099,
+            "transmission_phase_error_h": 0.01113070664692798,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0031249896764555373,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.0019623248218520704,
+            "transmission_amplitude_error_percent": -0.06334580920667188,
+            "transmission_phase_error_h": 0.007141564661612073,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0002656759187212014,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.0002557833696631989,
+            "transmission_amplitude_error_percent": -0.0013116488096986956,
+            "transmission_phase_error_h": 0.006830986940392468,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.007882145033067334,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.004750833298866883,
+            "transmission_amplitude_error_percent": -0.24255313628038788,
+            "transmission_phase_error_h": 0.008049674442075048,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0006956050759082629,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.0006024821948595731,
+            "transmission_amplitude_error_percent": -0.007131584657560364,
+            "transmission_phase_error_h": 0.006860047228663027,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.010520041833790964,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-413637d2420e641a46ae12d9",
+      "layers": [
+        {
+          "C": 31949.78614523946,
+          "R": 0.0392441598446354,
+          "conductivity_W_m_K": 0.8141284275603351,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.03194978614523946
+        },
+        {
+          "C": 0.0,
+          "R": 0.19930632743573815,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 5029.133004343249,
+          "R": 0.006177321457025943,
+          "conductivity_W_m_K": 0.8141284275603351,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.005029133004343249
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.75,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.75
+        },
+        "interior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.6,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.6
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 36978.91914958271,
+        "resistance_m2_K_W": 0.2447278087373995,
+        "u_reference_W_m2_K": 2.4112200313849406
+      }
+    },
+    "equivalent-assembly-50156639c3273a90e31a5eae": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.074,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.2944,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.5013192037915131,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.05750120286779273,
+            "transmission_amplitude_error_percent": 7.357305154829863,
+            "transmission_phase_error_h": 0.20955461016116392,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1536395181252854,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.055078215800791475,
+            "transmission_amplitude_error_percent": 1.479890390703975,
+            "transmission_phase_error_h": 0.27111139508735965,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.026060795986110444,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.011420472207774765,
+            "transmission_amplitude_error_percent": 0.04565328947454539,
+            "transmission_phase_error_h": 0.3073501011722193,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.2797309213538262,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.06393229686923178,
+            "transmission_amplitude_error_percent": 3.385181862212505,
+            "transmission_phase_error_h": 0.23860660118633079,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.05746180124005003,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.02547223047541458,
+            "transmission_amplitude_error_percent": 0.2363547068523042,
+            "transmission_phase_error_h": 0.3021314618999357,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.30309800984024743,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-50156639c3273a90e31a5eae",
+      "layers": [
+        {
+          "C": 3046.7672199182493,
+          "R": 0.0546257495847487,
+          "conductivity_W_m_K": 0.05577529357636302,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0030467672199182495
+        },
+        {
+          "C": 0.0,
+          "R": 1.7692388048526864,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 38125.76277897701,
+          "R": 0.6835600556145582,
+          "conductivity_W_m_K": 0.055775293576363016,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.038125762778977015
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.6,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.6
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 41172.52999889526,
+        "resistance_m2_K_W": 2.5074246100519932,
+        "u_reference_W_m2_K": 0.3613467902134514
+      }
+    },
+    "equivalent-assembly-5cc09308ae96da45e34d4bb9": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.39,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.96,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.01102396747922974,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.0062677993209680136,
+            "transmission_amplitude_error_percent": 0.6242313963622292,
+            "transmission_phase_error_h": 0.005644025247678869,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.004794706341322967,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.002765735452276434,
+            "transmission_amplitude_error_percent": 0.06721632031099212,
+            "transmission_phase_error_h": 0.010527183158640112,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0007684889297062543,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.00041494182920488693,
+            "transmission_amplitude_error_percent": 0.0014381157896536934,
+            "transmission_phase_error_h": 0.011093931807526259,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.007835815723304416,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.004818187763537276,
+            "transmission_amplitude_error_percent": 0.2354093137754365,
+            "transmission_phase_error_h": 0.009072269563765587,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0017703274410932044,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.0009637286251437203,
+            "transmission_amplitude_error_percent": 0.00779487455242478,
+            "transmission_phase_error_h": 0.011039205387080406,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0069547979390182785,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-5cc09308ae96da45e34d4bb9",
+      "layers": [
+        {
+          "C": 10790.705034345601,
+          "R": 0.27181102585788586,
+          "conductivity_W_m_K": 0.03969929108022068,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0107907050343456
+        },
+        {
+          "C": 0.0,
+          "R": 0.02903963951473142,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 16877.7694126944,
+          "R": 0.42514032249566763,
+          "conductivity_W_m_K": 0.039699291080220675,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0168777694126944
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        },
+        "interior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.7,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.7
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 27668.474447040004,
+        "resistance_m2_K_W": 0.7259909878682849,
+        "u_reference_W_m2_K": 1.116082654334694
+      }
+    },
+    "equivalent-assembly-9aac253dfaf63a4c6e2db7cd": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.682,
+        "films_m2_K_W": [
+          0.04,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.192,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.2595509074171969,
+            "period_h": 6,
+            "transmission_absolute_error_over_U": 0.09640940488551206,
+            "transmission_amplitude_error_percent": 9.054954374321134,
+            "transmission_phase_error_h": 0.176046876974292,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.1643650869899279,
+            "period_h": 24,
+            "transmission_absolute_error_over_U": 0.10649407864023312,
+            "transmission_amplitude_error_percent": 10.980515944422443,
+            "transmission_phase_error_h": 0.2237766712705399,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.051129984423244935,
+            "period_h": 168,
+            "transmission_absolute_error_over_U": 0.02100223181582713,
+            "transmission_amplitude_error_percent": 0.3502318609503785,
+            "transmission_phase_error_h": 0.5554978996527112,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.21951096065567652,
+            "period_h": 12,
+            "transmission_absolute_error_over_U": 0.12354475048235418,
+            "transmission_amplitude_error_percent": 17.922318675016747,
+            "transmission_phase_error_h": 0.07002506141991743,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.09455263905736327,
+            "period_h": 72,
+            "transmission_absolute_error_over_U": 0.047211595468705805,
+            "transmission_amplitude_error_percent": 1.8175025183478688,
+            "transmission_phase_error_h": 0.5097385149054174,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.17981178184369914,
+        "one_sided": false,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-9aac253dfaf63a4c6e2db7cd",
+      "layers": [
+        {
+          "C": 45144.9941475827,
+          "R": 0.16139435698779467,
+          "conductivity_W_m_K": 0.27971854152866543,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.0451449941475827
+        },
+        {
+          "C": 0.0,
+          "R": 0.9958962644041583,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 21050.011933916856,
+          "R": 0.07525426029636173,
+          "conductivity_W_m_K": 0.27971854152866543,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.021050011933916857
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "approximation_review",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.5,
+          "thermal_absorptance": 0.8999999999999999,
+          "visible_absorptance": 0.5
+        },
+        "interior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.6,
+          "thermal_absorptance": 0.8999999999999999,
+          "visible_absorptance": 0.6
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 66195.00608149955,
+        "resistance_m2_K_W": 1.2325448816883147,
+        "u_reference_W_m2_K": 0.7129896611909126
+      }
+    },
+    "equivalent-assembly-be36a83ecc99e5e77b2db462": {
+      "fit": {
+        "acceptance_policy": "practical_screen_1.0.0",
+        "exterior_capacity_fraction": 0.51,
+        "films_m2_K_W": [
+          0.13,
+          0.13
+        ],
+        "limitation": "Fixed three-slot approximation may inadequately reproduce source responses; errors are retained.",
+        "mass_layer_resistance_fraction": 0.6656000000000001,
+        "metrics": [
+          {
+            "normalized_response_rms": 0.0037682305989730786,
+            "period_h": 6,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.001881899542886771,
+            "period_h": 24,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0002700400908258931,
+            "period_h": 168,
+            "used_for_fitting": true
+          },
+          {
+            "normalized_response_rms": 0.0029478551517482282,
+            "period_h": 12,
+            "used_for_fitting": false
+          },
+          {
+            "normalized_response_rms": 0.0006955046975929103,
+            "period_h": 72,
+            "used_for_fitting": false
+          }
+        ],
+        "normalized_response_rms": 0.0024368031918347243,
+        "one_sided": true,
+        "policy": "two_mass_one_resistance_1.0.1"
+      },
+      "id": "equivalent-assembly-be36a83ecc99e5e77b2db462",
+      "layers": [
+        {
+          "C": 13250.559683565287,
+          "R": 0.1308211811080184,
+          "conductivity_W_m_K": 0.10128757110535766,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.013250559683565286
+        },
+        {
+          "C": 0.0,
+          "R": 0.1288726755824653,
+          "model": "Material:NoMass"
+        },
+        {
+          "C": 12730.929892052922,
+          "R": 0.12569093871162554,
+          "conductivity_W_m_K": 0.10128757110535765,
+          "density_kg_m3": 1000.0,
+          "model": "Material",
+          "specific_heat_J_kg_K": 1000.0,
+          "thickness_m": 0.012730929892052921
+        }
+      ],
+      "model": "opaque_layers",
+      "quality": "within_initial_screen",
+      "status": "ready",
+      "surface_properties": {
+        "exterior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.6,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.6
+        },
+        "interior": {
+          "roughness": "Rough",
+          "solar_absorptance": 0.6,
+          "thermal_absorptance": 0.9,
+          "visible_absorptance": 0.6
+        }
+      },
+      "targets": {
+        "capacity_J_m2_K": 25981.48957561821,
+        "resistance_m2_K_W": 0.38538479540210924,
+        "u_reference_W_m2_K": 1.5494632150064003
+      }
+    },
+    "foundation-assembly-2010b6847785e091e7c108db": {
+      "model": "native_opaque_layers",
+      "status": "ready",
+      "evidence_ids": [
+        "foundation-evidence-930b67e1998bb93b19c08476"
+      ],
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "foundation-material-3abfac1542067b5d56e567eb"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "id": "foundation-assembly-2010b6847785e091e7c108db"
+    },
+    "foundation-assembly-ffa0f8599778fe0f8c5ad3d6": {
+      "model": "native_opaque_layers",
+      "status": "ready",
+      "evidence_ids": [
+        "foundation-evidence-930b67e1998bb93b19c08476"
+      ],
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "foundation-material-3abfac1542067b5d56e567eb"
+        },
+        {
+          "order": 1,
+          "material_id": "foundation-material-644dfc832494865403d8d94a"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "id": "foundation-assembly-ffa0f8599778fe0f8c5ad3d6"
+    }
+  },
+  "foundation_ground": {
+    "configuration": {
+      "type": "Slab-on-Grade",
+      "thermal_hosts": [
+        "conditioned space",
+        "garage"
+      ],
+      "air_exchange": {
+        "garage": {
+          "model": "source_garage_sherman_grimsrud",
+          "exterior_ach50_per_s": 0.0008333333333333334,
+          "ela_volume_coefficient_s_m": 0.07499864010883212,
+          "stack_height_coefficient_m_s2_K": 0.005296398399962744,
+          "wind_reference_height_m": 9.99744,
+          "wind_height_exponent": 0.5,
+          "wind_coefficient_scale": 0.00887049669103105,
+          "engine_site_terrain": "Suburbs"
+        }
+      }
+    },
+    "methods": {
+      "ground-method-0313e485a24bf743da07ace8": {
+        "model": "Kiva",
+        "model_parameters_id": "ground-model-parameters-7bca94889d6960b6df10cbc3",
+        "parameters": {
+          "wall_depth_below_slab_m": 0.2032,
+          "initialization": {
+            "outdoor": 1.0,
+            "ground": 0.0,
+            "indoor": 0.0,
+            "offset_K": 6.111111111111111
+          },
+          "wall_height_above_grade": {
+            "material_thickness_id": "foundation-material-3abfac1542067b5d56e567eb"
+          },
+          "interior_horizontal_insulation": {
+            "material_id": "foundation-material-7866a10ca45ac52a113d0376",
+            "depth_m": 0.0,
+            "width_m": 0.6096
+          },
+          "interior_vertical_insulation": {
+            "material_id": "foundation-material-7866a10ca45ac52a113d0376",
+            "depth_m": 0.1016
+          }
+        },
+        "required_geometry": [
+          "surface_area_m2",
+          "exposed_perimeter_m",
+          "foundation_group_topology"
+        ]
+      },
+      "ground-method-f6d11928346eebb42997a7d2": {
+        "model": "Kiva",
+        "model_parameters_id": "ground-model-parameters-7bca94889d6960b6df10cbc3",
+        "parameters": {
+          "wall_depth_below_slab_m": 0.2032,
+          "initialization": {
+            "outdoor": 0.0,
+            "ground": 0.0,
+            "indoor": 1.0,
+            "offset_K": 0.0
+          },
+          "wall_height_above_grade": {
+            "material_thickness_id": "foundation-material-3abfac1542067b5d56e567eb"
+          },
+          "interior_horizontal_insulation": {
+            "material_id": "foundation-material-7866a10ca45ac52a113d0376",
+            "depth_m": 0.0,
+            "width_m": 0.6096
+          },
+          "interior_vertical_insulation": {
+            "material_id": "foundation-material-7866a10ca45ac52a113d0376",
+            "depth_m": 0.1016
+          }
+        },
+        "required_geometry": [
+          "surface_area_m2",
+          "exposed_perimeter_m",
+          "foundation_group_topology"
+        ]
+      }
+    },
+    "model_parameters": {
+      "ground-model-parameters-7bca94889d6960b6df10cbc3": {
+        "model": "Kiva",
+        "soil_material_id": "foundation-material-421de62e924b661d21317658",
+        "initialization_policy": "resstock_source_start_month_1.0.0",
+        "heating_balance_temperature_C": 10.0,
+        "cooling_balance_temperature_C": 15.0,
+        "ground_solar_absorptivity": 0.9,
+        "ground_thermal_absorptivity": 0.9,
+        "ground_surface_roughness_m": 0.03,
+        "far_field_width_m": 40.0,
+        "deep_ground_boundary_condition": "ZeroFlux",
+        "deep_ground_depth_m": 40.0,
+        "minimum_cell_dimension_m": 0.2,
+        "maximum_cell_growth_coefficient": 3.0,
+        "simulation_timestep": "Timestep"
+      }
+    },
+    "required_geometry": {
+      "surface_area_m2": {
+        "unit": "m2",
+        "description": "Actual assigned component surface area",
+        "exclusive_minimum": 0
+      },
+      "exposed_perimeter_m": {
+        "unit": "m",
+        "description": "Actual externally exposed foundation edges, with shared edges cancelled",
+        "minimum": 0
+      },
+      "foundation_group_topology": {
+        "unit": "topology",
+        "description": "Actual coupled slab/wall hosts and exposed edge grouping"
+      },
+      "thermal_host_height_m": {
+        "unit": "m",
+        "description": "Actual garage height",
+        "exclusive_minimum": 0
+      },
+      "foundation_top_height_above_grade_m": {
+        "unit": "m",
+        "description": "Actual source-equivalent foundation top height above grade",
+        "minimum": 0
+      },
+      "thermal_host_volume_m3": {
+        "unit": "m3",
+        "description": "Actual unconditioned host air volume",
+        "exclusive_minimum": 0
+      }
+    }
+  },
+  "materials": {
+    "foundation-material-3abfac1542067b5d56e567eb": {
+      "id": "foundation-material-3abfac1542067b5d56e567eb",
+      "name": "concrete 4.0 in.",
+      "model": "StandardOpaqueMaterial",
+      "properties": {
+        "thickness_m": 0.1016,
+        "conductivity_W_m_K": 1.803125,
+        "density_kg_m3": 2242.8,
+        "specific_heat_J_kg_K": 837.4,
+        "roughness": "Rough",
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.7
+      },
+      "property_evidence": {
+        "thickness_m": "foundation-evidence-930b67e1998bb93b19c08476",
+        "conductivity_W_m_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "density_kg_m3": "foundation-evidence-930b67e1998bb93b19c08476",
+        "specific_heat_J_kg_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "roughness": "foundation-evidence-930b67e1998bb93b19c08476",
+        "thermal_absorptance": "foundation-evidence-930b67e1998bb93b19c08476",
+        "solar_absorptance": "foundation-evidence-930b67e1998bb93b19c08476",
+        "visible_absorptance": "foundation-evidence-930b67e1998bb93b19c08476"
+      }
+    },
+    "foundation-material-421de62e924b661d21317658": {
+      "id": "foundation-material-421de62e924b661d21317658",
+      "name": "Source Kiva soil",
+      "model": "BulkMaterial",
+      "properties": {
+        "conductivity_W_m_K": 2.4234,
+        "density_kg_m3": 1842.3,
+        "specific_heat_J_kg_K": 418.7
+      },
+      "property_evidence": {
+        "conductivity_W_m_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "density_kg_m3": "foundation-evidence-930b67e1998bb93b19c08476",
+        "specific_heat_J_kg_K": "foundation-evidence-930b67e1998bb93b19c08476"
+      }
+    },
+    "foundation-material-644dfc832494865403d8d94a": {
+      "id": "foundation-material-644dfc832494865403d8d94a",
+      "name": "floor covering",
+      "model": "StandardOpaqueMaterial",
+      "properties": {
+        "thickness_m": 0.0127,
+        "conductivity_W_m_K": 0.045078125,
+        "density_kg_m3": 54.468,
+        "specific_heat_J_kg_K": 1339.84,
+        "roughness": "Rough",
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.9,
+        "visible_absorptance": 0.9
+      },
+      "property_evidence": {
+        "thickness_m": "foundation-evidence-930b67e1998bb93b19c08476",
+        "conductivity_W_m_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "density_kg_m3": "foundation-evidence-930b67e1998bb93b19c08476",
+        "specific_heat_J_kg_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "roughness": "foundation-evidence-930b67e1998bb93b19c08476",
+        "thermal_absorptance": "foundation-evidence-930b67e1998bb93b19c08476",
+        "solar_absorptance": "foundation-evidence-930b67e1998bb93b19c08476",
+        "visible_absorptance": "foundation-evidence-930b67e1998bb93b19c08476"
+      }
+    },
+    "foundation-material-7866a10ca45ac52a113d0376": {
+      "id": "foundation-material-7866a10ca45ac52a113d0376",
+      "name": "interior vertical ins 1",
+      "model": "StandardOpaqueMaterial",
+      "properties": {
+        "thickness_m": 0.025908,
+        "conductivity_W_m_K": 0.029427,
+        "density_kg_m3": 32.04,
+        "specific_heat_J_kg_K": 1214.23,
+        "roughness": "Rough",
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.7
+      },
+      "property_evidence": {
+        "thickness_m": "foundation-evidence-930b67e1998bb93b19c08476",
+        "conductivity_W_m_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "density_kg_m3": "foundation-evidence-930b67e1998bb93b19c08476",
+        "specific_heat_J_kg_K": "foundation-evidence-930b67e1998bb93b19c08476",
+        "roughness": "foundation-evidence-930b67e1998bb93b19c08476",
+        "thermal_absorptance": "foundation-evidence-930b67e1998bb93b19c08476",
+        "solar_absorptance": "foundation-evidence-930b67e1998bb93b19c08476",
+        "visible_absorptance": "foundation-evidence-930b67e1998bb93b19c08476"
+      }
+    }
+  },
+  "evidence": {
+    "foundation-evidence-930b67e1998bb93b19c08476": {
+      "id": "foundation-evidence-930b67e1998bb93b19c08476",
+      "source_project": "ResStock",
+      "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+      "source_locator": "data/construction-inputs/foundation-execution-v1.json#/residential/residential_archetype-ca56512c8a583227b5d4",
+      "source_file_sha256": {
+        "native_capture": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83",
+        "host_airflow": "1f73fe7461655a235f1a017b4e4ca8ed1f820763891fdf404381c125b3d28e6f"
+      },
+      "original_value": {
+        "frozen_native_capture": "data/construction-inputs/foundation-execution-v1.json#/residential/residential_archetype-ca56512c8a583227b5d4"
+      },
+      "original_unit": "SI native materials/method parameters; original HPXML/IP evidence retained at the pinned locator",
+      "transformation": "Retain native ground methods, selected source interfaces and SI material recipes; ordinary unified interfaces use the existing two-mass/one-resistance approximation",
+      "extraction_date": "2026-10-16",
+      "interpretation_note": "Consumer supplies actual geometry/environment. Raw inventories, source geometry and verification probes remain internal.",
+      "supporting_inputs": {
+        "host_airflow": {
+          "source_locator": "data/construction-inputs/foundation-airflow-v1.json#/records/residential_archetype-ca56512c8a583227b5d4",
+          "sha256": "1f73fe7461655a235f1a017b4e4ca8ed1f820763891fdf404381c125b3d28e6f"
+        }
+      }
+    }
+  }
+}

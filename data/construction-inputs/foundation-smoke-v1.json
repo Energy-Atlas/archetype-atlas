@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "internal_foundation_native_smoke",
+  "engine_version": "26.2.0-4bd7a1f26f",
+  "engine_sha256": "71278a62c9c3871922b3f7ee28a3c7c9f658caa995a934fccb92e8f8965a3977",
+  "weather_sha256": "6ea31e9e6779cc0295ba3bfe8a72300e3aa05ef2926d1e9f6f68853d425a56ca",
+  "smoke_input_sha256": "a6010f843a79a8be95a8d7efec3e060dc393cfba6b67f4658fa63868a5c6ce03",
+  "input_sha256": {
+    "sources/foundation-engine-runtime-lock.json": "b38770a8bcbbfe2186f8056362d3d15f2f3cdc3aa417def195fe7c7b1b03c53f",
+    "scripts/construction_foundation_smoke.py": "64f99dc634e160aaede0b7c7228012865fe7b0b5c161bd6473522d4e424b128b",
+    "scripts/experiments/construction_foundation_smoke.rb": "ee4568b10030eae88d2f12cda9d86e37bda178a0adfaabd53c8b0ef4dca3a82e",
+    "sources/runtime-lock.json": "b1a967e261cfd5f128606665604c23c92f1bdf1ca384e6085355a75b5f921312",
+    "data/construction-inputs/foundation-execution-v1.json": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83",
+    "data/construction-inputs/foundation-airflow-v1.json": "1f73fe7461655a235f1a017b4e4ca8ed1f820763891fdf404381c125b3d28e6f",
+    "scripts/construction_foundation_export.py": "537273b2c507717030b1ef9a815420a8f20cb82507ba80e53e66d1f3a620e3ca"
+  },
+  "test_conditions": {
+    "plan_area_m2": 100,
+    "height_m": 3,
+    "design_day_maximum_C": 32,
+    "design_day_range_K": 10,
+    "ground_monthly_temperature_C": 18,
+    "hours": 24,
+    "timestep_per_hour": 4,
+    "initialization_note": "Explicit synthetic smoke temperatures only. Source initialization independently verified against 588 native probes.",
+    "closing_faces": "Explicit MediumOffice test closing construction; no public catalogue fallback."
+  },
+  "results": [
+    {
+      "label": "f-factor",
+      "returncode": 0,
+      "severe": 0,
+      "fatal": 0,
+      "warnings": 0,
+      "samples": 24,
+      "finite": true,
+      "range_W": [
+        -346.41201962413106,
+        226.2849608077829
+      ]
+    },
+    {
+      "label": "f-factor-core",
+      "returncode": 0,
+      "severe": 0,
+      "fatal": 0,
+      "warnings": 0,
+      "samples": 24,
+      "finite": true,
+      "range_W": [
+        -313.7041769180186,
+        366.9339899523379
+      ]
+    },
+    {
+      "label": "layered-ground",
+      "returncode": 0,
+      "severe": 0,
+      "fatal": 0,
+      "warnings": 0,
+      "samples": 24,
+      "finite": true,
+      "range_W": [
+        -161.3303297996424,
+        47.131704822284775
+      ]
+    },
+    {
+      "label": "c-factor",
+      "returncode": 0,
+      "severe": 0,
+      "fatal": 0,
+      "warnings": 0,
+      "samples": 24,
+      "finite": true,
+      "range_W": [
+        -252.60759445681842,
+        427.7097076730769
+      ]
+    },
+    {
+      "label": "kiva-slab",
+      "returncode": 0,
+      "severe": 0,
+      "fatal": 0,
+      "warnings": 0,
+      "samples": 24,
+      "finite": true,
+      "range_W": [
+        -360.5928051671617,
+        187.41859318353855
+      ]
+    },
+    {
+      "label": "kiva-wall",
+      "returncode": 0,
+      "severe": 0,
+      "fatal": 0,
+      "warnings": 0,
+      "samples": 24,
+      "finite": true,
+      "range_W": [
+        -360.4826276050578,
+        311.03076355827994
+      ]
+    }
+  ],
+  "interpretation_note": "Six synthetic method-input/numerical smoke cells with finite conduction output, no warnings/severe/fatal. Not archetype energy validation or a systematic zoning/construction error experiment. Minimal audited 25.1-to-26.2 object subset, not a general importer."
+}

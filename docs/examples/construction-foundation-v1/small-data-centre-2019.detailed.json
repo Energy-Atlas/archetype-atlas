@@ -1,0 +1,3190 @@
+{
+  "schema_version": "3.0.0",
+  "kind": "construction_set",
+  "export_mode": "source_ready",
+  "id": "construction-set-e1790fa0b54a713f752fc601",
+  "name": "SmallDataCenterLowITE construction package",
+  "scope": "building",
+  "source": {
+    "construction_set_id": "construction-2e0ceb3642df6de84ba83c7d",
+    "definition_release": "v0.1.1",
+    "building_type": "SmallDataCenterLowITE",
+    "template": "90.1-2019",
+    "evidence_view": "source",
+    "source_family": "code_prototype_rules",
+    "vintage": {
+      "status": "exact",
+      "value": "90.1-2019",
+      "kind": "source_template"
+    },
+    "space_type": null,
+    "source_fixture_id": null,
+    "climate": {
+      "status": "exact",
+      "value": "3B"
+    },
+    "reference_variant_id": "90.1-2019/SmallDataCenterLowITE",
+    "evidence": [
+      {
+        "source_project": "OpenStudio SDK",
+        "source_revision": "OpenStudio-3.10.0-documentation",
+        "source_file_sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+        "source_locator": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html#getDefaultConstructionWithSearchDistance",
+        "original_value": [
+          "space",
+          "space_type",
+          "building_story",
+          "building",
+          "building_space_type"
+        ],
+        "original_unit": "ordered categorical construction scopes",
+        "transformation": "Retain the source space-type, story and building hierarchy for recovered construction defaults.",
+        "extraction_date": "2026-10-14",
+        "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration.",
+        "id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24"
+      },
+      {
+        "source_project": "atlas_source_derivation",
+        "source_revision": "fixed-ach-v1/1.0.0",
+        "source_file_sha256": "41bcb8c3c6c44b73a6f1d445914615c764598ec7cfeba192fc31af9b39cb7828",
+        "source_locator": "data/construction-inputs/fixed-ach-v1.json#/commercial_reference_benchmarks/982",
+        "extraction_date": "2026-10-14",
+        "original_value": {
+          "reference_id": "90.1-2019/SmallDataCenterLowITE",
+          "climate_zone": "3B",
+          "natural_ach": {
+            "value": 0.00042716864200173656,
+            "unit": "1/s"
+          },
+          "inspection_ach_per_h": 1.5378071112062517,
+          "mean_flow_m3_s": 0.10160697863835112,
+          "reference_enclosed_volume_m3": 237.861511,
+          "method": "nist_source_passive_envelope_hourly_reference_mean",
+          "nist_correlation_type": "SmallOffice",
+          "coefficient_evidence": {
+            "coefficients": {
+              "a": 0.0,
+              "b": 0.0179,
+              "d": 0.1473
+            },
+            "fallback_fields": [],
+            "correlation_climate_zone": 3,
+            "original_rows": [
+              {
+                "building_type": "SmallOffice",
+                "climate_zone": "3",
+                "air_barrier": "no",
+                "hvac_status": "on",
+                "a": 0.0209,
+                "b": 0.0064,
+                "d": 0.1297
+              },
+              {
+                "building_type": "SmallOffice",
+                "climate_zone": "3",
+                "air_barrier": "no",
+                "hvac_status": "off",
+                "a": 0.0,
+                "b": 0.0179,
+                "d": 0.1473
+              }
+            ]
+          },
+          "source_surrogate_mapping": true,
+          "source_locator": "lib/openstudio-standards/infiltration/data/NISTInfiltrationCorrelations.json#infiltration/SmallOffice/3/no/off",
+          "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+          "geometry_evidence_locator": "commercial-ach-geometry-v1.json#/references/id=90.1-2019/SmallDataCenterLowITE",
+          "forcing_evidence_locator": "fixed-ach-v1.json#/climate_references/climate_zone=3B",
+          "original_value": {
+            "native_design_rate_m_s": 0.000570329399,
+            "coefficients": {
+              "a": 0.0,
+              "b": 0.0179,
+              "d": 0.1473
+            },
+            "whole_enclosed_volume_m3": 237.861511
+          },
+          "original_unit": "Native flow per area m3/s/m2; coefficient a dimensionless, b 1/K, d s2/m2; volume m3",
+          "transformation": "Sum [native q4/exterior-area * space Outdoors gross area * multiplier * mean(max(0,a+b*abs(22C-height-adjusted EPW dry bulb)+d*height-adjusted wind^2))] / whole source enclosed volume with multipliers",
+          "interpretation_note": "Equal-weight hourly EPW samples; schedule=1 for source off correlation, no pressurization/door operation. Includes all source enclosure spaces in denominator, not conditioned-volume claim. No simulation timestep/energy parity claimed."
+        },
+        "original_unit": "SI 1/s; inspection ACH 1/h",
+        "transformation": "Sum [native q4/exterior-area * space Outdoors gross area * multiplier * mean(max(0,a+b*abs(22C-height-adjusted EPW dry bulb)+d*height-adjusted wind^2))] / whole source enclosed volume with multipliers",
+        "interpretation_note": "Equal-weight hourly EPW samples; schedule=1 for source off correlation, no pressurization/door operation. Includes all source enclosure spaces in denominator, not conditioned-volume claim. No simulation timestep/energy parity claimed.",
+        "id": "construction-evidence-e51007609cdc0dfcb95ce5ed"
+      },
+      {
+        "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_sets.json#/construction_sets/32",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "extraction_date": "2026-10-14",
+        "original_value": {
+          "building_shading": null,
+          "building_type": "SmallDataCenterLowITE",
+          "exterior_door_building_category": null,
+          "exterior_door_standards_construction_type": null,
+          "exterior_fixed_window_building_category": null,
+          "exterior_fixed_window_standards_construction_type": null,
+          "exterior_floor_building_category": "Adiabatic",
+          "exterior_floor_standards_construction_type": "Mass",
+          "exterior_glass_door_building_category": null,
+          "exterior_glass_door_standards_construction_type": null,
+          "exterior_operable_window_building_category": null,
+          "exterior_operable_window_standards_construction_type": null,
+          "exterior_overhead_door_building_category": null,
+          "exterior_overhead_door_standards_construction_type": null,
+          "exterior_roof_building_category": "Adiabatic",
+          "exterior_roof_standards_construction_type": "Attic and Other",
+          "exterior_skylight_building_category": null,
+          "exterior_skylight_standards_construction_type": null,
+          "exterior_wall_building_category": "Adiabatic",
+          "exterior_wall_standards_construction_type": "Mass",
+          "ground_contact_ceiling_building_category": null,
+          "ground_contact_ceiling_standards_construction_type": null,
+          "ground_contact_floor_building_category": "Adiabatic",
+          "ground_contact_floor_standards_construction_type": "Unheated",
+          "ground_contact_wall_building_category": null,
+          "ground_contact_wall_standards_construction_type": null,
+          "interior_ceilings": "Typical Interior Ceiling",
+          "interior_doors": null,
+          "interior_fixed_windows": null,
+          "interior_floors": "Typical Interior Floor",
+          "interior_operable_windows": null,
+          "interior_partitions": null,
+          "interior_walls": "Typical Interior Wall",
+          "is_residential": "No",
+          "notes": null,
+          "site_shading": null,
+          "space_shading": null,
+          "space_type": null,
+          "template": "90.1-2019",
+          "tubular_daylight_diffusers": null,
+          "tubular_daylight_domes": null
+        },
+        "original_unit": "native construction-set selectors",
+        "transformation": "Exact source set and complete pinned model_add_construction_set slot census.",
+        "interpretation_note": "Null selector means upstream supplies no construction at this scope; inherit consumer/source parent context explicitly.",
+        "source_file_sha256": "b1dadfc3c43e52f8645011e76fa37a55b0386dc4bf3fcf993e48feaa876ac052",
+        "source_project": "OpenStudio Standards",
+        "id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      }
+    ]
+  },
+  "components": {
+    "ExteriorWall": {
+      "target": {
+        "surface_type": "Wall",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "id": "construction-assignment-cdffecf36032a81af18499f7",
+          "assembly_id": "construction-08ce1260a778a54ee1f4a40d",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "exterior_wall",
+          "when": {
+            "scope": "building_default"
+          },
+          "source_element_ids": [],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "selector-evidence-777d45ce17cb8496f6cf0246",
+            "selector-evidence-5dca6236a702b132e5415925"
+          ]
+        }
+      ]
+    },
+    "ExteriorRoof": {
+      "target": {
+        "surface_type": "Roof",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "id": "construction-assignment-42061627ca10347add18c336",
+          "assembly_id": "construction-6ccb9c76dec5df910240c48a",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "exterior_roof",
+          "when": {
+            "scope": "building_default"
+          },
+          "source_element_ids": [],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "selector-evidence-8f88fdafc19c2f5d3873b2ab",
+            "selector-evidence-755b9ab4b3bc07f18f6f727b"
+          ]
+        }
+      ]
+    },
+    "ExteriorFloor": {
+      "target": {
+        "surface_type": "Floor",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "id": "construction-assignment-016276dd1354e1960c39bcaa",
+          "assembly_id": "construction-f91bd16c0082909b765714ee",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "exterior_floor",
+          "when": {
+            "scope": "building_default"
+          },
+          "source_element_ids": [],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "selector-evidence-d510d7b43dc75b8e3166898e",
+            "selector-evidence-f306682e982cc6dbd9e15480"
+          ]
+        }
+      ]
+    },
+    "ExteriorWindow": {
+      "target": {
+        "surface_type": "Window",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "ExteriorDoor": {
+      "target": {
+        "surface_type": "Door",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "GlassDoor": {
+      "target": {
+        "surface_type": "GlassDoor",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "OverheadDoor": {
+      "target": {
+        "surface_type": "OverheadDoor",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "Skylight": {
+      "target": {
+        "surface_type": "Skylight",
+        "boundary_conditions": [
+          "Outdoors"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "InteriorWall": {
+      "target": {
+        "surface_type": "Wall",
+        "boundary_conditions": [
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "id": "construction-assignment-a0a2f1877c1fdbb401c76579",
+          "assembly_id": "construction-af7922e68f126c26f87fbc61",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "interior_walls",
+          "when": {
+            "scope": "building_default"
+          },
+          "source_element_ids": [],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "selector-evidence-7c494caa257e75d7e29446f7"
+          ]
+        }
+      ]
+    },
+    "InteriorFloor": {
+      "target": {
+        "surface_type": "Floor",
+        "boundary_conditions": [
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "id": "construction-assignment-82018556334fffddd6d8aec5",
+          "assembly_id": "construction-57199c17dd84fdb7f8bb6507",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "interior_floors",
+          "when": {
+            "scope": "building_default"
+          },
+          "source_element_ids": [],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "selector-evidence-e6e2ef8c911033a7a119a1a5"
+          ]
+        }
+      ]
+    },
+    "InteriorCeiling": {
+      "target": {
+        "surface_type": "Ceiling",
+        "boundary_conditions": [
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "id": "construction-assignment-7c5aa32cd400d453c1d12914",
+          "assembly_id": "construction-6fee15841f07ad859fba5934",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "interior_ceilings",
+          "when": {
+            "scope": "building_default"
+          },
+          "source_element_ids": [],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "selector-evidence-acd186f6d40f5b7b387fb776"
+          ]
+        }
+      ]
+    },
+    "InteriorDoor": {
+      "target": {
+        "surface_type": "Door",
+        "boundary_conditions": [
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "InteriorWindow": {
+      "target": {
+        "surface_type": "Window",
+        "boundary_conditions": [
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "InteriorPartition": {
+      "target": {
+        "object_type": "InternalMass"
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "TubularDaylightDome": {
+      "target": {
+        "surface_type": "TubularDaylightDome"
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "TubularDaylightDiffuser": {
+      "target": {
+        "surface_type": "TubularDaylightDiffuser"
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "SpaceShading": {
+      "target": {
+        "object_type": "Shading",
+        "shading_scope": "space"
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "BuildingShading": {
+      "target": {
+        "object_type": "Shading",
+        "shading_scope": "building"
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "SiteShading": {
+      "target": {
+        "object_type": "Shading",
+        "shading_scope": "site"
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "GroundFloor": {
+      "target": {
+        "surface_type": "Floor",
+        "boundary_conditions": [
+          "Ground",
+          "GroundFCfactorMethod",
+          "Foundation"
+        ]
+      },
+      "disposition": "provided",
+      "assignments": [
+        {
+          "assembly_id": "foundation-assembly-25d0f42a74c1b2ace41eb269",
+          "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+          "source_selector": "GroundFloor",
+          "when": {
+            "scope": "building_default",
+            "boundary_condition": "Ground"
+          },
+          "source_element_ids": [
+            "Surface 1"
+          ],
+          "geometry": {
+            "area": {
+              "method": "bem_surface_area",
+              "unit": "m2"
+            },
+            "layers": {
+              "orientation": "exterior_to_interior",
+              "paired_surface_policy": "reverse_order",
+              "source_reference_reversed": false
+            }
+          },
+          "evidence_ids": [
+            "foundation-evidence-7dae18ba0e7658a34b52025d"
+          ],
+          "ground_method_id": "ground-method-f181ecf923d42ee7f4eb23b1",
+          "id": "construction-assignment-5db14d213e5407a7b5da365c"
+        }
+      ]
+    },
+    "FoundationWall": {
+      "target": {
+        "surface_type": "Wall",
+        "boundary_conditions": [
+          "Ground",
+          "GroundFCfactorMethod",
+          "Foundation",
+          "Surface",
+          "Adiabatic",
+          "Outdoors"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "FloorOverFoundation": {
+      "target": {
+        "surface_type": "Floor",
+        "boundary_conditions": [
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    },
+    "RimJoist": {
+      "target": {
+        "surface_type": "Wall",
+        "boundary_conditions": [
+          "Outdoors",
+          "Surface",
+          "Adiabatic"
+        ]
+      },
+      "disposition": "source_absent",
+      "assignments": []
+    }
+  },
+  "infiltration": {
+    "method": "fixed_source_reference_natural_ach",
+    "reference_id": "90.1-2019/SmallDataCenterLowITE",
+    "natural_ach": {
+      "value": 0.00042716864200173656,
+      "unit": "1/s",
+      "evidence_id": "construction-evidence-e51007609cdc0dfcb95ce5ed"
+    }
+  },
+  "assemblies": {
+    "construction-08ce1260a778a54ee1f4a40d": {
+      "id": "construction-08ce1260a778a54ee1f4a40d",
+      "name": "Adiabatic Wall",
+      "role": "ExteriorWall",
+      "model": "opaque_layers",
+      "status": "ready",
+      "source_family": "code_prototype_rules",
+      "template": "90.1-2019",
+      "climate_group": "ClimateZone 3",
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "construction-material-85e91ad1719e5c19f9f6b07d"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "evidence_ids": [
+        "selector-evidence-777d45ce17cb8496f6cf0246",
+        "selector-evidence-5dca6236a702b132e5415925"
+      ],
+      "applicability": {},
+      "source_attributes": {
+        "climate_zone_set": "ClimateZone 3",
+        "intended_surface_type": "ExteriorWall",
+        "standards_construction_type": "Mass",
+        "building_category": "Adiabatic",
+        "construction": "Adiabatic Wall",
+        "minimum_percent_of_surface": null,
+        "maximum_percent_of_surface": 0,
+        "assembly_maximum_u_value": null,
+        "assembly_maximum_u_value_unit": "Btu/h-ft2-F",
+        "u_value_includes_interior_film_coefficient": null,
+        "u_value_includes_exterior_film_coefficient": null,
+        "assembly_maximum_f_factor": null,
+        "assembly_maximum_f_factor_unit": "Btu/h-ft-F",
+        "assembly_maximum_c_factor": null,
+        "assembly_maximum_c_factor_unit": "Btu/h-ft2-F",
+        "assembly_maximum_r_value": null,
+        "assembly_maximum_r_value_unit": "hr-ft2-F/btu",
+        "orientation": null,
+        "minimum_projection_factor": null,
+        "maximum_projection_factor": null,
+        "assembly_maximum_solar_heat_gain_coefficient": null,
+        "assembly_minimum_visible_transmittance": null,
+        "assembly_minimum_vt_shgc": null,
+        "assembly_maximum_u_value_based_on_HDD65_slope": null,
+        "assembly_maximum_u_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_u_value_based_on_HDD65_minimum_u_value": null,
+        "assembly_maximum_u_value_based_on_HDD65_maximum_u_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_slope": null,
+        "assembly_maximum_r_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_r_value_based_on_HDD65_minimum_r_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_maximum_r_value": null,
+        "template": "90.1-2019"
+      },
+      "source_surface_ids": [],
+      "source_adjacency": [],
+      "metrics": {
+        "layer_resistance_m2_K_W": 1760.92572663938,
+        "layer_conductance_W_m2_K": 0.0005678831224235899
+      },
+      "source_parameters": {
+        "u_W_m2_K": {
+          "value": 0.0005678831224235899,
+          "unit": "W/m2/K",
+          "evidence_id": "selector-evidence-bed5f095b66388a76c013b72"
+        }
+      },
+      "target_adjustment": {
+        "status": "base_source_layers",
+        "target_u_W_m2_K": null,
+        "attained_u_W_m2_K": 0.0005678831224235899,
+        "films_m2_K_W": 0.0,
+        "includes_interior_film": false,
+        "includes_exterior_film": false,
+        "evidence_id": "selector-evidence-2fb842e49213fb07169b4b6f"
+      }
+    },
+    "construction-57199c17dd84fdb7f8bb6507": {
+      "id": "construction-57199c17dd84fdb7f8bb6507",
+      "name": "Typical Interior Floor",
+      "role": "InteriorFloor",
+      "model": "opaque_layers",
+      "status": "ready",
+      "source_family": "code_prototype_rules",
+      "template": "90.1-2019",
+      "climate_group": null,
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "construction-material-a4e8014ca69d03916e4ebf1e"
+        },
+        {
+          "order": 1,
+          "material_id": "construction-material-5d57067e64422a8b525309b2"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "evidence_ids": [
+        "selector-evidence-e6e2ef8c911033a7a119a1a5"
+      ],
+      "applicability": {},
+      "source_attributes": {},
+      "source_surface_ids": [],
+      "source_adjacency": [],
+      "metrics": {
+        "layer_resistance_m2_K_W": 0.26045416612689704,
+        "layer_conductance_W_m2_K": 3.839447127571711,
+        "areal_heat_capacity_J_m2_K": 196412.9246721946
+      },
+      "source_parameters": {
+        "u_W_m2_K": {
+          "value": 1.8871387350941606,
+          "unit": "W/m2/K",
+          "evidence_id": "selector-evidence-81ea688c28e68f803eb60088"
+        }
+      },
+      "target_adjustment": {
+        "status": "base_source_layers",
+        "target_u_W_m2_K": null,
+        "attained_u_W_m2_K": 1.8871387350941606,
+        "films_m2_K_W": 0.269448581033928,
+        "includes_interior_film": true,
+        "includes_exterior_film": true,
+        "evidence_id": "selector-evidence-203dbe7f1e607b28163d308f"
+      }
+    },
+    "construction-6ccb9c76dec5df910240c48a": {
+      "id": "construction-6ccb9c76dec5df910240c48a",
+      "name": "Adiabatic Roof",
+      "role": "ExteriorRoof",
+      "model": "opaque_layers",
+      "status": "ready",
+      "source_family": "code_prototype_rules",
+      "template": "90.1-2019",
+      "climate_group": "ClimateZone 3",
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "construction-material-9699c0a980d45f3fab264f2a"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "evidence_ids": [
+        "selector-evidence-8f88fdafc19c2f5d3873b2ab",
+        "selector-evidence-755b9ab4b3bc07f18f6f727b"
+      ],
+      "applicability": {},
+      "source_attributes": {
+        "climate_zone_set": "ClimateZone 3",
+        "intended_surface_type": "ExteriorRoof",
+        "standards_construction_type": "Attic and Other",
+        "building_category": "Adiabatic",
+        "construction": "Adiabatic Roof",
+        "minimum_percent_of_surface": null,
+        "maximum_percent_of_surface": 0,
+        "assembly_maximum_u_value": null,
+        "assembly_maximum_u_value_unit": "Btu/h-ft2-F",
+        "u_value_includes_interior_film_coefficient": null,
+        "u_value_includes_exterior_film_coefficient": null,
+        "assembly_maximum_f_factor": null,
+        "assembly_maximum_f_factor_unit": "Btu/h-ft-F",
+        "assembly_maximum_c_factor": null,
+        "assembly_maximum_c_factor_unit": "Btu/h-ft2-F",
+        "assembly_maximum_r_value": null,
+        "assembly_maximum_r_value_unit": "hr-ft2-F/btu",
+        "orientation": null,
+        "minimum_projection_factor": null,
+        "maximum_projection_factor": null,
+        "assembly_maximum_solar_heat_gain_coefficient": null,
+        "assembly_minimum_visible_transmittance": null,
+        "assembly_minimum_vt_shgc": null,
+        "assembly_maximum_u_value_based_on_HDD65_slope": null,
+        "assembly_maximum_u_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_u_value_based_on_HDD65_minimum_u_value": null,
+        "assembly_maximum_u_value_based_on_HDD65_maximum_u_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_slope": null,
+        "assembly_maximum_r_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_r_value_based_on_HDD65_minimum_r_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_maximum_r_value": null,
+        "template": "90.1-2019"
+      },
+      "source_surface_ids": [],
+      "source_adjacency": [],
+      "metrics": {
+        "layer_resistance_m2_K_W": 1760.92572663938,
+        "layer_conductance_W_m2_K": 0.0005678831224235899
+      },
+      "source_parameters": {
+        "u_W_m2_K": {
+          "value": 0.0005678831224235899,
+          "unit": "W/m2/K",
+          "evidence_id": "selector-evidence-24df28f73e69a49d3e072f82"
+        }
+      },
+      "target_adjustment": {
+        "status": "base_source_layers",
+        "target_u_W_m2_K": null,
+        "attained_u_W_m2_K": 0.0005678831224235899,
+        "films_m2_K_W": 0.0,
+        "includes_interior_film": false,
+        "includes_exterior_film": false,
+        "evidence_id": "selector-evidence-f0ab88c202e086a927e1cf89"
+      }
+    },
+    "construction-6fee15841f07ad859fba5934": {
+      "id": "construction-6fee15841f07ad859fba5934",
+      "name": "Typical Interior Ceiling",
+      "role": "InteriorCeiling",
+      "model": "opaque_layers",
+      "status": "ready",
+      "source_family": "code_prototype_rules",
+      "template": "90.1-2019",
+      "climate_group": null,
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "construction-material-5d57067e64422a8b525309b2"
+        },
+        {
+          "order": 1,
+          "material_id": "construction-material-a4e8014ca69d03916e4ebf1e"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "evidence_ids": [
+        "selector-evidence-acd186f6d40f5b7b387fb776"
+      ],
+      "applicability": {},
+      "source_attributes": {},
+      "source_surface_ids": [],
+      "source_adjacency": [],
+      "metrics": {
+        "layer_resistance_m2_K_W": 0.26045416612689704,
+        "layer_conductance_W_m2_K": 3.839447127571711,
+        "areal_heat_capacity_J_m2_K": 196412.9246721946
+      },
+      "source_parameters": {
+        "u_W_m2_K": {
+          "value": 1.8871387350941602,
+          "unit": "W/m2/K",
+          "evidence_id": "selector-evidence-60afec3c5b310efc6715d57e"
+        }
+      },
+      "target_adjustment": {
+        "status": "base_source_layers",
+        "target_u_W_m2_K": null,
+        "attained_u_W_m2_K": 1.8871387350941602,
+        "films_m2_K_W": 0.269448581033928,
+        "includes_interior_film": true,
+        "includes_exterior_film": true,
+        "evidence_id": "selector-evidence-2fd4c307e98e4e858eac7b53"
+      }
+    },
+    "construction-af7922e68f126c26f87fbc61": {
+      "id": "construction-af7922e68f126c26f87fbc61",
+      "name": "Typical Interior Wall",
+      "role": "InteriorWall",
+      "model": "opaque_layers",
+      "status": "ready",
+      "source_family": "code_prototype_rules",
+      "template": "90.1-2019",
+      "climate_group": null,
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "construction-material-8c7bf16d170bf4c5be615433"
+        },
+        {
+          "order": 1,
+          "material_id": "construction-material-8c7bf16d170bf4c5be615433"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "evidence_ids": [
+        "selector-evidence-7c494caa257e75d7e29446f7"
+      ],
+      "applicability": {},
+      "source_attributes": {},
+      "source_surface_ids": [],
+      "source_adjacency": [],
+      "metrics": {
+        "layer_resistance_m2_K_W": 0.1587193032738207,
+        "layer_conductance_W_m2_K": 6.300430882529843,
+        "areal_heat_capacity_J_m2_K": 22163.63629605144
+      },
+      "source_parameters": {
+        "u_W_m2_K": {
+          "value": 2.51111700954425,
+          "unit": "W/m2/K",
+          "evidence_id": "selector-evidence-50f391fe37e0a50424da088c"
+        }
+      },
+      "target_adjustment": {
+        "status": "base_source_layers",
+        "target_u_W_m2_K": null,
+        "attained_u_W_m2_K": 2.51111700954425,
+        "films_m2_K_W": 0.239509849807936,
+        "includes_interior_film": true,
+        "includes_exterior_film": true,
+        "evidence_id": "selector-evidence-7a96992accc1262aa68705a8"
+      }
+    },
+    "construction-f91bd16c0082909b765714ee": {
+      "id": "construction-f91bd16c0082909b765714ee",
+      "name": "Adiabatic ExteriorFloor",
+      "role": "ExteriorFloor",
+      "model": "opaque_layers",
+      "status": "ready",
+      "source_family": "code_prototype_rules",
+      "template": "90.1-2019",
+      "climate_group": "ClimateZone 3",
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "construction-material-7c7b57b4addb5276ed5e0f81"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "evidence_ids": [
+        "selector-evidence-d510d7b43dc75b8e3166898e",
+        "selector-evidence-f306682e982cc6dbd9e15480"
+      ],
+      "applicability": {},
+      "source_attributes": {
+        "climate_zone_set": "ClimateZone 3",
+        "intended_surface_type": "ExteriorFloor",
+        "standards_construction_type": "Mass",
+        "building_category": "Adiabatic",
+        "construction": "Adiabatic ExteriorFloor",
+        "minimum_percent_of_surface": null,
+        "maximum_percent_of_surface": 0,
+        "assembly_maximum_u_value": null,
+        "assembly_maximum_u_value_unit": "Btu/h-ft2-F",
+        "u_value_includes_interior_film_coefficient": null,
+        "u_value_includes_exterior_film_coefficient": null,
+        "assembly_maximum_f_factor": null,
+        "assembly_maximum_f_factor_unit": "Btu/h-ft-F",
+        "assembly_maximum_c_factor": null,
+        "assembly_maximum_c_factor_unit": "Btu/h-ft2-F",
+        "assembly_maximum_r_value": null,
+        "assembly_maximum_r_value_unit": "hr-ft2-F/btu",
+        "orientation": null,
+        "minimum_projection_factor": null,
+        "maximum_projection_factor": null,
+        "assembly_maximum_solar_heat_gain_coefficient": null,
+        "assembly_minimum_visible_transmittance": null,
+        "assembly_minimum_vt_shgc": null,
+        "assembly_maximum_u_value_based_on_HDD65_slope": null,
+        "assembly_maximum_u_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_u_value_based_on_HDD65_minimum_u_value": null,
+        "assembly_maximum_u_value_based_on_HDD65_maximum_u_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_slope": null,
+        "assembly_maximum_r_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_r_value_based_on_HDD65_minimum_r_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_maximum_r_value": null,
+        "template": "90.1-2019"
+      },
+      "source_surface_ids": [],
+      "source_adjacency": [],
+      "metrics": {
+        "layer_resistance_m2_K_W": 1760.92572663938,
+        "layer_conductance_W_m2_K": 0.0005678831224235899
+      },
+      "source_parameters": {
+        "u_W_m2_K": {
+          "value": 0.0005678831224235899,
+          "unit": "W/m2/K",
+          "evidence_id": "selector-evidence-5b05b320ea5e67d5d896cc82"
+        }
+      },
+      "target_adjustment": {
+        "status": "base_source_layers",
+        "target_u_W_m2_K": null,
+        "attained_u_W_m2_K": 0.0005678831224235899,
+        "films_m2_K_W": 0.0,
+        "includes_interior_film": false,
+        "includes_exterior_film": false,
+        "evidence_id": "selector-evidence-9d0e9311142df2ec5bbcec2b"
+      }
+    },
+    "foundation-assembly-25d0f42a74c1b2ace41eb269": {
+      "model": "native_opaque_layers",
+      "status": "ready",
+      "evidence_ids": [
+        "foundation-evidence-7dae18ba0e7658a34b52025d"
+      ],
+      "layers": [
+        {
+          "order": 0,
+          "material_id": "foundation-material-fde98c2ee6863cb26f45dabb"
+        }
+      ],
+      "layer_orientation": "exterior_to_interior",
+      "id": "foundation-assembly-25d0f42a74c1b2ace41eb269"
+    }
+  },
+  "materials": {
+    "construction-material-5d57067e64422a8b525309b2": {
+      "name": "CP02 CARPET PAD",
+      "model": "MasslessOpaqueMaterial",
+      "properties": {
+        "roughness": "Smooth",
+        "resistance_m2_K_W": 0.216479986995276,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.8
+      },
+      "property_evidence": {
+        "roughness": "selector-evidence-a853b8b047e39cdf9e2b8257",
+        "resistance_m2_K_W": "selector-evidence-385a25cffedb81545fee3bf2",
+        "thermal_absorptance": "selector-evidence-ecfe09a473d2fbe95a3f4d64",
+        "solar_absorptance": "selector-evidence-fa1b439e1cec20a24a2556b0",
+        "visible_absorptance": "selector-evidence-836758ffed6b6142a2036525"
+      },
+      "id": "construction-material-5d57067e64422a8b525309b2"
+    },
+    "construction-material-7c7b57b4addb5276ed5e0f81": {
+      "name": "Adiabatic Material",
+      "model": "MasslessOpaqueMaterial",
+      "properties": {
+        "roughness": "Smooth",
+        "resistance_m2_K_W": 1760.92572663938,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.0,
+        "visible_absorptance": 0.0
+      },
+      "property_evidence": {
+        "roughness": "selector-evidence-69107c656aefcba43204d83b",
+        "resistance_m2_K_W": "selector-evidence-e4a72e2adc0bb3fb67a31884",
+        "thermal_absorptance": "selector-evidence-9a0698127b131af5559e85e5",
+        "solar_absorptance": "selector-evidence-e6939089af8765602cbae37b",
+        "visible_absorptance": "selector-evidence-959d1223f1e0dfc872f50877"
+      },
+      "id": "construction-material-7c7b57b4addb5276ed5e0f81"
+    },
+    "construction-material-85e91ad1719e5c19f9f6b07d": {
+      "name": "Adiabatic Material",
+      "model": "MasslessOpaqueMaterial",
+      "properties": {
+        "roughness": "Smooth",
+        "resistance_m2_K_W": 1760.92572663938,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.0,
+        "visible_absorptance": 0.0
+      },
+      "property_evidence": {
+        "roughness": "selector-evidence-69107c656aefcba43204d83b",
+        "resistance_m2_K_W": "selector-evidence-6b9eb6ec1d042c026519e5ea",
+        "thermal_absorptance": "selector-evidence-9a0698127b131af5559e85e5",
+        "solar_absorptance": "selector-evidence-e6939089af8765602cbae37b",
+        "visible_absorptance": "selector-evidence-959d1223f1e0dfc872f50877"
+      },
+      "id": "construction-material-85e91ad1719e5c19f9f6b07d"
+    },
+    "construction-material-8c7bf16d170bf4c5be615433": {
+      "name": "G01 13mm gypsum board",
+      "model": "StandardOpaqueMaterial",
+      "properties": {
+        "roughness": "Smooth",
+        "thickness_m": 0.0127,
+        "conductivity_W_m_K": 0.160030944416258,
+        "density_kg_m3": 800.000505207667,
+        "specific_heat_J_kg_K": 1090.7294438736,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.5
+      },
+      "property_evidence": {
+        "roughness": "selector-evidence-448d20b654b7099103dc8aca",
+        "thickness_m": "selector-evidence-cd2c140ad3cb5d84c3da2525",
+        "conductivity_W_m_K": "selector-evidence-8c5b1efbbc401c07840780bb",
+        "density_kg_m3": "selector-evidence-ab10030f9fff0a1c63acd3ff",
+        "specific_heat_J_kg_K": "selector-evidence-c9781ce43a14b50e058fd1b8",
+        "thermal_absorptance": "selector-evidence-15c9ecc80c06fc148103f3ee",
+        "solar_absorptance": "selector-evidence-56280477246fbde0ee079e5d",
+        "visible_absorptance": "selector-evidence-100dfc9445cd6094e0cbd21a"
+      },
+      "id": "construction-material-8c7bf16d170bf4c5be615433"
+    },
+    "construction-material-9699c0a980d45f3fab264f2a": {
+      "name": "Adiabatic Material",
+      "model": "MasslessOpaqueMaterial",
+      "properties": {
+        "roughness": "Smooth",
+        "resistance_m2_K_W": 1760.92572663938,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.0,
+        "visible_absorptance": 0.0
+      },
+      "property_evidence": {
+        "roughness": "selector-evidence-69107c656aefcba43204d83b",
+        "resistance_m2_K_W": "selector-evidence-ea8a962d315166629abc911c",
+        "thermal_absorptance": "selector-evidence-9a0698127b131af5559e85e5",
+        "solar_absorptance": "selector-evidence-e6939089af8765602cbae37b",
+        "visible_absorptance": "selector-evidence-959d1223f1e0dfc872f50877"
+      },
+      "id": "construction-material-9699c0a980d45f3fab264f2a"
+    },
+    "construction-material-a4e8014ca69d03916e4ebf1e": {
+      "name": "100mm Normalweight concrete floor",
+      "model": "StandardOpaqueMaterial",
+      "properties": {
+        "roughness": "MediumRough",
+        "thickness_m": 0.1016,
+        "conductivity_W_m_K": 2.31044676686054,
+        "density_kg_m3": 2322.00146636525,
+        "specific_heat_J_kg_K": 832.5567858096,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.7
+      },
+      "property_evidence": {
+        "roughness": "selector-evidence-6b1fec263f8ee79d6bf907cf",
+        "thickness_m": "selector-evidence-a836ec9e72192f9649e5336b",
+        "conductivity_W_m_K": "selector-evidence-c2b11da50891c049914b12b7",
+        "density_kg_m3": "selector-evidence-8581f3dbdfed9d6e06ef7efa",
+        "specific_heat_J_kg_K": "selector-evidence-feca69b449189bd0774093ba",
+        "thermal_absorptance": "selector-evidence-8c10be2ffbfe089f101da92d",
+        "solar_absorptance": "selector-evidence-ddde8cb5f45c4ba643d07e7c",
+        "visible_absorptance": "selector-evidence-492717e81aaa99a1036a4cf4"
+      },
+      "id": "construction-material-a4e8014ca69d03916e4ebf1e"
+    },
+    "foundation-material-fde98c2ee6863cb26f45dabb": {
+      "id": "foundation-material-fde98c2ee6863cb26f45dabb",
+      "name": "Adiabatic Material",
+      "model": "MasslessOpaqueMaterial",
+      "properties": {
+        "resistance_m2_K_W": 1760.92572663938,
+        "roughness": "Smooth",
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.0,
+        "visible_absorptance": 0.0
+      },
+      "property_evidence": {
+        "resistance_m2_K_W": "foundation-evidence-7dae18ba0e7658a34b52025d",
+        "roughness": "foundation-evidence-7dae18ba0e7658a34b52025d",
+        "thermal_absorptance": "foundation-evidence-7dae18ba0e7658a34b52025d",
+        "solar_absorptance": "foundation-evidence-7dae18ba0e7658a34b52025d",
+        "visible_absorptance": "foundation-evidence-7dae18ba0e7658a34b52025d"
+      }
+    }
+  },
+  "evidence": {
+    "construction-evidence-5a4e9b38cf3ad0ac972f0d24": {
+      "source_project": "OpenStudio SDK",
+      "source_revision": "OpenStudio-3.10.0-documentation",
+      "source_file_sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+      "source_locator": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html#getDefaultConstructionWithSearchDistance",
+      "original_value": [
+        "space",
+        "space_type",
+        "building_story",
+        "building",
+        "building_space_type"
+      ],
+      "original_unit": "ordered categorical construction scopes",
+      "transformation": "Retain the source space-type, story and building hierarchy for recovered construction defaults.",
+      "extraction_date": "2026-10-14",
+      "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration.",
+      "id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24"
+    },
+    "construction-evidence-e51007609cdc0dfcb95ce5ed": {
+      "source_project": "atlas_source_derivation",
+      "source_revision": "fixed-ach-v1/1.0.0",
+      "source_file_sha256": "41bcb8c3c6c44b73a6f1d445914615c764598ec7cfeba192fc31af9b39cb7828",
+      "source_locator": "data/construction-inputs/fixed-ach-v1.json#/commercial_reference_benchmarks/982",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "reference_id": "90.1-2019/SmallDataCenterLowITE",
+        "climate_zone": "3B",
+        "natural_ach": {
+          "value": 0.00042716864200173656,
+          "unit": "1/s"
+        },
+        "inspection_ach_per_h": 1.5378071112062517,
+        "mean_flow_m3_s": 0.10160697863835112,
+        "reference_enclosed_volume_m3": 237.861511,
+        "method": "nist_source_passive_envelope_hourly_reference_mean",
+        "nist_correlation_type": "SmallOffice",
+        "coefficient_evidence": {
+          "coefficients": {
+            "a": 0.0,
+            "b": 0.0179,
+            "d": 0.1473
+          },
+          "fallback_fields": [],
+          "correlation_climate_zone": 3,
+          "original_rows": [
+            {
+              "building_type": "SmallOffice",
+              "climate_zone": "3",
+              "air_barrier": "no",
+              "hvac_status": "on",
+              "a": 0.0209,
+              "b": 0.0064,
+              "d": 0.1297
+            },
+            {
+              "building_type": "SmallOffice",
+              "climate_zone": "3",
+              "air_barrier": "no",
+              "hvac_status": "off",
+              "a": 0.0,
+              "b": 0.0179,
+              "d": 0.1473
+            }
+          ]
+        },
+        "source_surrogate_mapping": true,
+        "source_locator": "lib/openstudio-standards/infiltration/data/NISTInfiltrationCorrelations.json#infiltration/SmallOffice/3/no/off",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "geometry_evidence_locator": "commercial-ach-geometry-v1.json#/references/id=90.1-2019/SmallDataCenterLowITE",
+        "forcing_evidence_locator": "fixed-ach-v1.json#/climate_references/climate_zone=3B",
+        "original_value": {
+          "native_design_rate_m_s": 0.000570329399,
+          "coefficients": {
+            "a": 0.0,
+            "b": 0.0179,
+            "d": 0.1473
+          },
+          "whole_enclosed_volume_m3": 237.861511
+        },
+        "original_unit": "Native flow per area m3/s/m2; coefficient a dimensionless, b 1/K, d s2/m2; volume m3",
+        "transformation": "Sum [native q4/exterior-area * space Outdoors gross area * multiplier * mean(max(0,a+b*abs(22C-height-adjusted EPW dry bulb)+d*height-adjusted wind^2))] / whole source enclosed volume with multipliers",
+        "interpretation_note": "Equal-weight hourly EPW samples; schedule=1 for source off correlation, no pressurization/door operation. Includes all source enclosure spaces in denominator, not conditioned-volume claim. No simulation timestep/energy parity claimed."
+      },
+      "original_unit": "SI 1/s; inspection ACH 1/h",
+      "transformation": "Sum [native q4/exterior-area * space Outdoors gross area * multiplier * mean(max(0,a+b*abs(22C-height-adjusted EPW dry bulb)+d*height-adjusted wind^2))] / whole source enclosed volume with multipliers",
+      "interpretation_note": "Equal-weight hourly EPW samples; schedule=1 for source off correlation, no pressurization/door operation. Includes all source enclosure spaces in denominator, not conditioned-volume claim. No simulation timestep/energy parity claimed.",
+      "id": "construction-evidence-e51007609cdc0dfcb95ce5ed"
+    },
+    "selector-evidence-100dfc9445cd6094e0cbd21a": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/visible_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.5,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-100dfc9445cd6094e0cbd21a"
+    },
+    "selector-evidence-15c9ecc80c06fc148103f3ee": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/thermal_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.9,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-15c9ecc80c06fc148103f3ee"
+    },
+    "selector-evidence-203dbe7f1e607b28163d308f": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/InteriorFloor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "role": "InteriorFloor",
+        "interior": true,
+        "exterior": true
+      },
+      "original_unit": "boolean",
+      "transformation": "Pinned native film method; attained U = 1 / (sum native layer resistance + included films) for opaque materials.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-203dbe7f1e607b28163d308f"
+    },
+    "selector-evidence-24df28f73e69a49d3e072f82": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/ExteriorRoof",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "target_u_Btu_h_ft2_degF": null,
+        "native_layer_resistances_m2_K_W": [
+          1760.92572663938
+        ],
+        "native_included_films_m2_K_W": 0.0,
+        "native_simple_glazing_rated_u_W_m2_K": null,
+        "source_layer_evidence_ids": [
+          "selector-evidence-7abb273287f5e5ed61e1193d"
+        ]
+      },
+      "original_unit": "native getter resistances m2*K/W, SimpleGlazing rated U W/m2/K; source target Btu/(h*ft2*degF)",
+      "transformation": "Execute pinned source material and construction methods; opaque attained U = 1/(sum native layer R + included pinned films); simple glazing uses native rated U getter; detailed glazing scalar U is unreported, not required for ordered pane/gas model execution.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-24df28f73e69a49d3e072f82"
+    },
+    "selector-evidence-2fb842e49213fb07169b4b6f": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/ExteriorWall",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "role": "ExteriorWall",
+        "interior": false,
+        "exterior": false
+      },
+      "original_unit": "boolean",
+      "transformation": "Pinned native film method; attained U = 1 / (sum native layer resistance + included films) for opaque materials.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-2fb842e49213fb07169b4b6f"
+    },
+    "selector-evidence-2fd4c307e98e4e858eac7b53": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/InteriorCeiling",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "role": "InteriorCeiling",
+        "interior": true,
+        "exterior": true
+      },
+      "original_unit": "boolean",
+      "transformation": "Pinned native film method; attained U = 1 / (sum native layer resistance + included films) for opaque materials.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-2fd4c307e98e4e858eac7b53"
+    },
+    "selector-evidence-302a5b55f3233e74a5fe4882": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_sets.json#/construction_sets/32",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "building_shading": null,
+        "building_type": "SmallDataCenterLowITE",
+        "exterior_door_building_category": null,
+        "exterior_door_standards_construction_type": null,
+        "exterior_fixed_window_building_category": null,
+        "exterior_fixed_window_standards_construction_type": null,
+        "exterior_floor_building_category": "Adiabatic",
+        "exterior_floor_standards_construction_type": "Mass",
+        "exterior_glass_door_building_category": null,
+        "exterior_glass_door_standards_construction_type": null,
+        "exterior_operable_window_building_category": null,
+        "exterior_operable_window_standards_construction_type": null,
+        "exterior_overhead_door_building_category": null,
+        "exterior_overhead_door_standards_construction_type": null,
+        "exterior_roof_building_category": "Adiabatic",
+        "exterior_roof_standards_construction_type": "Attic and Other",
+        "exterior_skylight_building_category": null,
+        "exterior_skylight_standards_construction_type": null,
+        "exterior_wall_building_category": "Adiabatic",
+        "exterior_wall_standards_construction_type": "Mass",
+        "ground_contact_ceiling_building_category": null,
+        "ground_contact_ceiling_standards_construction_type": null,
+        "ground_contact_floor_building_category": "Adiabatic",
+        "ground_contact_floor_standards_construction_type": "Unheated",
+        "ground_contact_wall_building_category": null,
+        "ground_contact_wall_standards_construction_type": null,
+        "interior_ceilings": "Typical Interior Ceiling",
+        "interior_doors": null,
+        "interior_fixed_windows": null,
+        "interior_floors": "Typical Interior Floor",
+        "interior_operable_windows": null,
+        "interior_partitions": null,
+        "interior_walls": "Typical Interior Wall",
+        "is_residential": "No",
+        "notes": null,
+        "site_shading": null,
+        "space_shading": null,
+        "space_type": null,
+        "template": "90.1-2019",
+        "tubular_daylight_diffusers": null,
+        "tubular_daylight_domes": null
+      },
+      "original_unit": "native construction-set selectors",
+      "transformation": "Exact source set and complete pinned model_add_construction_set slot census.",
+      "interpretation_note": "Null selector means upstream supplies no construction at this scope; inherit consumer/source parent context explicitly.",
+      "source_file_sha256": "b1dadfc3c43e52f8645011e76fa37a55b0386dc4bf3fcf993e48feaa876ac052",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-302a5b55f3233e74a5fe4882"
+    },
+    "selector-evidence-385a25cffedb81545fee3bf2": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=CP02 CARPET PAD/resistance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 1.22923037424,
+      "original_unit": "h*ft2*degF/Btu",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable m2*K/W operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "m2*K/W",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-385a25cffedb81545fee3bf2"
+    },
+    "selector-evidence-3e7607b747232aa13a86e4a7": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=CP02 CARPET PAD",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "CP02 CARPET PAD",
+        "material_type": "MasslessOpaqueMaterial",
+        "roughness": "VeryRough",
+        "thickness": null,
+        "conductivity": null,
+        "resistance": 1.22923037424,
+        "density": null,
+        "specific_heat": null,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.8,
+        "gas_type": null,
+        "u_factor": null,
+        "solar_heat_gain_coefficient": null,
+        "visible_transmittance": null,
+        "optical_data_type": null,
+        "solar_transmittance_at_normal_incidence": null,
+        "front_side_solar_reflectance_at_normal_incidence": null,
+        "back_side_solar_reflectance_at_normal_incidence": null,
+        "visible_transmittance_at_normal_incidence": null,
+        "front_side_visible_reflectance_at_normal_incidence": null,
+        "back_side_visible_reflectance_at_normal_incidence": null,
+        "infrared_transmittance_at_normal_incidence": null,
+        "front_side_infrared_hemispherical_emissivity": null,
+        "back_side_infrared_hemispherical_emissivity": null,
+        "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+        "solar_diffusing": null,
+        "frame_width": null,
+        "material_standard": null,
+        "material_standard_source": null,
+        "code_category": null,
+        "code_identifier": null,
+        "framing_material": null,
+        "framing_configuration": null,
+        "framing_depth": null,
+        "framing_size": null,
+        "cavity_insulation": null,
+        "notes": null,
+        "source_candidates": [
+          {
+            "index": 128,
+            "row": {
+              "name": "CP02 CARPET PAD",
+              "material_type": "MasslessOpaqueMaterial",
+              "roughness": "VeryRough",
+              "thickness": null,
+              "conductivity": null,
+              "resistance": 1.22923037424,
+              "density": null,
+              "specific_heat": null,
+              "thermal_absorptance": 0.9,
+              "solar_absorptance": 0.7,
+              "visible_absorptance": 0.8,
+              "gas_type": null,
+              "u_factor": null,
+              "solar_heat_gain_coefficient": null,
+              "visible_transmittance": null,
+              "optical_data_type": null,
+              "solar_transmittance_at_normal_incidence": null,
+              "front_side_solar_reflectance_at_normal_incidence": null,
+              "back_side_solar_reflectance_at_normal_incidence": null,
+              "visible_transmittance_at_normal_incidence": null,
+              "front_side_visible_reflectance_at_normal_incidence": null,
+              "back_side_visible_reflectance_at_normal_incidence": null,
+              "infrared_transmittance_at_normal_incidence": null,
+              "front_side_infrared_hemispherical_emissivity": null,
+              "back_side_infrared_hemispherical_emissivity": null,
+              "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+              "solar_diffusing": null,
+              "frame_width": null,
+              "material_standard": null,
+              "material_standard_source": null,
+              "code_category": null,
+              "code_identifier": null,
+              "framing_material": null,
+              "framing_configuration": null,
+              "framing_depth": null,
+              "framing_size": null,
+              "cavity_insulation": null,
+              "notes": null
+            }
+          }
+        ]
+      },
+      "original_unit": "source IP material columns; generated simple glazing U Btu/h/ft2/degF and SHGC/VT 1",
+      "transformation": "Execute pinned constructors/setters and target adjustment; getters report SI. solar_diffusing uses source /true/i boolean conversion.",
+      "interpretation_note": "Retain actual SDK outcome including rejected nil.to_f setters; no fabricated material defaults.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-3e7607b747232aa13a86e4a7"
+    },
+    "selector-evidence-448d20b654b7099103dc8aca": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/roughness",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": "Smooth",
+      "original_unit": "category",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable category operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "category",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-448d20b654b7099103dc8aca"
+    },
+    "selector-evidence-492717e81aaa99a1036a4cf4": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/visible_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.7,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-492717e81aaa99a1036a4cf4"
+    },
+    "selector-evidence-50f391fe37e0a50424da088c": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/InteriorWall",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "target_u_Btu_h_ft2_degF": null,
+        "native_layer_resistances_m2_K_W": [
+          0.07935965163691035,
+          0.07935965163691035
+        ],
+        "native_included_films_m2_K_W": 0.239509849807936,
+        "native_simple_glazing_rated_u_W_m2_K": null,
+        "source_layer_evidence_ids": [
+          "selector-evidence-621345a62bd24f04636a0f25",
+          "selector-evidence-621345a62bd24f04636a0f25"
+        ]
+      },
+      "original_unit": "native getter resistances m2*K/W, SimpleGlazing rated U W/m2/K; source target Btu/(h*ft2*degF)",
+      "transformation": "Execute pinned source material and construction methods; opaque attained U = 1/(sum native layer R + included pinned films); simple glazing uses native rated U getter; detailed glazing scalar U is unreported, not required for ordered pane/gas model execution.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-50f391fe37e0a50424da088c"
+    },
+    "selector-evidence-56280477246fbde0ee079e5d": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/solar_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.7,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-56280477246fbde0ee079e5d"
+    },
+    "selector-evidence-5b05b320ea5e67d5d896cc82": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/ExteriorFloor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "target_u_Btu_h_ft2_degF": null,
+        "native_layer_resistances_m2_K_W": [
+          1760.92572663938
+        ],
+        "native_included_films_m2_K_W": 0.0,
+        "native_simple_glazing_rated_u_W_m2_K": null,
+        "source_layer_evidence_ids": [
+          "selector-evidence-7abb273287f5e5ed61e1193d"
+        ]
+      },
+      "original_unit": "native getter resistances m2*K/W, SimpleGlazing rated U W/m2/K; source target Btu/(h*ft2*degF)",
+      "transformation": "Execute pinned source material and construction methods; opaque attained U = 1/(sum native layer R + included pinned films); simple glazing uses native rated U getter; detailed glazing scalar U is unreported, not required for ordered pane/gas model execution.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-5b05b320ea5e67d5d896cc82"
+    },
+    "selector-evidence-5dca6236a702b132e5415925": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json#/construction_properties/239",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "climate_zone_set": "ClimateZone 3",
+        "intended_surface_type": "ExteriorWall",
+        "standards_construction_type": "Mass",
+        "building_category": "Adiabatic",
+        "construction": "Adiabatic Wall",
+        "minimum_percent_of_surface": null,
+        "maximum_percent_of_surface": 0,
+        "assembly_maximum_u_value": null,
+        "assembly_maximum_u_value_unit": "Btu/h-ft2-F",
+        "u_value_includes_interior_film_coefficient": null,
+        "u_value_includes_exterior_film_coefficient": null,
+        "assembly_maximum_f_factor": null,
+        "assembly_maximum_f_factor_unit": "Btu/h-ft-F",
+        "assembly_maximum_c_factor": null,
+        "assembly_maximum_c_factor_unit": "Btu/h-ft2-F",
+        "assembly_maximum_r_value": null,
+        "assembly_maximum_r_value_unit": "hr-ft2-F/btu",
+        "orientation": null,
+        "minimum_projection_factor": null,
+        "maximum_projection_factor": null,
+        "assembly_maximum_solar_heat_gain_coefficient": null,
+        "assembly_minimum_visible_transmittance": null,
+        "assembly_minimum_vt_shgc": null,
+        "assembly_maximum_u_value_based_on_HDD65_slope": null,
+        "assembly_maximum_u_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_u_value_based_on_HDD65_minimum_u_value": null,
+        "assembly_maximum_u_value_based_on_HDD65_maximum_u_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_slope": null,
+        "assembly_maximum_r_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_r_value_based_on_HDD65_minimum_r_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_maximum_r_value": null
+      },
+      "original_unit": "U Btu/h/ft2/degF; SHGC 1; surface coverage percent; film flags boolean",
+      "transformation": "Exact selector context; template is the pinned source class/file binding; native source units enter pinned construction method.",
+      "interpretation_note": "Climate group, type, conditioning category and coverage branch remain explicit.",
+      "source_file_sha256": "5c35cbff4d4182be480dd2416d65bb7df483f54f9b4fb87e78e61390e1d314a3",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-5dca6236a702b132e5415925"
+    },
+    "selector-evidence-60afec3c5b310efc6715d57e": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/InteriorCeiling",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "target_u_Btu_h_ft2_degF": null,
+        "native_layer_resistances_m2_K_W": [
+          0.216479986995276,
+          0.04397417913162101
+        ],
+        "native_included_films_m2_K_W": 0.269448581033928,
+        "native_simple_glazing_rated_u_W_m2_K": null,
+        "source_layer_evidence_ids": [
+          "selector-evidence-3e7607b747232aa13a86e4a7",
+          "selector-evidence-6f81fc257b7449d0b60fa828"
+        ]
+      },
+      "original_unit": "native getter resistances m2*K/W, SimpleGlazing rated U W/m2/K; source target Btu/(h*ft2*degF)",
+      "transformation": "Execute pinned source material and construction methods; opaque attained U = 1/(sum native layer R + included pinned films); simple glazing uses native rated U getter; detailed glazing scalar U is unreported, not required for ordered pane/gas model execution.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-60afec3c5b310efc6715d57e"
+    },
+    "selector-evidence-621345a62bd24f04636a0f25": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "G01 13mm gypsum board",
+        "material_type": "StandardOpaqueMaterial",
+        "roughness": "Smooth",
+        "thickness": 0.5,
+        "conductivity": 1.10957004,
+        "resistance": 0.4506250007,
+        "density": 49.9424,
+        "specific_heat": 0.260516252,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.5,
+        "gas_type": null,
+        "u_factor": null,
+        "solar_heat_gain_coefficient": null,
+        "visible_transmittance": null,
+        "optical_data_type": null,
+        "solar_transmittance_at_normal_incidence": null,
+        "front_side_solar_reflectance_at_normal_incidence": null,
+        "back_side_solar_reflectance_at_normal_incidence": null,
+        "visible_transmittance_at_normal_incidence": null,
+        "front_side_visible_reflectance_at_normal_incidence": null,
+        "back_side_visible_reflectance_at_normal_incidence": null,
+        "infrared_transmittance_at_normal_incidence": null,
+        "front_side_infrared_hemispherical_emissivity": null,
+        "back_side_infrared_hemispherical_emissivity": null,
+        "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+        "solar_diffusing": null,
+        "frame_width": null,
+        "material_standard": null,
+        "material_standard_source": null,
+        "code_category": null,
+        "code_identifier": null,
+        "framing_material": null,
+        "framing_configuration": null,
+        "framing_depth": null,
+        "framing_size": null,
+        "cavity_insulation": null,
+        "notes": null,
+        "source_candidates": [
+          {
+            "index": 382,
+            "row": {
+              "name": "G01 13mm gypsum board",
+              "material_type": "StandardOpaqueMaterial",
+              "roughness": "Smooth",
+              "thickness": 0.5,
+              "conductivity": 1.10957004,
+              "resistance": 0.4506250007,
+              "density": 49.9424,
+              "specific_heat": 0.260516252,
+              "thermal_absorptance": 0.9,
+              "solar_absorptance": 0.7,
+              "visible_absorptance": 0.5,
+              "gas_type": null,
+              "u_factor": null,
+              "solar_heat_gain_coefficient": null,
+              "visible_transmittance": null,
+              "optical_data_type": null,
+              "solar_transmittance_at_normal_incidence": null,
+              "front_side_solar_reflectance_at_normal_incidence": null,
+              "back_side_solar_reflectance_at_normal_incidence": null,
+              "visible_transmittance_at_normal_incidence": null,
+              "front_side_visible_reflectance_at_normal_incidence": null,
+              "back_side_visible_reflectance_at_normal_incidence": null,
+              "infrared_transmittance_at_normal_incidence": null,
+              "front_side_infrared_hemispherical_emissivity": null,
+              "back_side_infrared_hemispherical_emissivity": null,
+              "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+              "solar_diffusing": null,
+              "frame_width": null,
+              "material_standard": null,
+              "material_standard_source": null,
+              "code_category": null,
+              "code_identifier": null,
+              "framing_material": null,
+              "framing_configuration": null,
+              "framing_depth": null,
+              "framing_size": null,
+              "cavity_insulation": null,
+              "notes": null
+            }
+          }
+        ]
+      },
+      "original_unit": "source IP material columns; generated simple glazing U Btu/h/ft2/degF and SHGC/VT 1",
+      "transformation": "Execute pinned constructors/setters and target adjustment; getters report SI. solar_diffusing uses source /true/i boolean conversion.",
+      "interpretation_note": "Retain actual SDK outcome including rejected nil.to_f setters; no fabricated material defaults.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-621345a62bd24f04636a0f25"
+    },
+    "selector-evidence-69107c656aefcba43204d83b": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/roughness",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": null,
+      "original_unit": "category",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable category operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "category",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-69107c656aefcba43204d83b"
+    },
+    "selector-evidence-6b1fec263f8ee79d6bf907cf": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/roughness",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": "MediumRough",
+      "original_unit": "category",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable category operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "category",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-6b1fec263f8ee79d6bf907cf"
+    },
+    "selector-evidence-6b9eb6ec1d042c026519e5ea": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/resistance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "material_original": 9999.0,
+        "target_u_Btu_h_ft2_degF": null,
+        "insulation_layer": null,
+        "source_intended_surface_type": "ExteriorWall",
+        "interior_film": null,
+        "exterior_film": null
+      },
+      "original_unit": "h*ft2*degF/Btu",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution. Then pinned model_add_construction/modify.rb target adjustment, clamping, insulation removal, and setter acceptance. Detailed glazing adjustment is skipped by source.",
+      "interpretation_note": "Executable m2*K/W operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "m2*K/W",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-6b9eb6ec1d042c026519e5ea"
+    },
+    "selector-evidence-6f81fc257b7449d0b60fa828": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "100mm Normalweight concrete floor",
+        "material_type": "StandardOpaqueMaterial",
+        "roughness": "MediumRough",
+        "thickness": 4.0,
+        "conductivity": 16.0194175,
+        "resistance": 0.2496969693,
+        "density": 144.957816,
+        "specific_heat": 0.198852772,
+        "thermal_absorptance": 0.9,
+        "solar_absorptance": 0.7,
+        "visible_absorptance": 0.7,
+        "gas_type": null,
+        "u_factor": null,
+        "solar_heat_gain_coefficient": null,
+        "visible_transmittance": null,
+        "optical_data_type": null,
+        "solar_transmittance_at_normal_incidence": null,
+        "front_side_solar_reflectance_at_normal_incidence": null,
+        "back_side_solar_reflectance_at_normal_incidence": null,
+        "visible_transmittance_at_normal_incidence": null,
+        "front_side_visible_reflectance_at_normal_incidence": null,
+        "back_side_visible_reflectance_at_normal_incidence": null,
+        "infrared_transmittance_at_normal_incidence": null,
+        "front_side_infrared_hemispherical_emissivity": null,
+        "back_side_infrared_hemispherical_emissivity": null,
+        "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+        "solar_diffusing": null,
+        "frame_width": null,
+        "material_standard": null,
+        "material_standard_source": null,
+        "code_category": null,
+        "code_identifier": null,
+        "framing_material": null,
+        "framing_configuration": null,
+        "framing_depth": null,
+        "framing_size": null,
+        "cavity_insulation": null,
+        "notes": null,
+        "source_candidates": [
+          {
+            "index": 4,
+            "row": {
+              "name": "100mm Normalweight concrete floor",
+              "material_type": "StandardOpaqueMaterial",
+              "roughness": "MediumRough",
+              "thickness": 4.0,
+              "conductivity": 16.0194175,
+              "resistance": 0.2496969693,
+              "density": 144.957816,
+              "specific_heat": 0.198852772,
+              "thermal_absorptance": 0.9,
+              "solar_absorptance": 0.7,
+              "visible_absorptance": 0.7,
+              "gas_type": null,
+              "u_factor": null,
+              "solar_heat_gain_coefficient": null,
+              "visible_transmittance": null,
+              "optical_data_type": null,
+              "solar_transmittance_at_normal_incidence": null,
+              "front_side_solar_reflectance_at_normal_incidence": null,
+              "back_side_solar_reflectance_at_normal_incidence": null,
+              "visible_transmittance_at_normal_incidence": null,
+              "front_side_visible_reflectance_at_normal_incidence": null,
+              "back_side_visible_reflectance_at_normal_incidence": null,
+              "infrared_transmittance_at_normal_incidence": null,
+              "front_side_infrared_hemispherical_emissivity": null,
+              "back_side_infrared_hemispherical_emissivity": null,
+              "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+              "solar_diffusing": null,
+              "frame_width": null,
+              "material_standard": null,
+              "material_standard_source": null,
+              "code_category": null,
+              "code_identifier": null,
+              "framing_material": null,
+              "framing_configuration": null,
+              "framing_depth": null,
+              "framing_size": null,
+              "cavity_insulation": null,
+              "notes": null
+            }
+          }
+        ]
+      },
+      "original_unit": "source IP material columns; generated simple glazing U Btu/h/ft2/degF and SHGC/VT 1",
+      "transformation": "Execute pinned constructors/setters and target adjustment; getters report SI. solar_diffusing uses source /true/i boolean conversion.",
+      "interpretation_note": "Retain actual SDK outcome including rejected nil.to_f setters; no fabricated material defaults.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-6f81fc257b7449d0b60fa828"
+    },
+    "selector-evidence-755b9ab4b3bc07f18f6f727b": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json#/construction_properties/226",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "climate_zone_set": "ClimateZone 3",
+        "intended_surface_type": "ExteriorRoof",
+        "standards_construction_type": "Attic and Other",
+        "building_category": "Adiabatic",
+        "construction": "Adiabatic Roof",
+        "minimum_percent_of_surface": null,
+        "maximum_percent_of_surface": 0,
+        "assembly_maximum_u_value": null,
+        "assembly_maximum_u_value_unit": "Btu/h-ft2-F",
+        "u_value_includes_interior_film_coefficient": null,
+        "u_value_includes_exterior_film_coefficient": null,
+        "assembly_maximum_f_factor": null,
+        "assembly_maximum_f_factor_unit": "Btu/h-ft-F",
+        "assembly_maximum_c_factor": null,
+        "assembly_maximum_c_factor_unit": "Btu/h-ft2-F",
+        "assembly_maximum_r_value": null,
+        "assembly_maximum_r_value_unit": "hr-ft2-F/btu",
+        "orientation": null,
+        "minimum_projection_factor": null,
+        "maximum_projection_factor": null,
+        "assembly_maximum_solar_heat_gain_coefficient": null,
+        "assembly_minimum_visible_transmittance": null,
+        "assembly_minimum_vt_shgc": null,
+        "assembly_maximum_u_value_based_on_HDD65_slope": null,
+        "assembly_maximum_u_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_u_value_based_on_HDD65_minimum_u_value": null,
+        "assembly_maximum_u_value_based_on_HDD65_maximum_u_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_slope": null,
+        "assembly_maximum_r_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_r_value_based_on_HDD65_minimum_r_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_maximum_r_value": null
+      },
+      "original_unit": "U Btu/h/ft2/degF; SHGC 1; surface coverage percent; film flags boolean",
+      "transformation": "Exact selector context; template is the pinned source class/file binding; native source units enter pinned construction method.",
+      "interpretation_note": "Climate group, type, conditioning category and coverage branch remain explicit.",
+      "source_file_sha256": "5c35cbff4d4182be480dd2416d65bb7df483f54f9b4fb87e78e61390e1d314a3",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-755b9ab4b3bc07f18f6f727b"
+    },
+    "selector-evidence-777d45ce17cb8496f6cf0246": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json#/constructions/name=Adiabatic Wall",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Adiabatic Wall",
+        "intended_surface_type": "ExteriorWall",
+        "standards_construction_type": "Mass",
+        "insulation_layer": null,
+        "skylight_framing": null,
+        "materials": [
+          "Adiabatic Material"
+        ],
+        "source_candidates": [
+          {
+            "index": 10,
+            "row": {
+              "name": "Adiabatic Wall",
+              "intended_surface_type": "ExteriorWall",
+              "standards_construction_type": "Mass",
+              "insulation_layer": null,
+              "skylight_framing": null,
+              "materials": [
+                "Adiabatic Material"
+              ]
+            }
+          }
+        ]
+      },
+      "original_unit": "ordered source construction recipe",
+      "transformation": "Execute pinned model_add_construction; preserve source row candidates.",
+      "interpretation_note": "Target performance remains distinct from attained native layers; no source repair.",
+      "source_file_sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-777d45ce17cb8496f6cf0246"
+    },
+    "selector-evidence-7a96992accc1262aa68705a8": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/InteriorWall",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "role": "InteriorWall",
+        "interior": true,
+        "exterior": true
+      },
+      "original_unit": "boolean",
+      "transformation": "Pinned native film method; attained U = 1 / (sum native layer resistance + included films) for opaque materials.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-7a96992accc1262aa68705a8"
+    },
+    "selector-evidence-7abb273287f5e5ed61e1193d": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Adiabatic Material",
+        "material_type": "MasslessOpaqueMaterial",
+        "roughness": null,
+        "thickness": null,
+        "conductivity": null,
+        "resistance": 9999.0,
+        "density": null,
+        "specific_heat": null,
+        "thermal_absorptance": null,
+        "solar_absorptance": null,
+        "visible_absorptance": null,
+        "gas_type": null,
+        "u_factor": null,
+        "solar_heat_gain_coefficient": null,
+        "visible_transmittance": null,
+        "optical_data_type": null,
+        "solar_transmittance_at_normal_incidence": null,
+        "front_side_solar_reflectance_at_normal_incidence": null,
+        "back_side_solar_reflectance_at_normal_incidence": null,
+        "visible_transmittance_at_normal_incidence": null,
+        "front_side_visible_reflectance_at_normal_incidence": null,
+        "back_side_visible_reflectance_at_normal_incidence": null,
+        "infrared_transmittance_at_normal_incidence": null,
+        "front_side_infrared_hemispherical_emissivity": null,
+        "back_side_infrared_hemispherical_emissivity": null,
+        "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+        "solar_diffusing": null,
+        "frame_width": null,
+        "material_standard": null,
+        "material_standard_source": null,
+        "code_category": null,
+        "code_identifier": null,
+        "framing_material": null,
+        "framing_configuration": null,
+        "framing_depth": null,
+        "framing_size": null,
+        "cavity_insulation": null,
+        "notes": null,
+        "source_candidates": [
+          {
+            "index": 32,
+            "row": {
+              "name": "Adiabatic Material",
+              "material_type": "MasslessOpaqueMaterial",
+              "roughness": null,
+              "thickness": null,
+              "conductivity": null,
+              "resistance": 9999.0,
+              "density": null,
+              "specific_heat": null,
+              "thermal_absorptance": null,
+              "solar_absorptance": null,
+              "visible_absorptance": null,
+              "gas_type": null,
+              "u_factor": null,
+              "solar_heat_gain_coefficient": null,
+              "visible_transmittance": null,
+              "optical_data_type": null,
+              "solar_transmittance_at_normal_incidence": null,
+              "front_side_solar_reflectance_at_normal_incidence": null,
+              "back_side_solar_reflectance_at_normal_incidence": null,
+              "visible_transmittance_at_normal_incidence": null,
+              "front_side_visible_reflectance_at_normal_incidence": null,
+              "back_side_visible_reflectance_at_normal_incidence": null,
+              "infrared_transmittance_at_normal_incidence": null,
+              "front_side_infrared_hemispherical_emissivity": null,
+              "back_side_infrared_hemispherical_emissivity": null,
+              "dirt_correction_factor_for_solar_and_visible_transmittance": null,
+              "solar_diffusing": null,
+              "frame_width": null,
+              "material_standard": null,
+              "material_standard_source": null,
+              "code_category": null,
+              "code_identifier": null,
+              "framing_material": null,
+              "framing_configuration": null,
+              "framing_depth": null,
+              "framing_size": null,
+              "cavity_insulation": null,
+              "notes": null
+            }
+          }
+        ]
+      },
+      "original_unit": "source IP material columns; generated simple glazing U Btu/h/ft2/degF and SHGC/VT 1",
+      "transformation": "Execute pinned constructors/setters and target adjustment; getters report SI. solar_diffusing uses source /true/i boolean conversion.",
+      "interpretation_note": "Retain actual SDK outcome including rejected nil.to_f setters; no fabricated material defaults.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-7abb273287f5e5ed61e1193d"
+    },
+    "selector-evidence-7c494caa257e75d7e29446f7": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json#/constructions/name=Typical Interior Wall",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Typical Interior Wall",
+        "intended_surface_type": "InteriorWall",
+        "standards_construction_type": null,
+        "insulation_layer": null,
+        "skylight_framing": null,
+        "materials": [
+          "G01 13mm gypsum board",
+          "G01 13mm gypsum board"
+        ],
+        "source_candidates": [
+          {
+            "index": 69,
+            "row": {
+              "name": "Typical Interior Wall",
+              "intended_surface_type": "InteriorWall",
+              "standards_construction_type": null,
+              "insulation_layer": null,
+              "skylight_framing": null,
+              "materials": [
+                "G01 13mm gypsum board",
+                "G01 13mm gypsum board"
+              ]
+            }
+          }
+        ]
+      },
+      "original_unit": "ordered source construction recipe",
+      "transformation": "Execute pinned model_add_construction; preserve source row candidates.",
+      "interpretation_note": "Target performance remains distinct from attained native layers; no source repair.",
+      "source_file_sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-7c494caa257e75d7e29446f7"
+    },
+    "selector-evidence-81ea688c28e68f803eb60088": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/InteriorFloor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "target_u_Btu_h_ft2_degF": null,
+        "native_layer_resistances_m2_K_W": [
+          0.04397417913162101,
+          0.216479986995276
+        ],
+        "native_included_films_m2_K_W": 0.269448581033928,
+        "native_simple_glazing_rated_u_W_m2_K": null,
+        "source_layer_evidence_ids": [
+          "selector-evidence-6f81fc257b7449d0b60fa828",
+          "selector-evidence-3e7607b747232aa13a86e4a7"
+        ]
+      },
+      "original_unit": "native getter resistances m2*K/W, SimpleGlazing rated U W/m2/K; source target Btu/(h*ft2*degF)",
+      "transformation": "Execute pinned source material and construction methods; opaque attained U = 1/(sum native layer R + included pinned films); simple glazing uses native rated U getter; detailed glazing scalar U is unreported, not required for ordered pane/gas model execution.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-81ea688c28e68f803eb60088"
+    },
+    "selector-evidence-836758ffed6b6142a2036525": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=CP02 CARPET PAD/visible_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.8,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-836758ffed6b6142a2036525"
+    },
+    "selector-evidence-8581f3dbdfed9d6e06ef7efa": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/density",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 144.957816,
+      "original_unit": "lb/ft3",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable kg/m3 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "kg/m3",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-8581f3dbdfed9d6e06ef7efa"
+    },
+    "selector-evidence-8c10be2ffbfe089f101da92d": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/thermal_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.9,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-8c10be2ffbfe089f101da92d"
+    },
+    "selector-evidence-8c5b1efbbc401c07840780bb": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/conductivity",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 1.10957004,
+      "original_unit": "Btu*in/(h*ft2*degF)",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable W/m/K operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "W/m/K",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-8c5b1efbbc401c07840780bb"
+    },
+    "selector-evidence-8f88fdafc19c2f5d3873b2ab": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json#/constructions/name=Adiabatic Roof",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Adiabatic Roof",
+        "intended_surface_type": "ExteriorRoof",
+        "standards_construction_type": "Attic and Other",
+        "insulation_layer": null,
+        "skylight_framing": null,
+        "materials": [
+          "Adiabatic Material"
+        ],
+        "source_candidates": [
+          {
+            "index": 9,
+            "row": {
+              "name": "Adiabatic Roof",
+              "intended_surface_type": "ExteriorRoof",
+              "standards_construction_type": "Attic and Other",
+              "insulation_layer": null,
+              "skylight_framing": null,
+              "materials": [
+                "Adiabatic Material"
+              ]
+            }
+          }
+        ]
+      },
+      "original_unit": "ordered source construction recipe",
+      "transformation": "Execute pinned model_add_construction; preserve source row candidates.",
+      "interpretation_note": "Target performance remains distinct from attained native layers; no source repair.",
+      "source_file_sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-8f88fdafc19c2f5d3873b2ab"
+    },
+    "selector-evidence-959d1223f1e0dfc872f50877": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/visible_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": null,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-959d1223f1e0dfc872f50877"
+    },
+    "selector-evidence-9a0698127b131af5559e85e5": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/thermal_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": null,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-9a0698127b131af5559e85e5"
+    },
+    "selector-evidence-9d0e9311142df2ec5bbcec2b": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/ExteriorFloor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "role": "ExteriorFloor",
+        "interior": false,
+        "exterior": false
+      },
+      "original_unit": "boolean",
+      "transformation": "Pinned native film method; attained U = 1 / (sum native layer resistance + included films) for opaque materials.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-9d0e9311142df2ec5bbcec2b"
+    },
+    "selector-evidence-a836ec9e72192f9649e5336b": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/thickness",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 4.0,
+      "original_unit": "in",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable m operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "m",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-a836ec9e72192f9649e5336b"
+    },
+    "selector-evidence-a853b8b047e39cdf9e2b8257": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=CP02 CARPET PAD/roughness",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": "VeryRough",
+      "original_unit": "category",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable category operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "category",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-a853b8b047e39cdf9e2b8257"
+    },
+    "selector-evidence-ab10030f9fff0a1c63acd3ff": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/density",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 49.9424,
+      "original_unit": "lb/ft3",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable kg/m3 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "kg/m3",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-ab10030f9fff0a1c63acd3ff"
+    },
+    "selector-evidence-acd186f6d40f5b7b387fb776": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json#/constructions/name=Typical Interior Ceiling",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Typical Interior Ceiling",
+        "intended_surface_type": "InteriorCeiling",
+        "standards_construction_type": null,
+        "insulation_layer": null,
+        "skylight_framing": null,
+        "materials": [
+          "CP02 CARPET PAD",
+          "100mm Normalweight concrete floor"
+        ],
+        "source_candidates": [
+          {
+            "index": 64,
+            "row": {
+              "name": "Typical Interior Ceiling",
+              "intended_surface_type": "InteriorCeiling",
+              "standards_construction_type": null,
+              "insulation_layer": null,
+              "skylight_framing": null,
+              "materials": [
+                "CP02 CARPET PAD",
+                "100mm Normalweight concrete floor"
+              ]
+            }
+          }
+        ]
+      },
+      "original_unit": "ordered source construction recipe",
+      "transformation": "Execute pinned model_add_construction; preserve source row candidates.",
+      "interpretation_note": "Target performance remains distinct from attained native layers; no source repair.",
+      "source_file_sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-acd186f6d40f5b7b387fb776"
+    },
+    "selector-evidence-bed5f095b66388a76c013b72": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/ExteriorWall",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "target_u_Btu_h_ft2_degF": null,
+        "native_layer_resistances_m2_K_W": [
+          1760.92572663938
+        ],
+        "native_included_films_m2_K_W": 0.0,
+        "native_simple_glazing_rated_u_W_m2_K": null,
+        "source_layer_evidence_ids": [
+          "selector-evidence-7abb273287f5e5ed61e1193d"
+        ]
+      },
+      "original_unit": "native getter resistances m2*K/W, SimpleGlazing rated U W/m2/K; source target Btu/(h*ft2*degF)",
+      "transformation": "Execute pinned source material and construction methods; opaque attained U = 1/(sum native layer R + included pinned films); simple glazing uses native rated U getter; detailed glazing scalar U is unreported, not required for ordered pane/gas model execution.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-bed5f095b66388a76c013b72"
+    },
+    "selector-evidence-c2b11da50891c049914b12b7": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/conductivity",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 16.0194175,
+      "original_unit": "Btu*in/(h*ft2*degF)",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable W/m/K operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "W/m/K",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-c2b11da50891c049914b12b7"
+    },
+    "selector-evidence-c9781ce43a14b50e058fd1b8": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/specific_heat",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.260516252,
+      "original_unit": "Btu/(lb*degF)",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable J/kg/K operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "J/kg/K",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-c9781ce43a14b50e058fd1b8"
+    },
+    "selector-evidence-cd2c140ad3cb5d84c3da2525": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=G01 13mm gypsum board/thickness",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.5,
+      "original_unit": "in",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable m operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "m",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-cd2c140ad3cb5d84c3da2525"
+    },
+    "selector-evidence-d510d7b43dc75b8e3166898e": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json#/constructions/name=Adiabatic ExteriorFloor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Adiabatic ExteriorFloor",
+        "intended_surface_type": "ExteriorFloor",
+        "standards_construction_type": "Mass",
+        "insulation_layer": null,
+        "skylight_framing": null,
+        "materials": [
+          "Adiabatic Material"
+        ],
+        "source_candidates": [
+          {
+            "index": 7,
+            "row": {
+              "name": "Adiabatic ExteriorFloor",
+              "intended_surface_type": "ExteriorFloor",
+              "standards_construction_type": "Mass",
+              "insulation_layer": null,
+              "skylight_framing": null,
+              "materials": [
+                "Adiabatic Material"
+              ]
+            }
+          }
+        ]
+      },
+      "original_unit": "ordered source construction recipe",
+      "transformation": "Execute pinned model_add_construction; preserve source row candidates.",
+      "interpretation_note": "Target performance remains distinct from attained native layers; no source repair.",
+      "source_file_sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-d510d7b43dc75b8e3166898e"
+    },
+    "selector-evidence-ddde8cb5f45c4ba643d07e7c": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/solar_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.7,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-ddde8cb5f45c4ba643d07e7c"
+    },
+    "selector-evidence-e4a72e2adc0bb3fb67a31884": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/resistance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "material_original": 9999.0,
+        "target_u_Btu_h_ft2_degF": null,
+        "insulation_layer": null,
+        "source_intended_surface_type": "ExteriorFloor",
+        "interior_film": null,
+        "exterior_film": null
+      },
+      "original_unit": "h*ft2*degF/Btu",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution. Then pinned model_add_construction/modify.rb target adjustment, clamping, insulation removal, and setter acceptance. Detailed glazing adjustment is skipped by source.",
+      "interpretation_note": "Executable m2*K/W operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "m2*K/W",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-e4a72e2adc0bb3fb67a31884"
+    },
+    "selector-evidence-e6939089af8765602cbae37b": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/solar_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": null,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-e6939089af8765602cbae37b"
+    },
+    "selector-evidence-e6e2ef8c911033a7a119a1a5": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json#/constructions/name=Typical Interior Floor",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "name": "Typical Interior Floor",
+        "intended_surface_type": "InteriorFloor",
+        "standards_construction_type": null,
+        "insulation_layer": null,
+        "skylight_framing": null,
+        "materials": [
+          "100mm Normalweight concrete floor",
+          "CP02 CARPET PAD"
+        ],
+        "source_candidates": [
+          {
+            "index": 66,
+            "row": {
+              "name": "Typical Interior Floor",
+              "intended_surface_type": "InteriorFloor",
+              "standards_construction_type": null,
+              "insulation_layer": null,
+              "skylight_framing": null,
+              "materials": [
+                "100mm Normalweight concrete floor",
+                "CP02 CARPET PAD"
+              ]
+            }
+          }
+        ]
+      },
+      "original_unit": "ordered source construction recipe",
+      "transformation": "Execute pinned model_add_construction; preserve source row candidates.",
+      "interpretation_note": "Target performance remains distinct from attained native layers; no source repair.",
+      "source_file_sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-e6e2ef8c911033a7a119a1a5"
+    },
+    "selector-evidence-ea8a962d315166629abc911c": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=Adiabatic Material/resistance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "material_original": 9999.0,
+        "target_u_Btu_h_ft2_degF": null,
+        "insulation_layer": null,
+        "source_intended_surface_type": "ExteriorRoof",
+        "interior_film": null,
+        "exterior_film": null
+      },
+      "original_unit": "h*ft2*degF/Btu",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution. Then pinned model_add_construction/modify.rb target adjustment, clamping, insulation removal, and setter acceptance. Detailed glazing adjustment is skipped by source.",
+      "interpretation_note": "Executable m2*K/W operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "m2*K/W",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-ea8a962d315166629abc911c"
+    },
+    "selector-evidence-ecfe09a473d2fbe95a3f4d64": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=CP02 CARPET PAD/thermal_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.9,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-ecfe09a473d2fbe95a3f4d64"
+    },
+    "selector-evidence-f0ab88c202e086a927e1cf89": {
+      "source_locator": "lib/openstudio-standards/constructions/information.rb#/film_coefficients_r_value/ExteriorRoof",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "role": "ExteriorRoof",
+        "interior": false,
+        "exterior": false
+      },
+      "original_unit": "boolean",
+      "transformation": "Pinned native film method; attained U = 1 / (sum native layer resistance + included films) for opaque materials.",
+      "interpretation_note": "Direct base recipes report physical U with both source standard films; simple glazing U already includes rating films; detailed optical summary remains optional.",
+      "source_file_sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-f0ab88c202e086a927e1cf89"
+    },
+    "selector-evidence-f306682e982cc6dbd9e15480": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json#/construction_properties/216",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": {
+        "climate_zone_set": "ClimateZone 3",
+        "intended_surface_type": "ExteriorFloor",
+        "standards_construction_type": "Mass",
+        "building_category": "Adiabatic",
+        "construction": "Adiabatic ExteriorFloor",
+        "minimum_percent_of_surface": null,
+        "maximum_percent_of_surface": 0,
+        "assembly_maximum_u_value": null,
+        "assembly_maximum_u_value_unit": "Btu/h-ft2-F",
+        "u_value_includes_interior_film_coefficient": null,
+        "u_value_includes_exterior_film_coefficient": null,
+        "assembly_maximum_f_factor": null,
+        "assembly_maximum_f_factor_unit": "Btu/h-ft-F",
+        "assembly_maximum_c_factor": null,
+        "assembly_maximum_c_factor_unit": "Btu/h-ft2-F",
+        "assembly_maximum_r_value": null,
+        "assembly_maximum_r_value_unit": "hr-ft2-F/btu",
+        "orientation": null,
+        "minimum_projection_factor": null,
+        "maximum_projection_factor": null,
+        "assembly_maximum_solar_heat_gain_coefficient": null,
+        "assembly_minimum_visible_transmittance": null,
+        "assembly_minimum_vt_shgc": null,
+        "assembly_maximum_u_value_based_on_HDD65_slope": null,
+        "assembly_maximum_u_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_u_value_based_on_HDD65_minimum_u_value": null,
+        "assembly_maximum_u_value_based_on_HDD65_maximum_u_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_slope": null,
+        "assembly_maximum_r_value_based_on_HDD65_intercept": null,
+        "assembly_maximum_r_value_based_on_HDD65_minimum_r_value": null,
+        "assembly_maximum_r_value_based_on_HDD65_maximum_r_value": null
+      },
+      "original_unit": "U Btu/h/ft2/degF; SHGC 1; surface coverage percent; film flags boolean",
+      "transformation": "Exact selector context; template is the pinned source class/file binding; native source units enter pinned construction method.",
+      "interpretation_note": "Climate group, type, conditioning category and coverage branch remain explicit.",
+      "source_file_sha256": "5c35cbff4d4182be480dd2416d65bb7df483f54f9b4fb87e78e61390e1d314a3",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-f306682e982cc6dbd9e15480"
+    },
+    "selector-evidence-fa1b439e1cec20a24a2556b0": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=CP02 CARPET PAD/solar_absorptance",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.7,
+      "original_unit": "1",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable 1 operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "1",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-fa1b439e1cec20a24a2556b0"
+    },
+    "selector-evidence-feca69b449189bd0774093ba": {
+      "source_locator": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json#/materials/name=100mm Normalweight concrete floor/specific_heat",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "extraction_date": "2026-10-14",
+      "original_value": 0.198852772,
+      "original_unit": "Btu/(lb*degF)",
+      "transformation": "Pinned model_add_material constructor/setter SI getter; original null retained; actual SDK default is recovered by execution.",
+      "interpretation_note": "Executable J/kg/K operand comes from exact source-native getter; no inferred constant.",
+      "runtime_executable_sha256": "46a80a3d340696bcc189d9a7ae7ec4b70ea4db0fdb4565a33ecd25aa8ebf6361",
+      "normalized_unit": "J/kg/K",
+      "supporting_source_locators": [
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_material",
+        "lib/openstudio-standards/standards/Standards.Model.rb#model_add_construction",
+        "lib/openstudio-standards/constructions/modify.rb#construction_set_u_value"
+      ],
+      "source_file_sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+      "source_project": "OpenStudio Standards",
+      "id": "selector-evidence-feca69b449189bd0774093ba"
+    },
+    "foundation-evidence-7dae18ba0e7658a34b52025d": {
+      "id": "foundation-evidence-7dae18ba0e7658a34b52025d",
+      "source_project": "OpenStudio Standards",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "source_locator": "data/construction-inputs/foundation-execution-v1.json#/commercial/foundation-case-09ce63eab93726b31deac4ef",
+      "source_file_sha256": {
+        "native_capture": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83"
+      },
+      "original_value": {
+        "frozen_native_capture": "data/construction-inputs/foundation-execution-v1.json#/commercial/foundation-case-09ce63eab93726b31deac4ef"
+      },
+      "original_unit": "SI native materials/method parameters; original HPXML/IP evidence retained at the pinned locator",
+      "transformation": "Retain native ground methods, selected source interfaces and SI material recipes; ordinary unified interfaces use the existing two-mass/one-resistance approximation",
+      "extraction_date": "2026-10-16",
+      "interpretation_note": "Consumer supplies actual geometry/environment. Raw inventories, source geometry and verification probes remain internal."
+    }
+  },
+  "metadata": {
+    "assignment_policy": {
+      "precedence": "space_type_then_story_then_building_default",
+      "evidence_id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24",
+      "variant_resolution": "explicit_assignment_id_or_unique_compatible_rule",
+      "source_absent_override": "inherit_building_default",
+      "unmatched_or_ambiguous": "error"
+    },
+    "input_sha256": {
+      "data/construction-releases/v1.0.0/catalogue.json": "0e45b78fcb3f78142a80f62aa401a7725c9ba56a78fc0fc803a6cb40b6c2c6a4",
+      "data/construction-releases/v1.0.0/manifest.json": "57c1e8f21a73ba182b1ef11b54cf2fa9087a66f82b7f4b51f0f33f2b85f99ec1",
+      "data/construction-inputs/geometry-v1.json": "66274536119e312f296abc05c98223e69f296c8560fff4670589216b4a581bf0",
+      "data/definition-releases/v0.1.1/constructions.json": "5b15d8a47b971a56024e2ad3d3c59829b964faabc647bf9581289896d0a3dab5",
+      "scripts/construction_set_export.py": "95c4be0c99767db084e7adf8d6837b4c778224d7733447a86fc4f0401b08891c",
+      "scripts/construction_set_validation.py": "42b2ab6bed058461b0b4c446a80a77642b262b169cfb649289138b7642ebbfaf",
+      "scripts/construction_set_geometry.py": "d82b0fc8d7fb7f835b5f541b862f94c11782a4975a0fd8840adb01b0dee6d2a4",
+      "scripts/construction_set_release.py": "64a33fa36b85fe87b2d0a15ffc0990ecd59d66a7c89f1a6311b0bedaaafb24a1",
+      "schemas/construction-catalogue-v2.schema.json": "6201c393afb924472e82f83da1cafd9554c4a6567ec5b296e556dd59a0dbde2c",
+      "schemas/construction-json-v2.schema.json": "81eb75e3d0dd4306078fe906cf23ddfb1dd1df23256c2af8e30cc0e9ae4b48f3",
+      "sources/construction-v2-source-lock.json": "52dd272415d624afea038795ba4fb2fa4d81486ee043588d3184ca78edd3ec7a",
+      "scripts/construction_export.py": "27e8479c58f6736a73b80456e3f2d6cdcb5f874972bccd0733c60e750434b8fc",
+      "scripts/construction_validation.py": "4b500c934bda363e235049f1d71beed34480a32984b503ef9d9eba70b2268917",
+      "scripts/energy_json_review.py": "3951ac739823585b5eab74fef60b3fc7de31c86cb8519cd3c022341d1cdc56a8",
+      "scripts/recover_construction_selectors.py": "1d1f4b3125c78247e7c6273657382fac55758b0b1abf3157fdea825945767c03",
+      "scripts/common.py": "7a1883f76a990fda09923e4431b2a8f856ed4557ef387c944a4759f04de93c73",
+      "scripts/definition_contract.py": "93433fb3aa70067e2761960a86338bb98fe4b4d5fe668913c64f177981f87eba",
+      "data/construction-inputs/selector-closure-v1.json": "f1e4919912f67a173f0a1be4ec30af9467702cca90fda759ab5220bf6a08d1dc",
+      "data/construction-inputs/residential-assemblies-v1.json": "1163f41618296a464c31457a7255122655199402c7204c77686504034370619b",
+      "data/construction-inputs/fixed-ach-v1.json": "41bcb8c3c6c44b73a6f1d445914615c764598ec7cfeba192fc31af9b39cb7828",
+      "schemas/construction-json-v1.schema.json": "6d8e94910cb47a034fde3ec26be9bca69bde11b859e4565594339257b646d6d3",
+      "data/construction-releases/v2.0.0/manifest.json": "d3de9efa1327a28f8f9618d87d043342fb63116ad96421770e0f8b8af29abb93",
+      "schemas/construction-applicability-v1.schema.json": "4f1860c9e4c24d9231511ad4712b9abd4339a34917db8681487082c51468e1b5",
+      "scripts/construction_hotel_applicability.py": "0f405fcf967b4149c1424373f222b2dd88af69d25d8b23402c4174f7d9ea7b7b",
+      "sources/hotel-guestroom-applicability-v1.json": "dee876044bec9391344caf92a16b0f68fce04a3928bcc4bfb4f40491b419d86b"
+    },
+    "source_files": {
+      "commercial/lib/openstudio-standards/constructions/information.rb": {
+        "sha256": "5730762a016218604803fea566920072e8e3f589630072f9c4817da987460233",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "source_id": "openstudio-standards",
+        "path": "lib/openstudio-standards/constructions/information.rb",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/openstudio-standards/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/constructions/information.rb"
+      },
+      "commercial/lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json": {
+        "sha256": "5c35cbff4d4182be480dd2416d65bb7df483f54f9b4fb87e78e61390e1d314a3",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "source_id": "openstudio-standards",
+        "path": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/openstudio-standards/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_properties.json"
+      },
+      "commercial/lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_sets.json": {
+        "sha256": "b1dadfc3c43e52f8645011e76fa37a55b0386dc4bf3fcf993e48feaa876ac052",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "source_id": "openstudio-standards",
+        "path": "lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_sets.json",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/openstudio-standards/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/ashrae_90_1/ashrae_90_1_2019/data/ashrae_90_1_2019.construction_sets.json"
+      },
+      "commercial/lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json": {
+        "sha256": "85567514f58fb8523a0bf9e03ef96a497065fd0b25601d5e9a8873bd1dc6766c",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "source_id": "openstudio-standards",
+        "path": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/openstudio-standards/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.constructions.json"
+      },
+      "commercial/lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json": {
+        "sha256": "80f218a68bdbf59b1e162e197550da8e968cd89eec960258f6883c233a40fe28",
+        "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+        "source_id": "openstudio-standards",
+        "path": "lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json",
+        "url": "https://raw.githubusercontent.com/NatLabRockies/openstudio-standards/c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907/lib/openstudio-standards/standards/ashrae_90_1/data/ashrae_90_1.materials.json"
+      },
+      "openstudio-construction-inheritance": {
+        "url": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html",
+        "sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+        "source_revision": "OpenStudio-3.10.0-documentation",
+        "cache_path": "build/construction-set-v2/Space-3.10.0.html",
+        "source_locator": "Space#getDefaultConstructionWithSearchDistance",
+        "extraction_date": "2026-10-14",
+        "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration."
+      },
+      "atlas-foundation-native_capture": {
+        "sha256": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83",
+        "source_revision": "foundation-execution/1.0.0"
+      }
+    },
+    "migration": {
+      "source_contract": "construction-json/1.0.0",
+      "physics": "unchanged",
+      "translator_owner": "BEMGen",
+      "review_status": "design_accepted"
+    },
+    "source_definition_ids": [
+      "construction-2e0ceb3642df6de84ba83c7d"
+    ],
+    "selection_decisions": [
+      {
+        "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+        "source_selector": "exterior_floor",
+        "scope": {
+          "scope": "building_default"
+        },
+        "resolved_climate_selection": {
+          "element_ids": [
+            "construction-f91bd16c0082909b765714ee"
+          ],
+          "source_climate_group": "ClimateZone 3B",
+          "property_climate_group": "ClimateZone 3",
+          "selection_rule": "source_first_match"
+        },
+        "candidate_element_ids": [
+          "construction-f91bd16c0082909b765714ee"
+        ],
+        "evidence_id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      },
+      {
+        "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+        "source_selector": "exterior_wall",
+        "scope": {
+          "scope": "building_default"
+        },
+        "resolved_climate_selection": {
+          "element_ids": [
+            "construction-08ce1260a778a54ee1f4a40d"
+          ],
+          "source_climate_group": "ClimateZone 3B",
+          "property_climate_group": "ClimateZone 3",
+          "selection_rule": "source_first_match"
+        },
+        "candidate_element_ids": [
+          "construction-08ce1260a778a54ee1f4a40d"
+        ],
+        "evidence_id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      },
+      {
+        "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+        "source_selector": "exterior_roof",
+        "scope": {
+          "scope": "building_default"
+        },
+        "resolved_climate_selection": {
+          "element_ids": [
+            "construction-6ccb9c76dec5df910240c48a"
+          ],
+          "source_climate_group": "ClimateZone 3B",
+          "property_climate_group": "ClimateZone 3",
+          "selection_rule": "source_first_match"
+        },
+        "candidate_element_ids": [
+          "construction-6ccb9c76dec5df910240c48a"
+        ],
+        "evidence_id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      },
+      {
+        "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+        "source_selector": "interior_floors",
+        "scope": {
+          "scope": "building_default"
+        },
+        "resolved_climate_selection": {
+          "element_ids": [
+            "construction-57199c17dd84fdb7f8bb6507"
+          ],
+          "source_climate_group": "ClimateZone 3B",
+          "property_climate_group": null,
+          "selection_rule": "direct_source_recipe_or_absent"
+        },
+        "candidate_element_ids": [
+          "construction-57199c17dd84fdb7f8bb6507"
+        ],
+        "evidence_id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      },
+      {
+        "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+        "source_selector": "interior_walls",
+        "scope": {
+          "scope": "building_default"
+        },
+        "resolved_climate_selection": {
+          "element_ids": [
+            "construction-af7922e68f126c26f87fbc61"
+          ],
+          "source_climate_group": "ClimateZone 3B",
+          "property_climate_group": null,
+          "selection_rule": "direct_source_recipe_or_absent"
+        },
+        "candidate_element_ids": [
+          "construction-af7922e68f126c26f87fbc61"
+        ],
+        "evidence_id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      },
+      {
+        "source_definition_id": "construction-2e0ceb3642df6de84ba83c7d",
+        "source_selector": "interior_ceilings",
+        "scope": {
+          "scope": "building_default"
+        },
+        "resolved_climate_selection": {
+          "element_ids": [
+            "construction-6fee15841f07ad859fba5934"
+          ],
+          "source_climate_group": "ClimateZone 3B",
+          "property_climate_group": null,
+          "selection_rule": "direct_source_recipe_or_absent"
+        },
+        "candidate_element_ids": [
+          "construction-6fee15841f07ad859fba5934"
+        ],
+        "evidence_id": "selector-evidence-302a5b55f3233e74a5fe4882"
+      }
+    ],
+    "variant_selections": {}
+  },
+  "mass_accounting": {
+    "schema_version": "1.0.0",
+    "status": "ready",
+    "reference": {
+      "profile_id": "90.1-2019/SmallDataCenterLowITE",
+      "counted_floor_area_m2": 55.741824,
+      "quantity_basis": "multiply normalized quantities by actual counted building floor area"
+    },
+    "floor_pair_policy": "one physical slab; do not add both floor and ceiling capacity",
+    "paired_surface_policy": {
+      "canonical_side": "InteriorFloor",
+      "adjacent_ceiling": "reverse the same canonical floor assembly",
+      "unpaired_ceiling": "use InteriorCeiling recipe"
+    },
+    "added_mass_policy": "additional source furnishings/partition objects are separate from explicit surfaces",
+    "removed_wall_policy": "Restore only unrepresented InteriorWall capacity using source or equivalent recipes; exchange equivalence remains approximate",
+    "residual_floor_policy": "Restore only unrepresented InteriorFloor capacity; explicit slabs retain their capacity",
+    "residual_policy": "max(0, reference minus represented); report signed difference and excess; never subtract mass",
+    "physical_inventory_profile_id": "90.1-2019/SmallDataCenterLowITE",
+    "paired_face_area_policy": "mean_zone_weighted_faces",
+    "reference_area_approximation": {
+      "unequal_multiplier_pair_counts": {
+        "floor_pairs": 0,
+        "wall_pairs": 0
+      },
+      "evidence_profile_id": "90.1-2019/SmallDataCenterLowITE",
+      "interpretation": "Mean of multiplied face areas where multipliers differ; preserve the frozen source inventory. Residential inferred adiabatic floor/ceiling object quantities retain their source convention."
+    },
+    "physical_capacity_budgets": {
+      "InteriorFloor": [],
+      "InteriorWall": []
+    },
+    "additional_mass": {
+      "status": "known_zero",
+      "entries": [],
+      "allocation_policy": "Precomputed source-scope quantities normalized by building counted floor area; preserve source scopes. If absent in consumer geometry, require an explicit consumer allocation policy.",
+      "legacy_partition_selector_policy": "InteriorPartition is a retained material selector. Instantiate additional mass from this inventory only; never instantiate both representations of the same source object."
+    },
+    "recipes": {},
+    "provenance": {
+      "source_project": "OpenStudio Standards",
+      "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+      "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/90.1-2019~1SmallDataCenterLowITE",
+      "source_file_sha256": {
+        "data/program-support/construction-weighting-v1.1.0/profiles.json": "aa2621fdfd837ceacf454070482aa3863de93bf1a5f3c1f85d7ffd607791681c"
+      },
+      "extraction_date": "2026-10-16",
+      "original_unit": "m2, m3, SI material properties, and dimensionless source multipliers/scaling coefficients",
+      "original_value": {
+        "counted_floor_area_m2": 55.741824,
+        "profile_provenance": {
+          "extraction_date": "2026-10-15",
+          "interpretation_note": "Source thermostat rules evaluate only furnishing applicability; no HVAC or annual energy model.",
+          "original_unit": "m2, m3 and dimensionless",
+          "source_file_sha256": "29cda57e6e7c75d80edd8e3836f7dcf4133aeccacd458b349715137c6b3c8339",
+          "source_locator": "data/geometry/ASHRAESmallDataCenterLowITE.osm",
+          "source_project": "OpenStudio Standards",
+          "source_revision": "c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907",
+          "transformation": "Pinned SDK netArea/grossArea, 9 significant digits for derived geometry only; source geometry tweaks; source multipliers exactly once; no consumer BEM."
+        }
+      },
+      "transformation": "Copy frozen source quantities; divide area and capacity by counted reference floor area. Use source multiplier once. Select wall/slab recipes with detailed source precedence.",
+      "interpretation_note": "Quantities describe the selected source archetype, not a population weight or consumer geometry. Additional mass is independent of residual restoration."
+    }
+  },
+  "foundation_ground": {
+    "configuration": {
+      "type": "source_native_commercial"
+    },
+    "methods": {
+      "ground-method-f181ecf923d42ee7f4eb23b1": {
+        "model": "LayeredGround",
+        "model_parameters_id": "ground-model-parameters-ddb72c681cd607b3d7605e7a",
+        "parameters": {},
+        "required_geometry": [
+          "surface_area_m2"
+        ]
+      }
+    },
+    "model_parameters": {
+      "ground-model-parameters-ddb72c681cd607b3d7605e7a": {
+        "model": "LayeredGroundBoundary",
+        "monthly_temperature_input": "surface_monthly_ground_temperature_C"
+      }
+    },
+    "required_geometry": {
+      "surface_area_m2": {
+        "unit": "m2",
+        "description": "Actual assigned component surface area",
+        "exclusive_minimum": 0
+      }
+    }
+  }
+}
