@@ -1,8 +1,11 @@
 """Retrieve checksum-locked public source blobs; never execute downloaded code."""
 import argparse
 import hashlib
+import http.client
 import os
 import tempfile
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -10,6 +13,10 @@ from pathlib import Path
 from scripts.common import ROOT, load_json
 
 ALLOWED_HOSTS = {'raw.githubusercontent.com', 'www.energycodes.gov', 'www.energy.gov', 'docs.nlr.gov'}
+# Transient host failures (5xx, rate limits, dropped connections) are retried; the
+# downloaded bytes are still checked against the locked size and SHA-256.
+ATTEMPTS = 4
+BACKOFF_SECONDS = 2
 
 
 def cache_path(entry, cache_root):
@@ -41,15 +48,32 @@ def safe_url(url):
         raise ValueError('Source URL must be public HTTPS on an allowed host')
 
 
+def transient(error):
+    if isinstance(error, urllib.error.HTTPError):
+        return error.code == 429 or error.code >= 500
+    return isinstance(error, (urllib.error.URLError, TimeoutError, ConnectionError, http.client.IncompleteRead))
+
+
+def download(entry):
+    request = urllib.request.Request(entry['url'], headers={'User-Agent': 'archetype-atlas/0.1.0'})
+    for attempt in range(1, ATTEMPTS+1):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                safe_url(response.geturl())
+                return response.read(entry['size_bytes'] + 1)
+        except Exception as error:
+            if attempt == ATTEMPTS or not transient(error):
+                raise
+            print(f'Retrying {entry["path"]} after {error} (attempt {attempt} of {ATTEMPTS})')
+            time.sleep(BACKOFF_SECONDS * 2**(attempt-1))
+
+
 def fetch_file(entry, cache_root):
     path = cache_path(entry, cache_root)
     if path.exists():
         return verify_file(entry, cache_root)
     safe_url(entry['url'])
-    request = urllib.request.Request(entry['url'], headers={'User-Agent': 'archetype-atlas/0.1.0'})
-    with urllib.request.urlopen(request, timeout=60) as response:
-        safe_url(response.geturl())
-        content = response.read(entry['size_bytes'] + 1)
+    content = download(entry)
     if len(content) != entry['size_bytes'] or hashlib.sha256(content).hexdigest() != entry['sha256']:
         raise ValueError(f'Download integrity failure: {entry["path"]}')
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -125,7 +125,7 @@ Every run of the catalogue workflow's build job verifies the presentation
 contracts (delivery, query, program JSON, active-site and browser tests, Node
 tests), generates the catalogue, builds it with `mkdocs build --strict`,
 and passes `site_check` and the Chromium smoke test before it uploads the Pages
-artifact. The same pipeline calls the reusable `validate.yml` research matrix.
+artifact. The same pipeline calls the reusable `validate.yml` research jobs.
 Construction presentation tests run in the build job. Publication explicitly
 requires `construction-site.json` through `site_check --require-construction`;
 the default checker still permits small construction-free research fixtures.
@@ -142,29 +142,31 @@ Working-branch pushes do not start CI; use `gh workflow run catalogue-site.yml
 --ref BRANCH` for a manual validation run. Its default `deploy=false` does not
 publish; even `deploy=true` cannot publish from a working branch.
 
-The frozen-release checks (evidence fetches, definition release verification
-and byte reproduction, atlas, resolution, completion, water and water-reporting
-release verification, their tests, and the historical research-site tests of
-`test_site`, which read the fetched sources; about 11 minutes) run only when needed.
-They are skipped only when every path changed since the previous pushed commit,
-or since a pull request's base, is presentation-only:
+The build job does not repeat the frozen-release checks; the reusable
+`validate.yml` research workflow runs them on every pipeline run, as parallel
+Linux jobs:
 
-- `website/`, `design/`, `docs/`, `mkdocs.yml`, and the top-level Markdown files;
-- the site scripts `active_site`, `active_smoke`, `object_site`, `definition_site`,
-  `site_check`, `site_smoke`, `site_assets`;
-- the site tests `test_active_site`, `test_object_browser`, `test_html_delivery`,
-  `test_site_delivery`, `test_search_index`, `test_definition_site`, and the Node
-  tests.
+- `unit-tests`: fetches the pinned sources and runs the full Python suite;
+- `releases`: fetches the sources, validates, reproduces and compares the atlas,
+  verifies every frozen atlas, resolution, completion, water and water-reporting
+  release, verifies and reproduces the definition release, reproduces the v3
+  program completeness receipt and runs the security audit;
+- `construction-validation`: validates all frozen construction consumer documents
+  and the combined foundation documents and receipts;
+- `construction-reproduction`: reproduces the frozen detailed and unified
+  constructions and verifies the construction profiles;
+- `schedules`: reports schedule coverage and generates every packaged programme
+  once (`smoke_catalogue`).
 
-Any other change (data, schemas, sources, requirements, other scripts or tests,
-or the workflow itself), a new branch whose comparison with the default branch
-cannot be made, and every manual dispatch run the full build-side checks.
-Independently of that optimization, the reusable `validate.yml` research matrix
-fetches the sources, verifies every frozen release, reproduces the v3 program
-completeness receipt and runs the full Python suite on every pipeline run.
-Artifact generation remains part of site CI pending roadmap item 5's discussion.
+The required `research / atlas (ubuntu-latest, 3.11)` check passes only when every
+one of these jobs passes. The required `research / atlas (windows-latest, 3.14)`
+check runs the pinned-producer reproductions and the Windows consumer-document
+validation described below. A pipeline run takes about as long as its slowest
+job, the full Python suite, rather than the sum of all checks. Artifact generation
+remains part of site CI; [ADR 0036](adr/0036-suite-based-release-storage.md)
+records caching it by input digest.
 
-The research matrix additionally reproduces frozen construction base v2.0.0,
+The research workflow additionally reproduces frozen construction base v2.0.0,
 applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with
 their existing `--check` commands. Shared mass release 1.0.0 and its seven paired
 examples are reproduced with `construction_mass_release --check --examples`.
@@ -172,10 +174,10 @@ Supporting profile 1.1.0 files and declared input hashes are verified by `constr
 not require the ignored native-recovery cache. Reproducing profiles with
 `construction_weighting --check` is a separate maintenance check requiring the
 previously recovered `build/equivalent-work/commercial-weights.json` and pinned
-source/runtime retrieval for re-execution. These publication checks run on both
-required platforms. No native source recovery or annual construction simulation
-is introduced. Lighter artifact delivery remains deferred until BEMGen testing
-is accepted; this change does not decouple generation from CI.
+source/runtime retrieval for re-execution. The base, applicability, distribution
+and profile checks run on Linux; the unified and shared-mass byte reproductions
+run on the pinned Windows producer. No native source recovery or annual
+construction simulation is introduced.
 
 The immutable v2 base generator enumerates source license notices in filesystem
 order when serializing its manifest. Use `python -m scripts.construction_base_reproduce
@@ -197,7 +199,7 @@ mass byte under the pinned producer. Both required Linux/Python 3.11 and
 Windows/Python 3.14 jobs run `python -m scripts.construction_delivery_validate`
 over all 3,320 frozen pairs (6,640 self-contained documents): checksums, provenance
 inputs, schemas, source equality, physical conservation and shared mass accounting.
-Both retain the full consumer-test suite and all other research checks. Every
+The full Python suite and the other research checks run on Linux only. Every
 original producer byte comparison remains mandatory. Frozen data, historical
 generator sources, reported errors and recipe IDs are preserved. Consumers do
 not need to regenerate fit metrics or their hashed IDs when loading a release.
