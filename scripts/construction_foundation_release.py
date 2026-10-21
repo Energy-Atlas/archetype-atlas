@@ -13,6 +13,8 @@ OUTPUT=ROOT/'data/construction-foundation-releases/v1.0.0'
 EXAMPLES=ROOT/'docs/examples/construction-foundation-v1'
 TABLES=('contexts','extensions','assemblies','unified_assemblies','materials','evidence')
 SCHEMAS=('construction-json-v3.schema.json','construction-equivalent-v2.schema.json','construction-foundation-ground-v1.schema.json')
+# Notices of the upstream sources this release uses; unrelated licences added later stay out.
+NOTICES=('comstock','energyplus-26.2','openstudio-hpxml','openstudio-standards','resstock','weather')
 
 README='''# Combined Construction Suite 1.0.0
 
@@ -82,7 +84,7 @@ def artifacts(context_ids=None):
     files['completeness.json']=encoded(report);files['README.md']=README.encode('utf-8')
     for name in SCHEMAS:files['schemas/'+name]=(ROOT/'schemas'/name).read_bytes()
     files['LICENSE']=(ROOT/'LICENSE').read_bytes()
-    for path in sorted((ROOT/'sources/licenses').glob('*.txt')):files['notices/'+path.name]=path.read_bytes()
+    for name in NOTICES:files['notices/'+name+'.txt']=(ROOT/'sources/licenses'/(name+'.txt')).read_bytes()
     paths=[EXECUTION,AIRFLOW,ROOT/'data/construction-inputs/foundation-source-v1.json',
         ROOT/'data/construction-mass-releases/v1.0.0/manifest.json',
         ROOT/'data/construction-releases/v2.2.0/manifest.json',
