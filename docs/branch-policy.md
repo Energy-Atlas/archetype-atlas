@@ -49,9 +49,9 @@ Manual validation-only runs use a separate concurrency group so they cannot
 replace a pending automatic publication. Publishing runs share the production
 queue; an active publication is not cancelled by a newer push.
 
-Research verification and byte reproduction remain mandatory. Moving generated
-JSON into Git or to an explicitly invoked generation workflow remains a separate
-design discussion in [roadmap item 5](roadmap.md#5-discuss-a-lighter-site-and-decoupled-generation).
+Research verification and byte reproduction remain mandatory. Release data is
+committed; generated site output is not and is cached by input digest, per
+[ADR 0036](adr/0036-suite-based-release-storage.md).
 
 ## Cleanup inventory
 
