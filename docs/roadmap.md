@@ -32,9 +32,11 @@ open design topics, not accepted designs.
 
 Systems remain deferred. Schedule-generator packaging does not block this
 construction milestone; no program/schedule generation changes are included.
-The local branch remains unpublished; no push, PR, hosted CI/CD or production
-foundation deployment is claimed. Older plans/review receipts below document
-historical stages and do not supersede this current order.
+The branch, rebased onto `main` after the schedule-generator merge, is integrated
+through a protected-main pull request whose required checks gate the merge.
+Production foundation deployment and live verification follow that merge and are
+not yet recorded. Older plans/review receipts below document historical stages
+and do not supersede this current order.
 
 | Order | Task | Status |
 | --- | --- | --- |
