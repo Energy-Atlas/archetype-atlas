@@ -119,11 +119,20 @@ source's inventory and are otherwise dropped.
 
 ### 6. Constructions and systems
 
-Each construction set (suite) is one file in its folder, holding its contexts,
-detailed configurations, unified component sets, mass-accounting contracts and
-foundation extensions; all of these are local to one folder. The template
-`library/` holds what is shared between building types and never across
-templates (sizes per template vs copied into every folder):
+Each construction set (suite) is one file in its folder. It holds, per context
+(climate zone, plus reference where a set covers several), the current detailed
+and unified documents without their embedded assemblies, materials and evidence,
+which become ID lists. Their configurations, unified component sets,
+mass-accounting contracts and foundation extensions are all local to the folder.
+Fields equal across all of a set's contexts are stored once, and any other value
+repeated within the set (a component role, a mass contract shared by both
+representations) is stored once in the set's value table and referenced.
+Reading a set back reproduces each standalone document exactly.
+
+The template `library/` holds assemblies and materials, shared between building
+types. Assemblies are never shared across templates; some materials are, and each
+template's library keeps its own copy under its own ID (sizes per template vs
+copied into every folder):
 
 | Library table | Per template | Per folder copies |
 | --- | --- | --- |

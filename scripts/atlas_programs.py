@@ -14,6 +14,7 @@ import json
 import re
 from pathlib import Path
 
+from scripts.atlas_format import canonical, h6, slug, suite_bytes, table_bytes, translate
 from scripts.common import ROOT, load_json
 
 DEFINITIONS = ROOT/'data/definition-releases/v0.1.1'
@@ -27,35 +28,6 @@ REFERENCE = re.compile(r'"((?:mixed-)?schedule-[0-9a-f]{20,24})"')
 EVIDENCE = re.compile(r'(?:evidence|provenance)-[0-9a-f]{20,24}')
 
 Build = collections.namedtuple('Build', 'files ids')
-
-
-def slug(text):
-    return re.sub(r'[^a-z0-9]+', '-', re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '-', text).lower()).strip('-')
-
-
-def canonical(value):
-    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
-
-
-def h6(value):
-    return hashlib.sha256(canonical(value).encode()).hexdigest()[:6]
-
-
-def suite_bytes(value):
-    return (json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False)+'\n').encode()
-
-
-def table_bytes(records, sections=False):
-    """One record per line, optionally grouped into named sections."""
-    def rows(table):
-        return [json.dumps(k, ensure_ascii=False)+':'+canonical(v)+(',' if i < len(table)-1 else '')
-                for i, (k, v) in enumerate(sorted(table.items()))]
-    if not sections:
-        return ('\n'.join(['{', *rows(records), '}'])+'\n').encode()
-    lines = ['{']
-    for i, (name, table) in enumerate(sorted(records.items())):
-        lines += [json.dumps(name)+': {', *rows(table), '},' if i < len(records)-1 else '}']
-    return ('\n'.join(lines+['}'])+'\n').encode()
 
 
 def target(field):
@@ -236,14 +208,6 @@ def composition(sources, record, reviewed):
     return {'method': source['method'], 'members': members}
 
 
-def translate(value, ids):
-    if isinstance(value, dict):
-        return {k: translate(v, ids) for k, v in value.items()}
-    if isinstance(value, list):
-        return [translate(v, ids) for v in value]
-    return ids.get(value, value) if isinstance(value, str) else value
-
-
 def stem(name, building_type):
     """A program name without its building-family suffix, e.g. Lobby_Hospital -> Lobby."""
     return name[:-len(building_type)-1] if name.endswith('_'+building_type) else name
@@ -341,11 +305,13 @@ def build_folder(sources, template, building_type):
                          'source_file': row.get('source_file_id'), 'interpretation': interpretation,
                          'transformation': transformation}
     files[f'evidence/commercial/{tslug}/{bslug}.json'] = table_bytes(evidence)
-    rules = {rule: {'notes': sorted(notes)} for rule, notes in glossary['rules'].items()}
+    # Notes are content-addressed so folders merge without conflict: a rule's note text varies by record.
+    rule_notes = {'n-'+h6([rule, note]): {'rule': rule, 'note': note}
+                  for rule, notes in glossary['rules'].items() for note in notes}
     unresolved = {key: {'reason': reason} for key, reason in glossary['unresolved'].items()}
     files['evidence/glossary.json'] = table_bytes({'interpretations': terms['interpretations'],
         'transformations': terms['transformations'], 'source_files': terms['source_files'],
-        'rules': rules, 'unresolved': unresolved}, sections=True)
+        'rule_notes': rule_notes, 'unresolved': unresolved}, sections=True)
     return Build(files, ids)
 
 

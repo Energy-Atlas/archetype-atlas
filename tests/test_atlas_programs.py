@@ -191,7 +191,7 @@ class AtlasProgramSuiteTests(unittest.TestCase):
                     bases.add(filling['basis'])
                     self.assertIn(filling['basis'], ('research_assumption', 'executed_upstream'))
                     for rule in filling['rules']:
-                        self.assertIn(rule, glossary['rules'])
+                        self.assertIn(rule, {n['rule'] for n in glossary['rule_notes'].values()})
                     for eid in filling.get('evidence', []):
                         self.assertIn(eid, evidence)
         self.assertEqual(bases, {'research_assumption', 'executed_upstream'})
