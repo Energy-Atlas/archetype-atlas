@@ -64,6 +64,7 @@ jobs:
           python -m scripts.definition_release --verify
           python -m scripts.definition_release --reproduce
           python -m scripts.program_completeness --check
+          python -m scripts.atlas_release --verify
       - run: python -m scripts.audit
 
   construction-validation:
@@ -166,6 +167,9 @@ jobs:
           python -m scripts.construction_mass_release --check --examples
       - name: Reproduce combined foundation delivery with pinned producer
         run: python -m scripts.construction_foundation_release --check --examples
+      # Its construction documents come from the combined delivery, so it shares the pinned producer.
+      - name: Reproduce the ADR 0036 release with pinned producer
+        run: python -m scripts.atlas_release --check
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'

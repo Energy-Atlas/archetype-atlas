@@ -204,7 +204,12 @@ deferred.
 
 Frozen release folders under `data/` leave the checkout once the first new release
 verifies; they remain in history and are tagged. The first release is
-`data/atlas-releases/v1.0.0`. CI is split into parallel research jobs, Windows runs
+`data/atlas-releases/v1.0.0`, written by `python -m scripts.atlas_release` as a
+commercial candidate: the three writers' files merged, the upstream notices they
+cite, `LICENSE`, and a manifest of every file's SHA-256 and size, its pinned inputs
+and record counts. Linux CI checks every file against the manifest; the pinned
+Windows producer rebuilds the folder and compares it byte for byte, since its
+construction documents come from the combined delivery. CI is split into parallel research jobs, Windows runs
 only the pinned-producer checks, and the build job no longer repeats release
 verification; that change lands as its own pull request.
 
