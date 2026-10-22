@@ -85,10 +85,12 @@ def assemble(folders=None):
     missing = [f for f in sfolders if keep(f) and f not in programs]
     if missing:
         raise ValueError(f'Systems need their folder programs first: {missing}')
-    systems = [atlas_systems.build_folder(ssrc, *f, programs[f]) for f in sfolders if keep(f)]
+    systems = {f: atlas_systems.build_folder(ssrc, *f, programs[f]) for f in sfolders if keep(f)}
     chosen = [f for f in cfolders if keep(f)]
     constructions = [atlas_constructions.build_folders(csrc, chosen)] if chosen else []
-    files = merge(*[b.files for b in programs.values()], *[b.files for b in systems], *[b.files for b in constructions])
+    # Services are named after the programs that use them, so programs cite them by new ID last.
+    program_files = [atlas_programs.cite_services(b.files, systems[f].ids if f in systems else {}) for f, b in programs.items()]
+    files = merge(*program_files, *[b.files for b in systems.values()], *[b.files for b in constructions])
     glossary = json.loads(files['evidence/glossary.json'])
     cited = {Path(s['license_path']).name for s in glossary['source_files'].values() if s.get('license_path')}
     for name in sorted(cited | {p.name for p in INHERITED_NOTICES.iterdir()}):

@@ -61,6 +61,21 @@ class AtlasReleaseTests(unittest.TestCase):
         self.assertEqual(counts['hvac_systems'], len(systems))
         self.assertEqual(counts['folders'], 1)
 
+    def test_records_cite_each_other_by_new_ids_only(self):
+        # Old record IDs that must all have been replaced; evidence, demand, resolution and upstream
+        # IDs (program source_id, completion schedules) are opaque references and stay.
+        old = re.compile(r'"(?:program-[0-9a-f]{24}|service-[0-9a-f]{24}|hvac_system-[0-9a-f]{24}|component-[0-9a-f]{24}'
+                         r'|curve-[0-9a-f]{24}|performance-rule-[0-9a-f]{24}|(?:mixed-)?schedule-[0-9a-f]{24}'
+                         r'|water_reporting_schedule-[0-9a-f]{20}|construction-set-[0-9a-f]{24}|equivalent-[a-z]+-[0-9a-f]{24}'
+                         r'|construction-material-[0-9a-f]{24}|foundation-(?:assembly|material)-[0-9a-f]{24})"')
+        for path, data in self.files.items():
+            if path.startswith('commercial/'):
+                self.assertIsNone(old.search(data.decode()), path)
+        services = set(json.loads(self.files['commercial/90-1-2019/medium-office/services.json']))
+        for path, data in self.files.items():
+            if '/programs/' in path:
+                self.assertTrue(set(json.loads(data)['service_ids']) <= services, path)
+
     def test_files_are_canonical_and_commercial_only(self):
         for path, data in self.files.items():
             self.assertLess(len(data), 25_000_000, path)

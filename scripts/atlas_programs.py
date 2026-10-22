@@ -26,6 +26,8 @@ IDENTITY = ('id', 'kind', 'evidence_view', 'source_definition_id', 'reviewed_res
 FILLING_BASES = ('research_assumption', 'executed_upstream')  # strictest first
 REFERENCE = re.compile(r'"((?:mixed-)?schedule-[0-9a-f]{20,24})"')
 EVIDENCE = re.compile(r'(?:evidence|provenance)-[0-9a-f]{20,24}')
+SERVICE = '@service'  # placeholder for service citations while a program's hash is computed
+SERVICE_ID = re.compile(r'"service-[0-9a-f]{24}"')
 
 Build = collections.namedtuple('Build', 'files ids')
 
@@ -283,8 +285,23 @@ def encode_evidence(sources, evidence_ids):
 
 
 def program_id(prefix, program, building_type):
-    content = {k: v for k, v in program.items() if k != 'name'}
+    """Programs and services cite each other (service_ids, and shared loads' service and demand IDs),
+    so every service citation hashes as SERVICE."""
+    content = json.loads(SERVICE_ID.sub(json.dumps(SERVICE), canonical({k: v for k, v in program.items() if k != 'name'})))
     return f'{prefix}.{program["mode"]}.{slug(stem(program["name"], building_type))}.{h6(content)}'
+
+
+def cite_services(files, ids):
+    """Program files with every service citation replaced by the service's new ID."""
+    out = dict(files)
+    for path, data in files.items():
+        if '/programs/' in path:
+            program = json.loads(data)
+            missing = set(SERVICE_ID.findall(canonical(program))) - {json.dumps(s) for s in ids}
+            if missing:
+                raise ValueError(f'Services without new IDs in {path}: {sorted(missing)[:3]}')
+            out[path] = suite_bytes(translate(program, {k: v for k, v in ids.items() if SERVICE_ID.fullmatch(json.dumps(k))}))
+    return out
 
 
 def build_folder(sources, template, building_type):
