@@ -158,6 +158,9 @@ def verify(target=TARGET):
                    - set(listed['files']) - {'manifest.json'})
     if extra:
         raise ValueError('Release files not in the manifest: '+', '.join(extra[:5]))
+    stale = sorted(path for path, digest in listed['input_sha256'].items() if sha((ROOT/path).read_bytes()) != digest)
+    if stale:
+        raise ValueError('Release inputs changed since it was written; rerun python -m scripts.atlas_release: '+', '.join(stale))
     return listed
 
 
