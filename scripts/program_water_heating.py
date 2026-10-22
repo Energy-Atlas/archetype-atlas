@@ -92,8 +92,10 @@ def evaluate_recipe(recipe, flow_fraction, target_degC, mains_degC, bindings):
 
 
 class ProgramExporter:
-    def __init__(self, bundle, conversions=None, systems=None):
+    def __init__(self, bundle, conversions=None, systems=None, capped_services=CAPPED_SERVICES, capped_programs=CAPPED_PROGRAMS):
         self.base = V3Exporter(bundle)
+        # The approved capped-delivery demands, by record ID; a bundle with other IDs passes its own.
+        self.capped_services, self.capped_programs = frozenset(capped_services), frozenset(capped_programs)
         self.validator = Draft202012Validator(load_json(ROOT/'schemas/program-json-v4.schema.json'))
         artifact = conversions if conversions is not None else load_json(ROOT/'data/program-inputs/dhw-conversion-v1.json')
         self.conversion_artifact = artifact
@@ -180,9 +182,9 @@ class ProgramExporter:
             origin = service or self.origins(source['id']).get(draw['demand_id'])
             if origin is None:
                 raise ValueError('Unresolved water demand origin: '+draw['demand_id'])
-            capped = (service['id'] in CAPPED_SERVICES if service else
-                      origin['id'] in CAPPED_PROGRAMS and
-                      any(l['demand_id'] in CAPPED_SERVICES for l in origin['loads']
+            capped = (service['id'] in self.capped_services if service else
+                      origin['id'] in self.capped_programs and
+                      any(l['demand_id'] in self.capped_services for l in origin['loads']
                           if l['quantity'].startswith('hot_water')))
             channel = service['end_use'] if service else 'main'
             channels = ['main', 'booster'] if channel == 'booster' else [channel]

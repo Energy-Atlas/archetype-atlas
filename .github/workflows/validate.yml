@@ -65,6 +65,7 @@ jobs:
           python -m scripts.definition_release --reproduce
           python -m scripts.program_completeness --check
           python -m scripts.atlas_release --verify
+          python -m scripts.atlas_exports --check-schemas
       - run: python -m scripts.audit
 
   construction-validation:

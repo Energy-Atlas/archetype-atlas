@@ -289,7 +289,7 @@ class ConstructionSuite:
             if '/constructions/' in path:
                 record = json.loads(data)
                 self.sets[record['id']] = record
-            elif '/library/' in path:
+            elif '/library/' in path and Path(path).stem in RESOURCES:
                 self.library[Path(path).stem].update(json.loads(data))
             elif path.startswith('evidence/') and not path.endswith('glossary.json'):
                 self.evidence.update(json.loads(data))

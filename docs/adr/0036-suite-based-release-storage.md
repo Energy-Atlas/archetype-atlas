@@ -184,7 +184,10 @@ The new layout publishes new majors: Program JSON 5.0.0 (with water heating fold
 in from the opt-in v4) and detailed/unified construction JSON 4.0.0/3.0.0. The
 exporter resolves every reference into complete standalone documents, so
 consumers never see library or evidence references. BEMGen component changes are
-deferred.
+deferred. `scripts/atlas_exports.py` produces them from the release; Program 5.0.0
+has versions `source` and `filled`, and the construction majors change identities
+only. [Consumer contracts of release 1.0.0](../consumer-contracts-release-1.0.0.md)
+lists every change from the previous majors.
 
 ### 10. Site
 
