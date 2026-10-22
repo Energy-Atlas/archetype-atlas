@@ -1,0 +1,246 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "SecondarySchool",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0b86b921c28b13b82bc6a3f1",
+    "evidence-5bb3ada68fa07956cf6c8aa8",
+    "evidence-9281b541e5714553661e4069",
+    "evidence-9927f8be1e6fb89d6ca8bdf3",
+    "evidence-a2156d90d33abcb3ea82c4e0",
+    "evidence-abc225009f22abc1e1163a3b",
+    "evidence-b2ce61c2be2b30086b3e0dda",
+    "evidence-de4bd995c72c93136e50591e"
+  ],
+  "filling_evidence_ids": [
+    "evidence-549b8acf53e95fdb54a902cc",
+    "evidence-c4769669f1037c399f56fb05"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.secondary-school.source.restroom.b11cc9",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-3bfdee86731f7ddf07255224",
+      "evidence_id": "evidence-a2156d90d33abcb3ea82c4e0",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.school-secondary-bldg-occ-sch.06a261",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-2b112b04827c19bcdcbac82c",
+      "evidence_id": "evidence-9927f8be1e6fb89d6ca8bdf3",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.school-secondary-bldg-light-bath-sch-2013.5d5fdb",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-305ebfd647a5a12c6ea14ecb",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.37
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-e067d54ef27ddf3aff08d4a0",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-18fa54e18b74b30fb056ef0d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 10.548632208375528
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b8d49f603d65c458daef8632",
+      "evidence_id": "evidence-0b86b921c28b13b82bc6a3f1",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.school-secondary-bldg-light-bath-sch-2013.5d5fdb",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-305ebfd647a5a12c6ea14ecb",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.37
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-e067d54ef27ddf3aff08d4a0",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-18fa54e18b74b30fb056ef0d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b30719228c30efcb8cfcea53",
+      "evidence_id": "evidence-de4bd995c72c93136e50591e",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.school-secondary-bldg-equip-sch-2013.b6593a",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-67dfac7695db350d184c4c13",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-d655872d1a0beea9a2b61e2b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-1936b8e0a46def4dcbda77d1",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 3.982646854182597
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4ce31588c388c5b060be91aa",
+      "evidence_id": "evidence-abc225009f22abc1e1163a3b",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-c4769669f1037c399f56fb05"
+        ],
+        "resolutions": [
+          "resolution-53e32beded6027688369",
+          "resolution-b59acbf9d60121a4f077"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-c4769669f1037c399f56fb05",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-f3f296d837d6aa29da9855d2",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-51cbc59ff16abf5f2052579d",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-8e91b8ee906b9c6e81384331",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Restroom_SecondarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-b2ce61c2be2b30086b3e0dda",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.secondary-school.school-secondary-activity-sch.ab69a7"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-5bb3ada68fa07956cf6c8aa8",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.secondary-school.school-secondary-clgsetp-sch-setback.5946c1"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-9281b541e5714553661e4069",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.secondary-school.school-secondary-htgsetp-sch-setback.e449b6"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-4a566abb2cba120833a4",
+  "template": "90.1-2013"
+}

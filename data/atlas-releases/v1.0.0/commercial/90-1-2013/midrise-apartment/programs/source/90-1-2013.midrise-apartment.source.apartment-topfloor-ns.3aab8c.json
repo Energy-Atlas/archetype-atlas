@@ -1,0 +1,265 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "MidriseApartment",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-03bb7c9eb110f7c7f23fc969",
+    "evidence-16d59d84e3feadfb9200ff50",
+    "evidence-437dcced7edc7c3053a22010",
+    "evidence-5b1c4f21c4466da098c70bc7",
+    "evidence-75577362a49961b90d8dc67e",
+    "evidence-9d6b16bd185f10637b4a42cd",
+    "evidence-a600ddce25249421ce223477",
+    "evidence-eaa9a1c9bf0d9190c6c8f726"
+  ],
+  "filling_evidence_ids": [
+    "evidence-461cc815d953d0ecb3a53525",
+    "evidence-b660eb2d2dd082489701a0ec"
+  ],
+  "gate": [
+    "residential"
+  ],
+  "id": "90-1-2013.midrise-apartment.source.apartment-topfloor-ns.3aab8c",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-77fce3f67d4e3a7efb0ac992",
+      "evidence_id": "evidence-eaa9a1c9bf0d9190c6c8f726",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.midrise-apartment.apartment-mid-rise-occ-apt-sch.303f15",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.02830908439594657
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-30113b6f3cc62feefb26b52a",
+      "evidence_id": "evidence-16d59d84e3feadfb9200ff50",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.midrise-apartment.apartment-mid-rise-ltg-apt-sch.0ef1f6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-f8a87c28fa610281a7c63c75",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-16e965712f9f2f9d6aab7e08",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-99b468120e09765a4689bebf",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 11.517384145879403
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4a054e2f74be6d5fac1e06ce",
+      "evidence_id": "evidence-75577362a49961b90d8dc67e",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.midrise-apartment.apartment-mid-rise-ltg-apt-sch.0ef1f6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-f8a87c28fa610281a7c63c75",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-16e965712f9f2f9d6aab7e08",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-99b468120e09765a4689bebf",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 2.906255812511625
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9954b8dcb591e828a1a4525c",
+      "evidence_id": "evidence-a600ddce25249421ce223477",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.midrise-apartment.apartment-mid-rise-eqp-apt-sch.d5decc",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-ed87b53b24c8159245fa646c",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-fb9c96ddb779b1883d8dd64f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-157f83e540a87bca22fd2149",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.67
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-cd95f2638a73b7cfa3951f02",
+      "evidence_id": "evidence-03bb7c9eb110f7c7f23fc969",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-461cc815d953d0ecb3a53525"
+        ],
+        "resolutions": [
+          "resolution-0855e455090877b9258a",
+          "resolution-e3736eb33e4557239f63"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-461cc815d953d0ecb3a53525",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-48f7aa376eda00978d1c16ae",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-3f7794480dc44d50f2977b44",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-f7049c9b10e92ec2fa991279",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "service-bff08d1f1496cb5c28ac425e",
+      "evidence_id": "evidence-f48c91d21e3cff6d6ba82a64",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.midrise-apartment.apartment-mid-rise-apt-dhw-sch.3a5bbb",
+      "scope": "program_service",
+      "service_id": "service-bff08d1f1496cb5c28ac425e",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 4.146067251759837e-08,
+      "zone_heat_assignment": "unresolved"
+    }
+  ],
+  "mode": "source",
+  "name": "Apartment_topfloor_NS_MidriseApartment",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-9d6b16bd185f10637b4a42cd",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.midrise-apartment.apartment-mid-rise-activity-schedule.df03d0"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-5b1c4f21c4466da098c70bc7",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.midrise-apartment.apartment-mid-rise-clgsetp-apt-sch.c46683"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-437dcced7edc7c3053a22010",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.midrise-apartment.apartment-mid-rise-htgsetp-apt-sch.465ecd"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "service-bff08d1f1496cb5c28ac425e"
+  ],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-cd1ff5f5ca70813975c2",
+  "template": "90.1-2013"
+}

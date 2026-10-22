@@ -28,7 +28,9 @@ open design topics, not accepted designs.
 4. Support BEMGen testing and resolve any Atlas contract/data defects it finds.
    Its completion is not required to prepare/publish Atlas independently, but
    consumer acceptance must not be claimed before the tests pass.
-5. Revisit lighter artifact delivery only after the BEMGen test is accepted.
+5. Restructure release storage and the site per
+   [ADR 0036](adr/0036-suite-based-release-storage.md), unblocked on 2026-10-21
+   ahead of BEMGen acceptance.
 
 Systems remain deferred. Schedule-generator packaging does not block this
 construction milestone; no program/schedule generation changes are included.
@@ -45,7 +47,7 @@ and do not supersede this current order.
 | Deferred | Complete systems JSON and simulation-ready variants | Deferred; not a foundation publication prerequisite |
 | Deferred | Package schedule generators | Readable generator merged, unreleased ([ADR 0035](adr/0035-readable-generator-restructure.md)); release deferred; not a construction publication or BEMGen-test prerequisite |
 | 3–4 | BEMGen handoff and integration testing | v7 prepared; consumer acceptance pending; resolve reported Atlas defects; use existing schedule contracts |
-| 5 | Lighter site and decoupled artifact generation | Deferred until BEMGen testing is accepted |
+| 5 | Lighter site and decoupled artifact generation | Decided in [ADR 0036](adr/0036-suite-based-release-storage.md); implementation started on `codex/atlas-storage-restructure` |
 
 ## 1. Publish Program JSON v3
 
@@ -218,25 +220,33 @@ This replaces the narrower handoff scope in Task 11 of the
 
 ## 5. Discuss a lighter site and decoupled generation
 
-Deferred until the BEMGen integration test is accepted, per the 2026-10-15 decision.
+No longer deferred: the user unblocked it on 2026-10-21, ahead of BEMGen
+acceptance. The decisions are recorded in
+[ADR 0036](adr/0036-suite-based-release-storage.md); implementation is on
+`codex/atlas-storage-restructure`.
 
-- [ ] Measure CI generation/validation/build time separately from deployed
+- [x] Measure CI generation/validation/build time separately from deployed
   payload size and browser load/interaction cost.
-- [ ] Evaluate the user's proposal: keep generated JSON artifacts in Git and
+- [x] Evaluate the user's proposal: keep generated JSON artifacts in Git and
   run generation in an explicitly invoked one-shot workflow; normal site builds
   consume those artifacts without regenerating them.
-- [ ] Discuss where artifacts live, how schema/source/policy changes invalidate
+- [x] Discuss where artifacts live, how schema/source/policy changes invalidate
   them, and how manifests, checksums and reproducibility detect stale outputs.
-- [ ] Compare alternatives for payload size, including shared resources,
+- [x] Compare alternatives for payload size, including shared resources,
   compression and selective loading, using the measurements.
-- [ ] Agree on the architecture and record an ADR before implementation.
-
-Separating generation from CI can reduce build work; deployed payload and
-browser performance need their own measurements. A lightweight publication path
-must still reject missing, stale or incompatible artifacts and retain source
-provenance and license notices. Committing generated JSON is a proposal for this
-discussion, not an already adopted repository policy.
+- [x] Agree on the architecture and record an ADR before implementation.
+- [ ] Split CI into parallel jobs, limit Windows to pinned-producer checks and
+  drop the duplicate release verification (separate pull request).
+- [ ] Implement the suite-based commercial release `data/atlas-releases/v1.0.0`
+  and its consumer exports, test-first.
+- [ ] Replace per-record pages with suite pages, one viewer page and one JSON store.
+- [ ] Retire the frozen release folders to tags once the new release verifies.
 
 **Comments / decisions:**
 
-<!-- Write here. -->
+Release data stays in Git; site output does not and is cached by input digest.
+Programs and construction sets are one file each under
+`commercial/<template>/<building-type>/`; schedules get one table per folder;
+shared assemblies, materials and HVAC performance records get one library per
+template; evidence has its own mirrored tree. Source-backed and filled exports
+both ship. Residential storage is deferred.

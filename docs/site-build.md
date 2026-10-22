@@ -150,7 +150,8 @@ Linux jobs:
 - `releases`: fetches the sources, validates, reproduces and compares the atlas,
   verifies every frozen atlas, resolution, completion, water and water-reporting
   release, verifies and reproduces the definition release, reproduces the v3
-  program completeness receipt and runs the security audit;
+  program completeness receipt, checks every file of the ADR 0036 release
+  `data/atlas-releases/v1.0.0` against its manifest and runs the security audit;
 - `construction-validation`: validates all frozen construction consumer documents
   and the combined foundation documents and receipts;
 - `construction-reproduction`: reproduces the frozen detailed and unified
@@ -160,7 +161,9 @@ Linux jobs:
 
 The required `research / atlas (ubuntu-latest, 3.11)` check passes only when every
 one of these jobs passes. The required `research / atlas (windows-latest, 3.14)`
-check runs the pinned-producer reproductions and the Windows consumer-document
+check runs the pinned-producer reproductions (including a byte-for-byte rebuild of
+the ADR 0036 release, whose construction documents come from the combined
+delivery) and the Windows consumer-document
 validation described below. A pipeline run takes about as long as its slowest
 job, the full Python suite, rather than the sum of all checks. Artifact generation
 remains part of site CI; [ADR 0036](adr/0036-suite-based-release-storage.md)

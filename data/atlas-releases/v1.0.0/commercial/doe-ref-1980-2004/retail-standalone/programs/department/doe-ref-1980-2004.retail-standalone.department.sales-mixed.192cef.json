@@ -1,0 +1,171 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.retail-standalone.source.point-of-sale.eda663",
+        "represented_area_m2": 150.81,
+        "source_geometry_file_id": "sourcefile-8d150ba530d87a2bdc18",
+        "source_program_id": "program-ad808b11256faea0629f",
+        "weight": 0.07928593137626783
+      },
+      {
+        "program_id": "doe-ref-1980-2004.retail-standalone.source.retail.4099fa",
+        "represented_area_m2": 1751.2929,
+        "source_geometry_file_id": "sourcefile-8d150ba530d87a2bdc18",
+        "source_program_id": "program-25c4c5373e0c32d574c7",
+        "weight": 0.9207140686237322
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-1e3d73d77b9d836c931f2b84"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.retail-standalone.department.sales-mixed.192cef",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-580e1eecf38af84c1b1cc41f",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-44320ee1c1210109194b3487",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-electric-equipment.bf87d8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 4.679998451500136
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-dfca33d87d27fbed8b4faf9a",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-476a891b6c4a736457ff",
+          "resolution-b6ca4c83a60cae079250",
+          "resolution-e139278bab0b61407789",
+          "resolution-eb713bb435138992eaa9"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-gas-equipment.07992a",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7fba34368c3715c8aa8cae4b",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-lighting.16e720",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 36.274378104311765
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-281519a99f4557bf4217d910",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-occupancy.31ae47",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.16145865625064584
+    }
+  ],
+  "mode": "department",
+  "name": "Sales_Mixed_RetailStandalone",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.retail-standalone.sales-mixed-activity.f4b9d5"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.retail-standalone.sales-mixed-cooling-setpoint.e1438e"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.retail-standalone.sales-mixed-heating-setpoint.baf90c"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}

@@ -1,0 +1,180 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-pre-1980.small-hotel.source.exercise.9c2257",
+        "represented_area_m2": 32.60896704000001,
+        "source_geometry_file_id": "sourcefile-2f403ab95a9d93a0a4b4",
+        "source_program_id": "program-36188c5fb03603a3d6ab",
+        "weight": 0.11817422061865376
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-hotel.source.meeting.fc0384",
+        "represented_area_m2": 80.27407871999998,
+        "source_geometry_file_id": "sourcefile-2f403ab95a9d93a0a4b4",
+        "source_program_id": "program-7dcae7baf4ef3419f555",
+        "weight": 0.2909115973216812
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-hotel.source.guest-lounge.d5da13",
+        "represented_area_m2": 163.0567224,
+        "source_geometry_file_id": "sourcefile-2f403ab95a9d93a0a4b4",
+        "source_program_id": "program-5b5462a1af7c0b54468f",
+        "weight": 0.5909141820596651
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-7d1fbc400522ec968e3daf01"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.small-hotel.department.amenities-mixed.5d100f",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-3e898afbcf3010bf08c5035d",
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-cf23f1825babd7afb60017e0",
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-hotel.amenities-mixed-electric-equipment.5efbbf",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 14.2142562094125
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d4ac79122f1e9fd3c0fa5afc",
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-51371e18dfe1dcae86da",
+          "resolution-94b88bf2d0ecabccbe83",
+          "resolution-a3f10b30cd9d26d606a9",
+          "resolution-ca4bb7b3c69c4023f61d",
+          "resolution-f42874cd439ea0e091d8",
+          "resolution-fb2e7b4f1017db4d858d"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-pre-1980.small-hotel.amenities-mixed-gas-equipment.3c4e76",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-136e33ab00fa5dda7b5009d2",
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-hotel.amenities-mixed-lighting.1bf6da",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 16.744747675005012
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ef27103b64fcdb3ca4d98b88",
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-hotel.amenities-mixed-occupancy.2c6825",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.38723602219966574
+    }
+  ],
+  "mode": "department",
+  "name": "Amenities_Mixed_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.small-hotel.amenities-mixed-activity.9816d2"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.small-hotel.amenities-mixed-cooling-setpoint.8f31bd"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-7d1fbc400522ec968e3daf01",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.small-hotel.amenities-mixed-heating-setpoint.cb4eac"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref Pre-1980"
+}

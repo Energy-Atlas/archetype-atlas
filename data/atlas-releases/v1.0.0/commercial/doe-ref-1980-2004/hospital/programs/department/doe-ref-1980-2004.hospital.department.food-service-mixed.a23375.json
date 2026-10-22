@@ -1,0 +1,169 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Hospital",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.hospital.source.kitchen.f1b9a2",
+        "represented_area_m2": 929.0303999999999,
+        "source_geometry_file_id": "sourcefile-bd0e0dc4716975a0f6f2",
+        "source_program_id": "program-675d72eee63ff4a5c849",
+        "weight": 0.5714285714285714
+      },
+      {
+        "program_id": "doe-ref-1980-2004.hospital.source.dining.4b1e47",
+        "represented_area_m2": 696.7728000000001,
+        "source_geometry_file_id": "sourcefile-bd0e0dc4716975a0f6f2",
+        "source_program_id": "program-230e8fac5ac4a384e04c",
+        "weight": 0.42857142857142866
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-77576c73f640b9a6a05902b6"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.hospital.department.food-service-mixed.a23375",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-89e315d3dd68cd253707d50e",
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b1ea3bd104c912f353c0eeef",
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.hospital.food-service-mixed-electric-equipment.dd45d1",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 50.74414910734583
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-6647c48261f8cca3b5132990",
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-739e89c0285e156d27fd",
+          "resolution-a4c8af0800e2c7274936"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-1980-2004.hospital.food-service-mixed-gas-equipment.a2ffba",
+          "status": "known",
+          "value": 174.3136714557696
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-dd796387939fbab1e3782fdc",
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.hospital.food-service-mixed-lighting.6511d3",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 20.612888447999122
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-996048eaa156c700b308a5ac",
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.hospital.food-service-mixed-occupancy.192684",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.07688507440506945
+    }
+  ],
+  "mode": "department",
+  "name": "FoodService_Mixed_Hospital",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.hospital.food-service-mixed-activity.d348bd"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.hospital.food-service-mixed-cooling-setpoint.48eff0"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-77576c73f640b9a6a05902b6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.hospital.food-service-mixed-heating-setpoint.eed525"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}

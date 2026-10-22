@@ -1,0 +1,246 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "FullServiceRestaurant",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-1593c28421079101e59a1337",
+    "evidence-1b31ed579030e25d22f45062",
+    "evidence-3abdfd9505b14c4b47de0821",
+    "evidence-66a66965689a845ede9b6c2f",
+    "evidence-73a790cb7fab87c31652fe6a",
+    "evidence-7dedb48c4a72ad7f083c2c02",
+    "evidence-dacdc757601e6db6af364480",
+    "evidence-fbf22366d49be42828c128c7"
+  ],
+  "filling_evidence_ids": [
+    "evidence-49bdd2b2fb0d9de8cfdf2d99",
+    "evidence-5936dfe2391625d3714ed121",
+    "evidence-7f9b3cce9ab0b15244725eed"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.full-service-restaurant.source.dining.45ee60",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-085588e61df05e915c190f33",
+      "evidence_id": "evidence-73a790cb7fab87c31652fe6a",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-bldg-occ.0d4e6f",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.7211819979195514
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-38d30146df6d4c96ec451ad1",
+      "evidence_id": "evidence-66a66965689a845ede9b6c2f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-bldg-light.a94636",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-f17815e07a1f7e0175c4e0a2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-01b80957d3d9451dae7348fc",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-943bf2f4539080eb99410baf",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 27.340332458442695
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-006ef5e81b424ce2e3230a54",
+      "evidence_id": "evidence-dacdc757601e6db6af364480",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-bldg-light.a94636",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-f17815e07a1f7e0175c4e0a2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-01b80957d3d9451dae7348fc",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-943bf2f4539080eb99410baf",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-edfaf0ecc7b543fdabeb0f01",
+      "evidence_id": "evidence-1593c28421079101e59a1337",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-bldg-equip.647fe7",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-ab028f8fffd8d88055f776e3",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.25
+        },
+        "lost": {
+          "evidence_id": "evidence-6e8a5b6534364ed3979e8553",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-681423916b5fa52c5250f370",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.3
+        }
+      },
+      "unit": "W/m2",
+      "value": 60.27789833357444
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-146bc6bc3dfaaef0595e153a",
+      "evidence_id": "evidence-7dedb48c4a72ad7f083c2c02",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-49bdd2b2fb0d9de8cfdf2d99"
+        ],
+        "resolutions": [
+          "resolution-ed9abf0f3987cad27aaf",
+          "resolution-fed54f29d7c95b479f5d"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-49bdd2b2fb0d9de8cfdf2d99",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-5f10446c1ccdf489c9123900",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-7126f3ff50c6ac6db8f8207a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-e96c9ab04b9535c39b3cc397",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Dining_FullServiceRestaurant",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-1b31ed579030e25d22f45062",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-activity.e06644"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-3abdfd9505b14c4b47de0821",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-clg-setp.cd8545"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-fbf22366d49be42828c128c7",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.full-service-restaurant.full-service-restaurant-htg-setp.b47f9c"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "source_id": "program-4dbe05a3b9b89ce1c707",
+  "template": "DOE Ref Pre-1980"
+}
