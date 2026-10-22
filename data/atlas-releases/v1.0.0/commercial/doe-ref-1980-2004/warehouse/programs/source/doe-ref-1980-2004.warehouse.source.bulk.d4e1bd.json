@@ -1,0 +1,246 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "Warehouse",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-2039f5d530e36747e8b9b069",
+    "evidence-2b40fa28f2fced94406507b1",
+    "evidence-51410333f92016900a657e2d",
+    "evidence-75a7d89b0487a9b5e06978c7",
+    "evidence-9a56bb035c0b814aa518e862",
+    "evidence-c4280092643520f3dc1c4465",
+    "evidence-d62cdee7d9d0312b6b620810",
+    "evidence-f6fe63dfeae134216d87cd0c"
+  ],
+  "filling_evidence_ids": [
+    "evidence-a9bbb5b88f9dcbda0e615fd9",
+    "evidence-b0a9e4626db28aa948df2404",
+    "evidence-e96774bb63593f0dbf0ba455"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.warehouse.source.bulk.d4e1bd",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4a5e0901dca02d1d7f9d5ca1",
+      "evidence_id": "evidence-2039f5d530e36747e8b9b069",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.warehouse-bldg-occ.dfba62",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e5a02a7f441c55b0b82cd3c2",
+      "evidence_id": "evidence-75a7d89b0487a9b5e06978c7",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.warehouse-bldg-light.549428",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-8c1090f496b14b51ff40e784",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-208a661a72162e57389fce0d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-3b431dd66fb890383c694bca",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 3.3400004994454435
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-986873e563a3fa1b4db26f9e",
+      "evidence_id": "evidence-d62cdee7d9d0312b6b620810",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.warehouse-bldg-light.549428",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-8c1090f496b14b51ff40e784",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-208a661a72162e57389fce0d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-3b431dd66fb890383c694bca",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-76f8259a70e1a4d2d2e91705",
+      "evidence_id": "evidence-f6fe63dfeae134216d87cd0c",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.warehouse-bldg-equip.8cccc5",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-7e533de202add14e927b89d4",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-9ecfc526e5d459559f167d41",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-6a90f1d0c5248556b6796ef8",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 2.5600001894448234
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0d4aae2248953246cd95a980",
+      "evidence_id": "evidence-51410333f92016900a657e2d",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-b0a9e4626db28aa948df2404"
+        ],
+        "resolutions": [
+          "resolution-6592f20bccad37162c7c",
+          "resolution-9a75e76cd0f90578ab4a"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-b0a9e4626db28aa948df2404",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-c197508c2798af65d7eeccca",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-168ad4ec67c8ddb6d85ee799",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-50d995eba81662f34966bc93",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Bulk_Warehouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-c4280092643520f3dc1c4465",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.warehouse.warehouse-activity.cbff26"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-2b40fa28f2fced94406507b1",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.warehouse.warehouse-clg-setp-bulk-storage.0b2d21"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-9a56bb035c0b814aa518e862",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.warehouse.warehouse-htg-setp-bulk-storage.4fe81a"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "source_id": "program-38e5364bb5319d1dacf7",
+  "template": "DOE Ref 1980-2004"
+}

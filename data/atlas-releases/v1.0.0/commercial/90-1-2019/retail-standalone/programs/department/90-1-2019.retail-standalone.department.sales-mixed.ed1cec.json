@@ -1,0 +1,180 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2019.retail-standalone.source.front-retail.9c6fe6",
+        "represented_area_m2": 150.81,
+        "source_geometry_file_id": "sourcefile-d05808701abdf84add6e",
+        "source_program_id": "program-77e26d2ed7de857d5631",
+        "weight": 0.07928593137626783
+      },
+      {
+        "program_id": "90-1-2019.retail-standalone.source.core-retail.4e6adc",
+        "represented_area_m2": 1600.4829,
+        "source_geometry_file_id": "sourcefile-d05808701abdf84add6e",
+        "source_program_id": "program-b3a39944c78d23c4711c",
+        "weight": 0.8414281372474645
+      },
+      {
+        "program_id": "90-1-2019.retail-standalone.source.point-of-sale.1f503d",
+        "represented_area_m2": 150.81,
+        "source_geometry_file_id": "sourcefile-d05808701abdf84add6e",
+        "source_program_id": "program-8fad5df363b26f468748",
+        "weight": 0.07928593137626783
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-46d086eeb6c63d3a4f54dd03"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.retail-standalone.department.sales-mixed.ed1cec",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-778e2c399e6ffe5df6e6bc2e",
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-12c53620b703b26c6df3c8c0",
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-standalone.sales-mixed-electric-equipment.9c25ae",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 4.679998451500137
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-95191fd93d579bc942c521b1",
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-35c41da9c15b0d2c205a",
+          "resolution-72f8deb2a773a57c9dc7",
+          "resolution-810f461a5885aad59b07",
+          "resolution-866265208846319bb597",
+          "resolution-fdb0a1f0ad40b6de7866",
+          "resolution-fee94030f60f5d062a4a"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2019.retail-standalone.sales-mixed-gas-equipment.1be5cc",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-bfd9a6b79ff0c91000e17338",
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-standalone.sales-mixed-lighting.ae630f",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.30210593754521
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-86987721fabdddf8334170e0",
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-standalone.sales-mixed-occupancy.57548f",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.16145865625064584
+    }
+  ],
+  "mode": "department",
+  "name": "Sales_Mixed_RetailStandalone",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.retail-standalone.sales-mixed-activity.fd60cc"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.retail-standalone.sales-mixed-cooling-setpoint.df1b59"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-46d086eeb6c63d3a4f54dd03",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.retail-standalone.sales-mixed-heating-setpoint.411133"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2019"
+}

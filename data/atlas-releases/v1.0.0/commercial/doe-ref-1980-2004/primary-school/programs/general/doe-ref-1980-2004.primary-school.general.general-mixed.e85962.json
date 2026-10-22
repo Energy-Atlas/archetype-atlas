@@ -1,0 +1,223 @@
+{
+  "available_details": [
+    "GeneralMix"
+  ],
+  "building_type": "PrimarySchool",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.cafeteria.9ff6c5",
+        "represented_area_m2": 315.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-d74584da0453a37e6362",
+        "weight": 0.054792137763089235
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.classroom.d95d99",
+        "represented_area_m2": 3855.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-11087f9575e9f3e72598",
+        "weight": 0.6705514002435206
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.gym.0b3db8",
+        "represented_area_m2": 357.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-7efcda51de8142d9c21f",
+        "weight": 0.06209775613150113
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.kitchen.5dc846",
+        "represented_area_m2": 168.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-d4a10c5d992384d99ae1",
+        "weight": 0.029222473473647592
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.lobby.cd3b6f",
+        "represented_area_m2": 171.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-fa06519fc62b5094965b",
+        "weight": 0.029744303357105584
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.mechanical.739106",
+        "represented_area_m2": 252.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-0bc75854bbebf5bf1cca",
+        "weight": 0.04383371021047138
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.office.0dd6a4",
+        "represented_area_m2": 441.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-71eef6cfb7c2c660799c",
+        "weight": 0.07670899286832493
+      },
+      {
+        "program_id": "doe-ref-1980-2004.primary-school.source.restroom.e9e1b9",
+        "represented_area_m2": 190.0,
+        "source_geometry_file_id": "sourcefile-e10be0a03f8dc86739a8",
+        "source_program_id": "program-bed3edd29a5d452ee34d",
+        "weight": 0.033049225952339535
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-499f9a0efcc02ccb298ebbd5"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.primary-school.general.general-mixed.e85962",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0c63af09df50a9cab15c66ff",
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a85cb25c433b5d85eb643483",
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.primary-school.general-mixed-electric-equipment.271d73",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 18.549874269497867
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4bb17ea22f04a5633d984f7e",
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-06ab793a529d9468d582",
+          "resolution-0a0ad80047c3dec235d9",
+          "resolution-32c92af535045e44f370",
+          "resolution-351c415043215bca9446",
+          "resolution-48e5a9b0304858c5ec13",
+          "resolution-62379e28874cfb610c81",
+          "resolution-69b061008a44cc261ade",
+          "resolution-75f7dc15343d1e8b497b",
+          "resolution-7e9e9cf7ba3af327d346",
+          "resolution-90f6b3e83f8100418f56",
+          "resolution-9db713254162bb83396b",
+          "resolution-d6c3db3e0f612240a21b",
+          "resolution-d954b0a62499a53f1b83",
+          "resolution-dd94d38ff536e9bee499"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-1980-2004.primary-school.general-mixed-gas-equipment.807fb5",
+          "status": "known",
+          "value": 27.89516416570207
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-2c52a6ccad51c7659c9e62af",
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.primary-school.general-mixed-lighting.cc205d",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 19.088687652646364
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-224707c9200236f5b9658bde",
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.primary-school.general-mixed-occupancy.c60d1b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.23753023869086717
+    }
+  ],
+  "mode": "general",
+  "name": "General_Mixed_PrimarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.primary-school.general-mixed-activity.c08eb4"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.primary-school.general-mixed-cooling-setpoint.895046"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-499f9a0efcc02ccb298ebbd5",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.primary-school.general-mixed-heating-setpoint.1871cb"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}

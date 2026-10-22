@@ -1,0 +1,180 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.small-hotel.source.exercise.ffe5d8",
+        "represented_area_m2": 32.60896704000001,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-794b4bc0dc233ca14ede",
+        "weight": 0.11817442320604211
+      },
+      {
+        "program_id": "90-1-2013.small-hotel.source.meeting.2a8309",
+        "represented_area_m2": 80.27392266337537,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-1f6f1ab9ebf34706f379",
+        "weight": 0.29091153048774443
+      },
+      {
+        "program_id": "90-1-2013.small-hotel.source.guest-lounge.0508fe",
+        "represented_area_m2": 163.05640541080422,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-cdffb8447a12a50ba333",
+        "weight": 0.5909140463062134
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-fd9f667c612e44956b44dd5f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.small-hotel.department.amenities-mixed.891886",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-eac61fa2fde4527e59a50416",
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-36abc82627cd9b5b6d7713df",
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.amenities-mixed-electric-equipment.73172c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 19.390506087932692
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a02357d15a2e4c77cbbf1bc9",
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-39d141ff338a14925670",
+          "resolution-4d230ae9df62411c27b3",
+          "resolution-977f9e2a84c81287157e",
+          "resolution-aeddaa7bbe91c80fbec8",
+          "resolution-bfa82abfae7b38d9999c",
+          "resolution-ca9db133a50bdd4043b6"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.small-hotel.amenities-mixed-gas-equipment.67c4b7",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-50f9895100dbf0b6daf26c12",
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.amenities-mixed-lighting.984b69",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.509587375104863
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-8a75c15e4688cee744e14730",
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.amenities-mixed-occupancy.6343a2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.3727477153847937
+    }
+  ],
+  "mode": "department",
+  "name": "Amenities_Mixed_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.small-hotel.amenities-mixed-activity.272aa9"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.small-hotel.amenities-mixed-cooling-setpoint.6c226e"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-fd9f667c612e44956b44dd5f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.small-hotel.amenities-mixed-heating-setpoint.9896d7"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013"
+}

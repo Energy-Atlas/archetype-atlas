@@ -1,0 +1,209 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.outpatient.source.exam.203269",
+        "represented_area_m2": 391.40050752,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-93a26f4c1883fbf23d27",
+        "weight": 0.5533955076842244
+      },
+      {
+        "program_id": "90-1-2013.outpatient.source.mri.b1c412",
+        "represented_area_m2": 40.877337600000004,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-0d99c9b0dcf921c02867",
+        "weight": 0.057795875476159206
+      },
+      {
+        "program_id": "90-1-2013.outpatient.source.mri-control.7fc17e",
+        "represented_area_m2": 15.607710720000002,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-4215c27d2f8596123852",
+        "weight": 0.02206751609089715
+      },
+      {
+        "program_id": "90-1-2013.outpatient.source.xray.3f4575",
+        "represented_area_m2": 83.612736,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-da50dc5e121a48f7ae1f",
+        "weight": 0.11821883620123472
+      },
+      {
+        "program_id": "90-1-2013.outpatient.source.physical-therapy.e55bf9",
+        "represented_area_m2": 175.77255168,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-2fdf36522933e16c08d9",
+        "weight": 0.24852226454748455
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-295cd04cfcdf5f9dcb7fe6d9"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.outpatient.department.diagnostics-mixed.ba745e",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-cc252f21db09336f52371c8a",
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0f154ee054575dcfacf43036",
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.outpatient.diagnostics-mixed-electric-equipment.2b5c86",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 31.886370273317045
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ed7fd8ed7df101eac1c3877b",
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-33c5483c060a7e8405c9",
+          "resolution-46c74b9660a939afcdd4",
+          "resolution-4a308b99ab400371e5e6",
+          "resolution-5f9c8fa76085bbfa1bbf",
+          "resolution-63ac85c49c2ec038e37d",
+          "resolution-6e1f6a2d0da023b49cc8",
+          "resolution-a0412d32e74fe5daa200",
+          "resolution-ab26d1f705d5d28c6db1",
+          "resolution-bd6b9921fa5f2fcf36f4",
+          "resolution-e64b4e243dbd50e7941d"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.outpatient.diagnostics-mixed-gas-equipment.821458",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-5fd397866580752d5f66ee76",
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.outpatient.diagnostics-mixed-lighting.02aed2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 15.541966844401895
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-51bd5cfc269f1992534af3d9",
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.outpatient.diagnostics-mixed-occupancy.216264",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.21549348654252864
+    }
+  ],
+  "mode": "department",
+  "name": "Diagnostics_Mixed_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.outpatient.diagnostics-mixed-activity.a247f5"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.outpatient.diagnostics-mixed-cooling-setpoint.830336"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-295cd04cfcdf5f9dcb7fe6d9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.outpatient.diagnostics-mixed-heating-setpoint.715718"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "service-3141091fe90a845db50d53ac",
+    "service-b606300f3746a45b276a270b",
+    "service-bc9be378160a0a1c2665623a",
+    "service-f50e552329814f1d5949505a"
+  ],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013",
+  "unresolved_loads": [
+    {
+      "quantity": "hot_water_volume",
+      "reason": "missing or multiple source demands; source member references retained"
+    }
+  ]
+}

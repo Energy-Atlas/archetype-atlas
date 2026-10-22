@@ -1,0 +1,248 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-455865dd61f001f6d99cffe8",
+    "evidence-4e9e50616272b7d453ba74e7",
+    "evidence-66aa33aa9d2474532da8dd8f",
+    "evidence-7b037370195fcdeb128e45ab",
+    "evidence-808584e3ce07078a4ee14d30",
+    "evidence-98e569fdbcfec0c7150dbdb1",
+    "evidence-d7d63dbeded64cf4a1e748eb",
+    "evidence-ee6bacebfa658d312a7e33aa"
+  ],
+  "filling_evidence_ids": [
+    "evidence-5e5307b645f2e7a8cac828da",
+    "evidence-e7ca0df5177e05c717542f01"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2007.large-hotel.source.corridor2.96eb24",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-c34fef7e3857687e7efbe66a",
+      "evidence_id": "evidence-808584e3ce07078a4ee14d30",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.hotel-large-bldg-occ-sch.9bc41f",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-592b907c0fe7b8b26127a94a",
+      "evidence_id": "evidence-455865dd61f001f6d99cffe8",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.hotel-large-bldg-light-corridor-sch.1674d3",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-77aa1dd5290b7533cd2d2e8a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-454d81a88e43968aa70f5667",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-7535a81272df08b235509497",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 5.381955208354861
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-73737bcb60354bf613b67403",
+      "evidence_id": "evidence-66aa33aa9d2474532da8dd8f",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.hotel-large-bldg-light-corridor-sch.1674d3",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-77aa1dd5290b7533cd2d2e8a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-454d81a88e43968aa70f5667",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-7535a81272df08b235509497",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-205078ebb1dc257c643bd5b2",
+      "evidence_id": "evidence-98e569fdbcfec0c7150dbdb1",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.hotel-large-bldg-equip-sch.79ae08",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-0c3ef16076b4700aea91b4c7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-5ab37c02a8d610f5c6760d99",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-a9b66dbfadcfb860fd969f64",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-536947e50eb793858eaf3f84",
+      "evidence_id": "evidence-7b037370195fcdeb128e45ab",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-e7ca0df5177e05c717542f01"
+        ],
+        "resolutions": [
+          "resolution-16132cadf734edf96e22",
+          "resolution-26e16b54046de9771669"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-e7ca0df5177e05c717542f01",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-a9bbf7d13316e2b08407b67d",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-845ec8ab998b931bdeb7e935",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-b1bc6f84a4cf9f64e726761e",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Corridor2_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d7d63dbeded64cf4a1e748eb",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.large-hotel.hotel-large-activity-sch.35e756"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-ee6bacebfa658d312a7e33aa",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.large-hotel.hotel-large-clgsetp-sch.7d8b06"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-4e9e50616272b7d453ba74e7",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.large-hotel.hotel-large-htgsetp-sch.9047dc"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-1ea13e3a51d350446b62",
+  "template": "90.1-2007",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}

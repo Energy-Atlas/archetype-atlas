@@ -1,0 +1,180 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SuperMarket",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.dry-storage.b2cd95",
+        "represented_area_m2": 422.16666408000015,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-c6636e8e30e014f6f688",
+        "weight": 0.7809011935238624
+      },
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.elec-mech-room.6c6038",
+        "represented_area_m2": 55.74042700000007,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-98bda65452dc66458d95",
+        "weight": 0.10310564446552632
+      },
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.restroom.b92960",
+        "represented_area_m2": 62.70760842500163,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-83503e705803742561ce",
+        "weight": 0.11599316201061133
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-03dabe1746e10b2833e131c9"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.super-market.department.support-mixed.cffcde",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-360f1045517909da4ae61733",
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-8fc526f53d7d7b31ba4743df",
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.super-market.support-mixed-electric-equipment.eab208",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 6.304162868544418
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-10a6fe6f974d95bbb834a9d2",
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-41a24ec3d569a61e48e8",
+          "resolution-928772b4d1302e8f353a",
+          "resolution-c996bfc01ac86c7f5430",
+          "resolution-e7092920f40a08c90461",
+          "resolution-f02572f73939ad3ac01a",
+          "resolution-f346f60cdf85a4c5e5a7"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-1980-2004.super-market.support-mixed-gas-equipment.ee7df5",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7dac0fc5de15716eeed1e2ca",
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.super-market.support-mixed-lighting.d9740e",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.840301458380697
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b9b96a3b26126dcf47d640bb",
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.super-market.support-mixed-occupancy.0bf2b6",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.03806285867991608
+    }
+  ],
+  "mode": "department",
+  "name": "Support_Mixed_SuperMarket",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.super-market.support-mixed-activity.6e274f"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.super-market.support-mixed-cooling-setpoint.dc066b"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-03dabe1746e10b2833e131c9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.super-market.support-mixed-heating-setpoint.0f994e"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}
