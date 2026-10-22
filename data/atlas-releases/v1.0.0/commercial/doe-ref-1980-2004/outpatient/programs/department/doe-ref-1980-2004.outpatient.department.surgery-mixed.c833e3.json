@@ -1,0 +1,219 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.outpatient.source.or.973997",
+        "represented_area_m2": 131.55070464,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-85e199b9208781487b79",
+        "weight": 0.43118148599269185
+      },
+      {
+        "program_id": "doe-ref-1980-2004.outpatient.source.anesthesia.7d871a",
+        "represented_area_m2": 10.033528319999999,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-bb9c79c9d794275513fc",
+        "weight": 0.03288672350791717
+      },
+      {
+        "program_id": "doe-ref-1980-2004.outpatient.source.pacu.5e911e",
+        "represented_area_m2": 88.07208192,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-15d5b31c9328931254c4",
+        "weight": 0.2886723507917175
+      },
+      {
+        "program_id": "doe-ref-1980-2004.outpatient.source.pre-op.7515e1",
+        "represented_area_m2": 48.95990207999999,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-79cd154397039c7a0e48",
+        "weight": 0.1604750304506699
+      },
+      {
+        "program_id": "doe-ref-1980-2004.outpatient.source.procedure-room.749a0d",
+        "represented_area_m2": 26.477366399999998,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-9caaf4b37503fa7ff03e",
+        "weight": 0.08678440925700366
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-bd0b100d70a8b81df460be28"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.outpatient.department.surgery-mixed.c833e3",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7f40ad1518849d6ea5c60276",
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ae3bfa91f74f930a4c11615f",
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.outpatient.surgery-mixed-electric-equipment.49498f",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 34.85160154107018
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-97305f1b609d85e404e85976",
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-1d9363a999e730931df9",
+          "resolution-3032907dea807f4e6bb4",
+          "resolution-6cfa02ba1019e35551a8",
+          "resolution-6e1ab3fcaed9b2a65f76",
+          "resolution-9e5c44ab488429061d3e",
+          "resolution-9eec3fab4779b27e4098",
+          "resolution-b1dbf9088cab214c919a",
+          "resolution-ceed71465e36d17e8c70"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-1980-2004.outpatient.surgery-mixed-gas-equipment.d0d99a",
+          "status": "known",
+          "value": 32.46800085745171
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-c8b8bd80bc9cc81b28c6b68d",
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.outpatient.surgery-mixed-hot-water-volume.6db732",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 8.616235565759115e-08
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-57fc3346f611e6b5b354508c",
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.outpatient.surgery-mixed-lighting.25aede",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 44.29132809409211
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ed9318f6144d41f4bd47be0a",
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.outpatient.surgery-mixed-occupancy.5ebc82",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.17736934813259259
+    }
+  ],
+  "mode": "department",
+  "name": "Surgery_Mixed_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.outpatient.surgery-mixed-activity.0b0660"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.outpatient.surgery-mixed-cooling-setpoint.3efaac"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-bd0b100d70a8b81df460be28",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.outpatient.surgery-mixed-heating-setpoint.6b6200"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "doe-ref-1980-2004.outpatient.main.07a0ed",
+    "doe-ref-1980-2004.outpatient.main.a2491e",
+    "doe-ref-1980-2004.outpatient.main.2efc0c",
+    "doe-ref-1980-2004.outpatient.main.3ba38f",
+    "doe-ref-1980-2004.outpatient.main.598840"
+  ],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}
