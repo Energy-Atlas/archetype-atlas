@@ -101,7 +101,9 @@ class AtlasProgramSuiteTests(unittest.TestCase):
                 record = json.loads(data)
                 self.assertRegex(record['id'], ID)
                 self.assertTrue(path.endswith('/' + record['id'] + '.json'))
-                content = {k: v for k, v in record.items() if k not in ('id', 'name')}
+                # Services cite programs back, so service citations hash as '@service'.
+                content = json.loads(re.sub(r'"service-[0-9a-f]{24}"', '"@service"', canonical(
+                    {k: v for k, v in record.items() if k not in ('id', 'name')})))
                 self.assertEqual(record['id'][-6:], hashlib.sha256(canonical(content).encode()).hexdigest()[:6])
             table = json.loads(built.files[next(p for p in built.files if p.endswith('/schedules.json'))])
             for sid, schedule in table['schedules'].items():
