@@ -34,20 +34,29 @@ conditions that the atlas has not given canonical SI fields.
 The [DOE reference-building inventory](https://www.energy.gov/cmei/buildings/commercial-reference-buildings)
 separates new construction, pre-1980 and post-1980 existing-building models. Its
 [pre-1980 page](https://www.energy.gov/cmei/buildings/existing-commercial-reference-buildings-constructed-1980)
-describes packages and historical updates. Its linked Medium Office target
-`https://www.energy.gov/cmei/articles/reference-buildings-building-type-medium-office-0`
-returned HTTP 404 in this session. Standards DOE template inputs are retained
-as a separate implementation of reference semantics, not a verified byte-for-byte
-extraction from DOE's distributed IDFs.
+describes packages and historical updates. Its per-type article pages, such as
+`https://www.energy.gov/cmei/articles/reference-buildings-building-type-medium-office-0`,
+return HTTP 404, but the per-building ZIPs themselves are still served from
+`https://www.energy.gov/sites/default/files/2013/12/f5/`. Since 2026-10-25 the 48
+v1.4_7.2 ZIPs (new construction to 90.1-2004, post-1980, pre-1980) are pinned in
+`sources/reference-models-lock.json`; their sizes match energy.gov and their digests
+match Internet Archive captures, which the lock records as fallback copies. Retrieval
+is opt-in (`python -m scripts.fetch --lock sources/reference-models-lock.json
+--cache-root <dir>`); CI never downloads them. Standards DOE template inputs remain
+a separate implementation of reference semantics; the reconciliation against the
+DOE IDFs is planned in `docs/superpowers/plans/2026-10-24-doe-reference-reconciliation.md`.
 
 The [DOE/PNNL prototype inventory](https://www.energycodes.gov/prototype-building-models)
 describes new-construction/code models and downloadable IDF/output/scorecard
-packages. The linked `2023-10/ASHRAE901_OfficeMedium_STD2013.zip` returned HTTP 404
-on direct retrieval. It is recorded as an unresolved benchmark download, not
-included in the blob lock or falsely reported as inspected. Standards template
-rules are separately named. Future benchmark ingestion must pin package bytes,
-check redistribution terms, parse IDFs against their EnergyPlus version, and
-compare final generated inputs after controls and overrides.
+packages. An earlier direct retrieval of `2023-10/ASHRAE901_OfficeMedium_STD2013.zip`
+returned HTTP 404 because the host refused the default client; the files are served
+to an identified client. Since 2026-10-25, 160 archives are pinned in
+`sources/reference-models-lock.json`: the ASHRAE 90.1 (2004–2022) and IECC (2006–2021)
+commercial per-type bundles, the IECC residential sets and the manufactured-housing
+sets. Per-version commercial ZIPs (byte-identical subsets of the bundles), Appendix G
+models and stand-alone weather files are not pinned. Redistribution terms are recorded
+in `sources/licenses/pnnl-prototypes.txt`. Standards template rules stay separately
+named; ingestion parses each IDF against its EnergyPlus version.
 
 ## License handling
 
