@@ -5,8 +5,9 @@ from `data/atlas-releases/v1.0.0`, and `manifest.json` names that base with its
 manifest's SHA-256 and lists deleted files. Resolve it by reading the base and
 replacing or removing the files listed here (`scripts.atlas_minor_release.files`).
 
-Commercial: everything of release 1.2.0 (the DOE reference reconciliation, ADR 0037,
-and the programs of the construction-only folders, ADR 0039), unchanged.
+Commercial: everything of release 1.3.0 (the DOE reference reconciliation, ADR 0037,
+the programs of the construction-only folders, ADR 0039, and the IECC commercial
+family, ADR 0040), unchanged.
 
 Residential (new, docs/adr/0038-residential-release-storage.md):
 - `residential/resstock-sdr/<building-type>/`: the 41 ResStock SDR fixture dwellings,
@@ -24,7 +25,7 @@ Residential (new, docs/adr/0038-residential-release-storage.md):
   are not stored for residential families (ADR 0038 section 7).
 
 Exports: dwelling programs as Program JSON 5.3.0 (`python -m scripts.atlas_exports
---release 1.4.0 --program ID`), ResStock construction sets as constructions 4.1.0 /
+--release 1.4.0 --program ID`), ResStock construction sets as constructions 4.2.0 /
 3.1.0, and the IDF-derived sets as source model constructions 1.0.0.
 
 Verify with `python -m scripts.atlas_minor_release --release 1.4.0 --verify`; rebuild

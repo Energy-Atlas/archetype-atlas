@@ -1,0 +1,177 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2012.outpatient.source.office.40db17",
+        "represented_area_m2": 538.4660198400001,
+        "source_geometry_file_id": "sourcefile-20536d85b77d54a39e67",
+        "source_program_id": "program-08a90d7053a4ec8ec8c3",
+        "weight": 0.7409869598568142
+      },
+      {
+        "program_id": "iecc-2012.outpatient.source.conference.0da2b5",
+        "represented_area_m2": 31.21542144,
+        "source_geometry_file_id": "sourcefile-20536d85b77d54a39e67",
+        "source_program_id": "program-f6c0ea0e3906b5976037",
+        "weight": 0.042955765788800816
+      },
+      {
+        "program_id": "iecc-2012.outpatient.source.outpatient-floor2-work.efffd2",
+        "represented_area_m2": 157.0061376,
+        "source_geometry_file_id": "sourcefile-20536d85b77d54a39e67",
+        "source_program_id": "program-211a6f15b1f88e58434a",
+        "weight": 0.21605727435438501
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-b948600e0f37652dd2471792"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2012.outpatient.department.office-mixed.db2cec",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-16f752946f7ca5076fdb966d",
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.outpatient.office-mixed-additional-lighting.01c9a8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-07606fdec40b73ecab366690",
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.outpatient.office-mixed-electric-equipment.52d2aa",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.348586021946462
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-cb8daa1921c7edfedfd5a8fd",
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.outpatient.office-mixed-additional-lighting.01c9a8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ad1b2aa41adc541864cf5c4d",
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.outpatient.office-mixed-additional-lighting.01c9a8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-341c6c063e077afee4e9f41e",
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.outpatient.office-mixed-lighting.bd406c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 10.122533162490164
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0ad13e883be5062e729cf4f0",
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.outpatient.office-mixed-occupancy.e8977d",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.07463355544106366
+    }
+  ],
+  "mode": "department",
+  "name": "Office_Mixed_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.outpatient.office-mixed-activity.2e8381"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.outpatient.office-mixed-cooling-setpoint.866507"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-b948600e0f37652dd2471792",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.outpatient.office-mixed-heating-setpoint.ac16e2"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2012"
+}
