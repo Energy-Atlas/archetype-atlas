@@ -67,6 +67,7 @@ jobs:
           python -m scripts.atlas_release --verify
           python -m scripts.atlas_delta_release --verify
           python -m scripts.atlas_minor_release --release 1.2.0 --verify
+          python -m scripts.atlas_minor_release --release 1.3.0 --verify
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
       - name: Reproduce the construction-only program definitions from pinned sources
@@ -74,6 +75,10 @@ jobs:
           python -m scripts.fetch --lock sources/construction-only-programs-lock.json
           python -m scripts.fetch --lock sources/openstudio-area-default-lock.json
           python -m scripts.construction_only_programs --check
+      - name: Reproduce atlas release 1.3.0 (IECC commercial) byte for byte and its evidence report
+        run: |
+          python -m scripts.atlas_minor_release --release 1.3.0 --check
+          python -m scripts.iecc_commercial_review --check
       - run: python -m scripts.audit
 
   construction-validation:
