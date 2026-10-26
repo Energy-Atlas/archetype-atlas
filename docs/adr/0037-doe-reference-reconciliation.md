@@ -174,6 +174,12 @@ its rules.
   not only each DOE schedule with its closest atlas schedule. This finds 22
   assignments the per-schedule match missed. Slots with several DOE schedules take the
   area-dominant one (`R-SLOT-CONFLICT`).
+- **Window ratios stay program-level (user, 2026-10-26).** A program's ratio per
+  direction is its zones' window area over their true outdoor wall area, each zone
+  counted by its multiplier. Programs hold no zone-by-zone values. In the DOE files,
+  61 of 579 zone and direction values differ from their program's by more than 0.01,
+  most of them in the outpatient and small hotel. Consumers reproduce glazed area per
+  orientation and program, not per zone.
 - **Infiltration schedules** are inlined in the construction documents, which stay
   standalone, rather than referenced from the folder's `schedules.json`.
 - **Building services** are exported per folder as building services 1.0.0, because

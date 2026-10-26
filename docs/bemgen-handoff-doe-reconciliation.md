@@ -34,6 +34,12 @@ Programs whose content changed have new readable IDs; select by name and templat
    - The atlas finds the same stretches the T4 run found: 8 in the secondary school
      (auditorium, bathrooms and main corridor on x = 79 m) and the outpatient
      `Floor 2 Reception Hall`, 26.5 of 28.7 m.
+   - The ratio is program-level by decision: weighted by wall area and zone
+     multiplier, per direction, with no zone-by-zone values. 61 of the 579 DOE zone
+     and direction values differ from their program's by more than 0.01, for example
+     the small-hotel ground-floor guest rooms (0.124 against 0.158). A generator
+     reproduces glazed area per orientation and program, and lists the zone
+     differences in its answer keys.
    - The construction set's `fenestration_defaults` holds the 15 whole-building
      values (conditioned, unconditioned and all zone surfaces). A generator can check
      its total glazed area against them.
