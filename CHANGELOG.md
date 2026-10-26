@@ -1,5 +1,28 @@
 # Changelog
 
+## Atlas release 1.3.0 candidate (IECC commercial prototypes) — 2026-10-26
+
+Add the IECC commercial prototype family (ADR 0040). It covers 16 PNNL building types in
+the IECC 2006, 2009, 2012, 2015, 2018 and 2021 editions, in 96 folders under
+`commercial/iecc-<year>/`.
+- Values are extracted offline from the pinned PNNL IDFs into six definition inputs.
+  Each IDF is checked against its archive record, and every schedule conversion over
+  the full year.
+- 1,134 programs and mixes. Zones map to standards space types through one lookup
+  table with a reasoned alias table. Absent objects are source zeros, and the 2021
+  lighting that differs by climate is stored as `value_by_climate`.
+- 1,077 building services and hot-water draws with zone gains.
+- 96 detailed construction sets of 19 contexts, with the IDF design-flow infiltration
+  and the whole-building window ratios. The unified representation is deferred.
+- Additive exports Program JSON 5.2.0 and detailed constructions 4.2.0.
+- Answer-key tests compare the release with the IDFs in Buffalo, Miami and Fairbanks.
+- An evidence-only report compares IECC with 90.1.
+- The delta `data/atlas-releases/v1.3.0` holds releases 1.1.0 and 1.2.0 unchanged.
+
+No frozen release or existing record changes. See the
+[release and migration notes](docs/release-notes-atlas-v1.3.0.md) and the agent
+decisions in ADR 0040.
+
 ## Atlas release 1.2.0 candidate (construction-only programs) — 2026-10-26
 
 Add programs to the 51 template × building-type folders that had construction sets
