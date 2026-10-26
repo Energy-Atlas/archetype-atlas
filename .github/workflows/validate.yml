@@ -68,6 +68,7 @@ jobs:
           python -m scripts.atlas_delta_release --verify
           python -m scripts.atlas_minor_release --release 1.2.0 --verify
           python -m scripts.atlas_minor_release --release 1.3.0 --verify
+          python -m scripts.atlas_minor_release --release 1.4.0 --verify
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
       - name: Reproduce the construction-only program definitions from pinned sources
@@ -193,6 +194,9 @@ jobs:
         run: python -m scripts.atlas_delta_release --check
       - name: Reproduce the 1.2.0 delta release with pinned producer
         run: python -m scripts.atlas_minor_release --release 1.2.0 --check
+      # The residential tree reads the committed definition inputs, never the IDFs.
+      - name: Reproduce the 1.4.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.4.0 --check
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
