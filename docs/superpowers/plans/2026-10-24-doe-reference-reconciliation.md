@@ -4,6 +4,15 @@ Status: **round 4.** Your round-3 answers (given in chat) are recorded in sectio
 questions still open after them are in **section 6c**; sections 0 to 6b are kept as they
 were.
 
+## 0g. Round 11: after the S3 gate (given in chat)
+
+- **S3 found real construction differences** between the PNNL prototypes and the atlas
+  90.1 templates: walls, doors and some glazing
+  ([review](../../reviews/prototype-equivalence-90-1.md)).
+- **Decision:** record those differences as evidence only, and decide the 90.1
+  construction authority separately.
+- Continue S4–S9 for the DOE reconciliation (release v1.1.0).
+
 ## 0f. Round 9 (given in chat)
 
 - **IECC is a completely different family from ASHRAE.** IECC commercial
