@@ -1,0 +1,757 @@
+{
+  "axes": {
+    "climate": [
+      "1AWH",
+      "1AWHT",
+      "2AWH",
+      "2B",
+      "3A",
+      "3AWH",
+      "3B",
+      "3C",
+      "4A",
+      "4B",
+      "4C",
+      "5A",
+      "5B",
+      "5C",
+      "6A",
+      "6B",
+      "7",
+      "8"
+    ],
+    "foundation": [
+      "crawlspace",
+      "heatedbsmt",
+      "slab",
+      "unheatedbsmt"
+    ],
+    "heating": [
+      "elecres",
+      "hp",
+      "oilfurnace"
+    ]
+  },
+  "building_context": {
+    "floors": [
+      "bottom",
+      "middle",
+      "top"
+    ],
+    "non_dwelling_zones": [
+      "attic",
+      "breezeway",
+      "crawlspace",
+      "heatedbsmt",
+      "unheatedbsmt"
+    ],
+    "note": "One per-unit program stands for every unit: the 18 units have identical loads (user decision R4). Zones outside the units are building-level (shared services and the construction set).",
+    "rows": [
+      "back",
+      "front"
+    ],
+    "units_in_building": 18,
+    "units_per_row_and_floor": 3
+  },
+  "building_type": "Multifamily",
+  "climate": null,
+  "construction_set_id": "iecc-2006.multifamily.envelope.c8dcae",
+  "controls": [
+    {
+      "control_type_schedule_id": "iecc-2006.multifamily.zone-control-type.7f863d",
+      "cooling_setpoint_schedule_id": "iecc-2006.multifamily.cooling-sch.919200",
+      "evidence_id": "evidence-af29325ea35b66cd77ac5bf8",
+      "heating_setpoint_schedule_id": "iecc-2006.multifamily.heating-sch.4164b9",
+      "model_count": 216
+    }
+  ],
+  "edition": "2006",
+  "evidence_ids": [
+    "evidence-03c990b9eef199acabb5577f",
+    "evidence-07e2ce6781d7046b590f519e",
+    "evidence-1165b0d1b670b64b5d6177f5",
+    "evidence-132210d70fcdc03e6c230734",
+    "evidence-199fcdcb12a61c83367e4306",
+    "evidence-260dea50c1fb295850ff6bbf",
+    "evidence-37c4338c26886d1144da5e6d",
+    "evidence-3d5fd4ae48c31c857ba1a1f3",
+    "evidence-4ae97b21d571f2d1dc48f552",
+    "evidence-6384cd4c39d8bb2978d0e3b6",
+    "evidence-6d7a0e0fec217e0efade5b13",
+    "evidence-7f700d54b09a4b0f6c10dbb2",
+    "evidence-82e67b73a9743fb70a4bd519",
+    "evidence-94893e0ae24c53d2431965cc",
+    "evidence-949e6972caba303bc0efc2f6",
+    "evidence-9817aa78727be70663e4b78d",
+    "evidence-aa00015abcf54194de2fcf58",
+    "evidence-aee5d0048b34ca014ec8c8d2",
+    "evidence-af29325ea35b66cd77ac5bf8",
+    "evidence-af55a7d846aaa57a4d21bc86",
+    "evidence-b1a6c174bc4ccee0c9b658f8",
+    "evidence-bbdc5962b1f1a2a85cf69ac9",
+    "evidence-bd1be5403e306d7665a2b208",
+    "evidence-c49bf73ea7e1e7f4d1f652ea",
+    "evidence-c8d9bfdb40f16bdeb0dc393c",
+    "evidence-cac297f30cdbe2f8ecd5c933",
+    "evidence-e572e42111c3ae78f965e37d",
+    "evidence-e6e76da50a0fa0ec0dbc470e",
+    "evidence-e8516ee72a1bb1110ac9080d",
+    "evidence-faaf55c6b9007364b7299a4d",
+    "evidence-fc8ac84bea7613eafd5b6dbb"
+  ],
+  "fenestration": [
+    {
+      "basis": "program_zone_surfaces",
+      "evidence_id": "evidence-6384cd4c39d8bb2978d0e3b6",
+      "model_count": 216,
+      "wwr": {
+        "E": 0.346888,
+        "N": 0.086939,
+        "S": 0.086939,
+        "W": 0.346888
+      }
+    }
+  ],
+  "floor_area": [
+    {
+      "basis": "floor surfaces of the living zones over the number of dwelling units",
+      "conditioned_floor_area_m2": 111.524164,
+      "evidence_id": "evidence-1165b0d1b670b64b5d6177f5",
+      "model_count": 216
+    }
+  ],
+  "id": "iecc-2006.multifamily.electric-appliances.d5a1df",
+  "kind": "dwelling",
+  "loads": [
+    {
+      "activity_schedule_id": "iecc-2006.multifamily.activity-sch.cbe7de",
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-94893e0ae24c53d2431965cc",
+      "fraction_radiant": 0.0,
+      "host_zone": "living",
+      "method": "People",
+      "model_count": 216,
+      "quantity": "people",
+      "schedule_id": "iecc-2006.multifamily.occupancy.d081b5",
+      "sensible_fraction": "autocalculate",
+      "source_class": "people",
+      "source_object": "people",
+      "type": "occupancy",
+      "unit": "person/dwelling",
+      "value": 2.0
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-e8516ee72a1bb1110ac9080d",
+      "fractions": {
+        "radiant": 0.6,
+        "replaceable": 0.0,
+        "return_air": 0.0,
+        "visible": 0.2
+      },
+      "host_zone": "living",
+      "method": "LightingLevel",
+      "model_count": 216,
+      "quantity": "living_hardwired_lighting",
+      "schedule_id": "iecc-2006.multifamily.interior-lighting-he.15415c",
+      "source_class": "lights",
+      "source_object": "Living Hardwired Lighting",
+      "subcategory": "",
+      "type": "lighting",
+      "unit": "W/dwelling",
+      "value": 256.521172638436
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-c8d9bfdb40f16bdeb0dc393c",
+      "fractions": {
+        "radiant": 0.6,
+        "replaceable": 0.0,
+        "return_air": 0.0,
+        "visible": 0.2
+      },
+      "host_zone": "living",
+      "method": "LightingLevel",
+      "model_count": 216,
+      "quantity": "living_plug_in_lighting",
+      "schedule_id": "iecc-2006.multifamily.interior-lighting-he.15415c",
+      "source_class": "lights",
+      "source_object": "Living Plug-in Lighting",
+      "subcategory": "",
+      "type": "lighting",
+      "unit": "W/dwelling",
+      "value": 64.1302931596091
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-aee5d0048b34ca014ec8c8d2",
+      "fractions": {
+        "latent": 0.15,
+        "lost": 0.25,
+        "radiant": 0.6
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 216,
+      "quantity": "dishwasher",
+      "schedule_id": "iecc-2006.multifamily.dishwasher-equip-sch.c0ed1d",
+      "source_class": "electricequipment",
+      "source_object": "dishwasher",
+      "subcategory": "dishwasher",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 54.7543075941289
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-fc8ac84bea7613eafd5b6dbb",
+      "fractions": {
+        "latent": 0.0,
+        "lost": 0.0,
+        "radiant": 1.0
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 216,
+      "quantity": "refrigerator",
+      "schedule_id": "iecc-2006.multifamily.refrigerator.78157d",
+      "source_class": "electricequipment",
+      "source_object": "refrigerator",
+      "subcategory": "refrigerator",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 91.0575745202123
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-e6e76da50a0fa0ec0dbc470e",
+      "fractions": {
+        "latent": 0.0,
+        "lost": 0.2,
+        "radiant": 0.8
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 216,
+      "quantity": "clotheswasher",
+      "schedule_id": "iecc-2006.multifamily.clothes-washer-equip-sch.869605",
+      "source_class": "electricequipment",
+      "source_object": "clotheswasher",
+      "subcategory": "clotheswasher",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 23.7320314618931
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-3d5fd4ae48c31c857ba1a1f3",
+      "fractions": {
+        "latent": 0.05,
+        "lost": 0.8,
+        "radiant": 0.15
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 216,
+      "quantity": "electric_dryer",
+      "schedule_id": "iecc-2006.multifamily.clothes-dryer.562324",
+      "source_class": "electricequipment",
+      "source_object": "electric_dryer",
+      "subcategory": "electric_dryer",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 177.596325593264
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-9817aa78727be70663e4b78d",
+      "fractions": {
+        "latent": 0.3,
+        "lost": 0.3,
+        "radiant": 0.4
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 216,
+      "quantity": "electric_range",
+      "schedule_id": "iecc-2006.multifamily.cooking-range.c0a4bc",
+      "source_class": "electricequipment",
+      "source_object": "electric_range",
+      "subcategory": "electric_range",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 206.726825266612
+    },
+    {
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-af55a7d846aaa57a4d21bc86",
+      "fractions": {
+        "latent": 0.0,
+        "lost": 0.0,
+        "radiant": 1.0
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 216,
+      "quantity": "television",
+      "schedule_id": "iecc-2006.multifamily.interior-lighting.e41f79",
+      "source_class": "electricequipment",
+      "source_object": "television",
+      "subcategory": "television",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 0.0
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "crawlspace",
+          "slab",
+          "unheatedbsmt"
+        ]
+      },
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-260dea50c1fb295850ff6bbf",
+      "fractions": {
+        "latent": 0.06,
+        "lost": 0.25,
+        "radiant": 0.69
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 162,
+      "quantity": "electric_mels",
+      "schedule_id": "iecc-2006.multifamily.misc-plug-load.06f7e9",
+      "source_class": "electricequipment",
+      "source_object": "electric_mels",
+      "subcategory": "electric_mels",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 440.55330634278
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-132210d70fcdc03e6c230734",
+      "fractions": {
+        "latent": 0.06,
+        "lost": 0.25,
+        "radiant": 0.69
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 54,
+      "quantity": "electric_mels",
+      "schedule_id": "iecc-2006.multifamily.misc-plug-load.06f7e9",
+      "source_class": "electricequipment",
+      "source_object": "electric_mels",
+      "subcategory": "electric_mels",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 471.839856050382
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "crawlspace",
+          "slab",
+          "unheatedbsmt"
+        ]
+      },
+      "basis": "dwelling_unit",
+      "evidence_id": "evidence-82e67b73a9743fb70a4bd519",
+      "fractions": {
+        "latent": 0.0624390461422629,
+        "lost": 0.251045347957769,
+        "radiant": 0.41190936353998
+      },
+      "fuel": "electricity",
+      "host_zone": "living",
+      "method": "EquipmentLevel",
+      "model_count": 162,
+      "quantity": "iecc_adj",
+      "role": "reference_design_adjustment",
+      "schedule_id": "iecc-2006.multifamily.misc-plug-load.06f7e9",
+      "source_class": "electricequipment",
+      "source_object": "IECC_Adj",
+      "subcategory": "IECC_adj",
+      "type": "electric_equipment",
+      "unit": "W/dwelling",
+      "value": 29.2314361523423
+    },
+    {
+      "basis": "dwelling_unit",
+      "control": "",
+      "evidence_id": "evidence-aa00015abcf54194de2fcf58",
+      "host_zone": "exterior",
+      "method": "DesignLevel",
+      "model_count": 216,
+      "quantity": "exterior_lights",
+      "schedule_id": "iecc-2006.multifamily.exterior-lighting.19cdaf",
+      "source_class": "exterior:lights",
+      "source_object": "Exterior-Lights",
+      "subcategory": "Exterior-Lights",
+      "type": "exterior_lighting",
+      "unit": "W/dwelling",
+      "value": 76.5386111111111
+    },
+    {
+      "basis": "dwelling_unit",
+      "control": "",
+      "evidence_id": "evidence-199fcdcb12a61c83367e4306",
+      "host_zone": "exterior",
+      "method": "DesignLevel",
+      "model_count": 216,
+      "quantity": "garage_lights",
+      "schedule_id": "iecc-2006.multifamily.interior-lighting-he.15415c",
+      "source_class": "exterior:lights",
+      "source_object": "Garage-Lights",
+      "subcategory": "Garage-Lights",
+      "type": "exterior_lighting",
+      "unit": "W/dwelling",
+      "value": 0.0
+    },
+    {
+      "basis": "dwelling_unit",
+      "cold_supply_temperature_schedule_id": null,
+      "evidence_id": "evidence-03c990b9eef199acabb5577f",
+      "host_zone": null,
+      "hot_supply_temperature_schedule_id": null,
+      "latent_fraction_schedule_id": null,
+      "method": "PeakFlowRate",
+      "model_count": 216,
+      "quantity": "clothes_washer",
+      "schedule_id": "iecc-2006.multifamily.clothes-washer-flow-sch.bf3f1e",
+      "sensible_fraction_schedule_id": null,
+      "source_class": "wateruse:equipment",
+      "source_object": "Clothes Washer",
+      "subcategory": "Domestic Hot Water",
+      "target_temperature_schedule_id": "iecc-2006.multifamily.cwwater-temp-schedule.285f07",
+      "type": "hot_water",
+      "unit": "m3/s/dwelling",
+      "value": 1.0812793212e-06
+    },
+    {
+      "basis": "dwelling_unit",
+      "cold_supply_temperature_schedule_id": null,
+      "evidence_id": "evidence-bbdc5962b1f1a2a85cf69ac9",
+      "host_zone": null,
+      "hot_supply_temperature_schedule_id": null,
+      "latent_fraction_schedule_id": null,
+      "method": "PeakFlowRate",
+      "model_count": 216,
+      "quantity": "dishwasher",
+      "schedule_id": "iecc-2006.multifamily.dishwasher-flow-sch.f3c4fc",
+      "sensible_fraction_schedule_id": null,
+      "source_class": "wateruse:equipment",
+      "source_object": "Dishwasher",
+      "subcategory": "Domestic Hot Water",
+      "target_temperature_schedule_id": "iecc-2006.multifamily.dwwater-temp-schedule.45aaab",
+      "type": "hot_water",
+      "unit": "m3/s/dwelling",
+      "value": 4.24456902e-07
+    },
+    {
+      "basis": "dwelling_unit",
+      "cold_supply_temperature_schedule_id": null,
+      "evidence_id": "evidence-4ae97b21d571f2d1dc48f552",
+      "host_zone": null,
+      "hot_supply_temperature_schedule_id": null,
+      "latent_fraction_schedule_id": null,
+      "method": "PeakFlowRate",
+      "model_count": 216,
+      "quantity": "sinks",
+      "schedule_id": "iecc-2006.multifamily.ba-sink-sch.f26868",
+      "sensible_fraction_schedule_id": null,
+      "source_class": "wateruse:equipment",
+      "source_object": "Sinks",
+      "subcategory": "Domestic Hot Water",
+      "target_temperature_schedule_id": "iecc-2006.multifamily.ssbwater-temp-schedule.c94246",
+      "type": "hot_water",
+      "unit": "m3/s/dwelling",
+      "value": 7.1934e-05
+    },
+    {
+      "basis": "dwelling_unit",
+      "cold_supply_temperature_schedule_id": null,
+      "evidence_id": "evidence-37c4338c26886d1144da5e6d",
+      "host_zone": null,
+      "hot_supply_temperature_schedule_id": null,
+      "latent_fraction_schedule_id": null,
+      "method": "PeakFlowRate",
+      "model_count": 216,
+      "quantity": "showers",
+      "schedule_id": "iecc-2006.multifamily.ba-shower-sch.111d9f",
+      "sensible_fraction_schedule_id": null,
+      "source_class": "wateruse:equipment",
+      "source_object": "Showers",
+      "subcategory": "Domestic Hot Water",
+      "target_temperature_schedule_id": "iecc-2006.multifamily.ssbwater-temp-schedule.c94246",
+      "type": "hot_water",
+      "unit": "m3/s/dwelling",
+      "value": 0.000141975
+    },
+    {
+      "basis": "dwelling_unit",
+      "cold_supply_temperature_schedule_id": null,
+      "evidence_id": "evidence-949e6972caba303bc0efc2f6",
+      "host_zone": null,
+      "hot_supply_temperature_schedule_id": null,
+      "latent_fraction_schedule_id": null,
+      "method": "PeakFlowRate",
+      "model_count": 216,
+      "quantity": "baths",
+      "schedule_id": "iecc-2006.multifamily.ba-bath-sch.c47743",
+      "sensible_fraction_schedule_id": null,
+      "source_class": "wateruse:equipment",
+      "source_object": "Baths",
+      "subcategory": "Domestic Hot Water",
+      "target_temperature_schedule_id": "iecc-2006.multifamily.ssbwater-temp-schedule.c94246",
+      "type": "hot_water",
+      "unit": "m3/s/dwelling",
+      "value": 0.00027764
+    }
+  ],
+  "model_count": 216,
+  "name": "IECC 2006 Multifamily dwelling, electric appliances",
+  "scope": "whole_dwelling",
+  "services": [
+    {
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "basis": "absolute",
+      "evidence_id": "evidence-faaf55c6b9007364b7299a4d",
+      "fractions": {
+        "radiant": 0.6,
+        "replaceable": 0.0,
+        "return_air": 0.0,
+        "visible": 0.2
+      },
+      "host_zone": "heatedbsmt",
+      "method": "LightingLevel",
+      "model_count": 54,
+      "quantity": "basement_hardwired_lighting",
+      "schedule_id": "iecc-2006.multifamily.interior-lighting-he.15415c",
+      "source_class": "lights",
+      "source_object": "Basement Hardwired Lighting",
+      "subcategory": "",
+      "type": "lighting",
+      "unit": "W",
+      "value": 1101.65472312704
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "basis": "absolute",
+      "evidence_id": "evidence-e572e42111c3ae78f965e37d",
+      "fractions": {
+        "radiant": 0.6,
+        "replaceable": 0.0,
+        "return_air": 0.0,
+        "visible": 0.2
+      },
+      "host_zone": "heatedbsmt",
+      "method": "LightingLevel",
+      "model_count": 54,
+      "quantity": "basement_plug_in_lighting",
+      "schedule_id": "iecc-2006.multifamily.interior-lighting-he.15415c",
+      "source_class": "lights",
+      "source_object": "Basement Plug-in Lighting",
+      "subcategory": "",
+      "type": "lighting",
+      "unit": "W",
+      "value": 275.413680781759
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "basis": "absolute",
+      "evidence_id": "evidence-7f700d54b09a4b0f6c10dbb2",
+      "fractions": {
+        "latent": 0.0624390461422629,
+        "lost": 0.251045347957769,
+        "radiant": 0.41190936353998
+      },
+      "fuel": "electricity",
+      "host_zone": "heatedbsmt",
+      "method": "EquipmentLevel",
+      "model_count": 54,
+      "quantity": "iecc_adj_heatedbsmt",
+      "role": "reference_design_adjustment",
+      "schedule_id": "iecc-2006.multifamily.misc-plug-load.06f7e9",
+      "source_class": "electricequipment",
+      "source_object": "IECC_Adj_heatedbsmt",
+      "subcategory": "IECC_adj",
+      "type": "electric_equipment",
+      "unit": "W",
+      "value": 3514.50542559152
+    }
+  ],
+  "source_family": "iecc_residential_prototype",
+  "template": "IECC 2006",
+  "variant": {
+    "appliance_fuel": "electric",
+    "heating": [
+      "elecres",
+      "hp",
+      "oilfurnace"
+    ]
+  },
+  "ventilation": [
+    {
+      "air_changes_per_hour": null,
+      "applies_with": {
+        "foundation": [
+          "crawlspace",
+          "slab",
+          "unheatedbsmt"
+        ]
+      },
+      "coefficients": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "design_flow_rate_m3_s": 0.0212376348471564,
+      "evidence_id": "evidence-bd1be5403e306d7665a2b208",
+      "fan_pressure_rise_Pa": 0.0,
+      "fan_total_efficiency": 0.6,
+      "flow_per_area_m3_s_m2": null,
+      "flow_per_person_m3_s": null,
+      "method": "Flow/Zone",
+      "model_count": 162,
+      "object": "Ventilation",
+      "schedule_id": "iecc-2006.multifamily.always-avail.b31866",
+      "ventilation_type": "Exhaust",
+      "zone": "living"
+    },
+    {
+      "air_changes_per_hour": null,
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "coefficients": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "design_flow_rate_m3_s": 0.0283168464628752,
+      "evidence_id": "evidence-6d7a0e0fec217e0efade5b13",
+      "fan_pressure_rise_Pa": 0.0,
+      "fan_total_efficiency": 0.6,
+      "flow_per_area_m3_s_m2": null,
+      "flow_per_person_m3_s": null,
+      "method": "Flow/Zone",
+      "model_count": 54,
+      "object": "Ventilation",
+      "schedule_id": "iecc-2006.multifamily.always-avail.b31866",
+      "ventilation_type": "Exhaust",
+      "zone": "living"
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "crawlspace",
+          "slab",
+          "unheatedbsmt"
+        ]
+      },
+      "end_use_subcategory": "Ventilation",
+      "evidence_id": "evidence-b1a6c174bc4ccee0c9b658f8",
+      "fan_pressure_rise_Pa": 908.091434122032,
+      "fan_total_efficiency": 0.6,
+      "maximum_flow_rate_m3_s": 0.0212376348471564,
+      "method": "Fan:ZoneExhaust",
+      "model_count": 162,
+      "object": "Zone Exhaust Fan",
+      "schedule_id": "iecc-2006.multifamily.always-avail.b31866",
+      "zone": null
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "end_use_subcategory": "Ventilation",
+      "evidence_id": "evidence-c49bf73ea7e1e7f4d1f652ea",
+      "fan_pressure_rise_Pa": 908.091434122032,
+      "fan_total_efficiency": 0.6,
+      "maximum_flow_rate_m3_s": 0.0283168464628752,
+      "method": "Fan:ZoneExhaust",
+      "model_count": 54,
+      "object": "Zone Exhaust Fan",
+      "schedule_id": "iecc-2006.multifamily.always-avail.b31866",
+      "zone": null
+    },
+    {
+      "air_changes_per_hour": null,
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "coefficients": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "design_flow_rate_m3_s": 0.0283168464628752,
+      "evidence_id": "evidence-07e2ce6781d7046b590f519e",
+      "fan_pressure_rise_Pa": 0.0,
+      "fan_total_efficiency": 0.6,
+      "flow_per_area_m3_s_m2": null,
+      "flow_per_person_m3_s": null,
+      "method": "Flow/Zone",
+      "model_count": 54,
+      "object": "Ventilation_unitheatedbsmt",
+      "schedule_id": "iecc-2006.multifamily.always-off.7e369b",
+      "ventilation_type": "Exhaust",
+      "zone": "heatedbsmt"
+    },
+    {
+      "applies_with": {
+        "foundation": [
+          "heatedbsmt"
+        ]
+      },
+      "end_use_subcategory": "Ventilation",
+      "evidence_id": "evidence-cac297f30cdbe2f8ecd5c933",
+      "fan_pressure_rise_Pa": 908.091434122032,
+      "fan_total_efficiency": 0.6,
+      "maximum_flow_rate_m3_s": 0.0283168464628752,
+      "method": "Fan:ZoneExhaust",
+      "model_count": 54,
+      "object": "Zone Exhaust Fan_unitheatedbsmt",
+      "schedule_id": "iecc-2006.multifamily.always-avail.b31866",
+      "zone": null
+    }
+  ],
+  "vintage": null
+}

@@ -11,6 +11,14 @@ since then: release 1.2.0 applies the DOE reference reconciliation of 1.1.0
 release 1.0.0 stay as they are: the overlays reach them through their source
 loaders and the construction document export for the length of one build.
 Release 1.1.0 keeps its own builder, scripts.atlas_delta_release.
+
+Release 1.4.0 adds the residential tree (ADR 0038, 0041, 0042) beside the commercial
+files: the `residential` overlay merges the files of scripts.residential_release into
+the assembled release.
+
+This builder holds every minor release's entry, so its bytes change whenever a release
+is added. Its recorded input digest is provenance only: `--verify` does not treat it
+as stale, and `--check` rebuilds a release to show the builder still reproduces it.
 """
 import argparse
 import contextlib
@@ -20,13 +28,21 @@ from pathlib import Path
 
 from scripts import (atlas_constructions, atlas_programs, atlas_release, atlas_systems,
                      construction_foundation_release, construction_only_overlay, reconciliation_overlay)
-from scripts.atlas_format import suite_bytes
+from scripts.atlas_format import merge, suite_bytes
 from scripts.common import ROOT
 
 BASE = atlas_release.TARGET
 RECONCILIATION = ('scripts/program_composition.py', 'data/reconciliation/doe-reference-v1.json',
                   'data/reconciliation/doe-reference-values-v1.json', 'scripts/reconciliation_overlay.py')
 CONSTRUCTION_ONLY = ('data/program-inputs/construction-only-v1.json', 'scripts/construction_only_overlay.py')
+SELF = 'scripts/atlas_minor_release.py'
+
+
+def residential_inputs():
+    from scripts import residential_release
+    return residential_release.inputs()
+
+
 RELEASES = {
     '1.2.0': {
         'overlays': ('reconciliation', 'construction_only'),
@@ -60,6 +76,46 @@ Research assumptions in the new folders (user decisions, ADR 0039):
   building draw per floor area.
 
 Verify with `python -m scripts.atlas_minor_release --release 1.2.0 --verify`; rebuild
+and compare with `--check`. Upstream notices are in `notices/` of either folder;
+original Atlas work remains unlicensed (see `LICENSE`).
+'''},
+    '1.4.0': {
+        'overlays': ('reconciliation', 'construction_only', 'residential'),
+        'inputs': (*atlas_release.INPUTS, *RECONCILIATION, *CONSTRUCTION_ONLY, *residential_inputs(), SELF),
+        'decisions': ('docs/adr/0036-suite-based-release-storage.md', 'docs/adr/0037-doe-reference-reconciliation.md',
+                      'docs/adr/0039-construction-only-programs.md', 'docs/adr/0038-residential-release-storage.md',
+                      'docs/adr/0041-iecc-residential-family.md', 'docs/adr/0042-manufactured-housing-family.md'),
+        'scope': 'commercial and residential',
+        'readme': '''# Energy Archetype Atlas release 1.4.0 (commercial and residential, delta)
+
+A delta on release 1.0.0 (ADR 0036): this folder holds only the files that differ
+from `data/atlas-releases/v1.0.0`, and `manifest.json` names that base with its
+manifest's SHA-256 and lists deleted files. Resolve it by reading the base and
+replacing or removing the files listed here (`scripts.atlas_minor_release.files`).
+
+Commercial: everything of release 1.2.0 (the DOE reference reconciliation, ADR 0037,
+and the programs of the construction-only folders, ADR 0039), unchanged.
+
+Residential (new, docs/adr/0038-residential-release-storage.md):
+- `residential/resstock-sdr/<building-type>/`: the 41 ResStock SDR fixture dwellings,
+  one program per dwelling with its fillings, its annual series in
+  `schedules/<program-id>.json` and one construction set of one context. Values are
+  those of the frozen definition, resolution and construction releases.
+- `residential/iecc-<edition>/{single-family,multifamily}/`: the IECC residential
+  prototypes, editions 2006 to 2024 (docs/adr/0041-iecc-residential-family.md).
+  Programs per type and appliance fuel, whose entries carry `applies_with` where they
+  hold only for some climate codes, foundations or heating systems; one construction
+  set per type with a context per climate code and foundation.
+- `residential/{hud-code,doe-final-rule}/{single-section,multi-section}/`: the
+  manufactured-housing prototypes (docs/adr/0042-manufactured-housing-family.md).
+- Loads keep the source basis, per dwelling unit where the source gives one. Systems
+  are not stored for residential families (ADR 0038 section 7).
+
+Exports: dwelling programs as Program JSON 5.3.0 (`python -m scripts.atlas_exports
+--release 1.4.0 --program ID`), ResStock construction sets as constructions 4.1.0 /
+3.1.0, and the IDF-derived sets as source model constructions 1.0.0.
+
+Verify with `python -m scripts.atlas_minor_release --release 1.4.0 --verify`; rebuild
 and compare with `--check`. Upstream notices are in `notices/` of either folder;
 original Atlas work remains unlicensed (see `LICENSE`).
 '''},
@@ -118,13 +174,20 @@ def assemble(release):
     with overlaid(spec['overlays']):
         full = atlas_release.assemble()
     full.pop('manifest.json')
+    residential_counts = {}
+    if 'residential' in spec['overlays']:
+        from scripts import residential_release, residential_storage
+        full = merge(full, residential_release.files())
+        residential_counts = residential_storage.counts(full)
     full['README.md'] = spec['readme'].encode('utf-8')
     base = base_files()
     changed = {path: data for path, data in full.items() if base.get(path) != data}
     deleted = sorted(set(base) - set(full) - {'manifest.json'})
-    resolved = atlas_release.manifest(full)
+    resolved = atlas_release.manifest({p: d for p, d in full.items() if not p.startswith('residential/')})
+    resolved['counts'].update(residential_counts)
     manifest = {
-        'schema_version': '1.0.0', 'kind': 'atlas_release', 'release': release, 'status': 'candidate', 'scope': 'commercial',
+        'schema_version': '1.0.0', 'kind': 'atlas_release', 'release': release, 'status': 'candidate',
+        'scope': spec.get('scope', 'commercial'),
         'base_release': {'release': '1.0.0', 'path': BASE.relative_to(ROOT).as_posix(),
                          'manifest_sha256': atlas_release.sha(base['manifest.json'])},
         'decision': list(spec['decisions']), 'deferred': resolved['deferred'],
@@ -158,7 +221,8 @@ def verify(release):
         raise ValueError('Release files not in the manifest: '+', '.join(extra[:5]))
     if set(listed['deleted']) - set(base_listed['files']) or set(listed['deleted']) & set(listed['files']):
         raise ValueError('Deleted files must be base files and not delta files')
-    stale = sorted(path for path, digest in listed['input_sha256'].items() if atlas_release.sha((ROOT/path).read_bytes()) != digest)
+    stale = sorted(path for path, digest in listed['input_sha256'].items()
+                   if path != SELF and atlas_release.sha((ROOT/path).read_bytes()) != digest)
     if stale:
         raise ValueError(f'Release inputs changed since it was written; rerun python -m scripts.atlas_minor_release '
                          f'--release {release}: '+', '.join(stale))
@@ -197,7 +261,7 @@ def main():
     elif not args.verify:
         atlas_release.write(assemble(args.release), target(args.release))
     listed = verify(args.release)
-    print(f'Atlas release {args.release} (commercial, delta on 1.0.0): {len(listed["files"])} files, '
+    print(f'Atlas release {args.release} ({listed["scope"]}, delta on 1.0.0): {len(listed["files"])} files, '
           f'{len(listed["deleted"])} deleted; resolved: '+', '.join(f'{v} {k}' for k, v in listed['counts'].items()))
 
 
