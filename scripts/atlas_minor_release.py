@@ -381,8 +381,17 @@ original Atlas work remains unlicensed (see `LICENSE`).
 '''}
 
 
+# What release 1.4.0 still leaves out. The base list named residential storage and the consumer exports,
+# which releases 1.1.0 and 1.4.0 now hold.
+DEFERRED_1_4_0 = ('generator recipes in program files',
+                  'systems, water heaters and the unified construction representation of the IECC commercial '
+                  'family (ADR 0040)',
+                  'systems and water heaters of the residential families (ADR 0038 section 7)')
+
+
 def assemble(release):
-    """The delta files, manifest included, against the written base; residential files join the commercial ones."""
+    """The delta files, manifest included, against the written base; residential files join the commercial ones.
+    Input digests are taken as verify reads them (the builder without the blocks of later releases)."""
     spec = RELEASES[release]
     with overlaid(spec['overlays']):
         full = atlas_release.assemble()
@@ -398,6 +407,8 @@ def assemble(release):
     deleted = sorted(set(base) - set(full) - {'manifest.json'})
     resolved = atlas_release.manifest({p: d for p, d in full.items() if not p.startswith('residential/')})
     resolved['counts'].update(residential_counts)
+    if 'residential' in spec['overlays']:
+        resolved['deferred'] = list(DEFERRED_1_4_0)
     manifest = {
         'schema_version': '1.0.0', 'kind': 'atlas_release', 'release': release, 'status': 'candidate',
         'scope': spec.get('scope', 'commercial'),
@@ -405,7 +416,7 @@ def assemble(release):
                          'manifest_sha256': atlas_release.sha(base['manifest.json'])},
         'decision': list(spec['decisions']), 'deferred': resolved['deferred'],
         'generated_by': f'python -m scripts.atlas_minor_release --release {release}',
-        'input_sha256': {path: atlas_release.sha((ROOT/path).read_bytes()) for path in spec['inputs']},
+        'input_sha256': {path: atlas_release.sha(pinned_bytes(path, release)) for path in spec['inputs']},
         'counts': resolved['counts'],
         'files': {path: {'sha256': atlas_release.sha(data), 'bytes': len(data)} for path, data in sorted(changed.items())},
         'deleted': deleted}
