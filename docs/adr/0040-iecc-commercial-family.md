@@ -1,8 +1,8 @@
 # ADR 0040: The IECC commercial prototype family
 
-Status: proposed (2026-10-26). The decisions in section 2 need the user's approval
-before stage S11 builds anything. The family itself was decided earlier: IECC is a
-separate family from ASHRAE 90.1, with no pairing between editions (plan round 9).
+Status: accepted (2026-10-26, user approval of every decision in section 2). The
+family itself was decided earlier: IECC is a separate family from ASHRAE 90.1, with
+no pairing between editions (plan round 9).
 
 ## 1. Context
 
@@ -39,7 +39,7 @@ Inspection on 2026-10-26 found the following:
   templates, has no IECC templates. The atlas construction pipeline cannot produce
   IECC sets either.
 
-## 2. Decisions (proposed)
+## 2. Decisions
 
 1. **Scope.**
    - All 16 types in all 6 editions: 96 folders under `commercial/iecc-<year>/`.
