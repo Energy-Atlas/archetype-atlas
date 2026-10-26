@@ -13,6 +13,9 @@ from pathlib import Path
 from scripts.common import ROOT, load_json
 
 ALLOWED_HOSTS = {'raw.githubusercontent.com', 'www.energycodes.gov', 'www.energy.gov', 'docs.nlr.gov'}
+# A locked entry may name an archived copy of the same bytes, tried only when the
+# primary URL fails; it is held to the same size and SHA-256.
+FALLBACK_HOSTS = {'web.archive.org'}
 # Transient host failures (5xx, rate limits, dropped connections) are retried; the
 # downloaded bytes are still checked against the locked size and SHA-256.
 ATTEMPTS = 4
@@ -42,9 +45,9 @@ def verify_file(entry, cache_root=ROOT/'data/raw'):
     return path
 
 
-def safe_url(url):
+def safe_url(url, hosts=ALLOWED_HOSTS):
     u = urllib.parse.urlsplit(url)
-    if u.scheme != 'https' or u.hostname not in ALLOWED_HOSTS or u.username or u.password or u.query:
+    if u.scheme != 'https' or u.hostname not in hosts or u.username or u.password or u.query:
         raise ValueError('Source URL must be public HTTPS on an allowed host')
 
 
@@ -54,12 +57,13 @@ def transient(error):
     return isinstance(error, (urllib.error.URLError, TimeoutError, ConnectionError, http.client.IncompleteRead))
 
 
-def download(entry):
-    request = urllib.request.Request(entry['url'], headers={'User-Agent': 'archetype-atlas/0.1.0'})
+def download(entry, url=None, hosts=ALLOWED_HOSTS):
+    url = url or entry['url']
+    request = urllib.request.Request(url, headers={'User-Agent': 'archetype-atlas/0.1.0'})
     for attempt in range(1, ATTEMPTS+1):
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
-                safe_url(response.geturl())
+                safe_url(response.geturl(), hosts)
                 return response.read(entry['size_bytes'] + 1)
         except Exception as error:
             if attempt == ATTEMPTS or not transient(error):
@@ -73,7 +77,14 @@ def fetch_file(entry, cache_root):
     if path.exists():
         return verify_file(entry, cache_root)
     safe_url(entry['url'])
-    content = download(entry)
+    try:
+        content = download(entry)
+    except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.IncompleteRead):
+        if 'fallback_url' not in entry:
+            raise
+        safe_url(entry['fallback_url'], FALLBACK_HOSTS)
+        print(f'Primary URL failed for {entry["path"]}; trying the archived copy')
+        content = download(entry, entry['fallback_url'], FALLBACK_HOSTS)
     if len(content) != entry['size_bytes'] or hashlib.sha256(content).hexdigest() != entry['sha256']:
         raise ValueError(f'Download integrity failure: {entry["path"]}')
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,24 @@
 # Changelog
 
+## Atlas release 1.1.0 candidate (DOE reference reconciliation) — 2026-10-25
+
+Reconcile the DOE Ref templates with the pinned DOE v1.4_7.2 post-1980 and
+pre-1980 models (ADR 0037). A 1,874-row register records every difference and its
+decision, and a generated site page publishes it. The delta release
+`data/atlas-releases/v1.1.0` (504 files, 371 deletions on 1.0.0) applies the register.
+It sets DOE schedules on 920 program slots and DOE densities and heat fractions where
+they differ. It adds four DOE zone-group programs and recomposes the mixes, adds
+hot-water zone gains and 158 building services, and puts the DOE infiltration method,
+internal-mass fills, window ratios and the source calendar beside the existing data.
+The 90.1 templates are unchanged.
+
+Add the additive exports Program JSON 5.1.0, constructions 4.1.0 / 3.1.0 and building
+services 1.0.0. Answer-key tests compare the release with the extracted DOE values.
+With the IDFs present, they also compare every program slot with the DOE schedules.
+No hosted check or deployment is claimed. See the
+[release and migration notes](docs/release-notes-atlas-v1.1.0.md) and the
+[BEMGen handoff](docs/bemgen-handoff-doe-reconciliation.md).
+
 ## Foundation/ground publication candidate — 2026-10-19
 
 Prepare combined construction delivery 1.0.0, detailed schema 3.0.0 and unified

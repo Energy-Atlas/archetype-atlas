@@ -14,8 +14,12 @@ ENTRY = {'source_id': 'example', 'path': 'data/file.json', 'url': 'https://raw.g
 
 
 class Response(io.BytesIO):
+    def __init__(self, content, url=ENTRY['url']):
+        super().__init__(content)
+        self.url = url
+
     def geturl(self):
-        return ENTRY['url']
+        return self.url
 
 
 def http_error(code):
@@ -23,7 +27,7 @@ def http_error(code):
 
 
 class FetchRetryTests(unittest.TestCase):
-    def fetch(self, *outcomes):
+    def fetch(self, *outcomes, entry=ENTRY):
         calls = []
 
         def urlopen(request, timeout):
@@ -31,14 +35,15 @@ class FetchRetryTests(unittest.TestCase):
             outcome = outcomes[len(calls)-1]
             if isinstance(outcome, Exception):
                 raise outcome
-            return Response(outcome)
+            return Response(outcome, request.full_url)
         with tempfile.TemporaryDirectory() as root, patch.object(fetch.urllib.request, 'urlopen', urlopen), \
                 patch.object(fetch.time, 'sleep'):
-            path = fetch.fetch_file(ENTRY, root)
-            return path.read_bytes(), len(calls)
+            path = fetch.fetch_file(entry, root)
+            return path.read_bytes(), calls
 
     def test_transient_host_errors_are_retried_then_verified(self):
-        self.assertEqual(self.fetch(http_error(503), urllib.error.URLError('reset'), CONTENT), (CONTENT, 3))
+        content, calls = self.fetch(http_error(503), urllib.error.URLError('reset'), CONTENT)
+        self.assertEqual((content, len(calls)), (CONTENT, 3))
 
     def test_client_errors_are_not_retried(self):
         with self.assertRaises(urllib.error.HTTPError):
@@ -47,6 +52,17 @@ class FetchRetryTests(unittest.TestCase):
     def test_retries_stop_after_the_last_attempt(self):
         with self.assertRaises(urllib.error.HTTPError):
             self.fetch(*[http_error(503)]*fetch.ATTEMPTS)
+
+    def test_archived_copy_is_tried_after_the_primary_url_fails(self):
+        entry = dict(ENTRY, fallback_url='https://web.archive.org/web/20250126231226id_/' + ENTRY['url'])
+        content, calls = self.fetch(http_error(404), CONTENT, entry=entry)
+        self.assertEqual(content, CONTENT)
+        self.assertEqual(calls, [ENTRY['url'], entry['fallback_url']])
+
+    def test_archived_copy_must_be_on_an_archive_host(self):
+        entry = dict(ENTRY, fallback_url='https://example.com/' + ENTRY['path'])
+        with self.assertRaisesRegex(ValueError, 'allowed host'):
+            self.fetch(http_error(404), CONTENT, entry=entry)
 
     def test_corrupt_bytes_still_fail_integrity(self):
         with self.assertRaisesRegex(ValueError, 'integrity'):

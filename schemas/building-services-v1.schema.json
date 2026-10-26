@@ -1,0 +1,52 @@
+{
+  "$id": "urn:archetype-atlas:building-services:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "The building-level services of one template x building-type folder (ADR 0037): elevators, exhaust fans, exterior lights and equipment, refrigeration cases and racks, each instantiated once, with its schedules inlined.",
+  "properties": {
+    "building_type": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "kind": {
+      "const": "building_services"
+    },
+    "release": {
+      "const": "atlas-release-1.1.0"
+    },
+    "schedules": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "services": {
+      "items": {
+        "required": [
+          "id",
+          "end_use",
+          "load",
+          "beneficiary_program_ids"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "template": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "release",
+    "template",
+    "building_type",
+    "services",
+    "schedules"
+  ],
+  "title": "Building services 1.0.0",
+  "type": "object"
+}

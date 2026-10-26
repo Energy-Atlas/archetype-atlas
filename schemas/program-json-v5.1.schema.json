@@ -1,0 +1,4300 @@
+{
+  "$defs": {
+    "filled": {
+      "$defs": {
+        "annual": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "1"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "maximum": 1,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "W/person"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Chronological hourly intervals from Jan 1 00:00; length must equal hours in the recorded year, with no DST. Never remap to another year.",
+          "properties": {
+            "clock": {
+              "const": "local_standard_time"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "source_context": {
+              "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns.",
+              "type": "object"
+            },
+            "timestep_minutes": {
+              "const": 60
+            },
+            "type": {
+              "const": "annual"
+            },
+            "unit": {
+              "enum": [
+                "1",
+                "degC",
+                "W/person"
+              ]
+            },
+            "values": {
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 8760,
+                  "minItems": 8760,
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 8784,
+                  "minItems": 8784,
+                  "type": "array"
+                }
+              ]
+            },
+            "year": {
+              "maximum": 9999,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "unit",
+            "timestep_minutes",
+            "type",
+            "year",
+            "clock",
+            "values"
+          ],
+          "type": "object"
+        },
+        "assumption": {
+          "additionalProperties": false,
+          "properties": {
+            "original_value": {},
+            "path": {
+              "pattern": "^/",
+              "type": "string"
+            },
+            "reason": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "replacement_value": {},
+            "rule_id": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "rule_id",
+            "original_value",
+            "replacement_value",
+            "reason"
+          ],
+          "type": "object"
+        },
+        "controls": {
+          "additionalProperties": false,
+          "properties": {
+            "activity_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "conditioning_state": {
+              "enum": [
+                "unconditioned",
+                "heating_only",
+                "cooling_only",
+                "heating_and_cooling",
+                "unknown"
+              ]
+            },
+            "cooling_enabled": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cooling_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "dehumidifying_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "heating_enabled": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "heating_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "humidifying_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "people_radiant_fraction": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "people_sensible_fraction": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "const": "autocalculate"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "heating_enabled",
+            "cooling_enabled",
+            "conditioning_state"
+          ],
+          "type": "object"
+        },
+        "evidence": {
+          "additionalProperties": false,
+          "properties": {
+            "extraction_date": {
+              "format": "date",
+              "type": "string"
+            },
+            "interpretation": {
+              "type": "string"
+            },
+            "locator": {
+              "type": "string"
+            },
+            "original_unit": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "original_value": {},
+            "source_file_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "transformation": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_file_id",
+            "locator",
+            "original_value",
+            "original_unit",
+            "transformation",
+            "extraction_date",
+            "interpretation"
+          ],
+          "type": "object"
+        },
+        "heat_fractions": {
+          "additionalProperties": false,
+          "description": "For power loads only. Convective fraction = 1 - sum(all five fields). The sum must not exceed 1; known fractions are never overwritten.",
+          "properties": {
+            "latent": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lost": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "radiant": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "return_air": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "radiant",
+            "latent",
+            "lost",
+            "visible",
+            "return_air"
+          ],
+          "type": "object"
+        },
+        "load": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "not": {
+                  "required": [
+                    "activity_schedule_id"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "occupancy"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "heat_fractions"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person/m2",
+                      "person/dwelling",
+                      "person"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "lighting"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "heat_fractions": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "radiant": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "return_air": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "visible": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "radiant",
+                      "visible",
+                      "return_air"
+                    ],
+                    "type": "object"
+                  },
+                  "unit": {
+                    "enum": [
+                      "W/m2",
+                      "W/dwelling",
+                      "W/person",
+                      "W"
+                    ]
+                  }
+                },
+                "required": [
+                  "heat_fractions"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "electric_equipment"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "heat_fractions": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "latent": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "lost": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "radiant": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "radiant",
+                      "latent",
+                      "lost"
+                    ],
+                    "type": "object"
+                  },
+                  "unit": {
+                    "enum": [
+                      "W/m2",
+                      "W/dwelling",
+                      "W/person",
+                      "W"
+                    ]
+                  }
+                },
+                "required": [
+                  "heat_fractions"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "gas_equipment"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "heat_fractions": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "latent": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "lost": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "radiant": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "radiant",
+                      "latent",
+                      "lost"
+                    ],
+                    "type": "object"
+                  },
+                  "unit": {
+                    "enum": [
+                      "W/m2",
+                      "W/dwelling",
+                      "W/person",
+                      "W"
+                    ]
+                  }
+                },
+                "required": [
+                  "heat_fractions"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "hot_water"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "heat_fractions"
+                  ]
+                },
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "m3/s/m2",
+                      "m3/s/dwelling",
+                      "m3/s/person",
+                      "m3/s"
+                    ]
+                  }
+                },
+                "required": [
+                  "target_temperature_schedule_id",
+                  "inlet_temperature"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "floor_area"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person/m2",
+                      "W/m2",
+                      "m3/s/m2"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "dwelling_unit"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person/dwelling",
+                      "W/dwelling",
+                      "m3/s/dwelling"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "person"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "W/person",
+                      "m3/s/person"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "absolute"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person",
+                      "W",
+                      "m3/s"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "exterior_lighting"
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "heat_fractions"
+                  ]
+                },
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "W",
+                      "W/m2",
+                      "W/dwelling"
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "activity_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "basis": {
+              "enum": [
+                "floor_area",
+                "dwelling_unit",
+                "person",
+                "absolute"
+              ]
+            },
+            "demand_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "end_use": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "fuel": {
+              "enum": [
+                "electricity",
+                "natural gas",
+                "propane",
+                "fuel oil",
+                "wood",
+                "coal",
+                "other fuel"
+              ]
+            },
+            "heat_fractions": {
+              "type": "object"
+            },
+            "host": {
+              "type": "string"
+            },
+            "inlet_temperature": {
+              "additionalProperties": false,
+              "properties": {
+                "engine": {
+                  "const": "EnergyPlus"
+                },
+                "engine_version": {
+                  "const": "25.1.0"
+                },
+                "method": {
+                  "enum": [
+                    "CorrelationFromWeatherFile",
+                    "unresolved"
+                  ]
+                }
+              },
+              "required": [
+                "method"
+              ],
+              "type": "object"
+            },
+            "schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "target_temperature_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "enum": [
+                "occupancy",
+                "lighting",
+                "electric_equipment",
+                "gas_equipment",
+                "hot_water",
+                "exterior_lighting"
+              ]
+            },
+            "unit": {
+              "enum": [
+                "person/m2",
+                "person/dwelling",
+                "person",
+                "W/m2",
+                "W/dwelling",
+                "W/person",
+                "W",
+                "m3/s/m2",
+                "m3/s/dwelling",
+                "m3/s/person",
+                "m3/s"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "demand_id",
+            "type",
+            "end_use",
+            "value",
+            "unit",
+            "basis",
+            "schedule_id"
+          ],
+          "type": "object"
+        },
+        "ready_controls": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/controls"
+            },
+            {
+              "allOf": [
+                {
+                  "else": {
+                    "not": {
+                      "required": [
+                        "heating_setpoint_schedule_id"
+                      ]
+                    }
+                  },
+                  "if": {
+                    "properties": {
+                      "heating_enabled": {
+                        "const": true
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "heating_setpoint_schedule_id"
+                    ]
+                  }
+                },
+                {
+                  "else": {
+                    "not": {
+                      "required": [
+                        "cooling_setpoint_schedule_id"
+                      ]
+                    }
+                  },
+                  "if": {
+                    "properties": {
+                      "cooling_enabled": {
+                        "const": true
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "cooling_setpoint_schedule_id"
+                    ]
+                  }
+                }
+              ],
+              "oneOf": [
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "unconditioned"
+                    },
+                    "cooling_enabled": {
+                      "const": false
+                    },
+                    "heating_enabled": {
+                      "const": false
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "heating_only"
+                    },
+                    "cooling_enabled": {
+                      "const": false
+                    },
+                    "heating_enabled": {
+                      "const": true
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "cooling_only"
+                    },
+                    "cooling_enabled": {
+                      "const": true
+                    },
+                    "heating_enabled": {
+                      "const": false
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "heating_and_cooling"
+                    },
+                    "cooling_enabled": {
+                      "const": true
+                    },
+                    "heating_enabled": {
+                      "const": true
+                    }
+                  }
+                }
+              ],
+              "properties": {
+                "activity_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "cooling_enabled": {
+                  "type": "boolean"
+                },
+                "cooling_setpoint_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "heating_enabled": {
+                  "type": "boolean"
+                },
+                "heating_setpoint_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "people_radiant_fraction": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "people_sensible_fraction": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "const": "autocalculate"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "ready_heat_fractions": {
+          "additionalProperties": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "type": "object"
+        },
+        "ready_load": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/load"
+            },
+            {
+              "properties": {
+                "activity_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "heat_fractions": {
+                  "$ref": "#/$defs/ready_heat_fractions"
+                },
+                "inlet_temperature": {
+                  "properties": {
+                    "engine": {
+                      "const": "EnergyPlus"
+                    },
+                    "engine_version": {
+                      "const": "25.1.0"
+                    },
+                    "method": {
+                      "const": "CorrelationFromWeatherFile"
+                    }
+                  },
+                  "required": [
+                    "method",
+                    "engine",
+                    "engine_version"
+                  ]
+                },
+                "schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "target_temperature_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "value": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "hot_water"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "target_temperature_schedule_id",
+                  "inlet_temperature"
+                ]
+              }
+            }
+          ]
+        },
+        "ready_service": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/service"
+            },
+            {
+              "properties": {
+                "loads": {
+                  "items": {
+                    "$ref": "#/$defs/ready_load"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          ]
+        },
+        "rule": {
+          "additionalProperties": false,
+          "description": "Dates are inclusive recurring MM-DD boundaries; start > end wraps New Year. One value is constant; 24 values describe hourly intervals [h,h+1). Array order is authoritative.",
+          "properties": {
+            "day_types": {
+              "items": {
+                "enum": [
+                  "Default",
+                  "Wkdy",
+                  "Wknd",
+                  "Mon",
+                  "Tue",
+                  "Wed",
+                  "Thu",
+                  "Fri",
+                  "Sat",
+                  "Sun",
+                  "Hol",
+                  "WntrDsn",
+                  "SmrDsn"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "end_date": {
+              "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+              "type": "string"
+            },
+            "start_date": {
+              "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+              "type": "string"
+            },
+            "values": {
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 1,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 24,
+                  "minItems": 24,
+                  "type": "array"
+                }
+              ]
+            }
+          },
+          "required": [
+            "start_date",
+            "end_date",
+            "day_types",
+            "values"
+          ],
+          "type": "object"
+        },
+        "ruleset": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "1"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "maximum": 1,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "W/person"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "%"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "maximum": 100,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "maximum": 100,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "rule_selection": {
+              "const": "last_specific_match_else_last_default"
+            },
+            "rules": {
+              "items": {
+                "$ref": "#/$defs/rule"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "source_context": {
+              "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns.",
+              "type": "object"
+            },
+            "timestep_minutes": {
+              "const": 60
+            },
+            "type": {
+              "const": "ruleset"
+            },
+            "unit": {
+              "enum": [
+                "1",
+                "degC",
+                "W/person",
+                "%"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "unit",
+            "timestep_minutes",
+            "type",
+            "rule_selection",
+            "rules"
+          ],
+          "type": "object"
+        },
+        "schedule": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ruleset"
+            },
+            {
+              "$ref": "#/$defs/annual"
+            }
+          ]
+        },
+        "service": {
+          "additionalProperties": false,
+          "properties": {
+            "host_assignment": {
+              "const": "consumer_selected_zone"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "loads": {
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/ready_load"
+                  },
+                  {
+                    "not": {
+                      "properties": {
+                        "type": {
+                          "const": "hot_water"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "ownership": {
+              "const": "instantiate_once"
+            }
+          },
+          "required": [
+            "id",
+            "ownership",
+            "host_assignment",
+            "loads"
+          ],
+          "type": "object"
+        },
+        "water_delivery_policy": {
+          "additionalProperties": false,
+          "description": "Explicit user-approved source outlet cap. Preserve requested target schedules and report unmet target separately from delivered heat/fuel.",
+          "properties": {
+            "decision": {
+              "const": "ADR 0018; user approved 2026-10-12"
+            },
+            "evidence": {
+              "$ref": "#/$defs/water_stage/properties/temperature_evidence"
+            },
+            "method": {
+              "const": "cap_at_source_outlet"
+            },
+            "report_unmet_target": {
+              "const": true
+            }
+          },
+          "required": [
+            "method",
+            "report_unmet_target",
+            "decision",
+            "evidence"
+          ],
+          "type": "object"
+        },
+        "water_heating": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "properties": {
+                  "service_id": {
+                    "type": "null"
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "ownership": {
+                    "const": "instantiate_once"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "service_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "alternative_to": {
+              "const": "explicit_equipment_heating_for_same_demand"
+            },
+            "delivery_policy": {
+              "$ref": "#/$defs/water_delivery_policy"
+            },
+            "demand_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "draw": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/ready_load"
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "const": "hot_water"
+                    }
+                  }
+                }
+              ]
+            },
+            "exclusions": {
+              "const": [
+                "standby_losses",
+                "heater_auxiliaries",
+                "pilot_consumption",
+                "solar_credit"
+              ]
+            },
+            "method": {
+              "const": "draw_only"
+            },
+            "output_unit": {
+              "const": "W"
+            },
+            "ownership": {
+              "enum": [
+                "per_program_instance",
+                "instantiate_once"
+              ]
+            },
+            "service_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stages": {
+              "items": {
+                "$ref": "#/$defs/water_stage"
+              },
+              "maxItems": 2,
+              "minItems": 1,
+              "type": "array"
+            },
+            "zone_heat_gains": {
+              "const": "excluded"
+            }
+          },
+          "required": [
+            "demand_id",
+            "method",
+            "draw",
+            "stages",
+            "output_unit",
+            "zone_heat_gains",
+            "exclusions",
+            "ownership",
+            "service_id",
+            "alternative_to"
+          ],
+          "type": "object"
+        },
+        "water_stage": {
+          "additionalProperties": false,
+          "properties": {
+            "conversion_efficiency": {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            "conversion_evidence": {
+              "properties": {
+                "source_file_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "source_project",
+                "source_revision",
+                "source_locator",
+                "source_file_sha256",
+                "original_value",
+                "original_unit",
+                "transformation",
+                "extraction_date",
+                "interpretation_note"
+              ],
+              "type": "object"
+            },
+            "fuel": {
+              "enum": [
+                "electricity",
+                "natural gas",
+                "propane",
+                "fuel oil",
+                "wood",
+                "coal"
+              ]
+            },
+            "fuel_evidence": {
+              "properties": {
+                "source_file_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "source_project",
+                "source_revision",
+                "source_locator",
+                "source_file_sha256",
+                "original_value",
+                "original_unit",
+                "transformation",
+                "extraction_date",
+                "interpretation_note"
+              ],
+              "type": "object"
+            },
+            "heater_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "outlet_temperature_degC": {
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "type": "number"
+            },
+            "temperature_evidence": {
+              "properties": {
+                "source_file_sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "source_project",
+                "source_revision",
+                "source_locator",
+                "source_file_sha256",
+                "original_value",
+                "original_unit",
+                "transformation",
+                "extraction_date",
+                "interpretation_note"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "heater_id",
+            "fuel",
+            "conversion_efficiency",
+            "outlet_temperature_degC",
+            "conversion_evidence",
+            "temperature_evidence",
+            "fuel_evidence"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "urn:archetype-atlas:program-json:5.1.0:filled",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "allOf": [
+            {
+              "if": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "loads": {
+                        "contains": {
+                          "properties": {
+                            "type": {
+                              "const": "occupancy"
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "shared_services": {
+                        "contains": {
+                          "properties": {
+                            "loads": {
+                              "contains": {
+                                "properties": {
+                                  "type": {
+                                    "const": "occupancy"
+                                  }
+                                },
+                                "required": [
+                                  "type"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "then": {
+                "properties": {
+                  "controls": {
+                    "required": [
+                      "people_radiant_fraction",
+                      "people_sensible_fraction"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "controls": {
+                      "properties": {
+                        "activity_schedule_id": {
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "activity_schedule_id"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "loads": {
+                      "items": {
+                        "if": {
+                          "properties": {
+                            "type": {
+                              "const": "occupancy"
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "activity_schedule_id": {
+                              "minLength": 1,
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "activity_schedule_id"
+                          ]
+                        }
+                      }
+                    },
+                    "shared_services": {
+                      "items": {
+                        "properties": {
+                          "loads": {
+                            "items": {
+                              "if": {
+                                "properties": {
+                                  "type": {
+                                    "const": "occupancy"
+                                  }
+                                },
+                                "required": [
+                                  "type"
+                                ]
+                              },
+                              "then": {
+                                "properties": {
+                                  "activity_schedule_id": {
+                                    "minLength": 1,
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "activity_schedule_id"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "controls": {
+              "$ref": "#/$defs/ready_controls"
+            },
+            "default_policy_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "loads": {
+              "items": {
+                "$ref": "#/$defs/ready_load"
+              }
+            },
+            "shared_services": {
+              "items": {
+                "$ref": "#/$defs/ready_service"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "alternates": {
+          "description": "Second backed values where two sources disagree; the primary value is unchanged.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_id": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "string"
+              },
+              "reason_id": {
+                "type": "string"
+              },
+              "schedule_id": {
+                "type": "string"
+              },
+              "source_family": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "quantity",
+              "source_family",
+              "evidence_id",
+              "reason_id"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "building_service_ids": {
+          "description": "Building services (building services 1.0.0) whose source objects sit in this program's zones.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "controls": {
+          "$ref": "#/$defs/controls"
+        },
+        "default_policy_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excluded_source_spaces": {
+          "description": "Source spaces of this space type that another program represents.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "fenestration": {
+          "additionalProperties": false,
+          "description": "Window over exterior wall area of the program zones by direction; roof is skylight over roof area. null: no exterior surface in that direction; 0: wall without window.",
+          "properties": {
+            "basis": {
+              "const": "program_zone_surfaces"
+            },
+            "evidence_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "roof": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wwr": {
+              "additionalProperties": false,
+              "properties": {
+                "E": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "N": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "S": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "W": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "N",
+                "E",
+                "S",
+                "W"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "basis",
+            "wwr",
+            "roof",
+            "evidence_id"
+          ],
+          "type": "object"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "const": "program"
+        },
+        "loads": {
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/ready_load"
+              },
+              {
+                "not": {
+                  "properties": {
+                    "type": {
+                      "const": "hot_water"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "metadata": {
+          "description": "Simulation-ignored provenance, assumptions, source components and applicability.",
+          "type": "object"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "required_bindings": {
+          "items": {
+            "enum": [
+              "floor_area_m2",
+              "dwelling_unit_count",
+              "person_count",
+              "shared_service_host",
+              "calendar_year",
+              "holiday_calendar",
+              "weather_file",
+              "load_host",
+              "water_density_kg_m3",
+              "water_specific_heat_J_kg_K"
+            ]
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "schedules": {
+          "additionalProperties": {
+            "$ref": "#/$defs/schedule"
+          },
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "5.1.0"
+        },
+        "scope": {
+          "enum": [
+            "program",
+            "whole_dwelling"
+          ]
+        },
+        "shared_services": {
+          "items": {
+            "$ref": "#/$defs/service"
+          },
+          "type": "array"
+        },
+        "source": {
+          "additionalProperties": false,
+          "properties": {
+            "building_type": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "climate": {
+              "type": "object"
+            },
+            "evidence": {
+              "items": {
+                "$ref": "#/$defs/evidence"
+              },
+              "type": "array"
+            },
+            "program_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "release": {
+              "const": "atlas-release-1.1.0"
+            },
+            "source_family": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "template": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "vintage": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "program_id",
+            "building_type",
+            "template",
+            "evidence",
+            "release"
+          ],
+          "type": "object"
+        },
+        "source_calendar": {
+          "additionalProperties": false,
+          "description": "The source model calendar (ADR 0037): holiday rules to resolve per year, and daylight saving recorded, not applied.",
+          "properties": {
+            "daylight_saving": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "applied": {
+                      "const": false
+                    },
+                    "end": {
+                      "type": "string"
+                    },
+                    "start": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "applied"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "evidence_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "holidays": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "rule"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "holidays",
+            "daylight_saving",
+            "evidence_id"
+          ],
+          "type": "object"
+        },
+        "source_spaces": {
+          "description": "Source spaces this program represents where it is not their tagged space type.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "floor_area_m2": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "multiplier": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "floor_area_m2",
+              "multiplier"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "version": {
+          "const": "filled"
+        },
+        "water_heating": {
+          "items": {
+            "$ref": "#/$defs/water_heating"
+          },
+          "type": "array"
+        },
+        "water_use_gains": {
+          "description": "EnergyPlus WaterUse:Equipment gains of this program's hot-water demands: sensible = fraction x mass flow x cp x (mixed - zone air temperature); latent = fraction of the evaporable water.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "demand_id": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              },
+              "latent_fraction": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "semantics": {
+                "type": "string"
+              },
+              "sensible_fraction": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "zone_gains": {
+                "const": "applied"
+              },
+              "zone_heat_assignment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "demand_id",
+              "zone_gains",
+              "sensible_fraction",
+              "latent_fraction",
+              "semantics"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "version",
+        "id",
+        "name",
+        "scope",
+        "source",
+        "loads",
+        "controls",
+        "schedules",
+        "shared_services",
+        "default_policy_id",
+        "required_bindings",
+        "metadata",
+        "water_heating"
+      ],
+      "type": "object"
+    },
+    "source": {
+      "$defs": {
+        "annual": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "1"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "maximum": 1,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "W/person"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Chronological hourly intervals from Jan 1 00:00; length must equal hours in the recorded year, with no DST. Never remap to another year.",
+          "properties": {
+            "clock": {
+              "const": "local_standard_time"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "source_context": {
+              "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns.",
+              "type": "object"
+            },
+            "timestep_minutes": {
+              "const": 60
+            },
+            "type": {
+              "const": "annual"
+            },
+            "unit": {
+              "enum": [
+                "1",
+                "degC",
+                "W/person"
+              ]
+            },
+            "values": {
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 8760,
+                  "minItems": 8760,
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 8784,
+                  "minItems": 8784,
+                  "type": "array"
+                }
+              ]
+            },
+            "year": {
+              "maximum": 9999,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "unit",
+            "timestep_minutes",
+            "type",
+            "year",
+            "clock",
+            "values"
+          ],
+          "type": "object"
+        },
+        "assumption": {
+          "additionalProperties": false,
+          "properties": {
+            "original_value": {},
+            "path": {
+              "pattern": "^/",
+              "type": "string"
+            },
+            "reason": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "replacement_value": {},
+            "rule_id": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "rule_id",
+            "original_value",
+            "replacement_value",
+            "reason"
+          ],
+          "type": "object"
+        },
+        "controls": {
+          "additionalProperties": false,
+          "properties": {
+            "activity_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "conditioning_state": {
+              "enum": [
+                "unconditioned",
+                "heating_only",
+                "cooling_only",
+                "heating_and_cooling",
+                "unknown"
+              ]
+            },
+            "cooling_enabled": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cooling_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "dehumidifying_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "heating_enabled": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "heating_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "humidifying_setpoint_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "people_radiant_fraction": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "people_sensible_fraction": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "const": "autocalculate"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "heating_enabled",
+            "cooling_enabled",
+            "conditioning_state"
+          ],
+          "type": "object"
+        },
+        "evidence": {
+          "additionalProperties": false,
+          "properties": {
+            "extraction_date": {
+              "format": "date",
+              "type": "string"
+            },
+            "interpretation": {
+              "type": "string"
+            },
+            "locator": {
+              "type": "string"
+            },
+            "original_unit": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "original_value": {},
+            "source_file_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "transformation": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_file_id",
+            "locator",
+            "original_value",
+            "original_unit",
+            "transformation",
+            "extraction_date",
+            "interpretation"
+          ],
+          "type": "object"
+        },
+        "heat_fractions": {
+          "additionalProperties": false,
+          "description": "For power loads only. Convective fraction = 1 - sum(all five fields). The sum must not exceed 1; known fractions are never overwritten.",
+          "properties": {
+            "latent": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lost": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "radiant": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "return_air": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visible": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "radiant",
+            "latent",
+            "lost",
+            "visible",
+            "return_air"
+          ],
+          "type": "object"
+        },
+        "load": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "not": {
+                  "required": [
+                    "activity_schedule_id"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "occupancy"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "heat_fractions"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person/m2",
+                      "person/dwelling",
+                      "person"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "lighting"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "heat_fractions": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "radiant": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "return_air": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "visible": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "radiant",
+                      "visible",
+                      "return_air"
+                    ],
+                    "type": "object"
+                  },
+                  "unit": {
+                    "enum": [
+                      "W/m2",
+                      "W/dwelling",
+                      "W/person",
+                      "W"
+                    ]
+                  }
+                },
+                "required": [
+                  "heat_fractions"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "electric_equipment"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "heat_fractions": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "latent": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "lost": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "radiant": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "radiant",
+                      "latent",
+                      "lost"
+                    ],
+                    "type": "object"
+                  },
+                  "unit": {
+                    "enum": [
+                      "W/m2",
+                      "W/dwelling",
+                      "W/person",
+                      "W"
+                    ]
+                  }
+                },
+                "required": [
+                  "heat_fractions"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "gas_equipment"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "target_temperature_schedule_id"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "inlet_temperature"
+                      ]
+                    }
+                  ]
+                },
+                "properties": {
+                  "heat_fractions": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "latent": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "lost": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "radiant": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "radiant",
+                      "latent",
+                      "lost"
+                    ],
+                    "type": "object"
+                  },
+                  "unit": {
+                    "enum": [
+                      "W/m2",
+                      "W/dwelling",
+                      "W/person",
+                      "W"
+                    ]
+                  }
+                },
+                "required": [
+                  "heat_fractions"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "hot_water"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "heat_fractions"
+                  ]
+                },
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "m3/s/m2",
+                      "m3/s/dwelling",
+                      "m3/s/person",
+                      "m3/s"
+                    ]
+                  }
+                },
+                "required": [
+                  "target_temperature_schedule_id",
+                  "inlet_temperature"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "floor_area"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person/m2",
+                      "W/m2",
+                      "m3/s/m2"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "dwelling_unit"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person/dwelling",
+                      "W/dwelling",
+                      "m3/s/dwelling"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "person"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "W/person",
+                      "m3/s/person"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "basis": {
+                    "const": "absolute"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "person",
+                      "W",
+                      "m3/s"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "exterior_lighting"
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "heat_fractions"
+                  ]
+                },
+                "properties": {
+                  "unit": {
+                    "enum": [
+                      "W",
+                      "W/m2",
+                      "W/dwelling"
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "activity_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "basis": {
+              "enum": [
+                "floor_area",
+                "dwelling_unit",
+                "person",
+                "absolute"
+              ]
+            },
+            "demand_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "end_use": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "fuel": {
+              "enum": [
+                "electricity",
+                "natural gas",
+                "propane",
+                "fuel oil",
+                "wood",
+                "coal",
+                "other fuel"
+              ]
+            },
+            "heat_fractions": {
+              "type": "object"
+            },
+            "host": {
+              "type": "string"
+            },
+            "inlet_temperature": {
+              "additionalProperties": false,
+              "properties": {
+                "engine": {
+                  "const": "EnergyPlus"
+                },
+                "engine_version": {
+                  "const": "25.1.0"
+                },
+                "method": {
+                  "enum": [
+                    "CorrelationFromWeatherFile",
+                    "unresolved"
+                  ]
+                }
+              },
+              "required": [
+                "method"
+              ],
+              "type": "object"
+            },
+            "schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "target_temperature_schedule_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "enum": [
+                "occupancy",
+                "lighting",
+                "electric_equipment",
+                "gas_equipment",
+                "hot_water",
+                "exterior_lighting"
+              ]
+            },
+            "unit": {
+              "enum": [
+                "person/m2",
+                "person/dwelling",
+                "person",
+                "W/m2",
+                "W/dwelling",
+                "W/person",
+                "W",
+                "m3/s/m2",
+                "m3/s/dwelling",
+                "m3/s/person",
+                "m3/s"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "demand_id",
+            "type",
+            "end_use",
+            "value",
+            "unit",
+            "basis",
+            "schedule_id"
+          ],
+          "type": "object"
+        },
+        "ready_controls": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/controls"
+            },
+            {
+              "allOf": [
+                {
+                  "else": {
+                    "not": {
+                      "required": [
+                        "heating_setpoint_schedule_id"
+                      ]
+                    }
+                  },
+                  "if": {
+                    "properties": {
+                      "heating_enabled": {
+                        "const": true
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "heating_setpoint_schedule_id"
+                    ]
+                  }
+                },
+                {
+                  "else": {
+                    "not": {
+                      "required": [
+                        "cooling_setpoint_schedule_id"
+                      ]
+                    }
+                  },
+                  "if": {
+                    "properties": {
+                      "cooling_enabled": {
+                        "const": true
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "cooling_setpoint_schedule_id"
+                    ]
+                  }
+                }
+              ],
+              "oneOf": [
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "unconditioned"
+                    },
+                    "cooling_enabled": {
+                      "const": false
+                    },
+                    "heating_enabled": {
+                      "const": false
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "heating_only"
+                    },
+                    "cooling_enabled": {
+                      "const": false
+                    },
+                    "heating_enabled": {
+                      "const": true
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "cooling_only"
+                    },
+                    "cooling_enabled": {
+                      "const": true
+                    },
+                    "heating_enabled": {
+                      "const": false
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "conditioning_state": {
+                      "const": "heating_and_cooling"
+                    },
+                    "cooling_enabled": {
+                      "const": true
+                    },
+                    "heating_enabled": {
+                      "const": true
+                    }
+                  }
+                }
+              ],
+              "properties": {
+                "activity_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "cooling_enabled": {
+                  "type": "boolean"
+                },
+                "cooling_setpoint_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "heating_enabled": {
+                  "type": "boolean"
+                },
+                "heating_setpoint_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "people_radiant_fraction": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "people_sensible_fraction": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "const": "autocalculate"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "ready_heat_fractions": {
+          "additionalProperties": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "type": "object"
+        },
+        "ready_load": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/load"
+            },
+            {
+              "properties": {
+                "activity_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "heat_fractions": {
+                  "$ref": "#/$defs/ready_heat_fractions"
+                },
+                "inlet_temperature": {
+                  "properties": {
+                    "engine": {
+                      "const": "EnergyPlus"
+                    },
+                    "engine_version": {
+                      "const": "25.1.0"
+                    },
+                    "method": {
+                      "const": "CorrelationFromWeatherFile"
+                    }
+                  },
+                  "required": [
+                    "method",
+                    "engine",
+                    "engine_version"
+                  ]
+                },
+                "schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "target_temperature_schedule_id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "value": {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "hot_water"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "target_temperature_schedule_id",
+                  "inlet_temperature"
+                ]
+              }
+            }
+          ]
+        },
+        "ready_service": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/service"
+            },
+            {
+              "properties": {
+                "loads": {
+                  "items": {
+                    "$ref": "#/$defs/ready_load"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          ]
+        },
+        "rule": {
+          "additionalProperties": false,
+          "description": "Dates are inclusive recurring MM-DD boundaries; start > end wraps New Year. One value is constant; 24 values describe hourly intervals [h,h+1). Array order is authoritative.",
+          "properties": {
+            "day_types": {
+              "items": {
+                "enum": [
+                  "Default",
+                  "Wkdy",
+                  "Wknd",
+                  "Mon",
+                  "Tue",
+                  "Wed",
+                  "Thu",
+                  "Fri",
+                  "Sat",
+                  "Sun",
+                  "Hol",
+                  "WntrDsn",
+                  "SmrDsn"
+                ]
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "end_date": {
+              "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+              "type": "string"
+            },
+            "start_date": {
+              "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+              "type": "string"
+            },
+            "values": {
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 1,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 24,
+                  "minItems": 24,
+                  "type": "array"
+                }
+              ]
+            }
+          },
+          "required": [
+            "start_date",
+            "end_date",
+            "day_types",
+            "values"
+          ],
+          "type": "object"
+        },
+        "ruleset": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "1"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "maximum": 1,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "W/person"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "unit": {
+                    "const": "%"
+                  }
+                },
+                "required": [
+                  "unit"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "rules": {
+                    "items": {
+                      "properties": {
+                        "values": {
+                          "items": {
+                            "maximum": 100,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "type": "array"
+                        }
+                      }
+                    }
+                  },
+                  "values": {
+                    "items": {
+                      "maximum": 100,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "rule_selection": {
+              "const": "last_specific_match_else_last_default"
+            },
+            "rules": {
+              "items": {
+                "$ref": "#/$defs/rule"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "source_context": {
+              "description": "Optional original schedule provenance, seed/weather/calendar context and rule metadata. Not simulation operands; preserve unknowns.",
+              "type": "object"
+            },
+            "timestep_minutes": {
+              "const": 60
+            },
+            "type": {
+              "const": "ruleset"
+            },
+            "unit": {
+              "enum": [
+                "1",
+                "degC",
+                "W/person",
+                "%"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "unit",
+            "timestep_minutes",
+            "type",
+            "rule_selection",
+            "rules"
+          ],
+          "type": "object"
+        },
+        "schedule": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ruleset"
+            },
+            {
+              "$ref": "#/$defs/annual"
+            }
+          ]
+        },
+        "service": {
+          "additionalProperties": false,
+          "properties": {
+            "host_assignment": {
+              "const": "consumer_selected_zone"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "loads": {
+              "items": {
+                "$ref": "#/$defs/load"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "ownership": {
+              "const": "instantiate_once"
+            }
+          },
+          "required": [
+            "id",
+            "ownership",
+            "host_assignment",
+            "loads"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "urn:archetype-atlas:program-json:5.1.0:source",
+      "additionalProperties": false,
+      "properties": {
+        "alternates": {
+          "description": "Second backed values where two sources disagree; the primary value is unchanged.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_id": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "string"
+              },
+              "reason_id": {
+                "type": "string"
+              },
+              "schedule_id": {
+                "type": "string"
+              },
+              "source_family": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "quantity",
+              "source_family",
+              "evidence_id",
+              "reason_id"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "building_service_ids": {
+          "description": "Building services (building services 1.0.0) whose source objects sit in this program's zones.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "controls": {
+          "$ref": "#/$defs/controls"
+        },
+        "default_policy_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excluded_source_spaces": {
+          "description": "Source spaces of this space type that another program represents.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "fenestration": {
+          "additionalProperties": false,
+          "description": "Window over exterior wall area of the program zones by direction; roof is skylight over roof area. null: no exterior surface in that direction; 0: wall without window.",
+          "properties": {
+            "basis": {
+              "const": "program_zone_surfaces"
+            },
+            "evidence_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "roof": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wwr": {
+              "additionalProperties": false,
+              "properties": {
+                "E": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "N": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "S": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "W": {
+                  "anyOf": [
+                    {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "N",
+                "E",
+                "S",
+                "W"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "basis",
+            "wwr",
+            "roof",
+            "evidence_id"
+          ],
+          "type": "object"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "const": "program"
+        },
+        "loads": {
+          "items": {
+            "$ref": "#/$defs/load"
+          },
+          "type": "array"
+        },
+        "metadata": {
+          "description": "Simulation-ignored provenance, assumptions, source components and applicability.",
+          "type": "object"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "required_bindings": {
+          "items": {
+            "enum": [
+              "floor_area_m2",
+              "dwelling_unit_count",
+              "person_count",
+              "shared_service_host",
+              "calendar_year",
+              "holiday_calendar",
+              "weather_file",
+              "load_host"
+            ]
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "schedules": {
+          "additionalProperties": {
+            "$ref": "#/$defs/schedule"
+          },
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "5.1.0"
+        },
+        "scope": {
+          "enum": [
+            "program",
+            "whole_dwelling"
+          ]
+        },
+        "shared_services": {
+          "items": {
+            "$ref": "#/$defs/service"
+          },
+          "type": "array"
+        },
+        "source": {
+          "additionalProperties": false,
+          "properties": {
+            "building_type": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "climate": {
+              "type": "object"
+            },
+            "evidence": {
+              "items": {
+                "$ref": "#/$defs/evidence"
+              },
+              "type": "array"
+            },
+            "program_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "release": {
+              "const": "atlas-release-1.1.0"
+            },
+            "source_family": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "template": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "vintage": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "program_id",
+            "building_type",
+            "template",
+            "evidence",
+            "release"
+          ],
+          "type": "object"
+        },
+        "source_calendar": {
+          "additionalProperties": false,
+          "description": "The source model calendar (ADR 0037): holiday rules to resolve per year, and daylight saving recorded, not applied.",
+          "properties": {
+            "daylight_saving": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "applied": {
+                      "const": false
+                    },
+                    "end": {
+                      "type": "string"
+                    },
+                    "start": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "applied"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "evidence_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "holidays": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "rule"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "holidays",
+            "daylight_saving",
+            "evidence_id"
+          ],
+          "type": "object"
+        },
+        "source_spaces": {
+          "description": "Source spaces this program represents where it is not their tagged space type.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "floor_area_m2": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "multiplier": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "floor_area_m2",
+              "multiplier"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "version": {
+          "const": "source"
+        },
+        "water_use_gains": {
+          "description": "EnergyPlus WaterUse:Equipment gains of this program's hot-water demands: sensible = fraction x mass flow x cp x (mixed - zone air temperature); latent = fraction of the evaporable water.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "demand_id": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              },
+              "latent_fraction": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "semantics": {
+                "type": "string"
+              },
+              "sensible_fraction": {
+                "anyOf": [
+                  {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "zone_gains": {
+                "const": "applied"
+              },
+              "zone_heat_assignment": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "demand_id",
+              "zone_gains",
+              "sensible_fraction",
+              "latent_fraction",
+              "semantics"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "version",
+        "id",
+        "name",
+        "scope",
+        "source",
+        "loads",
+        "controls",
+        "schedules",
+        "shared_services",
+        "default_policy_id",
+        "required_bindings",
+        "metadata"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:archetype-atlas:program-json:5.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "ADR 0036 release export. version \"source\" holds actual values only (the 3.0.0 raw form); version \"filled\" applies fillings and approved defaults with draw-only water heating (the 4.0.0 form). 5.1.0 (release 1.1.0) adds window ratios, the source calendar, source spaces, humidity controls, alternates, water-use zone gains and building-service IDs; every 5.0.0 field keeps its meaning.",
+  "oneOf": [
+    {
+      "$ref": "urn:archetype-atlas:program-json:5.1.0:source"
+    },
+    {
+      "$ref": "urn:archetype-atlas:program-json:5.1.0:filled"
+    }
+  ],
+  "title": "Self-contained program JSON 5.1.0"
+}

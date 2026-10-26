@@ -1,0 +1,2155 @@
+{
+ "lock_version": "1.0.0",
+ "retrieval_date": "2026-10-25",
+ "retrieval": "Opt-in only: python -m scripts.fetch --lock sources/reference-models-lock.json --cache-root <dir>. CI never fetches these archives.",
+ "sources": [
+  {
+   "source_id": "doe-reference",
+   "project": "DOE Commercial Reference Buildings",
+   "version": "v1.4_7.2 (updated 2012-11-13)",
+   "landing_urls": [
+    "https://www.energy.gov/cmei/buildings/commercial-reference-buildings",
+    "https://www.energy.gov/cmei/buildings/new-construction-commercial-reference-buildings",
+    "https://www.energy.gov/cmei/buildings/existing-commercial-reference-buildings-constructed-or-after-1980",
+    "https://www.energy.gov/cmei/buildings/existing-commercial-reference-buildings-constructed-1980"
+   ],
+   "report": "Deru et al. 2011, NREL/TP-5500-46861, https://www.osti.gov/biblio/1009264",
+   "license_path": "sources/licenses/doe-reference.txt"
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "project": "DOE/PNNL Prototype Building Models",
+   "version": "energycodes.gov releases 2022-09 to 2025-01 (per-file Last-Modified)",
+   "landing_urls": [
+    "https://www.energycodes.gov/prototype-building-models"
+   ],
+   "license_path": "sources/licenses/pnnl-prototypes.txt"
+  }
+ ],
+ "excluded": {
+  "not_pinned": [
+   "DOE v1.3_5.0 archives (superseded by v1.4_7.2; geometry and schedules identical)",
+   "PNNL per-version commercial zips (byte-identical subsets of the per-type bundles)",
+   "PNNL Appendix G baseline/proposed models",
+   "stand-alone weather files"
+  ],
+  "downloaded_then_removed": [
+   {
+    "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_all.zip",
+    "size_bytes": 764261968,
+    "sha256": "de35252dada89f6e24f6007e24c2c1796a047c294707f491b65e81cc7ee212ab",
+    "reason": "duplicates the per-type bundles; only unique content is weather files, which are out of scope"
+   },
+   {
+    "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_epw.zip",
+    "size_bytes": 3794398,
+    "sha256": "ccc8c8834eaf039b790612e8333abb204e86408255997598afb22552b73156aa",
+    "reason": "duplicates the per-type bundles; only unique content is weather files, which are out of scope"
+   },
+   {
+    "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_all.zip",
+    "size_bytes": 649774090,
+    "sha256": "85f987c93ff177810672d0fd4b69951affb3c8540d0f368b6cc76ac83fd1593a",
+    "reason": "duplicates the per-type bundles; only unique content is weather files, which are out of scope"
+   }
+  ]
+ },
+ "files": [
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_fullservicerestaurant_new2004_v1-4_7-2.zip",
+   "sha256": "7b9ae89d8b1b859437e5dd1c06e77d5cc955ec8dcfb93b8efb2ec63ef61b1448",
+   "size_bytes": 323003,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_fullservicerestaurant_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:03:49 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231230id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_fullservicerestaurant_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "fullservicerestaurant"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_fullservicerestaurant_post1980_v1-4_7-2.zip",
+   "sha256": "5ac8f584d60fbc7f47665e00aae1f18e3ceb8a01a4bfb086d322c7b52560daa8",
+   "size_bytes": 323330,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_fullservicerestaurant_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:56:15 GMT",
+   "family": "existing-post-1980",
+   "building_type": "fullservicerestaurant"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_fullservicerestaurant_pre1980_v1-4_7-2.zip",
+   "sha256": "e057856618298441512f656a3a45b8275e6662424d7ba4cea8346158a4eb212b",
+   "size_bytes": 318968,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_fullservicerestaurant_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:52 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "fullservicerestaurant"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_hospital_new2004_v1-4_7-2.zip",
+   "sha256": "539c73aa49076b97ce66854c6935cc38feb2ca8dc488301c64444b2ecc31ed56",
+   "size_bytes": 977620,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_hospital_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:03:57 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231232id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_hospital_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "hospital"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_hospital_post1980_v1-4_7-2.zip",
+   "sha256": "ed7e9580d0f11ed93d2e51b6350f5f6c6c3abe11e84967a0dd0b7c78ab1717a9",
+   "size_bytes": 978260,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_hospital_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:56:23 GMT",
+   "family": "existing-post-1980",
+   "building_type": "hospital"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_hospital_pre1980_v1-4_7-2.zip",
+   "sha256": "f320ad9b54ba95396d7c61190f4d8d1995cf4253ac0496ad36a2d883dd2554ab",
+   "size_bytes": 978404,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_hospital_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:58 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "hospital"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_largehotel_new2004_v1-4_7-2.zip",
+   "sha256": "03f4f8dd19b1269507a41fc4d73d76b86a8edcfbd141b1700840fa57cabf9720",
+   "size_bytes": 674826,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largehotel_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:04:17 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231232id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largehotel_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "largehotel"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_largehotel_post1980_v1-4_7-2.zip",
+   "sha256": "9099e3f31c52333a5c6b31cca45ab0b1e3b6d807973afb8c0fd2bec48adf0c41",
+   "size_bytes": 675277,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largehotel_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:58:27 GMT",
+   "family": "existing-post-1980",
+   "building_type": "largehotel"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_largehotel_pre1980_v1-4_7-2.zip",
+   "sha256": "daf4bcae2b70930073a7e5e402330bd1bb49a1622771b9d5f33b12f78d6502ea",
+   "size_bytes": 673417,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largehotel_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:26:40 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "largehotel"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_largeoffice_new2004_v1-4_7-2.zip",
+   "sha256": "fbd1ace46ef5df53605ea047bd56bb3671956cf2e656223e3ffe82fa200ae3b9",
+   "size_bytes": 504425,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largeoffice_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:46:42 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231226id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largeoffice_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "largeoffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_largeoffice_post1980_v1-4_7-2.zip",
+   "sha256": "1f09e6b6509b1eea7941f5c694bafe011a32378592f2237df16cdf42e580f4a7",
+   "size_bytes": 504921,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largeoffice_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:23:36 GMT",
+   "family": "existing-post-1980",
+   "building_type": "largeoffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_largeoffice_pre1980_v1-4_7-2.zip",
+   "sha256": "3cdfccc633e753419b04e9ebb4776b47578a291a3b758fdcc99a3caf55278441",
+   "size_bytes": 505012,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_largeoffice_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:01:14 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "largeoffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_mediumoffice_new2004_v1-4_7-2.zip",
+   "sha256": "db328a99f85a071a9e5f5201ebe808bbf4693bdfdd0fe3849e5910573b65a6bc",
+   "size_bytes": 415139,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_mediumoffice_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:47:47 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231227id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_mediumoffice_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "mediumoffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_mediumoffice_post1980_v1-4_7-2.zip",
+   "sha256": "3f1d53115164746ee165cdcb122d208054819544ea95140449cdeb2e5b2c4c9a",
+   "size_bytes": 415494,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_mediumoffice_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:23:46 GMT",
+   "family": "existing-post-1980",
+   "building_type": "mediumoffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_mediumoffice_pre1980_v1-4_7-2.zip",
+   "sha256": "58750857066b6ba82387588e8c684906c21675d1df5e64ddc9c8be3db4f65326",
+   "size_bytes": 483051,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_mediumoffice_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:01:20 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "mediumoffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_midriseapartment_new2004_v1-4_7-2.zip",
+   "sha256": "e5bea2cf8c7b35b594caa5fde252156c13e7945458a8c0c38c763ba855462a45",
+   "size_bytes": 575604,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_midriseapartment_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:04:23 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231233id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_midriseapartment_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "midriseapartment"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_midriseapartment_post1980_v1-4_7-2.zip",
+   "sha256": "264bcbfb536f76ff4612036c639db37a4bcd482f4e429592c5e2364a92b56c3f",
+   "size_bytes": 576192,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_midriseapartment_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:58:39 GMT",
+   "family": "existing-post-1980",
+   "building_type": "midriseapartment"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_midriseapartment_pre1980_v1-4_7-2.zip",
+   "sha256": "903c0a4bcc4611abe2a064312282935357b901799684d11f22bcf324cfd30dea",
+   "size_bytes": 576494,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_midriseapartment_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:26:52 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "midriseapartment"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_outpatient_new2004_v1-4_7-2.zip",
+   "sha256": "79e11e19720cd322d75b7fbd7e5156a7873565153b4bb332b9a7f518e7aa4a9d",
+   "size_bytes": 1327871,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_outpatient_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:04:05 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231233id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_outpatient_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "outpatient"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_outpatient_post1980_v1-4_7-2.zip",
+   "sha256": "c81a6d1a887a775d2a203dbb602b2ce6101a4e1f4e9b6687049ee0d844a0c4ba",
+   "size_bytes": 1327929,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_outpatient_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:56:31 GMT",
+   "family": "existing-post-1980",
+   "building_type": "outpatient"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_outpatient_pre1980_v1-4_7-2.zip",
+   "sha256": "99e6438e23df261adbb6a12d881678f3750d4217960bde97bf12ad8ed9495b35",
+   "size_bytes": 1327986,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_outpatient_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:09:09 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "outpatient"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_primaryschool_new2004_v1-4_7-2.zip",
+   "sha256": "943690fd18ad44dfac5b08be9a73dd84efff353bbb6de1218e10a0b1f5d561b4",
+   "size_bytes": 626978,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_primaryschool_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:48:46 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231228id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_primaryschool_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "primaryschool"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_primaryschool_post1980_v1-4_7-2.zip",
+   "sha256": "84b5622b2a59e4eaa2a223a6b3610637e370b749c4885c0df9b7e239c1fb324b",
+   "size_bytes": 613750,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_primaryschool_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:27:03 GMT",
+   "family": "existing-post-1980",
+   "building_type": "primaryschool"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_primaryschool_pre1980_v1-4_7-2.zip",
+   "sha256": "31807f098ee1fd1bc75dd87a7e6c15b943425a79610662f6b4c108c26342c937",
+   "size_bytes": 613705,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_primaryschool_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:15 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "primaryschool"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_quickservicerestaurant_new2004_v1-4_7-2.zip",
+   "sha256": "0e1e703f36942244d74f3d397f945179cc158880d73cb28f237971db3c522617",
+   "size_bytes": 319318,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_quickservicerestaurant_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:50:03 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231229id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_quickservicerestaurant_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "quickservicerestaurant"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_quickservicerestaurant_post1980_v1-4_7-2.zip",
+   "sha256": "5121c99e5006b5bbc4ef5430df81fca09fb2618469b3c3410098b21a18c9a59e",
+   "size_bytes": 319496,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_quickservicerestaurant_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:56:09 GMT",
+   "family": "existing-post-1980",
+   "building_type": "quickservicerestaurant"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_quickservicerestaurant_pre1980_v1-4_7-2.zip",
+   "sha256": "08152169e7bfb22f3136c1e419f14e6292d0ac7e73d7bc1fb09b203c2ed7a5c3",
+   "size_bytes": 315227,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_quickservicerestaurant_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:43 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "quickservicerestaurant"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_secondaryschool_new2004_v1-4_7-2.zip",
+   "sha256": "b5e28f7774e44f2d0c93816903d1fbdbd68c17f13628d97ad7b1b430774843cc",
+   "size_bytes": 860075,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_secondaryschool_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:48:56 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231230id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_secondaryschool_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "secondaryschool"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_secondaryschool_post1980_v1-4_7-2.zip",
+   "sha256": "00d45d6d0954e9e159f2082d87d2b1208cf1a27f29bbf0d589ca9fe7fe228c42",
+   "size_bytes": 811387,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_secondaryschool_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:27:10 GMT",
+   "family": "existing-post-1980",
+   "building_type": "secondaryschool"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_secondaryschool_pre1980_v1-4_7-2.zip",
+   "sha256": "8ae071b4b91faf84e838cabc7dc042cfd4cb278fc1e761275e3640cd7b9aa9da",
+   "size_bytes": 786330,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_secondaryschool_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:26 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "secondaryschool"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_smallhotel_new2004_v1-4_7-2.zip",
+   "sha256": "1bb5a756e396fa419486928aa40d9f6b4a966640b51ca43bd48f374cc0701fad",
+   "size_bytes": 1024982,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smallhotel_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:04:11 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231234id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smallhotel_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "smallhotel"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_smallhotel_post1980_v1-4_7-2.zip",
+   "sha256": "de257b8748f7e56a3e310be64005240f0f5aa6033eb9efbe9c34801f33e44f73",
+   "size_bytes": 1051044,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smallhotel_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:56:42 GMT",
+   "family": "existing-post-1980",
+   "building_type": "smallhotel"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_smallhotel_pre1980_v1-4_7-2.zip",
+   "sha256": "56252c056dcf1a67b79c6ec435c5a3a37384bc0daaec802f00b149a278ea954a",
+   "size_bytes": 953521,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smallhotel_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:26:27 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "smallhotel"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_smalloffice_new2004_v1-4_7-2.zip",
+   "sha256": "5f11c3d90861ddcc1d6625da6ae241ffc0426f7223f19f992d7718aa2e725d65",
+   "size_bytes": 325295,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smalloffice_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:47:58 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231130id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smalloffice_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "smalloffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_smalloffice_post1980_v1-4_7-2.zip",
+   "sha256": "53284688da4f0443ccc37c4cf07d469894afc9ba367aaca12aec956400bc2764",
+   "size_bytes": 325643,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smalloffice_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:24:10 GMT",
+   "family": "existing-post-1980",
+   "building_type": "smalloffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_smalloffice_pre1980_v1-4_7-2.zip",
+   "sha256": "e8c857d30d787f88b17fa63ea75710cbc0a94ceb5303bda22812e8f9f7959b17",
+   "size_bytes": 319036,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_smalloffice_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:01:31 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "smalloffice"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_stand-aloneretail_new2004_v1-4_7-2.zip",
+   "sha256": "fe8e5730da4046ffdc1b563c96ab406391905c54cb4c2b00484b4852e70a5af4",
+   "size_bytes": 291351,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stand-aloneretail_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:48:28 GMT",
+   "fallback_url": "https://web.archive.org/web/20220419114246id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stand-aloneretail_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "stand-aloneretail"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_stand-aloneretail_post1980_v1-4_7-2.zip",
+   "sha256": "9fe8246a9e86428354af31a3f3e39c7aa75b673d407a52a22398b141254e5a46",
+   "size_bytes": 291262,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stand-aloneretail_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:26:48 GMT",
+   "family": "existing-post-1980",
+   "building_type": "stand-aloneretail"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_stand-aloneretail_pre1980_v1-4_7-2.zip",
+   "sha256": "8258a820a76b2d5d634b103df52eebdeb18a1b134cb5c8927dc891961c852d1d",
+   "size_bytes": 291111,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stand-aloneretail_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:04 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "stand-aloneretail"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_stripmall_new2004_v1-4_7-2.zip",
+   "sha256": "9f16f4cfdb64339bc0779caf7e7a3e3071fb6cdcd317a7e57c7f7fe6e081d0e1",
+   "size_bytes": 380486,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stripmall_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:48:36 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231231id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stripmall_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "stripmall"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_stripmall_post1980_v1-4_7-2.zip",
+   "sha256": "28f7b5eca1e1a2a70379ca6c8f11a2e54fa5d7a6a6574f4bf9b08a5d4746b7fc",
+   "size_bytes": 380670,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stripmall_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:26:56 GMT",
+   "family": "existing-post-1980",
+   "building_type": "stripmall"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_stripmall_pre1980_v1-4_7-2.zip",
+   "sha256": "9c1b8c5fb9f2f4279e24b667ea1d08a9647d8cc9e51e7ac972512a13ce7ea276",
+   "size_bytes": 380792,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_stripmall_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:10 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "stripmall"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_supermarket_new2004_v1-4_7-2.zip",
+   "sha256": "52a425811aabb59ad46fcc5ddfb4f3b7f2465d9ede32411d8330663d139e3913",
+   "size_bytes": 419632,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_supermarket_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:49:55 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231232id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_supermarket_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "supermarket"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_supermarket_post1980_v1-4_7-2.zip",
+   "sha256": "15de928d39b327b12171073c165a32b92ea4f399173cd448ad555b35340dda40",
+   "size_bytes": 420013,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_supermarket_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:59:01 GMT",
+   "family": "existing-post-1980",
+   "building_type": "supermarket"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_supermarket_pre1980_v1-4_7-2.zip",
+   "sha256": "3e7fe950a45383b63b34b503a75ef7ff78e1d6b76987d9e02f319a0f1fcb661a",
+   "size_bytes": 419996,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_supermarket_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:08:31 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "supermarket"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_warehouse_new2004_v1-4_7-2.zip",
+   "sha256": "179b155feeea41e160ddfeb50f46fca2a9d2dc010275ec93281937addb2eb0bf",
+   "size_bytes": 264411,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_warehouse_new2004_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 13:48:10 GMT",
+   "fallback_url": "https://web.archive.org/web/20250126231228id_/https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_warehouse_new2004_v1-4_7-2.zip",
+   "family": "new-construction-90.1-2004",
+   "building_type": "warehouse"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_warehouse_post1980_v1-4_7-2.zip",
+   "sha256": "e08231ffd60724584668c46b325b8d48513040a08d2bb163fb25f6d7afdfca24",
+   "size_bytes": 264671,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_warehouse_post1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 14:26:41 GMT",
+   "family": "existing-post-1980",
+   "building_type": "warehouse"
+  },
+  {
+   "source_id": "doe-reference",
+   "path": "v1.4_7.2/refbldg_warehouse_pre1980_v1-4_7-2.zip",
+   "sha256": "a928cb8902b14fa83d2c79b944c4a9f7ecdedbd1ea927aabc67fbdf4263a990f",
+   "size_bytes": 265135,
+   "url": "https://www.energy.gov/sites/default/files/2013/12/f5/refbldg_warehouse_pre1980_v1-4_7-2.zip",
+   "last_modified": "Mon, 16 Dec 2013 16:07:58 GMT",
+   "family": "existing-pre-1980",
+   "building_type": "warehouse"
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/1A_Miami_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/1A_Miami_CompleteSet.zip",
+   "sha256": "ff8f0cfc83a7d2d56344f93a0ecc3565bcda6d819023be2931fbe5ffb00cb58a",
+   "size_bytes": 632402,
+   "last_modified": "Thu, 15 Sep 2022 22:27:10 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/1A_Miami_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/1A_Miami_FinalRule.zip",
+   "sha256": "784f02074ed39940bcf7f517656253a0318569db369cbcb27208942a53139de7",
+   "size_bytes": 316564,
+   "last_modified": "Thu, 15 Sep 2022 22:29:11 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/1A_Miami_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/1A_Miami_HUD.zip",
+   "sha256": "72367975e7bdaf876b9cb47fe3159755b7cea511facb7d2770ff4d0895469e59",
+   "size_bytes": 315860,
+   "last_modified": "Thu, 15 Sep 2022 22:30:15 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/2A_Houston_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/2A_Houston_CompleteSet.zip",
+   "sha256": "3af7bc49466e04881d3ebd24081ad98a9d80a4bf618bcd68bcdf297899fb40ab",
+   "size_bytes": 635148,
+   "last_modified": "Thu, 15 Sep 2022 22:31:18 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/2A_Houston_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/2A_Houston_FinalRule.zip",
+   "sha256": "9d14d50d48edea9f93888ae2a99ce690e69fc66468e38151f75cedabf3ea0826",
+   "size_bytes": 317890,
+   "last_modified": "Thu, 15 Sep 2022 22:31:56 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/2A_Houston_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/2A_Houston_HUD.zip",
+   "sha256": "2ff8cdd432a9fecc85a7c9fd130e16b3aabc290476fd9cfe2aff7289ef86d758",
+   "size_bytes": 317280,
+   "last_modified": "Thu, 15 Sep 2022 22:32:31 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/2B_Phoenix_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/2B_Phoenix_CompleteSet.zip",
+   "sha256": "71bac005dcc3049690ed6aa471b71e52f3b30d5f4069c0d59fdf8c2ae6f132c9",
+   "size_bytes": 634797,
+   "last_modified": "Thu, 15 Sep 2022 22:33:14 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/2B_Phoenix_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/2B_Phoenix_FinalRule.zip",
+   "sha256": "c3063290ee8b4cb0042fba48bbb70bcf68b2361c800b9440d76ece5645a9fed7",
+   "size_bytes": 317779,
+   "last_modified": "Thu, 15 Sep 2022 22:33:43 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/2B_Phoenix_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/2B_Phoenix_HUD.zip",
+   "sha256": "bb5b3739f23820f34e11868849131e084a22677bfa6bd1ab85c00f6560ddbc7d",
+   "size_bytes": 317040,
+   "last_modified": "Thu, 15 Sep 2022 22:34:17 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Atlanta_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Atlanta_CompleteSet.zip",
+   "sha256": "66d25b82dee3ef87fb4ce72857676e0a3c7b926a92f0e3661a1b466297edf60f",
+   "size_bytes": 635898,
+   "last_modified": "Thu, 15 Sep 2022 22:35:41 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Atlanta_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Atlanta_FinalRule.zip",
+   "sha256": "94711283d187ef6dfcb7c92cdf9028774ed1a35969a33911f2050a020565733d",
+   "size_bytes": 318467,
+   "last_modified": "Thu, 15 Sep 2022 22:36:12 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Atlanta_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Atlanta_HUD.zip",
+   "sha256": "cd4c4beecf3d6c25f9d58ba9b2886d98c701ee4e557b113e5c64ac06ab6aa1f8",
+   "size_bytes": 317453,
+   "last_modified": "Thu, 15 Sep 2022 22:36:50 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Birmingham_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Birmingham_CompleteSet.zip",
+   "sha256": "e939ac242181ecc473b2aacafc511cebd6c12f162255cb0d1d4fedd14f7650ce",
+   "size_bytes": 634905,
+   "last_modified": "Thu, 15 Sep 2022 22:43:21 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Birmingham_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Birmingham_FinalRule.zip",
+   "sha256": "c7c78cb903a5a301ece1b5b66d9623165bc7bd51fcfaf566735171c12993b0b7",
+   "size_bytes": 317901,
+   "last_modified": "Thu, 15 Sep 2022 22:44:02 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Birmingham_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Birmingham_HUD.zip",
+   "sha256": "021ae5c289946c9f86c6c08d851b2634875efb0092dec6fdad30ccddc2f89567",
+   "size_bytes": 317026,
+   "last_modified": "Thu, 15 Sep 2022 22:44:47 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Charleston_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Charleston_CompleteSet.zip",
+   "sha256": "36f40e80fa0f8541dd30dc1f537f03baa6426a6b77a1d1dfbbf5705569c1233f",
+   "size_bytes": 635170,
+   "last_modified": "Thu, 15 Sep 2022 22:38:01 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Charleston_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Charleston_FinalRule.zip",
+   "sha256": "885557942cf39cfa74396f6207e04cec2ffb00169a4b5540417f38da86b432b6",
+   "size_bytes": 318048,
+   "last_modified": "Thu, 15 Sep 2022 22:39:08 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Charleston_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Charleston_HUD.zip",
+   "sha256": "f3cb42e6a0bcc880b4f41c6674b70cbcd688a150c2026d924ae92c66e638c824",
+   "size_bytes": 317144,
+   "last_modified": "Thu, 15 Sep 2022 22:39:51 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Jackson_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Jackson_CompleteSet.zip",
+   "sha256": "a85fd4010161d393e245a490f7864661db38175360e3b71c655f1d79cdc982db",
+   "size_bytes": 635227,
+   "last_modified": "Thu, 15 Sep 2022 22:40:34 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Jackson_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Jackson_FinalRule.zip",
+   "sha256": "66670fd83a648ef6a0c370d7d349458cbd47962358f6617d3b3e1652b8ddb4ae",
+   "size_bytes": 318093,
+   "last_modified": "Thu, 15 Sep 2022 22:41:26 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Jackson_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Jackson_HUD.zip",
+   "sha256": "7f873712f19724655c056ab40dfc83d3e6baf6ebee20d151c57e9ab9a1f22d0e",
+   "size_bytes": 317156,
+   "last_modified": "Thu, 15 Sep 2022 22:42:17 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Memphis_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Memphis_CompleteSet.zip",
+   "sha256": "605d7307d4aef72ec9db6cef775b3c19f64ccf15ad2b9818faffdd2ae99e9432",
+   "size_bytes": 634912,
+   "last_modified": "Thu, 15 Sep 2022 22:45:47 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Memphis_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Memphis_FinalRule.zip",
+   "sha256": "88c92c28ae82698c20c06572130393183b29a58e1067c20ce89ec4d92d65aaeb",
+   "size_bytes": 317918,
+   "last_modified": "Thu, 15 Sep 2022 22:46:26 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3A_Memphis_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3A_Memphis_HUD.zip",
+   "sha256": "dd6c727b7064d624ef735bd10276cd2e08e78eff2a82e1122c780ed9b9d78150",
+   "size_bytes": 317016,
+   "last_modified": "Thu, 15 Sep 2022 22:47:30 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3B_ElPaso_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3B_ElPaso_CompleteSet.zip",
+   "sha256": "68dd6d5faec35ce4995c9901d50ccb2b3f709dff77ad4c313c4de696caa3df63",
+   "size_bytes": 634860,
+   "last_modified": "Thu, 15 Sep 2022 22:48:31 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3B_ElPaso_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3B_ElPaso_FinalRule.zip",
+   "sha256": "eed39889262e49d7cb75cbe835a2b0b795a01253d850a6f6221f5440431a462c",
+   "size_bytes": 317751,
+   "last_modified": "Thu, 15 Sep 2022 22:49:05 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3B_ElPaso_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3B_ElPaso_HUD.zip",
+   "sha256": "59a52f9c589704daff1595af57d4c4a728929c30cedcd162bd13ad444456f7ad",
+   "size_bytes": 317131,
+   "last_modified": "Thu, 15 Sep 2022 22:49:49 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3C_SanFrancisco_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3C_SanFrancisco_CompleteSet.zip",
+   "sha256": "485eb6f9ead3d9c10cbaf71995efe76c0847b3db4840ab259eb0b12ef022f3f6",
+   "size_bytes": 635587,
+   "last_modified": "Thu, 15 Sep 2022 22:51:08 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3C_SanFrancisco_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3C_SanFrancisco_FinalRule.zip",
+   "sha256": "426b9d8d24e2dedf9a88e2ac185777eca19ebbbe37b4da50a37826d826610415",
+   "size_bytes": 318146,
+   "last_modified": "Thu, 15 Sep 2022 22:52:02 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/3C_SanFrancisco_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/3C_SanFrancisco_HUD.zip",
+   "sha256": "96d9065fd7cf2560eeeabd3aa8a145cab0e2f696577deb99a19a92cc273bf08a",
+   "size_bytes": 317463,
+   "last_modified": "Thu, 15 Sep 2022 22:52:58 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4A_Baltimore_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4A_Baltimore_CompleteSet.zip",
+   "sha256": "e4503931c6aa425f91f4ff432c97d7f84e725d453cbe47bfb5669ef775dbd86f",
+   "size_bytes": 635318,
+   "last_modified": "Thu, 15 Sep 2022 22:58:10 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4A_Baltimore_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4A_Baltimore_FinalRule.zip",
+   "sha256": "34c4ec71b682b2c6ee24276409114c26dfdcf4c5763f151386e1f1f7b3aa7277",
+   "size_bytes": 318056,
+   "last_modified": "Thu, 15 Sep 2022 22:58:55 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4A_Baltimore_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4A_Baltimore_HUD.zip",
+   "sha256": "a792eb5f07bf82e76d99c57ae5d10c2aa9df3165a6ddf35f7bdc28201776277f",
+   "size_bytes": 317284,
+   "last_modified": "Thu, 15 Sep 2022 23:06:15 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4B_Albuquerque_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4B_Albuquerque_CompleteSet.zip",
+   "sha256": "033e39b2441aeab7df071ebc3077b7fd8e74bf266882ac4104494146b496b32d",
+   "size_bytes": 636065,
+   "last_modified": "Thu, 15 Sep 2022 23:00:53 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4B_Albuquerque_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4B_Albuquerque_FinalRule.zip",
+   "sha256": "7b0737d141508cc9db845c842cc67a0eb20f48be10e42f0052663727bb9fc96f",
+   "size_bytes": 318343,
+   "last_modified": "Thu, 15 Sep 2022 22:59:26 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4B_Albuquerque_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4B_Albuquerque_HUD.zip",
+   "sha256": "dfb992c8fdd296efdf611ecf3ba6f4f3a08a3bf6d8c8eacba22681519479ccac",
+   "size_bytes": 317744,
+   "last_modified": "Thu, 15 Sep 2022 23:00:04 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4C_Salem_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4C_Salem_CompleteSet.zip",
+   "sha256": "8ce93869d70f067c8fda399d0a0e0698d53abc7f91485d426d9df2c3abaaf9ef",
+   "size_bytes": 634771,
+   "last_modified": "Thu, 15 Sep 2022 23:12:13 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4C_Salem_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4C_Salem_FinalRule.zip",
+   "sha256": "d4583ef244ca60192c8db7479b263d9bf70872841e597434010a84561f634d74",
+   "size_bytes": 317736,
+   "last_modified": "Thu, 15 Sep 2022 23:12:44 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/4C_Salem_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/4C_Salem_HUD.zip",
+   "sha256": "d492b187f0a4d786ee7a3d1f4720b95cbb670277c3ba40fd41bd7e3df4ce4b81",
+   "size_bytes": 317057,
+   "last_modified": "Thu, 15 Sep 2022 23:13:10 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/5A_Chicago_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/5A_Chicago_CompleteSet.zip",
+   "sha256": "51d16382d1ad851d9f77debd4547b5f5a71a7aaa76b04b48c7a977f62a350107",
+   "size_bytes": 634625,
+   "last_modified": "Fri, 16 Sep 2022 01:16:26 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/5A_Chicago_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/5A_Chicago_FinalRule.zip",
+   "sha256": "5ef627668cd0d5cd0d004a88573a91da9efddd61f79c5570aacaff60b875a20a",
+   "size_bytes": 317774,
+   "last_modified": "Fri, 16 Sep 2022 01:16:55 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/5A_Chicago_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/5A_Chicago_HUD.zip",
+   "sha256": "5156eebf3e95e5ea6601b30c84da337d4f8a3b892277d11e069c0ec096011663",
+   "size_bytes": 316873,
+   "last_modified": "Fri, 16 Sep 2022 01:17:22 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/5B_Boise_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/5B_Boise_CompleteSet.zip",
+   "sha256": "6dbbeee9dba9ace825bcf82e6e42f122af88d0c9c8a966b6462329fc0b475bac",
+   "size_bytes": 634660,
+   "last_modified": "Fri, 16 Sep 2022 01:18:09 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/5B_Boise_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/5B_Boise_FinalRule.zip",
+   "sha256": "1408d9ba619e9227d421e8019481c2b20507083106521c1d7a918beb7a32accd",
+   "size_bytes": 317755,
+   "last_modified": "Fri, 16 Sep 2022 01:18:38 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/5B_Boise_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/5B_Boise_HUD.zip",
+   "sha256": "4854ee392d24d20a805b49d514681cde86dd7803acc24cee5432bc95d4ca33ee",
+   "size_bytes": 316927,
+   "last_modified": "Fri, 16 Sep 2022 01:19:04 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/6A_Burlington_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/6A_Burlington_CompleteSet.zip",
+   "sha256": "1217777eddca3f54adebdd1b2a5e0592449f1d1d22f537e54cd23b4c7f6b1963",
+   "size_bytes": 635222,
+   "last_modified": "Fri, 16 Sep 2022 01:20:12 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/6A_Burlington_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/6A_Burlington_FinalRule.zip",
+   "sha256": "f8c3d4fbc771e498a17dda43f247adc2e93613e02e10a2cd637203cf5c2b166f",
+   "size_bytes": 318064,
+   "last_modified": "Fri, 16 Sep 2022 01:20:41 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/6A_Burlington_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/6A_Burlington_HUD.zip",
+   "sha256": "97eb760188196d3db43624bde4be32c160202206d1c58b07f54331648ce96d78",
+   "size_bytes": 317180,
+   "last_modified": "Fri, 16 Sep 2022 01:21:14 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/6B_Helena_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/6B_Helena_CompleteSet.zip",
+   "sha256": "5a1244ade005e040985e1a1d6084440cc041c17f910a55543ac1ceb77ebf9341",
+   "size_bytes": 634419,
+   "last_modified": "Fri, 16 Sep 2022 01:22:16 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/6B_Helena_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/6B_Helena_FinalRule.zip",
+   "sha256": "7b897e95760771bc5bbfdcafb4c076001682cd756d146fd5147a7e9648f97ad2",
+   "size_bytes": 317607,
+   "last_modified": "Fri, 16 Sep 2022 01:22:50 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/6B_Helena_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/6B_Helena_HUD.zip",
+   "sha256": "047a8413ef1d7f7240bdd41f863d0e11e9462bcfe045ea69271c8ef49f73d495",
+   "size_bytes": 316834,
+   "last_modified": "Fri, 16 Sep 2022 01:23:20 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/7_Duluth_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/7_Duluth_CompleteSet.zip",
+   "sha256": "508941e4f745cf256ad82d8dfc1eadf9208aa3831277cf54fe90fb0f299007d9",
+   "size_bytes": 634263,
+   "last_modified": "Fri, 16 Sep 2022 01:26:16 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/7_Duluth_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/7_Duluth_FinalRule.zip",
+   "sha256": "1505a6df6f475eba0deb0a07df31e7954bad476e2eee5a6dc52f205dc71d55d6",
+   "size_bytes": 317594,
+   "last_modified": "Fri, 16 Sep 2022 01:26:45 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/7_Duluth_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/7_Duluth_HUD.zip",
+   "sha256": "0e2386f09fec4ba240b6ce12715f8f850665be8b6b7f86e43c63729576c5f06c",
+   "size_bytes": 316691,
+   "last_modified": "Fri, 16 Sep 2022 01:27:11 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/8_Fairbanks_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/8_Fairbanks_CompleteSet.zip",
+   "sha256": "2cc4772ec3f46e5b0337da246a4a83bae14bd60b5b8864ab546e7a2d4255e13f",
+   "size_bytes": 634124,
+   "last_modified": "Fri, 16 Sep 2022 01:28:07 GMT",
+   "family": "manufactured-housing",
+   "members": 32
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/8_Fairbanks_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/8_Fairbanks_FinalRule.zip",
+   "sha256": "e4af9dd863c80a1f7c56f0ed1a653ae14e3497ea4610587b5404004519b5522d",
+   "size_bytes": 317442,
+   "last_modified": "Fri, 16 Sep 2022 01:28:34 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/8_Fairbanks_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/8_Fairbanks_HUD.zip",
+   "sha256": "2eb1ef19269203f42db38d715a51e8f8823137b590879f9b545425e99c76440a",
+   "size_bytes": 316704,
+   "last_modified": "Fri, 16 Sep 2022 01:29:03 GMT",
+   "family": "manufactured-housing",
+   "members": 16
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/All_CompleteSet.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/All_CompleteSet.zip",
+   "sha256": "00997dab945decfde163b5b43f3721d734a91a825c1bd736444329b734f55088",
+   "size_bytes": 12061977,
+   "last_modified": "Fri, 16 Sep 2022 01:30:24 GMT",
+   "family": "manufactured-housing",
+   "members": 608
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/All_FinalRule.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/All_FinalRule.zip",
+   "sha256": "afb6fb5524dd800769efd72805a9b126dbf1e0e39a7a01c039bd52e7e01b7d8d",
+   "size_bytes": 6038532,
+   "last_modified": "Fri, 16 Sep 2022 03:16:39 GMT",
+   "family": "manufactured-housing",
+   "members": 304
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "manufactured-housing/All_HUD.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2022-09/All_HUD.zip",
+   "sha256": "23cb6aab4b9dfcbcdf1ce8876ee4b2567539293e9f7f1397c037929f825ed6f4",
+   "size_bytes": 6023467,
+   "last_modified": "Fri, 16 Sep 2022 03:17:33 GMT",
+   "family": "manufactured-housing",
+   "members": 304
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_ApartmentHighRise.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_ApartmentHighRise.zip",
+   "sha256": "59a71fe2d7f9120bf8ef18f98a717f4e8e3fb6004241e019cb3405271bb59101",
+   "size_bytes": 50203326,
+   "last_modified": "Wed, 25 Oct 2023 16:12:27 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_ApartmentMidRise.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_ApartmentMidRise.zip",
+   "sha256": "df09996c00905d7df643fd923ec621863a86a00859f0b588df99a427dd11cfa6",
+   "size_bytes": 47115745,
+   "last_modified": "Wed, 25 Oct 2023 16:21:05 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_Hospital.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_Hospital.zip",
+   "sha256": "e6cf3ba38f28f037613599416ef55986b806dda926bf51f28e5c6de7bd6b3caa",
+   "size_bytes": 78598244,
+   "last_modified": "Wed, 25 Oct 2023 16:34:56 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_HotelLarge.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_HotelLarge.zip",
+   "sha256": "5f089b44ac37e2a4e5c11a1572433e73fa293b5c78406da3d7744a863d7bdf64",
+   "size_bytes": 46237580,
+   "last_modified": "Wed, 25 Oct 2023 21:27:27 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_HotelSmall.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_HotelSmall.zip",
+   "sha256": "74cd36d043b1a4c5fb2736c008012d01d1abed21c9d696bb27e5f7ef8d5abf05",
+   "size_bytes": 85703022,
+   "last_modified": "Wed, 25 Oct 2023 16:50:48 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_OfficeLarge.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeLarge.zip",
+   "sha256": "a0ddad75df7704aba374b68446244ea17589a87dfb6353cc9ee27e858d69ab89",
+   "size_bytes": 45672589,
+   "last_modified": "Wed, 25 Oct 2023 16:58:12 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_OfficeMedium.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeMedium.zip",
+   "sha256": "5100be9e068c207197525486ab0f398474d8325ea6d4105f7f77e0d786413ce0",
+   "size_bytes": 32421304,
+   "last_modified": "Wed, 25 Oct 2023 17:21:11 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_OfficeSmall.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeSmall.zip",
+   "sha256": "3ff188bca04290d83d5fb24bccf3f4f0b0127344b6a789b4981a0cd0d44fbc1e",
+   "size_bytes": 19584946,
+   "last_modified": "Wed, 25 Oct 2023 17:32:25 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_OutPatientHealthCare.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OutPatientHealthCare.zip",
+   "sha256": "7777f43779292580e05b69567a9a9f6f06da8148cd863aaf2647b16779fb01fc",
+   "size_bytes": 144747666,
+   "last_modified": "Wed, 25 Oct 2023 17:44:15 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_RestaurantFastFood.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_RestaurantFastFood.zip",
+   "sha256": "1fc6ec23db164ede2e525bee7de8fcbbfe4980f706af4ec49c254427cee9f297",
+   "size_bytes": 14999606,
+   "last_modified": "Wed, 25 Oct 2023 17:51:39 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_RestaurantSitDown.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_RestaurantSitDown.zip",
+   "sha256": "e44fe976dec603d28f94fd5f88745b2ae186515e902ab725371f5f822eb01a2a",
+   "size_bytes": 15241300,
+   "last_modified": "Wed, 25 Oct 2023 17:57:34 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_RetailStandalone.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_RetailStandalone.zip",
+   "sha256": "685d82653b4118f0d03713713d9220a3edeaefddde5477e729be677955db99ae",
+   "size_bytes": 18781877,
+   "last_modified": "Wed, 25 Oct 2023 18:04:30 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_RetailStripmall.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_RetailStripmall.zip",
+   "sha256": "614edb8632868b8d793881cc3d5f8083cd6239cae9e0d85f9fbbd889f748e3d7",
+   "size_bytes": 26837385,
+   "last_modified": "Wed, 25 Oct 2023 18:10:20 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_SchoolPrimary.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_SchoolPrimary.zip",
+   "sha256": "8fa74e05a25e2f2ca5c9a9398bc3f9c10bab99397c19f8b8de3f1100b6fa91f6",
+   "size_bytes": 55060514,
+   "last_modified": "Wed, 25 Oct 2023 18:15:50 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_SchoolSecondary.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_SchoolSecondary.zip",
+   "sha256": "84e7b5323d27818a19ea9b35101da58b295b5d3b4befae029e0d2daae1c05198",
+   "size_bytes": 86047100,
+   "last_modified": "Wed, 25 Oct 2023 18:23:10 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-ashrae901/ASHRAE901_Warehouse.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_Warehouse.zip",
+   "sha256": "3c66bc5a3068371609bb563560d8a18180af931ef49962ad329dfba10b5a219b",
+   "size_bytes": 16438973,
+   "last_modified": "Wed, 25 Oct 2023 18:43:36 GMT",
+   "family": "commercial-ashrae901",
+   "members": 267
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_ApartmentHighRise.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_ApartmentHighRise.zip",
+   "sha256": "a58fdcb93b6abeb93273d417e18265670710810026ee8104f549c3b90794f645",
+   "size_bytes": 43085266,
+   "last_modified": "Wed, 25 Oct 2023 18:17:57 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_ApartmentMidRise.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_ApartmentMidRise.zip",
+   "sha256": "10e7ab4eacbaa36b837f6a417c54468a8490a7dac46e9f32b35117b7b31ebae8",
+   "size_bytes": 40310788,
+   "last_modified": "Wed, 25 Oct 2023 18:10:51 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_Hospital.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_Hospital.zip",
+   "sha256": "c07698de3883ce700a92ed81eddd24e12252cd637761d39abd33bdec75289ed2",
+   "size_bytes": 66908233,
+   "last_modified": "Wed, 25 Oct 2023 17:04:05 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_HotelLarge.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_HotelLarge.zip",
+   "sha256": "a2c809489c3c5e1b0f3019929aa78bf337b5717129ec099b215edc533f2e199c",
+   "size_bytes": 39711118,
+   "last_modified": "Wed, 25 Oct 2023 17:38:09 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_HotelSmall.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_HotelSmall.zip",
+   "sha256": "e39b5065a1a8360cb50decf88a5c484606f05ffb54e50fa9fad7ca41d23fa635",
+   "size_bytes": 73590633,
+   "last_modified": "Wed, 25 Oct 2023 17:16:10 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_OfficeLarge.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_OfficeLarge.zip",
+   "sha256": "e54bb1b50ba7ba520f5065844a47f71d55773cf17fba12c6e81682aabf256491",
+   "size_bytes": 38531893,
+   "last_modified": "Wed, 25 Oct 2023 15:51:50 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_OfficeMedium.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_OfficeMedium.zip",
+   "sha256": "d53883d686b5a6beba5f897dd81da3d179eccf4a724cc9860aaef142e74afef1",
+   "size_bytes": 27597266,
+   "last_modified": "Wed, 25 Oct 2023 15:41:21 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_OfficeSmall.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_OfficeSmall.zip",
+   "sha256": "19667bf9c9044af97c5b76c3d5cec98c6842c16fc58ef5db5f524d050bc97960",
+   "size_bytes": 16898872,
+   "last_modified": "Wed, 25 Oct 2023 15:20:16 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_OutPatientHealthCare.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_OutPatientHealthCare.zip",
+   "sha256": "ba74e5dfe530d34a017a99c10f6bb24a7eb3f48a1631e222d3e04b0f599cf2e0",
+   "size_bytes": 124349597,
+   "last_modified": "Wed, 25 Oct 2023 16:56:12 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_RestaurantFastFood.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_RestaurantFastFood.zip",
+   "sha256": "e4c0683ee7ef59fb5b8c2cff497029c7adcd6e8b00be70a9e2e17ff080c130f0",
+   "size_bytes": 12980856,
+   "last_modified": "Wed, 25 Oct 2023 17:53:06 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_RestaurantSitDown.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_RestaurantSitDown.zip",
+   "sha256": "dcc004ddedc925dc4efd2d66a52d5c33532db16f0e58c7d0ad700bc10176f54b",
+   "size_bytes": 13180323,
+   "last_modified": "Wed, 25 Oct 2023 17:59:57 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_RetailStandalone.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_RetailStandalone.zip",
+   "sha256": "73f77da34dc4c02b35ff2f4838451f67fa31ee8f0a7b073d8c4f2553dbce5283",
+   "size_bytes": 16068369,
+   "last_modified": "Wed, 25 Oct 2023 16:10:28 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_RetailStripmall.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_RetailStripmall.zip",
+   "sha256": "9c8f8645a5a2247b2e28db34b8a58fce96dfe937ec574a0180a8e9762cd3e289",
+   "size_bytes": 23059702,
+   "last_modified": "Wed, 25 Oct 2023 16:25:02 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_SchoolPrimary.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_SchoolPrimary.zip",
+   "sha256": "d9827c4f5691516249d42e01d91fed025c4c680e9e728a814a958b9efebb4112",
+   "size_bytes": 46406111,
+   "last_modified": "Wed, 25 Oct 2023 16:35:28 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_SchoolSecondary.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_SchoolSecondary.zip",
+   "sha256": "93b731fae46e435faa3d7a7f952cbf8ba1b36c89206f738fc8cc91cd79783b7c",
+   "size_bytes": 72279574,
+   "last_modified": "Wed, 25 Oct 2023 16:46:13 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "commercial-iecc/IECC_Warehouse.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2023-10/IECC_Warehouse.zip",
+   "sha256": "9710c5cc0cabf4b57c8391dde5a343e279e4e20aefaff5b93ddb4b409f034817",
+   "size_bytes": 14244698,
+   "last_modified": "Wed, 25 Oct 2023 17:45:20 GMT",
+   "family": "commercial-iecc",
+   "members": 229
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_AllCodes.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_AllCodes.zip",
+   "sha256": "d7b0565755a18d4d7f3788587c3ee21667b70c10f60c86e20b7876fb764f0381",
+   "size_bytes": 568151034,
+   "last_modified": "Mon, 23 Dec 2024 02:35:03 GMT",
+   "family": "residential",
+   "members": 8288
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ1A.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ1A.zip",
+   "sha256": "c165b00b8e99fa04cc1c1f48f4f8fe4e55ab3e3dfca0e33102b2976c76f78adc",
+   "size_bytes": 70968154,
+   "last_modified": "Mon, 23 Dec 2024 01:14:46 GMT",
+   "family": "residential",
+   "members": 1120
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ1A_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ1A_IECC_2024.zip",
+   "sha256": "2e6528dcc26c545b58851a4d62ba56a703ec536d2f6fe7dd740a33a04031c614",
+   "size_bytes": 10938858,
+   "last_modified": "Mon, 23 Dec 2024 00:34:52 GMT",
+   "family": "residential",
+   "members": 160
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2A.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ2A.zip",
+   "sha256": "93349b406d990f635bb25bc5af4ced12ba0546d8f4356d05e16bc64caa9a1794",
+   "size_bytes": 30987476,
+   "last_modified": "Mon, 23 Dec 2024 01:08:40 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2A_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ2A_IECC_2024.zip",
+   "sha256": "0f7f5f76ab8c4bfa33231fe34af901b408461c413cc081cba39a0c8f2dc202c5",
+   "size_bytes": 4819664,
+   "last_modified": "Mon, 23 Dec 2024 00:32:55 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2B.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ2B.zip",
+   "sha256": "8157a73e5eed584c67b641f17322bc99d5dfa41c0ae904bf1a79476aac2fd556",
+   "size_bytes": 31092028,
+   "last_modified": "Mon, 23 Dec 2024 01:07:23 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2B_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ2B_IECC_2024.zip",
+   "sha256": "ba3a3d77fddd005deb1874eb6c65593eb6a3a9735be918d2cc3b58d176f2e267",
+   "size_bytes": 4834130,
+   "last_modified": "Mon, 23 Dec 2024 00:31:36 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3A.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ3A.zip",
+   "sha256": "5934aac559c4cbf7871aff46b382976fa7783101102bcffc9137e53c6429947a",
+   "size_bytes": 62017643,
+   "last_modified": "Mon, 23 Dec 2024 00:49:02 GMT",
+   "family": "residential",
+   "members": 896
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3A_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ3A_IECC_2024.zip",
+   "sha256": "ce5d2cc45d29e6e93dae1337268dcd137fbb8c4d52f90e3367e3ff6d85eccb1a",
+   "size_bytes": 9636568,
+   "last_modified": "Mon, 23 Dec 2024 00:28:28 GMT",
+   "family": "residential",
+   "members": 128
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3B.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ3B.zip",
+   "sha256": "d7f48255d0adc9a791462af0ecc547d0330c2c16e5bfc3bf7060a48c8a7b1b6e",
+   "size_bytes": 31075260,
+   "last_modified": "Mon, 23 Dec 2024 00:40:22 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3B_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ3B_IECC_2024.zip",
+   "sha256": "098280e06f93a6f2148c63a9fb29b5f24fe8dfe21dc439a7aba11c2c5abd7be9",
+   "size_bytes": 4829610,
+   "last_modified": "Mon, 23 Dec 2024 00:22:45 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3C.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ3C.zip",
+   "sha256": "0db8daf77eeeb18f1ab13fc070ee3ab7d15ac014b41e19ea1bae7711076ff4c0",
+   "size_bytes": 31175003,
+   "last_modified": "Mon, 23 Dec 2024 00:40:09 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3C_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ3C_IECC_2024.zip",
+   "sha256": "4a4b974eddc8fe4c98b52878fd2324d64136fb01bda4d7881ad63ee2ad4ece01",
+   "size_bytes": 4842283,
+   "last_modified": "Mon, 23 Dec 2024 00:14:41 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4A.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ4A.zip",
+   "sha256": "1344c2852dc3872a2bc08b1d479ff7427c704c6bab888280adc6e3acde6c8d88",
+   "size_bytes": 31009390,
+   "last_modified": "Mon, 23 Dec 2024 00:32:48 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4A_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ4A_IECC_2024.zip",
+   "sha256": "ac445b683f6695cd01bc6a9af30cd5692227411ba96d78f086e41d0b6e7ec9c2",
+   "size_bytes": 4815542,
+   "last_modified": "Mon, 23 Dec 2024 00:05:46 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4B.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ4B.zip",
+   "sha256": "f1c154bc165fa90cebf51069c9293215b981848ac359452117cd52c5752c26af",
+   "size_bytes": 31109155,
+   "last_modified": "Mon, 23 Dec 2024 00:28:06 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4B_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ4B_IECC_2024.zip",
+   "sha256": "ac3e36145e728a9a5eb626707e95b77aefbd4a431bcde248dbb6d7bc3bc6cbe3",
+   "size_bytes": 4830764,
+   "last_modified": "Mon, 23 Dec 2024 00:05:03 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4C.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ4C.zip",
+   "sha256": "26086f2c870362851ceff2632ddc11e4488a9744c1e1659ac639ddca408eef88",
+   "size_bytes": 31055656,
+   "last_modified": "Mon, 23 Dec 2024 00:28:50 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4C_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ4C_IECC_2024.zip",
+   "sha256": "14aab4305a65b948b2b42859a4a91a2b1e8519180d21d2acb52c4692f908e1fb",
+   "size_bytes": 4815920,
+   "last_modified": "Sun, 22 Dec 2024 23:38:36 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5A.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ5A.zip",
+   "sha256": "fadf5711967f5eff02a303a6d9d235df6ba1271f7b69c6d0f9b60d80a692da4c",
+   "size_bytes": 30877081,
+   "last_modified": "Mon, 23 Dec 2024 00:26:58 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5A_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ5A_IECC_2024.zip",
+   "sha256": "ef72781cc9a6df9bf13501e3fde16349cc2e2edc10cfbc7c57007d9f2ca8b9af",
+   "size_bytes": 4780503,
+   "last_modified": "Sun, 22 Dec 2024 23:35:46 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5B.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ5B.zip",
+   "sha256": "3901b25f0df2752410fda0805e2527131121b6f2c2fadf24fc83bf9ab4a217d8",
+   "size_bytes": 31185654,
+   "last_modified": "Mon, 23 Dec 2024 01:01:05 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5B_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ5B_IECC_2024.zip",
+   "sha256": "aca6427978743db36882cc540ced059400eb8623c85689dfec412e64db8a1ffc",
+   "size_bytes": 4812950,
+   "last_modified": "Sun, 22 Dec 2024 23:32:23 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5C.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ5C.zip",
+   "sha256": "27dad508e23ffc07bf7472c82d3b1b8f09e60fb85dbb23017f501f85b6f21089",
+   "size_bytes": 31043550,
+   "last_modified": "Mon, 23 Dec 2024 00:56:45 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5C_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ5C_IECC_2024.zip",
+   "sha256": "92d48eb4d60110a3fff79f46c174ef0d9f2409360d61e36fef406fcb938c5072",
+   "size_bytes": 4802497,
+   "last_modified": "Sun, 22 Dec 2024 23:29:46 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6A.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ6A.zip",
+   "sha256": "23a0636ef41c717b56d671d17d4e8eeba5064f5c10c68e712d555f70c5f7ad47",
+   "size_bytes": 31085502,
+   "last_modified": "Mon, 23 Dec 2024 00:59:28 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6A_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ6A_IECC_2024.zip",
+   "sha256": "8761de2317bf3698ffee9fc040d92d6db641e2bf86ec642b11ba4b0ea6c0a40f",
+   "size_bytes": 4865218,
+   "last_modified": "Sun, 22 Dec 2024 21:45:03 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6B.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ6B.zip",
+   "sha256": "091c6f635531291ddeacd73d9354089a6e94ed3738c1e1b24282f2cc88095606",
+   "size_bytes": 31208177,
+   "last_modified": "Mon, 23 Dec 2024 00:48:17 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6B_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ6B_IECC_2024.zip",
+   "sha256": "0ce05efe8f95e502139ac71a99149ed5ba2e1f0d9220b79e2419eda50d0fc6be",
+   "size_bytes": 4873528,
+   "last_modified": "Sun, 22 Dec 2024 23:30:30 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ7.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ7.zip",
+   "sha256": "9a2731117d478022ddc4b7c10da192932ca53803bd143fd1a2eedc0c98e071cd",
+   "size_bytes": 31181984,
+   "last_modified": "Mon, 23 Dec 2024 00:46:56 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ7_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ7_IECC_2024.zip",
+   "sha256": "221beae0242110f482c3b23129ba77e809af977fa203b5b1e21b4431f7add127",
+   "size_bytes": 4863017,
+   "last_modified": "Sun, 22 Dec 2024 21:37:41 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ8.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ8.zip",
+   "sha256": "d13e73ab03c6cfa7d4d1dc03de90009240a616d3b49dfc934c06e51f7bd036a9",
+   "size_bytes": 31079651,
+   "last_modified": "Mon, 23 Dec 2024 00:14:36 GMT",
+   "family": "residential",
+   "members": 448
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ8_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_CZ8_IECC_2024.zip",
+   "sha256": "0f897f4e43c7eed23325f84cd9847febec771c1ea73da6395ae131f8b7d96f89",
+   "size_bytes": 4844361,
+   "last_modified": "Sun, 22 Dec 2024 20:00:15 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_IECC_2018.zip",
+   "sha256": "039beb11b3816202aa9b59a5ae0dced870883e8e622080917403d21e120a8e7c",
+   "size_bytes": 77862430,
+   "last_modified": "Mon, 23 Dec 2024 01:46:30 GMT",
+   "family": "residential",
+   "members": 1184
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_IECC_2021.zip",
+   "sha256": "b460f1c95ed1d495a96f14f31d215be9ae722c493ebf130b25234a2c2080a9e9",
+   "size_bytes": 91649075,
+   "last_modified": "Mon, 23 Dec 2024 02:08:08 GMT",
+   "family": "residential",
+   "members": 1184
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_IECC_2024.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2024-12/resstd_IECC_2024.zip",
+   "sha256": "092f86076d498b6355c2f83b57beb8f55e4271f5fee3798559fc825ee4424efd",
+   "size_bytes": 88205083,
+   "last_modified": "Mon, 23 Dec 2024 02:05:41 GMT",
+   "family": "residential",
+   "members": 1184
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ1A_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ1A_IECC_2018.zip",
+   "sha256": "e8a6b580c308ee800f72546fed3e8cb0bbb8ed15f23fc7077d29ceddc02b6ee0",
+   "size_bytes": 9768251,
+   "last_modified": "Thu, 16 Jan 2025 21:59:25 GMT",
+   "family": "residential",
+   "members": 160
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ1A_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ1A_IECC_2021.zip",
+   "sha256": "c8e6a48330ef0afaf47771cc2e1b4d072b224814fd362821e98106a583d55f74",
+   "size_bytes": 11304381,
+   "last_modified": "Thu, 16 Jan 2025 21:28:26 GMT",
+   "family": "residential",
+   "members": 160
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2A_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ2A_IECC_2018.zip",
+   "sha256": "0c48582d21ff12ec8921ae6e19bc9d33c7110bb5bba8a52b3c1101576492d624",
+   "size_bytes": 4247079,
+   "last_modified": "Thu, 16 Jan 2025 21:58:45 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2A_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ2A_IECC_2021.zip",
+   "sha256": "0d2b1637423c04142e69a5798b512495ae6ba291095b24430d358d4c22ac16cb",
+   "size_bytes": 5001019,
+   "last_modified": "Thu, 16 Jan 2025 21:27:44 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2B_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ2B_IECC_2018.zip",
+   "sha256": "24695726b1ba511591d83fab42f279cd71cdc134fb14e6446d9aa0c36c1b4777",
+   "size_bytes": 4259561,
+   "last_modified": "Thu, 16 Jan 2025 21:58:43 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ2B_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ2B_IECC_2021.zip",
+   "sha256": "c55e1ddba9521966e708eb7018031b023e9cbc23d2e5e84a1ff2b1609300a872",
+   "size_bytes": 5016976,
+   "last_modified": "Thu, 16 Jan 2025 21:27:16 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3A_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ3A_IECC_2018.zip",
+   "sha256": "7192bcc871c34620c96ef74a516ced7ecd0fd7f23bfb18b213e0360b7a402215",
+   "size_bytes": 8491609,
+   "last_modified": "Thu, 16 Jan 2025 21:58:21 GMT",
+   "family": "residential",
+   "members": 128
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3A_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ3A_IECC_2021.zip",
+   "sha256": "90000419cc7a77ddabf56d71e9aa3e16f1831974c367ff3e396fdea5c5a83f75",
+   "size_bytes": 9999016,
+   "last_modified": "Thu, 16 Jan 2025 21:26:52 GMT",
+   "family": "residential",
+   "members": 128
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3B_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ3B_IECC_2018.zip",
+   "sha256": "9eee3c8df819f6026f1ce1071f92c67711cc0b92691823ee1b3577b82c5a00a6",
+   "size_bytes": 4254193,
+   "last_modified": "Thu, 16 Jan 2025 21:58:13 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3B_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ3B_IECC_2021.zip",
+   "sha256": "7edc40491d5c8f16e0acc27bd99551128d7680d5574730996eb6aee4805bb432",
+   "size_bytes": 5013127,
+   "last_modified": "Thu, 16 Jan 2025 21:26:18 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3C_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ3C_IECC_2018.zip",
+   "sha256": "bc3d8152b8277db4ad8a0e604181284b0710be1d8f10798c21ff06aadf16adfe",
+   "size_bytes": 4266314,
+   "last_modified": "Thu, 16 Jan 2025 21:57:36 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ3C_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ3C_IECC_2021.zip",
+   "sha256": "6ebc3a1111b00cc825d0b3ff0c6937aca0c2dd97f41912593d13055c83f3bc50",
+   "size_bytes": 5028257,
+   "last_modified": "Thu, 16 Jan 2025 21:25:35 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4A_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ4A_IECC_2018.zip",
+   "sha256": "7e6353911f8cf2d229db43791426ee41f310152f464b9cf92ab84a3bae4c27fd",
+   "size_bytes": 4251004,
+   "last_modified": "Thu, 16 Jan 2025 21:57:15 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4A_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ4A_IECC_2021.zip",
+   "sha256": "fb008204d6a3a34d8212aeb16d00dfbaf12066f68e796c40ceb0bf73c69a5ade",
+   "size_bytes": 5000418,
+   "last_modified": "Thu, 16 Jan 2025 21:25:05 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4B_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ4B_IECC_2018.zip",
+   "sha256": "c745137f7cbd24abfcb94e85bfe8f08272c37a46e42383258cd9c30183f7379f",
+   "size_bytes": 4262683,
+   "last_modified": "Thu, 16 Jan 2025 21:56:49 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4B_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ4B_IECC_2021.zip",
+   "sha256": "446e87fcb46ae6926c6e29d8157b5eaab9504007fa40c172a1bf7717c37f31e2",
+   "size_bytes": 5012621,
+   "last_modified": "Thu, 16 Jan 2025 21:24:26 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4C_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ4C_IECC_2018.zip",
+   "sha256": "0ba70adeccd7b71c2236709f9867de35babaafa32b9ca2f88f32f6e072089a1f",
+   "size_bytes": 4257647,
+   "last_modified": "Thu, 16 Jan 2025 21:56:43 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ4C_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ4C_IECC_2021.zip",
+   "sha256": "ebb75fbef832e28b4400b50e4580d22a43fe2656002a901e557bd1f7e84b8cdb",
+   "size_bytes": 5008151,
+   "last_modified": "Thu, 16 Jan 2025 21:23:57 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5A_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ5A_IECC_2018.zip",
+   "sha256": "02ef028729d0ac453dd4cdcfe16d73b891aa2e9acb9b8ec87f5faa3635e3f0a8",
+   "size_bytes": 4237093,
+   "last_modified": "Thu, 16 Jan 2025 21:56:21 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5A_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ5A_IECC_2021.zip",
+   "sha256": "c9577e3954ad2a51e5b20955069308a7c6e6b95495c18483f8be825c9d1664cf",
+   "size_bytes": 4984384,
+   "last_modified": "Thu, 16 Jan 2025 21:23:30 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5B_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ5B_IECC_2018.zip",
+   "sha256": "9e55b5e5b5a18e398082033a905831c0699c5abaa544ef2a6a161415c1debe2b",
+   "size_bytes": 4280503,
+   "last_modified": "Thu, 16 Jan 2025 21:56:05 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5B_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ5B_IECC_2021.zip",
+   "sha256": "f78d82ac167b7183bb70d130b06119c1dc5df967010807db472da4122ffdb87b",
+   "size_bytes": 5026387,
+   "last_modified": "Thu, 16 Jan 2025 21:22:47 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5C_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ5C_IECC_2018.zip",
+   "sha256": "4519226b89b7af0edd9918c204c47da6a9825e2313e7a83095e806667b07ec86",
+   "size_bytes": 4261575,
+   "last_modified": "Thu, 16 Jan 2025 21:55:48 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ5C_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ5C_IECC_2021.zip",
+   "sha256": "a0b335c216760b483fde9a92f1ab114f61c9a9804d0631320a30503ad64443c5",
+   "size_bytes": 5010982,
+   "last_modified": "Thu, 16 Jan 2025 21:22:03 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6A_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ6A_IECC_2018.zip",
+   "sha256": "39941594974359629181b266f539de13af9cccff462dddad73d29a27e23b4886",
+   "size_bytes": 4252918,
+   "last_modified": "Thu, 16 Jan 2025 21:55:40 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6A_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ6A_IECC_2021.zip",
+   "sha256": "93e3d19797191c177d0d5449c267c15366817c4fbf4fdf749bf743e8c44247b1",
+   "size_bytes": 5004834,
+   "last_modified": "Thu, 16 Jan 2025 21:21:10 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6B_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ6B_IECC_2018.zip",
+   "sha256": "2e1612a9341f3de6ca7c580dc7678f72f468540c0e168d4682fe5c8ed5e841de",
+   "size_bytes": 4276814,
+   "last_modified": "Thu, 16 Jan 2025 21:55:15 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ6B_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ6B_IECC_2021.zip",
+   "sha256": "b32126b3120c471afd0282ea5d30dcf985b22d10e0b383a81e4afb7253b75a18",
+   "size_bytes": 5021749,
+   "last_modified": "Thu, 16 Jan 2025 21:20:24 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ7_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ7_IECC_2018.zip",
+   "sha256": "256cefd2d95a100b5909e2fc09fd6954f25e968cf92dec479963b542a1329cc7",
+   "size_bytes": 4253150,
+   "last_modified": "Thu, 16 Jan 2025 21:55:08 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ7_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ7_IECC_2021.zip",
+   "sha256": "a52d9fa0a20c3aad9b9f15e4c700351b4c00e20e1ee9a9613d295efbe6977587",
+   "size_bytes": 5117626,
+   "last_modified": "Thu, 16 Jan 2025 21:19:43 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ8_IECC_2018.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ8_IECC_2018.zip",
+   "sha256": "0dd7500b9c3bd437bf0fd8bb6cc65ff86af20dbaf4a5c73ab7ee95e8802f7bea",
+   "size_bytes": 4242366,
+   "last_modified": "Thu, 16 Jan 2025 21:54:40 GMT",
+   "family": "residential",
+   "members": 64
+  },
+  {
+   "source_id": "pnnl-prototypes",
+   "path": "residential/resstd_CZ8_IECC_2021.zip",
+   "url": "https://www.energycodes.gov/sites/default/files/2025-01/resstd_CZ8_IECC_2021.zip",
+   "sha256": "36894708eabaa92ef36e9d98acd58ca4cfdd0d3250aa30e6bcc1c240d5519f1f",
+   "size_bytes": 5099477,
+   "last_modified": "Thu, 16 Jan 2025 21:19:08 GMT",
+   "family": "residential",
+   "members": 64
+  }
+ ]
+}

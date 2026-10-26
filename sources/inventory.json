@@ -31,7 +31,9 @@
       "official_url": "https://www.energy.gov/cmei/buildings/commercial-reference-buildings",
       "parameter_locations": ["https://www.energy.gov/cmei/buildings/existing-commercial-reference-buildings-constructed-1980", "Building-type ZIP packages: IDF, scorecard and legacy output depending on version"],
       "role": "Legacy existing-stock benchmarks: pre-1980 and post-1980; separate new-construction family",
-      "v0_1_status": "Official inventory inspected; direct Medium Office link returned HTTP 404. Atlas uses separately labeled OpenStudio Standards DOE reference inputs; no direct DOE IDF equivalence asserted"
+      "v0_1_status": "Official inventory inspected; direct Medium Office link returned HTTP 404. Atlas uses separately labeled OpenStudio Standards DOE reference inputs; no direct DOE IDF equivalence asserted",
+      "pinned_archives": "sources/reference-models-lock.json: 48 v1.4_7.2 per-building ZIPs (new construction to 90.1-2004, post-1980, pre-1980); sizes match energy.gov and digests match Internet Archive captures",
+      "pin_status": "2026-10-25: the ZIPs are live under https://www.energy.gov/sites/default/files/2013/12/f5/; the earlier HTTP 404 came from the retired per-type article pages, not the files"
     },
     {
       "source_id": "pnnl-prototypes",
@@ -39,7 +41,9 @@
       "official_url": "https://www.energycodes.gov/prototype-building-models",
       "parameter_locations": ["Building-type/code ZIP packages: IDF, HTM and scorecard XLSX", "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeMedium_STD2013.zip"],
       "role": "New construction/code benchmarks, distinct from historical existing buildings",
-      "v0_1_status": "Official inventory inspected; linked Medium Office 2013 ZIP returned HTTP 404. Direct scorecard/IDF cross-validation remains unresolved"
+      "v0_1_status": "Official inventory inspected; linked Medium Office 2013 ZIP returned HTTP 404. Direct scorecard/IDF cross-validation remains unresolved",
+      "pinned_archives": "sources/reference-models-lock.json: 160 energycodes.gov archives (ASHRAE 90.1 and IECC commercial per-type bundles, IECC residential, manufactured housing)",
+      "pin_status": "2026-10-25: archives retrieved and hashed; the earlier HTTP 404 was the host refusing the default client, not a missing file"
     }
   ]
 }
