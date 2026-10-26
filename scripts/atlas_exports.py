@@ -13,11 +13,15 @@ minors Program JSON 5.1.0 and constructions 4.1.0 / 3.1.0, and building services
 Release 1.3.0 adds the IECC commercial family (ADR 0040) and exports Program JSON 5.2.0
 (loads by climate, source zones) and detailed constructions 4.2.0 (the source design-flow
 infiltration method); the IECC sets have no unified representation yet.
+Release 1.4.0 holds release 1.3.0 and adds the residential tree (ADR 0038): dwelling
+programs export as Program JSON 5.3.0 (scripts.residential_exports) and IDF-derived construction sets as source
+model constructions 1.0.0 (scripts.prototype_dwellings).
 
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
 python -m scripts.atlas_exports --construction SET --context KEY --representation detailed
 python -m scripts.atlas_exports --release 1.1.0 --building-services doe-ref-1980-2004/hospital
+python -m scripts.atlas_exports --release 1.4.0 --program resstock-sdr.single-family-detached.<...> --version filled
 """
 import argparse
 import copy
@@ -35,13 +39,13 @@ from scripts.common import ROOT, load_json
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0',), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 SOURCE_METHOD = 'source_design_flow'
 NATURAL_ACH = ('fixed_source_reference_natural_ach', 'fixed_source_annual_average_natural_ach')
@@ -98,6 +102,9 @@ def derived_schemas():
     out[MINOR['services'][0]] = services_schema()
     out[IECC['program'][0]] = program_minor_iecc(out[MINOR['program'][0]])
     out[IECC['detailed'][0]] = construction_minor_iecc(out[MINOR['detailed'][0]])
+    from scripts import prototype_dwellings, residential_exports
+    out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
+    out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = prototype_dwellings.construction_schema()
     return out
 
 
@@ -356,11 +363,19 @@ class Release:
         self.files, self.release = files, release
         self.programs = {}
         for path, data in files.items():
-            if '/programs/' in path:
+            if '/programs/' in path and path.startswith('commercial/'):
                 program = json.loads(data)
                 self.programs[program['id']] = (path.split('/programs/')[0]+'/', program)
         self.constructions = atlas_constructions.read_files(files)
-        self._suites, self._bundles, self._exporters = {}, {}, {}
+        self._suites, self._bundles, self._exporters, self._dwellings = {}, {}, {}, None
+
+    @property
+    def dwellings(self):
+        """The residential tree (ADR 0038, release 1.4.0 on)."""
+        if self._dwellings is None:
+            from scripts.residential_exports import Dwellings
+            self._dwellings = Dwellings(self.files, self.release)
+        return self._dwellings
 
     def program_ids(self):
         return sorted(self.programs)
@@ -439,6 +454,8 @@ class Release:
         """Program JSON 5.0.0 in one version."""
         if version not in VERSIONS:
             raise ValueError('Unknown program version: '+version)
+        if program_id not in self.programs and program_id in self.dwellings.programs:
+            return self.dwellings.program(program_id, version)
         if version == 'filled' and str(self.programs[program_id][1].get('template', '')).startswith('IECC '):
             raise ValueError(program_id+': IECC programs export as source only. They hold source values with no fillings, and the '
                              'filled version folds water heating into its source heaters, which are deferred with the systems '
@@ -566,6 +583,9 @@ class Release:
     def construction(self, set_id, key, representation):
         """Construction detailed 4.0.0 or unified 3.0.0 for one context of a set."""
         name, _, version, _ = CONSTRUCTION_SCHEMAS[representation]
+        if set_id.startswith(('iecc-', 'hud-code.', 'doe-final-rule.')):
+            from scripts import prototype_dwellings
+            return prototype_dwellings.construction(self, set_id, key)
         if self.release != '1.0.0':
             name, version, _ = MINOR[representation]
         if self.release in IECC['releases'] and representation == 'detailed':
@@ -608,7 +628,8 @@ def main():
                 path.write_bytes(suite_bytes(schema))
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
-        print('Program 5.0.0 / 5.1.0 / 5.2.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 3.0.0 / 3.1.0 and building services 1.0.0 schemas '
+        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 3.0.0 / 3.1.0, '
+              'source model constructions 1.0.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return
     release = Release(release=args.release)
