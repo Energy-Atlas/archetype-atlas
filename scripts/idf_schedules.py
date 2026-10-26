@@ -17,6 +17,7 @@ import re
 WEEKDAYS = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
 TOLERANCE = 1e-6
 MONTHS = {name.lower(): i for i, name in enumerate(calendar.month_name) if name}
+MONTHS.update({name.lower(): i for i, name in enumerate(calendar.month_abbr) if name})  # 'Jan 1' (PNNL IECC files)
 ORDINALS = {'1st': 1, 'first': 1, '2nd': 2, 'second': 2, '3rd': 3, 'third': 3, '4th': 4, 'fourth': 4, 'last': -1}
 
 

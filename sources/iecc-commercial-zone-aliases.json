@@ -1,0 +1,513 @@
+{
+ "schema_version": "1.0.0",
+ "kind": "iecc_commercial_zone_aliases",
+ "adr": "docs/adr/0040-iecc-commercial-family.md",
+ "rule": "A name that the 90.1-2007, 2013 and 2019 geometries tag differently takes its 90.1-2019 tag (agent decision, ADR 0040 Agent decisions); a zone name without a geometry space takes a reasoned guess listed under guesses.",
+ "conflicts": [
+  {
+   "building_type": "Hospital",
+   "zone": "office1_flr_5",
+   "candidates": {
+    "90.1-2007": [
+     "Hospital",
+     "Office"
+    ],
+    "90.1-2013": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ],
+    "90.1-2019": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ]
+   },
+   "standards_building_type": "Hospital",
+   "space_type": "HospitalOfficeFlr5",
+   "reason": "90.1-2019 splits the hospital offices by floor (HospitalOfficeFlr1, HospitalOfficeFlr5); the IECC IDFs give the floor-1 and floor-5 office zones different loads, so the finer 2019 tags keep them apart."
+  },
+  {
+   "building_type": "Hospital",
+   "zone": "office1_mult4_flr_1",
+   "candidates": {
+    "90.1-2007": [
+     "Hospital",
+     "Office"
+    ],
+    "90.1-2013": [
+     "Hospital",
+     "HospitalOfficeFlr1"
+    ],
+    "90.1-2019": [
+     "Hospital",
+     "HospitalOfficeFlr1"
+    ]
+   },
+   "standards_building_type": "Hospital",
+   "space_type": "HospitalOfficeFlr1",
+   "reason": "90.1-2019 splits the hospital offices by floor (HospitalOfficeFlr1, HospitalOfficeFlr5); the IECC IDFs give the floor-1 and floor-5 office zones different loads, so the finer 2019 tags keep them apart."
+  },
+  {
+   "building_type": "Hospital",
+   "zone": "office2_mult5_flr_5",
+   "candidates": {
+    "90.1-2007": [
+     "Hospital",
+     "Office"
+    ],
+    "90.1-2013": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ],
+    "90.1-2019": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ]
+   },
+   "standards_building_type": "Hospital",
+   "space_type": "HospitalOfficeFlr5",
+   "reason": "90.1-2019 splits the hospital offices by floor (HospitalOfficeFlr1, HospitalOfficeFlr5); the IECC IDFs give the floor-1 and floor-5 office zones different loads, so the finer 2019 tags keep them apart."
+  },
+  {
+   "building_type": "Hospital",
+   "zone": "office3_flr_5",
+   "candidates": {
+    "90.1-2007": [
+     "Hospital",
+     "Office"
+    ],
+    "90.1-2013": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ],
+    "90.1-2019": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ]
+   },
+   "standards_building_type": "Hospital",
+   "space_type": "HospitalOfficeFlr5",
+   "reason": "90.1-2019 splits the hospital offices by floor (HospitalOfficeFlr1, HospitalOfficeFlr5); the IECC IDFs give the floor-1 and floor-5 office zones different loads, so the finer 2019 tags keep them apart."
+  },
+  {
+   "building_type": "Hospital",
+   "zone": "office4_mult6_flr_5",
+   "candidates": {
+    "90.1-2007": [
+     "Hospital",
+     "Office"
+    ],
+    "90.1-2013": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ],
+    "90.1-2019": [
+     "Hospital",
+     "HospitalOfficeFlr5"
+    ]
+   },
+   "standards_building_type": "Hospital",
+   "space_type": "HospitalOfficeFlr5",
+   "reason": "90.1-2019 splits the hospital offices by floor (HospitalOfficeFlr1, HospitalOfficeFlr5); the IECC IDFs give the floor-1 and floor-5 office zones different loads, so the finer 2019 tags keep them apart."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "basement",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-basement"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-basement"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-basement",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "core_bottom",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "core_mid",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "core_top",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_bot_zn_1",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_bot_zn_2",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_bot_zn_3",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_bot_zn_4",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_mid_zn_1",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_mid_zn_2",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_mid_zn_3",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_mid_zn_4",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_top_zn_1",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_top_zn_2",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_top_zn_3",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "LargeOffice",
+   "zone": "perimeter_top_zn_4",
+   "candidates": {
+    "90.1-2007": [
+     "Office",
+     "WholeBuilding - Lg Office"
+    ],
+    "90.1-2013": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ],
+    "90.1-2019": [
+     "Office",
+     "WholeBuilding - Lg Office-others"
+    ]
+   },
+   "standards_building_type": "Office",
+   "space_type": "WholeBuilding - Lg Office-others",
+   "reason": "90.1-2019 tags the above-grade office zones WholeBuilding - Lg Office-others and the basement WholeBuilding - Lg Office-basement, beside the data-centre zones; the IECC IDFs model the same basement and data-centre zones, so the 2019 tags apply. 90.1-2007 and 2013 use one office tag."
+  },
+  {
+   "building_type": "Outpatient",
+   "zone": "floor_2_work",
+   "candidates": {
+    "90.1-2007": [
+     "Outpatient",
+     "Office"
+    ],
+    "90.1-2013": [
+     "Outpatient",
+     "OutpatientFloor2Work"
+    ],
+    "90.1-2019": [
+     "Outpatient",
+     "OutpatientFloor2Work"
+    ]
+   },
+   "standards_building_type": "Outpatient",
+   "space_type": "OutpatientFloor2Work",
+   "reason": "90.1-2019 tags this zone OutpatientFloor2Work (the composition recipe names it); the newest tagging of the shared prototype geometry is used."
+  },
+  {
+   "building_type": "RetailStandalone",
+   "zone": "core_retail",
+   "candidates": {
+    "90.1-2007": [
+     "Retail",
+     "Retail"
+    ],
+    "90.1-2013": [
+     "Retail",
+     "Core_Retail"
+    ],
+    "90.1-2019": [
+     "Retail",
+     "Core_Retail"
+    ]
+   },
+   "standards_building_type": "Retail",
+   "space_type": "Core_Retail",
+   "reason": "90.1-2019 tags the front and core retail zones Front_Retail and Core_Retail (the composition recipe names both); 90.1-2007 tags them Retail. The newest tagging is used."
+  },
+  {
+   "building_type": "RetailStandalone",
+   "zone": "front_retail",
+   "candidates": {
+    "90.1-2007": [
+     "Retail",
+     "Retail"
+    ],
+    "90.1-2013": [
+     "Retail",
+     "Front_Retail"
+    ],
+    "90.1-2019": [
+     "Retail",
+     "Front_Retail"
+    ]
+   },
+   "standards_building_type": "Retail",
+   "space_type": "Front_Retail",
+   "reason": "90.1-2019 tags the front and core retail zones Front_Retail and Core_Retail (the composition recipe names both); 90.1-2007 tags them Retail. The newest tagging is used."
+  }
+ ],
+ "guesses": []
+}
