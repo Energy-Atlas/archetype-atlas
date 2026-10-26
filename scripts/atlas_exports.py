@@ -233,6 +233,27 @@ def constants(record, prefix, schedules):
     return walk(record)
 
 
+COURTHOUSE_DESIGN_DAYS = {'Courthouse ' + n for n in (
+    'CELL_OCC_SCH', 'COURTROOM_LIGHT_SCH', 'GENERAL_LIGHT_SCH', 'JUDGES_CHAMBER_LIGHT_SCH',
+    'JUDGES_CHAMBER_OCC_SCH', 'JURY_ASSEMBLY_LIGHT_SCH', 'JURY_ASSEMBLY_OCC_SCH', 'JURY_DELIBERATION_LIGHT_SCH',
+    'JURY_DELIBERATION_OCC_SCH', 'OFFICE_OCC_SCH')}
+
+
+def complete_design_days(schedule):
+    """User-approved completion (ADR 0039 F3) of the Courthouse schedules, which give every weekday,
+    weekends and holidays but no Default or design-day rule: design days take the Wednesday profile."""
+    if schedule.get('source_name') not in COURTHOUSE_DESIGN_DAYS:
+        return
+    tokens = [set(r['day_types'].split('|')) for r in schedule['rules']]
+    if any(t & {'SmrDsn', 'WntrDsn', 'Default'} for t in tokens):
+        return  # this template's variant already covers design days
+    weekday = [r for r, t in zip(schedule['rules'], tokens) if t & {'Wed', 'Wkdy'}]
+    if not weekday or any(r['start_date'][5:10] != '01-01' or r['end_date'][5:10] != '12-31' for r in weekday):
+        raise ValueError('Unexpected weekday rules: '+schedule['source_name'])
+    schedule['rules'] = [*schedule['rules'], *({**copy.deepcopy(weekday[-1]), 'day_types': d} for d in ('SmrDsn', 'WntrDsn'))]
+    schedule['completion'] = 'accepted-design-day-weekday (ADR 0039 F3): design days take the Wednesday profile'
+
+
 class Release:
     """A written release folder, exported for consumers."""
 
@@ -288,6 +309,9 @@ class Release:
                                          'evidence_view': record['evidence_view'], 'method': stored['composition']['method'],
                                          'members': copy.deepcopy(stored['composition']['members'])})
                 programs.append(record)
+            if version == 'filled' and self.release != '1.0.0':
+                for schedule in schedules.values():
+                    complete_design_days(schedule)
             services = [{**row, 'id': sid} for p, d in sorted(self.files.items()) if p.endswith('/services.json')
                         for sid, row in json.loads(d).items()]
             provenance = [decode(eid, row, glossary) for p, d in sorted(self.files.items())

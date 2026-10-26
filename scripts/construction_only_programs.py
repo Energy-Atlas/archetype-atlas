@@ -127,6 +127,261 @@ def legacy_records(raw_root):
     return b.data
 
 
+# User-approved fillings for the new programs (2026-10-26, ADR 0039 F1, F2): the resolution
+# policy's rules extended by their criteria. Occupancy zero only for spaces with no routine
+# occupants; corridors, stairs, storage, restrooms and utility rooms stay unknown.
+NO_OCCUPANCY = ('shaft', 'machine room', 'data center', 'datacenter', 'computerroom', 'attic')
+SHAFTS = ('shaft',)
+NOTES = {
+    'occupancy': 'User-approved (ADR 0039): shaft, machine room, data centre or attic with no routine modeled occupancy; transient maintenance visits excluded from this experimental variant.',
+    'lighting': 'User-approved (ADR 0039): elevator or service shaft, or elevator machine room, with null source lighting; no modeled lighting.',
+    'conditioning': 'User-approved (ADR 0039): elevator or service shaft with no thermostat; heating and cooling disabled; no temperature sentinel.',
+    'attic': 'User-approved (ADR 0039): attic space-type row of the generic office, which has no geometry; no thermostat; heating and cooling disabled.'}
+
+
+def fillings(records, packet):
+    """Resolution rows for the new programs, and the fields that stay unresolved."""
+    from scripts import resolve
+    from scripts.common import stable_id as legacy_id
+    programs = [p for p in records['programs']]
+    name = lambda p: p['source_space_type'].lower().replace(' ', '')
+    errors = {p['id'] for p in programs if p['source_attributes'].get('lighting_per_area') in SPREADSHEET_ERRORS}
+    policy = copy.deepcopy(load_json(ROOT/'sources/resolution-policy.json'))
+    policy.update(
+        no_gas_equipment_program_ids=[p['id'] for p in programs if p['gas_equipment_W_m2'] is None],
+        no_occupancy_program_ids=[p['id'] for p in programs if p['people_per_m2'] is None
+                                  and any(t.replace(' ', '') in name(p) for t in NO_OCCUPANCY)],
+        no_hot_water_program_ids=[p['id'] for p in programs if 'attic' in name(p)],
+        unconditioned_program_ids=[p['id'] for p in programs if 'attic' in name(p)],
+        no_lighting_program_ids=[],
+        occupancy_notes={p['id']: NOTES['occupancy'] for p in programs if 'attic' not in name(p)})
+    data = {'programs': programs, 'provenance': records['provenance'], 'source_files': records['source_files'],
+            'mappings': records['mappings'], 'residential_archetypes': []}
+    result = resolve.resolve_records(data, policy, [], None, packet)
+    resolutions, provenance = result['resolutions'], {p['id']: p for p in records['provenance']}
+    sources = {s['id']: s for s in records['source_files']}
+
+    def add(row, field, value, unit, rule, note, fields):
+        p = provenance[row['provenance_id']]
+        s = sources[p['source_file_id']]
+        proofs = [{'source_locator': s['path']+'#'+p['locator']+'/'+f, 'source_revision': s['version'],
+                   'source_file_sha256': s['sha256'], 'provenance_id': p['id'],
+                   'original_value': p['fields'].get(f, {}).get('original_value', row.get(f)),
+                   'original_unit': p['fields'].get(f, {}).get('original_units', 'source descriptors'),
+                   'transformation': p['fields'].get(f, {}).get('transformation', 'Retain source context') + '; ' + note,
+                   'extraction_date': '2026-10-26', 'interpretation_note': note} for f in fields]
+        resolutions.append({'id': legacy_id('resolution', 'programs', row['id'], field, rule), 'record_table': 'programs',
+                            'record_id': row['id'], 'field': field, 'original_value': row.get(field), 'resolved_value': value,
+                            'unit': unit, 'rule': rule, 'basis': 'research_assumption', 'note': note, 'evidence': proofs})
+    constant = {'constant_value': 0, 'calendar_independent': True}
+    for row in programs:
+        shaft = any(t in name(row) for t in SHAFTS) or 'machineroom' in name(row)
+        if (row['lighting_W_m2'] is None and row['lighting_schedule_id'] is None and row['id'] not in errors and shaft):
+            add(row, 'lighting_schedule_id', constant, 'dimensionless', 'reviewed_no_lighting', NOTES['lighting'],
+                ['source_attributes', 'lighting_schedule_id', 'lighting_W_m2'])
+        mapped = any(m['program_id'] == row['id'] for m in records['mappings'])
+        if ('attic' in name(row) and not mapped and row['heating_setpoint_schedule_id'] is None
+                and row['cooling_setpoint_schedule_id'] is None):
+            add(row, 'conditioning', {'heating_enabled': False, 'cooling_enabled': False}, 'state', 'reviewed_unconditioned',
+                NOTES['attic'], ['source_attributes', 'heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id'])
+        if (any(t in name(row) for t in SHAFTS) and row['heating_setpoint_schedule_id'] is None
+                and row['cooling_setpoint_schedule_id'] is None):
+            add(row, 'conditioning', {'heating_enabled': False, 'cooling_enabled': False}, 'state', 'reviewed_unconditioned',
+                NOTES['conditioning'], ['source_attributes', 'heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id'])
+    resolved = {(r['record_id'], r['field']) for r in resolutions}
+    unresolved = [u for u in result['unresolved'] if (u['record_id'], u['field']) not in resolved
+                  and not (u['field'].endswith('setpoint_schedule_id') and (u['record_id'], 'conditioning') in resolved)]
+    return sorted(resolutions, key=lambda r: r['id']), unresolved
+
+
+RECIPE = 'lib/openstudio-standards/standards/Standards.ServiceWaterHeating.rb'
+GALLON_M3 = 0.003785411784
+
+
+def water_packet(records, raw_root):
+    """Hot-water fixture paths of the new types (ADR 0039 F4), ported from scripts.commercial_water_paths.
+
+    The same source branches apply: no main loop (data centres), one lumped building draw
+    (college, courthouse, detailed offices), per-space-type draws from the space-type rows
+    (laboratory, and the tall buildings, whose prototype adds one per space with a source flow).
+    The tall buildings' booster and laundry loops depend on prototype hotel-floor parameters
+    that the pinned data does not carry, so their programs' draws stay unknown."""
+    from scripts import commercial_completion
+    from scripts.common import stable_id as legacy_id
+    completion_lock = load_json(ROOT/'sources/completion-evidence-lock.json')
+    receipt = {r['path']: r for lock in (completion_lock, load_json(LOCK)) for r in lock['files'] if r['source_id'] == 'openstudio-standards'}
+    cache = Path(raw_root)/'openstudio-standards'
+    date = '2026-10-26'
+
+    def proof(path, locator, value, unit, transformation, note):
+        return dict(source_locator=path+'#'+locator, source_revision=REV, source_file_sha256=receipt[path]['sha256'],
+                    original_value=value, original_unit=unit, transformation=transformation, extraction_date=date,
+                    interpretation_note=note)
+    programs, provenance = records['programs'], {p['id']: p for p in records['provenance']}
+    files = {s['id']: s for s in records['source_files']}
+    names = {p['id']: sorted({n for m in records['mappings'] if m['program_id'] == p['id'] for n in m['source_space_names']})
+             for p in programs}
+
+    def attrproof(p):
+        pr = provenance[p['provenance_id']]
+        return proof(files[pr['source_file_id']]['path'], pr['locator'], {k: v for k, v in p['source_attributes'].items() if 'water' in k},
+                     'mixed original source units; gal/h, gal/h/ft2, degF', 'Keep null and empty-string fields unchanged; evaluate source branch separately',
+                     'Null and empty source fields are unknown/reporting state; no zero physical water assumption')
+    schedule_rows = load_json(cache/SCHEDULE_PATH)['schedules']
+    scheds = defaultdict(list)
+    for i, r in enumerate(schedule_rows):
+        scheds[r['name']].append((i, r))
+    paths, gaps, used = [], [], set()
+    for building_type, (_, _, templates) in TYPES.items():
+        for template in templates:
+            active = [p for p in programs if (p['template'], p['building_type']) == (template, building_type)]
+            if not active:
+                continue
+            spec = next(t for t in load_json(ROOT/'sources/selection.json')['templates'] if t['template'] == template)
+            rows = load_json(cache/spec['prototype_inputs'])['prototype_inputs']
+            found = [(i, r) for i, r in enumerate(rows) if r['building_type'] == building_type]
+            missing = [p for p in active if p['service_water_heating_schedule_id'] is None
+                       and p['source_space_type'] not in {'Attic', 'Plenum', 'Basement'}]
+            if not found:  # the generic Office: no prototype, no source water path
+                for p in missing:
+                    gaps.append(dict(program_id=p['id'], building_type=building_type, template=template, source_space_type=p['source_space_type'],
+                                     classification='no_source_prototype', source_schedule_name=None, normalized_physical_flow=None,
+                                     evidence=[attrproof(p)], coverage_resolution_status='allocation_unknown', zero_schedule_eligible=False))
+                continue
+            ii, r = found[0]
+            ip = spec['prototype_inputs']
+            if r['main_water_heater_volume'] is None:
+                branch = 'no_main_loop'
+            elif building_type in ('TallBuilding', 'SuperTallBuilding'):
+                branch = 'tall_building_space_draws'
+            elif r['main_service_water_peak_flowrate'] is not None:
+                branch = 'lumped_main_draw'
+            else:
+                branch = 'space_type_main_draw'
+            base = [proof(ip, '/prototype_inputs/'+str(ii), {k: v for k, v in r.items() if 'water' in k}, 'mixed source units',
+                          'Evaluate main then booster then laundry source branches independently',
+                          'Volumes gate loop creation; heater placement does not assign fixture beneficiaries')]
+            if branch == 'lumped_main_draw':
+                flow = r['main_service_water_peak_flowrate']
+                paths.append(dict(path_id=f'{building_type}|{template}|main', building_type=building_type, template=template, end_use='main',
+                                  source_branch=branch, source_schedule_name=r['main_service_water_flowrate_schedule'],
+                                  rated_flow_m3_s=flow*GALLON_M3/60, rated_flow_per_area_m3_s_m2=None, flow_instance_count=1,
+                                  physical_fixture_locations=[], beneficiary_program_ids=[], allocation_status='building_service_unallocated',
+                                  target_temperature_degC=(r['main_water_use_temperature']-32)/1.8, original_flow=flow, original_flow_unit='US gal/min',
+                                  evidence=[proof(ip, f'/prototype_inputs/{ii}/main_service_water_peak_flowrate', flow, 'US gal/min',
+                                                  'Multiply by 0.003785411784/60 to obtain m3/s', 'A lump has no beneficiary allocation'),
+                                            proof(RECIPE, 'L112-L121', 'create_water_use(...without space)', 'Ruby code',
+                                                  'Use explicit fixture-space argument only', 'A lump has no beneficiary allocation')]))
+                used.add(r['main_service_water_flowrate_schedule'])
+            if branch in ('space_type_main_draw', 'tall_building_space_draws'):
+                for p in active:
+                    attrs = p['source_attributes']
+                    q, total = attrs.get('service_water_heating_peak_flow_per_area'), attrs.get('service_water_heating_peak_flow_rate')
+                    qnum = q if type(q) in (float, int) else 0
+                    if qnum < 0.00001 and (total if type(total) in (float, int) else 0) < 0.00001:
+                        continue
+                    if 'plenum' in p['source_space_type'].lower():
+                        continue
+                    note = 'Default is_flow_per_area=true; source computes area times space multiplier once. Fixture helper call omits physical space.'
+                    paths.append(dict(path_id=f'{building_type}|{template}|main|{p["id"]}', building_type=building_type, template=template,
+                                      end_use='main', source_branch=branch, source_schedule_name=attrs.get('service_water_heating_schedule'),
+                                      rated_flow_m3_s=None, rated_flow_per_area_m3_s_m2=qnum*GALLON_M3/3600/0.09290304 if type(q) in (int, float) else None,
+                                      original_flow=q, original_flow_unit='US gal/h/ft2', alternate_original_total=total,
+                                      alternate_original_total_unit='US gal/h (unused default path)', source_space_names=names[p['id']],
+                                      physical_fixture_locations=[], beneficiary_program_ids=[p['id']], allocation_status='exact_source_space_type_tag',
+                                      target_temperature_degC=(attrs['service_water_heating_target_temperature']-32)/1.8
+                                      if type(attrs.get('service_water_heating_target_temperature')) in (int, float) else None,
+                                      evidence=[attrproof(p), proof(RECIPE, 'L122-L171 and L236-L307', 'default is_flow_per_area=true; create_water_use(...without space)',
+                                                                   'Ruby code', 'Convert flow with factor 0.003785411784/3600/0.09290304; no geometry assumed', note)],
+                                      interpretation_note=note))
+                    used.add(attrs.get('service_water_heating_schedule'))
+            if branch != 'tall_building_space_draws':
+                for use, prefix in (('booster', 'booster'), ('laundry', 'laundry')):
+                    if r[prefix+'_water_heater_volume'] is not None:
+                        raise ValueError(f'Unported {use} loop for {building_type} {template}')
+            served = {pid for d in paths if (d['building_type'], d['template']) == (building_type, template) for pid in d['beneficiary_program_ids']}
+            unallocated = [d['path_id'] for d in paths if (d['building_type'], d['template']) == (building_type, template)
+                           and d['allocation_status'] == 'building_service_unallocated']
+            for p in missing:
+                if p['id'] in served:
+                    continue
+                if branch == 'no_main_loop' and r['booster_water_heater_volume'] is None and r['laundry_water_heater_volume'] is None:
+                    status = 'source_no_swh_end_use_for_building_template'
+                elif branch == 'space_type_main_draw':
+                    status = 'source_no_local_main_fixture_draw'
+                elif branch == 'tall_building_space_draws':
+                    status = 'unported_booster_or_laundry_loop'
+                else:
+                    status = 'unallocated_building_main_draw'
+                zero = status in ('source_no_swh_end_use_for_building_template', 'source_no_local_main_fixture_draw') and not unallocated
+                gaps.append(dict(program_id=p['id'], building_type=building_type, template=template, source_space_type=p['source_space_type'],
+                                 source_space_names=names[p['id']], classification=status, source_schedule_name=None,
+                                 normalized_physical_flow=None, building_service_paths=unallocated,
+                                 evidence=[attrproof(p), *base], coverage_resolution_status='source_proved_no_modeled_program_draw' if zero else 'allocation_unknown',
+                                 zero_schedule_eligible=zero))
+    schedules = []
+    for name in sorted(n for n in used if n):
+        rows = scheds[name]
+        if not rows:
+            raise ValueError('No source schedule '+name)
+        peak = max(v for _, row in rows for v in row['values'])
+        schedules.append(dict(source_name=name, status='source_rules_extracted', source_order=[i for i, _ in rows],
+                              source_rows=[row for _, row in rows], peak_divisor=peak,
+                              matching_atlas_schedule_ids=[s['id'] for s in records['schedules'] if s.get('source_name') == name],
+                              evidence=[proof(SCHEDULE_PATH, '/schedules/'+str(i), row, 'dimensionless draw fraction (source units retained)',
+                                              'No rule sorting or date truncation; optional equivalent divides values by max and multiplies rated flow by max',
+                                              'Rules, design days, source dates and source order retained') for i, row in rows]))
+    for d in paths:
+        d['matching_atlas_schedule_ids'] = [s['id'] for s in records['schedules'] if s.get('source_name') == d['source_schedule_name']]
+        d['allocation_weights'] = {pid: 1 for pid in d['beneficiary_program_ids']} if len(d['beneficiary_program_ids']) == 1 else {}
+    packet = {'draw_paths': paths, 'missing_program_evidence': gaps, 'schedules': schedules, 'controls': [], 'summary': {}}
+    for s in packet['schedules']:
+        s['normalized_source_rows'] = copy.deepcopy(s['source_rows'])
+        for row in s['normalized_source_rows']:
+            row['values'] = [v/s['peak_divisor'] if s['peak_divisor'] else 0.0 for v in row['values']]
+
+        def schedule(variant, source_rows, s=s):
+            return dict(id=legacy_id('completion_schedule', s['source_name'], variant), source_name=s['source_name']+' ('+variant+')',
+                        schedule_type='fraction', units='dimensionless', time_resolution_minutes=60, interpolation='none',
+                        rules=[{**{k: row[k] for k in ('day_types', 'start_date', 'end_date', 'type', 'values')}, 'source_index': i,
+                                'source_units': row['units'], 'source_category': row['category']} for i, row in zip(s['source_order'], source_rows)])
+        s['source_schedule'] = schedule('source draw fractions', s['source_rows'])
+        s['equivalent_schedule'] = schedule('peak normalized draw', s['normalized_source_rows'])
+    by_name = {s['source_name']: s for s in packet['schedules']}
+    for d in paths:
+        s = by_name[d['source_schedule_name']]
+        d['equivalent_schedule_id'] = s['equivalent_schedule']['id']
+        d['equivalent_peak_flow_m3_s'] = None if d['rated_flow_m3_s'] is None else d['rated_flow_m3_s']*s['peak_divisor']
+        d['equivalent_peak_flow_per_area_m3_s_m2'] = None if d['rated_flow_per_area_m3_s_m2'] is None else d['rated_flow_per_area_m3_s_m2']*s['peak_divisor']
+        d['evidence'] += s['evidence']
+        d['interpretation_note'] = d.get('interpretation_note', '')+' Mixed fixture draw, not heater energy/circulation. Apply each source fixture once; represented area and multiplier once. Unallocated services are not copied to programs.'
+    evidence = {}
+
+    def compact(value):
+        if isinstance(value, dict):
+            for key in list(value):
+                if key == 'evidence':
+                    ids = []
+                    for e in value.pop(key):
+                        i = legacy_id('completion_evidence', e)
+                        evidence[i] = e
+                        ids.append(i)
+                    value['evidence_ids'] = ids
+                else:
+                    compact(value[key])
+        elif isinstance(value, list):
+            for v in value:
+                compact(v)
+    compact(packet)
+    packet['evidence'] = dict(sorted(evidence.items()))
+    commercial_completion.validate_packet(packet)
+    return packet
+
+
+REV = 'c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907'
+from scripts.build import SCHEDULE_PATH  # noqa: E402
+
+
 def stable_id_legacy(*parts):
     from scripts.common import stable_id as legacy
     return legacy(*parts)
@@ -208,9 +463,25 @@ def build(raw_root=ROOT/'data/raw'):
     for table in ('programs', 'schedules', 'systems', 'mappings', 'provenance', 'source_files'):
         known = {r['id'] for r in atlas[table]}
         atlas[table] += [r for r in records[table] if r['id'] not in known]
-    context = Context(base.root, base.scope, atlas, base.policy, base.sources, base.extraction_date, base.dependencies)
+    packet = water_packet(records, raw_root)
+    resolutions, unresolved = fillings(records, packet)
+    # apply_reviewed and the service build read the policy's resolution and completion releases: point
+    # them at the frozen releases' rows plus the new ones, in a scratch folder of the build tree.
+    import tempfile
+    (ROOT/'build').mkdir(exist_ok=True)
+    scratch = tempfile.TemporaryDirectory(dir=ROOT/'build')
+    frozen = load_json(ROOT/base.policy['dependencies']['resolution']/'resolutions.json')
+    (Path(scratch.name)/'resolutions.json').write_text(json.dumps({**frozen, 'resolutions': frozen['resolutions'] + resolutions}))
+    completion = load_json(ROOT/base.policy['dependencies']['completion']/'commercial-completion.json')
+    merged = {**completion, 'draw_paths': completion['draw_paths'] + packet['draw_paths'],
+              'schedules': completion['schedules'] + packet['schedules'], 'evidence': {**completion['evidence'], **packet['evidence']}}
+    (Path(scratch.name)/'commercial-completion.json').write_text(json.dumps(merged))
+    policy = copy.deepcopy(base.policy)
+    policy['dependencies']['resolution'] = policy['dependencies']['completion'] = Path(scratch.name).relative_to(ROOT).as_posix()
+    context = Context(base.root, base.scope, atlas, policy, base.sources, base.extraction_date, base.dependencies)
     bundle = DefinitionBundle()
     programs = build_programs(context)
+    scratch.cleanup()
     bundle.merge(programs).merge(build_hvac(context))
     defaults = area_defaults(raw_root)
     table, used = areas(context, raw_root, records, defaults)
@@ -245,6 +516,9 @@ def build(raw_root=ROOT/'data/raw'):
         'provenance': [r for r in bundle['provenance'] if r['id'] not in existing['provenance']],
         'source_files': [r for r in (sources[i] for i in sorted(cited)) if r['id'] not in existing['source_files']],
         'coverage_gaps': sorted(records['coverage_gaps'], key=json.dumps),
+        'resolutions': resolutions, 'unresolved': sorted(unresolved, key=json.dumps),
+        'services': bundle['services'], 'completion_evidence': packet['evidence'],
+        'water_paths': {'draw_paths': packet['draw_paths'], 'missing_program_evidence': packet['missing_program_evidence']},
     }
     return out
 

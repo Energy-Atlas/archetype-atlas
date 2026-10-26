@@ -17,7 +17,8 @@ class InputTests(unittest.TestCase):
         cls.document = load_json(INPUT)
         cls.folders = defaultdict(list)
         for p in cls.document['programs']:
-            cls.folders[(p['template'], p['building_type'])].append(p)
+            if p['evidence_view'] == 'source':
+                cls.folders[(p['template'], p['building_type'])].append(p)
 
     def test_every_construction_only_folder_has_programs(self):
         self.assertEqual(set(self.folders), cop.wanted())
@@ -45,11 +46,35 @@ class InputTests(unittest.TestCase):
 
     def test_spreadsheet_errors_stay_unknown(self):
         evidence = {e['id']: e for e in self.document['provenance']}
-        errors = [p for p in self.document['programs'] if p['derivation'] != 'composed'
+        errors = [p for p in self.document['programs'] if p['derivation'] != 'composed' and p['evidence_view'] == 'source'
                   for l in p['loads'] if l['quantity'] == 'lighting'
                   and evidence.get(l['evidence_id'], {}).get('original_value') == '#N/A']
         self.assertEqual(len(errors), 6)
         self.assertTrue(all(l['value'] is None for p in errors for l in p['loads'] if l['quantity'] == 'lighting'))
+
+    def test_fillings_follow_the_approved_rules(self):
+        rules = {r['rule'] for r in self.document['resolutions']}
+        self.assertLessEqual(rules, {'reviewed_no_gas_equipment', 'reviewed_no_occupancy', 'reviewed_no_lighting',
+                                     'reviewed_unconditioned', 'reviewed_no_hot_water', 'explicit_zero_magnitude',
+                                     'source_complete_no_water_draw'})
+        programs = {p['source_id']: p for p in self.document['programs'] if p['evidence_view'] == 'source'}
+        for row in self.document['resolutions']:
+            name = programs[row['record_id']]['name'].lower()
+            if row['rule'] == 'reviewed_no_occupancy':
+                self.assertFalse(any(w in name for w in ('corridor', 'stair', 'storage', 'restroom', 'utility')), name)
+            if row['rule'] in ('reviewed_no_lighting', 'reviewed_unconditioned'):
+                self.assertTrue(any(w in name for w in ('shaft', 'machine room', 'attic', 'plenum')), name)
+        twins = [p for p in self.document['programs'] if p['evidence_view'] == 'reviewed' and p['derivation'] != 'composed']
+        self.assertEqual({p['source_definition_id'] for p in twins} <= {p['id'] for p in programs.values()}, True)
+
+    def test_hot_water_paths_follow_the_source_branches(self):
+        branches = {(d['building_type'], d['source_branch']) for d in self.document['water_paths']['draw_paths']}
+        self.assertIn(('College', 'lumped_main_draw'), branches)
+        self.assertIn(('Laboratory', 'space_type_main_draw'), branches)
+        self.assertIn(('TallBuilding', 'tall_building_space_draws'), branches)
+        self.assertFalse(any(b.endswith('DataCenterHighITE') for b, _ in branches))
+        gaps = {g['classification'] for g in self.document['water_paths']['missing_program_evidence']}
+        self.assertIn('unported_booster_or_laundry_loop', gaps)
 
     def test_area_defaults_are_pinned(self):
         self.assertEqual(sorted(self.document['area_defaults']), ['2.6.0', '2.7.0', '2.7.1', '2.8.0'])

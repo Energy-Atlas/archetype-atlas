@@ -67,19 +67,60 @@ records.
      `ASHRAELargeOfficeDetailed.osm`, whose spaces carry the same Office space types.
      It sits beside the unmixed space-type programs.
 5. **Systems** come from each type's HVAC file. The tall buildings have none upstream.
-6. **Not yet applied** (each needs a user decision):
-   - research-assumption fillings under the resolution policy's rules;
-   - hot-water services from the prototype inputs;
-   - completion of the Courthouse schedules, which have no design-day rules.
+6. **Fillings (user, 2026-10-26, F1 and F2).**
+   - `scripts.resolve.resolve_records` runs on the new programs with the
+     resolution policy's lists extended by the policy's own criteria:
+     - no gas: every program whose source gas is null;
+     - no occupancy: shafts, machine rooms, data centres, computer rooms and attics
+       with null occupancy;
+     - no hot water: attics;
+     - unconditioned: attics.
+   - Rows of the same form add "no lighting" for elevator and service shafts and
+     machine rooms, and "unconditioned" for elevator and service shafts.
+   - The rule for zero-density schedules (`explicit_zero_magnitude`) applies as
+     everywhere.
+   - These stay unknown: corridors, stairs, storage, restrooms and utility rooms
+     with null occupancy; the Entrance Lobby with null lighting; the Courthouse
+     plug-load gaps; the `#N/A` rows; and other null setpoints.
+   - The reviewed twins come from `scripts.program_definitions.apply_reviewed`.
+7. **Courthouse design days (user, F3).** Ten Courthouse schedules give every
+   weekday, weekends and holidays, but no default or design-day rule. In the
+   `filled` export, their design days take the profile of the rule that applies on
+   Wednesday. This is recorded on the schedule as `accepted-design-day-weekday`,
+   and the `source` export keeps the source rules. `Courthouse BLDG_EQUIP_SCH` is a
+   different gap: it has design days but no holiday rule, so it is not completed.
+8. **Hot water (user, F4).** The fixture paths of `scripts.commercial_water_paths`
+   are ported for the new types:
+   - **College, courthouse and the detailed offices:** one lumped building draw,
+     with no beneficiary program.
+   - **Laboratory and the tall buildings:** per-space-type draws from the
+     space-type rows. The tall prototypes add one per space with a source flow.
+   - **Data centres:** no hot-water loop.
 
-   Until then the new programs hold source values only. Their `source` exports
-   validate; 179 of their 858 `filled` exports do not, where a magnitude, the
-   conditioning or schedule coverage is still unknown.
+   Programs that a source path proves have no draw get the zero-water fill
+   (`source_complete_no_water_draw`). The tall buildings' booster and laundry loops
+   depend on prototype hotel-floor parameters that the pinned data does not carry,
+   so their programs' hot water stays unknown. The generic office has no prototype,
+   so its hot water stays unknown too.
+
+9. **What still blocks `filled` exports.** 137 of the 1,716 exports of the new
+   programs do not validate, each for a recorded reason:
+   - **72 left unknown by the decisions above:**
+     - occupancy of corridors and other occupied support spaces;
+     - conditioning of corridors;
+     - Courthouse plug-load gaps, the `#N/A` lighting rows, the Entrance Lobby and
+       undefined space types.
+   - **60 from the missing holiday rule of `Courthouse BLDG_EQUIP_SCH`.**
+   - **5 Courthouse service shafts.** The "no lighting" filling sets their schedule,
+     as for plenums, but the writers map no lighting-density filling, and the
+     export's accepted-absence list (ADR 0016) does not name service shafts.
+
+   Every `source` export validates.
 
 ## Consequences
 
-- Release 1.2.0 adds 858 programs (819 source programs and 39 general mixes) and
-  193 HVAC systems.
+- Release 1.2.0 adds 858 programs (819 source programs and 39 general mixes), 193
+  HVAC systems and 82 hot-water services.
 - `python -m scripts.construction_only_programs --check` reproduces the input from
   the pinned sources. `python -m scripts.atlas_minor_release --release 1.2.0
   --check` reproduces the release.

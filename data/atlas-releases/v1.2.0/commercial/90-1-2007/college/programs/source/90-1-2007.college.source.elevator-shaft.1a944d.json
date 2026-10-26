@@ -1,0 +1,243 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "College",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-166c016a736f3055b3376f22",
+    "evidence-19a071de3ec7fc0cd422ac50",
+    "evidence-3dc3740ad8c7eb168ef4d6bc",
+    "evidence-5b7f9f118eebcc3183fa1b82",
+    "evidence-a299e1473c5ff951c8376a35",
+    "evidence-b3ab9feac815bc86f698803d",
+    "evidence-bf6725c3c66cbbc1a084824f",
+    "evidence-e0bced893da43042a8460aa5"
+  ],
+  "filling_evidence_ids": [
+    "evidence-39add5d685b89ccdc46ea95b",
+    "evidence-89977c4c7c31acd9729b99d1",
+    "evidence-a37b8af5ffb69ba7b93c8eb3",
+    "evidence-ff44e66f3b8bcd4506d497b2"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2007.college.source.elevator-shaft.1a944d",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-839689a1c3bb348534a907a0",
+      "evidence_id": "evidence-b3ab9feac815bc86f698803d",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-1d9c6f2a79c3dc2ca63f"
+        ],
+        "rules": [
+          "reviewed_no_occupancy"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-f251588afec5a97dd1e6b52d",
+      "evidence_id": "evidence-166c016a736f3055b3376f22",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.college.college-elev-light-fan-sch-24-7.3f4277",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-dc1fe5eedd90ffe2c3955b6a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-b0e9baa68dfd73845bf2eac2",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "visible": {
+          "evidence_id": "evidence-ebf1384f3034775ef7e96650",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4cc9f8e6ddb04712af09b40e",
+      "evidence_id": "evidence-3dc3740ad8c7eb168ef4d6bc",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.college.college-elev-light-fan-sch-24-7.3f4277",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-dc1fe5eedd90ffe2c3955b6a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-b0e9baa68dfd73845bf2eac2",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "visible": {
+          "evidence_id": "evidence-ebf1384f3034775ef7e96650",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ff72272dc793c602ccf5b66d",
+      "evidence_id": "evidence-bf6725c3c66cbbc1a084824f",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "unresolved": "u-b10d86",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-42d41e723f390a2c4095a9a7",
+      "evidence_id": "evidence-5b7f9f118eebcc3183fa1b82",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-ff44e66f3b8bcd4506d497b2"
+        ],
+        "resolutions": [
+          "resolution-040145228ba0e99ded2b",
+          "resolution-f18431be7fdba2f3ffc5"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-ff44e66f3b8bcd4506d497b2",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Elevator Shaft_College",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-a299e1473c5ff951c8376a35",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "conditioning": {
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-89977c4c7c31acd9729b99d1"
+        ],
+        "resolutions": [
+          "resolution-6182e5a95b8806acfaa6"
+        ],
+        "rules": [
+          "reviewed_unconditioned"
+        ],
+        "set": {
+          "evidence_id": "evidence-89977c4c7c31acd9729b99d1",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "state",
+          "value": {
+            "cooling_enabled": false,
+            "heating_enabled": false
+          }
+        }
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-e0bced893da43042a8460aa5",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-19a071de3ec7fc0cd422ac50",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-9f8a88ad68353042e0d4",
+  "template": "90.1-2007"
+}
