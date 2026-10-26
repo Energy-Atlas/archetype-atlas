@@ -308,6 +308,19 @@ def overlaid(overlays):
             yield
         finally:
             construction_foundation_release.export_pair = inner
+
+
+_assemble_unpinned = assemble
+
+
+def assemble(release):
+    """The delta files, the builder's digest taken as verify reads it: without the blocks of later releases,
+    so --check of an earlier release still reproduces its manifest after later blocks are added."""
+    out = _assemble_unpinned(release)
+    manifest = json.loads(out['manifest.json'])
+    if BUILDER in manifest['input_sha256']:
+        manifest['input_sha256'][BUILDER] = atlas_release.sha(pinned_bytes(BUILDER, release))
+    return {**out, 'manifest.json': suite_bytes(manifest)}
 # <<< release 1.3.0
 
 
