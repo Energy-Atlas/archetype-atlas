@@ -178,11 +178,12 @@ Each entry: decision; alternatives; reason; evidence.
     the building, stories, level, horizontal position, foundation, attic, garage).
 18. **Apartments** cite the commercial apartment folders of all five templates in
     `commercial_counterparts` (ADR 0038 section 8).
-19. **Program JSON 5.3.0.** The dwelling minor is numbered 5.3.0; 5.2.0 is reserved
-    for the IECC commercial release (ADR 0040, C6). When that branch merges, 5.3.0 is
-    rederived from 5.2.0 and stays additive.
+19. **Program JSON 5.3.0.** The dwelling minor is numbered 5.3.0 and derived from
+    5.2.0, the IECC commercial minor (ADR 0040, C6), so it stays additive over both.
+    (Rebased onto release 1.3.0 on 2026-10-26.)
 20. **Builder digest.** `scripts/atlas_minor_release.py` holds every minor release's
-    entry and changes whenever a release is added; `--verify` no longer treats its
-    recorded digest as stale. `--check` still rebuilds a release byte for byte.
+    entry. Superseded on rebase: release 1.4.0 is a tagged block after the 1.3.0 block
+    (ADR 0040's rule), and `--verify` strips later blocks before comparing the
+    builder's digest, so the digest check stays in force for every release.
 21. **No new research-assumption fillings** were added (S1): the code prototypes have
     no source nulls, and the ResStock fillings moved unchanged.

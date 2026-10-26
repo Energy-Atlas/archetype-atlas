@@ -1,8 +1,9 @@
 # Atlas release 1.4.0 (commercial and residential, delta): release and migration notes
 
-Release 1.4.0 is a delta on release 1.0.0 (ADR 0036), like 1.1.0 and 1.2.0. A reader
-resolves one base only, so 1.4.0 holds everything 1.2.0 changed, byte for byte, and
-adds the residential tree of [ADR 0038](adr/0038-residential-release-storage.md):
+Release 1.4.0 is a delta on release 1.0.0 (ADR 0036), like 1.1.0 to 1.3.0. A reader
+resolves one base only, so 1.4.0 holds everything 1.3.0 changed (the DOE reference
+reconciliation, the construction-only programs and the IECC commercial family of
+[ADR 0040](adr/0040-iecc-commercial-family.md)), byte for byte, and adds the residential tree of [ADR 0038](adr/0038-residential-release-storage.md):
 
 - the 41 ResStock SDR fixture dwellings, migrated unchanged (S12a);
 - the IECC residential prototypes, editions 2006 to 2024
@@ -10,15 +11,16 @@ adds the residential tree of [ADR 0038](adr/0038-residential-release-storage.md)
 - the manufactured-housing prototypes, HUD Code and DOE Final Rule 2022
   ([ADR 0042](adr/0042-manufactured-housing-family.md), S13).
 
-Release 1.3.0 (IECC commercial, ADR 0040) is built on its own branch. Whichever of
-the two merges second folds the other's overlay into its release entry and
-rebuilds its delta (plan section 1).
+Release 1.4.0 was rebuilt on release 1.3.0 after both were written (plan section 1):
+its entry adds the `iecc_commercial` overlay, and the builder carries 1.4.0 as a
+tagged block, as 1.3.0 does, so releases 1.2.0 and 1.3.0 still verify against the
+exact builder bytes that wrote them.
 
 ## What the release holds
 
-- `data/atlas-releases/v1.4.0/` has 1,907 changed files and lists 371 deleted files.
+- `data/atlas-releases/v1.4.0/` has 3,743 changed files and lists 371 deleted files.
   It is written and verified by `scripts.atlas_minor_release --release 1.4.0`.
-- The commercial files equal release 1.2.0's, except `README.md` and
+- The commercial files equal release 1.3.0's, except `README.md` and
   `evidence/glossary.json`, which gains the residential texts and source files.
 - The residential tree has 25 folders, 73 programs, 59 construction sets with 1,153
   contexts, and 641 annual schedules.
@@ -67,17 +69,17 @@ rebuilds its delta (plan section 1).
 ## Exports
 
 - **Program JSON 5.3.0** (`schemas/program-json-v5.3.schema.json`), an additive minor
-  of 5.1.0 for dwelling programs: a `dwelling` block, `host_zone`, `role` and
-  `applies_with` on loads. 5.2.0 is reserved for the IECC commercial release.
+  of 5.2.0 (IECC commercial, ADR 0040) for dwelling programs: a `dwelling` block,
+  `host_zone`, `role` and `applies_with` on loads.
   - ResStock: `source` and `filled`, from the frozen v3 and v4 exporters.
   - Code prototypes: `source` only (complete models; the filled version needs water
     heaters). `scripts.prototype_dwellings.document(..., context=...)` resolves the
     entries for one climate code, foundation or location and heating system.
 - **Source model constructions 1.0.0** (`schemas/construction-source-model-v1.schema.json`)
   for one context of an IDF-derived construction set. ResStock sets export as
-  constructions 4.1.0 / 3.1.0.
-- Commercial programs of 1.4.0 export as Program JSON 5.1.0, which now also accepts
-  `atlas-release-1.4.0`.
+  constructions 4.2.0 / 3.1.0, like the commercial sets of 1.3.0 and 1.4.0.
+- Commercial programs of 1.4.0 export as Program JSON 5.2.0, as in 1.3.0, and their
+  detailed construction sets as 4.2.0; both now also accept `atlas-release-1.4.0`.
 
 ```
 python -m scripts.atlas_exports --release 1.4.0 --program <id> --version source
@@ -103,8 +105,10 @@ The extraction is reproduced from the IDFs with
 - No commercial file changes meaning. Readers that list programs under
   `commercial/` are unaffected; residential programs live under `residential/` in a
   dwelling shape (ADR 0038, ADR 0041 section 2).
-- `--verify` of a minor release no longer treats the builder's own digest as stale,
-  because every new release entry changes it; `--check` still reproduces each release.
+- The builder carries release 1.4.0 as a tagged block after the 1.3.0 block. `--verify`
+  of an earlier release strips the blocks of later releases before comparing the
+  builder's digest (ADR 0040), so every release still verifies against the exact
+  builder bytes that wrote it.
 
 ## Open decisions
 
