@@ -18,9 +18,10 @@ def zone(name, value, atlas, quantity='electric_equipment', objects=()):
             'refs': {'atlas': stored, 'atlas_programs': ['program-t']}}
 
 
-def rows_for(*zones, building_type='X'):
+def rows_for(*zones, building_type='X', stored=None):
     register = rr.Register()
-    rr.program_load_rows(register, 'f.idf', 'doe-ref-1980-2004', building_type, list(zones))
+    stored = stored or {'program-t': {'loads': [{'quantity': 'electric_equipment', 'value': zones[0]['refs']['atlas']['electric_equipment']}]}}
+    rr.program_load_rows(register, 'f.idf', 'doe-ref-1980-2004', building_type, list(zones), stored)
     return [r for r in register.rows if r['field'] == 'electric_equipment']
 
 
@@ -57,8 +58,14 @@ class RuleTests(unittest.TestCase):
         [row] = rows_for(zone('a', 0.0, None))
         self.assertEqual((row['klass'], row['decision'], row['source_value']['value']), ('B5-missing-density', 'fill', 0.0))
 
+    def test_a_filled_density_is_rebased_on_the_doe_value_even_when_equal(self):
+        filled = {'program-t': {'loads': [{'quantity': 'electric_equipment', 'value': None,
+                                           'filling': {'rules': ['reviewed_zero'], 'set': {'value': 0.0}}}]}}
+        [row] = rows_for(zone('a', 0.0, 0.0), stored=filled)
+        self.assertEqual((row['klass'], row['decision'], row['current']['filling']), ('B7-filling-sourced', 'fill', ['reviewed_zero']))
+
     def test_retagged_zones_are_left_to_the_retag_row(self):
-        self.assertEqual(rows_for(zone('Storage_Flr1', 5.0, 0.4), building_type='Outpatient'), [])
+        self.assertEqual(rows_for(zone('Floor 2 Utility', 5.0, 0.4), building_type='Outpatient'), [])
 
 
 @unittest.skipUnless(REGISTER.exists(), 'register not generated')

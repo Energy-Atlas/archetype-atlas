@@ -40,9 +40,24 @@ REASONS = {
     'R-UNCONTROLLED': 'The DOE model gives these zones no thermostat, so the atlas null setpoint is source-backed.',
 }
 TEMPLATES = {'post1980': 'doe-ref-1980-2004', 'pre1980': 'doe-ref-pre-1980'}
-RETAGS = {('Outpatient', 'Janitor'): 'storage and utility rooms tagged Janitor in ASHRAEOutpatient.osm',
-          ('PrimarySchool', 'Classroom'): 'Computer_Class and Library tagged Classroom in DOERefPrimarySchool.osm'}
-RETAGGED_ZONES = {'Outpatient': ('storage', 'utility', 'sterile'), 'PrimarySchool': ('computer_class', 'library')}
+# DOE zones with loads of their own that the openstudio-standards geometry tags with a broader space
+# type: release 1.1.0 gives each group its own program, named as openstudio-standards names the
+# space type where it has one (ADR 0037 section 3).
+NEW_PROGRAMS = {
+    ('Outpatient', 'Utility'): {
+        'parent': 'Janitor', 'zones': ('Floor 1 Sterile Storage', 'Floor 1 Utility Room', 'Floor 2 Utility', 'Floor 3 Utility'),
+        'note': 'Tagged Janitor in ASHRAEOutpatient.osm; DOE gives the utility rooms and sterile storage 1.08 W/m2 '
+                'plug load. The storage rooms equal Janitor and keep it.'},
+    ('PrimarySchool', 'ComputerRoom'): {
+        'parent': 'Classroom', 'zones': ('Computer_Class_ZN_1_FLR_1',),
+        'note': 'Tagged Classroom in DOERefPrimarySchool.osm; DOE gives it 0.3 person/m2 and 20 W/m2 plug load.'},
+    ('PrimarySchool', 'Library'): {
+        'parent': 'Classroom', 'zones': ('Library_Media_Center_ZN_1_FLR_1',),
+        'note': 'Tagged Classroom in DOERefPrimarySchool.osm; DOE and the openstudio-standards Library row agree.'},
+    ('LargeOffice', 'Basement'): {
+        'parent': 'WholeBuilding - Lg Office', 'zones': ('Basement',),
+        'note': 'Tagged WholeBuilding - Lg Office; DOE gives the basement half the office occupancy.'},
+}
 EXPLICIT_FACTOR = 10 * (1 - 1e-2)  # a factor of ten, allowing for the IDFs' printed rounding
 
 
@@ -116,7 +131,9 @@ def schedule_rows(register, idf_file, template, building_type, rows, edits, zone
 
 
 def retagged(building_type, zone):
-    return any(w in zone.lower() for w in RETAGGED_ZONES.get(building_type, ()))
+    """True for a DOE zone that NEW_PROGRAMS moves to a program of its own."""
+    return any(zone.lower() == z.lower() for (bt, _), group in NEW_PROGRAMS.items() if bt == building_type
+               for z in group['zones'])
 
 
 def zone_program_map(load_rows, building_type):
@@ -169,8 +186,9 @@ def slot_rows(register, idf_file, template, building_type, model, choices, progr
                 register.add(category='inconsistency', klass='A4-slot-assignment', decision='replace', **row)
 
 
-def program_load_rows(register, idf_file, template, building_type, rows):
-    """One row per atlas program and quantity whose DOE value differs; mixed zones get a leave row."""
+def program_load_rows(register, idf_file, template, building_type, rows, stored):
+    """One row per atlas program and quantity whose DOE value differs; mixed zones get a leave row.
+    A density the atlas only has through a filling is re-based on the DOE value (B7)."""
     groups = defaultdict(list)
     for z in rows:
         if retagged(building_type, z['zone']):
@@ -195,12 +213,18 @@ def program_load_rows(register, idf_file, template, building_type, rows):
             idf_value = sum(z['idf'][q] * z['floor_m2'] for z in zones) / weight
             atlas_value = zones[0]['refs']['atlas'][q]
             grade = reference_loads.match(idf_value, atlas_value) if atlas_value is not None else None
-            if grade == 'exact':
+            entries = [next((l for l in stored[p]['loads'] if l['quantity'] == q), {}) for p in programs if p in stored]
+            filled = len(programs) == 1 and entries and entries[0].get('value') is None and 'filling' in entries[0]
+            if grade == 'exact' and not filled:
                 continue
             common = {'source_family': 'doe-reference', 'template': template, 'building_type': building_type,
                       'target': list(programs), 'field': q, 'current': {'value': atlas_value},
                       'source_value': {'file': idf_file, 'zones': [z['zone'] for z in zones], 'value': round(idf_value, 6)}}
-            if atlas_value is None:
+            if filled:
+                common['current']['filling'] = entries[0]['filling']['rules']
+                register.add(category='gap', klass='B7-filling-sourced', decision='fill',
+                             note='The DOE value replaces the research-assumption filling as a source value.', **common)
+            elif atlas_value is None:
                 # absence in the complete DOE model is a source-backed zero
                 register.add(category='gap', klass='B5-missing-density', decision='fill', **common)
             elif grade == 'rounding':
@@ -388,19 +412,19 @@ def component_rows(register, idf_file, template, building_type, model, rows, pro
             register.add(category='gap', klass='B4-setpoints', decision='keep', reason_id='R-UNCONTROLLED',
                          target=[program_id], field=missing, current={'value': None},
                          source_value={'file': idf_file, 'zones': mapped, 'value': 'no ZoneControl:Thermostat'}, **common)
-    # A4 re-tags
-    for (bt, space_type), note in RETAGS.items():
-        if bt == building_type:
-            register.add(category='inconsistency', klass='A4-retag', decision='replace', target=[space_type],
-                         field='space-type assignment', current={'value': space_type, 'note': note},
-                         source_value={'file': idf_file, 'value': 'DOE zone loads and schedules'}, **common)
-    # Q15 Large Office basement
-    if building_type == 'LargeOffice':
-        basement = next((z for z in rows if z['zone'].lower() == 'basement'), None)
-        if basement:
-            register.add(category='missing', klass='C8-basement-program', decision='add', target=['Basement_LargeOffice'],
-                         field='program', current={'value': 'basement uses WholeBuilding - Lg Office'},
-                         source_value={'file': idf_file, 'zone': 'Basement', 'value': basement['idf']}, **common)
+    # A4 re-tags and C8 basement programs: new programs for DOE zone groups
+    for (bt, space_type), group in NEW_PROGRAMS.items():
+        if bt != building_type:
+            continue
+        zones = [z for z in rows if z['zone'] in group['zones']]
+        parent = sorted({p for z in zones for p in z.get('refs', {}).get('atlas_programs', [])})
+        weight = sum(z['floor_m2'] for z in zones)
+        values = {q: round(sum(z['idf'][q] * z['floor_m2'] for z in zones) / weight, 6) for q in reference_loads.QUANTITIES}
+        register.add(category='missing' if space_type == 'Basement' else 'inconsistency',
+                     klass='C8-basement-program' if space_type == 'Basement' else 'A4-retag', decision='add',
+                     target=parent, field=f'program {space_type}_{building_type}',
+                     current={'value': group['parent'], 'note': group['note']},
+                     source_value={'file': idf_file, 'zones': list(group['zones']), 'value': values}, **common)
 
 
 def template_rows(register, template, idf_sample):
@@ -465,7 +489,7 @@ def main():
                           reference_extras.schedule_zones(model), conflicts)
             slot_rows(register, path.name, template, building_type, model, choices, programs,
                       release.suite(f'commercial/{template}/{folder}/'), edits)
-            program_load_rows(register, path.name, template, building_type, load_rows)
+            program_load_rows(register, path.name, template, building_type, load_rows, programs)
             fraction_rows(register, path.name, template, building_type, load_rows, programs)
             component_rows(register, path.name, template, building_type, model, load_rows, programs,
                            atlas_mass(release, template, folder), geometry[(geometry_template, building_type)])
