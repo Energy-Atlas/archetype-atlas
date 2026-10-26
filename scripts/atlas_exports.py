@@ -583,7 +583,9 @@ class Release:
     def construction(self, set_id, key, representation):
         """Construction detailed 4.0.0 or unified 3.0.0 for one context of a set."""
         name, _, version, _ = CONSTRUCTION_SCHEMAS[representation]
-        if set_id.startswith(('iecc-', 'hud-code.', 'doe-final-rule.')):
+        # IDF-derived dwelling sets live under residential/; commercial IECC sets share the `iecc-` prefix.
+        if set_id.startswith(('iecc-', 'hud-code.', 'doe-final-rule.')) and any(
+                p.startswith('residential/') and p.endswith(f'/constructions/{set_id}.json') for p in self.files):
             from scripts import prototype_dwellings
             return prototype_dwellings.construction(self, set_id, key)
         if self.release != '1.0.0':
