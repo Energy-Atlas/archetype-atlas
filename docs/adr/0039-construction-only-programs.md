@@ -83,44 +83,55 @@ records.
      with null occupancy; the Entrance Lobby with null lighting; the Courthouse
      plug-load gaps; the `#N/A` rows; and other null setpoints.
    - The reviewed twins come from `scripts.program_definitions.apply_reviewed`.
-7. **Courthouse design days (user, F3).** Ten Courthouse schedules give every
-   weekday, weekends and holidays, but no default or design-day rule. In the
-   `filled` export, their design days take the profile of the rule that applies on
-   Wednesday. This is recorded on the schedule as `accepted-design-day-weekday`,
-   and the `source` export keeps the source rules. `Courthouse BLDG_EQUIP_SCH` is a
-   different gap: it has design days but no holiday rule, so it is not completed.
-8. **Hot water (user, F4).** The fixture paths of `scripts.commercial_water_paths`
-   are ported for the new types:
-   - **College, courthouse and the detailed offices:** one lumped building draw,
-     with no beneficiary program.
-   - **Laboratory and the tall buildings:** per-space-type draws from the
-     space-type rows. The tall prototypes add one per space with a source flow.
+7. **Courthouse schedule completions (user, F3 and 2026-10-26).** These apply in the
+   `filled` export only; the `source` export keeps the source rules.
+   - **Design days:** ten Courthouse schedules give every weekday, weekends and
+     holidays, but no default or design-day rule. Their design days take the
+     profile of the rule that applies on Wednesday (`accepted-design-day-weekday`).
+   - **Holidays:** `Courthouse BLDG_EQUIP_SCH` has design days but no holiday or
+     default rule. openstudio-standards ignores holiday rules when it builds a
+     schedule, so the source gives no holiday profile. Holidays take the Sunday
+     profile, as the existing `accepted-holiday-sunday` completion does for two
+     office schedules.
+8. **Service shafts (user, 2026-10-26).** "No lighting" sets a shaft's lighting
+   schedule to zero, as for plenums. The writers map no lighting-density filling, so
+   the export's accepted-absence rule (ADR 0016), which sets a null density to zero
+   for named support spaces, now also names shafts. No program in releases 1.0.0 or
+   1.1.0 is named for a shaft. The completeness review
+   (`docs/reviews/program-json-completeness.json`) is regenerated; only its pinned
+   checksum of `scripts/program_json_v3.py` changes.
+9. **Hot water (user, F4 and 2026-10-26).** The fixture paths of
+   `scripts.commercial_water_paths` are ported for the new types:
+   - **College, courthouse and the detailed offices:** one lumped building draw, with
+     no beneficiary program.
+   - **Laboratory and the tall buildings:** per-space-type draws from the space-type
+     rows. The tall prototypes add one per space with a source flow.
+   - **Tall buildings' booster and laundry loops:** the tall prototypes fix their
+     hotel floors in their own source (9 and 17), so both loops exist and become
+     unallocated building draws, as for the original types.
    - **Data centres:** no hot-water loop.
+   - **Generic office (research assumption):** it has no prototype. Its hot water is
+     the large detailed office's lumped main draw divided by that building's counted
+     floor area, as one unallocated building draw per floor area. That gives
+     7.9 × 10⁻¹⁰ m³/s·m² in the 90.1 templates and 4.8 × 10⁻¹⁰ m³/s·m² in the DOE
+     Ref templates.
 
    Programs that a source path proves have no draw get the zero-water fill
-   (`source_complete_no_water_draw`). The tall buildings' booster and laundry loops
-   depend on prototype hotel-floor parameters that the pinned data does not carry,
-   so their programs' hot water stays unknown. The generic office has no prototype,
-   so its hot water stays unknown too.
+   (`source_complete_no_water_draw`). Programs served only by an unallocated
+   building draw keep unknown hot water, as in the original folders.
+10. **What still blocks `filled` exports.** 77 exports of the new programs do not
+    validate, mixes included. They are the values left unknown by the decisions above:
+    - occupancy of corridors and other occupied support spaces;
+    - conditioning of corridors;
+    - Courthouse plug-load gaps, the `#N/A` lighting rows, the Entrance Lobby and
+      undefined space types.
 
-9. **What still blocks `filled` exports.** 137 of the 1,716 exports of the new
-   programs do not validate, each for a recorded reason:
-   - **72 left unknown by the decisions above:**
-     - occupancy of corridors and other occupied support spaces;
-     - conditioning of corridors;
-     - Courthouse plug-load gaps, the `#N/A` lighting rows, the Entrance Lobby and
-       undefined space types.
-   - **60 from the missing holiday rule of `Courthouse BLDG_EQUIP_SCH`.**
-   - **5 Courthouse service shafts.** The "no lighting" filling sets their schedule,
-     as for plenums, but the writers map no lighting-density filling, and the
-     export's accepted-absence list (ADR 0016) does not name service shafts.
-
-   Every `source` export validates.
+    Every `source` export validates.
 
 ## Consequences
 
 - Release 1.2.0 adds 858 programs (819 source programs and 39 general mixes), 193
-  HVAC systems and 82 hot-water services.
+  HVAC systems and 99 hot-water services.
 - `python -m scripts.construction_only_programs --check` reproduces the input from
   the pinned sources. `python -m scripts.atlas_minor_release --release 1.2.0
   --check` reproduces the release.

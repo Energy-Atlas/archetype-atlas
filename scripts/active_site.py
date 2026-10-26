@@ -64,8 +64,8 @@ def generate_active_site(bundle, target, publish=True):
         from scripts.construction_site import library_guide,program_presentation_inputs
         write(stage, 'guides/definitions.md', library_guide())
         # Generated from the reconciliation register by scripts.reconciliation_page.
-        write(stage, 'guides/doe-reference-reconciliation.md',
-              (ROOT / 'website/content/guides/doe-reference-reconciliation.md').read_text(encoding='utf-8'))
+        for guide in ('doe-reference-reconciliation.md', 'construction-only-programs.md'):
+            write(stage, 'guides/'+guide, (ROOT / 'website/content/guides' / guide).read_text(encoding='utf-8'))
         result['program_presentation_inputs']=program_presentation_inputs(bundle)
         for src in (ROOT / 'schemas/program-json-v3.schema.json', ROOT / 'schemas/schedule-json-v2.schema.json', ROOT / 'sources/program-json-defaults-v2.json'):
             (stage / 'contracts').mkdir(exist_ok=True);shutil.copyfile(src, stage / 'contracts' / src.name)

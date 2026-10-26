@@ -185,7 +185,8 @@ class ProgramExporter(HistoricalExporter):
             out['metadata']['scope_decision'] = 'User accepted water-use thermal gains and distribution effects outside program scope on 2026-10-11; not assumed zero.'
 
         name = source['name'].lower()
-        support = any(k in name for k in ('attic', 'plenum', 'elevator', 'elec/mech', 'electrical', 'mechanical'))
+        # 'shaft' added by user decision (ADR 0039, 2026-10-26) for the construction-only service shafts.
+        support = any(k in name for k in ('attic', 'plenum', 'elevator', 'elec/mech', 'electrical', 'mechanical', 'shaft'))
         for group in [out['loads']] + [s['loads'] for s in out['shared_services']]:
             active = []
             for item in group:

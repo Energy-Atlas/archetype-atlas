@@ -254,6 +254,21 @@ def complete_design_days(schedule):
     schedule['completion'] = 'accepted-design-day-weekday (ADR 0039 F3): design days take the Wednesday profile'
 
 
+def complete_holidays(schedule):
+    """User-approved completion (ADR 0039, 2026-10-26) of Courthouse BLDG_EQUIP_SCH, which has design days
+    but no holiday or Default rule: holidays take the Sunday profile, as accepted-holiday-sunday does."""
+    if schedule.get('source_name') != 'Courthouse BLDG_EQUIP_SCH':
+        return
+    tokens = [set(r['day_types'].split('|')) for r in schedule['rules']]
+    if any(t & {'Hol', 'Default'} for t in tokens):
+        return  # this template's variant already covers holidays
+    sunday = [r for r, t in zip(schedule['rules'], tokens) if t == {'Sun'}]
+    if len(sunday) != 1 or sunday[0]['start_date'][5:10] != '01-01' or sunday[0]['end_date'][5:10] != '12-31':
+        raise ValueError('Unexpected Sunday rule: '+schedule['source_name'])
+    schedule['rules'] = [*schedule['rules'], {**copy.deepcopy(sunday[0]), 'day_types': 'Hol'}]
+    schedule['completion'] = 'accepted-holiday-sunday (ADR 0039): holidays take the Sunday profile'
+
+
 class Release:
     """A written release folder, exported for consumers."""
 
@@ -312,6 +327,7 @@ class Release:
             if version == 'filled' and self.release != '1.0.0':
                 for schedule in schedules.values():
                     complete_design_days(schedule)
+                    complete_holidays(schedule)
             services = [{**row, 'id': sid} for p, d in sorted(self.files.items()) if p.endswith('/services.json')
                         for sid, row in json.loads(d).items()]
             provenance = [decode(eid, row, glossary) for p, d in sorted(self.files.items())

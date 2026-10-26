@@ -5,11 +5,13 @@
 Add programs to the 51 template × building-type folders that had construction sets
 only (ADR 0039). The new types are college, courthouse, laboratory, data centres,
 detailed offices, the generic office, and tall buildings.
-- 819 source programs, 39 general mixes, 193 HVAC systems and 82 hot-water services.
+- 819 source programs, 39 general mixes, 193 HVAC systems and 99 hot-water services.
   They are built offline from pinned openstudio-standards sources by the existing
   builder, definition, composition and resolution code.
 - User-approved fillings follow the resolution policy's rules.
-- Courthouse design days are completed in the filled export.
+- Courthouse design days and one Courthouse holiday rule are completed in the filled
+  export. The generic office's hot water is a per-area estimate from the large
+  detailed office, recorded as a research assumption.
 - The delta `data/atlas-releases/v1.2.0` holds release 1.1.0's changes unchanged.
 - Release 1.2.0 also records the residential storage decisions (ADR 0038).
 

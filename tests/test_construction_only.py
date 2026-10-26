@@ -72,9 +72,19 @@ class InputTests(unittest.TestCase):
         self.assertIn(('College', 'lumped_main_draw'), branches)
         self.assertIn(('Laboratory', 'space_type_main_draw'), branches)
         self.assertIn(('TallBuilding', 'tall_building_space_draws'), branches)
+        self.assertIn(('SuperTallBuilding', 'tall_building_hotel_floors'), branches)
+        self.assertIn(('Office', 'borrowed_lumped_main_draw_per_area'), branches)
         self.assertFalse(any(b.endswith('DataCenterHighITE') for b, _ in branches))
-        gaps = {g['classification'] for g in self.document['water_paths']['missing_program_evidence']}
-        self.assertIn('unported_booster_or_laundry_loop', gaps)
+        tall = {d['end_use'] for d in self.document['water_paths']['draw_paths'] if d['building_type'] == 'TallBuilding'}
+        self.assertEqual(tall, {'main', 'booster', 'laundry'})
+
+    def test_generic_office_hot_water_is_the_borrowed_per_area_draw(self):
+        paths = [d for d in self.document['water_paths']['draw_paths'] if d['building_type'] == 'Office']
+        self.assertEqual(len(paths), 5)
+        for d in paths:
+            area = d['alternate_original_total']
+            self.assertAlmostEqual(d['rated_flow_per_area_m3_s_m2'], d['original_flow']*cop.GALLON_M3/60/area, places=18)
+            self.assertIn('research assumption', d['interpretation_note'])
 
     def test_area_defaults_are_pinned(self):
         self.assertEqual(sorted(self.document['area_defaults']), ['2.6.0', '2.7.0', '2.7.1', '2.8.0'])

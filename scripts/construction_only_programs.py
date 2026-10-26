@@ -198,14 +198,17 @@ RECIPE = 'lib/openstudio-standards/standards/Standards.ServiceWaterHeating.rb'
 GALLON_M3 = 0.003785411784
 
 
-def water_packet(records, raw_root):
+def water_packet(records, raw_root, office_area):
     """Hot-water fixture paths of the new types (ADR 0039 F4), ported from scripts.commercial_water_paths.
 
     The same source branches apply: no main loop (data centres), one lumped building draw
     (college, courthouse, detailed offices), per-space-type draws from the space-type rows
     (laboratory, and the tall buildings, whose prototype adds one per space with a source flow).
-    The tall buildings' booster and laundry loops depend on prototype hotel-floor parameters
-    that the pinned data does not carry, so their programs' draws stay unknown."""
+    The tall prototypes fix their hotel floors (9 and 17), so their booster and laundry loops
+    exist and become unallocated building draws, as for the original types.
+    The generic office has no prototype. By user decision it takes the large detailed office's
+    lumped draw divided by that building's counted floor area, a per-area research assumption
+    (`office_area`: {template: counted area}, from the borrowed geometry)."""
     from scripts import commercial_completion
     from scripts.common import stable_id as legacy_id
     completion_lock = load_json(ROOT/'sources/completion-evidence-lock.json')
@@ -242,11 +245,29 @@ def water_packet(records, raw_root):
             found = [(i, r) for i, r in enumerate(rows) if r['building_type'] == building_type]
             missing = [p for p in active if p['service_water_heating_schedule_id'] is None
                        and p['source_space_type'] not in {'Attic', 'Plenum', 'Basement'}]
-            if not found:  # the generic Office: no prototype, no source water path
+            if not found:  # the generic Office: no prototype, so it borrows the large detailed office's draw
+                ii, r = next((i, r) for i, r in enumerate(rows) if r['building_type'] == OFFICE_AREAS)
+                flow, area = r['main_service_water_peak_flowrate'], office_area[template]
+                note = ('User-approved research assumption (ADR 0039, 2026-10-26): the generic office has no prototype; it takes '
+                        "the large detailed office's lumped main draw divided by that building's counted floor area, "
+                        'as a building draw per floor area.')
+                paths.append(dict(path_id=f'{building_type}|{template}|main|borrowed-{OFFICE_AREAS}', building_type=building_type,
+                                  template=template, end_use='main', source_branch='borrowed_lumped_main_draw_per_area',
+                                  source_schedule_name=r['main_service_water_flowrate_schedule'], rated_flow_m3_s=None,
+                                  rated_flow_per_area_m3_s_m2=flow*GALLON_M3/60/area, original_flow=flow, original_flow_unit='US gal/min',
+                                  alternate_original_total=area, alternate_original_total_unit='m2 counted floor area of ASHRAELargeOfficeDetailed.osm',
+                                  physical_fixture_locations=[], beneficiary_program_ids=[], allocation_status='building_service_unallocated',
+                                  target_temperature_degC=(r['main_water_use_temperature']-32)/1.8,
+                                  evidence=[proof(spec['prototype_inputs'], f'/prototype_inputs/{ii}/main_service_water_peak_flowrate', flow, 'US gal/min',
+                                                  'Multiply by 0.003785411784/60 and divide by the borrowed counted floor area', note)],
+                                  interpretation_note=note))
+                used.add(r['main_service_water_flowrate_schedule'])
+                path_id = paths[-1]['path_id']
                 for p in missing:
                     gaps.append(dict(program_id=p['id'], building_type=building_type, template=template, source_space_type=p['source_space_type'],
-                                     classification='no_source_prototype', source_schedule_name=None, normalized_physical_flow=None,
-                                     evidence=[attrproof(p)], coverage_resolution_status='allocation_unknown', zero_schedule_eligible=False))
+                                     source_space_names=names[p['id']], classification='borrowed_building_main_draw', source_schedule_name=None,
+                                     normalized_physical_flow=None, building_service_paths=[path_id], evidence=[attrproof(p)],
+                                     coverage_resolution_status='allocation_unknown', zero_schedule_eligible=False))
                 continue
             ii, r = found[0]
             ip = spec['prototype_inputs']
@@ -295,7 +316,29 @@ def water_packet(records, raw_root):
                                                                    'Ruby code', 'Convert flow with factor 0.003785411784/3600/0.09290304; no geometry assumed', note)],
                                       interpretation_note=note))
                     used.add(attrs.get('service_water_heating_schedule'))
-            if branch != 'tall_building_space_draws':
+            if branch == 'tall_building_space_draws':
+                prototype = f'lib/openstudio-standards/prototypes/common/buildings/Prototype.{building_type}.rb'
+                lines = (cache/prototype).read_text().splitlines()
+                line = next(i for i, l in enumerate(lines) if 'num_of_floor_hotel:' in l)
+                hotel = int(lines[line].split(':')[1].strip().rstrip(','))
+                for use, prefix, minimum in (('booster', 'booster', 0), ('laundry', 'laundry', 1)):
+                    if r[prefix+'_water_heater_volume'] is None or hotel <= minimum:
+                        continue
+                    flow, temp, schedule = (r[prefix+'_service_water_peak_flowrate'], r[prefix+'_water_use_temperature'],
+                                            r[prefix+'_service_water_flowrate_schedule'])
+                    used.add(schedule)
+                    paths.append(dict(path_id=f'{building_type}|{template}|{use}', building_type=building_type, template=template, end_use=use,
+                                      source_branch='tall_building_hotel_floors', source_schedule_name=schedule,
+                                      rated_flow_m3_s=flow*GALLON_M3/60 if type(flow) in (int, float) else None, rated_flow_per_area_m3_s_m2=None,
+                                      original_flow=flow, original_flow_unit='US gal/min',
+                                      target_temperature_degC=(temp-32)/1.8 if type(temp) in (int, float) else None,
+                                      physical_fixture_locations=[], beneficiary_program_ids=[], allocation_status='building_service_unallocated',
+                                      evidence=[proof(ip, f'/prototype_inputs/{ii}/{prefix}_service_water_peak_flowrate', flow, 'US gal/min',
+                                                      'Multiply by 0.003785411784/60; preserve original null', 'Loop volume enables draw; no beneficiary allocation'),
+                                                proof(prototype, f'L{line + 1}', lines[line].strip(), 'Ruby code',
+                                                      f'{use} loop when the fixed hotel-floor count exceeds {minimum}',
+                                                      'Prototype additional parameters fix the hotel floors')]))
+            else:
                 for use, prefix in (('booster', 'booster'), ('laundry', 'laundry')):
                     if r[prefix+'_water_heater_volume'] is not None:
                         raise ValueError(f'Unported {use} loop for {building_type} {template}')
@@ -310,7 +353,7 @@ def water_packet(records, raw_root):
                 elif branch == 'space_type_main_draw':
                     status = 'source_no_local_main_fixture_draw'
                 elif branch == 'tall_building_space_draws':
-                    status = 'unported_booster_or_laundry_loop'
+                    status = 'unallocated_building_booster_or_laundry'
                 else:
                     status = 'unallocated_building_main_draw'
                 zero = status in ('source_no_swh_end_use_for_building_template', 'source_no_local_main_fixture_draw') and not unallocated
@@ -463,7 +506,11 @@ def build(raw_root=ROOT/'data/raw'):
     for table in ('programs', 'schedules', 'systems', 'mappings', 'provenance', 'source_files'):
         known = {r['id'] for r in atlas[table]}
         atlas[table] += [r for r in records[table] if r['id'] not in known]
-    packet = water_packet(records, raw_root)
+    defaults = area_defaults(raw_root)
+    table, used = areas(None, raw_root, records, defaults)
+    office_area = {t: math.fsum(r['represented_area_m2'] for r in table[(OFFICE_AREAS, t)] if r['area_status'] == 'derived')
+                   for t in TYPES['Office'][2]}
+    packet = water_packet(records, raw_root, office_area)
     resolutions, unresolved = fillings(records, packet)
     # apply_reviewed and the service build read the policy's resolution and completion releases: point
     # them at the frozen releases' rows plus the new ones, in a scratch folder of the build tree.
@@ -483,8 +530,6 @@ def build(raw_root=ROOT/'data/raw'):
     programs = build_programs(context)
     scratch.cleanup()
     bundle.merge(programs).merge(build_hvac(context))
-    defaults = area_defaults(raw_root)
-    table, used = areas(context, raw_root, records, defaults)
     saved = (program_composition.extract_areas, program_composition.recipe_groups)
     program_composition.extract_areas = lambda ctx: table
     program_composition.recipe_groups = recipe_groups

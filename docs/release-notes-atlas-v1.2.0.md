@@ -8,12 +8,12 @@ that had construction sets only
 
 ## What the release holds
 
-- `data/atlas-releases/v1.2.0/` has 1,648 changed files and lists 371 deleted files.
+- `data/atlas-releases/v1.2.0/` has 1,668 changed files and lists 371 deleted files.
   It is written and verified by `scripts.atlas_minor_release`.
 - The resolved release has:
   - 1,825 programs (1.1.0: 967);
   - 1,198 HVAC systems (1,005);
-  - 457 services (375).
+  - 474 services (375).
 - The definition input, `data/program-inputs/construction-only-v1.json`, is built
   offline from pinned sources by `scripts.construction_only_programs`, which
   reproduces it:
@@ -45,18 +45,26 @@ that had construction sets only
   - the zero-density schedule rule as everywhere.
 
   Corridors, stairs, storage, restrooms and utility rooms keep unknown occupancy.
-- **Hot water:** 82 services from the prototype inputs.
+- **Hot water:** 99 services from the prototype inputs.
   - **College, courthouse and the detailed offices:** a lumped building draw.
   - **Laboratory and the tall buildings:** per-space-type draws.
+  - **Tall buildings:** also booster and laundry loops; the prototypes fix 9 and 17
+    hotel floors.
   - **Data centres:** none.
-
-  The tall buildings' booster and laundry loops depend on prototype parameters that
-  the pinned data does not carry, so their programs' hot water stays unknown.
+  - **Generic office (research assumption, user decision):** it has no prototype.
+    Its hot water is the large detailed office's lumped main draw divided by that
+    building's counted floor area, as a building draw per floor area:
+    7.9 × 10⁻¹⁰ m³/s·m² in the 90.1 templates, 4.8 × 10⁻¹⁰ in the DOE Ref templates.
 - **Systems:** 193 HVAC systems from the types' HVAC files. The tall buildings have
   no HVAC file upstream.
-- **Courthouse design days:** in the `filled` export, ten Courthouse schedules
-  without design-day rules take the Wednesday profile on design days
-  (`accepted-design-day-weekday`).
+- **Courthouse schedules, `filled` export only:**
+  - ten schedules without design-day rules take the Wednesday profile on design
+    days (`accepted-design-day-weekday`);
+  - `Courthouse BLDG_EQUIP_SCH` takes the Sunday profile on holidays
+    (`accepted-holiday-sunday`).
+- **Shafts:** the export's accepted-absence rule (ADR 0016) now also names shafts. A
+  shaft's null lighting density therefore exports as zero beside its zero schedule.
+  No earlier program is named for a shaft.
 - **Gaps recorded:** 90 spaces have no standards tags or no matching row (tall
   buildings, detailed-office plenums, laboratory plenums). Spreadsheet errors (`#N/A`)
   in three DOE Ref Courthouse rows stay unknown.
@@ -68,11 +76,11 @@ The contracts are unchanged from 1.1.0: Program JSON 5.1.0, constructions 4.1.0 
 `atlas-release-1.2.0`. Read with `Release(release='1.2.0')`.
 
 - **Source:** every export of the new programs validates.
-- **Filled:** 137 of their exports do not, each for a recorded reason:
-  - **72:** values left unknown by the decisions above;
-  - **60:** `Courthouse BLDG_EQUIP_SCH`, which has no holiday rule;
-  - **5:** Courthouse service shafts, which the export's accepted-absence list does
-    not name.
+- **Filled:** 77 of their exports do not, mixes included. They are the values left
+  unknown by the decisions above:
+  - corridor occupancy and conditioning;
+  - Courthouse plug loads;
+  - the `#N/A` lighting rows, the Entrance Lobby and undefined space types.
 
 ## Verify
 
@@ -86,9 +94,4 @@ python -m unittest tests.test_construction_only
 
 ## Open decisions
 
-- **Holiday rule for `Courthouse BLDG_EQUIP_SCH`.** An earlier completion uses the
-  Sunday profile on holidays for two office schedules.
-- **Lighting density of Courthouse service shafts.** The writers map no
-  lighting-density filling.
-- **Hot water of the tall buildings' booster and laundry loops, and of the generic
-  office.**
+None for this release. Every value left unknown is listed in ADR 0039 section 10.
