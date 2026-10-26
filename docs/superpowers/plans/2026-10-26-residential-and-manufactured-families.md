@@ -142,3 +142,112 @@ for byte, and the exports validate. **Estimate:** 2 days.
 | R6 | Manufactured-housing templates | `hud-code` (baseline) and `doe-final-rule` (2022, tiers 1 and 2 by section), with the 3A cities as sub-contexts. |
 | R7 | Out of scope | Systems for all residential families, and the unified construction representation (as ADR 0040). |
 | R8 | Editions | All 7 IECC residential editions, including IECC 2024, which the residential set has but the commercial set does not. |
+
+R1 to R8 were approved as recommended (user, 2026-10-26).
+
+## 5. Clarified decisions (user, 2026-10-26)
+
+The two agents work without supervision. These answers settle the ambiguities found
+by probing the source files; follow them before falling back on G1.
+
+### General (both agents)
+
+- **G1. Undecided questions.**
+  - An agent may decide when it has reasoned confidence, and need not take the most
+    conservative option. Every such decision goes in the "Agent decisions" section
+    of its family's ADR (decision, alternatives, reason, evidence), and the PR
+    repeats the list.
+  - Stop only for:
+    - a licensing question;
+    - a change that would rewrite released data;
+    - the same kind of failure three times.
+- **G2. Push and PR.**
+  - Each agent pushes its own branch and opens one PR per release; it never merges.
+  - When the other branch reaches `main`, merge `main` in and fold the other
+    release into the cumulative delta.
+- **G3. Docs per family.** An ADR, release notes, a docs-site guide in the nav
+  (staged by `scripts/active_site.py` as well), and a CHANGELOG entry.
+- **G4. Answer-key samples.**
+  - Commercial: every type and edition in Buffalo (5A), Miami (1A) and
+    Fairbanks (8).
+  - Residential: every edition in 4A and 1AWH.
+  - Manufactured housing: every location under the HUD Code.
+- **G5. Progress.** A short note at the end of each stage.
+- **G6. Time box.** If S13 is not done when S12 is, release 1.4.0 ships without it
+  and S13 becomes 1.5.0.
+
+### S11, IECC commercial
+
+- **C1. Zone to space type.**
+  - IECC zones get their space type from a single lookup table, built from the
+    openstudio-standards geometry of all three 90.1 templates (2007, 2013, 2019).
+  - Names are normalized: lower case, spaces as underscores.
+  - The table is checked so that a zone name never maps to two space types. No
+    values come from the 90.1 geometry, only the tags.
+- **C2. Unmatched zones.** An agent may map them by reasoned guess. Each guess goes
+  in a committed alias table with its reason, under G1.
+- **C3. Type names.** Rename PNNL type names to the atlas vocabulary (OfficeMedium
+  becomes MediumOffice, and so on), keeping PNNL's name as a field.
+- **C4. Daylighting controls.** Evidence only.
+- **C5. PNNL scorecards.** Evidence only.
+- **C6. Climate-dependent values.** Where a load differs by climate (rare),
+  `value` keeps the value for most zones and an additive `value_by_climate`
+  (`{"0B": 6.59, …}`) gives the exceptions. This is Program JSON 5.2.0, an
+  additive minor.
+
+### S12a, residential storage
+
+- **S1. The ResStock dwellings.** Their fillings move unchanged.
+  - New research-assumption fillings, for example from IECC knowledge, are allowed
+    only where the source is null. They never overwrite a source value.
+  - Each cites its source file and reason and is listed in the ADR.
+- **S2. Dwelling identity.** IDs come from the source building ID plus climate,
+  vintage and size bin. Folders are the ResStock building types.
+- **S3. Older releases.**
+  - They are not maintained: no new versions, no edits. They remain frozen,
+    verify-only inputs, because the `--check` rebuilds of releases 1.0.0 to 1.4.0
+    and the ResStock migration read them.
+  - They can be archived at a future 2.0.0 full snapshot.
+
+### S12, IECC residential
+
+- **R1. Program variants.** One program per edition, type and appliance fuel. Gas
+  homes have a gas range, gas dryer and other gas appliances; electric-resistance,
+  heat-pump and oil homes have electric ones. A separate basement entry is used only
+  with the heated-basement foundation, which adds basement lighting and a larger
+  adjustment load.
+- **R2. The IECC adjustment load.** `IECC_Adj` is its own load quantity, labelled as
+  a reference-design adjustment.
+- **R3. Auxiliary zones.** Garage, attic, crawlspace and breezeway loads stay inside
+  the dwelling program, tagged with their host zone.
+- **R4. Multifamily.** The 18 units have identical loads, so there is one per-unit
+  program. The building context (18 units, 3 floors, front and back rows,
+  breezeway) goes in record fields.
+- **R5. The 1AWHTS unconditioned living zone.** It has walls but no floor or
+  ceiling. Its absolute loads (lighting about 169 W, `Addl_IECC_Adj` 253 W) become
+  building-level services attached to the dwelling and instantiated once. The
+  tropical-zone reading (WH warm-humid, T tropical, S semi-conditioned) is
+  confirmed from the PNNL documentation, or recorded as an agent decision.
+- **R6. Infiltration.** The source method per dwelling, as it is.
+
+### S13, manufactured housing
+
+- **M1. Source folders.** Read only the HUD and FinalRule folders. CompleteSet
+  duplicates them; check by checksum.
+- **M2. Programs.** Loads are identical across heating systems and code variants,
+  so there is one program per section type (single, multi). Envelope and the
+  standard vary by construction context and template.
+- **M3. The 3A cities.** Five sub-contexts of 3A (`3-a.atlanta`, …).
+
+### Probe findings for the agents
+
+- **Zone name normalization.** IECC commercial zone names match the 90.1 geometry
+  after normalization. Outpatient, Warehouse and High-rise Apartment match only
+  after it.
+- **1AWHTS floor area.** The unconditioned zone has no floor, so a per-floor-area
+  computation divides by zero; guard for it.
+- **Schedule converter.** The residential and manufactured-housing models use
+  `Schedule:Year`/`Week`/`Day`, which `scripts/idf_schedules.py` must learn to read
+  and to check over the full year.
+- **EnergyPlus 8.0.** Manufactured-housing models are EnergyPlus 8.0. Confirm the
+  idf reader's field layout for that version.
