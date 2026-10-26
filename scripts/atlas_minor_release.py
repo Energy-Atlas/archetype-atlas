@@ -201,5 +201,115 @@ def main():
           f'{len(listed["deleted"])} deleted; resolved: '+', '.join(f'{v} {k}' for k, v in listed['counts'].items()))
 
 
+# >>> release 1.3.0
+# Release 1.2.0 pins this file by SHA-256. Later releases are therefore added as tagged
+# blocks like this one, before the main guard; when a release that pins an earlier form of
+# the file is verified, the blocks of later releases are stripped first, which restores the
+# exact bytes that built it (ADR 0040, agent decisions). Nothing above this block changes.
+import re  # noqa: E402
+
+from scripts import iecc_commercial_overlay  # noqa: E402
+
+IECC_COMMERCIAL = (*iecc_commercial_overlay.INPUTS, *iecc_commercial_overlay.SCRIPTS)
+RELEASES['1.3.0'] = {
+    'overlays': ('reconciliation', 'construction_only', 'iecc_commercial'),
+    'inputs': (*atlas_release.INPUTS, *RECONCILIATION, *CONSTRUCTION_ONLY, *IECC_COMMERCIAL, 'scripts/atlas_minor_release.py'),
+    'decisions': ('docs/adr/0036-suite-based-release-storage.md', 'docs/adr/0037-doe-reference-reconciliation.md',
+                  'docs/adr/0039-construction-only-programs.md', 'docs/adr/0040-iecc-commercial-family.md'),
+    'readme': '''# Energy Archetype Atlas release 1.3.0 (commercial, delta)
+
+A delta on release 1.0.0 (ADR 0036): this folder holds only the files that differ
+from `data/atlas-releases/v1.0.0`, and `manifest.json` names that base with its
+manifest's SHA-256 and lists deleted files. Resolve it by reading the base and
+replacing or removing the files listed here (`scripts.atlas_minor_release.files`).
+
+It holds everything releases 1.1.0 and 1.2.0 changed (the DOE reference
+reconciliation, ADR 0037, and the construction-only programs, ADR 0039), and adds
+the IECC commercial prototype family (docs/adr/0040-iecc-commercial-family.md):
+16 building types in the IECC 2006, 2009, 2012, 2015, 2018 and 2021 editions,
+96 folders under `commercial/iecc-<year>/`, extracted from the pinned PNNL IDFs
+into data/program-inputs/iecc-commercial-<year>.json.
+- Programs per standards space type, area-weighted over the IDF zones; absence of an
+  object in the complete model is a source zero. A load that differs by location
+  keeps the most common value and lists the others in `value_by_climate`.
+- One construction set per folder with 19 contexts, one per climate zone (zones 7
+  and 8 keyed `7-a` and `8-a`). The IDF design-flow infiltration is the source
+  method. The unified representation is deferred.
+- Building services and hot-water draws with their zone gains. HVAC is deferred.
+
+Verify with `python -m scripts.atlas_minor_release --release 1.3.0 --verify`; rebuild
+and compare with `--check`. Upstream notices are in `notices/` of either folder;
+original Atlas work remains unlicensed (see `LICENSE`).
+'''}
+BUILDER = 'scripts/atlas_minor_release.py'
+BLOCK = re.compile(r'# >>> release (\d+\.\d+\.\d+)\n.*?# <<< release \1\n\n\n', re.S)
+
+
+def pinned_bytes(path, release):
+    """A release input as that release pinned it: this builder without the blocks of later releases."""
+    data = (ROOT/path).read_bytes()
+    if path != BUILDER:
+        return data
+    later = lambda m: tuple(map(int, m[1].split('.'))) > tuple(map(int, release.split('.')))
+    return BLOCK.sub(lambda m: '' if later(m) else m[0], data.decode('utf-8')).encode('utf-8')
+
+
+def verify(release):
+    """The base release, then every delta file with its checksum and size, and nothing else."""
+    folder = target(release)
+    listed = json.loads((folder/'manifest.json').read_text(encoding='utf-8'))
+    if listed.get('kind') != 'atlas_release' or listed.get('release') != release:
+        raise ValueError(f'Not an atlas release {release} manifest: {folder}')
+    base = ROOT/listed['base_release']['path']
+    if atlas_release.sha((base/'manifest.json').read_bytes()) != listed['base_release']['manifest_sha256']:
+        raise ValueError('Base release manifest differs from the one this delta names')
+    base_listed = atlas_release.verify(base)
+    for path, entry in listed['files'].items():
+        data = (folder/path).read_bytes() if (folder/path).is_file() else None
+        if data is None:
+            raise ValueError('Release file missing: '+path)
+        if len(data) != entry['bytes'] or atlas_release.sha(data) != entry['sha256']:
+            raise ValueError('Release file checksum or bytes differ: '+path)
+    extra = sorted({p.relative_to(folder).as_posix() for p in folder.rglob('*') if p.is_file()}
+                   - set(listed['files']) - {'manifest.json'})
+    if extra:
+        raise ValueError('Release files not in the manifest: '+', '.join(extra[:5]))
+    if set(listed['deleted']) - set(base_listed['files']) or set(listed['deleted']) & set(listed['files']):
+        raise ValueError('Deleted files must be base files and not delta files')
+    stale = sorted(path for path, digest in listed['input_sha256'].items() if atlas_release.sha(pinned_bytes(path, release)) != digest)
+    if stale:
+        raise ValueError(f'Release inputs changed since it was written; rerun python -m scripts.atlas_minor_release '
+                         f'--release {release}: '+', '.join(stale))
+    return listed
+
+
+_overlaid_before_1_3_0 = overlaid
+
+
+@contextlib.contextmanager
+def overlaid(overlays):
+    """The earlier overlays, then the IECC commercial family (ADR 0040): its programs and services join
+    the overlaid sources, its construction sets the construction sources, and the construction export
+    hook serves its documents."""
+    if 'iecc_commercial' not in overlays:
+        with _overlaid_before_1_3_0(overlays):
+            yield
+        return
+    iecc = iecc_commercial_overlay.constructions()
+    with _overlaid_before_1_3_0(tuple(o for o in overlays if o != 'iecc_commercial')):
+        iecc_commercial_overlay.apply(atlas_programs.load_sources(), atlas_systems.load_sources(), iecc.inputs)
+        iecc.add_to(atlas_constructions.load_sources())
+        inner = construction_foundation_release.export_pair
+
+        def pair(context_id, *, release=None):
+            return iecc.pair(context_id) if context_id in iecc.where else inner(context_id, release=release)
+        construction_foundation_release.export_pair = pair
+        try:
+            yield
+        finally:
+            construction_foundation_release.export_pair = inner
+# <<< release 1.3.0
+
+
 if __name__ == '__main__':
     main()

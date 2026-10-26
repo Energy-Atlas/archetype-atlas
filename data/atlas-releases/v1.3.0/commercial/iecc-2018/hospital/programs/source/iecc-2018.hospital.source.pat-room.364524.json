@@ -1,0 +1,410 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "Hospital",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-08319a39c43c161263d093f9",
+    "evidence-2a9accaeb3f21d3aa4c800d2",
+    "evidence-3638d506c80cc418936fde58",
+    "evidence-406585f4e0268c760d3fbd19",
+    "evidence-64e3960ed0c36dc533504080",
+    "evidence-7179386d8fb4c4e6fc571129",
+    "evidence-721666200d5f69e2d28bf168",
+    "evidence-895be430b8e8049660245bb7",
+    "evidence-8eefcdf532b0c6861f95c5a1",
+    "evidence-94af57872c4ed15d3a0c333e",
+    "evidence-a6dfe71f30c659a9cc9c94a5",
+    "evidence-ca186382d1ae43d265ba1d95",
+    "evidence-d017d5fb2f2a910c97ea4d20",
+    "evidence-d9a272bd2cb4f56fb2c15296",
+    "evidence-e3e7801e511c3d1aa2d77851",
+    "evidence-fc722cb5d983ffa6d1091a72",
+    "evidence-ff25306d44fbb24ead07e12d"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-64e3960ed0c36dc533504080",
+    "roof": null,
+    "wwr": {
+      "E": 0.2514,
+      "N": 0.2514,
+      "S": 0.2514,
+      "W": 0.2514
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2018.hospital.source.pat-room.364524",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-bfb66b2aa3cc0f52b8b59e49",
+      "evidence_id": "evidence-8eefcdf532b0c6861f95c5a1",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.hospital.bldg-occ-extd-sch.5e7df6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.05379805833
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ddccde8a2341bc0d0f92cd59",
+      "evidence_id": "evidence-ca186382d1ae43d265ba1d95",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.hospital.ltg-sch10-patient-room.b23fc3",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-ca186382d1ae43d265ba1d95",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-ca186382d1ae43d265ba1d95",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-ca186382d1ae43d265ba1d95",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.006258
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-65e49e4c2d58426c6ce7a100",
+      "evidence_id": "evidence-d017d5fb2f2a910c97ea4d20",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.hospital.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-fbd4d8e779e1d782d75c8b92",
+      "evidence_id": "evidence-3638d506c80cc418936fde58",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.hospital.bldg-equip-extd-sch.973b10",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-3638d506c80cc418936fde58",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-3638d506c80cc418936fde58",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-3638d506c80cc418936fde58",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 21.519998936651
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0a5e14d4bb6d8844f6b82dc1",
+      "evidence_id": "evidence-895be430b8e8049660245bb7",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.hospital.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2018.hospital.main.8ec16c",
+      "evidence_id": "evidence-406585f4e0268c760d3fbd19",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.hospital.bldg-swh-extd-sch.f9541e",
+      "scope": "program_service",
+      "service_id": "iecc-2018.hospital.main.8ec16c",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {
+        "latent": "fraction of the water that can evaporate",
+        "latent_fraction": {
+          "evidence_id": "evidence-406585f4e0268c760d3fbd19",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.05
+        },
+        "semantics": "EnergyPlus WaterUse:Equipment",
+        "sensible": "fraction x mass flow x cp x (mixed - zone air temperature)",
+        "sensible_fraction": {
+          "evidence_id": "evidence-406585f4e0268c760d3fbd19",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        },
+        "zone_gains": "applied"
+      },
+      "unit": "m3/s/m2",
+      "value": 4.901e-08,
+      "zone_heat_assignment": "program_zones"
+    }
+  ],
+  "mode": "source",
+  "name": "PatRoom_Hospital",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d9a272bd2cb4f56fb2c15296",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.hospital.activity-sch.bc3358"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-94af57872c4ed15d3a0c333e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-fc722cb5d983ffa6d1091a72",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.hospital.clgsetp-sch.22d895"
+    },
+    "dehumidifying_setpoint_schedule_id": {
+      "evidence_id": "evidence-7179386d8fb4c4e6fc571129",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.hospital.max-rel-hum-set-sch.3aea06"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-721666200d5f69e2d28bf168",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.hospital.htgsetp-sch.c58d10"
+    },
+    "humidifying_setpoint_schedule_id": {
+      "evidence_id": "evidence-ff25306d44fbb24ead07e12d",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.hospital.min-rel-hum-set-sch.0cdd00"
+    }
+  },
+  "pnnl_building_type": "Hospital",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2018.hospital.main.8ec16c"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-a6dfe71f30c659a9cc9c94a5",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-020ee275d165ad618d09",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 20.903184,
+      "multiplier": 10,
+      "name": "PatRoom1_Mult10_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.903184,
+      "multiplier": 10,
+      "name": "PatRoom1_Mult10_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 34.83864,
+      "multiplier": 1,
+      "name": "PatRoom2_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 34.83864,
+      "multiplier": 1,
+      "name": "PatRoom2_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.20824,
+      "multiplier": 10,
+      "name": "PatRoom3_Mult10_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.20824,
+      "multiplier": 10,
+      "name": "PatRoom3_Mult10_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 34.83864,
+      "multiplier": 1,
+      "name": "PatRoom4_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 34.83864,
+      "multiplier": 1,
+      "name": "PatRoom4_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.903184,
+      "multiplier": 10,
+      "name": "PatRoom5_Mult10_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.903184,
+      "multiplier": 10,
+      "name": "PatRoom5_Mult10_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 27.870912,
+      "multiplier": 1,
+      "name": "PatRoom6_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 27.870912,
+      "multiplier": 1,
+      "name": "PatRoom6_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.20824,
+      "multiplier": 10,
+      "name": "PatRoom7_Mult10_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 20.20824,
+      "multiplier": 10,
+      "name": "PatRoom7_Mult10_Flr_4"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 27.870912,
+      "multiplier": 1,
+      "name": "PatRoom8_Flr_3"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 27.870912,
+      "multiplier": 1,
+      "name": "PatRoom8_Flr_4"
+    }
+  ],
+  "standards_building_type": "Hospital",
+  "template": "IECC 2018"
+}

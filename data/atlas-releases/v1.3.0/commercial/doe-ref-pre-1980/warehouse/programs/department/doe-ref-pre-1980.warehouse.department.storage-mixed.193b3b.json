@@ -1,0 +1,203 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Warehouse",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-pre-1980.warehouse.source.bulk.d42523",
+        "represented_area_m2": 3204.8406388999992,
+        "source_geometry_file_id": "sourcefile-4004b5da37d87256a23f",
+        "source_program_id": "program-0aa4552adc59aed7f596",
+        "weight": 0.696969546326768
+      },
+      {
+        "program_id": "doe-ref-pre-1980.warehouse.source.fine.d1628d",
+        "represented_area_m2": 1393.4099672999998,
+        "source_geometry_file_id": "sourcefile-4004b5da37d87256a23f",
+        "source_program_id": "program-eb1cb935d9c0e7c869c2",
+        "weight": 0.303030453673232
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-5fc964405ecc35bcfb383100"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.warehouse.department.storage-mixed.193b3b",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-226ae307a9d9f2c6cc2b3cfc",
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.warehouse.storage-mixed-additional-lighting.a9b324",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-1371bb80056d4fd662a2d50f",
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.warehouse.storage-mixed-electric-equipment.e9b306",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 1.7842421706337988
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f99dff8c6b0cd71b92d4600a",
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.warehouse.storage-mixed-additional-lighting.a9b324",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b56e0b2f0e27fdc42558a44a",
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.warehouse.storage-mixed-lighting.311ce4",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 5.855153160555904
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0449bd89e299e9ee00d563b6",
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.warehouse.storage-mixed-additional-lighting.a9b324",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "department",
+  "name": "Storage_Mixed_Warehouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.warehouse.storage-mixed-activity.ff12cc"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.warehouse.storage-mixed-cooling-setpoint.d2f449"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-5fc964405ecc35bcfb383100",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.warehouse.storage-mixed-heating-setpoint.40fe57"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-3d27683db4a2984d3c1f9643",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref Pre-1980"
+}

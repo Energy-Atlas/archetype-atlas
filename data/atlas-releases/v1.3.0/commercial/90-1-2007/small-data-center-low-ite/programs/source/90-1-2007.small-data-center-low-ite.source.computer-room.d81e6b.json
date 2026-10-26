@@ -1,0 +1,262 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallDataCenterLowITE",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-3e5ad02fb57e7192572f613e",
+    "evidence-59e8336ebd752dc66abdc3bd",
+    "evidence-7b244375845e91f11a23dc35",
+    "evidence-824b14d491b1f218b3fa4384",
+    "evidence-9a310dfa764aca3f3597b23e",
+    "evidence-ca74fc8942d54f45f8f52e00",
+    "evidence-e6f2617f6b98adf62a8447e4",
+    "evidence-f060ea88b8117a262c532a14"
+  ],
+  "filling_evidence_ids": [
+    "evidence-4350a9c15d611d1a713132e8",
+    "evidence-631717aeb13f1bafd7ff030d",
+    "evidence-b9b0381eb5e1b70fc24ade02",
+    "evidence-dcf3ab595876a9c5581d2315"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2007.small-data-center-low-ite.source.computer-room.d81e6b",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-73d26267c857df73dc4b5584",
+      "evidence_id": "evidence-3e5ad02fb57e7192572f613e",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-8c6711dd6a76c1149350"
+        ],
+        "rules": [
+          "reviewed_no_occupancy"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-902de7e215b14c742fc7b4a1",
+      "evidence_id": "evidence-e6f2617f6b98adf62a8447e4",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.small-data-center-low-ite.data-center-lighting-sch.917a90",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3101d033a938e56025bd8dd9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-a53f34b8d388018d5a012e02",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-fbcc5788c2aa921c841ed20f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 10.763910416709722
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0f13083c14a90373d295e2e4",
+      "evidence_id": "evidence-59e8336ebd752dc66abdc3bd",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.small-data-center-low-ite.data-center-lighting-sch.917a90",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3101d033a938e56025bd8dd9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-a53f34b8d388018d5a012e02",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-fbcc5788c2aa921c841ed20f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-2cd60907afe6a6098c773019",
+      "evidence_id": "evidence-9a310dfa764aca3f3597b23e",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.small-data-center-low-ite.data-center-equipment-sch.a5694b",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-918b9960f4c32f512ca7777e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-00ee99a63ca20c182564076e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-9d93f12537c0167e25a01da9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.1
+        }
+      },
+      "unit": "W/m2",
+      "value": 430.55641666838886
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-7587a0772ca5e7fb9949f199",
+      "evidence_id": "evidence-824b14d491b1f218b3fa4384",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-4350a9c15d611d1a713132e8"
+        ],
+        "resolutions": [
+          "resolution-a0ecc6d4bbd986a7c337",
+          "resolution-ec7bf6d94c76cc2caaef"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-4350a9c15d611d1a713132e8",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-15e72caa4d464613554ab1a7",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-643367b0d66134958a92e2fc",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-455687408fc97460e8e1c155",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "ComputerRoom_SmallDataCenterLowITE",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-7b244375845e91f11a23dc35",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-ca74fc8942d54f45f8f52e00",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.small-data-center-low-ite.data-center-clgsetp-sch.5f9800"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-f060ea88b8117a262c532a14",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.small-data-center-low-ite.data-center-htgsetp-sch.ca0deb"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-0e3476ba59d63291b311",
+  "template": "90.1-2007"
+}
