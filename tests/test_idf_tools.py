@@ -119,9 +119,9 @@ class YearScheduleTests(unittest.TestCase):
                           ('SmrDsn', '2000-09-01', '2000-12-31')])
         self.assertAlmostEqual(rules[2]['values'][6], 0.5)  # 06:30 inside the hour: energy-conserving mean
         values = s.evaluate('Occ', days)
-        self.assertEqual(values['2006-07-04'][7], 0.9)
-        self.assertEqual(values['2006-01-02'][8], 1.0)  # a Monday
-        self.assertEqual(values['2006-01-01'][8], 0.2)  # a Sunday
+        self.assertAlmostEqual(values['2006-07-04'][7], 0.9, places=12)
+        self.assertAlmostEqual(values['2006-01-02'][8], 1.0, places=12)  # a Monday
+        self.assertAlmostEqual(values['2006-01-01'][8], 0.2, places=12)  # a Sunday
 
     def test_constant_and_colonless_compact_schedules(self):
         s = self.schedules()
