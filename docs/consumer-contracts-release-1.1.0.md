@@ -1,79 +1,109 @@
-# Consumer contracts of release 1.1.0 (draft)
+# Consumer contracts of release 1.1.0
 
 Release 1.1.0 applies the DOE reference reconciliation ([ADR 0037](adr/0037-doe-reference-reconciliation.md))
 to the DOE Ref templates, as a delta on release 1.0.0. The exports gain fields; no
-existing field changes meaning.
+existing field changes meaning. `scripts.atlas_exports` produces them with
+`Release(release='1.1.0')`, and the schemas are derived from the 1.0.0 majors
+(`python -m scripts.atlas_exports --check-schemas`).
 
-| Export | Version | Previous |
-| --- | --- | --- |
-| Program JSON | **5.1.0** | 5.0.0 |
-| Detailed construction set | **4.1.0** | 4.0.0 |
-| Unified construction set | **3.1.0** | 3.0.0 |
+| Export | Version | Schema | Previous |
+| --- | --- | --- | --- |
+| Program JSON | **5.1.0** | `schemas/program-json-v5.1.schema.json` | 5.0.0 |
+| Detailed construction set | **4.1.0** | `schemas/construction-json-v4.1.schema.json` | 4.0.0 |
+| Unified construction set | **3.1.0** | `schemas/construction-equivalent-v3.1.schema.json` | 3.0.0 |
+| Building services | **1.0.0** | `schemas/building-services-v1.schema.json` | new |
 
-Status: draft from stage S4. The exact JSON shapes are fixed in stage S7, when the
-schemas are derived.
+`source.release` is `atlas-release-1.1.0`. Every new field is optional. A record
+from a template the reconciliation did not touch has none of them.
 
 ## Program JSON 5.1.0
 
-1. **`fenestration`** (per program):
-   - `{"basis": "program_zone_surfaces", "wwr": {"N": …, "E": …, "S": …, "W": …},
-     "roof": …, "evidence_id": …}`.
-   - A WWR value is the window area over the exterior wall area of the program's zones
-     in that direction, averaged by area over the reference model's zones.
+1. **`fenestration`**:
+   - `{"basis": "program_zone_surfaces", "wwr": {"N", "E", "S", "W"}, "roof", "evidence_id"}`.
+   - Each `wwr` value is the window area over the exterior wall area of the program's
+     DOE zones in that direction, zone multipliers applied.
    - `roof` is the skylight area over the exterior roof area.
    - `null` means the program has no exterior surface in that direction; `0` means it
      has wall but no window.
-   - For a whole-building program the values equal the construction's
-     `fenestration_defaults.conditioned`.
-2. **Water-use gains.** A `hot_water` load (and `water_heating[].draw`) gains
-   `thermal_effects`:
-   - `{"zone_gains": "applied", "sensible_fraction": 0.2, "latent_fraction": 0.05,
-     "semantics": "EnergyPlus WaterUse:Equipment"}`.
-   - Sensible gain = fraction × mass flow × cp × (mixed − zone air temperature). The
-     latent fraction is a share of the water that can evaporate.
-   - The draw keeps its zone or program attachment.
-3. **Humidity controls.** `parameters.humidifying_setpoint_schedule_id` and
-   `parameters.dehumidifying_setpoint_schedule_id` are added where the source has a
-   humidistat (DOE hospital, outpatient).
-4. **`source_calendar`**:
-   - `{"holidays": [{"name": …, "rule": …}], "daylight_saving": {"start": …, "end": …,
-     "applied": false}, "evidence_id": …}`.
-   - `holidays` lists the source's 10 US holidays as rules, for example "Last Monday in
-     May".
-   - Consumers that build a calendar for a given year use them to select `Hol`
-     schedule rules.
-5. **`alternates`** on any value: `[{"value": …, "source_family": …, "evidence_id": …,
-   "reason_id": …}]`. An alternate is a second backed value, recorded where two sources
-   disagree by more than the register's threshold. The primary value is unchanged.
+2. **`source_calendar`**:
+   - `{"holidays": [{"name", "rule"}], "daylight_saving": {"start", "end", "applied": false}, "evidence_id"}`.
+   - The rules are as the DOE files write them, for example "Last Monday in May".
+   - A consumer that builds a calendar for a year selects `Hol` schedule rules on
+     those dates.
+   - Daylight saving is recorded, not applied to schedules.
+3. **`source_spaces`**, on the programs a DOE zone group gets:
+   - Outpatient `Utility`, PrimarySchool `ComputerRoom` and `Library`, Large Office
+     `Basement`.
+   - Format: `[{"name", "floor_area_m2", "multiplier"}]` for the source spaces the
+     program represents.
+4. **`excluded_source_spaces`**, on their parent programs: the source spaces of that
+   space type that the new programs now represent.
+5. **Humidity controls:**
+   - `controls.humidifying_setpoint_schedule_id` and
+     `controls.dehumidifying_setpoint_schedule_id` (hospital and outpatient).
+   - Their schedules are inlined with unit `%` (relative humidity, 0–100).
+6. **`alternates`**:
+   - Format: `[{"quantity", "value" or "schedule_id", "source_family", "evidence_id", "reason_id"}]`.
+   - These are second backed values where two sources disagree beyond the register's
+     threshold. The primary value is unchanged.
+   - An alternate schedule is inlined in `schedules`.
+7. **`water_use_gains`**:
+   - Format: `[{"demand_id", "zone_gains": "applied", "sensible_fraction", "latent_fraction", "semantics", "zone_heat_assignment", "evidence_id"}]`.
+   - One entry for each hot-water demand of the document (a load or a
+     `water_heating[].demand_id`) that carries DOE's gains.
+   - The gains follow EnergyPlus `WaterUse:Equipment`:
+     - sensible = fraction × mass flow × cp × (mixed − zone air temperature);
+     - latent = the fraction of the water that can evaporate.
+   - `zone_heat_assignment` says where the gains go: `program_zones`,
+     `beneficiary_program_zones` or `unresolved`.
+8. **`building_service_ids`**: the IDs of the building services whose DOE objects sit
+   in this program's zones. The services themselves are in the building-services
+   export.
 
 ## Construction sets 4.1.0 (detailed) and 3.1.0 (unified)
 
 1. **`fenestration_defaults`**:
-   - `{"conditioned": {"N", "E", "S", "W", "roof"}, "unconditioned": {…}, "all": {…},
-     "evidence_id": …}`.
-   - These are the reference model's whole-building WWR values, 15 in all, area-weighted
-     over conditioned, unconditioned and all zone surfaces. The same nulls and zeros
+   - `{"conditioned", "unconditioned", "all": {"N", "E", "S", "W", "roof"}, "basis": "whole_building_zone_surfaces", "evidence_id"}`.
+   - These are the source model's 15 whole-building ratios. The same nulls and zeros
      apply as in programs.
-   - `roof` may differ by climate context where the source's skylights do.
-2. **`infiltration`** keeps `method: fixed_source_reference_natural_ach` and gains:
-   - `default_method`;
-   - `methods.doe_design_flow`, with `zone_rules` (method, rate, coefficients, schedule
-     ID) and `excluded_zones`.
-   - The schedule IDs resolve in the building-type folder's schedules, which the export
-     inlines.
-   - The consumer computes the exterior wall and roof areas from its own geometry.
+   - Every climate context carries the same values: the 16 DOE climate files agree.
+2. **`infiltration`**:
+   - It keeps `method: fixed_source_reference_natural_ach` and gains
+     `default_method` (the same value) and `methods.doe_design_flow`.
+   - `methods.doe_design_flow` holds `zone_rules` and `excluded_zones`. Each rule has
+     a method (flow per exterior area, flow per exterior wall area, or air changes
+     per hour), value, unit, coefficients, DOE zone names and schedule.
+   - The schedule is inlined in the rule (`source_name`, `rules`), so the document
+     stays standalone.
+   - The consumer computes exterior surface and wall areas from its own geometry.
+3. **Internal mass:**
+   - `mass_accounting.additional_mass.entries` gains entries for the source spaces
+     where DOE has internal mass and openstudio-standards does not.
+   - They use the set's existing mass recipe ("Std Wood 6inch", as DOE) and carry an
+     `evidence_id`.
 
-## Services (inlined in the program and construction exports as today)
+## Building services 1.0.0
 
-- New building-service end uses: `elevator`, `exhaust_fan`, `exterior_lighting`,
-  `refrigeration_case`, `refrigeration_rack`.
-- Each has absolute or per-area loads, schedules, heat-gain fractions where the source
-  gives them, and its evidence.
-- They are building services, not program loads. Refrigeration cases name the program
-  whose zones receive their case credits.
+`Release(release='1.1.0').building_services('<template>/<building-type>')` returns:
+
+- `{"schema_version": "1.0.0", "kind": "building_services", "release", "template", "building_type", "services", "schedules", "evidence"}`.
+- Each service has an `end_use`: `elevator`, `exhaust_fan`, `exterior_lighting`,
+  `exterior_equipment`, `refrigeration_case` or `refrigeration_rack`.
+- Each service also has:
+  - `beneficiary_program_ids`;
+  - `ownership: instantiate_once`;
+  - `assignment`: `consumer_host_when_applicable` when it sits in program zones,
+    otherwise `building_level`;
+  - its `load`: the value, basis, unit and schedule ID, heat fractions where the
+    source gives them, and the case or rack fields for refrigeration.
+- Schedules are inlined in the Program JSON schedule form.
+- Hot-water services stay in the program exports, as in 1.0.0.
 
 ## Unchanged
 
-- The DOE Ref templates' program IDs, and the shape of every 1.0.0 field.
-- The 90.1 templates. The prototype comparison is evidence only (see the
+- The 90.1 templates and the DOE Ref Midrise Apartment folders.
+- The meaning of every 1.0.0 field.
+- Program names and upstream source IDs. Records whose content changed have new
+  readable IDs (ADR 0036 section 8).
+- The prototype comparison of the 90.1 templates is evidence only (see the
   [equivalence review](reviews/prototype-equivalence-90-1.md)).

@@ -152,3 +152,36 @@ Existing fields keep their meaning.
   answer-key tests read a committed extract of the compared values. The full
   comparison is rerun locally from the pinned archives.
 - **BEMGen** receives a handoff for the new fields.
+
+## Implementation notes (release 1.1.0, 2026-10-25)
+
+Applying the register settled these points. They refine section 3 and do not change
+its rules.
+- **Small-hotel mixes.** DOE gives the elevator cores and the attic no thermostat, so
+  their null setpoints are source-backed. They are kept (`R-UNCONTROLLED`), not
+  filled. The mixes that include them keep null setpoints.
+- **Re-tagging:**
+  - Only the zones whose DOE loads differ get a new program: Outpatient `Utility`
+    (utility rooms and sterile storage) and PrimarySchool `ComputerRoom` and
+    `Library`.
+  - The outpatient storage rooms equal Janitor and keep it.
+  - The new programs and the Large Office `Basement` list their source spaces. The
+    mixes are recomposed by `scripts.program_composition.compose` itself, with those
+    areas moved, and every other template's mixes must come out unchanged.
+- **Filled densities.** A density the atlas held only through a research-assumption
+  filling is re-based on the DOE value (register class B7), even where the two agree.
+- **Slot check.** Every program slot is compared with its DOE schedule over the year,
+  not only each DOE schedule with its closest atlas schedule. This finds 22
+  assignments the per-schedule match missed. Slots with several DOE schedules take the
+  area-dominant one (`R-SLOT-CONFLICT`).
+- **Infiltration schedules** are inlined in the construction documents, which stay
+  standalone, rather than referenced from the folder's `schedules.json`.
+- **Building services** are exported per folder as building services 1.0.0, because
+  they are instantiated once per building. Programs list the IDs of those in their
+  zones.
+- **Water-use gains** are listed in Program JSON 5.1.0 as `water_use_gains`, keyed by
+  demand. Where the atlas keeps a DOE zone draw as an absolute building demand, the
+  zone attachment stays unresolved.
+- **Writers unchanged.** Release 1.0.0 pins its writers by SHA-256, so the overlay
+  reaches them through their source loaders for the length of one build
+  (`scripts.atlas_delta_release`), and release 1.0.0 still verifies.

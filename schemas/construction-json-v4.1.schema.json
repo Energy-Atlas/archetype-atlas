@@ -1,0 +1,3355 @@
+{
+  "$defs": {
+    "ach": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unit": {
+          "const": "1/s"
+        },
+        "value": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "evidence_id"
+      ],
+      "type": "object"
+    },
+    "area": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "source_partition_cfa_scaling"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "area_per_conditioned_floor_area",
+              "area_convention"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "source_ordinary_interstory_scaling"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_area_rule",
+              "paired_floor_and_ceiling",
+              "source_activation_threshold_m2"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "area_convention": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "area_per_conditioned_floor_area": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "method": {
+          "enum": [
+            "bem_surface_area",
+            "source_partition_cfa_scaling",
+            "source_ordinary_interstory_scaling"
+          ]
+        },
+        "paired_floor_and_ceiling": {
+          "const": true
+        },
+        "source_activation_threshold_m2": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "source_area_rule": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unit": {
+          "const": "m2"
+        }
+      },
+      "required": [
+        "method",
+        "unit"
+      ],
+      "type": "object"
+    },
+    "assembly": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "applicability": {
+              "type": "object"
+            },
+            "climate_group": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "layer_orientation": {
+              "const": "exterior_to_interior"
+            },
+            "layers": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "material_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "order": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "order",
+                  "material_id"
+                ],
+                "type": "object"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "metrics": {
+              "additionalProperties": {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              "type": "object"
+            },
+            "model": {
+              "enum": [
+                "opaque_layers",
+                "simple_glazing",
+                "detailed_glazing"
+              ]
+            },
+            "name": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "role": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "solar_modifiers": {
+              "type": "object"
+            },
+            "source_adjacency": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "source_attributes": {
+              "type": "object"
+            },
+            "source_family": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_fixture_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_parameters": {
+              "additionalProperties": {
+                "$ref": "#/$defs/parameter"
+              },
+              "type": "object"
+            },
+            "source_surface_ids": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "status": {
+              "const": "ready"
+            },
+            "target_adjustment": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "template": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "role",
+            "model",
+            "status",
+            "source_family",
+            "template",
+            "climate_group",
+            "layers",
+            "layer_orientation",
+            "evidence_ids",
+            "applicability",
+            "source_attributes",
+            "source_surface_ids",
+            "source_adjacency",
+            "metrics",
+            "source_parameters",
+            "target_adjustment"
+          ],
+          "type": "object"
+        },
+        {
+          "$ref": "#/$defs/nativeAssembly"
+        }
+      ]
+    },
+    "assignment": {
+      "additionalProperties": false,
+      "properties": {
+        "assembly_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "geometry": {
+          "$ref": "#/$defs/geometry"
+        },
+        "ground_method_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_definition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_element_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "source_selector": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "when": {
+          "$ref": "#/$defs/when"
+        }
+      },
+      "required": [
+        "id",
+        "assembly_id",
+        "source_definition_id",
+        "source_selector",
+        "when",
+        "source_element_ids",
+        "geometry",
+        "evidence_ids"
+      ],
+      "type": "object"
+    },
+    "component": {
+      "additionalProperties": false,
+      "properties": {
+        "assignments": {
+          "items": {
+            "$ref": "#/$defs/assignment"
+          },
+          "type": "array"
+        },
+        "disposition": {
+          "enum": [
+            "provided",
+            "source_absent"
+          ]
+        },
+        "target": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "disposition",
+        "assignments",
+        "target"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": true,
+      "properties": {
+        "extraction_date": {
+          "format": "date",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "interpretation_note": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "original_unit": {
+          "oneOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "additionalProperties": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minProperties": 1,
+              "type": "object"
+            }
+          ]
+        },
+        "original_value": {},
+        "source_file_sha256": {
+          "oneOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "additionalProperties": {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              "minProperties": 1,
+              "type": "object"
+            }
+          ]
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_project": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_revision": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transformation": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source_project",
+        "source_revision",
+        "source_locator",
+        "source_file_sha256",
+        "original_value",
+        "original_unit",
+        "transformation",
+        "extraction_date",
+        "interpretation_note"
+      ],
+      "type": "object"
+    },
+    "foundationGround": {
+      "additionalProperties": false,
+      "properties": {
+        "configuration": {
+          "additionalProperties": false,
+          "properties": {
+            "air_exchange": {
+              "additionalProperties": {
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "model": {
+                          "const": "constant_ach"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "ach_per_s"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "model": {
+                          "const": "source_sla_annual"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "sla",
+                        "reference_height_m",
+                        "height_exponent",
+                        "normalized_leakage_multiplier",
+                        "weather_factor_input"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "model": {
+                          "const": "source_garage_sherman_grimsrud"
+                        }
+                      }
+                    },
+                    "then": {
+                      "required": [
+                        "exterior_ach50_per_s",
+                        "ela_volume_coefficient_s_m",
+                        "stack_height_coefficient_m_s2_K",
+                        "wind_reference_height_m",
+                        "wind_height_exponent",
+                        "wind_coefficient_scale",
+                        "engine_site_terrain"
+                      ]
+                    }
+                  }
+                ],
+                "properties": {
+                  "ach_per_s": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "ela_volume_coefficient_s_m": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "engine_site_terrain": {
+                    "enum": [
+                      "Country",
+                      "Suburbs",
+                      "City"
+                    ]
+                  },
+                  "exterior_ach50_per_s": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "height_exponent": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "model": {
+                    "enum": [
+                      "constant_ach",
+                      "source_sla_annual",
+                      "source_garage_sherman_grimsrud"
+                    ]
+                  },
+                  "normalized_leakage_multiplier": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "reference_height_m": {
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  },
+                  "sla": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "stack_height_coefficient_m_s2_K": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "weather_factor_input": {
+                    "const": "actual_weather_ashrae_622_wsf"
+                  },
+                  "wind_coefficient_scale": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "wind_height_exponent": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "wind_reference_height_m": {
+                    "exclusiveMinimum": 0,
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "reason": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "thermal_hosts": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "type": {
+              "enum": [
+                "source_native_commercial",
+                "Slab-on-Grade",
+                "Basement, Conditioned",
+                "Basement, Unconditioned",
+                "Crawlspace, Vented",
+                "Crawlspace, Unvented",
+                "no_direct_ground_contact"
+              ]
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        },
+        "methods": {
+          "additionalProperties": {
+            "$ref": "#/$defs/foundation_method"
+          },
+          "type": "object"
+        },
+        "model_parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/foundation_modelParameters"
+          },
+          "type": "object"
+        },
+        "required_geometry": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "exclusive_minimum": {
+                "type": "number"
+              },
+              "minimum": {
+                "type": "number"
+              },
+              "unit": {
+                "enum": [
+                  "m",
+                  "m2",
+                  "m3",
+                  "1",
+                  "topology"
+                ]
+              }
+            },
+            "required": [
+              "unit"
+            ],
+            "type": "object"
+          },
+          "properties": {
+            "exposed_perimeter_m": {
+              "properties": {
+                "minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m"
+                }
+              },
+              "required": [
+                "unit",
+                "minimum"
+              ],
+              "type": "object"
+            },
+            "foundation_group_topology": {
+              "properties": {
+                "unit": {
+                  "const": "topology"
+                }
+              },
+              "required": [
+                "unit"
+              ],
+              "type": "object"
+            },
+            "foundation_top_height_above_grade_m": {
+              "properties": {
+                "minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m"
+                }
+              },
+              "required": [
+                "unit",
+                "minimum"
+              ],
+              "type": "object"
+            },
+            "foundation_wall_height_m": {
+              "properties": {
+                "exclusive_minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m"
+                }
+              },
+              "required": [
+                "unit",
+                "exclusive_minimum"
+              ],
+              "type": "object"
+            },
+            "surface_area_m2": {
+              "properties": {
+                "exclusive_minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m2"
+                }
+              },
+              "required": [
+                "unit",
+                "exclusive_minimum"
+              ],
+              "type": "object"
+            },
+            "thermal_host_height_m": {
+              "properties": {
+                "exclusive_minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m"
+                }
+              },
+              "required": [
+                "unit",
+                "exclusive_minimum"
+              ],
+              "type": "object"
+            },
+            "thermal_host_volume_m3": {
+              "properties": {
+                "exclusive_minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m3"
+                }
+              },
+              "required": [
+                "unit",
+                "exclusive_minimum"
+              ],
+              "type": "object"
+            },
+            "wall_height_above_grade_m": {
+              "properties": {
+                "minimum": {
+                  "const": 0
+                },
+                "unit": {
+                  "const": "m"
+                }
+              },
+              "required": [
+                "unit",
+                "minimum"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "configuration",
+        "methods",
+        "model_parameters",
+        "required_geometry"
+      ],
+      "title": "Embedded foundation configuration and native ground methods",
+      "type": "object"
+    },
+    "foundation_block": {
+      "additionalProperties": false,
+      "properties": {
+        "depth_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "material_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "x_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "z_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        }
+      },
+      "required": [
+        "material_id",
+        "depth_m",
+        "x_m",
+        "z_m"
+      ],
+      "type": "object"
+    },
+    "foundation_dimension": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "geometry_input"
+              ]
+            },
+            {
+              "required": [
+                "material_thickness_id"
+              ]
+            },
+            {
+              "required": [
+                "assembly_thickness_id"
+              ]
+            }
+          ],
+          "properties": {
+            "assembly_thickness_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "geometry_input": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "material_thickness_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "offset_m": {
+              "type": "number"
+            },
+            "scale": {
+              "type": "number"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "foundation_insulation": {
+      "additionalProperties": false,
+      "properties": {
+        "depth_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        },
+        "material_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "width_m": {
+          "$ref": "#/$defs/foundation_dimension"
+        }
+      },
+      "required": [
+        "material_id"
+      ],
+      "type": "object"
+    },
+    "foundation_kivaParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "custom_blocks": {
+          "items": {
+            "$ref": "#/$defs/foundation_block"
+          },
+          "type": "array"
+        },
+        "exterior_horizontal_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "exterior_vertical_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "footing": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "initialization": {
+          "additionalProperties": false,
+          "properties": {
+            "ground": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "indoor": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "offset_K": {
+              "type": "number"
+            },
+            "outdoor": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "outdoor",
+            "ground",
+            "indoor",
+            "offset_K"
+          ],
+          "type": "object"
+        },
+        "interior_horizontal_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "interior_vertical_insulation": {
+          "$ref": "#/$defs/foundation_insulation"
+        },
+        "wall_depth_below_slab_m": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "wall_height_above_grade": {
+          "$ref": "#/$defs/foundation_dimension"
+        }
+      },
+      "type": "object"
+    },
+    "foundation_method": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": [
+                  "FFactor",
+                  "CFactor",
+                  "LayeredGround"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parameters": {
+                "maxProperties": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "FFactor"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "exposed_perimeter_m"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "CFactor"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "foundation_wall_height_m"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "LayeredGround"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parameters": {
+                "required": [
+                  "wall_depth_below_slab_m",
+                  "wall_height_above_grade",
+                  "initialization"
+                ]
+              },
+              "required_geometry": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "const": "surface_area_m2"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "exposed_perimeter_m"
+                    }
+                  },
+                  {
+                    "contains": {
+                      "const": "foundation_group_topology"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "model": {
+          "enum": [
+            "FFactor",
+            "CFactor",
+            "LayeredGround",
+            "Kiva"
+          ]
+        },
+        "model_parameters_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "parameters": {
+          "$ref": "#/$defs/foundation_kivaParameters"
+        },
+        "required_geometry": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "model",
+        "model_parameters_id",
+        "parameters",
+        "required_geometry"
+      ],
+      "type": "object"
+    },
+    "foundation_modelParameters": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "enum": [
+                  "FCBoundary",
+                  "LayeredGroundBoundary"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "monthly_temperature_input"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "soil_material_id",
+              "ground_solar_absorptivity",
+              "ground_thermal_absorptivity",
+              "ground_surface_roughness_m",
+              "far_field_width_m",
+              "deep_ground_boundary_condition",
+              "deep_ground_depth_m",
+              "minimum_cell_dimension_m",
+              "maximum_cell_growth_coefficient",
+              "simulation_timestep",
+              "initialization_policy",
+              "heating_balance_temperature_C",
+              "cooling_balance_temperature_C"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "FCBoundary"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "monthly_temperature_input": {
+                "const": "fc_monthly_ground_temperature_C"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "LayeredGroundBoundary"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "monthly_temperature_input": {
+                "const": "surface_monthly_ground_temperature_C"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "Kiva"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "monthly_temperature_input"
+              ]
+            }
+          }
+        }
+      ],
+      "properties": {
+        "cooling_balance_temperature_C": {
+          "type": "number"
+        },
+        "deep_ground_boundary_condition": {
+          "enum": [
+            "ZeroFlux",
+            "GroundWater"
+          ]
+        },
+        "deep_ground_depth_m": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "far_field_width_m": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "ground_solar_absorptivity": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "ground_surface_roughness_m": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "ground_thermal_absorptivity": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "heating_balance_temperature_C": {
+          "type": "number"
+        },
+        "initialization_policy": {
+          "const": "resstock_source_start_month_1.0.0"
+        },
+        "maximum_cell_growth_coefficient": {
+          "minimum": 1,
+          "type": "number"
+        },
+        "minimum_cell_dimension_m": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "model": {
+          "enum": [
+            "FCBoundary",
+            "LayeredGroundBoundary",
+            "Kiva"
+          ]
+        },
+        "monthly_temperature_input": {
+          "enum": [
+            "fc_monthly_ground_temperature_C",
+            "surface_monthly_ground_temperature_C"
+          ]
+        },
+        "simulation_timestep": {
+          "enum": [
+            "Timestep",
+            "Hourly"
+          ]
+        },
+        "soil_material_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "model"
+      ],
+      "type": "object"
+    },
+    "geometry": {
+      "additionalProperties": false,
+      "properties": {
+        "area": {
+          "$ref": "#/$defs/area"
+        },
+        "layers": {
+          "additionalProperties": false,
+          "properties": {
+            "orientation": {
+              "const": "exterior_to_interior"
+            },
+            "paired_surface_policy": {
+              "const": "reverse_order"
+            },
+            "source_reference_reversed": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "orientation",
+            "paired_surface_policy",
+            "source_reference_reversed"
+          ],
+          "type": "object"
+        },
+        "overhang": {
+          "additionalProperties": false,
+          "properties": {
+            "depth_m": {
+              "type": "number"
+            },
+            "distance_to_bottom_of_window_m": {
+              "type": "number"
+            },
+            "distance_to_top_of_window_m": {
+              "type": "number"
+            },
+            "evidence_id": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "depth_m",
+            "distance_to_top_of_window_m",
+            "distance_to_bottom_of_window_m",
+            "evidence_id"
+          ],
+          "type": "object"
+        },
+        "roof": {
+          "additionalProperties": false,
+          "properties": {
+            "applicability": {
+              "const": "source_pitch_only"
+            },
+            "different_pitch_policy": {
+              "const": "source_recipe_reevaluation_required"
+            },
+            "source_film_rule": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_pitch_rad": {
+              "maximum": 1.5707963267948966,
+              "minimum": 0,
+              "type": "number"
+            },
+            "unit": {
+              "const": "rad"
+            }
+          },
+          "required": [
+            "source_pitch_rad",
+            "unit",
+            "applicability",
+            "different_pitch_policy",
+            "source_film_rule"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "area",
+        "layers"
+      ],
+      "type": "object"
+    },
+    "infiltration": {
+      "additionalProperties": false,
+      "properties": {
+        "default_method": {
+          "enum": [
+            "fixed_source_reference_natural_ach",
+            "fixed_source_annual_average_natural_ach"
+          ]
+        },
+        "method": {
+          "enum": [
+            "fixed_source_reference_natural_ach",
+            "fixed_source_annual_average_natural_ach"
+          ]
+        },
+        "methods": {
+          "additionalProperties": false,
+          "properties": {
+            "doe_design_flow": {
+              "additionalProperties": false,
+              "properties": {
+                "consumer_inputs": {
+                  "type": "string"
+                },
+                "evidence_id": {
+                  "type": "string"
+                },
+                "excluded_zones": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "zone_rules": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "coefficients": {
+                        "items": {
+                          "type": "number"
+                        },
+                        "type": "array"
+                      },
+                      "method": {
+                        "type": "string"
+                      },
+                      "schedule": {
+                        "type": "object"
+                      },
+                      "unit": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "zones": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "required": [
+                      "method",
+                      "value",
+                      "unit",
+                      "coefficients",
+                      "schedule",
+                      "zones"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "zone_rules",
+                "excluded_zones",
+                "evidence_id"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "natural_ach": {
+          "$ref": "#/$defs/ach"
+        },
+        "reference_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "method",
+        "reference_id",
+        "natural_ach"
+      ],
+      "type": "object"
+    },
+    "massAccounting": {
+      "additionalProperties": false,
+      "properties": {
+        "added_mass_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "additional_mass": {
+          "additionalProperties": false,
+          "properties": {
+            "allocation_policy": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "entries": {
+              "items": {
+                "$ref": "#/$defs/massEntry"
+              },
+              "type": "array"
+            },
+            "legacy_partition_selector_policy": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "provided",
+                "known_zero"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "entries",
+            "allocation_policy",
+            "legacy_partition_selector_policy"
+          ],
+          "type": "object"
+        },
+        "floor_pair_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "paired_face_area_policy": {
+          "const": "mean_zone_weighted_faces"
+        },
+        "paired_surface_policy": {
+          "const": {
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "canonical_side": "InteriorFloor",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          }
+        },
+        "physical_capacity_budgets": {
+          "additionalProperties": false,
+          "properties": {
+            "InteriorFloor": {
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              },
+              "type": "array"
+            },
+            "InteriorWall": {
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "InteriorWall",
+            "InteriorFloor"
+          ],
+          "type": "object"
+        },
+        "physical_inventory_profile_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "provenance": {
+          "additionalProperties": false,
+          "properties": {
+            "extraction_date": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "interpretation_note": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "original_unit": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "original_value": {
+              "type": "object"
+            },
+            "source_file_sha256": {
+              "type": "object"
+            },
+            "source_locator": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_project": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_revision": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "transformation": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_project",
+            "source_revision",
+            "source_locator",
+            "source_file_sha256",
+            "extraction_date",
+            "original_unit",
+            "original_value",
+            "transformation",
+            "interpretation_note"
+          ],
+          "type": "object"
+        },
+        "recipes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/massRecipe"
+          },
+          "type": "object"
+        },
+        "reference": {
+          "additionalProperties": false,
+          "properties": {
+            "counted_floor_area_m2": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "profile_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "quantity_basis": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "profile_id",
+            "counted_floor_area_m2",
+            "quantity_basis"
+          ],
+          "type": "object"
+        },
+        "reference_area_approximation": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_profile_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "interpretation": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "unequal_multiplier_pair_counts": {
+              "additionalProperties": false,
+              "properties": {
+                "floor_pairs": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "wall_pairs": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "floor_pairs",
+                "wall_pairs"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "unequal_multiplier_pair_counts",
+            "evidence_profile_id",
+            "interpretation"
+          ],
+          "type": "object"
+        },
+        "removed_wall_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "residual_floor_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "residual_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "status": {
+          "const": "ready"
+        }
+      },
+      "required": [
+        "schema_version",
+        "status",
+        "reference",
+        "floor_pair_policy",
+        "added_mass_policy",
+        "removed_wall_policy",
+        "residual_floor_policy",
+        "residual_policy",
+        "physical_inventory_profile_id",
+        "paired_surface_policy",
+        "paired_face_area_policy",
+        "reference_area_approximation",
+        "physical_capacity_budgets",
+        "additional_mass",
+        "recipes",
+        "provenance"
+      ],
+      "type": "object"
+    },
+    "massBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "area_per_counted_floor_area": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "reference_area_m2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "source_areal_capacity_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "source_assembly_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_assembly_id",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "reference_area_m2",
+        "source_areal_capacity_J_m2_K",
+        "source_locator"
+      ],
+      "type": "object"
+    },
+    "massEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "area_convention": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "area_per_counted_floor_area": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "evidence_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "recipe_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "reference_area_m2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "scope": {
+          "$ref": "#/$defs/massScope"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_operands": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "recipe_id",
+        "scope",
+        "reference_area_m2",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "source_operands",
+        "source_locator",
+        "area_convention"
+      ],
+      "type": "object"
+    },
+    "massLayer": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap"
+          ]
+        },
+        "properties": {
+          "minProperties": 1,
+          "type": "object"
+        }
+      },
+      "required": [
+        "model",
+        "properties"
+      ],
+      "type": "object"
+    },
+    "massRecipe": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "layers": {
+          "items": {
+            "$ref": "#/$defs/massLayer"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "model": {
+          "const": "opaque_layers"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "model",
+        "layers",
+        "capacity_J_m2_K",
+        "source_locator",
+        "interpretation"
+      ],
+      "type": "object"
+    },
+    "massScope": {
+      "additionalProperties": false,
+      "properties": {
+        "counted_floor_area": {
+          "type": "boolean"
+        },
+        "kind": {
+          "enum": [
+            "source_space",
+            "whole_dwelling"
+          ]
+        },
+        "native_building_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_space_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_space_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_story": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "counted_floor_area"
+      ],
+      "type": "object"
+    },
+    "material": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap",
+            "Gas",
+            "StandardGlazing",
+            "SimpleGlazing",
+            "BulkMaterial"
+          ]
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "properties": {
+          "minProperties": 1,
+          "type": "object"
+        },
+        "property_evidence": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "model",
+        "properties",
+        "property_evidence"
+      ],
+      "type": "object"
+    },
+    "metadata": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_policy": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "precedence": {
+              "const": "space_type_then_story_then_building_default"
+            },
+            "source_absent_override": {
+              "const": "inherit_building_default"
+            },
+            "unmatched_or_ambiguous": {
+              "const": "error"
+            },
+            "variant_resolution": {
+              "const": "explicit_assignment_id_or_unique_compatible_rule"
+            }
+          },
+          "required": [
+            "precedence",
+            "variant_resolution",
+            "source_absent_override",
+            "unmatched_or_ambiguous",
+            "evidence_id"
+          ],
+          "type": "object"
+        },
+        "input_sha256": {
+          "additionalProperties": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "migration": {
+          "additionalProperties": false,
+          "properties": {
+            "physics": {
+              "const": "unchanged"
+            },
+            "review_status": {
+              "const": "design_accepted"
+            },
+            "source_contract": {
+              "const": "construction-json/1.0.0"
+            },
+            "translator_owner": {
+              "const": "BEMGen"
+            }
+          },
+          "required": [
+            "source_contract",
+            "physics",
+            "translator_owner",
+            "review_status"
+          ],
+          "type": "object"
+        },
+        "selection_decisions": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "source_definition_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "source_files": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "properties": {
+              "sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              "source_revision": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "sha256",
+              "source_revision"
+            ],
+            "type": "object"
+          },
+          "type": "object"
+        },
+        "variant_selections": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "source_definition_ids",
+        "selection_decisions",
+        "assignment_policy",
+        "input_sha256",
+        "source_files",
+        "migration",
+        "variant_selections"
+      ],
+      "type": "object"
+    },
+    "nativeAssembly": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "native_opaque_layers"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "f_W_m_K"
+                  ]
+                },
+                {
+                  "required": [
+                    "c_W_m2_K"
+                  ]
+                }
+              ]
+            },
+            "required": [
+              "layers",
+              "layer_orientation"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "FFactorGroundFloorConstruction"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "c_W_m2_K"
+                  ]
+                },
+                {
+                  "required": [
+                    "layers"
+                  ]
+                }
+              ]
+            },
+            "required": [
+              "f_W_m_K"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "CFactorUndergroundWallConstruction"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "f_W_m_K"
+                  ]
+                },
+                {
+                  "required": [
+                    "layers"
+                  ]
+                }
+              ]
+            },
+            "required": [
+              "c_W_m2_K"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "c_W_m2_K": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "f_W_m_K": {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "layer_orientation": {
+          "const": "exterior_to_interior"
+        },
+        "layers": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "material_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "order": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "order",
+              "material_id"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "model": {
+          "enum": [
+            "FFactorGroundFloorConstruction",
+            "CFactorUndergroundWallConstruction",
+            "native_opaque_layers"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "const": "ready"
+        }
+      },
+      "required": [
+        "id",
+        "model",
+        "status",
+        "evidence_ids"
+      ],
+      "type": "object"
+    },
+    "parameter": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unit": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "evidence_id"
+      ],
+      "type": "object"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "building_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "climate": {
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "exact"
+            },
+            "value": {
+              "enum": [
+                "0A",
+                "0B",
+                "1A",
+                "1B",
+                "2A",
+                "2B",
+                "3A",
+                "3B",
+                "3C",
+                "4A",
+                "4B",
+                "4C",
+                "5A",
+                "5B",
+                "5C",
+                "6A",
+                "6B",
+                "7A",
+                "7B",
+                "8A",
+                "8B"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "value"
+          ],
+          "type": "object"
+        },
+        "construction_set_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "definition_release": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/evidence"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "evidence_view": {
+          "enum": [
+            "source",
+            "reviewed"
+          ]
+        },
+        "reference_variant_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_climate_label": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_fixture_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "space_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "template": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vintage": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "source_template",
+                "stock_vintage"
+              ]
+            },
+            "status": {
+              "const": "exact"
+            },
+            "value": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "value",
+            "kind"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "construction_set_id",
+        "definition_release",
+        "building_type",
+        "template",
+        "evidence_view",
+        "source_family",
+        "climate",
+        "vintage",
+        "space_type",
+        "reference_variant_id",
+        "source_fixture_id",
+        "evidence"
+      ],
+      "type": "object"
+    },
+    "when": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "not": {
+              "required": [
+                "space_type"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "space_type"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "space_type"
+            ]
+          }
+        },
+        {
+          "else": {
+            "not": {
+              "required": [
+                "source_story_id"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "story"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_story_id"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "boundary_condition": {
+          "enum": [
+            "Outdoors",
+            "Surface",
+            "Adiabatic",
+            "Ground"
+          ]
+        },
+        "exterior_space_type": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "interior_space_type": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "building_default",
+            "space_type",
+            "whole_dwelling",
+            "story"
+          ]
+        },
+        "source_story_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "space_type": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "thermal_host": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "window_operation": {
+          "enum": [
+            "fixed",
+            "operable"
+          ]
+        }
+      },
+      "required": [
+        "scope"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:archetype-atlas:construction-set:4.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "building"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "components": {
+            "additionalProperties": {
+              "properties": {
+                "assignments": {
+                  "items": {
+                    "properties": {
+                      "when": {
+                        "properties": {
+                          "scope": {
+                            "enum": [
+                              "building_default",
+                              "space_type",
+                              "story"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "source": {
+            "properties": {
+              "source_fixture_id": {
+                "type": "null"
+              },
+              "space_type": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "space_type"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "components": {
+            "additionalProperties": {
+              "properties": {
+                "assignments": {
+                  "items": {
+                    "properties": {
+                      "when": {
+                        "properties": {
+                          "scope": {
+                            "const": "space_type"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "source": {
+            "properties": {
+              "source_fixture_id": {
+                "type": "null"
+              },
+              "space_type": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "whole_dwelling"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "components": {
+            "additionalProperties": {
+              "properties": {
+                "assignments": {
+                  "items": {
+                    "properties": {
+                      "when": {
+                        "properties": {
+                          "scope": {
+                            "const": "whole_dwelling"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "source": {
+            "properties": {
+              "source_fixture_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "space_type": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "assemblies": {
+      "additionalProperties": {
+        "$ref": "#/$defs/assembly"
+      },
+      "type": "object"
+    },
+    "components": {
+      "additionalProperties": false,
+      "properties": {
+        "BuildingShading": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "object_type": "Shading",
+                    "shading_scope": "building"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "ExteriorDoor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "Door"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "ExteriorFloor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "Floor"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "ExteriorRoof": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "Roof"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "ExteriorWall": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "Wall"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "ExteriorWindow": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "Window"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "FloorOverFoundation": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Floor"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "FoundationWall": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Ground",
+                      "GroundFCfactorMethod",
+                      "Foundation",
+                      "Surface",
+                      "Adiabatic",
+                      "Outdoors"
+                    ],
+                    "surface_type": "Wall"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "GlassDoor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "GlassDoor"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "GroundFloor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Ground",
+                      "GroundFCfactorMethod",
+                      "Foundation"
+                    ],
+                    "surface_type": "Floor"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "InteriorCeiling": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Ceiling"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "InteriorDoor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Door"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "InteriorFloor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Floor"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "InteriorPartition": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "object_type": "InternalMass"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "InteriorWall": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Wall"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "InteriorWindow": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Window"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "OverheadDoor": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "OverheadDoor"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "RimJoist": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors",
+                      "Surface",
+                      "Adiabatic"
+                    ],
+                    "surface_type": "Wall"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "SiteShading": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "object_type": "Shading",
+                    "shading_scope": "site"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Skylight": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "boundary_conditions": [
+                      "Outdoors"
+                    ],
+                    "surface_type": "Skylight"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "SpaceShading": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "object_type": "Shading",
+                    "shading_scope": "space"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "TubularDaylightDiffuser": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "surface_type": "TubularDaylightDiffuser"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "TubularDaylightDome": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/component"
+            },
+            {
+              "properties": {
+                "target": {
+                  "const": {
+                    "surface_type": "TubularDaylightDome"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "ExteriorWall",
+        "ExteriorRoof",
+        "ExteriorFloor",
+        "ExteriorWindow",
+        "ExteriorDoor",
+        "GlassDoor",
+        "OverheadDoor",
+        "Skylight",
+        "InteriorWall",
+        "InteriorFloor",
+        "InteriorCeiling",
+        "InteriorDoor",
+        "InteriorWindow",
+        "InteriorPartition",
+        "TubularDaylightDome",
+        "TubularDaylightDiffuser",
+        "SpaceShading",
+        "BuildingShading",
+        "SiteShading",
+        "GroundFloor",
+        "FoundationWall",
+        "FloorOverFoundation",
+        "RimJoist"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": {
+        "$ref": "#/$defs/evidence"
+      },
+      "type": "object"
+    },
+    "export_mode": {
+      "const": "source_ready"
+    },
+    "fenestration_defaults": {
+      "additionalProperties": false,
+      "description": "Whole-building window over exterior wall area by direction (roof: skylight over roof) for conditioned, unconditioned and all zone surfaces of the source model.",
+      "properties": {
+        "all": {
+          "additionalProperties": false,
+          "properties": {
+            "E": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "N": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "S": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "W": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "roof": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "N",
+            "E",
+            "S",
+            "W",
+            "roof"
+          ],
+          "type": "object"
+        },
+        "basis": {
+          "const": "whole_building_zone_surfaces"
+        },
+        "conditioned": {
+          "additionalProperties": false,
+          "properties": {
+            "E": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "N": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "S": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "W": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "roof": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "N",
+            "E",
+            "S",
+            "W",
+            "roof"
+          ],
+          "type": "object"
+        },
+        "evidence_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unconditioned": {
+          "additionalProperties": false,
+          "properties": {
+            "E": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "N": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "S": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "W": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "roof": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "N",
+            "E",
+            "S",
+            "W",
+            "roof"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "conditioned",
+        "unconditioned",
+        "all",
+        "basis",
+        "evidence_id"
+      ],
+      "type": "object"
+    },
+    "foundation_ground": {
+      "$ref": "#/$defs/foundationGround"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "infiltration": {
+      "$ref": "#/$defs/infiltration"
+    },
+    "kind": {
+      "const": "construction_set"
+    },
+    "mass_accounting": {
+      "$ref": "#/$defs/massAccounting"
+    },
+    "materials": {
+      "additionalProperties": {
+        "$ref": "#/$defs/material"
+      },
+      "type": "object"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "4.1.0"
+    },
+    "scope": {
+      "enum": [
+        "building",
+        "whole_dwelling"
+      ]
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "export_mode",
+    "id",
+    "name",
+    "scope",
+    "source",
+    "components",
+    "infiltration",
+    "assemblies",
+    "materials",
+    "evidence",
+    "metadata",
+    "mass_accounting",
+    "foundation_ground"
+  ],
+  "title": "Unified selected above-ground construction set 2.0.0 (release minor 4.1.0)",
+  "type": "object"
+}

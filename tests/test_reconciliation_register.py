@@ -88,6 +88,10 @@ class RegisterTests(unittest.TestCase):
         self.assertEqual([r['id'] for r in self.document['rows'] if r['decision'] not in
                           ('add', 'replace', 'keep', 'fill', 'leave', 'omit')], [])
 
+    def test_site_page_matches_the_register(self):
+        from scripts import reconciliation_page
+        self.assertEqual(reconciliation_page.PAGE.read_text(encoding='utf-8'), reconciliation_page.page(self.document))
+
     def test_inputs_are_pinned(self):
         self.assertEqual(len(self.document['input_sha256']), 30)
 
