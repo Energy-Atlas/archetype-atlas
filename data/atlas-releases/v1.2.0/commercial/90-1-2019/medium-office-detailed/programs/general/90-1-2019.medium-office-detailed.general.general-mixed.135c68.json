@@ -1,0 +1,216 @@
+{
+  "available_details": [
+    "GeneralMix"
+  ],
+  "building_type": "MediumOfficeDetailed",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-classroom.3c6f9e",
+        "represented_area_m2": 29.79100896624999,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-69b96161c44dcc9ca460",
+        "weight": 0.0059794697602444805
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-closed-office.88c0a6",
+        "represented_area_m2": 929.9027067231247,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-ba16ada9355471d06d66",
+        "weight": 0.18664440405894497
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-conference.3566cf",
+        "represented_area_m2": 258.6329756765625,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-a1e7cc23f341a8cbce2f",
+        "weight": 0.05191123465512888
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-corridor.848d07",
+        "represented_area_m2": 446.6429776799998,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-e51458a3636e7e65a822",
+        "weight": 0.08964745644193224
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-dining.f3b228",
+        "represented_area_m2": 68.82878371312512,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-30195f9a79c58d947c03",
+        "weight": 0.01381489399413401
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-elec-mech-room.4de0a8",
+        "represented_area_m2": 149.42474903296875,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-d147eed86f330e3019ae",
+        "weight": 0.0299916249660082
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-lobby.68944c",
+        "represented_area_m2": 273.83412975000016,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-e0bc7afe5246d0d55b3e",
+        "weight": 0.054962317658256155
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-open-office.563e3a",
+        "represented_area_m2": 2120.1789728392196,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-50b95b3013e0ffff6875",
+        "weight": 0.42554940212869635
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-restroom.5847ed",
+        "represented_area_m2": 179.1177869250001,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-dfc69bfc932adb29a356",
+        "weight": 0.035951430569314165
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-stair.eddf6f",
+        "represented_area_m2": 184.2354379800001,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-2f23525d351ff101f5f5",
+        "weight": 0.036978614299866
+      },
+      {
+        "program_id": "90-1-2019.medium-office-detailed.source.medium-office-storage.9690b5",
+        "represented_area_m2": 341.6263127137496,
+        "source_geometry_file_id": "sourcefile-3ff68f103396fa7d1ea1",
+        "source_program_id": "program-2f1498f9d00947c78d27",
+        "weight": 0.06856915146747462
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-493cd47e3167bf74ab1cb2f1"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.medium-office-detailed.general.general-mixed.135c68",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4a5f3ebd47866243bbc63e5f",
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-56ecee5440272bb0d0b77fda",
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 7.543685618487696
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a53a3ea073c31ae2ffe20389",
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-6368b3bac0c75247cbb903dc",
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 6.683173364376492
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-e6a3e412141eb2e866220941",
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.medium-office-detailed.general-mixed-occupancy.72dd2b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.0711850825478321
+    }
+  ],
+  "mode": "general",
+  "name": "General_Mixed_MediumOfficeDetailed",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.medium-office-detailed.general-mixed-cooling-setpoint.72e8d6"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-493cd47e3167bf74ab1cb2f1",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.medium-office-detailed.general-mixed-heating-setpoint.466706"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2019"
+}

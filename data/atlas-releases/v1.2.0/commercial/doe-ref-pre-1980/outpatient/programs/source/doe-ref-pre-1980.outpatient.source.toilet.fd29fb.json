@@ -1,0 +1,309 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-04e670061e997979a9243182",
+    "evidence-1f62dcdd893c571f27104a84",
+    "evidence-2c51e88ba3b8e04bea1ac8d2",
+    "evidence-5ac437a70951366e6ae54503",
+    "evidence-65d96f2f9cb764ecbfee096a",
+    "evidence-7826fe13c1006b2691f1d380",
+    "evidence-7f1c92c6623622750ce00f9f",
+    "evidence-853d2e81fcff675b84cb57ff",
+    "evidence-854b7dc4b6e4bcc020d710bc",
+    "evidence-936d829bdff1acca8713f5fb",
+    "evidence-9a47295ca6a69c99282a088e",
+    "evidence-d723b33074dd0a4251b14c53",
+    "evidence-dc5d5d14e271406857289635",
+    "evidence-f239d156ec332edd16dbed7c"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-9a47295ca6a69c99282a088e",
+    "roof": 0.0,
+    "wwr": {
+      "E": null,
+      "N": 0.25,
+      "S": null,
+      "W": 0.0
+    }
+  },
+  "filling_evidence_ids": [
+    "evidence-1a610a5d3cfe6f7f82576c8d",
+    "evidence-7f00f24489d8fc6ea74e4aeb",
+    "evidence-ba993c7f71b7ac5232c19e8f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.outpatient.source.toilet.fd29fb",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-01eb5a2cbdfa0d4806e29d2b",
+      "evidence_id": "evidence-04e670061e997979a9243182",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.outpatient-bldg-occ.1cd2d3",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-80b1a49b470394a16fc78768",
+      "evidence_id": "evidence-2c51e88ba3b8e04bea1ac8d2",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.bldg-light-sch.1abd8d",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-0c4629099cef38ca392bed0f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-db469a477ba3cf883f7d6239",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-2f65e94e0f2ca034062ace43",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 8.611128333367779
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-6067ad75041b8a93e39464eb",
+      "evidence_id": "evidence-1f62dcdd893c571f27104a84",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.bldg-light-sch.1abd8d",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-0c4629099cef38ca392bed0f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-db469a477ba3cf883f7d6239",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-2f65e94e0f2ca034062ace43",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-22976d83ab33bcccfcd7d60f",
+      "evidence_id": "evidence-5ac437a70951366e6ae54503",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.bldg-equip-sch.da12c6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-0c19b85aa47df49e0eb9ba2d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-6c6d65d0669abd2cba104b3e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "radiant": {
+          "evidence_id": "evidence-494a0b744033e4b747af43b7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.3
+        }
+      },
+      "unit": "W/m2",
+      "value": 7.534737291696805
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-13c98cce5bff114e4640b325",
+      "evidence_id": "evidence-854b7dc4b6e4bcc020d710bc",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-34dd3d38f82e7696f9af",
+          "resolution-86b7325f8c567e7ef138"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.doe-reference-no-object-constant-0.47b394",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-f66a9ec3b99d0f3d5c69bcae",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-defec08b5c8c52eee5aa5a49",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-6ba782518edca13107094084",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Toilet_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d723b33074dd0a4251b14c53",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.outpatient.outpatient-activity.a2d448"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-65d96f2f9cb764ecbfee096a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.outpatient.outpatient-clg-setp.1fd613"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-dc5d5d14e271406857289635",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.outpatient.outpatient-htg-setp.6c67a5"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-7826fe13c1006b2691f1d380",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "source_id": "program-82a99ce34023f0ad804a",
+  "template": "DOE Ref Pre-1980"
+}

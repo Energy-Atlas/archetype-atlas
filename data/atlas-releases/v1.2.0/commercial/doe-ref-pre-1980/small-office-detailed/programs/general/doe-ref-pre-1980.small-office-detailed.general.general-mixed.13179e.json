@@ -1,0 +1,202 @@
+{
+  "available_details": [
+    "GeneralMix"
+  ],
+  "building_type": "SmallOfficeDetailed",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-closed-office.aab927",
+        "represented_area_m2": 169.983531,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-c25d1b186c8ccc40f5bd",
+        "weight": 0.3325471074383099
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-conference.205131",
+        "represented_area_m2": 41.806368,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-12a78aff78068f8e8f04",
+        "weight": 0.08178784538192421
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-corridor.922d8b",
+        "represented_area_m2": 61.993424399999995,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-ce44a6ad4af0d670772c",
+        "weight": 0.12128077257328854
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-elec-mech-room.58429b",
+        "represented_area_m2": 10.273195179375,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-a2bc4aa777372a27c084",
+        "weight": 0.02009795490746892
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-lobby.3e7f1c",
+        "represented_area_m2": 41.79910995,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-020c9fa174174fa9301e",
+        "weight": 0.08177364610321208
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-open-office.7f1309",
+        "represented_area_m2": 84.79579815,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-ded6b2033c8e0afaa5e1",
+        "weight": 0.16589017319392718
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-restroom.b4d402",
+        "represented_area_m2": 20.54639035875,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-ab3558ee2156685e0aef",
+        "weight": 0.04019590981493784
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-stair.b6c311",
+        "represented_area_m2": 10.273195179375,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-43ddd1393f5ee3918e7c",
+        "weight": 0.02009795490746892
+      },
+      {
+        "program_id": "doe-ref-pre-1980.small-office-detailed.source.small-office-storage.f571d9",
+        "represented_area_m2": 69.68523361312499,
+        "source_geometry_file_id": "sourcefile-11c08ff1be190bd03028",
+        "source_program_id": "program-fe98c6cb7b4f2d2accb1",
+        "weight": 0.1363286356794624
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-449e16216912c3f604af44f6"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.small-office-detailed.general.general-mixed.13179e",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b76e9f205404bcf02020cc0b",
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-28b7d7f4a45caed0dc990fb6",
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-office-detailed.general-mixed-electric-equipment.20567c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 8.668346115212492
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f3995a15ff8f54a36d8eedc8",
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d4fb42a47ce0d4fea3455ba8",
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-office-detailed.general-mixed-lighting.77fbef",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 20.663297461625838
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-e2955925bcb2ec3387e98927",
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-office-detailed.general-mixed-occupancy.71147a",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.07919709516210041
+    }
+  ],
+  "mode": "general",
+  "name": "General_Mixed_SmallOfficeDetailed",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.small-office-detailed.general-mixed-activity.b9c77d"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.small-office-detailed.general-mixed-cooling-setpoint.71a886"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-449e16216912c3f604af44f6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.small-office-detailed.general-mixed-heating-setpoint.97d3ed"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref Pre-1980"
+}

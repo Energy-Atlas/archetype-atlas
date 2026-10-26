@@ -9,7 +9,7 @@ rebuilt from the release, so their physics and policies are unchanged.
 
 Release 1.1.0 (the DOE reference reconciliation, ADR 0037) exports the additive
 minors Program JSON 5.1.0 and constructions 4.1.0 / 3.1.0, and building services
-1.0.0 per folder: `Release(release='1.1.0')`.
+1.0.0 per folder: `Release(release='1.1.0')`; release 1.2.0 adds the construction-only folders' programs (ADR 0039).
 
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
@@ -32,7 +32,7 @@ from scripts.common import ROOT, load_json
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'release': 'atlas-release-1.1.0', 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
@@ -145,7 +145,7 @@ def program_minor(major):
     for version in VERSIONS:
         variant = schema['$defs'][version]
         variant['properties']['schema_version'] = {'const': '5.1.0'}
-        variant['properties']['source']['properties']['release'] = {'const': MINOR['release']}
+        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in MINOR['releases']]}
         variant['properties'].update(copy.deepcopy(added))
         controls = variant['$defs']['controls']['properties']
         for field in HUMIDITY:
@@ -198,7 +198,7 @@ def services_schema():
             'type': 'object', 'additionalProperties': False,
             'required': ['schema_version', 'kind', 'release', 'template', 'building_type', 'services', 'schedules'],
             'properties': {'schema_version': {'const': '1.0.0'}, 'kind': {'const': 'building_services'},
-                           'release': {'const': MINOR['release']}, 'template': {'type': 'string'}, 'building_type': {'type': 'string'},
+                           'release': {'enum': [f'atlas-release-{r}' for r in MINOR['releases']]}, 'template': {'type': 'string'}, 'building_type': {'type': 'string'},
                            'services': {'type': 'array', 'items': {'type': 'object', 'required': ['id', 'end_use', 'load', 'beneficiary_program_ids']}},
                            'schedules': {'type': 'object'}, 'evidence': {'type': 'object'}}}
 
@@ -237,11 +237,14 @@ class Release:
     """A written release folder, exported for consumers."""
 
     def __init__(self, files=None, root=TARGET, release='1.0.0'):
-        if release not in ('1.0.0', '1.1.0'):
+        if release not in ('1.0.0', *MINOR['releases']):
             raise ValueError('Unknown release: '+release)
         if files is None and release == '1.1.0':
             from scripts import atlas_delta_release
             files = atlas_delta_release.files()
+        elif files is None and release != '1.0.0':
+            from scripts import atlas_minor_release
+            files = atlas_minor_release.files(release)
         if files is None:
             root = Path(root)
             files = {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob('*') if p.is_file()}
@@ -337,7 +340,7 @@ class Release:
         document = {'schema_version': '5.0.0', 'version': version, **{k: v for k, v in document.items() if k != 'schema_version'}}
         document['id'] = program_id
         schema = PROGRAM_SCHEMA
-        if self.release == '1.1.0':
+        if self.release != '1.0.0':
             document, schema = self.program_minor(document, program_id, version), MINOR['program'][0]
         errors = [e.message for e in validator(schema).iter_errors(document)]
         if errors:
@@ -354,7 +357,7 @@ class Release:
         exported = self.suite(folder).export(program_id, version)
         schedules = self.bundle(version)['schedules_by_id']
         document = {**document, 'schema_version': MINOR['program'][1]}
-        document['source']['release'] = MINOR['release']
+        document['source']['release'] = f'atlas-release-{self.release}'
         for key in ('fenestration', 'source_calendar', 'source_spaces', 'excluded_source_spaces'):
             if key in stored:
                 document[key] = copy.deepcopy(stored[key])
@@ -392,8 +395,8 @@ class Release:
     def building_services(self, folder):
         """Building services 1.0.0 for one folder, e.g. `doe-ref-1980-2004/hospital`."""
         from scripts.schedule_json import normalize_schedule
-        if self.release != '1.1.0':
-            raise ValueError('Building services are exported from release 1.1.0')
+        if self.release == '1.0.0':
+            raise ValueError('Building services are exported from release 1.1.0 on')
         services = self.folder_services(f'commercial/{folder}/')
         suite = self.suite(f'commercial/{folder}/')
         added = {sid: s for sid, s in services.items() if s['load'].get('quantity') != 'hot_water_volume'}
@@ -407,7 +410,7 @@ class Release:
                     schedules[sid] = normalize_schedule({**suite.schedule(sid), 'id': sid})
         evidence = json.loads(self.files[f'evidence/commercial/{folder}.json'])
         first = next(iter(added.values()))
-        document = {'schema_version': MINOR['services'][1], 'kind': 'building_services', 'release': MINOR['release'],
+        document = {'schema_version': MINOR['services'][1], 'kind': 'building_services', 'release': f'atlas-release-{self.release}',
                     'template': first['template'], 'building_type': first['building_type'],
                     'services': [{**copy.deepcopy(s), 'id': sid} for sid, s in sorted(added.items())], 'schedules': schedules,
                     'evidence': {e: evidence[e] for s in added.values() for e in s['evidence_ids'] if e in evidence}}
@@ -419,7 +422,7 @@ class Release:
     def construction(self, set_id, key, representation):
         """Construction detailed 4.0.0 or unified 3.0.0 for one context of a set."""
         name, _, version, _ = CONSTRUCTION_SCHEMAS[representation]
-        if self.release == '1.1.0':
+        if self.release != '1.0.0':
             name, version, _ = MINOR[representation]
         document = self.constructions.export(set_id, key, representation)
         document['schema_version'] = version
@@ -447,7 +450,7 @@ def main():
     parser.add_argument('--construction')
     parser.add_argument('--context')
     parser.add_argument('--representation', choices=tuple(CONSTRUCTION_SCHEMAS), default='detailed')
-    parser.add_argument('--release', choices=('1.0.0', '1.1.0'), default='1.0.0')
+    parser.add_argument('--release', choices=('1.0.0', *MINOR['releases']), default='1.0.0')
     parser.add_argument('--building-services', metavar='FOLDER', help='e.g. doe-ref-1980-2004/hospital (release 1.1.0)')
     args = parser.parse_args()
     if args.schemas or args.check_schemas:
