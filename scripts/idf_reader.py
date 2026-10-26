@@ -74,6 +74,10 @@ class Model:
         self.relative = len(rules) > 2 and rules[2].lower() == 'relative'
         self.zones = {f[0].lower(): self._zone(f) for f in self.all('zone')}
         self.zone_lists = {f[0].lower(): [z.lower() for z in f[1:] if z] for f in self.all('zonelist')}
+        # A ZoneGroup multiplies every zone of its zone list (the prototypes' repeated floors).
+        for f in self.all('zonegroup'):
+            for zone in self.zone_lists.get(f[1].lower(), []):
+                self.zones[zone]['multiplier'] *= int(number(f[2], 1) or 1)
 
     def _version(self):
         text = self.first('version', ['0'])[0]
@@ -158,7 +162,9 @@ class Model:
         return result
 
     def internal_mass(self):
-        return [{'name': f[0], 'construction': f[1], 'zones': self.zone_names(f[2]), 'area': number(f[3])}
+        """InternalMass; 9.6 added a Space or SpaceList field before Surface Area."""
+        area_field = 4 if self.version >= (9, 6) else 3
+        return [{'name': f[0], 'construction': f[1], 'zones': self.zone_names(f[2]), 'area': number(f[area_field])}
                 for f in self.all('internalmass')]
 
     def materials(self):

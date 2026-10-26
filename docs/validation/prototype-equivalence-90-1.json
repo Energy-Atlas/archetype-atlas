@@ -1,0 +1,1925 @@
+{
+ "inputs": {
+  "prototypes": "sources/reference-models-lock.json (pnnl-prototypes, commercial-ashrae901 bundles; Denver for geometry, all 19 climates for constructions)",
+  "atlas": "data/atlas-releases/v1.0.0 (90-1-2007/2013/2019 construction sets) and data/construction-inputs/geometry-v1.json",
+  "tolerance": "1% relative",
+  "script": "python -m scripts.prototype_equivalence"
+ },
+ "geometry": {
+  "90-1-2007/highrise-apartment": {
+   "conditioned_floor_m2": {
+    "prototype": 7836.48,
+    "atlas": 7836.48,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 783.65,
+    "atlas": 783.65,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 3855.02,
+    "atlas": 3855.02,
+    "equal": true
+   }
+  },
+  "90-1-2007/midrise-apartment": {
+   "conditioned_floor_m2": {
+    "prototype": 3134.61,
+    "atlas": 3134.59,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 783.65,
+    "atlas": 783.65,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1542.04,
+    "atlas": 1542.06,
+    "equal": true
+   }
+  },
+  "90-1-2007/hospital": {
+   "conditioned_floor_m2": {
+    "prototype": 22436.18,
+    "atlas": 22436.08,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 3739.37,
+    "atlas": 4353.13,
+    "equal": false
+   },
+   "exterior_wall_m2": {
+    "prototype": 5197.44,
+    "atlas": 7372.67,
+    "equal": false
+   }
+  },
+  "90-1-2007/large-hotel": {
+   "conditioned_floor_m2": {
+    "prototype": 11345.29,
+    "atlas": 11345.29,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1978.84,
+    "atlas": 1978.84,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 4025.82,
+    "atlas": 4025.82,
+    "equal": true
+   }
+  },
+  "90-1-2007/small-hotel": {
+   "conditioned_floor_m2": {
+    "prototype": 4013.58,
+    "atlas": 4013.58,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1003.4,
+    "atlas": 1003.4,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1694.58,
+    "atlas": 1694.58,
+    "equal": true
+   }
+  },
+  "90-1-2007/large-office": {
+   "conditioned_floor_m2": {
+    "prototype": 46320.38,
+    "atlas": 46320.38,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 3563.11,
+    "atlas": 3563.11,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 11589.54,
+    "atlas": 11589.54,
+    "equal": true
+   }
+  },
+  "90-1-2007/medium-office": {
+   "conditioned_floor_m2": {
+    "prototype": 4982.19,
+    "atlas": 4982.19,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1660.73,
+    "atlas": 1660.73,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1977.67,
+    "atlas": 1977.67,
+    "equal": true
+   }
+  },
+  "90-1-2007/small-office": {
+   "conditioned_floor_m2": {
+    "prototype": 511.16,
+    "atlas": 511.16,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 598.76,
+    "atlas": 598.76,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 281.51,
+    "atlas": 281.51,
+    "equal": true
+   }
+  },
+  "90-1-2007/outpatient": {
+   "conditioned_floor_m2": {
+    "prototype": 3804.01,
+    "atlas": 3804.01,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1373.29,
+    "atlas": 1373.29,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1553.34,
+    "atlas": 1553.34,
+    "equal": true
+   }
+  },
+  "90-1-2007/quick-service-restaurant": {
+   "conditioned_floor_m2": {
+    "prototype": 232.34,
+    "atlas": 232.34,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 258.86,
+    "atlas": 258.86,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 185.89,
+    "atlas": 185.89,
+    "equal": true
+   }
+  },
+  "90-1-2007/full-service-restaurant": {
+   "conditioned_floor_m2": {
+    "prototype": 511.15,
+    "atlas": 511.15,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 569.51,
+    "atlas": 569.51,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 275.72,
+    "atlas": 275.72,
+    "equal": true
+   }
+  },
+  "90-1-2007/retail-standalone": {
+   "conditioned_floor_m2": {
+    "prototype": 2293.99,
+    "atlas": 2293.99,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 2293.99,
+    "atlas": 2293.99,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1177.02,
+    "atlas": 1177.02,
+    "equal": true
+   }
+  },
+  "90-1-2007/retail-stripmall": {
+   "conditioned_floor_m2": {
+    "prototype": 2090.32,
+    "atlas": 2090.32,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 2090.32,
+    "atlas": 2090.32,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1184.15,
+    "atlas": 1184.15,
+    "equal": true
+   }
+  },
+  "90-1-2007/primary-school": {
+   "conditioned_floor_m2": {
+    "prototype": 6871.0,
+    "atlas": 6871.0,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 6871.0,
+    "atlas": 6871.0,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 2512.0,
+    "atlas": 2512.0,
+    "equal": true
+   }
+  },
+  "90-1-2007/secondary-school": {
+   "conditioned_floor_m2": {
+    "prototype": 19592.0,
+    "atlas": 19592.0,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 11902.0,
+    "atlas": 11902.0,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 5968.0,
+    "atlas": 5968.0,
+    "equal": true
+   }
+  },
+  "90-1-2007/warehouse": {
+   "conditioned_floor_m2": {
+    "prototype": 4598.25,
+    "atlas": 4835.13,
+    "equal": false
+   },
+   "exterior_roof_m2": {
+    "prototype": 4598.25,
+    "atlas": 4598.25,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 2496.99,
+    "atlas": 2496.99,
+    "equal": true
+   }
+  },
+  "90-1-2013/highrise-apartment": {
+   "conditioned_floor_m2": {
+    "prototype": 7836.48,
+    "atlas": 7836.48,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 783.65,
+    "atlas": 783.65,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 3855.02,
+    "atlas": 3855.02,
+    "equal": true
+   }
+  },
+  "90-1-2013/midrise-apartment": {
+   "conditioned_floor_m2": {
+    "prototype": 3134.61,
+    "atlas": 3134.59,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 783.65,
+    "atlas": 783.65,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1542.04,
+    "atlas": 1542.06,
+    "equal": true
+   }
+  },
+  "90-1-2013/hospital": {
+   "conditioned_floor_m2": {
+    "prototype": 22436.18,
+    "atlas": 22436.08,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 3739.37,
+    "atlas": 4353.13,
+    "equal": false
+   },
+   "exterior_wall_m2": {
+    "prototype": 5197.44,
+    "atlas": 7372.67,
+    "equal": false
+   }
+  },
+  "90-1-2013/large-hotel": {
+   "conditioned_floor_m2": {
+    "prototype": 11345.29,
+    "atlas": 11345.29,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1978.84,
+    "atlas": 1978.84,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 4025.82,
+    "atlas": 4025.82,
+    "equal": true
+   }
+  },
+  "90-1-2013/small-hotel": {
+   "conditioned_floor_m2": {
+    "prototype": 4013.58,
+    "atlas": 4013.58,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1003.4,
+    "atlas": 1003.4,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1694.58,
+    "atlas": 1694.58,
+    "equal": true
+   }
+  },
+  "90-1-2013/large-office": {
+   "conditioned_floor_m2": {
+    "prototype": 46320.38,
+    "atlas": 46320.38,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 3563.11,
+    "atlas": 3563.11,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 11589.54,
+    "atlas": 11589.54,
+    "equal": true
+   }
+  },
+  "90-1-2013/medium-office": {
+   "conditioned_floor_m2": {
+    "prototype": 4982.19,
+    "atlas": 4982.19,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1660.73,
+    "atlas": 1660.73,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1977.67,
+    "atlas": 1977.67,
+    "equal": true
+   }
+  },
+  "90-1-2013/small-office": {
+   "conditioned_floor_m2": {
+    "prototype": 511.16,
+    "atlas": 511.16,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 598.76,
+    "atlas": 598.76,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 281.51,
+    "atlas": 281.51,
+    "equal": true
+   }
+  },
+  "90-1-2013/outpatient": {
+   "conditioned_floor_m2": {
+    "prototype": 3804.01,
+    "atlas": 3804.01,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1373.29,
+    "atlas": 1373.29,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1553.34,
+    "atlas": 1553.34,
+    "equal": true
+   }
+  },
+  "90-1-2013/quick-service-restaurant": {
+   "conditioned_floor_m2": {
+    "prototype": 232.34,
+    "atlas": 232.34,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 258.86,
+    "atlas": 258.86,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 185.89,
+    "atlas": 185.89,
+    "equal": true
+   }
+  },
+  "90-1-2013/full-service-restaurant": {
+   "conditioned_floor_m2": {
+    "prototype": 511.15,
+    "atlas": 511.15,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 569.51,
+    "atlas": 569.51,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 275.72,
+    "atlas": 275.72,
+    "equal": true
+   }
+  },
+  "90-1-2013/retail-standalone": {
+   "conditioned_floor_m2": {
+    "prototype": 2293.99,
+    "atlas": 2293.99,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 2293.99,
+    "atlas": 2293.99,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1177.02,
+    "atlas": 1177.02,
+    "equal": true
+   }
+  },
+  "90-1-2013/retail-stripmall": {
+   "conditioned_floor_m2": {
+    "prototype": 2090.32,
+    "atlas": 2090.32,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 2090.32,
+    "atlas": 2090.32,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1184.15,
+    "atlas": 1184.15,
+    "equal": true
+   }
+  },
+  "90-1-2013/primary-school": {
+   "conditioned_floor_m2": {
+    "prototype": 6871.0,
+    "atlas": 6871.0,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 6871.0,
+    "atlas": 6871.0,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 2512.0,
+    "atlas": 2512.0,
+    "equal": true
+   }
+  },
+  "90-1-2013/secondary-school": {
+   "conditioned_floor_m2": {
+    "prototype": 19592.0,
+    "atlas": 19592.0,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 11902.0,
+    "atlas": 11902.0,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 5968.0,
+    "atlas": 5968.0,
+    "equal": true
+   }
+  },
+  "90-1-2013/warehouse": {
+   "conditioned_floor_m2": {
+    "prototype": 4598.25,
+    "atlas": 4835.13,
+    "equal": false
+   },
+   "exterior_roof_m2": {
+    "prototype": 4598.25,
+    "atlas": 4598.25,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 2496.99,
+    "atlas": 2496.99,
+    "equal": true
+   }
+  },
+  "90-1-2019/highrise-apartment": {
+   "conditioned_floor_m2": {
+    "prototype": 7836.48,
+    "atlas": 7836.48,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 783.65,
+    "atlas": 783.65,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 3855.02,
+    "atlas": 3855.02,
+    "equal": true
+   }
+  },
+  "90-1-2019/midrise-apartment": {
+   "conditioned_floor_m2": {
+    "prototype": 3134.61,
+    "atlas": 3134.59,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 783.65,
+    "atlas": 783.65,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1542.04,
+    "atlas": 1542.06,
+    "equal": true
+   }
+  },
+  "90-1-2019/hospital": {
+   "conditioned_floor_m2": {
+    "prototype": 22436.18,
+    "atlas": 22436.08,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 3739.37,
+    "atlas": 4353.13,
+    "equal": false
+   },
+   "exterior_wall_m2": {
+    "prototype": 5197.44,
+    "atlas": 7372.67,
+    "equal": false
+   }
+  },
+  "90-1-2019/large-hotel": {
+   "conditioned_floor_m2": {
+    "prototype": 11345.29,
+    "atlas": 11345.29,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1978.84,
+    "atlas": 1978.84,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 4025.82,
+    "atlas": 4025.82,
+    "equal": true
+   }
+  },
+  "90-1-2019/small-hotel": {
+   "conditioned_floor_m2": {
+    "prototype": 4013.58,
+    "atlas": 4013.58,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1003.4,
+    "atlas": 1003.4,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1694.58,
+    "atlas": 1694.58,
+    "equal": true
+   }
+  },
+  "90-1-2019/large-office": {
+   "conditioned_floor_m2": {
+    "prototype": 46320.38,
+    "atlas": 46320.38,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 3563.11,
+    "atlas": 3563.11,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 11589.54,
+    "atlas": 11589.54,
+    "equal": true
+   }
+  },
+  "90-1-2019/medium-office": {
+   "conditioned_floor_m2": {
+    "prototype": 4982.19,
+    "atlas": 4982.19,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1660.73,
+    "atlas": 1660.73,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1977.67,
+    "atlas": 1977.67,
+    "equal": true
+   }
+  },
+  "90-1-2019/small-office": {
+   "conditioned_floor_m2": {
+    "prototype": 511.16,
+    "atlas": 511.16,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 598.76,
+    "atlas": 598.76,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 281.51,
+    "atlas": 281.51,
+    "equal": true
+   }
+  },
+  "90-1-2019/outpatient": {
+   "conditioned_floor_m2": {
+    "prototype": 3804.01,
+    "atlas": 3804.01,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 1373.29,
+    "atlas": 1373.29,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1553.34,
+    "atlas": 1553.34,
+    "equal": true
+   }
+  },
+  "90-1-2019/quick-service-restaurant": {
+   "conditioned_floor_m2": {
+    "prototype": 232.34,
+    "atlas": 232.34,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 258.86,
+    "atlas": 258.86,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 185.89,
+    "atlas": 185.89,
+    "equal": true
+   }
+  },
+  "90-1-2019/full-service-restaurant": {
+   "conditioned_floor_m2": {
+    "prototype": 511.15,
+    "atlas": 511.15,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 569.51,
+    "atlas": 569.51,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 275.72,
+    "atlas": 275.72,
+    "equal": true
+   }
+  },
+  "90-1-2019/retail-standalone": {
+   "conditioned_floor_m2": {
+    "prototype": 2293.99,
+    "atlas": 2293.99,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 2293.99,
+    "atlas": 2293.99,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1177.02,
+    "atlas": 1177.02,
+    "equal": true
+   }
+  },
+  "90-1-2019/retail-stripmall": {
+   "conditioned_floor_m2": {
+    "prototype": 2090.32,
+    "atlas": 2090.32,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 2090.32,
+    "atlas": 2090.32,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 1184.15,
+    "atlas": 1184.15,
+    "equal": true
+   }
+  },
+  "90-1-2019/primary-school": {
+   "conditioned_floor_m2": {
+    "prototype": 6871.0,
+    "atlas": 6871.0,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 6871.0,
+    "atlas": 6871.0,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 2512.0,
+    "atlas": 2512.0,
+    "equal": true
+   }
+  },
+  "90-1-2019/secondary-school": {
+   "conditioned_floor_m2": {
+    "prototype": 19592.0,
+    "atlas": 19592.0,
+    "equal": true
+   },
+   "exterior_roof_m2": {
+    "prototype": 11902.0,
+    "atlas": 11902.0,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 5968.0,
+    "atlas": 5968.0,
+    "equal": true
+   }
+  },
+  "90-1-2019/warehouse": {
+   "conditioned_floor_m2": {
+    "prototype": 4598.25,
+    "atlas": 4835.13,
+    "equal": false
+   },
+   "exterior_roof_m2": {
+    "prototype": 4598.25,
+    "atlas": 4598.25,
+    "equal": true
+   },
+   "exterior_wall_m2": {
+    "prototype": 2496.99,
+    "atlas": 2496.99,
+    "equal": true
+   }
+  }
+ },
+ "fenestration": {
+  "90-1-2007/highrise-apartment": {
+   "prototype_wwr": 0.2984,
+   "atlas_source_wwr": 0.2984,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/midrise-apartment": {
+   "prototype_wwr": 0.199,
+   "atlas_source_wwr": 0.199,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/hospital": {
+   "prototype_wwr": 0.1633,
+   "atlas_source_wwr": 0.1151,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/large-hotel": {
+   "prototype_wwr": 0.3015,
+   "atlas_source_wwr": 0.3016,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/small-hotel": {
+   "prototype_wwr": 0.1088,
+   "atlas_source_wwr": 0.1087,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/large-office": {
+   "prototype_wwr": 0.4,
+   "atlas_source_wwr": 0.4,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/medium-office": {
+   "prototype_wwr": 0.33,
+   "atlas_source_wwr": 0.3301,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/small-office": {
+   "prototype_wwr": 0.2119,
+   "atlas_source_wwr": 0.212,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/outpatient": {
+   "prototype_wwr": 0.1985,
+   "atlas_source_wwr": 0.1985,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/quick-service-restaurant": {
+   "prototype_wwr": 0.14,
+   "atlas_source_wwr": 0.14,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/full-service-restaurant": {
+   "prototype_wwr": 0.1711,
+   "atlas_source_wwr": 0.1711,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/retail-standalone": {
+   "prototype_wwr": 0.0713,
+   "atlas_source_wwr": 0.0713,
+   "prototype_srr_by_climate": [
+    0.0029
+   ]
+  },
+  "90-1-2007/retail-stripmall": {
+   "prototype_wwr": 0.1051,
+   "atlas_source_wwr": 0.105,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2007/primary-school": {
+   "prototype_wwr": 0.35,
+   "atlas_source_wwr": 0.35,
+   "prototype_srr_by_climate": [
+    0.0019
+   ]
+  },
+  "90-1-2007/secondary-school": {
+   "prototype_wwr": 0.35,
+   "atlas_source_wwr": 0.35,
+   "prototype_srr_by_climate": [
+    0.0112
+   ]
+  },
+  "90-1-2007/warehouse": {
+   "prototype_wwr": 0.0071,
+   "atlas_source_wwr": 0.0071,
+   "prototype_srr_by_climate": [
+    0.0032
+   ]
+  },
+  "90-1-2013/highrise-apartment": {
+   "prototype_wwr": 0.2984,
+   "atlas_source_wwr": 0.2984,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/midrise-apartment": {
+   "prototype_wwr": 0.199,
+   "atlas_source_wwr": 0.199,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/hospital": {
+   "prototype_wwr": 0.1633,
+   "atlas_source_wwr": 0.1151,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/large-hotel": {
+   "prototype_wwr": 0.3015,
+   "atlas_source_wwr": 0.3016,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/small-hotel": {
+   "prototype_wwr": 0.1088,
+   "atlas_source_wwr": 0.1087,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/large-office": {
+   "prototype_wwr": 0.4,
+   "atlas_source_wwr": 0.4,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/medium-office": {
+   "prototype_wwr": 0.33,
+   "atlas_source_wwr": 0.3301,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/small-office": {
+   "prototype_wwr": 0.2119,
+   "atlas_source_wwr": 0.212,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/outpatient": {
+   "prototype_wwr": 0.1985,
+   "atlas_source_wwr": 0.1985,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/quick-service-restaurant": {
+   "prototype_wwr": 0.14,
+   "atlas_source_wwr": 0.14,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/full-service-restaurant": {
+   "prototype_wwr": 0.1711,
+   "atlas_source_wwr": 0.1711,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/retail-standalone": {
+   "prototype_wwr": 0.0713,
+   "atlas_source_wwr": 0.0713,
+   "prototype_srr_by_climate": [
+    0.0029,
+    0.0104
+   ]
+  },
+  "90-1-2013/retail-stripmall": {
+   "prototype_wwr": 0.1051,
+   "atlas_source_wwr": 0.105,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2013/primary-school": {
+   "prototype_wwr": 0.35,
+   "atlas_source_wwr": 0.35,
+   "prototype_srr_by_climate": [
+    0.0019
+   ]
+  },
+  "90-1-2013/secondary-school": {
+   "prototype_wwr": 0.35,
+   "atlas_source_wwr": 0.35,
+   "prototype_srr_by_climate": [
+    0.0112
+   ]
+  },
+  "90-1-2013/warehouse": {
+   "prototype_wwr": 0.0071,
+   "atlas_source_wwr": 0.0071,
+   "prototype_srr_by_climate": [
+    0.0032,
+    0.0149
+   ]
+  },
+  "90-1-2019/highrise-apartment": {
+   "prototype_wwr": 0.2984,
+   "atlas_source_wwr": 0.2984,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/midrise-apartment": {
+   "prototype_wwr": 0.199,
+   "atlas_source_wwr": 0.199,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/hospital": {
+   "prototype_wwr": 0.1633,
+   "atlas_source_wwr": 0.1151,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/large-hotel": {
+   "prototype_wwr": 0.3015,
+   "atlas_source_wwr": 0.3016,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/small-hotel": {
+   "prototype_wwr": 0.1088,
+   "atlas_source_wwr": 0.1087,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/large-office": {
+   "prototype_wwr": 0.4,
+   "atlas_source_wwr": 0.4,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/medium-office": {
+   "prototype_wwr": 0.33,
+   "atlas_source_wwr": 0.3301,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/small-office": {
+   "prototype_wwr": 0.2119,
+   "atlas_source_wwr": 0.212,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/outpatient": {
+   "prototype_wwr": 0.1985,
+   "atlas_source_wwr": 0.1985,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/quick-service-restaurant": {
+   "prototype_wwr": 0.14,
+   "atlas_source_wwr": 0.14,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/full-service-restaurant": {
+   "prototype_wwr": 0.1711,
+   "atlas_source_wwr": 0.1711,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/retail-standalone": {
+   "prototype_wwr": 0.0713,
+   "atlas_source_wwr": 0.0713,
+   "prototype_srr_by_climate": [
+    0.0029,
+    0.0104
+   ]
+  },
+  "90-1-2019/retail-stripmall": {
+   "prototype_wwr": 0.1051,
+   "atlas_source_wwr": 0.105,
+   "prototype_srr_by_climate": [
+    0.0
+   ]
+  },
+  "90-1-2019/primary-school": {
+   "prototype_wwr": 0.35,
+   "atlas_source_wwr": 0.35,
+   "prototype_srr_by_climate": [
+    0.0019
+   ]
+  },
+  "90-1-2019/secondary-school": {
+   "prototype_wwr": 0.35,
+   "atlas_source_wwr": 0.35,
+   "prototype_srr_by_climate": [
+    0.0112
+   ]
+  },
+  "90-1-2019/warehouse": {
+   "prototype_wwr": 0.0071,
+   "atlas_source_wwr": 0.0071,
+   "prototype_srr_by_climate": [
+    0.0032,
+    0.0149
+   ]
+  }
+ },
+ "internal_mass": {
+  "90-1-2007/highrise-apartment": {
+   "prototype": {
+    "counted": 1.6216,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 1.8018,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2007/midrise-apartment": {
+   "prototype": {
+    "counted": 1.3514,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2007/hospital": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/large-hotel": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/small-hotel": {
+   "prototype": {
+    "counted": 0.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 0.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/large-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 1.8462
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2007/medium-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2007/small-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.2223
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2007/outpatient": {
+   "prototype": {
+    "counted": 1.9856,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/quick-service-restaurant": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2007/full-service-restaurant": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2007/retail-standalone": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 1.9895,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/retail-stripmall": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/primary-school": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/secondary-school": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2007/warehouse": {
+   "prototype": {
+    "counted": 1.311,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 0.6744,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2013/highrise-apartment": {
+   "prototype": {
+    "counted": 1.6216,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 1.8018,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2013/midrise-apartment": {
+   "prototype": {
+    "counted": 1.3514,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2013/hospital": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/large-hotel": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/small-hotel": {
+   "prototype": {
+    "counted": 0.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 0.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/large-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 1.8462
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2013/medium-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2013/small-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.2223
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2013/outpatient": {
+   "prototype": {
+    "counted": 1.9856,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/quick-service-restaurant": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2013/full-service-restaurant": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2013/retail-standalone": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 1.9895,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/retail-stripmall": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/primary-school": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/secondary-school": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2013/warehouse": {
+   "prototype": {
+    "counted": 1.311,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 0.6744,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2019/highrise-apartment": {
+   "prototype": {
+    "counted": 1.6216,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 1.8018,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2019/midrise-apartment": {
+   "prototype": {
+    "counted": 1.3514,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  },
+  "90-1-2019/hospital": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/large-hotel": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/small-hotel": {
+   "prototype": {
+    "counted": 0.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 0.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/large-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 1.8462
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2019/medium-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2019/small-office": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.2223
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2019/outpatient": {
+   "prototype": {
+    "counted": 1.9856,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/quick-service-restaurant": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2019/full-service-restaurant": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 2.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": false
+  },
+  "90-1-2019/retail-standalone": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 1.9895,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/retail-stripmall": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/primary-school": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/secondary-school": {
+   "prototype": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 2.0,
+    "uncounted": 0.0
+   },
+   "counted_equal": true,
+   "uncounted_equal": true
+  },
+  "90-1-2019/warehouse": {
+   "prototype": {
+    "counted": 1.311,
+    "uncounted": 0.0
+   },
+   "atlas": {
+    "counted": 0.6744,
+    "uncounted": 0.0
+   },
+   "counted_equal": false,
+   "uncounted_equal": true
+  }
+ },
+ "constructions": {
+  "90-1-2007": {
+   "ExteriorDoor": {
+    "equal": 0,
+    "differ": 266,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 2.469
+    }
+   },
+   "ExteriorFloor": {
+    "equal": 0,
+    "differ": 19,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.072
+    }
+   },
+   "ExteriorRoof": {
+    "equal": 212,
+    "differ": 92,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.036
+    }
+   },
+   "ExteriorWall": {
+    "equal": 0,
+    "differ": 304,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.641
+    }
+   },
+   "ExteriorWindow": {
+    "equal": 64,
+    "differ": 240,
+    "median_prototype_over_atlas": {
+     "u_factor": 0.928,
+     "shgc": 1.0
+    }
+   },
+   "GlassDoor": {
+    "equal": 8,
+    "differ": 30,
+    "median_prototype_over_atlas": {
+     "u_factor": 0.6,
+     "shgc": 1.0
+    }
+   },
+   "GroundFloor": {
+    "equal": 247,
+    "differ": 0,
+    "median_prototype_over_atlas": {}
+   },
+   "Skylight": {
+    "equal": 0,
+    "differ": 76,
+    "median_prototype_over_atlas": {
+     "u_factor": 0.872,
+     "shgc": 1.0
+    }
+   }
+  },
+  "90-1-2013": {
+   "ExteriorDoor": {
+    "equal": 0,
+    "differ": 266,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 1.739
+    }
+   },
+   "ExteriorFloor": {
+    "equal": 0,
+    "differ": 19,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.046
+    }
+   },
+   "ExteriorRoof": {
+    "equal": 212,
+    "differ": 92,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.034
+    }
+   },
+   "ExteriorWall": {
+    "equal": 0,
+    "differ": 304,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.599
+    }
+   },
+   "ExteriorWindow": {
+    "equal": 266,
+    "differ": 38,
+    "median_prototype_over_atlas": {
+     "u_factor": 0.986,
+     "shgc": 1.0
+    }
+   },
+   "GlassDoor": {
+    "equal": 0,
+    "differ": 38,
+    "median_prototype_over_atlas": {
+     "u_factor": 0.544,
+     "shgc": 1.0
+    }
+   },
+   "GroundFloor": {
+    "equal": 247,
+    "differ": 0,
+    "median_prototype_over_atlas": {}
+   },
+   "Skylight": {
+    "equal": 45,
+    "differ": 31,
+    "median_prototype_over_atlas": {
+     "u_factor": 1.36,
+     "shgc": 1.222
+    }
+   }
+  },
+  "90-1-2019": {
+   "ExteriorDoor": {
+    "equal": 0,
+    "differ": 266,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 1.459
+    }
+   },
+   "ExteriorFloor": {
+    "equal": 0,
+    "differ": 19,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.046
+    }
+   },
+   "ExteriorRoof": {
+    "equal": 212,
+    "differ": 92,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.034
+    }
+   },
+   "ExteriorWall": {
+    "equal": 0,
+    "differ": 304,
+    "median_prototype_over_atlas": {
+     "layer_resistance": 0.599
+    }
+   },
+   "ExteriorWindow": {
+    "equal": 141,
+    "differ": 163,
+    "median_prototype_over_atlas": {
+     "u_factor": 1.024,
+     "shgc": 0.991
+    }
+   },
+   "GlassDoor": {
+    "equal": 0,
+    "differ": 38,
+    "median_prototype_over_atlas": {
+     "u_factor": 0.576,
+     "shgc": 1.095
+    }
+   },
+   "GroundFloor": {
+    "equal": 247,
+    "differ": 0,
+    "median_prototype_over_atlas": {}
+   },
+   "Skylight": {
+    "equal": 51,
+    "differ": 25,
+    "median_prototype_over_atlas": {
+     "u_factor": 1.0,
+     "shgc": 1.222
+    }
+   }
+  }
+ }
+}
