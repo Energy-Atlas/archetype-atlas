@@ -251,3 +251,22 @@ by probing the source files; follow them before falling back on G1.
   and to check over the full year.
 - **EnergyPlus 8.0.** Manufactured-housing models are EnergyPlus 8.0. Confirm the
   idf reader's field layout for that version.
+
+## 6. Progress (agent 2, G5)
+
+- **S12a, done (2026-10-26).** `scripts.resstock_dwellings` migrates the 41 dwellings
+  into `residential/resstock-sdr/`; every value equals its frozen source and one
+  dwelling per type exports exactly as the frozen exporters do
+  (`tests/test_residential_storage.py`). Program JSON 5.3.0 is the dwelling minor.
+- **S12, done (2026-10-26).** `scripts.iecc_residential` extracts the 4,144 models into
+  seven inputs of 2.5–2.8 MB; 28 programs and 14 construction sets with 1,036
+  contexts. The answer keys (448 models in 4A and 1AWH) pass. ADR 0041 lists the
+  agent decisions, among them the 1A suffix reading (WH warm-humid location, T
+  tropical location, S semi-conditioned tropical design).
+- **S13, done (2026-10-26)** in the same release, so 1.4.0 ships both (G6).
+  `scripts.manufactured_housing` reads the 304 HUD and FinalRule models (CompleteSet
+  identical by checksum); 4 programs, 4 sets with 76 contexts; the answer keys (152
+  HUD models) pass. ADR 0042 records the 8.0 layout check and the missing existing
+  category.
+- **Release 1.4.0** is written and reproduces byte for byte; the 1.0.0, 1.1.0 and
+  1.2.0 verifies pass.

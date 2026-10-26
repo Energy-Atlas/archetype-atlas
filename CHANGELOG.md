@@ -1,5 +1,27 @@
 # Changelog
 
+## Atlas release 1.4.0 candidate (residential families) — 2026-10-26
+
+Add the residential tree of ADR 0038 as a delta on 1.0.0 that holds release 1.3.0
+(and so 1.1.0 and 1.2.0) unchanged:
+- **ResStock (S12a):** the 41 SDR fixture dwellings, one program each with its
+  annual series and fillings, and one construction set of one context. Every value
+  equals its frozen source; exports equal the frozen exporters' documents.
+- **IECC residential (S12, ADR 0041):** editions 2006 to 2024, single-family and
+  per-unit multifamily, one program per appliance fuel, entries with `applies_with`
+  for foundation, climate code and heating system; 14 construction sets with 1,036
+  climate × foundation contexts. Extracted offline from 4,144 pinned models.
+- **Manufactured housing (S13, ADR 0042):** HUD Code and DOE Final Rule 2022
+  (tier 1 and 2), single- and multi-section; contexts per location with the five 3A
+  cities as sub-contexts. Gap: no existing-building category.
+- **Contracts:** Program JSON 5.3.0 (additive minor for dwellings) and source model
+  constructions 1.0.0; `idf_schedules` reads Schedule:Year, Week and Day objects.
+
+Answer-key tests compare every IECC edition in 4A and 1AWH and every
+manufactured-housing location under the HUD Code with the IDFs when they are present.
+No hosted check or deployment is claimed. See the
+[release and migration notes](docs/release-notes-atlas-v1.4.0.md).
+
 ## Atlas release 1.3.0 candidate (IECC commercial prototypes) — 2026-10-26
 
 Add the IECC commercial prototype family (ADR 0040). It covers 16 PNNL building types in
