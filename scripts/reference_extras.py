@@ -80,16 +80,73 @@ def humidistats(model):
             for f in model.all('zonecontrol:humidistat')]
 
 
+PLANE_TOLERANCE_M = 0.01
+
+
+def wall_frame(points):
+    """A vertical wall as (unit normal, plane offset, horizontal axis, (s0, s1, z0, z1))."""
+    nx, ny, nz = idf_reader.newell(points)
+    length = (nx*nx + ny*ny + nz*nz) ** 0.5
+    n = (nx/length, ny/length, nz/length)
+    u = (-n[1], n[0], 0.0)
+    s = [p[0]*u[0] + p[1]*u[1] for p in points]
+    z = [p[2] for p in points]
+    return n, sum(a*b for a, b in zip(n, points[0])), u, (min(s), max(s), min(z), max(z))
+
+
+def union_area(rectangles):
+    """Area of a union of axis-aligned rectangles (s0, s1, z0, z1)."""
+    xs = sorted({v for r in rectangles for v in r[:2]})
+    total = 0.0
+    for a, b in zip(xs, xs[1:]):
+        spans = sorted((r[2], r[3]) for r in rectangles if r[0] <= a and r[1] >= b)
+        covered, end = 0.0, None
+        for lo, hi in spans:
+            if end is None or lo > end:
+                covered += hi - lo
+                end = hi
+            elif hi > end:
+                covered += hi - end
+                end = hi
+        total += (b - a) * covered
+    return total
+
+
+def coinciding_area(wall, others):
+    """Area of an outdoor wall that coincides with other zones' walls on the same plane, whatever their
+    boundary: the source marks such stretches Outdoors although they are interior (BEMGen gap note, A2)."""
+    n, d, u, (s0, s1, z0, z1) = wall_frame(wall)
+    overlaps = []
+    for other in others:
+        m, e, _, _ = wall_frame(other)
+        dot = sum(a*b for a, b in zip(n, m))
+        if abs(abs(dot) - 1) > 1e-6 or abs(d - (e if dot > 0 else -e)) > PLANE_TOLERANCE_M:
+            continue
+        s = [p[0]*u[0] + p[1]*u[1] for p in other]
+        z = [p[2] for p in other]
+        rect = (max(s0, min(s)), min(s1, max(s)), max(z0, min(z)), min(z1, max(z)))
+        if rect[1] - rect[0] > PLANE_TOLERANCE_M and rect[3] - rect[2] > PLANE_TOLERANCE_M:
+            overlaps.append(rect)
+    return union_area(overlaps) if overlaps else 0.0
+
+
 def zone_fenestration(model):
-    """{zone: wall and window area by orientation, roof and skylight area}, unmultiplied."""
+    """{zone: true outdoor wall and window area by orientation, roof and skylight area}, unmultiplied.
+
+    The wall area excludes stretches that coincide with another zone's wall on the same plane."""
     zones = defaultdict(lambda: {'wall': defaultdict(float), 'window': defaultdict(float)})
     hosts = {}
-    for s in model.surfaces():
+    surfaces = model.surfaces()
+    walls = [s for s in surfaces if s['type'] == 'wall']
+    for s in surfaces:
         if s['boundary'] != 'outdoors' or s['type'] not in ('wall', 'roof'):
             continue
         key = s['zone'].lower()
         direction = idf_reader.orientation(s['vertices'], model.north_axis) if s['type'] == 'wall' else 'roof'
-        zones[key]['wall'][direction] += idf_reader.area(s['vertices'])
+        area = idf_reader.area(s['vertices'])
+        if s['type'] == 'wall':
+            area -= coinciding_area(s['vertices'], [w['vertices'] for w in walls if w['zone'].lower() != key])
+        zones[key]['wall'][direction] += area
         hosts[s['name'].lower()] = (key, direction)
     for w in model.fenestration():
         host = hosts.get(w['host'].lower())
