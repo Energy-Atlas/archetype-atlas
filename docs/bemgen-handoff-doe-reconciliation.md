@@ -85,8 +85,8 @@ Programs whose content changed have new readable IDs; select by name and templat
 8. **Infiltration: two methods in the construction set.**
    - `infiltration.default_method` stays `fixed_source_reference_natural_ach`.
    - `methods.doe_design_flow` gives DOE's zone rules: flow per exterior surface
-     area or per exterior wall area at 0.001133 m³/s·m² (post-1980) or the
-     pre-1980 value, air changes for attics and entries, and an inlined schedule.
+     area or per exterior wall area at 0.001133 m³/s·m² in both vintages,
+     air changes for attics and entries, and an inlined schedule.
    - BEMGen computes each zone's exterior area from its own geometry. The rule
      names the DOE zones it covers.
 9. **Humidity setpoints.** The hospital and outpatient programs carry humidifying and
