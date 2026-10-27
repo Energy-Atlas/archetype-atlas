@@ -23,6 +23,11 @@ class Release200Tests(unittest.TestCase):
         cls.listed = atlas_snapshot.verify()
         cls.files = atlas_snapshot.files()
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.listed, cls.files
+
     def test_full_snapshot_with_the_values_of_1_6_0(self):
         self.assertIsNone(self.listed['base_release'])
         self.assertEqual(self.listed['snapshot_of']['release'], '1.6.0')
