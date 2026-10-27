@@ -54,6 +54,8 @@ IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
 LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+# Inputs a full snapshot carries so that its exports read no frozen folder (ADR 0046).
+EXPORTER_INPUTS = 'exporter-inputs.json'
 SOURCE_METHOD = 'source_design_flow'
 NATURAL_ACH = ('fixed_source_reference_natural_ach', 'fixed_source_annual_average_natural_ach')
 CONSTRUCTION_SCHEMAS = {'detailed': ('construction-json-v4.schema.json', 'construction-json-v3.schema.json', '4.0.0',
@@ -514,21 +516,44 @@ class Release:
 
     def exporter(self, version):
         if version not in self._exporters:
+            inactive = self.exporter_inputs()['inactive_controls'] if self.exporter_inputs() else None
             if version == 'source':
                 from scripts.program_json_v3 import ProgramExporter
-                self._exporters[version] = ProgramExporter(self.bundle(version))
+                self._exporters[version] = ProgramExporter(self.bundle(version), inactive_controls=inactive)
             else:
                 from scripts.program_water_heating import ProgramExporter
                 services, programs = self.capped()
-                self._exporters[version] = ProgramExporter(self.bundle(version), capped_services=services, capped_programs=programs)
+                self._exporters[version] = ProgramExporter(self.bundle(version), capped_services=services, capped_programs=programs,
+                                                           inactive_controls=inactive)
         return self._exporters[version]
+
+    @contextlib.contextmanager
+    def carried_inputs(self):
+        """Exporters built by the pinned residential modules take this release's exporter inputs, for one export."""
+        from scripts import program_json_v3
+        saved = program_json_v3.INACTIVE_CONTROLS
+        if self.exporter_inputs():
+            program_json_v3.INACTIVE_CONTROLS = set(self.exporter_inputs()['inactive_controls'])
+        try:
+            yield
+        finally:
+            program_json_v3.INACTIVE_CONTROLS = saved
+
+    def exporter_inputs(self):
+        """The exporter inputs a full snapshot carries (ADR 0046), or None for a release that reads them from the frozen folders."""
+        data = self.files.get(EXPORTER_INPUTS)
+        return json.loads(data) if data is not None else None
 
     def capped(self):
         """The approved capped-delivery demands (ADR 0018) under release IDs.
 
         The policy names them by definition-release IDs; services are matched by their water
-        path and programs by upstream source ID and name, which the release keeps.
+        path and programs by upstream source ID and name, which the release keeps. A full
+        snapshot carries the matched IDs.
         """
+        if self.exporter_inputs():
+            inputs = self.exporter_inputs()
+            return set(inputs['capped_services']), set(inputs['capped_programs'])
         from scripts.program_water_heating import CAPPED_PROGRAMS, CAPPED_SERVICES
         definitions = ROOT/'data/definition-releases/v0.1.1'
         old_services = {s['id']: s for s in load_json(definitions/'services.json')}
@@ -547,7 +572,7 @@ class Release:
         if version not in VERSIONS:
             raise ValueError('Unknown program version: '+version)
         if program_id not in self.programs and program_id in self.dwellings.programs:
-            with later_residential(self.release):
+            with later_residential(self.release), self.carried_inputs():
                 return self.dwellings.program(program_id, version)
         if version == 'filled' and str(self.programs[program_id][1].get('template', '')).startswith('IECC '):
             raise ValueError(program_id+': IECC programs export as source only. They hold source values with no fillings, and the '

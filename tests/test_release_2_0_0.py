@@ -1,9 +1,16 @@
 """Release 2.0.0: the full snapshot of release 1.6.0 (ADR 0046, phase 1)."""
+import io
 import json
 import os
 import unittest
+from unittest import mock
 
 from scripts import atlas_minor_release, atlas_snapshot
+from scripts.atlas_exports import EXPORTER_INPUTS
+
+FROZEN = ('releases', 'definition-releases', 'resolution-releases', 'water-reporting-releases', 'completion-releases',
+          'construction-releases', 'construction-equivalent-releases', 'construction-mass-releases',
+          'construction-foundation-releases', 'water-releases')
 
 
 class EncodingTests(unittest.TestCase):
@@ -42,7 +49,7 @@ class Release200Tests(unittest.TestCase):
                 else:
                     self.assertEqual(self.files[path], data)
         extra = set(self.files) - set(source)
-        self.assertTrue(all(p.endswith('/generator.json') for p in extra))
+        self.assertTrue(all(p.endswith('/generator.json') or p == EXPORTER_INPUTS for p in extra))
 
     def test_generator_recipes_for_the_90_1_programs(self):
         counts = self.listed['counts']
@@ -54,6 +61,38 @@ class Release200Tests(unittest.TestCase):
         entry = next(iter(recipes.values()))
         self.assertLessEqual(set(entry), {'source', 'reviewed'})
         self.assertIn('slots', entry.get('source') or entry['reviewed'])
+
+    def test_exporter_inputs_are_those_release_1_6_0_reads(self):
+        from scripts.atlas_exports import Release
+        carried = json.loads(self.files[EXPORTER_INPUTS])
+        services, programs = Release(release='1.6.0').capped()
+        self.assertEqual((set(carried['capped_services']), set(carried['capped_programs'])), (services, programs))
+        self.assertEqual(len(carried['inactive_controls']), 43)
+
+    def test_exports_open_no_frozen_folder(self):
+        from scripts.atlas_exports import Release
+        release = Release(files=self.files, release='2.0.0')
+        opened = []
+        real = io.open
+
+        def guarded(file, *args, **kwargs):
+            path = str(file).replace('\\', '/')
+            if any('/data/'+name+'/' in path for name in FROZEN):
+                opened.append(path)
+            return real(file, *args, **kwargs)
+        programs = sorted(release.program_ids())
+        dwellings = sorted(release.dwellings.program_ids())
+        with mock.patch('io.open', guarded), mock.patch('builtins.open', guarded):
+            for pid in [*programs[::150], *dwellings[::8]]:
+                for version in ('source', 'filled'):
+                    try:
+                        release.program(pid, version)
+                    except ValueError as error:
+                        self.assertRegex(str(error), 'source only|water heaters', pid)
+            for sid in sorted(release.constructions.sets)[::20]:
+                key = sorted(release.constructions.sets[sid]['contexts'])[0]
+                release.construction(sid, key, 'unified')
+        self.assertEqual(opened, [])
 
     def test_exports(self):
         from scripts.atlas_exports import Release

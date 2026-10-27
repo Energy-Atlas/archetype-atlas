@@ -14,6 +14,9 @@ stage X1; phase 2 waits on the conditions in ADR 0046 section 4.
 - The 90.1 folders gain `generator.json`: the source and reviewed generator recipes of
   610 programs, keyed by release program ID.
 - Exports equal 1.6.0's, with `source.release` `atlas-release-2.0.0`.
+- `exporter-inputs.json` carries the values the exporters read from the frozen folders
+  (capped-delivery IDs, programs with no setpoint schedules), so reading and exporting
+  2.0.0 needs no other folder (ADR 0046 section 5).
 
 ## Not in this release
 
