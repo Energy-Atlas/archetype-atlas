@@ -297,6 +297,29 @@ Carried over from the residential plan (G1–G6), with these changes:
   Commits with the `Agent-Model` trailer; files written with LF (`write_bytes`).
 - **Progress:** an ETA at the start of each stage, a short note at its end.
 
+## 5a. X1 phase 2 stages
+
+Ordered by dependency; each ends in its own PR.
+
+1. **X1.1 Self-contained 2.0.0.** Freeze the run-time inputs into the release
+   (`evidence/exporter-inputs.json`: the capped services and programs under release
+   IDs, the commercial programs with no setpoint schedules); `Release` reads only
+   release files; 2.0.0 verifies by its file checksums alone, its manifest keeps the
+   inputs as provenance.
+2. **X1.2 DOE Ref recipes.** `build_family_recipes` reads the release programs (1.1.0
+   values) and the DOE file geometry for the People topology; the 672 recipes and 60
+   configurations are rewritten; catalogue smoke and coverage stay at zero failures;
+   2.0.0's `generator.json` gains them. Then commit the 2.0.0 folder.
+3. **X1.3 Retire the frozen folders.** Tag the tree before removal; remove the 1.x
+   deltas and the v0.x, resolution, water-reporting, completion and construction
+   release folders with their builders, recovery scripts and tests; 1.x stays
+   verifiable from the tag. CI keeps the 2.0.0 checks; the reproduction jobs of the
+   retired releases go, and the required check names stay. **Asks first:** the list of
+   removed scripts, tests and CI jobs.
+4. **X1.4 Rewritten writers.** Writers that read and write the 2.0.0 layout, with
+   release enums read from the release, selection decisions in the evidence tree, and
+   the construction alternates field (P1). The next minor release is a delta on 2.0.0.
+
 ## 6. Discussion register
 
 | Date | ID | Status | Note |
@@ -326,3 +349,8 @@ Carried over from the residential plan (G1–G6), with these changes:
 | 2026-10-27 | X1 | blocked | Phase 2 (ADR 0046 section 4): commit the 337 MB folder only with the deltas' retirement (your go-ahead); DOE Ref recipes are stale since 1.1.0 and need regeneration (generator owner); retiring the frozen folders needs stage S merged (the current site reads them); rewritten writers and P1 alternates follow. |
 | 2026-10-27 | finding | issue | Repository size: the six 1.x deltas take about 1.1 GB on top of 1.0.0's 216 MB, because each delta repeats every change since 1.0.0. |
 | 2026-10-27 | R1 | open | Pair 2010s ResStock with IECC 2009 or 2012? A weather-based conversion of the prototype leakage areas for a like-for-like infiltration comparison? |
+| 2026-10-27 | CI | fixed | The 1.5.0+ PRs failed CI: release test classes held whole releases for the rest of the run (about 1.8 GiB each) and the 16 GB Linux runner shut down; the Windows job passed its 60-minute cap. Classes now free their state in `tearDownClass`; the Windows checks run as three jobs behind the required check. |
+| 2026-10-27 | merge | done | User: merge CI-cleared PRs. #23 merged with the stack (#18–#22 marked merged); #24 brought up to date with `main` (site now builds from 1.6.0) and set to auto-merge. |
+| 2026-10-27 | X1 phase 2 | decided | User: commit 2.0.0; regenerate the DOE Ref recipes; rewrite the pinned writers after the merges. |
+| 2026-10-27 | X1 | correction | ADR 0046 section 4 item 2 said regeneration re-baselines the generator answer keys; they hold no DOE Ref cases, so only the packaged recipes and configurations change, checked by the catalogue smoke and coverage runs. |
+| 2026-10-27 | X1 | finding | Every `atlas_exports.Release`, 2.0.0 included, still reads the frozen folders at run time: release verification re-hashes their manifests, filled exports read `definition-releases/v0.1.1` (capped delivery, ADR 0018), and the source exporter reads `data/releases/v0.2.0/programs.json` (inactive controls). 2.0.0 must carry these before the folders can go. |
