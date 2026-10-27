@@ -318,4 +318,11 @@ Carried over from the residential plan (G1–G6), with these changes:
 | 2026-10-27 | G1 | fixed | The export sweep found the 19 new plenum twins could not export `filled` (conditioning unresolved). They now take the 1.0.0 policy's plenum rules (no occupancy, lighting, hot water; unconditioned), as the 1.0.0 office plenums do. |
 | 2026-10-27 | finding | issue | Pinned modules hard-code release enums (`prototype_dwellings.construction_schema`, `residential_exports.program_schema`); every later release needs a wrapper until X1 rewrites them. |
 | 2026-10-27 | R1 | done | `docs/reviews/resstock-vs-iecc-residential.md`: 10 pairs. ResStock interior lighting runs at a median 0.41× the prototypes, hot water 0.45×, electric equipment 0.87×; window SHGC lower in every prototype. One ResStock 5+ multifamily dwelling records only its refrigerator. |
+| 2026-10-27 | L, G1, R1 | PR | #21 (`codex/lighting-controls`), stacked on #19. |
+| 2026-10-27 | U | done | Release 1.6.0, ADR 0045, PR #22 (`codex/unified-iecc`). All 1,824 IECC contexts export unified 3.1.0 `ready`; weights are IDF net surface areas; no interpreter pin needed. |
+| 2026-10-27 | U | finding | PNNL gives some adiabatic core floors an F-factor construction (570 contexts); left out of the fits and listed in the unified provenance (ADR 0045 decision 4.1). |
+| 2026-10-27 | U | open | ADR 0045 section 5: move the 90.1 recipe IDs to interpreter-independent hashing in 2.0.0? |
+| 2026-10-27 | X1 | phase 1 done | `scripts.atlas_snapshot`, ADR 0046, PR on `codex/release-2-0-0`: 2.0.0 = resolved 1.6.0 with equal values, compact (439 → 337 MB), generator recipes for 610 90.1 programs in `generator.json`. |
+| 2026-10-27 | X1 | blocked | Phase 2 (ADR 0046 section 4): commit the 337 MB folder only with the deltas' retirement (your go-ahead); DOE Ref recipes are stale since 1.1.0 and need regeneration (generator owner); retiring the frozen folders needs stage S merged (the current site reads them); rewritten writers and P1 alternates follow. |
+| 2026-10-27 | finding | issue | Repository size: the six 1.x deltas take about 1.1 GB on top of 1.0.0's 216 MB, because each delta repeats every change since 1.0.0. |
 | 2026-10-27 | R1 | open | Pair 2010s ResStock with IECC 2009 or 2012? A weather-based conversion of the prototype leakage areas for a like-for-like infiltration comparison? |
