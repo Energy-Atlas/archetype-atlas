@@ -1,6 +1,4 @@
 import importlib
-from pathlib import Path
-import tempfile
 import unittest
 
 
@@ -25,16 +23,3 @@ class CardIconTests(unittest.TestCase):
     def test_other_content_is_unchanged(self):
         source = '<pre>&lt;svg&gt;</pre><span class="other">Unknown</span>'
         self.assertEqual(self.renderer()(source, page=None, config=None, files=None), source)
-
-    def test_focused_renderer_also_inlines_icons(self):
-        from scripts.construction_site_refresh import render_page
-        with tempfile.TemporaryDirectory() as temporary:
-            docs = Path(temporary)
-            (docs / 'next.md').write_text('# Next', encoding='utf-8')
-            source = ('# Overview\n\n<div class="definition-kinds">'
-                      '<a class="definition-kind" href="next.md">'
-                      '<span class="ea-card-icon" data-icon="program"></span>Programs</a></div>')
-            result = render_page(source, '<article>Before</article>', 'index.md', docs)
-            self.assertEqual(result.count('<svg '), 2)
-            self.assertIn('href="/archetype-atlas/next/"', result)
-            self.assertNotIn('data-icon=', result)

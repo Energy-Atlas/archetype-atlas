@@ -1,16 +1,11 @@
 """Regressions from the one fresh whole-implementation review."""
 import copy
-import tempfile
 import unittest
-from pathlib import Path
-from unittest.mock import patch
 
 from scripts.definition_contract import DefinitionBundle, parameter, record, evidence, BuildContext, load_context
 from scripts.definition_validate import validate
 from scripts.program_definitions import build_programs
 from scripts.program_composition import compose
-from scripts.construction_definitions import build_constructions
-from scripts.query_v2 import QueryClient, generate_delivery
 
 
 def program(identity='p', **values):
@@ -30,43 +25,6 @@ class ReviewedCompositionTests(unittest.TestCase):
             if r['evidence_view']!='reviewed':continue
             members=lambda recipe:{m['source_program_id']:(m['represented_area_m2'],m['weight']) for m in recipe['members']}
             self.assertEqual(members(r),members(source[key(r)]),key(r))
-
-
-class SelectiveQueryTests(unittest.TestCase):
-    def test_impossible_scalar_filters_fetch_no_packets(self):
-        row=program(climate='CZ1',system_type='x',role='x',representation='x')
-        with tempfile.TemporaryDirectory() as temp:
-            generate_delivery(DefinitionBundle(programs=[row]),Path(temp))
-            client=QueryClient(Path(temp)); original=client.fetch
-            for key in ('climate','detail','gate','system_type','role','representation','derivation'):
-                fetched=[]
-                def fetch(ref):
-                    value=original(ref);fetched.append(value['kind']);return value
-                with patch.object(client,'fetch',side_effect=fetch):
-                    self.assertEqual(client.query('program',{key:'impossible'},['name'])['match_count'],0)
-                self.assertNotIn('packet',fetched,key)
-
-    def test_reviewed_exact_source_id_is_empty_after_replacement(self):
-        source=program(); overlay=program('p2',evidence_view='reviewed',source_definition_id='p')
-        with tempfile.TemporaryDirectory() as temp:
-            generate_delivery(DefinitionBundle(programs=[source,overlay]),Path(temp))
-            client=QueryClient(Path(temp))
-            self.assertEqual(client.query('program',{'id':'p'},['name'],view='reviewed')['records'],[])
-            self.assertEqual(client.query('program',{'id':'p2'},['name'],view='reviewed')['match_count'],1)
-            self.assertEqual(client.query('program',{},['name'],view='reviewed')['match_count'],1)
-
-    def test_shared_constructions_are_found_through_source_package_context(self):
-        context=load_context(scope='full')
-        result=build_constructions(context,build_programs(context))
-        with tempfile.TemporaryDirectory() as temp:
-            generate_delivery(result,Path(temp));client=QueryClient(Path(temp))
-            rows=client.query('construction',{'building_type':'FullServiceRestaurant',
-                'template':'90.1-2019','climate':'ClimateZone 7'},['role','representation','building_type'])['records']
-            self.assertTrue(any(r['fields']['role']=='ExteriorWall' for r in rows))
-            self.assertTrue(any(r['fields']['representation']=='package' for r in rows))
-            self.assertTrue(any(r['fields']['building_type'] is None for r in rows))
-            self.assertEqual(client.query('construction',{'building_type':'FullServiceRestaurant',
-                'template':'90.1-2019','climate':'impossible'},['name'])['match_count'],0)
 
 
 class ValidationReviewTests(unittest.TestCase):

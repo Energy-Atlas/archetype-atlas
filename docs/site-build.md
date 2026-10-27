@@ -1,139 +1,96 @@
 # Build and verify the current catalogue
 
 The catalogue is built, verified and deployed by `.github/workflows/catalogue-site.yml`
-(see [Release gate](#release-gate)). Canonical research releases remain immutable.
+(see [Release gate](#release-gate)). It shows the **latest release** under
+`data/atlas-releases` ([ADR 0043](adr/0043-suite-based-site.md), after
+[ADR 0036](adr/0036-suite-based-release-storage.md) section 10). Releases remain immutable.
 
 ## Reproduce locally
 
 Python 3.12+ and Node 24 are the site CI baseline. Substitute `.venv/bin/python`
-on Linux/macOS. Install the pinned site/browser dependencies and Chromium first.
+on Linux/macOS. Install the pinned site and browser dependencies and Chromium first.
 
 ```powershell
 .venv/Scripts/python.exe -m pip install -r requirements-site.txt -r requirements-browser.txt
 .venv/Scripts/python.exe -m playwright install chromium
-.venv/Scripts/python.exe -m scripts.site
+.venv/Scripts/python.exe -m scripts.suite_site
 .venv/Scripts/python.exe -m mkdocs build --strict
-.venv/Scripts/python.exe -m scripts.site_check --require-construction
+.venv/Scripts/python.exe -m scripts.site_check --require-complete
 node --test tests/*.test.js
-.venv/Scripts/python.exe -m unittest discover -s tests -v
+.venv/Scripts/python.exe -m unittest tests.test_suite_site -v
 .venv/Scripts/python.exe -m scripts.site_smoke --screenshots build/screenshots
-.venv/Scripts/python.exe -m scripts.construction_site_smoke --screenshots build/screenshots/construction
 .venv/Scripts/python.exe -m scripts.site_smoke --serve
 ```
 
-Preview: <http://127.0.0.1:8765/archetype-atlas/>. Generation consumes verified
-`data/definition-releases/v0.1.1` by default; `--definitions PATH` selects an
-explicit compatible bundle. `--output PATH` selects a generated build directory.
-An existing nonempty output must be marked by `site-manifest.json`.
+Preview: <http://127.0.0.1:8765/archetype-atlas/>. `--release 1.4.0` picks a release
+other than the newest; `--only REGEX` builds a partial preview of the matching
+folders (for example `--only 90-1-2019/medium-office`), which `site_check
+--require-complete` refuses to publish. `--output PATH` selects a generated build
+directory; an existing nonempty output must be marked by `site-manifest.json`.
+`site_smoke --channel chrome` (or `msedge`) uses an installed browser instead of
+Playwright's Chromium. Generation exports every program and construction context in
+worker processes (`--jobs`, default the CPU count up to 6; each holds the resolved
+release, about 2 GB).
 
-Fresh checkouts retrieve the source locks before reproduction:
+## What is generated
 
-```console
-python -m scripts.fetch
-python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-python -m scripts.fetch --lock sources/water-evidence-lock.json
-python -m scripts.fetch --lock sources/completion-evidence-lock.json
-python -m scripts.fetch --lock sources/definition-evidence-lock.json
-python -m scripts.definition_release --verify
-python -m scripts.definition_release --reproduce
-```
+`python -m scripts.suite_site` reads one release through
+`scripts.atlas_exports.Release` and writes the MkDocs input tree `build/site-docs/`:
 
-## Active output
+| Output | Content |
+| --- | --- |
+| `catalogue/<family>/<template>/<type>/programs/<name>/` | One page per program (source, department, general, dwelling): every field of the record, fillings in place, the schedules it uses and the evidence it cites, and the source and filled exports. |
+| `catalogue/<family>/<template>/<type>/constructions/<name>/` | One page per construction set: its contexts with their exports, the fields shared by every context once, each context's own fields and components, the assemblies and materials it uses. |
+| `catalogue/<family>/<template>/<type>/` | One folder page per template × building type: programs, mixes and their members, construction sets, services, systems, components and water-reporting records with their schedules and evidence. |
+| `catalogue/<family>/<template>/template-library/` | The template library: assemblies, materials and performance rules. |
+| `catalogue/glossary/` | The evidence glossary: rule notes, unresolved reasons, interpretations, transformations, source files. |
+| `view/` and `view-index.json` | The viewer for any ID (`view/?id=…`): its page and anchor, or its own JSON. |
+| `store/<sha256>.json.gz` | The one content-addressed JSON store: every export, every schedule and the viewer packets. |
+| `site-manifest.json` | Release, input digest, counts, and every page and export. |
 
-### Local UI-only display preview
-
-To review card styling without generating the research catalogue, run:
-
-```console
-python -m scripts.card_preview
-python -m scripts.card_preview --serve
-```
-
-Open <http://127.0.0.1:8766/archetype-atlas/>. The strict MkDocs build uses
-the current landing and catalogue overview generators, shared theme and hooks.
-Finders are explicitly empty and guide pages are labelled typography specimens.
-Only UI assets and preview pages are written under `build/card-preview/`;
-no record pages, research packets, release bundles or deployment artifacts are
-generated. Re-run the first command after editing styles or templates.
-This display build does not replace the full publication checks below.
-
-The catalogue has two family gates and three object kinds. Programs, constructions
-and HVAC systems link to designated schedules, materials, components and evidence.
-Every object has lazy, bounded, checksum-verified JSON inspection and copying.
-Programs offer raw or default-filled self-contained DTOs under the
-[v3 connector contract](program-json-v3-contract.md). Other library objects
-retain explicit unknowns; program defaults do not manufacture HVAC performance.
-
-The foundation candidate provides separate detailed schema 3.0.0 and additive
-unified schema 2.0.0 exports for all 177 current sets / 3,320 supported contexts,
-including 3,308 contact and 12 source-supported no-contact cases. Both named copy
-buttons act directly without a chooser; preview mode does not change their
-representation. Source-record copying is absent on construction definition pages.
-Both include the same source mass-accounting contract 1.0.0.
-See [combined construction release notes](release-notes-construction-foundation-v1.0.0.md)
-and [shared mass release notes](release-notes-construction-mass-v1.0.0.md).
-Both exports include source-native foundation methods with single parameter
-ownership. Ordinary unified components stay simplified; 20 native suite/role
-exceptions retain two assignments each. BEMGen consumer acceptance remains pending.
-
-Schedules show unique daily step profiles, an annual day × hour heatmap, exact
-tables and selected-day inspection. Rules use an explicit preview year and holiday
-overrides; annual realizations retain their recorded year and cannot be remapped.
-Unknown raw coverage remains a gap. Plotly cartesian 3.1.0 is served locally from
-checksum-locked assets with its MIT notice.
-
-The active generator starts a fresh tree. It does not import old curated pages,
-release catalogues, downloads, generator/resolution interfaces, v1 delivery or
-historical snapshots. No redirects or archive compatibility pages are emitted.
-Current v2 finder delivery is generated afresh. Repository research tooling and
-frozen input releases remain available for scientific verification.
+Page URLs drop the content hash of the record ID, so an edited record keeps its URL;
+two records that would share a URL keep their hash. Pages read completely without
+JavaScript; `website/assets/suite.js` adds the `?version=` and context switches and
+verified copying, `website/assets/view.js` the viewer. Plots are inline SVG drawn at
+build time. Search indexes each suite page once, by its name, ID, template, building
+type and kind (`website/hooks/search_index.py`).
 
 ## Implementation and checks
 
-- `scripts/active_site.py`: fresh active build, called by `python -m scripts.site`.
-- `scripts/object_site.py`: object pages and content-addressed JSON resources.
-- `scripts/program_json_v3.py`, `scripts/schedule_json.py`: current program DTO conversion.
-- `scripts/program_completeness.py`: reproduce the complete v3 export receipt.
-- `website/assets/object.js`: verified disclosure and accessible copy choices.
-- `website/assets/schedule_core.js`, `schedule.js`: calendar semantics and plots.
-- `website/assets.lock.json`: asset version, size and SHA-256 locks.
+- `scripts/suite_site.py`: the generator and the input digest.
+- `scripts/site_release.py`: the release index the pages need (newest release, folders,
+  schedules, library, evidence), over `atlas_exports.Release`.
+- `scripts/site_render.py`, `scripts/site_pages.py`: the generic record renderer and the
+  page layouts. Record fields the renderer does not know render generically, so a new
+  optional block of a later Program JSON minor needs no site change.
+- `scripts/site_store.py`: gzip, SHA-256 and descriptors (ADR 0011 transport).
+- `scripts/site_check.py`: links and fragments, store checksums and descriptors, a page
+  and exports for every program and construction set of the release, retired routes,
+  search entries, viewer packets, the input digest and the 1,000,000,000-byte ceiling.
+- `scripts/site_smoke.py`: Chromium checks of the version and context switches,
+  verified copy and download, annual schedule plots, the viewer, search, the 404 page,
+  reading without JavaScript and phone width.
+- `tests/test_suite_site.py`, `tests/suite.test.js`: unit tests of the modules above.
 - `website/assets/site.css`, `fonts.css`, `fonts/`, `theme.js`, `website/overrides/`:
   the EnergyAtlas family UI of `design/ui-design-spec.md`, with self-hosted OFL fonts.
-- `scripts/site_check.py`: links, fragments, assets, retirement, complete program
-  exports and the 1,000,000,000-byte publication ceiling.
-- `scripts/active_smoke.py`: Chromium gates, search, filters, copying, plots,
-  mobile layout and no-JS catalogue fallback.
-- `scripts/construction_site_smoke.py`: separate detailed/unified preview and
-  clipboard parity for Medium Office, Warehouse, basement, upper apartment,
-  data centre and Hospital examples. The selected foundation summary loads one
-  verified detailed packet on entry; preview/copy reuses each representation's
-  packet. Unsupported contexts and desktop/mobile themes remain checked.
 - `build/site-docs/`, `build/site/`: ignored generated documents and HTML.
 
-Energy pages use a compact document shell. Evidence/coverage records use compact
-HTML pages with the same JSON controls. Search indexes energy-object titles and
-guide text without duplicating full provenance. JSON resources are limited to
-16 MB decoded; both compressed and decoded sizes are checked before use.
-
-The Pages workflow definition builds this current catalogue and no longer restores
-historical query snapshots. Original work remains unlicensed by user choice;
-upstream and dependency notices remain applicable.
+The definition-release catalogue (`scripts/active_site.py`, `definition_site`,
+`object_site`, `construction_site`, `query_v2` and their browser scripts) was retired
+with ADR 0043; it remains in the repository history.
 
 ## Release gate
 
-Every run of the catalogue workflow's build job verifies the presentation
-contracts (delivery, query, program JSON, active-site and browser tests, Node
-tests), generates the catalogue, builds it with `mkdocs build --strict`,
-and passes `site_check` and the Chromium smoke test before it uploads the Pages
-artifact. The same pipeline calls the reusable `validate.yml` research jobs.
-Construction presentation tests run in the build job. Publication explicitly
-requires `construction-site.json` through `site_check --require-construction`;
-the default checker still permits small construction-free research fixtures.
-Both construction copy representations are browser-checked before artifact upload.
-Deployment requires both the build and research validation to succeed for the
-same commit. It runs only on `main`, automatically for pushes or after a manual
-dispatch with `deploy` set. The production environment also permits `main` only.
-See [branch and publication policy](branch-policy.md).
+Every run of the catalogue workflow's build job runs the site unit and Node tests,
+computes the input digest (`python -m scripts.suite_site --digest`) and restores
+`build/site-docs` from the Actions cache under that digest, or generates it. It then
+builds with `mkdocs build --strict`, and passes `site_check --require-complete` (which
+also rejects a cached tree whose recorded digest differs from the checkout) and the
+Chromium smoke test before it uploads the Pages artifact. The same pipeline calls the
+reusable `validate.yml` research jobs. Deployment requires both the build and research
+validation to succeed for the same commit. It runs only on `main`, automatically for
+pushes or after a manual dispatch with `deploy` set. The production environment also
+permits `main` only. See [branch and publication policy](branch-policy.md).
 
 Automatic runs cover every pull request targeting `main` and every push to
 `main`. There are no path filters on these required checks, avoiding missing
@@ -165,9 +122,9 @@ check runs the pinned-producer reproductions (including a byte-for-byte rebuild 
 the ADR 0036 release, whose construction documents come from the combined
 delivery) and the Windows consumer-document
 validation described below. A pipeline run takes about as long as its slowest
-job, the full Python suite, rather than the sum of all checks. Artifact generation
-remains part of site CI; [ADR 0036](adr/0036-suite-based-release-storage.md)
-records caching it by input digest.
+job, the full Python suite, rather than the sum of all checks. Site generation is
+cached by input digest ([ADR 0036](adr/0036-suite-based-release-storage.md) section 1,
+[ADR 0043](adr/0043-suite-based-site.md)).
 
 The research workflow additionally reproduces frozen construction base v2.0.0,
 applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with
@@ -230,15 +187,8 @@ python -m scripts.construction_foundation_smoke
 These commands verify committed records and declared hashes/source probes. They
 must not invoke `--recover`, native-smoke `--run`, runtime downloads or annual
 simulation. Actual native extraction and EnergyPlus execution remain separate,
-explicit maintenance operations. The build job verifies combined manifest/resource/
-input closure and runs the foundation hydration/publication tests before site
-build/browser verification and Pages artifact upload. A local handover packet or
-ignored recovery cache is not a build input.
-
-For local maintenance, a focused construction refresh and these targeted checks
-can validate changes without regenerating program/schedule pages. They do not
-replace the eventual clean production build, hosted required checks and live
-verification. No foundation production deployment is claimed by the local
-publication-preparation receipt. See the
+explicit maintenance operations. A local handover packet or ignored recovery cache is
+not a build input. The site no longer serves the frozen combined delivery: its
+construction exports come from the newest atlas release (ADR 0043). See the
 [release notes](release-notes-construction-foundation-v1.0.0.md) for migration and
 remaining publication gates.

@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+
+{#- Retired URLs (ADR 0043): record pages under definitions/ and objects/ were replaced by suite pages without a map. -#}
+{% block content %}
+  <h1>Page not found</h1>
+  <p>
+    This address does not exist in the current catalogue. The site shows the latest release only, one page per
+    program and per construction set; record pages of earlier sites (<code>definitions/</code>, <code>objects/</code>,
+    <code>json/</code>, <code>delivery/</code>) were retired without redirects.
+  </p>
+  <p>
+    Search for a name or ID with the search box above, browse the <a href="{{ 'catalogue/' | url }}">catalogue</a>, or
+    look up any record ID with the <a href="{{ 'view/' | url }}">viewer</a>.
+  </p>
+{% endblock %}
