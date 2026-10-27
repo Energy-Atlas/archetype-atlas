@@ -1,0 +1,200 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2021.small-hotel.source.guest-room123-occ.de313b",
+        "represented_area_m2": 1148.878865357196,
+        "source_geometry_file_id": "sourcefile-8c27b8669e681872bbd6",
+        "source_program_id": "program-e4b7927ece049c296335",
+        "weight": 0.4534634022660521
+      },
+      {
+        "program_id": "iecc-2021.small-hotel.source.guest-room123-vac.eb7635",
+        "represented_area_m2": 594.514855469592,
+        "source_geometry_file_id": "sourcefile-8c27b8669e681872bbd6",
+        "source_program_id": "program-e5bdd825d9c5b22070cb",
+        "weight": 0.23465548648171314
+      },
+      {
+        "program_id": "iecc-2021.small-hotel.source.guest-room4-occ.a111bb",
+        "represented_area_m2": 489.14607580800003,
+        "source_geometry_file_id": "sourcefile-8c27b8669e681872bbd6",
+        "source_program_id": "program-ed0efb90a84c8823a88a",
+        "weight": 0.1930663453122374
+      },
+      {
+        "program_id": "iecc-2021.small-hotel.source.guest-room4-vac.314305",
+        "represented_area_m2": 301.0248959424,
+        "source_geometry_file_id": "sourcefile-8c27b8669e681872bbd6",
+        "source_program_id": "program-61434e0b3e0af36ce810",
+        "weight": 0.11881476593999739
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-8068b959f99788e50f16520e"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2021.small-hotel.department.guest-rooms-mixed.e459e2",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-62a0e6458d0ca312c315a289",
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.small-hotel.guest-rooms-mixed-additional-lighting.524dbf",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-99c80bd669f1a7d24c6d06d6",
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.89346164
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0452b3960835f15222a1cbc3",
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.small-hotel.guest-rooms-mixed-additional-lighting.524dbf",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-cfa1a4b33dbf8899c252b28c",
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.small-hotel.guest-rooms-mixed-hot-water-volume.deb31b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 7.102584439545851e-08
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a514e1203602df4c174339ad",
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.small-hotel.guest-rooms-mixed-lighting.fd058b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 4.4132,
+      "value_by_climate": {
+        "2A": 3.97188,
+        "2B": 3.97188,
+        "3B": 3.97188,
+        "3C": 3.97188,
+        "4B": 3.97188,
+        "4C": 3.97188,
+        "5C": 3.97188,
+        "7A": 3.97188,
+        "8A": 3.97188
+      }
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-10260548207f5ae9ff08b105",
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.04558794189805921
+    }
+  ],
+  "mode": "department",
+  "name": "GuestRooms_Mixed_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.small-hotel.guest-rooms-mixed-activity.677723"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.small-hotel.guest-rooms-mixed-cooling-setpoint.38a8af"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-8068b959f99788e50f16520e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.small-hotel.guest-rooms-mixed-heating-setpoint.da57f9"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2021.small-hotel.main.a49f9a",
+    "iecc-2021.small-hotel.main.710351",
+    "iecc-2021.small-hotel.main.d68708",
+    "iecc-2021.small-hotel.main.6e2643"
+  ],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2021"
+}

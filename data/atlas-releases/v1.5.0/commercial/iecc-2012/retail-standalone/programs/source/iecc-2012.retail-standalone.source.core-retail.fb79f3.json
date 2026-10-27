@@ -1,0 +1,299 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0d491a45de4410ec4646e622",
+    "evidence-2cf3be0fe254325ce7256dc6",
+    "evidence-475de05816b7b1169dd00189",
+    "evidence-49a24346b64542229c95fddd",
+    "evidence-56d641d76c3de34f4a738bd1",
+    "evidence-5ac2ba5067ce5e7dd346a1c0",
+    "evidence-6568b346b6ffffbaa7f0c572",
+    "evidence-740744d939025cb7f84e502d",
+    "evidence-7e2901fa3fc939c3b3bb5553",
+    "evidence-95af2bea3b84b4e43f4ee21a",
+    "evidence-984e02086939c15f0cb40d5c",
+    "evidence-a192752094e2161823b22d96",
+    "evidence-a1b454799e3d387bec4c835e",
+    "evidence-c4a74f6dcd5f19408713f84e",
+    "evidence-cc7030f4a915bfef17f16465",
+    "evidence-e6485c9ef47f58d296a7caf3"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-5ac2ba5067ce5e7dd346a1c0",
+    "roof": 0.0149,
+    "wwr": {
+      "E": 0.0,
+      "N": null,
+      "S": null,
+      "W": 0.0
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2012.retail-standalone.source.core-retail.fb79f3",
+  "lighting_controls": {
+    "daylighting": {
+      "availability": "all_days_except_design_days",
+      "control_type": "stepped",
+      "controlled_floor_fraction": 1.0,
+      "controlled_lighting_fraction": 0.5,
+      "controlled_zones": 1,
+      "illuminance_setpoint_lux": 538.0,
+      "method": "split_flux",
+      "minimum_input_power_fraction": 0.3,
+      "minimum_light_output_fraction": 0.2,
+      "stepped_control_steps": 3,
+      "zones": 1
+    },
+    "evidence_id": "evidence-740744d939025cb7f84e502d",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-3bd9b3b1877086b079e168fb",
+      "evidence_id": "evidence-c4a74f6dcd5f19408713f84e",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.retail-standalone.bldg-occ-sch.ce0527",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.161472630389
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-849c0f233c4a25654385e0cb",
+      "evidence_id": "evidence-49a24346b64542229c95fddd",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.retail-standalone.ltg-sch-core.26769c",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-49a24346b64542229c95fddd",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-49a24346b64542229c95fddd",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-49a24346b64542229c95fddd",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 14.638904
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-2073d8bdd3ee32fc804a8f4f",
+      "evidence_id": "evidence-a192752094e2161823b22d96",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-f4384dffeb3779360276d8c5",
+      "evidence_id": "evidence-cc7030f4a915bfef17f16465",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.retail-standalone.bldg-equip-sch.8a17f8",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-cc7030f4a915bfef17f16465",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-cc7030f4a915bfef17f16465",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-cc7030f4a915bfef17f16465",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 3.230000020619
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-525845487532596f173fcba0",
+      "evidence_id": "evidence-56d641d76c3de34f4a738bd1",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1549eee62eb1d8932cd061b0",
+      "evidence_id": "evidence-984e02086939c15f0cb40d5c",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Core_Retail_RetailStandalone",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-a1b454799e3d387bec4c835e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.retail-standalone.activity-sch.6257b4"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-2cf3be0fe254325ce7256dc6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-95af2bea3b84b4e43f4ee21a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.retail-standalone.clgsetp-sch-yes-optimum.dc05ba"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-0d491a45de4410ec4646e622",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.retail-standalone.htgsetp-sch-yes-optimum.c92562"
+    }
+  },
+  "pnnl_building_type": "RetailStandalone",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-475de05816b7b1169dd00189",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-95a7d172d84fc464aab2",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 1600.4829,
+      "multiplier": 1,
+      "name": "Core_Retail"
+    }
+  ],
+  "standards_building_type": "Retail",
+  "template": "IECC 2012"
+}

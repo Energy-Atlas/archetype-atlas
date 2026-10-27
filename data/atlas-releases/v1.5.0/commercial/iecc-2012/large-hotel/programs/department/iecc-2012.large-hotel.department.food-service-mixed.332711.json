@@ -1,0 +1,179 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2012.large-hotel.source.kitchen.1ffc5f",
+        "represented_area_m2": 103.304462,
+        "source_geometry_file_id": "sourcefile-da43d4679fb4fdfa1fd4",
+        "source_program_id": "program-08cf3105c989c2bdb29d",
+        "weight": 0.10811772822137299
+      },
+      {
+        "program_id": "iecc-2012.large-hotel.source.cafe.fcaa49",
+        "represented_area_m2": 188.861883,
+        "source_geometry_file_id": "sourcefile-da43d4679fb4fdfa1fd4",
+        "source_program_id": "program-8da1d21190a2aee6df2e",
+        "weight": 0.1976615273169008
+      },
+      {
+        "program_id": "iecc-2012.large-hotel.source.banquet.07a7fa",
+        "represented_area_m2": 663.314904,
+        "source_geometry_file_id": "sourcefile-da43d4679fb4fdfa1fd4",
+        "source_program_id": "program-7eb56de3210ab4ff2b2b",
+        "weight": 0.6942207444617262
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-9eccfcb634e6d34457e34424"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2012.large-hotel.department.food-service-mixed.332711",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-3fbf14861a4b605f19ebfb1d",
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.large-hotel.food-service-mixed-additional-lighting.00dfa1",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-1bc759f13f28d00fdf8a3c1c",
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.large-hotel.food-service-mixed-electric-equipment.446cf8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 103.07360055791095
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f8f9dd729e8e6d7710a13e91",
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.large-hotel.food-service-mixed-gas-equipment.b2c428",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 261.5648951369425
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-fd21d60190c9a8a5328a440f",
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.large-hotel.food-service-mixed-hot-water-volume.46cffc",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 1.46365996345607e-07
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-c563c0b81aa757f2b4962aab",
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.large-hotel.food-service-mixed-lighting.167ef4",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 12.611200369483653
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f4910772d0e9e169d15a93ac",
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2012.large-hotel.food-service-mixed-occupancy.fd40be",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.695283136843639
+    }
+  ],
+  "mode": "department",
+  "name": "FoodService_Mixed_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.large-hotel.food-service-mixed-activity.a3dc2b"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.large-hotel.food-service-mixed-cooling-setpoint.a1ec37"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-9eccfcb634e6d34457e34424",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2012.large-hotel.food-service-mixed-heating-setpoint.ba9464"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2012.large-hotel.main.2c885c"
+  ],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2012"
+}

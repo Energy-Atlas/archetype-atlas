@@ -1,0 +1,224 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-pre-1980.outpatient.source.clean-work.8d74c4",
+        "represented_area_m2": 27.034784639999998,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-40ed74325f5b45e48f95",
+        "weight": 0.18920676202860856
+      },
+      {
+        "program_id": "doe-ref-pre-1980.outpatient.source.soil-work.dca5c1",
+        "represented_area_m2": 33.63090048,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-ca6ca3bb2002558d5ccc",
+        "weight": 0.235370611183355
+      },
+      {
+        "program_id": "doe-ref-pre-1980.outpatient.source.nurse-station.2b1b23",
+        "represented_area_m2": 71.81404992,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-e8a10d9536bedd1679ef",
+        "weight": 0.5026007802340702
+      },
+      {
+        "program_id": "doe-ref-pre-1980.outpatient.source.med-gas.43847f",
+        "represented_area_m2": 5.20257024,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-e7ba0c78aa8b44479657",
+        "weight": 0.036410923276983094
+      },
+      {
+        "program_id": "doe-ref-pre-1980.outpatient.source.bio-hazard.8ea5a4",
+        "represented_area_m2": 5.20257024,
+        "source_geometry_file_id": "sourcefile-037f2e5b0a7cc5a21232",
+        "source_program_id": "program-afa56a3d92da4a9be498",
+        "weight": 0.036410923276983094
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-6311a99ac899b7e1057f46f0"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.outpatient.department.clinical-support-mixed.e13ff8",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-913316edca43f3f868bc2094",
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.clinical-support-mixed-additional-lighting.7a5e5c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4f5dde6615b5d28cdf25c455",
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.clinical-support-mixed-electric-equipment.fe38ec",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 20.038509951315522
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ecceed60837d7e82ec4258a8",
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.clinical-support-mixed-additional-lighting.7a5e5c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-aa2a48e0ebe30827ecb8f4ac",
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.clinical-support-mixed-lighting.eb7fdf",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 17.072485741561568
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-aea145597bc775442d84fcd7",
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.outpatient.clinical-support-mixed-occupancy.d41ea0",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.18542956281115563
+    }
+  ],
+  "mode": "department",
+  "name": "ClinicalSupport_Mixed_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.outpatient.clinical-support-mixed-activity.93fe8c"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.outpatient.clinical-support-mixed-cooling-setpoint.cc47e6"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-6311a99ac899b7e1057f46f0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.outpatient.clinical-support-mixed-heating-setpoint.b95aa2"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-7826fe13c1006b2691f1d380",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref Pre-1980"
+}

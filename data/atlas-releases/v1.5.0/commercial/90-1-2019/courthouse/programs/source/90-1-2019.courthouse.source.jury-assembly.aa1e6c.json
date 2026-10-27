@@ -1,0 +1,271 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "Courthouse",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-02de0ed9a9198b310e025c99",
+    "evidence-22869cbde48864a6ff039a71",
+    "evidence-3b95928dd6916b4389d86289",
+    "evidence-40a44fa491f97f9bd3d1bcfe",
+    "evidence-536705f59e1ee0e0efe597ea",
+    "evidence-6c3aab22b62de7b06b648673",
+    "evidence-a993f7670853228958901eb0",
+    "evidence-c3d44fc4c8d2a5f46f009d14"
+  ],
+  "filling_evidence_ids": [
+    "evidence-0308f349b6fe7510f02d2bc2",
+    "evidence-6967611e67a6cb2ee73a2069",
+    "evidence-6c494bad4434f211b6ea0ee2"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.courthouse.source.jury-assembly.aa1e6c",
+  "lighting_controls": {
+    "reason": "No PNNL prototype zone carries this space type, and the pinned openstudio-standards cache holds the space-type data but not the template daylighting rules, so the controls are unknown (ADR 0044).",
+    "source": "pnnl_prototype",
+    "status": "unknown"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e544e09dfd3e5add7097069e",
+      "evidence_id": "evidence-536705f59e1ee0e0efe597ea",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.courthouse.courthouse-jury-assembly-occ-sch.ba4cc7",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 1.2916692500051667
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-39d993a3b4716709c660b5da",
+      "evidence_id": "evidence-a993f7670853228958901eb0",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.courthouse.courthouse-jury-assembly-light-sch.4f6725",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-40a8e74cb74c78cb1f6bf361",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-3459aab5fee8a1a21a85ef6e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-90d6a2828615b64adfcda6ff",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 7.642376395863902
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-683cd1a6301ba1881d6cd4ce",
+      "evidence_id": "evidence-22869cbde48864a6ff039a71",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.courthouse.courthouse-jury-assembly-light-sch.4f6725",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-40a8e74cb74c78cb1f6bf361",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-3459aab5fee8a1a21a85ef6e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-90d6a2828615b64adfcda6ff",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9a68b26ca5ee76a0864b5119",
+      "evidence_id": "evidence-40a44fa491f97f9bd3d1bcfe",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-6967611e67a6cb2ee73a2069"
+        ],
+        "resolutions": [
+          "resolution-a0083868d1983d573a68"
+        ],
+        "rules": [
+          "reviewed_borrowed_value"
+        ],
+        "set": {
+          "evidence_id": "evidence-6967611e67a6cb2ee73a2069",
+          "status": "known",
+          "value": 3.982646854182597
+        }
+      },
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.courthouse.courthouse-bldg-equip-sch.8b13ae",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-d5fdb3926729185ba0c0ab13",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-fae745a67f763297d02ec773",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-693abe92a1f139976d0afe49",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a51c7701ac76d03c18200fe0",
+      "evidence_id": "evidence-3b95928dd6916b4389d86289",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-6c494bad4434f211b6ea0ee2"
+        ],
+        "resolutions": [
+          "resolution-3e12ad5c1fe53e375978",
+          "resolution-991a36536d75c9082b5b"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-6c494bad4434f211b6ea0ee2",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-202be80459b14d8dec06d8df",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-91b3c727cc5c4f6e8e01e65b",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-3d2529d90a1f78234aeab2aa",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Jury Assembly_Courthouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-6c3aab22b62de7b06b648673",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.courthouse.courthouse-activity-sch.db91f0"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-02de0ed9a9198b310e025c99",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.courthouse.courthouse-clgsetp.51d237"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-c3d44fc4c8d2a5f46f009d14",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.courthouse.courthouse-htgsetp.790466"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-ffe075b7c6710ee449f6",
+  "template": "90.1-2019",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}

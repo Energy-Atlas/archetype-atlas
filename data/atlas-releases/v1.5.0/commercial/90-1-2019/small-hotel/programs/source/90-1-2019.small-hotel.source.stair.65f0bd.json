@@ -1,0 +1,262 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-3c625b49b1b858dc357c3ec0",
+    "evidence-4300c8d7f34b14c2cc73bc09",
+    "evidence-43d9b3d8f613aa60b83530d5",
+    "evidence-5d7c7629595698267bcd26e0",
+    "evidence-6d0fd458f8c94f57bea138c4",
+    "evidence-7beda1048b157de370fb7280",
+    "evidence-91f5abc16776851fddbd1538",
+    "evidence-b436df85beb9a3a7c78a65c5",
+    "evidence-d8923471a2ac8e2082fa3514",
+    "evidence-e69baf03584711dd6f939c62"
+  ],
+  "filling_evidence_ids": [
+    "evidence-57d9c8f60f35e0e00c1c3132",
+    "evidence-c99d807a785e06a4a8bbb36e"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.small-hotel.source.stair.65f0bd",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-3c625b49b1b858dc357c3ec0",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "standards_rule": {
+      "daylighting_appropriate": true,
+      "evidence_id": "evidence-b436df85beb9a3a7c78a65c5",
+      "target_illuminance_setpoint_lux": null
+    },
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0fea7a483c6cf05b65a01fa0",
+      "evidence_id": "evidence-e69baf03584711dd6f939c62",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-always-off.2b1675",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-fe19d8fbae203d6f458a983b",
+      "evidence_id": "evidence-43d9b3d8f613aa60b83530d5",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-bldg-light-stair-sch.ba7283",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-00a2998a8484b292e31d8cee",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-09753fa13bc597aa581183c2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-c26e92220234054b1ebabf17",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 5.274316104187764
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b9f43dd115030e3c2ceebe3a",
+      "evidence_id": "evidence-5d7c7629595698267bcd26e0",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-bldg-light-stair-sch.ba7283",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-00a2998a8484b292e31d8cee",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-09753fa13bc597aa581183c2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-c26e92220234054b1ebabf17",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-82133a0ed2749d0c65ad4e4d",
+      "evidence_id": "evidence-91f5abc16776851fddbd1538",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-always-off.2b1675",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-8e644c7a18ec7981e804e556",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-9a464f50408822a194802dab",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-b3d6f6c5a0ec144eae70eca6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e8805298390f7b66f05bb8fc",
+      "evidence_id": "evidence-d8923471a2ac8e2082fa3514",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-57d9c8f60f35e0e00c1c3132"
+        ],
+        "resolutions": [
+          "resolution-1d9f24799ea7b24c3926",
+          "resolution-c064f3f5b2da336ba4b8"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-57d9c8f60f35e0e00c1c3132",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-9990f46299100dd82ef9e56b",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-10b1c1f74e10234d9a4f0797",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-b11d0025e7c0042a74029fe1",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Stair_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-4300c8d7f34b14c2cc73bc09",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.small-hotel.hotel-small-activity-sch.36215a"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-6d0fd458f8c94f57bea138c4",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.small-hotel.small-hotel-unit-heater-clg-sp-sch.96902d"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-7beda1048b157de370fb7280",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.small-hotel.hotel-small-semi-heated-htg-sp-sch.6f9ff4"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-570fee543a1b6cf0693f",
+  "template": "90.1-2019",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}
