@@ -69,13 +69,16 @@ jobs:
           python -m scripts.atlas_minor_release --release 1.2.0 --verify
           python -m scripts.atlas_minor_release --release 1.3.0 --verify
           python -m scripts.atlas_minor_release --release 1.4.0 --verify
+          python -m scripts.atlas_minor_release --release 1.5.0 --verify
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
+          python -m scripts.resstock_iecc_review --check
       - name: Reproduce the construction-only program definitions from pinned sources
         run: |
           python -m scripts.fetch --lock sources/construction-only-programs-lock.json
           python -m scripts.fetch --lock sources/openstudio-area-default-lock.json
           python -m scripts.construction_only_programs --check
+          python -m scripts.plenum_aliases --check
       - name: Reproduce atlas release 1.3.0 (IECC commercial) byte for byte and its evidence report
         run: |
           python -m scripts.atlas_minor_release --release 1.3.0 --check
@@ -197,6 +200,8 @@ jobs:
       # The residential tree reads the committed definition inputs, never the IDFs.
       - name: Reproduce the 1.4.0 delta release with pinned producer
         run: python -m scripts.atlas_minor_release --release 1.4.0 --check
+      - name: Reproduce the 1.5.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.5.0 --check
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
