@@ -239,7 +239,8 @@ acceptance. The decisions are recorded in
   drop the duplicate release verification (separate pull request).
 - [ ] Implement the suite-based commercial release `data/atlas-releases/v1.0.0`
   and its consumer exports, test-first.
-- [ ] Replace per-record pages with suite pages, one viewer page and one JSON store.
+- [x] Replace per-record pages with suite pages, one viewer page and one JSON store
+  ([ADR 0043](adr/0043-suite-based-site.md)).
 - [ ] Retire the frozen release folders to tags once the new release verifies.
 
 **Comments / decisions:**

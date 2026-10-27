@@ -22,13 +22,3 @@ class AssetVersionTests(unittest.TestCase):
             after=version_asset_urls(before,assets)
             self.assertNotEqual(before,after)
             self.assertEqual(after.count('?v='),1)
-
-    def test_focused_renderer_refreshes_shell_asset_versions(self):
-        from scripts.construction_site_refresh import render_page
-        with tempfile.TemporaryDirectory() as d:
-            root=Path(d)
-            old='<html><head><script src="/archetype-atlas/assets/construction.js?v=old"></script><link href="/archetype-atlas/assets/site.css?v=old"></head><article>old</article></html>'
-            result=render_page('# New',old,'index.md',root)
-            self.assertNotIn('?v=old',result)
-            self.assertIn('construction.js?v=',result)
-            self.assertIn('site.css?v=',result)

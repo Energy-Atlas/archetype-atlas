@@ -1,370 +1,243 @@
-"""Exercise built catalogue, schedules, downloads and mobile/no-JS fallbacks."""
-import argparse
-import csv
-from functools import partial
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-import threading
-import time
+"""Browser checks of the built suite site (ADR 0043) in Chromium through Playwright.
 
-from scripts.common import ROOT, load_json
+python -m scripts.site_smoke                         # build/site, Playwright's Chromium
+python -m scripts.site_smoke --channel chrome        # an installed Chrome or Edge (msedge) instead
+python -m scripts.site_smoke --screenshots build/screenshots
+python -m scripts.site_smoke --serve                 # serve build/site at http://127.0.0.1:8765/archetype-atlas/
+
+The site is served under its project prefix, with 404.html for missing paths as
+GitHub Pages does. Pages are chosen from site-manifest.json: a program with fillings,
+a source-only program, a dwelling with annual schedules and a construction set with
+several context axes.
+"""
+import argparse
+import functools
+import http.server
+import json
+import re
+import threading
+from pathlib import Path
+
+from scripts.common import ROOT
 
 PREFIX = '/archetype-atlas/'
 
 
-class Handler(SimpleHTTPRequestHandler):
-    def copyfile(self, source, outputfile):
-        try:
-            super().copyfile(source, outputfile)
-        except (ConnectionError, BrokenPipeError):
-            # Browser navigation/closing cancels in-flight asset requests.
-            pass
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def translate_path(self, path):
+        path = path.split('?', 1)[0].split('#', 1)[0]
+        if not path.startswith(PREFIX):
+            return str(Path(self.directory)/'__outside_prefix__')
+        return super().translate_path('/'+path[len(PREFIX):])
 
-    def do_GET(self):
-        if not self.path.startswith(PREFIX):
-            self.send_error(404)
-            return
-        self.path = '/' + self.path[len(PREFIX):]
-        super().do_GET()
+    def send_error(self, code, message=None, explain=None):
+        page = Path(self.directory)/'404.html'
+        if code != 404 or not page.is_file():
+            return super().send_error(code, message, explain)
+        body = page.read_bytes()
+        self.send_response(404)
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def log_message(self, *args):
         pass
 
 
-def serve(root, port=0):
-    server = ThreadingHTTPServer(('127.0.0.1', port), partial(Handler, directory=str(root)))
+class Server(http.server.ThreadingHTTPServer):
+    def handle_error(self, request, client_address):
+        pass  # The browser closes connections it no longer needs; that is not a site fault.
+
+
+def serve(site, port=0):
+    handler = functools.partial(Handler, directory=str(site))
+    server = Server(('127.0.0.1', port), handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
-    return server, f'http://127.0.0.1:{server.server_port}' + PREFIX
+    return server, f'http://127.0.0.1:{server.server_address[1]}{PREFIX}'
 
 
-def definition_smoke(browser,base,screenshot_dir=None):
-    from playwright.sync_api import expect
-    page=browser.new_page(viewport={'width':1440,'height':960})
-    errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
-    page.goto(base+'catalogue/')
-    expect(page.locator('.definition-gate')).to_have_count(2)
-    page.locator('.definition-gate').nth(1).focus();page.keyboard.press('Enter')
-    expect(page.locator('.definition-kind')).to_have_count(3)
-    page.locator('.definition-kind').first.click()
-    expect(page.locator('.definition-status')).to_contain_text('matching entries')
-    expect(page.locator('[data-filter="vintage"]')).to_have_value('90.1-2019')
-    expect(page.locator('[data-filter="detail"]')).to_have_value('SourcePrograms')
-    expect(page.locator('[data-filter="climate"]')).to_have_count(0)
-    page.locator('[data-filter="building"]').select_option('Medium Office')
-    page.locator('[data-filter="vintage"]').select_option('90.1-2019')
-    expect(page.locator('.definition-status')).to_contain_text('2 matching entries')
-    page.reload();expect(page.locator('[data-filter="vintage"]')).to_have_value('90.1-2019')
-    if screenshot_dir:page.screenshot(path=str(screenshot_dir/'definition-finder.png'),full_page=True)
-    page.locator('.definition-result a').first.click()
-    expect(page.locator('.definition-copy')).to_be_visible()
-    resource=page.locator('.definition-resource').first
-    resource.locator('summary').click();resource.locator('button').click()
-    expect(resource.locator('button')).to_have_text('Verified')
-    expect(resource.locator('pre')).not_to_be_empty()
-    if screenshot_dir:page.screenshot(path=str(screenshot_dir/'definition-detail.png'),full_page=True)
-    page.reload()
-    page.route('**/delivery/v2/resources/**',lambda route:route.fulfill(status=404,body='missing'))
-    resource=page.locator('.definition-resource').first
-    resource.locator('summary').click();resource.locator('button').click()
-    expect(resource.locator('pre')).to_contain_text('Resource unavailable (404)')
-    page.unroute('**/delivery/v2/resources/**')
-    page.goto(base+'catalogue/nonresidential/program/?building=Medium+Office&vintage=Unsupported')
-    expect(page.locator('.definition-status')).to_contain_text('No entries match')
-    page.goto(base+'catalogue/nonresidential/construction/?building=Full+Service+Restaurant&vintage=90.1-2019&climate=ClimateZone+7')
-    expect(page.locator('.definition-status')).to_contain_text('matching entries')
-    page.goto(base+'catalogue/nonresidential/program/?vintage=')
-    expect(page.locator('[data-filter="vintage"]')).to_have_value('')
-    page.locator('.definition-finder button[type="reset"]').click()
-    expect(page.locator('[data-filter="vintage"]')).to_have_value('90.1-2019')
-    page.set_viewport_size({'width':390,'height':844})
-    page.goto(base+'catalogue/')
-    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'Definition gate mobile overflow'
-    if screenshot_dir:page.screenshot(path=str(screenshot_dir/'definition-mobile.png'),full_page=True)
-    offline=browser.new_context(java_script_enabled=False);fallback=offline.new_page()
-    fallback.goto(base+'catalogue/');expect(fallback.locator('.definition-gate')).to_have_count(2)
-    fallback.goto(base+'catalogue/nonresidential/program/')
-    fallback.locator('.definition-static summary').click()
-    expect(fallback.locator('.definition-static a').first).to_be_visible()
-    fallback.locator('.definition-static a').first.click();expect(fallback.locator('h1')).to_be_visible()
-    offline.close();page.close()
-    assert not errors,errors
+def pick(site):
+    """Representative pages from the manifest and the built HTML."""
+    manifest = json.loads((site/'site-manifest.json').read_text(encoding='utf-8'))
+    programs = manifest['programs']
+    filled = next(p for p, e in sorted(programs.items()) if e.get('filled') and
+                  'ea-filling' in (site/e['page']/'index.html').read_text(encoding='utf-8'))
+    source_only = next(p for p, e in sorted(programs.items()) if e.get('filled_reason') and p.startswith('iecc-'))
+    dwelling = next((p for p in sorted(programs) if p.startswith('resstock-sdr.')), None)
+    sets = manifest['construction_sets']
+    axes = next((s for s, e in sorted(sets.items()) if s.startswith('iecc-') and '.' in next(iter(e['contexts'])) and
+                 'data-foundation' in (site/e['page']/'index.html').read_text(encoding='utf-8')), None)
+    commercial = next(s for s, e in sorted(sets.items()) if len(e['contexts']) > 3 and s.startswith('90-1-2019.'))
+    return manifest, filled, source_only, dwelling, axes or commercial, commercial
 
 
-def smoke(root, screenshot_dir=None):
-    if (Path(root) / 'object-index.json').exists():
-        from scripts.active_smoke import smoke as current_smoke
-        return current_smoke(root, screenshot_dir)
-    from playwright.sync_api import sync_playwright, expect
-    root = Path(root)
-    index = load_json(root/'releases/v0.2.0/catalogue.json')
-    office = next(r for r in index['entries'] if r['kind'] == 'programs'
-                  and r['building'] == 'Medium Office' and r['program'] == 'Office'
-                  and r['template'] == '90.1-2013')
-    residential = next(r for r in index['entries'] if r['kind'] == 'residential_archetypes')
-    server, base = serve(root)
-    errors, failed = [], []
+def check(site, channel=None, screenshots=None):
+    from playwright.sync_api import sync_playwright
+    site = Path(site)
+    manifest, filled, source_only, dwelling, axes, commercial = pick(site)
+    server, base = serve(site)
+    failures, notes = [], []
+
+    def expect(condition, message):
+        (notes if condition else failures).append(message)
+
+    def shot(page, name):
+        if screenshots:
+            Path(screenshots).mkdir(parents=True, exist_ok=True)
+            page.screenshot(path=str(Path(screenshots)/f'{name}.png'), full_page=False)
+
+    page_url = lambda record_id: base+manifest['programs'].get(record_id, manifest['construction_sets'].get(record_id, {})).get('page', '')
     try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch()
-            context = browser.new_context(viewport={'width': 1440, 'height': 960})
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch(channel=channel) if channel else playwright.chromium.launch()
+            context = browser.new_context(accept_downloads=True)
+            context.grant_permissions(['clipboard-read', 'clipboard-write'], origin=base.split(PREFIX)[0])
             page = context.new_page()
+            errors = []
             page.on('pageerror', lambda error: errors.append(str(error)))
-            page.on('response', lambda response: failed.append(response.url) if
-                    response.status >= 400 and response.url.startswith(base) else None)
-            page.goto(base)
-            query=page.locator('[data-md-component="search-query"]')
-            query.fill('Medium Office')
-            expect(page.locator('.md-search-result__list')).to_contain_text('Medium Office')
-            query.fill('')
-            query.press('Escape')
-            expect(page.locator('.atlas-hero')).to_be_visible()
-            if screenshot_dir:
-                screenshot_dir.mkdir(parents=True, exist_ok=True)
-                page.screenshot(path=str(screenshot_dir/'home.png'), full_page=True)
-            page.goto(base + 'releases/v0.2.0/catalogue/')
-            expect(page.locator('#atlas-results-count')).to_contain_text('matching entries')
-            if not index.get('pilot'):
-                climates = page.locator('#atlas-filter-climate option').evaluate_all('(options) => options.map(o => o.value)')
-                assert '2B' in climates and 'ClimateZone 2B' not in climates, 'Equivalent climate labels split the filter'
-                page.locator('#atlas-filter-climate').select_option('2B')
-                expected = sum(r['climate'] == '2B' for r in index['entries'])
-                expect(page.locator('#atlas-results-count')).to_contain_text(str(expected) + ' matching entries')
-                expect(page.locator('#atlas-filter-climate')).to_have_value('2B')
-                page.goto(base + 'releases/v0.2.0/catalogue/?climate=ClimateZone+2B')
-                expect(page.locator('#atlas-filter-climate')).to_have_value('2B')
-                expect(page.locator('#atlas-results-count')).to_contain_text(str(expected) + ' matching entries')
-                page.locator('#atlas-reset').click()
-                page.goto(base + 'releases/v0.2.0/catalogue/?building=MediumOffice&program=office&template=90.1-2013&kind=mappings&system=PVAV')
-                expect(page.locator('#atlas-filter-building')).to_have_value('Medium Office')
-                expect(page.locator('#atlas-filter-program')).to_have_value('Office')
-                expect(page.locator('#atlas-results-count')).to_contain_text('3 matching entries')
-                page.locator('#atlas-reset').click()
-            page.locator('#atlas-filter-building').select_option('Medium Office')
-            page.locator('#atlas-filter-template').select_option('90.1-2013')
-            page.locator('#atlas-filter-kind').select_option('mappings')
-            page.locator('#atlas-filter-program').select_option('Office')
-            page.locator('#atlas-filter-system').select_option('PVAV')
-            # The pinned source has one PVAV office mapping for each of its three floors.
-            expect(page.locator('#atlas-results-count')).to_contain_text('3 matching entries')
-            page.locator('#atlas-filter-program').select_option('')
-            page.locator('#atlas-filter-system').select_option('')
-            page.locator('#atlas-filter-kind').select_option('programs')
-            expect(page.locator('#atlas-results-count')).to_contain_text('2 matching entries')
-            saved = page.url
-            page.reload()
-            expect(page.locator('#atlas-filter-building')).to_have_value('Medium Office')
-            expect(page.locator('#atlas-results-count')).to_contain_text('2 matching entries')
-            page.locator('#atlas-query').fill('no-such-program-xyz')
-            expect(page.locator('#atlas-results-count')).to_contain_text('0 matching entries')
-            expect(page.locator('#atlas-results')).to_contain_text('No matching')
-            page.locator('#atlas-reset').click()
-            expect(page.locator('#atlas-filter-building')).to_have_value('')
-            if not index.get('pilot'):
-                page.locator('#atlas-filter-kind').select_option('schedules')
-                page.locator('#atlas-filter-building').select_option('Highrise Apartment')
-                page.locator('#atlas-filter-template').select_option('90.1-2019')
-                page.locator('#atlas-query').fill('schedule-9841fa9f62ff202db619')
-                expect(page.locator('#atlas-results-count')).to_contain_text('0 matching entries')
-                page.locator('#atlas-filter-template').select_option('90.1-2007')
-                expect(page.locator('#atlas-results-count')).to_contain_text('1 matching entries')
-                page.locator('#atlas-filter-building').select_option('Midrise Apartment')
-                page.locator('#atlas-filter-template').select_option('90.1-2019')
-                expect(page.locator('#atlas-results-count')).to_contain_text('1 matching entries')
-                page.locator('#atlas-reset').click()
-            page.goto(base + office['path'].removesuffix('.md') + '/')
-            expect(page.locator('.atlas-charts .js-plotly-plot').first).to_be_visible(timeout=30000)
-            page.locator('.atlas-day').select_option('SmrDsn')
-            expect(page.locator('.atlas-chart-status')).to_contain_text('schedules inspected')
-            page.locator('.atlas-date').fill('2000-07-15')
-            page.locator('.atlas-date').dispatch_event('change')
-            expect(page.locator('.atlas-profile-table')).to_contain_text('SELECTED')
-            overlay = page.locator('.atlas-controls select').last
-            overlay_id = overlay.locator('option').nth(1).get_attribute('value')
-            overlay.select_option(overlay_id)
-            expect(page.locator('.atlas-profile-table')).to_contain_text('overlay')
+            page.on('console', lambda message: errors.append(message.text) if message.type == 'error' and 'Failed to load resource' not in message.text else None)
+            # Only the site's own resources count; Material's repository widget also asks api.github.com.
+            page.on('response', lambda response: errors.append(f'{response.status} {response.url}')
+                    if response.status >= 400 and response.url.startswith(base) else None)
+
+            # A program with fillings: version switch, copy and download.
+            page.goto(page_url(filled))
+            expect(page.locator('.ea-filling').count() > 0, f'{filled}: fillings are marked')
+            exports = page.locator('.ea-suite > .ea-exports').first
+            expect(exports.locator('.ea-copy:visible').count() == 2, f'{filled}: copy buttons for source and filled')
+            page.goto(page_url(filled)+'?version=source')
+            hidden = page.eval_on_selector('.ea-filling', 'e => getComputedStyle(e).display')
+            expect(hidden == 'none', f'{filled}: ?version=source hides fillings')
+            page.goto(page_url(filled)+'?version=filled')
+            shown = page.eval_on_selector('.ea-filling', 'e => getComputedStyle(e).display')
+            expect(shown != 'none', f'{filled}: ?version=filled shows fillings')
+            expect(page.locator('[data-switch="version"] a[aria-current="true"]').inner_text() == 'Filled', f'{filled}: active version marked')
+            shot(page, 'program-filled')
+            holder = page.locator('.ea-suite > .ea-exports').first.locator('.ea-json').nth(1)
+            holder.locator('.ea-copy').click()
+            page.wait_for_function('document.querySelectorAll(".ea-json__status").length > 0 && '
+                                   '/Copied|clipboard/.test(document.querySelector(".ea-json__status").textContent)', timeout=20000)
+            text = page.evaluate('navigator.clipboard.readText()')
+            copied = json.loads(text) if text.startswith('{') else {}
+            expect(copied.get('id') == filled and copied.get('version') == 'filled', f'{filled}: copied filled JSON verified')
             with page.expect_download() as download:
-                page.locator('.atlas-csv').click()
-            assert download.value.suggested_filename == 'atlas-selected-profiles.csv'
-            exported_water = list(csv.DictReader(Path(download.value.path()).read_text().splitlines()))
-            normalized = [float(r['value']) for r in exported_water
-                          if r['role'] == 'fixture_draw_equivalent_peak_normalized']
-            source_draw = [float(r['value']) for r in exported_water
-                           if r['role'] == 'service_water_heating_schedule_id']
-            assert len(normalized) == len(source_draw) == 24, 'Water equivalent missing from explorer CSV'
-            assert all(abs(a-b*0.57) < 1e-12 for a,b in zip(source_draw,normalized)), 'Water equivalent changes draw shape/scaling'
-            attributed = [float(r['value']) for r in exported_water if r['role']=='attributed_hot_water_reporting']
-            assert len(attributed)==24 and all(abs(a-b)<1e-12 for a,b in zip(attributed,normalized)), 'Program reporting curve differs from the conserved Medium Office pilot'
-            office_packet=page.request.get(base+office['download']).json()
-            assert office_packet['water_reporting']['record']['program_id']==office['id']
-            report=page.request.get(base+'schedule-coverage.json').json()
-            assert report['commercial']['missing_schedule_fields']==279
-            assert report['water_reporting_variant']['supplied_schedule_fields']==5138
-            assert report['water_reporting_variant']['remaining_schedule_gaps']==0
-            water_link = page.locator('.atlas-profile-table details').filter(has_text='fixture_draw_equivalent_peak_normalized').locator('a').first
-            detail_url = water_link.get_attribute('href')
-            assert detail_url and context.request.get(detail_url).status == 200, 'Equivalent source-rule detail page is unavailable'
-            if screenshot_dir:
-                page.screenshot(path=str(screenshot_dir/'office.png'), full_page=True)
-            hospital = next((r for r in index['entries'] if r['id'] == 'program-063ce56e8cb91eedd1ae'), None)
-            if not index.get('pilot'):
-                assert hospital is not None, 'Full build must contain the shared-role regression fixture'
-            if hospital:
-                page.goto(base + hospital['path'].removesuffix('.md') + '/')
-                expect(page.locator('.atlas-charts .js-plotly-plot').first).to_be_visible(timeout=30000)
-                expect(page.locator('.atlas-profile-table')).to_contain_text('heating_setpoint_schedule_id')
-                expect(page.locator('.atlas-profile-table')).to_contain_text('cooling_setpoint_schedule_id')
-                expect(page.locator('.atlas-profile-table')).to_contain_text('minimum deadband: 0.000')
-                with page.expect_download() as shared_csv:
-                    page.locator('.atlas-csv').click()
-                exported = list(csv.DictReader(Path(shared_csv.value.path()).read_text().splitlines()))
-                for role in ['heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id']:
-                    assert len([r for r in exported if r['role'] == role]) == 24, 'Shared schedule role missing from CSV'
-            race = context.new_page()
-            race.add_init_script("""
-                let api;
-                window.__pendingPlots = 0;
-                Object.defineProperty(window, 'Plotly', {
-                  configurable: true,
-                  get() { return api; },
-                  set(value) {
-                    const original = value.newPlot;
-                    value.newPlot = function (...args) {
-                      window.__pendingPlots++;
-                      const result = original.apply(value, args);
-                      if (!window.__plotHeld) {
-                        window.__plotHeld = true;
-                        return new Promise(resolve => {
-                          window.__releasePlot = () => {
-                            window.__plotReleased = true;
-                            Promise.resolve(result).then(value => {
-                              window.__pendingPlots--; resolve(value);
-                            });
-                          };
-                        });
-                      }
-                      return Promise.resolve(result).finally(() => window.__pendingPlots--);
-                    };
-                    api = value;
-                  }
-                });
-            """)
-            race.goto(base + office['path'].removesuffix('.md') + '/')
-            race.wait_for_function('window.__plotHeld === true')
-            race.locator('.atlas-day').select_option('Sat')
-            expect(race.locator('.atlas-charts .js-plotly-plot')).to_have_count(3)
-            race.evaluate('window.__releasePlot()')
-            race.wait_for_function('window.__plotReleased && window.__pendingPlots === 0')
-            race.evaluate('() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))')
-            expect(race.locator('.atlas-charts .js-plotly-plot')).to_have_count(3)
-            race.close()
-            page.goto(base + residential['path'].removesuffix('.md') + '/')
-            fixed_active=page.locator('.atlas-residential-profile[data-fixed="true"]')
-            expect(fixed_active.locator('.atlas-res-columns option')).to_have_count(3)
-            fixed_active.locator('.atlas-res-columns').select_option('lighting_exterior')
-            page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 24")
-            exterior=fixed_active.locator('.js-plotly-plot').first.evaluate('(el) => el.data[0].y')
-            from urllib.parse import urljoin
-            exterior_packet=page.request.get(urljoin(page.url,fixed_active.get_attribute('data-profile'))).json()
-            assert exterior==exterior_packet['series']['lighting_exterior'][:24], 'Exterior plot differs from fixed source profile'
-            executed_section=page.locator('.atlas-residential-profile:not([data-fixed])')
-            expect(page.locator('body')).to_contain_text('Profiles unavailable')
-            assert page.locator('.atlas-explorer').count() == 0
-            expect(executed_section.locator('.atlas-res-charts .js-plotly-plot')).to_have_count(2)
-            expect(executed_section.locator('.atlas-res-status')).to_contain_text('24 executed hourly intervals')
-            profile_packet = page.request.get(base + residential['download']).json()['resolution_supplement']['profile']
-            canonical = page.request.get(base + profile_packet['download']).json()
-            executed_section.locator('.atlas-res-view').select_option('annual')
-            page.wait_for_function("document.querySelector('.atlas-residential-profile:not([data-fixed]) .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
-            expect(executed_section.locator('.atlas-res-date')).to_be_disabled()
-            executed_section.locator('.atlas-res-view').select_option('day')
-            executed_section.locator('.atlas-res-date').fill('2007-07-01')
-            executed_section.locator('.atlas-res-date').dispatch_event('change')
-            page.wait_for_function("document.querySelector('.atlas-residential-profile:not([data-fixed]) .js-plotly-plot')?.data?.[0]?.x?.[0] === '2007-07-01T00:00:00'")
-            plotted = executed_section.locator('.atlas-res-charts .js-plotly-plot').first.evaluate('(el) => el.data[0].y')
-            assert plotted == canonical['series']['occupants'][181*24:182*24], 'Residential chart must show actual generated calendar data'
-            if screenshot_dir:
-                page.screenshot(path=str(screenshot_dir/'residential-profiles.png'), full_page=True)
-            fixed_record=next(r for r in index['entries'] if r['id']=='residential_archetype-28457c00121833f065f2')
-            page.goto(base + fixed_record['path'].removesuffix('.md') + '/')
-            fixed_section=page.locator('.atlas-residential-profile[data-fixed="true"]')
-            expect(fixed_section.locator('.atlas-res-columns option')).to_have_count(1)
-            expect(fixed_section.locator('.atlas-res-status')).to_contain_text('no temperature feedback')
-            page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 24")
-            fixed_url=fixed_section.get_attribute('data-profile')
-            from urllib.parse import urljoin
-            fixed_packet=page.request.get(urljoin(page.url,fixed_url)).json()
-            actual=fixed_section.locator('.js-plotly-plot').first.evaluate('(el) => el.data[0].y')
-            assert actual==fixed_packet['series']['refrigerator'][:24], 'Fixed refrigeration chart differs from canonical recipe expansion'
-            fixed_section.locator('.atlas-res-view').select_option('annual')
-            page.wait_for_function("document.querySelector('[data-fixed=true] .js-plotly-plot')?.data?.[0]?.y?.length === 8760")
-            if screenshot_dir:
-                page.screenshot(path=str(screenshot_dir/'fixed-refrigeration.png'),full_page=True)
-            completion=page.request.get(base+'commercial-completion/v0.1.0/catalogue.json').json()
-            draw=next(d for d in completion['draw_paths'] if d['beneficiary_program_ids'])
-            from scripts.site import completion_page
-            page.goto(base+completion_page(draw).removesuffix('.md')+'/')
-            expect(page.locator('.atlas-chart-status')).to_contain_text('2 schedules inspected')
-            with page.expect_download() as draw_csv:
-                page.locator('.atlas-csv').click()
-            curves=list(csv.DictReader(Path(draw_csv.value.path()).read_text().splitlines()))
-            raw=[float(r['value']) for r in curves if r['role']=='source_fixture_draw']
-            normalized=[float(r['value']) for r in curves if r['role']=='conserved_peak_normalized_draw']
-            recipe=next(s for s in completion['schedules'] if s['source_name']==draw['source_schedule_name'])
-            assert len(raw)==len(normalized)==24
-            assert all(abs(a-b*recipe['peak_divisor'])<1e-12 for a,b in zip(raw,normalized)), 'Fixture plot does not conserve draw'
-            if screenshot_dir:
-                page.screenshot(path=str(screenshot_dir/'commercial-fixture.png'),full_page=True)
-            response = page.request.get(base + office['download'])
-            assert response.ok and response.json()['record']['id'] == office['id']
-            page.set_viewport_size({'width': 390, 'height': 844})
-            page.goto(saved)
-            expect(page.locator('#atlas-query')).to_be_visible()
-            assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth + 1'), 'Mobile layout overflows'
-            if screenshot_dir:
-                page.screenshot(path=str(screenshot_dir/'mobile.png'), full_page=True)
-            offline = browser.new_context(java_script_enabled=False)
-            fallback = offline.new_page()
-            fallback.goto(base + 'releases/v0.2.0/catalogue/')
-            expect(fallback.locator('body')).to_contain_text('Browse by climate')
-            expect(fallback.locator('a[href*="buildings/"]').first).to_be_visible()
-            fallback.goto(base + office['path'].removesuffix('.md') + '/')
-            expect(fallback.locator('body')).to_contain_text('Source locator')
-            expect(fallback.locator('a[href$=".json"]').first).to_be_visible()
-            for slug, heading in [('data-delivery', 'Data delivery for software'),
-                                  ('data-delivery-contract', 'Query contract v1'),
-                                  ('data-delivery-schedules', 'Schedules and conformance')]:
-                fallback.goto(base + 'guides/' + slug + '/')
-                expect(fallback.locator('h1')).to_contain_text(heading)
-                if screenshot_dir and slug == 'data-delivery':
-                    fallback.screenshot(path=str(screenshot_dir/'data-delivery.png'), full_page=True)
-            if (root/'catalogue/nonresidential/program/entries.json').exists():
-                definition_smoke(browser,base,screenshot_dir)
+                page.locator('.ea-suite > .ea-exports').first.locator('.ea-json').nth(0).locator('a[download]').click()
+            saved = json.loads(Path(download.value.path()).read_text(encoding='utf-8'))
+            expect(saved.get('id') == filled and saved.get('version') == 'source' and download.value.suggested_filename.endswith('.source.json'),
+                   f'{filled}: downloaded source JSON verified and decompressed')
+
+            # A source-only program asked for its filled version.
+            page.goto(page_url(source_only)+'?version=filled')
+            expect(page.locator('.ea-notice[data-when-version="filled"]').is_visible(), f'{source_only}: notice for the missing filled version')
+            expect(page.locator('.ea-suite > .ea-exports').first.locator('.ea-json--absent').count() == 1,
+                   f'{source_only}: filled export marked absent with its reason')
+            shot(page, 'program-source-only')
+
+            # A dwelling: annual schedules as monthly and typical-day plots, no hourly table.
+            if dwelling:
+                page.goto(page_url(dwelling))
+                expect(page.locator('.ea-schedule svg.ea-plot').count() >= 2, f'{dwelling}: annual schedule plots')
+                expect(page.locator('text=Typical day').count() > 0, f'{dwelling}: typical day shown')
+                biggest = max(len(t) for t in page.locator('.ea-schedule table').all_inner_texts()) if page.locator('.ea-schedule table').count() else 0
+                expect(biggest < 20000, f'{dwelling}: no hourly table')
+                shot(page, 'dwelling')
+
+            # A construction set: context filters in the query string.
+            page.goto(page_url(axes)+'?climate=4A')
+            expect(page.locator('form[data-filters]').is_visible(), f'{axes}: filters shown')
+            visible = page.eval_on_selector_all('.ea-context:not([hidden])', 'es => es.map(e => e.dataset.climate)')
+            expect(visible and all(re.match(r'^4A', v or '') for v in visible), f'{axes}: ?climate=4A keeps zone 4A only ({len(visible)})')
+            count = page.locator('.ea-filter-count').inner_text()
+            expect(count.startswith(f'{len(visible)} of '), f'{axes}: count says {count}')
+            if page.locator('select[data-filter="foundation"]').count():
+                value = page.eval_on_selector('select[data-filter="foundation"]', 's => s.options[1].value')
+                page.select_option('select[data-filter="foundation"]', value)
+                expect(f'foundation={value}' in page.url, f'{axes}: foundation choice is kept in the URL')
+                foundations = page.eval_on_selector_all('.ea-context:not([hidden])', 'es => es.map(e => e.dataset.foundation)')
+                expect(foundations and set(foundations) == {value}, f'{axes}: foundation filter')
+            shot(page, 'construction-filtered')
+            page.goto(page_url(commercial))
+            expect(page.locator('.ea-context').count() == len(manifest['construction_sets'][commercial]['contexts']),
+                   f'{commercial}: every context is listed')
+
+            # The viewer: a schedule opens its page and anchor; an evidence row shows its JSON.
+            page.goto(page_url(filled))
+            schedule = page.eval_on_selector('.ea-schedule[id]', 'e => e.id') if page.locator('.ea-schedule[id]').count() else None
+            if schedule:
+                page.goto(base+'view/?id='+schedule)
+                page.wait_for_url(re.compile('#'+re.escape(schedule)+'$'), timeout=20000)
+                expect('/catalogue/' in page.url, f'viewer opens schedule {schedule}')
+            page.goto(page_url(filled))
+            evidence_id = page.eval_on_selector('.ea-evidence[id]', 'e => e.id') if page.locator('.ea-evidence[id]').count() else None
+            if evidence_id:
+                page.goto(base+'view/?id='+evidence_id)
+                page.wait_for_selector('.ea-viewer__json', timeout=20000)
+                expect(evidence_id in page.locator('.ea-viewer__json').inner_text(), f'viewer shows evidence {evidence_id}')
+                shot(page, 'viewer')
+            page.goto(base+'view/?id=no-such-object-id')
+            page.wait_for_function('/No object/.test(document.querySelector(".ea-viewer__status").textContent)', timeout=20000)
+            expect(True, 'viewer reports an unknown ID')
+
+            # Search finds a suite page by its ID.
+            page.goto(base)
+            page.locator('label.md-search__icon, .md-search__input').first.click()
+            page.locator('.md-search__input').fill(filled.split('.')[-2])
+            page.wait_for_selector('.md-search-result__item', timeout=30000)
+            hrefs = page.eval_on_selector_all('.md-search-result__item a', 'es => es.map(e => e.getAttribute("href"))')
+            expect(any(manifest['programs'][filled]['page'] in (h or '') for h in hrefs), f'search finds {filled}')
+
+            expect(not errors, 'no console errors: '+'; '.join(errors[:3]))
+
+            # Retired URLs answer with the 404 page and its search box.
+            response = page.goto(base+'definitions/old-record/')
+            expect(response.status == 404 and page.locator('.md-search__input').count() > 0, 'retired URL shows the 404 page with search')
+
+            # Without JavaScript the record and its gzip download remain.
+            plain = browser.new_context(java_script_enabled=False)
+            nojs = plain.new_page()
+            nojs.goto(page_url(filled))
+            expect(nojs.locator('.ea-section').count() > 2 and nojs.locator('.ea-suite > .ea-exports').first.locator('a[download]').count() == 2,
+                   f'{filled}: reads without JavaScript')
+            plain.close()
+
+            # Phone width: no horizontal page scroll.
+            phone = browser.new_context(viewport={'width': 375, 'height': 812})
+            small = phone.new_page()
+            for record_id in (filled, axes):
+                small.goto(page_url(record_id))
+                overflow = small.evaluate('document.documentElement.scrollWidth - window.innerWidth')
+                expect(overflow <= 1, f'{record_id}: no horizontal scroll at 375 px ({overflow})')
+            shot(small, 'phone')
+            phone.close()
             browser.close()
-        if errors or failed:
-            raise AssertionError({'browser_errors': errors, 'failed_local_requests': failed})
-        print('Browser checks passed: filters/permalinks, plots/overlays/CSV, executed residential annual/day profiles, mobile and no-JS')
     finally:
         server.shutdown()
-        server.server_close()
+    return failures, notes
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--site', type=Path, default=ROOT/'build/site')
-    p.add_argument('--screenshots', type=Path)
-    p.add_argument('--serve', action='store_true', help='Serve a persistent local preview')
-    p.add_argument('--port', type=int, default=8765)
-    args = p.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--site', type=Path, default=ROOT/'build/site')
+    parser.add_argument('--channel', help='an installed browser channel (chrome, msedge) instead of Playwright Chromium')
+    parser.add_argument('--screenshots', type=Path)
+    parser.add_argument('--serve', action='store_true')
+    parser.add_argument('--port', type=int, default=8765)
+    args = parser.parse_args()
     if args.serve:
         server, url = serve(args.site, args.port)
-        print(url, flush=True)
+        print('Serving', url, '(Ctrl+C to stop)')
         try:
-            while True:
-                time.sleep(1)
+            threading.Event().wait()
         except KeyboardInterrupt:
             server.shutdown()
-    else:
-        smoke(args.site, args.screenshots)
+        return
+    failures, notes = check(args.site, args.channel, args.screenshots)
+    for note in notes:
+        print('ok  ', note)
+    if failures:
+        raise SystemExit('\n'.join('FAIL '+f for f in failures))
+    print(f'{len(notes)} browser checks passed')
 
 
 if __name__ == '__main__':

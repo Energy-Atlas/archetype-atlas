@@ -43,23 +43,29 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Verify presentation contracts
         run: |
-          python -c "from scripts.construction_foundation_release import load_release; load_release(); print('Combined construction manifest, resources and input checksums verified')"
-          python -m scripts.definition_release --verify
-          python -m unittest tests.test_definition_site -q
-          python -m unittest tests.test_site_delivery tests.test_html_delivery -q
-          python -m unittest tests.test_query_delivery tests.test_query_client tests.test_query_compression tests.test_query_history tests.test_query_site -q
-          python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_completion tests.test_program_recovery tests.test_program_completeness tests.test_er_triage tests.test_active_site tests.test_object_browser -q
-          python -m unittest tests.test_construction_site tests.test_construction_site_refresh tests.test_construction_foundation_site tests.test_construction_publication tests.test_site_asset_versions -q
+          python -m unittest tests.test_suite_site tests.test_search_index tests.test_html_delivery tests.test_card_icons tests.test_site_asset_versions tests.test_construction_publication -q
+          python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_completion tests.test_program_recovery tests.test_program_completeness tests.test_er_triage -q
           node --test tests/*.test.js
-      - name: Generate the current definition catalogue and build
-        run: |
-          python -m scripts.site
-          python -m mkdocs build --strict
+      # Site output is a pure function of the release and the scripts (ADR 0036 section 1, ADR 0043):
+      # it is cached under a digest of its inputs, and site_check still rejects a stale or partial tree.
+      - name: Digest the site inputs
+        id: digest
+        run: echo "value=$(python -m scripts.suite_site --digest)" >> "$GITHUB_OUTPUT"
+      - name: Restore the generated catalogue
+        id: cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: build/site-docs
+          key: suite-site-docs-${{ steps.digest.outputs.value }}
+      - name: Generate the suite catalogue of the newest release
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python -m scripts.suite_site
+      - name: Build
+        run: python -m mkdocs build --strict
       - name: Verify all links and browser behavior
         run: |
-          python -m scripts.site_check --require-construction
+          python -m scripts.site_check --require-complete
           python -m scripts.site_smoke --screenshots build/screenshots
-          python -m scripts.construction_site_smoke --screenshots build/screenshots/construction
       - name: Retain verification screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

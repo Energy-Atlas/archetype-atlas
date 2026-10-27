@@ -97,7 +97,10 @@ filter or projected field names fail; zero matches return an empty list and
 multiple matches remain multiple. No nearest-vintage fallback occurs. Source is
 the default view. Project only needed fields, keeping supporting evidence lazy.
 
-The repository reference client implements this contract:
+Retired with the suite site ([ADR 0043](adr/0043-suite-based-site.md)): `delivery/v2` and
+`scripts/query_v2.py` were removed; the client below remains in the repository history.
+
+The repository reference client implemented this contract:
 
 ```python
 from scripts.query_v2 import QueryClient
