@@ -81,3 +81,7 @@ Each entry: decision; alternatives; reason; evidence.
 
 - Whether the 90.1 recipe IDs should move to the same interpreter-independent hashing
   in release 2.0.0 (stage X1), ending the pinned-producer dependency.
+
+Answered by the user on 2026-10-27 (plan register, U): yes, in milestone B with the
+rewritten writers (stage X1.4), with a published map from old to new IDs. Release 2.0.0
+stays `candidate` until then, so the IDs change before it is declared stable.
