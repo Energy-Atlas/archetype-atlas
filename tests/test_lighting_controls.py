@@ -121,6 +121,11 @@ class Release150Tests(unittest.TestCase):
         cls.listed = atlas_minor_release.verify('1.5.0')
         cls.release = Release(release='1.5.0')
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.listed, cls.release
+
     def test_every_commercial_leaf_program_states_its_controls(self):
         states = Counter()
         for pid, (_, stored) in self.release.programs.items():

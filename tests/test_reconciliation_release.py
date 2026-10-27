@@ -47,6 +47,11 @@ class ReleaseAnswerKeyTests(unittest.TestCase):
         for pid, (_, p) in cls.release.programs.items():
             cls.current[(p['template'], p['building_type'], p.get('source_id') or p['name'])] = pid
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.files, cls.release, cls.values, cls.base, cls.current
+
     def now(self, base_id):
         p = self.base[base_id]
         return self.release.stored_program(self.current[(p['template'], p['building_type'], p.get('source_id') or p['name'])])

@@ -99,6 +99,11 @@ class ReleaseTests(unittest.TestCase):
         from scripts.atlas_exports import Release
         cls.release = Release(release='1.3.0')
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.release
+
     def test_release_holds_release_1_2_0(self):
         listed = atlas_minor_release.verify('1.3.0')
         earlier = json.loads((ROOT/'data/atlas-releases/v1.2.0/manifest.json').read_text())
@@ -155,6 +160,11 @@ class AnswerKeyTests(unittest.TestCase):
                 cls.schedules[folder] = json.loads(data)
             elif '/constructions/' in path:
                 cls.sets[folder] = json.loads(data)
+
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.programs, cls.schedules, cls.constructions, cls.sets
 
     def schedule(self, folder, sid):
         table = self.schedules[folder]
