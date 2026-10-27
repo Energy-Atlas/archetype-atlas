@@ -70,6 +70,7 @@ jobs:
           python -m scripts.atlas_minor_release --release 1.3.0 --verify
           python -m scripts.atlas_minor_release --release 1.4.0 --verify
           python -m scripts.atlas_minor_release --release 1.5.0 --verify
+          python -m scripts.atlas_minor_release --release 1.6.0 --verify
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
           python -m scripts.resstock_iecc_review --check
@@ -202,6 +203,8 @@ jobs:
         run: python -m scripts.atlas_minor_release --release 1.4.0 --check
       - name: Reproduce the 1.5.0 delta release with pinned producer
         run: python -m scripts.atlas_minor_release --release 1.5.0 --check
+      - name: Reproduce the 1.6.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.6.0 --check
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
