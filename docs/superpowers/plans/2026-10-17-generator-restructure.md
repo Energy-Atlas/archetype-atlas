@@ -453,3 +453,43 @@ Residential review decisions, 2026-10-18:
   started.
 - O13 done (2026-10-19): southern-hemisphere season shift in `residential/seasons.py`, applied to residential monthly multipliers, fixed-background multipliers, the lighting hour and the evening width; tests in `test_seasons.py`.
 - O14 implemented (2026-10-19): `scripts/derive_occupancy_mix.py` (pinned ATUS 2003-2024 and ACS 2024 PUMS, `sources/occupancy-mix-lock.json`) writes `occupancy-mix.json`, with 16 cells x 2 windows and 51 state compositions. `residential/occupancy.py` gives the state mix (children keep national shares). The request option `occupancy` (mix state/national, window 2003-2019/2022-2024) defaults to the state mix, 2003-2019. Native and legacy keys use national. Tests are in `test_occupancy_mix.py`.
+
+Decisions and findings, 2026-10-27 (logged; implement later together with the
+remaining decisions):
+- O15 DECISION (user, 2026-10-27): commercial power loads (lighting,
+  additional lighting, plug loads, gas equipment) and commercial shared
+  hot-water services keep their source magnitude (W/m² density, or m³/s peak
+  flow) fixed and bind it to the sampled schedule, as ComStock does. Annual
+  energy and volume become outputs of each draw. The prototype value ×
+  schedule is one candidate draw of what ResStock or ComStock may produce, so
+  it is not a target to match. This amends ADR 0021 (annual budgets fixed
+  before sampling), ADR 0023 (mixture targets as sums of original targets)
+  and ADR 0027 (original per-area volume targets before amplitude binding).
+  Not started.
+  - Why: the generator holds each load's annual total and refits its
+    amplitude (`budgets.fit_amplitude`), so peak power drifts from the
+    installed value. A catalogue scan (2026-10-27, seeds 42 and 51, 5,778
+    loads) found the peak above the installed value in 53 % of lighting,
+    45 % of plug-load, 23 % of gas-equipment and 27 % of shared-water cases
+    (up to 1.46× power and 2.11× flow). The annual-energy spread that
+    ComStock's hours sampling produces was cancelled.
+  - In ComStock, `create_typical_building_from_model` rewrites schedule
+    values only; `set_interior_lighting_technology` replaces the density and
+    keeps the default schedule; base-to-peak changes schedule values only.
+    Nothing rescales power to hold energy.
+  - Unchanged: residential dwellings (annual totals by ResStock design),
+    fixed programmes, people counts (density × schedule, never fitted),
+    apartment plug loads and unit water (untransformed prototype schedules).
+- O16 (open): apartment-unit lighting and additional lighting combine a
+  prototype density, whose schedule peaks at 0.18, with ResStock timing
+  normalised to a peak of 1. A fixed density would give 2.8–3.6× the
+  prototype energy (90.1) or about 0.47× (DOE Ref Midrise). The ResStock shape
+  carries no installed rating, so these slots stay on the annual binding until
+  their budget source is decided (prototype budget, or a ResStock annual
+  lighting budget).
+- Open findings: ComStock sets lighting density from a sampled lighting
+  generation (technology baseline), while the atlas uses each template's code
+  density. ComStock's baseline adds no daylighting controls
+  (`add_daylighting_controls: nil`); only `upgrade_light_lighting_controls`
+  adds them, and it models occupancy sensors as a density reduction. ADR 0044
+  records the PNNL prototypes' controls instead.
