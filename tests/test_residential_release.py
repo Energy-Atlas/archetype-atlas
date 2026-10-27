@@ -61,7 +61,7 @@ class Release140Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.release.program(iecc, 'filled')
         from scripts.prototype_dwellings import document as resolved
-        one = resolved(dwellings, iecc, 'source', {'climate': '1AWHTS', 'foundation': 'slab', 'heating': 'gasfurnace'})
+        one = resolved(dwellings, iecc, 'source', {'climate': '1A-tropical-semi-conditioned', 'foundation': 'slab', 'heating': 'gasfurnace'})
         self.assertFalse(any('applies_with' in l for l in one['loads']))
         services = {s['loads'][0]['end_use']: s['loads'][0]['value'] for s in one['shared_services']}
         self.assertAlmostEqual(services['uncond_living_hardwired_lighting'] + services['uncond_living_plug_in_lighting'], 168.995, 3)

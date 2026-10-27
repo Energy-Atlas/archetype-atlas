@@ -59,7 +59,8 @@ Inspection of all 4,144 models (`scripts.iecc_residential`) found:
    basement's lighting and adjustment) are building-level services.
 7. **1AWHTS (R5).** The unconditioned living zone's absolute loads (lighting
    168.995 W, `Addl_IECC_Adj` 252.7 W with gas appliances) are building-level services
-   (`shared_services`, instantiated once) that apply with climate code 1AWHTS.
+   (`shared_services`, instantiated once) that apply with climate
+   `1A-tropical-semi-conditioned` (section 2 item 13).
 8. **Infiltration (R6).** The source method as it is: SF uses AirflowNetwork surface
    leakage (effective leakage area per component, the surfaces it is linked to);
    MF uses `ZoneInfiltration:EffectiveLeakageArea` per zone and unit position. It is
@@ -68,12 +69,29 @@ Inspection of all 4,144 models (`scripts.iecc_residential`) found:
 9. **Schedules** convert to atlas rulesets checked over the full year and both design
    days against the source objects (`scripts.idf_schedules.Schedules`).
 10. **Construction sets:** one per edition and type, with one context per climate
-    code and foundation (`4-a.slab`, `1-awhts.heatedbsmt`, …): 76 for SF, 72 for MF.
+    label and foundation (`4-a.slab`, `1-a-tropical-semi-conditioned.heatedbsmt`, …): 76
+    for SF, 72 for MF.
 11. **Window ratios** are program level (`fenestration`), from the dwelling zones'
     outdoor walls; **thermostat** setpoints and **mechanical ventilation** are program
     entries.
 12. **Out of scope (R7):** systems (HVAC, water heaters, solar water heating) and
     the unified construction representation.
+13. **Climate labels (user, 2026-10-26; amends agent decision 1).** The source codes with
+    suffixes get a distinct, readable label each. The label is the context's `climate`
+    and the value `applies_with` conditions name; every context also carries
+    `climate_zone`, `warm_humid`, `tropical`, `design` and `source_climate_code`, and the
+    labelled ones their `source_location` (the city of the source models; not a context
+    axis). Codes without a suffix keep their names (`3A` is Atlanta). The inputs and the
+    evidence keep the source codes (`scripts.prototype_dwellings.CLIMATES` maps them at
+    release build).
+
+    | Source code | Climate label | Zone | Location | Warm-humid | Tropical | Design |
+    | --- | --- | --- | --- | --- | --- | --- |
+    | 1AWH | `1A-warm-humid` | 1A | Miami | yes | no | standard |
+    | 1AWHT | `1A-tropical` | 1A | Honolulu | yes | yes | standard |
+    | 1AWHTS | `1A-tropical-semi-conditioned` | 1A | Honolulu | yes | yes | tropical semi-conditioned |
+    | 2AWH | `2A-warm-humid` | 2A | Tampa | yes | no | standard |
+    | 3AWH | `3A-warm-humid` | 3A | Montgomery | yes | no | standard |
 
 ## 3. Consequences
 
@@ -98,7 +116,8 @@ Each entry: decision; alternatives; reason; evidence.
    adds the unconditioned living zone (half the living space without conditioning),
    flat-plate solar water heating and a thinner ceiling insulation layer
    (`ceil_consol_layer`, 0.285 m to 0.146 m in IECC 2021), matching the IECC
-   tropical-zone provisions (R401.2.1). The codes stay context names (R5).
+   tropical-zone provisions (R401.2.1). The codes stayed context names (R5) until the
+   user replaced them with the labels of section 2 item 13.
 2. **Variation as `applies_with`, not as separate programs.** *Alternatives:* a
    program per fuel and foundation, or climate-specific program variants as in
    ADR 0040 item 5. *Reason:* R1 asks one program per edition, type and fuel; the

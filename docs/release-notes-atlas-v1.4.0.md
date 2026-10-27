@@ -55,11 +55,16 @@ exact builder bytes that wrote them.
   `manufactured-housing.json` from 304 models (CompleteSet checked identical).
 - Program entries that hold only for some climate codes, foundations, locations or
   heating systems carry `applies_with`. Examples: the heated basement's lighting and
-  adjustment loads, the 1AWHTS unconditioned zone's services, IECC 2024's appliance
+  adjustment loads, the `1A-tropical-semi-conditioned` unconditioned zone's services, IECC 2024's appliance
   levels and draw schedules by heating system.
 - `IECC_Adj` loads have `role: reference_design_adjustment`; every load has its host
   zone. Multifamily is one per-unit program with its building context.
-- Construction contexts: IECC climate code × foundation; manufactured housing per
+- IECC climate labels: the source codes with suffixes are relabelled `1A-warm-humid`
+  (1AWH), `1A-tropical` (1AWHT), `1A-tropical-semi-conditioned` (1AWHTS),
+  `2A-warm-humid` (2AWH) and `3A-warm-humid` (3AWH). Each context also carries its
+  zone, warm-humid and tropical flags, design and source code (ADR 0041 section 2
+  item 13).
+- Construction contexts: IECC climate label × foundation; manufactured housing per
   location, with the five 3A cities as sub-contexts. Each holds assemblies by surface
   class, windows, doors, internal mass, window shading control and the source
   infiltration (AirflowNetwork leakage or effective leakage area).

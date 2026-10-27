@@ -33,6 +33,48 @@ CONSTRUCTION_SCHEMA = ('construction-source-model-v1.schema.json', '1.0.0')
 SCRIPTS = ('scripts/prototype_extract.py', 'scripts/prototype_programs.py', 'scripts/iecc_residential.py',
            'scripts/manufactured_housing.py', 'scripts/prototype_dwellings.py', 'scripts/idf_schedules.py')
 PARTS = ('loads', 'services', 'controls', 'ventilation', 'fenestration', 'floor_area')
+# The IECC residential codes with suffixes get a distinct, readable climate label each (user, 2026-10-26;
+# ADR 0041 section 5). The label is the context's climate; its parts are context attributes, and the
+# source code stays in the evidence. WH: a warm-humid location; T: a tropical location; S: the
+# semi-conditioned tropical design. Other codes keep their names.
+CLIMATES = {
+    '1AWH': {'climate': '1A-warm-humid', 'climate_zone': '1A', 'source_location': 'Miami', 'warm_humid': True,
+             'tropical': False, 'design': 'standard'},
+    '1AWHT': {'climate': '1A-tropical', 'climate_zone': '1A', 'source_location': 'Honolulu', 'warm_humid': True,
+              'tropical': True, 'design': 'standard'},
+    '1AWHTS': {'climate': '1A-tropical-semi-conditioned', 'climate_zone': '1A', 'source_location': 'Honolulu',
+               'warm_humid': True, 'tropical': True, 'design': 'tropical_semi_conditioned'},
+    '2AWH': {'climate': '2A-warm-humid', 'climate_zone': '2A', 'source_location': 'Tampa', 'warm_humid': True,
+             'tropical': False, 'design': 'standard'},
+    '3AWH': {'climate': '3A-warm-humid', 'climate_zone': '3A', 'source_location': 'Montgomery', 'warm_humid': True,
+             'tropical': False, 'design': 'standard'},
+}
+
+
+def climate_label(code):
+    return CLIMATES[code]['climate'] if code in CLIMATES else code
+
+
+def relabel(data):
+    """An IECC residential input with its climate codes replaced by their labels, contexts carrying the parts."""
+    data = copy.deepcopy(data)
+
+    def walk(value):
+        if isinstance(value, dict):
+            if isinstance(value.get('applies_with'), dict) and 'climate' in value['applies_with']:
+                value['applies_with']['climate'] = sorted(climate_label(c) for c in value['applies_with']['climate'])
+            for v in value.values():
+                walk(v)
+        elif isinstance(value, list):
+            for v in value:
+                walk(v)
+    walk(data['programs'])
+    for construction in data['constructions']:
+        for context in construction['contexts'].values():
+            code = context['climate']
+            context.update(CLIMATES.get(code, {'climate': code, 'climate_zone': code, 'warm_humid': False,
+                                               'tropical': False, 'design': 'standard'}), source_climate_code=code)
+    return data
 
 
 def input_paths():
@@ -112,6 +154,8 @@ def axes(program, construction):
 
 def build_input(data, glossary):
     """Files of one definition input."""
+    if data['family'] == 'iecc_residential_prototype':
+        data = relabel(data)
     files = {}
     by_template = collections.defaultdict(list)
     for program in data['programs']:
@@ -366,7 +410,10 @@ def construction_schema():
             'properties': {'schema_version': {'const': CONSTRUCTION_SCHEMA[1]}, 'kind': {'const': 'source_model_construction'},
                            'id': text, 'construction_set_id': text, 'context': text, 'name': text,
                            'release': {'enum': ['atlas-release-1.4.0']}, 'source': {'type': 'object'},
-                           'climate': text, 'foundation': text, 'location': text,
+                           'climate': text, 'foundation': text, 'location': text, 'climate_zone': text,
+                           'warm_humid': {'type': 'boolean'}, 'tropical': {'type': 'boolean'},
+                           'design': {'enum': ['standard', 'tropical_semi_conditioned']}, 'source_climate_code': text,
+                           'source_location': text,
                            'components': {'type': 'array', 'items': surface}, 'windows': {'type': 'array', 'items': surface},
                            'doors': {'type': 'array', 'items': surface}, 'internal_mass': {'type': 'array', 'items': {
                                'type': 'object', 'required': ['zone', 'assembly_id', 'area_m2'],

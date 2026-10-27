@@ -10,11 +10,18 @@ multifamily), 4 heating systems, 4 foundations and 7 editions. They are read off
 into `data/program-inputs/iecc-residential-<edition>.json`; the release is built from
 those files.
 
-| Climate code | Meaning (agent reading of the models) |
-| --- | --- |
-| 1AWH, 2AWH, 3AWH | warm-humid location (Miami, Tampa, Montgomery) |
-| 1AWHT | tropical location (Honolulu), same building as 1AWH |
-| 1AWHTS | tropical semi-conditioned design: half the living space unconditioned, solar water heating |
+The source codes with suffixes get their own climate label in the release. WH is a
+warm-humid location, T a tropical location, S the semi-conditioned tropical design
+(half the living space unconditioned, solar water heating). Use the label as `climate`;
+the other codes keep their names.
+
+| Source code | Climate label | Zone | Location | Warm-humid | Tropical | Design |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1AWH | `1A-warm-humid` | 1A | Miami | yes | no | standard |
+| 1AWHT | `1A-tropical` | 1A | Honolulu | yes | yes | standard |
+| 1AWHTS | `1A-tropical-semi-conditioned` | 1A | Honolulu | yes | yes | tropical semi-conditioned |
+| 2AWH | `2A-warm-humid` | 2A | Tampa | yes | no | standard |
+| 3AWH | `3A-warm-humid` | 3A | Montgomery | yes | no | standard |
 
 ## Programs
 
@@ -43,13 +50,13 @@ dwelling = document(release.dwellings, program_id, 'source',
   `heatedbsmt`, `breezeway`, `uncond_living`, `exterior`).
 - **Multifamily** is one program per dwelling unit; the 18 units have identical
   loads. Loads in the heated basement are building services, instantiated once.
-- **1AWHTS.** The unconditioned living zone's lighting and adjustment loads are
-  building services that apply with that climate code.
+- **`1A-tropical-semi-conditioned`.** The unconditioned living zone's lighting and
+  adjustment loads are building services that apply with that climate.
 
 ## Construction sets
 
-One per edition and type, with one context per climate code and foundation
-(`4-a.slab`, `1-awhts.heatedbsmt`, …): assemblies by surface class with layer-only
+One per edition and type, with one context per climate and foundation
+(`4-a.slab`, `1-a-tropical-semi-conditioned.heatedbsmt`, …): assemblies by surface class with layer-only
 U-factors, windows (U-factor, SHGC), doors, internal mass, window shading control and
 the source infiltration method (AirflowNetwork leakage for single-family, effective
 leakage area per unit for multifamily). Export one context as source model

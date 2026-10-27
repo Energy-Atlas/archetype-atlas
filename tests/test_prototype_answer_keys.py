@@ -133,11 +133,11 @@ class PrototypeAnswerKeyTests(unittest.TestCase):
                 tslug, bslug = f'iecc-{edition}', prototype_dwellings.TYPE_FOLDERS[building_type]
                 folder = f'residential/{tslug}/{bslug}/'
                 [program] = [p for p in self.folder_programs(folder) if heating in p['variant']['heating']]
-                context = {'climate': climate, 'foundation': foundation, 'heating': heating}
+                context = {'climate': prototype_dwellings.climate_label(climate), 'foundation': foundation, 'heating': heating}
                 label = path.name
                 model = self.check_model(path, folder, program, context, label)
                 construction = self.sets[program['construction_set_id']]
-                key = f'{prototype_dwellings.slug(climate)}.{foundation}'
+                key = f'{prototype_dwellings.slug(context["climate"])}.{foundation}'
                 self.check_envelope(model, construction, key, tslug, label)
                 checked += 1
         self.assertEqual(checked, 7 * 2 * 2 * 16)
