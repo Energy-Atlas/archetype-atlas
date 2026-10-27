@@ -14,6 +14,11 @@ Release 2.0.0 is the resolved release 1.6.0 (scripts.atlas_minor_release.files),
   90.1 templates). The DOE Ref programs changed in release 1.1.0 and the later families have
   no recipes; the manifest lists both as deferred.
 Values do not change: every resolved 1.6.0 file decodes to the same JSON in 2.0.0.
+
+The release reads no frozen folder (ADR 0046 phase 2): `exporter-inputs.json` holds what the
+exporters took from them (the capped-delivery services and programs under release IDs, and the
+source programs with neither setpoint schedule), and readers verify the files alone; only
+`--verify` and `--check` compare the inputs.
 """
 import argparse
 import hashlib
@@ -22,6 +27,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from scripts import atlas_minor_release, atlas_release
+from scripts.atlas_exports import EXPORTER_INPUTS, Release
 from scripts.atlas_format import suite_bytes
 from scripts.common import ROOT, load_json
 from scripts.iecc_commercial_values import layered
@@ -31,7 +37,9 @@ TARGET = ROOT/f'data/atlas-releases/v{RELEASE}'
 RECIPES = ROOT/'atlas_schedules/data/recipes'
 DEFINITIONS = ROOT/'data/definition-releases/v0.1.1/programs.json'
 CURRENT = ('90.1-2007', '90.1-2013', '90.1-2019')  # templates whose definition values are those of release 1.0.0
-INPUTS = ('scripts/atlas_snapshot.py', f'data/atlas-releases/v{SOURCE}/manifest.json', 'data/definition-releases/v0.1.1/programs.json')
+LEGACY = ROOT/'data/releases/v0.2.0/programs.json'
+INPUTS = ('scripts/atlas_snapshot.py', f'data/atlas-releases/v{SOURCE}/manifest.json', 'data/definition-releases/v0.1.1/programs.json',
+          'data/releases/v0.2.0/programs.json')
 DEFERRED = ('generator recipes of the DOE Ref programs (values changed in release 1.1.0) and of the construction-only, '
             'IECC, plenum and residential programs (none exist)',
             'systems and water heaters of the IECC commercial family (ADR 0040)',
@@ -105,11 +113,24 @@ def generator_files(files):
     return {p: (layered(v, 2)+'\n').encode('utf-8') for p, v in out.items()}, dict(counts)
 
 
+def exporter_inputs(source):
+    """The frozen-folder values the exporters of the source release read, under release IDs."""
+    release = Release(source, release=SOURCE)
+    services, programs = release.capped()
+    sources = {p.get('source_id') for _, p in release.programs.values()}
+    commercial = load_json(LEGACY)
+    inactive = sorted(r['id'] for r in commercial if r['id'] in sources and r['heating_setpoint_schedule_id'] is None
+                      and r['cooling_setpoint_schedule_id'] is None)
+    return {'schema_version': '1.0.0', 'decision': 'docs/adr/0046-release-2-0-0.md',
+            'capped_services': sorted(services), 'capped_programs': sorted(programs), 'inactive_controls': inactive}
+
+
 def assemble():
     source = atlas_minor_release.files(SOURCE)
     files = {p: encode(p, d) for p, d in source.items() if p not in ('manifest.json', 'README.md')}
     generators, generator_counts = generator_files(source)
     files.update(generators)
+    files[EXPORTER_INPUTS] = (layered(exporter_inputs(source), 1)+'\n').encode('utf-8')
     files['README.md'] = README.encode('utf-8')
     listed = json.loads((ROOT/f'data/atlas-releases/v{SOURCE}/manifest.json').read_text(encoding='utf-8'))
     manifest = {
@@ -123,7 +144,7 @@ def assemble():
     return {**files, 'manifest.json': suite_bytes(manifest)}
 
 
-def verify(folder=TARGET):
+def verify(folder=TARGET, inputs=True):
     listed = json.loads((Path(folder)/'manifest.json').read_text(encoding='utf-8'))
     if listed.get('kind') != 'atlas_release' or listed.get('release') != RELEASE or listed.get('base_release') is not None:
         raise ValueError(f'Not a full atlas release {RELEASE} manifest: {folder}')
@@ -135,14 +156,16 @@ def verify(folder=TARGET):
     extra = sorted({p.relative_to(folder).as_posix() for p in Path(folder).rglob('*') if p.is_file()} - set(listed['files']) - {'manifest.json'})
     if extra:
         raise ValueError('Release files not in the manifest: '+', '.join(extra[:5]))
-    stale = [p for p, d in listed['input_sha256'].items() if (recipes_digest() if p == 'atlas_schedules/data/recipes' else digest(p)) != d]
+    stale = inputs and [p for p, d in listed['input_sha256'].items()
+                        if (recipes_digest() if p == 'atlas_schedules/data/recipes' else digest(p)) != d]
     if stale:
         raise ValueError('Release inputs changed since it was written; rerun python -m scripts.atlas_snapshot: '+', '.join(stale))
     return listed
 
 
 def files(folder=TARGET):
-    listed = verify(folder)
+    """Every file, checked against the manifest; the writer's inputs need not be present."""
+    listed = verify(folder, inputs=False)
     return {path: (Path(folder)/path).read_bytes() for path in listed['files']}
 
 

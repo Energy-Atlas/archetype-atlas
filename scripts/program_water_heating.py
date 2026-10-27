@@ -92,8 +92,9 @@ def evaluate_recipe(recipe, flow_fraction, target_degC, mains_degC, bindings):
 
 
 class ProgramExporter:
-    def __init__(self, bundle, conversions=None, systems=None, capped_services=CAPPED_SERVICES, capped_programs=CAPPED_PROGRAMS):
-        self.base = V3Exporter(bundle)
+    def __init__(self, bundle, conversions=None, systems=None, capped_services=CAPPED_SERVICES, capped_programs=CAPPED_PROGRAMS,
+                 inactive_controls=None):
+        self.base = V3Exporter(bundle, inactive_controls=inactive_controls)
         # The approved capped-delivery demands, by record ID; a bundle with other IDs passes its own.
         self.capped_services, self.capped_programs = frozenset(capped_services), frozenset(capped_programs)
         self.validator = Draft202012Validator(load_json(ROOT/'schemas/program-json-v4.schema.json'))

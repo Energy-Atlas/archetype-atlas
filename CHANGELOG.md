@@ -1,5 +1,11 @@
 # Changelog
 
+## Atlas release 2.0.0 candidate: self-contained (X1.1) — 2026-10-27
+
+Release 2.0.0 now reads and exports with no frozen folder present: `exporter-inputs.json`
+carries the capped-delivery IDs and the programs with no setpoint schedules, and readers
+verify the files alone (ADR 0046 section 5). Exports are unchanged.
+
 ## Atlas release 2.0.0 candidate (full snapshot, phase 1) — 2026-10-27
 
 A full snapshot of release 1.6.0 that ends the delta chain (ADR 0046, stage X1 phase 1):

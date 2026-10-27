@@ -51,8 +51,13 @@ def complete_approved_schedule(original):
     return result, reason
 
 
+# Set for the length of an export by readers of a release that carries the inactive controls (ADR 0046),
+# for exporters built by pinned modules; None reads them from the frozen v0.2.0 programs.
+INACTIVE_CONTROLS = None
+
+
 class ProgramExporter(HistoricalExporter):
-    def __init__(self, bundle, recovery=None):
+    def __init__(self, bundle, recovery=None, inactive_controls=None):
         super().__init__(bundle)
         self.historical = HistoricalExporter(bundle)
         self.validator = Draft202012Validator(load_json(ROOT / 'schemas/program-json-v3.schema.json'))
@@ -63,9 +68,14 @@ class ProgramExporter(HistoricalExporter):
         self.recovery_provenance = {k: v for k, v in artifact.items() if k not in {'records', 'schedules'}}
         triage = ROOT / 'data/program-inputs/er-triage-v1.json'
         self.triage = load_json(triage) if triage.exists() else {}
-        commercial = load_json(ROOT / 'data/releases/v0.2.0/programs.json')
-        self.inactive_controls = {r['id'] for r in commercial if r['heating_setpoint_schedule_id'] is None
-                                  and r['cooling_setpoint_schedule_id'] is None}
+        # Source programs with neither setpoint schedule; a release that carries them passes its own (ADR 0046).
+        if inactive_controls is None:
+            inactive_controls = INACTIVE_CONTROLS
+        if inactive_controls is None:
+            commercial = load_json(ROOT / 'data/releases/v0.2.0/programs.json')
+            inactive_controls = {r['id'] for r in commercial if r['heating_setpoint_schedule_id'] is None
+                                 and r['cooling_setpoint_schedule_id'] is None}
+        self.inactive_controls = set(inactive_controls)
         self._ready_cache = {}
 
     def export(self, program_id, mode='raw'):
