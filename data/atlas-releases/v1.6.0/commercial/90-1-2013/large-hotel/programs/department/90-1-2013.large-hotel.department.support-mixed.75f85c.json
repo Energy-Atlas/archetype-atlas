@@ -1,0 +1,186 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.large-hotel.source.mechanical.27ddd3",
+        "represented_area_m2": 164.24318700000003,
+        "source_geometry_file_id": "sourcefile-fcf637334a2c36105be6",
+        "source_program_id": "program-f302c0d76281ddcfb46f",
+        "weight": 0.48730788024482197
+      },
+      {
+        "program_id": "90-1-2013.large-hotel.source.laundry.c32374",
+        "represented_area_m2": 78.03946799999997,
+        "source_geometry_file_id": "sourcefile-fcf637334a2c36105be6",
+        "source_program_id": "program-557645cb81cce0648fdc",
+        "weight": 0.23154231491205537
+      },
+      {
+        "program_id": "90-1-2013.large-hotel.source.storage.e6bc59",
+        "represented_area_m2": 94.75927200000001,
+        "source_geometry_file_id": "sourcefile-fcf637334a2c36105be6",
+        "source_program_id": "program-6f6826f61c7e4291e4b1",
+        "weight": 0.2811498048431227
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-4592a7ba06298910ac577d4a"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.large-hotel.department.support-mixed.75f85c",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f2236784621ba631643d9a08",
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-748b8502beaddfd0a48948c9",
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.large-hotel.support-mixed-electric-equipment.605f89",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 17.66012022619786
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-987a0b4c33ea3bfa97ff2651",
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-13c2ef69d4d9dda1932a",
+          "resolution-50c33e35c3af9b55de5e",
+          "resolution-72bce40ab08b311e1e8f",
+          "resolution-fd2f5e86130888092eb6"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.large-hotel.support-mixed-gas-equipment.04fb53",
+          "status": "known",
+          "value": 124.17161143104744
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ae2b035e2cd60fc2509acc31",
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.large-hotel.support-mixed-lighting.33d65d",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 5.604973483119882
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-264fcc6a19b76144538c62f6",
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.large-hotel.support-mixed-occupancy.c12f81",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.02492300735390956
+    }
+  ],
+  "mode": "department",
+  "name": "Support_Mixed_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.large-hotel.support-mixed-activity.e1a5db"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.large-hotel.support-mixed-cooling-setpoint.14ba6c"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-4592a7ba06298910ac577d4a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.large-hotel.support-mixed-heating-setpoint.4d7bb2"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "90-1-2013.large-hotel.main.45ba80"
+  ],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013",
+  "unresolved_loads": [
+    {
+      "quantity": "hot_water_volume",
+      "reason": "missing or multiple source demands; source member references retained"
+    }
+  ]
+}

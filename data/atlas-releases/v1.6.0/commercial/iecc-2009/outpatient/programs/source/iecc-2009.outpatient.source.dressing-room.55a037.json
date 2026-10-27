@@ -1,0 +1,294 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-02f7eeff4eff4c8042d991ff",
+    "evidence-077ac0d02b6b13e5d85a9243",
+    "evidence-18ae041a98da95f1ac0ce7f5",
+    "evidence-1db3b8799013154e24442523",
+    "evidence-2663f038c90a0583fa983267",
+    "evidence-310c06c6b4ff6d06c2cc340c",
+    "evidence-5adfb2e5eb304994cfca8915",
+    "evidence-5c30902e1bc2d2b706a5cc24",
+    "evidence-748d6ce40a587331035cdd32",
+    "evidence-7941bdb0194a244ff6ef7ad9",
+    "evidence-7e69a57d03b34887ef82e105",
+    "evidence-95cc9e4bb1a8806d750aecce",
+    "evidence-ae78f62c4c43220fd6c89657",
+    "evidence-c581732d8df5123e2d2ae869",
+    "evidence-c85845182a10485f06dfb498",
+    "evidence-f120d6135c137e39668e7942"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-7e69a57d03b34887ef82e105",
+    "roof": 0.0,
+    "wwr": {
+      "E": null,
+      "N": 0.2778,
+      "S": null,
+      "W": null
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2009.outpatient.source.dressing-room.55a037",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-5c30902e1bc2d2b706a5cc24",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-2e9f52461f8f2ac35de55ca5",
+      "evidence_id": "evidence-18ae041a98da95f1ac0ce7f5",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.outpatient.office-occ-w-sb-sch.a28f2c",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.05382479
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a1bdec0b88a55da39f7f6362",
+      "evidence_id": "evidence-7941bdb0194a244ff6ef7ad9",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.outpatient.ltg-sch-office.c5f4f4",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-7941bdb0194a244ff6ef7ad9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-7941bdb0194a244ff6ef7ad9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-7941bdb0194a244ff6ef7ad9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 12.11508
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-5b98046da0ea77c2da75296e",
+      "evidence_id": "evidence-1db3b8799013154e24442523",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.outpatient.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-8e009fd4e0844fe1d7076338",
+      "evidence_id": "evidence-077ac0d02b6b13e5d85a9243",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.outpatient.bldg-equip-sch.4c89d0",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-077ac0d02b6b13e5d85a9243",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-077ac0d02b6b13e5d85a9243",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-077ac0d02b6b13e5d85a9243",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 11.83999215061
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-38c80adaf1273b13fa5cbf34",
+      "evidence_id": "evidence-ae78f62c4c43220fd6c89657",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.outpatient.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ea888c6f8d03519106748144",
+      "evidence_id": "evidence-2663f038c90a0583fa983267",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.outpatient.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "DressingRoom_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-02f7eeff4eff4c8042d991ff",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2009.outpatient.activity-sch.6110e1"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-95cc9e4bb1a8806d750aecce",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-c581732d8df5123e2d2ae869",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2009.outpatient.clgsetp-sch-no-optimum.030ef6"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-748d6ce40a587331035cdd32",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2009.outpatient.htgsetp-sch-no-optimum.54b7e6"
+    }
+  },
+  "pnnl_building_type": "OutPatientHealthCare",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-c85845182a10485f06dfb498",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-0c113093c73a495e41f9",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 4.1806368,
+      "multiplier": 1,
+      "name": "Floor 1 Dressing Room"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 3.90192768,
+      "multiplier": 1,
+      "name": "Floor 3 Dressing Room"
+    }
+  ],
+  "standards_building_type": "Outpatient",
+  "template": "IECC 2009"
+}

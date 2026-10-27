@@ -1,0 +1,267 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "LargeDataCenterHighITE",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-1872855ad378b4720db361a9",
+    "evidence-42fbb8cc52fdc22c3c176158",
+    "evidence-76fe92897f1c5c48ff86d145",
+    "evidence-78734532d5720c59aa010599",
+    "evidence-8cf3c6adb11b6c63f166fdd0",
+    "evidence-8d3579e0adad6b48edf55b0c",
+    "evidence-a0b58bcfc4d762304e2b2179",
+    "evidence-c111d89b7aa5c4c249bf2aed"
+  ],
+  "filling_evidence_ids": [
+    "evidence-1fac54d237ef1e78f62a83f6",
+    "evidence-28d8d7dadc07dbc45a1ca825",
+    "evidence-5ee3095c19c9aea69f6787cf",
+    "evidence-8a00df3aecfc833bbf13665d"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.large-data-center-high-ite.source.standalone-data-center.16a10e",
+  "lighting_controls": {
+    "reason": "No PNNL prototype zone carries this space type, and the pinned openstudio-standards cache holds the space-type data but not the template daylighting rules, so the controls are unknown (ADR 0044).",
+    "source": "pnnl_prototype",
+    "status": "unknown"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-723e1f70dcebba7455f95c1b",
+      "evidence_id": "evidence-a0b58bcfc4d762304e2b2179",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-db9fa46d4b41f02c5816"
+        ],
+        "rules": [
+          "reviewed_no_occupancy"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ac061941010f004ba95568aa",
+      "evidence_id": "evidence-8d3579e0adad6b48edf55b0c",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.large-data-center-high-ite.data-center-lighting-sch.917a90",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-31d2a6eed1e71bac366331c4",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-ab1296f4de3c069cd2fe2793",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-94a889f255bfdec71593c984",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.888902666694222
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a2e9bcd7f781d189bec447a5",
+      "evidence_id": "evidence-42fbb8cc52fdc22c3c176158",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.large-data-center-high-ite.data-center-lighting-sch.917a90",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-31d2a6eed1e71bac366331c4",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-ab1296f4de3c069cd2fe2793",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-94a889f255bfdec71593c984",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e6649cbe94fc3677a7923c52",
+      "evidence_id": "evidence-1872855ad378b4720db361a9",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.large-data-center-high-ite.data-center-equipment-sch.a5694b",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-e082ccc3e877a3a284793fe9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-fdf80631c32451a7bc330d00",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-ac8bd3a29a79379c9f9cb5d9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.1
+        }
+      },
+      "unit": "W/m2",
+      "value": 5381.955208354861
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-c054b018bbbe9ee8eac13c7e",
+      "evidence_id": "evidence-c111d89b7aa5c4c249bf2aed",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-8a00df3aecfc833bbf13665d"
+        ],
+        "resolutions": [
+          "resolution-4bcb80458234de50f027",
+          "resolution-fefedeca609b70fe5fdb"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-8a00df3aecfc833bbf13665d",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-23e40daa620be1b5d95724c7",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-2ee7a7d3f12a1d1c2464d38a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-4a4202e5dc4310b6828c4a95",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "StandaloneDataCenter_LargeDataCenterHighITE",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-8cf3c6adb11b6c63f166fdd0",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-78734532d5720c59aa010599",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.large-data-center-high-ite.data-center-clgsetp-sch.5f9800"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-76fe92897f1c5c48ff86d145",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.large-data-center-high-ite.data-center-htgsetp-sch.ca0deb"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-a67bb465adb5dac71e0e",
+  "template": "90.1-2019"
+}

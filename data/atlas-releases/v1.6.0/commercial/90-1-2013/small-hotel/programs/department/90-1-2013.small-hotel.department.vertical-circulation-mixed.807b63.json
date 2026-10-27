@@ -1,0 +1,189 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.small-hotel.source.stair.1ee0cd",
+        "represented_area_m2": 120.41675809919994,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-1fe92d0279b0d8800cb2",
+        "weight": 0.5853812395743045
+      },
+      {
+        "program_id": "90-1-2013.small-hotel.source.stair4.1ffff2",
+        "represented_area_m2": 40.13891936640002,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-b904d1d23789fa909a76",
+        "weight": 0.1951270798581017
+      },
+      {
+        "program_id": "90-1-2013.small-hotel.source.elevator-core.f16757",
+        "represented_area_m2": 30.100584960000106,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-2978a44a5e1fa43749d7",
+        "weight": 0.14632778704506247
+      },
+      {
+        "program_id": "90-1-2013.small-hotel.source.elevator-core4.9683e3",
+        "represented_area_m2": 15.050292480000053,
+        "source_geometry_file_id": "sourcefile-4097594cd2e6a33bb1d7",
+        "source_program_id": "program-03e3cad63de90940f7c0",
+        "weight": 0.07316389352253123
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-49688b9871cf5ecf017d75a5"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.small-hotel.department.vertical-circulation-mixed.807b63",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-e4be4d1de70292f3f998ec91",
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f1b124dad2c375f61dc67a9c",
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4bed669fcbcb9ed3bfdbe111",
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-0d432fcc8c668cac3fd1",
+          "resolution-1f89f44685844c98e21c",
+          "resolution-3ca2be1c5f8f5c130219",
+          "resolution-52b63e7fb96777caecd3",
+          "resolution-703e04b72a8c6ba17ef1",
+          "resolution-aa0985723b19771e6f87",
+          "resolution-e2beaeb398bde6533682",
+          "resolution-f4ca91228db7c7459b51"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.small-hotel.vertical-circulation-mixed-gas-equipment.a470d9",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f7be1fb49e0c8ef7dc6ada3f",
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.vertical-circulation-mixed-lighting.605f63",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 5.796911924608283
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a35f7daef5411bca7b8b6c24",
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.vertical-circulation-mixed-occupancy.56d487",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "department",
+  "name": "VerticalCirculation_Mixed_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-49688b9871cf5ecf017d75a5",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013"
+}

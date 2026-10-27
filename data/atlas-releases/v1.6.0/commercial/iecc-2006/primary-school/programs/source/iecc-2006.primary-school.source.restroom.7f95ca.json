@@ -1,0 +1,312 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "PrimarySchool",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0e3d20a7e6ba221928d3be38",
+    "evidence-11aaae28220de307d5f22e8c",
+    "evidence-45b6c955563724872f5f2815",
+    "evidence-4cf943cf2af681fac7d8c7d5",
+    "evidence-4e980f5a951346f2a7fbfac4",
+    "evidence-628a0abdc28b4bc6f19b5c52",
+    "evidence-6c1ee12d7d329727cbeeac5e",
+    "evidence-7b9e408941995971e7343488",
+    "evidence-8230b9743d123060e7ac90f6",
+    "evidence-8b58bd174a5114a25655355d",
+    "evidence-8d39187b4818d0110db0d56e",
+    "evidence-8fffba177730477849b994a5",
+    "evidence-bb530c72f7a5be48536cd152",
+    "evidence-c6a2c75aef58910fee81f288",
+    "evidence-de742911f3dc453462f52899",
+    "evidence-f5941a5a138beeb554b2d3a4"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-f5941a5a138beeb554b2d3a4",
+    "roof": 0.0,
+    "wwr": {
+      "E": null,
+      "N": null,
+      "S": null,
+      "W": 0.35
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2006.primary-school.source.restroom.7f95ca",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-6c1ee12d7d329727cbeeac5e",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-6a90c42814f794cc107746ac",
+      "evidence_id": "evidence-7b9e408941995971e7343488",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2006.primary-school.bldg-occ-sch.0236b6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.053826315789
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9d7fc5c8cf9df99d4faed15a",
+      "evidence_id": "evidence-8b58bd174a5114a25655355d",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2006.primary-school.ltg-sch-bath.b4e164",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-8b58bd174a5114a25655355d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.37
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-8b58bd174a5114a25655355d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-8b58bd174a5114a25655355d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 11.01371
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ca0fd9b5ae4159213ca7d0c2",
+      "evidence_id": "evidence-de742911f3dc453462f52899",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2006.primary-school.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-5feda599dc70c4ef027bb9be",
+      "evidence_id": "evidence-4e980f5a951346f2a7fbfac4",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2006.primary-school.bldg-equip-sch.c16e2b",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-4e980f5a951346f2a7fbfac4",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-4e980f5a951346f2a7fbfac4",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-4e980f5a951346f2a7fbfac4",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-008ea57e32f290ecd577d607",
+      "evidence_id": "evidence-0e3d20a7e6ba221928d3be38",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2006.primary-school.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2006.primary-school.main.f6abcc",
+      "evidence_id": "evidence-628a0abdc28b4bc6f19b5c52",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2006.primary-school.bldg-swh-sch.8084f5",
+      "scope": "program_service",
+      "service_id": "iecc-2006.primary-school.main.f6abcc",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {
+        "latent": "fraction of the water that can evaporate",
+        "latent_fraction": {
+          "evidence_id": "evidence-628a0abdc28b4bc6f19b5c52",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.05
+        },
+        "semantics": "EnergyPlus WaterUse:Equipment",
+        "sensible": "fraction x mass flow x cp x (mixed - zone air temperature)",
+        "sensible_fraction": {
+          "evidence_id": "evidence-628a0abdc28b4bc6f19b5c52",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        },
+        "zone_gains": "applied"
+      },
+      "unit": "m3/s/m2",
+      "value": 1.389e-09,
+      "zone_heat_assignment": "program_zones"
+    }
+  ],
+  "mode": "source",
+  "name": "Restroom_PrimarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-45b6c955563724872f5f2815",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2006.primary-school.activity-sch.595f1e"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-11aaae28220de307d5f22e8c",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-4cf943cf2af681fac7d8c7d5",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2006.primary-school.clgsetp-sch-setup.a90845"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-8230b9743d123060e7ac90f6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2006.primary-school.htgsetp-sch-setback.91a754"
+    }
+  },
+  "pnnl_building_type": "SchoolPrimary",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2006.primary-school.main.f6abcc"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-8d39187b4818d0110db0d56e",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-87b451ed3758e726710a",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 190.0,
+      "multiplier": 1,
+      "name": "Bath_ZN_1_FLR_1"
+    }
+  ],
+  "standards_building_type": "PrimarySchool",
+  "template": "IECC 2006"
+}

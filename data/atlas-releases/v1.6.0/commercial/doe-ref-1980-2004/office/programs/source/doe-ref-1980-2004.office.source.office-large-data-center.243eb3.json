@@ -1,0 +1,271 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "Office",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-014d2d808e23cdf1f30e039d",
+    "evidence-0de93cd0efa59d435e703116",
+    "evidence-1f46b2d086868a4977dcfda6",
+    "evidence-472bebe07259577d685dead0",
+    "evidence-74ff9e888c44fdd9d3e165ca",
+    "evidence-9cf00ad1b3f59de82261bfc6",
+    "evidence-c6ff1508dc6f832fd4fe2d24",
+    "evidence-e60a4835254d389210e4e951",
+    "evidence-f9b223275f992a26fefc6fbc"
+  ],
+  "filling_evidence_ids": [
+    "evidence-852cb7a34d17e3f4ee84c5e1",
+    "evidence-98c006100d55adf4db712eb2",
+    "evidence-f379bb455a98e7f05fd77f84"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.office.source.office-large-data-center.243eb3",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-f9b223275f992a26fefc6fbc",
+    "source": "doe_reference",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ce3d201e545210cb9296f4dd",
+      "evidence_id": "evidence-c6ff1508dc6f832fd4fe2d24",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-5a5ce78fb68f24ae1e7a"
+        ],
+        "rules": [
+          "reviewed_no_occupancy"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-12a650ef18787c5bf4aaa17e",
+      "evidence_id": "evidence-e60a4835254d389210e4e951",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.office.office-large-bldg-light-sch.8da377",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-b2a21924c844ca4e6b4fa2d5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-8044fc1d7685aa807c1a245b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-e5cd09a07d5d2daabb1c1cf6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 16.68406114590007
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-471b36c48f72e16ed797000a",
+      "evidence_id": "evidence-74ff9e888c44fdd9d3e165ca",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.office.office-large-bldg-light-sch.8da377",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-b2a21924c844ca4e6b4fa2d5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-8044fc1d7685aa807c1a245b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-e5cd09a07d5d2daabb1c1cf6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4b6a507a2289ab8f788e6c01",
+      "evidence_id": "evidence-472bebe07259577d685dead0",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.office.data-center-equip-sch.d0b3fa",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-8acb8f7d74a52769502263a3",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-6fb435afa6521df9c66a391b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-84c36d81d0b8bdee0dbc19f2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 215.27820833419443
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-42245534821394df06c464f2",
+      "evidence_id": "evidence-1f46b2d086868a4977dcfda6",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-98c006100d55adf4db712eb2"
+        ],
+        "resolutions": [
+          "resolution-33e15437bc11a7c08532",
+          "resolution-58845632a34b65f3cbef"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-98c006100d55adf4db712eb2",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-8707b66337bd1238dccff88f",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-e0d68e6f0ebd86e9b699c921",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-95b802fc9b9c11e4ed042894",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "OfficeLarge Data Center_Office",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-9cf00ad1b3f59de82261bfc6",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-0de93cd0efa59d435e703116",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.office.office-large-clgsetp-dc-sch.f13d11"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-014d2d808e23cdf1f30e039d",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.office.office-large-htgsetp-dc-sch.a192d7"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "existing_stock_benchmark",
+  "source_id": "program-24468c180b76dc9949ff",
+  "template": "DOE Ref 1980-2004",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}

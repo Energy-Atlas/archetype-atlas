@@ -1,0 +1,311 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-1a51563b747d4f930b9aab43",
+    "evidence-3036bfd20a5a849fe0b89099",
+    "evidence-33d55a9c60a70cffc87a63b9",
+    "evidence-4223ae430dafc7251f3dc48e",
+    "evidence-42fc72e84ef17751d0d74777",
+    "evidence-4399e25befc82b99857a2a49",
+    "evidence-5b178dd5e3a9bfeecb8a05e9",
+    "evidence-62949c164845303a08f1fa7c",
+    "evidence-7944d0bbd34b94499ae33026",
+    "evidence-a717f4f2aff9774150024a49",
+    "evidence-c4c97cf1bffeebfde9af737b",
+    "evidence-c71b59caf1372ed6ea8c393c",
+    "evidence-d3df4f2cf2a8d6289fbb81af",
+    "evidence-dc4ac339e214600c2fe087d0",
+    "evidence-e1de6eab62b13b7f11ef1d7c",
+    "evidence-e990aa6292eacf354d4d9176"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-4399e25befc82b99857a2a49",
+    "roof": 0.0,
+    "wwr": {
+      "E": null,
+      "N": null,
+      "S": 0.33,
+      "W": null
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2018.large-hotel.source.guest-room4.c32409",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-33d55a9c60a70cffc87a63b9",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a5ec44dbc2338813d1513d2a",
+      "evidence_id": "evidence-3036bfd20a5a849fe0b89099",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.large-hotel.guest-room-occ-sch.bb9657",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.061148246668
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-f27f0d31729cf1126c50e3f9",
+      "evidence_id": "evidence-dc4ac339e214600c2fe087d0",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.large-hotel.ltg-sch-guestroom.c81fd6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-dc4ac339e214600c2fe087d0",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-dc4ac339e214600c2fe087d0",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-dc4ac339e214600c2fe087d0",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 7.45938
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-68b2c4a5f379399a6d9cf794",
+      "evidence_id": "evidence-7944d0bbd34b94499ae33026",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.large-hotel.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-5bbd6ff8b371e089f79359f3",
+      "evidence_id": "evidence-e1de6eab62b13b7f11ef1d7c",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.large-hotel.guest-room-eqp-sch-base.7d2b63",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-e1de6eab62b13b7f11ef1d7c",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-e1de6eab62b13b7f11ef1d7c",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-e1de6eab62b13b7f11ef1d7c",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 10.520001428423
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1f2f47059ee9904ebf9c264f",
+      "evidence_id": "evidence-e990aa6292eacf354d4d9176",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.large-hotel.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2018.large-hotel.main.1ee387",
+      "evidence_id": "evidence-1a51563b747d4f930b9aab43",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.large-hotel.guest-room-swh-sch.825d1f",
+      "scope": "program_service",
+      "service_id": "iecc-2018.large-hotel.main.1ee387",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {
+        "latent": "fraction of the water that can evaporate",
+        "latent_fraction": {
+          "evidence_id": "evidence-1a51563b747d4f930b9aab43",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.05
+        },
+        "semantics": "EnergyPlus WaterUse:Equipment",
+        "sensible": "fraction x mass flow x cp x (mixed - zone air temperature)",
+        "sensible_fraction": {
+          "evidence_id": "evidence-1a51563b747d4f930b9aab43",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        },
+        "zone_gains": "applied"
+      },
+      "unit": "m3/s/m2",
+      "value": 5.3561e-08,
+      "zone_heat_assignment": "program_zones"
+    }
+  ],
+  "mode": "source",
+  "name": "GuestRoom4_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-c4c97cf1bffeebfde9af737b",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.large-hotel.activity-sch.7bafe3"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-4223ae430dafc7251f3dc48e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-c71b59caf1372ed6ea8c393c",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.large-hotel.obcreset-s-occ-guest-room-clg-sp-sch-30min.a49429"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-a717f4f2aff9774150024a49",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.large-hotel.obcreset-s-occ-guest-room-htg-sp-sch-30min.08dceb"
+    }
+  },
+  "pnnl_building_type": "HotelLarge",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2018.large-hotel.main.1ee387"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-d3df4f2cf2a8d6289fbb81af",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-e8cf188d4db0006237c5",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 24.530548,
+      "multiplier": 9,
+      "name": "Room_3_Mult9_Flr_6"
+    }
+  ],
+  "standards_building_type": "LargeHotel",
+  "template": "IECC 2018"
+}

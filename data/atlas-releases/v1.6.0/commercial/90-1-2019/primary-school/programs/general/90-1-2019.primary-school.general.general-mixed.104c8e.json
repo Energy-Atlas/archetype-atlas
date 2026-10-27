@@ -1,0 +1,241 @@
+{
+  "available_details": [
+    "GeneralMix"
+  ],
+  "building_type": "PrimarySchool",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2019.primary-school.source.cafeteria.7311c7",
+        "represented_area_m2": 315.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-b2443da6f70eb0d8b578",
+        "weight": 0.054792137763089235
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.classroom.445ae1",
+        "represented_area_m2": 3294.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-3e3593b9cb89464f2e3f",
+        "weight": 0.572969212036876
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.computer-room.22a467",
+        "represented_area_m2": 162.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-4ab07f407e77c1d51f60",
+        "weight": 0.028178813706731604
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.gym.34ee67",
+        "represented_area_m2": 357.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-d4d7f4d84bcb33165ad3",
+        "weight": 0.06209775613150113
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.kitchen.be7eb5",
+        "represented_area_m2": 168.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-9f66bb7e48a53b70093a",
+        "weight": 0.029222473473647592
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.library.4b2e42",
+        "represented_area_m2": 399.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-f1413e87260714ff6816",
+        "weight": 0.06940337449991303
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.lobby.a7dddb",
+        "represented_area_m2": 171.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-b682652e148237bc8126",
+        "weight": 0.029744303357105584
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.mechanical.47aeea",
+        "represented_area_m2": 252.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-d9b9f1acfb086dca2829",
+        "weight": 0.04383371021047138
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.office.c2cc88",
+        "represented_area_m2": 441.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-2f11966c5bc92db997d1",
+        "weight": 0.07670899286832493
+      },
+      {
+        "program_id": "90-1-2019.primary-school.source.restroom.10e8fe",
+        "represented_area_m2": 190.0,
+        "source_geometry_file_id": "sourcefile-13d65a146e5a0bdd393b",
+        "source_program_id": "program-df69ac7e4c95500117fe",
+        "weight": 0.033049225952339535
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-879cb14a11a302bbfc9964d0"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.primary-school.general.general-mixed.104c8e",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-36890007134ecd331117639f",
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-feff24c87ffd4bd837d85cee",
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.primary-school.general-mixed-electric-equipment.758365",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 18.9839176763837
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-758ea3198208f79cedda00f3",
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-2e366ef6e89389dd390f",
+          "resolution-33e5463e8904f44354dd",
+          "resolution-3a0e0c11a96009288b07",
+          "resolution-441c8464f7863e1cb340",
+          "resolution-480e5a38d178a72db69b",
+          "resolution-54c7c3e5358418b995e5",
+          "resolution-607943708a4adaac9b1c",
+          "resolution-63f4e783dd601afb8d40",
+          "resolution-77924f8280dbc87d961b",
+          "resolution-9ae3304881c81f53f19d",
+          "resolution-9b9d91c575296c06d50b",
+          "resolution-a966dc7889562385470d",
+          "resolution-b3db85ca4118fbc6392e",
+          "resolution-c1a10056bc5f343ef159",
+          "resolution-cb3fbf715be8420ca400",
+          "resolution-d94185cead95ef412cd2",
+          "resolution-f05a6583c2b3e48c68c8",
+          "resolution-fad15913cb00d668c5be"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2019.primary-school.general-mixed-gas-equipment.19c1ff",
+          "status": "known",
+          "value": 41.82430925967954
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7b633ab2b52d19a7b1557031",
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.primary-school.general-mixed-lighting.671167",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 7.719234722982694
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-eecf3171c9c9858acc4fa05d",
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.primary-school.general-mixed-occupancy.d26307",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.25709295779929764
+    }
+  ],
+  "mode": "general",
+  "name": "General_Mixed_PrimarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.primary-school.general-mixed-activity.b7b507"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.primary-school.general-mixed-cooling-setpoint.3690d6"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-879cb14a11a302bbfc9964d0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.primary-school.general-mixed-heating-setpoint.05d61f"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2019"
+}
