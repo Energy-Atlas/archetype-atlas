@@ -49,32 +49,13 @@ class FoundationPublicationTests(unittest.TestCase):
                         'scripts.construction_base_reproduce','scripts.definition_release --reproduce','scripts.audit'):
             self.assertIn(command,runs)
 
-    def test_build_verifies_combined_closure_and_presentation_before_upload(self):
+    def test_build_verifies_the_suite_site_before_upload(self):
         jobs=workflow('catalogue-site.yml')['jobs'];steps=jobs['build']['steps']
         runs='\n'.join(s.get('run','') for s in steps)
-        self.assertIn('scripts.construction_foundation_release import load_release',runs)
-        self.assertIn('tests.test_construction_foundation_site',runs)
-        self.assertIn('tests.test_construction_publication',runs)
-        self.assertIn('scripts.construction_site_smoke',runs)
+        for command in ('scripts.suite_site','mkdocs build --strict','scripts.site_check','scripts.site_smoke','tests.test_suite_site'):
+            self.assertIn(command,runs)
         self.assertEqual(jobs['deploy']['needs'],['research','build'])
         self.assertIn("github.ref == 'refs/heads/main'",jobs['deploy']['if'])
-
-
-class ConstructionSmokeCasesTests(unittest.TestCase):
-    def test_smoke_cases_use_current_versions_and_cover_native_methods_and_absence(self):
-        from scripts import construction_site_smoke as smoke
-        self.assertTrue(hasattr(smoke,'smoke_cases'),'Browser expectations must come from the combined frozen delivery')
-        cases=smoke.smoke_cases();methods=set();absence=False
-        self.assertGreaterEqual(len(cases),5)
-        for case in cases:
-            d,u=case['detailed'],case['unified']
-            self.assertEqual((d['schema_version'],u['schema_version']),('3.0.0','2.0.0'))
-            self.assertEqual(d['foundation_ground'],u['foundation_ground'])
-            self.assertEqual(d['id'],case['context']['id'])
-            methods.update(m['model'] for m in d['foundation_ground']['methods'].values())
-            absence|=d['foundation_ground']['configuration']['type']=='no_direct_ground_contact'
-        self.assertEqual(methods,{'FFactor','CFactor','Kiva','LayeredGround'})
-        self.assertTrue(absence)
 
 
 if __name__=='__main__':unittest.main()
