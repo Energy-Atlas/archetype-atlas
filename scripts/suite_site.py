@@ -35,7 +35,7 @@ GUIDES = ('selection.md', 'schedules.md', 'program-json.md', 'construction-json.
 DIGEST_INPUTS = ('scripts', 'website', 'schemas', 'mkdocs.yml', 'requirements-site.txt',
                  'data/definition-releases/v0.1.1/manifest.json')
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._:-]{5,}$')
-# Not `library/`: Library is also a building type, whose folder page sits beside the template's library.
+# Not `library/`: a template library page must never share a path with a building-type folder page.
 LIBRARY = 'template-library'
 
 

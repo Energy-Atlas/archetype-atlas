@@ -1,5 +1,22 @@
 # Changelog
 
+## Suite-based site — 2026-10-27
+
+Replace the definition-release catalogue with the suite-based site of ADR 0036 section 10
+([ADR 0043](docs/adr/0043-suite-based-site.md)). `python -m scripts.suite_site` reads the
+newest release under `data/atlas-releases` through `atlas_exports.Release`:
+- one page per program and per construction set, with schedules, loads, fillings and
+  evidence anchored in place, `?version=` and context switches in the query string;
+- one page per template × building type folder (mixes, services, systems, water) and per
+  template library, an evidence glossary and the `view/?id=` viewer;
+- one content-addressed JSON store (`store/`) replacing `json/` and `delivery/v2`.
+
+Search indexes each suite page once. New `site_check` and Chromium `site_smoke` gates;
+CI caches the generated tree under an input digest. The old generators (`active_site`,
+`definition_site`, `object_site`, `construction_site`, `query_v2` and their helpers,
+browser scripts and tests) are retired. Old record URLs return the 404 page. No
+deployment is claimed.
+
 ## Atlas release 1.4.0 candidate (residential families) — 2026-10-26
 
 Add the residential tree of ADR 0038 as a delta on 1.0.0 that holds release 1.3.0

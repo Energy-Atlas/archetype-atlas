@@ -178,7 +178,7 @@ class ReleaseTests(unittest.TestCase):
 
 
 class LayoutTests(unittest.TestCase):
-    def test_template_libraries_do_not_take_the_library_building_type_url(self):
+    def test_template_libraries_never_take_a_building_type_folder_url(self):
         from scripts.suite_site import Site, library_url
         self.assertNotEqual(library_url('commercial/90-1-2019/'), Site.folder_url(None, 'commercial/90-1-2019/library/'))
 

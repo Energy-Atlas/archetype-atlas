@@ -186,20 +186,13 @@ documents the distinction. Reproduce/verify with `python -m scripts.water_report
 
 ## Research catalogue site
 
-The local `feature/dto-json-v2` implementation replaces the active site with the
-Residential / Non Residential object catalogue. Program, construction and HVAC
-pages link to inspectable nested objects. Programs copy self-contained raw or
-default-filled JSON, including their schedules, under the
-[connector contract](docs/program-json-v2-contract.md). Schedules have unique day
-step plots and annual heatmaps. Source unknowns remain explicit.
-
-The [site build guide](docs/site-build.md) provides local verification and preview
-commands. Superseded pages, historical URLs and versioned downloads are removed
-from the generated site. Frozen research inputs remain immutable in this repository.
-This implementation has not been pushed or deployed; the
-[published site](https://energy-atlas.github.io/archetype-atlas/) reflects its last
-deployment. [Execution findings](docs/reviews/dto-json-v2-execution-log.md) record
-local decisions and checks.
+The [site](https://energy-atlas.github.io/archetype-atlas/) shows the latest release
+under `data/atlas-releases` ([ADR 0043](docs/adr/0043-suite-based-site.md)): one page per
+program and per construction set with its schedules, loads, fillings and evidence in
+place, one page per template × building type folder, a `view/?id=` viewer for any ID,
+and one content-addressed JSON store holding every source and filled export. Pages read
+without JavaScript; `?version=` and context switches narrow them. The
+[site build guide](docs/site-build.md) gives the local build, checks and preview.
 
 ## Element definition library and catalogue v2
 
