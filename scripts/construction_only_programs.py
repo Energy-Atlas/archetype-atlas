@@ -139,7 +139,7 @@ NOTES = {
     'attic': 'User-approved (ADR 0039): attic space-type row of the generic office, which has no geometry; no thermostat; heating and cooling disabled.'}
 
 
-def fillings(records, packet):
+def fillings(records, packet, legacy):
     """Resolution rows for the new programs, and the fields that stay unresolved."""
     from scripts import resolve
     from scripts.common import stable_id as legacy_id
@@ -188,13 +188,134 @@ def fillings(records, packet):
                 and row['cooling_setpoint_schedule_id'] is None):
             add(row, 'conditioning', {'heating_enabled': False, 'cooling_enabled': False}, 'state', 'reviewed_unconditioned',
                 NOTES['conditioning'], ['source_attributes', 'heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id'])
+    resolutions += borrowings(programs, legacy, {(r['record_id'], r['field']) for r in resolutions}, provenance, sources)
     resolved = {(r['record_id'], r['field']) for r in resolutions}
     unresolved = [u for u in result['unresolved'] if (u['record_id'], u['field']) not in resolved
                   and not (u['field'].endswith('setpoint_schedule_id') and (u['record_id'], 'conditioning') in resolved)]
     return sorted(resolutions, key=lambda r: r['id']), unresolved
 
 
-RECIPE = 'lib/openstudio-standards/standards/Standards.ServiceWaterHeating.rb'
+# User-approved borrowings (2026-10-26, ADR 0039 section 6): the values still null after the rules above
+# blocked the filled exports. A density comes from the same space type elsewhere: the same template in
+# a similar building type, then the same building type in the nearest template, then an analogous space
+# type. Schedules come from the target building's own most common schedule. Research assumptions.
+TEMPLATE_ORDER = ('DOE Ref Pre-1980', 'DOE Ref 1980-2004', '90.1-2007', '90.1-2013', '90.1-2019')
+SIMILAR = {
+    'College': ('SecondarySchool', 'PrimarySchool', 'Courthouse', 'Outpatient', 'Hospital', 'Office', 'LargeOffice',
+                'MediumOffice', 'SmallOffice', 'LargeHotel', 'SmallHotel'),
+    'Courthouse': ('Office', 'LargeOffice', 'MediumOffice', 'SmallOffice', 'College', 'SecondarySchool', 'PrimarySchool',
+                   'Outpatient', 'Hospital', 'LargeHotel', 'SmallHotel')}
+ANALOGUE = {'juryassembly': 'jurydeliberation', 'courtroom': 'conference', 'cell': 'guestroom', 'parking': 'storage'}
+PLACEHOLDER = 'undefined'
+SUPPORT = ('attic', 'plenum', 'elevator', 'elec/mech', 'electrical', 'mechanical', 'shaft')  # export accepts their absence
+BORROWED = {'people_per_m2': ('occupancy_schedule_id', 'person/m2'), 'electric_equipment_W_m2': ('electric_equipment_schedule_id', 'W/m2'),
+            'lighting_W_m2': ('lighting_schedule_id', 'W/m2')}
+
+
+def borrowings(programs, legacy, resolved, provenance, sources):
+    """Resolution rows that borrow the densities, schedules and setpoints still null after `fillings`."""
+    from scripts.common import stable_id as legacy_id
+    provenance = {**{p['id']: p for p in legacy['provenance']}, **provenance}
+    sources = {**{s['id']: s for s in legacy['source_files']}, **sources}
+    pool = sorted([p for p in legacy['programs'] if p.get('source_family') != 'residential'] + programs, key=lambda p: p['id'])
+    key = lambda p: ''.join(c for c in p['source_space_type'].lower().split(' - ')[-1] if c.isalnum()).rstrip('s')
+    index = defaultdict(list)
+    for p in pool:
+        index[(p['template'], p['source_building_type'], key(p))].append(p)
+
+    def donor(row, field):
+        building, template, rank = row['source_building_type'], row['template'], TEMPLATE_ORDER.index(row['template'])
+        nearest = sorted((t for t in TEMPLATE_ORDER if t != template), key=lambda t: (abs(TEMPLATE_ORDER.index(t) - rank), t))
+        name = key(row)
+        candidates = ([(template, b, name) for b in SIMILAR[building]] + [(t, building, name) for t in nearest]
+                      + ([(template, b, ANALOGUE[name]) for b in (building,) + SIMILAR[building]] if name in ANALOGUE else []))
+        return next((p for c in candidates for p in index[c] if p[field] is not None and p['id'] != row['id']), None)
+
+    def common(row, fields):
+        """The target building's most common non-null value of `fields`, taken together."""
+        counts = defaultdict(int)
+        for p in index_building[(row['template'], row['source_building_type'])]:
+            values = tuple(p[f] for f in fields)
+            if None not in values:
+                counts[values] += 1
+        return max(sorted(counts), key=lambda v: counts[v]) if counts else None
+
+    index_building = defaultdict(list)
+    for p in programs:
+        index_building[(p['template'], p['source_building_type'])].append(p)
+
+    def proof(p, f, note):
+        e = provenance[p['provenance_id']]
+        s = sources[e['source_file_id']]
+        return {'source_locator': s['path']+'#'+e['locator']+'/'+f, 'source_revision': s['version'],
+                'source_file_sha256': s['sha256'], 'provenance_id': e['id'],
+                'original_value': e['fields'].get(f, {}).get('original_value', p.get(f)),
+                'original_unit': e['fields'].get(f, {}).get('original_units', 'source descriptors'),
+                'transformation': e['fields'].get(f, {}).get('transformation', 'Retain source context') + '; ' + note,
+                'extraction_date': '2026-10-26', 'interpretation_note': note}
+
+    rows = []
+
+    def add(row, field, value, unit, rule, note, evidence):
+        if (row['id'], field) in resolved:
+            return
+        resolved.add((row['id'], field))
+        rows.append({'id': legacy_id('resolution', 'programs', row['id'], field, rule), 'record_table': 'programs',
+                     'record_id': row['id'], 'field': field, 'original_value': row.get(field), 'resolved_value': value,
+                     'unit': unit, 'rule': rule, 'basis': 'research_assumption', 'note': note,
+                     'evidence': [proof(row, field, note)] + evidence})
+
+    constant = {'constant_value': 0, 'calendar_independent': True}
+    for row in programs:
+        if row['template'] not in TEMPLATE_ORDER or any(t in row['source_space_type'].lower() for t in SUPPORT):
+            continue
+        if any(t in key(row) for t in ('datacenter', 'computerroom')):
+            continue
+        for field, (schedule, unit) in BORROWED.items():
+            if row[field] is not None or (row['id'], schedule) in resolved:
+                continue
+            if PLACEHOLDER in key(row):
+                if field == 'lighting_W_m2':
+                    continue
+                note = (f"User-approved (ADR 0039): '{row['source_space_type']}' is a placeholder space-type row with no "
+                        'source loads (its lighting is zero); zero density.')
+                add(row, field, 0, unit, 'reviewed_placeholder_zero', note, [])
+                if row[schedule] is None:
+                    add(row, schedule, constant, 'dimensionless', 'reviewed_placeholder_zero', note, [])
+                continue
+            if row['source_building_type'] not in SIMILAR:
+                continue
+            source = donor(row, field)
+            if source is None:
+                continue
+            note = (f"User-approved (ADR 0039): null source value; borrowed from {source['source_space_type']} of "
+                    f"{source['source_building_type']} ({source['template']}). Research assumption.")
+            add(row, field, source[field], unit, 'reviewed_borrowed_value', note, [proof(source, field, note)])
+            if row[schedule] is None:
+                if source[field] == 0:
+                    add(row, schedule, constant, 'dimensionless', 'reviewed_borrowed_value',
+                        note + ' Zero density, so the schedule is constant zero.', [])
+                else:
+                    value = common(row, (schedule,))
+                    if value:
+                        add(row, schedule, value[0], 'dimensionless', 'reviewed_borrowed_value',
+                            note + " Schedule: the building's most common one.", [])
+            if field == 'people_per_m2' and source[field] and row['activity_schedule_id'] is None:
+                value = common(row, ('activity_schedule_id',))
+                if value:
+                    add(row, 'activity_schedule_id', value[0], 'dimensionless', 'reviewed_borrowed_value',
+                        note + " Activity: the building's most common schedule.", [])
+        if row['heating_setpoint_schedule_id'] is None and row['cooling_setpoint_schedule_id'] is None:
+            value = common(row, ('heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id'))
+            if value and (row['id'], 'conditioning') not in resolved:
+                note = ('User-approved (ADR 0039): conditioned occupied space with no source thermostat; the building\'s '
+                        'most common heating and cooling setpoint schedules. Research assumption.')
+                for f, v in zip(('heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id'), value):
+                    add(row, f, v, 'dimensionless', 'reviewed_building_setpoints', note, [])
+    return rows
+
+
+RECIPE ='lib/openstudio-standards/standards/Standards.ServiceWaterHeating.rb'
 GALLON_M3 = 0.003785411784
 
 
@@ -511,7 +632,7 @@ def build(raw_root=ROOT/'data/raw'):
     office_area = {t: math.fsum(r['represented_area_m2'] for r in table[(OFFICE_AREAS, t)] if r['area_status'] == 'derived')
                    for t in TYPES['Office'][2]}
     packet = water_packet(records, raw_root, office_area)
-    resolutions, unresolved = fillings(records, packet)
+    resolutions, unresolved = fillings(records, packet, legacy)
     # apply_reviewed and the service build read the policy's resolution and completion releases: point
     # them at the frozen releases' rows plus the new ones, in a scratch folder of the build tree.
     import tempfile

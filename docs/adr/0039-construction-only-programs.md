@@ -79,9 +79,29 @@ records.
      machine rooms, and "unconditioned" for elevator and service shafts.
    - The rule for zero-density schedules (`explicit_zero_magnitude`) applies as
      everywhere.
-   - These stay unknown: corridors, stairs, storage, restrooms and utility rooms
-     with null occupancy; the Entrance Lobby with null lighting; the Courthouse
-     plug-load gaps; the `#N/A` rows; and other null setpoints.
+   - **Borrowed values (user, 2026-10-26, amendment).** The values the rules above
+     left null blocked 77 `filled` exports. They are now filled as research
+     assumptions, for complete coverage rather than accuracy (later generators will
+     replace them). `scripts.construction_only_programs.borrowings` adds them:
+     - **Densities** (occupancy, plug loads, lighting) come from the first donor
+       with a value:
+       1. the same space type in the same template, in a similar building type
+          (College: schools first; Courthouse: offices first);
+       2. the same space type and building type in the nearest template;
+       3. an analogous space type: Jury Assembly from Jury Deliberation, Courtroom
+          from Conference, Cell from a hotel guest room, Parking from Storage.
+     - **Schedules** of a borrowed density: the target building's most common
+       schedule for that load, and its most common activity schedule for occupancy.
+       A zero density gets a constant-zero schedule.
+     - **Setpoints:** occupied spaces with no source thermostat (the tall buildings'
+       corridors, the generic office's undefined rows) take the building's most
+       common heating and cooling setpoint pair.
+     - **Placeholder rows:** the generic office's `- undefined -` rows have no
+       source loads (their lighting is zero) and get zero occupancy and plug load.
+     - Every row cites the target's null and, for a borrowed density, the donor's
+       value. Rules: `reviewed_borrowed_value`, `reviewed_building_setpoints` and
+       `reviewed_placeholder_zero`. The release writer maps these fields through
+       `scripts.construction_only_overlay.addressed`, for the length of the build.
    - The reviewed twins come from `scripts.program_definitions.apply_reviewed`.
 7. **Courthouse schedule completions (user, F3 and 2026-10-26).** These apply in the
    `filled` export only; the `source` export keeps the source rules.
@@ -119,14 +139,11 @@ records.
    Programs that a source path proves have no draw get the zero-water fill
    (`source_complete_no_water_draw`). Programs served only by an unallocated
    building draw keep unknown hot water, as in the original folders.
-10. **What still blocks `filled` exports.** 77 exports of the new programs do not
-    validate, mixes included. They are the values left unknown by the decisions above:
-    - occupancy of corridors and other occupied support spaces;
-    - conditioning of corridors;
-    - Courthouse plug-load gaps, the `#N/A` lighting rows, the Entrance Lobby and
-      undefined space types.
-
-    Every `source` export validates.
+10. **Exports.** Every `source` and `filled` export of the new programs validates,
+    mixes included. Before the borrowed values of section 6, 77 `filled` exports did
+    not: corridor occupancy and conditioning, the Courthouse plug-load gaps, the
+    `#N/A` lighting rows, the Entrance Lobby and the undefined space types. The
+    `source` export keeps every one of those values null.
 
 ## Consequences
 

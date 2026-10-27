@@ -56,7 +56,8 @@ class InputTests(unittest.TestCase):
         rules = {r['rule'] for r in self.document['resolutions']}
         self.assertLessEqual(rules, {'reviewed_no_gas_equipment', 'reviewed_no_occupancy', 'reviewed_no_lighting',
                                      'reviewed_unconditioned', 'reviewed_no_hot_water', 'explicit_zero_magnitude',
-                                     'source_complete_no_water_draw'})
+                                     'source_complete_no_water_draw', 'reviewed_borrowed_value',
+                                     'reviewed_placeholder_zero', 'reviewed_building_setpoints'})
         programs = {p['source_id']: p for p in self.document['programs'] if p['evidence_view'] == 'source'}
         for row in self.document['resolutions']:
             name = programs[row['record_id']]['name'].lower()
@@ -66,6 +67,19 @@ class InputTests(unittest.TestCase):
                 self.assertTrue(any(w in name for w in ('shaft', 'machine room', 'attic', 'plenum')), name)
         twins = [p for p in self.document['programs'] if p['evidence_view'] == 'reviewed' and p['derivation'] != 'composed']
         self.assertEqual({p['source_definition_id'] for p in twins} <= {p['id'] for p in programs.values()}, True)
+
+    def test_borrowed_values_cite_their_donor(self):
+        rows = [r for r in self.document['resolutions'] if r['rule'] == 'reviewed_borrowed_value'
+                and r['field'].endswith(('_per_m2', '_W_m2'))]
+        self.assertEqual(len(rows), 71)
+        for row in rows:
+            with self.subTest(row=row['id']):
+                self.assertEqual(row['basis'], 'research_assumption')
+                self.assertEqual(len(row['evidence']), 2)  # the target's null and the donor's value
+                self.assertIsNotNone(row['evidence'][1]['original_value'])
+        # What stays unresolved is support-space schedules, whose absence the export accepts.
+        self.assertEqual({u['field'] for u in self.document['unresolved']},
+                         {'service_water_heating_schedule_id', 'electric_equipment_schedule_id'})
 
     def test_hot_water_paths_follow_the_source_branches(self):
         branches = {(d['building_type'], d['source_branch']) for d in self.document['water_paths']['draw_paths']}
@@ -105,11 +119,13 @@ class ReleaseTests(unittest.TestCase):
         release = Release(release='1.2.0')
         folders = {(p['template'], p['building_type']) for _, p in release.programs.values()}
         self.assertLessEqual(cop.wanted(), folders)
-        # Source exports hold actual values only; filled exports wait for the fillings (ADR 0039 section 6).
-        for prefix in ('90-1-2019.college.general.', '90-1-2013.tall-building.source.', 'doe-ref-pre-1980.office.general.',
-                       '90-1-2007.courthouse.source.'):
+        # Every new program exports in both versions (ADR 0039 sections 6 and 10); a sample of the formerly blocked.
+        for prefix in ('90-1-2019.college.general.', '90-1-2013.tall-building.source.corridor', 'doe-ref-pre-1980.office.general.',
+                       'doe-ref-pre-1980.courthouse.source.cell', '90-1-2019.office.source.undefined',
+                       'doe-ref-1980-2004.college.source.corridor', '90-1-2007.courthouse.general.'):
             program_id = next(p for p in release.program_ids() if p.startswith(prefix))
             self.assertEqual(release.program(program_id, 'source')['source']['release'], 'atlas-release-1.2.0')
+            self.assertEqual(release.program(program_id, 'filled')['version'], 'filled')
         program_id = next(p for p in release.program_ids() if p.startswith('90-1-2007.large-data-center-high-ite.source.'))
         self.assertEqual(release.program(program_id, 'filled')['version'], 'filled')
 

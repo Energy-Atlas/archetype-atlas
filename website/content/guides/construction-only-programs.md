@@ -47,7 +47,10 @@ release:
   - no lighting for shafts and machine rooms;
   - unconditioned and no hot water for attics, and unconditioned for shafts.
 
-  Corridors, stairs, storage, restrooms and utility rooms keep unknown occupancy.
+  Values still null after these rules are borrowed in the filled export, as
+  research assumptions: occupancy and plug loads from the same or an analogous
+  space type elsewhere, setpoints and schedules from the building's most common
+  ones. The source export keeps them null. ADR 0039 section 6 lists the donors.
 - **Courthouse schedules, filled export only:**
   - ten schedules without design-day rules take the Wednesday profile on design
     days;
@@ -59,6 +62,7 @@ release:
   row. They are tall-building spaces, detailed-office plenums and laboratory
   plenums.
 - **Spreadsheet errors:** three DOE Ref Courthouse rows give `#N/A` as lighting
-  density. The value stays unknown.
-- **Blocked filled exports:** some new programs have no filled export because a
-  value stays unknown. Their source exports are complete.
+  density. The source export keeps it unknown; the filled export borrows the
+  90.1-2007 courthouse value.
+- **Borrowed values are estimates:** they make every filled export complete, not
+  accurate. Prefer measured or generated values where you have them.

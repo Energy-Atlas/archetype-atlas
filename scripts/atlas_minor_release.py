@@ -51,6 +51,10 @@ Research assumptions in the new folders (user decisions, ADR 0039):
   lighting, unconditioned spaces and no hot water. In the filled export,
   Courthouse schedules without design days take the Wednesday profile on design
   days, and Courthouse BLDG_EQUIP_SCH takes the Sunday profile on holidays.
+- Values still null after those rules are borrowed in the filled export:
+  densities from the same or an analogous space type elsewhere, schedules and
+  setpoints from the building's most common ones. The source export keeps them
+  null.
 - The generic office has no prototype. Its hot water is the large detailed
   office's lumped main draw divided by that building's counted floor area, as a
   building draw per floor area.
@@ -88,6 +92,9 @@ def overlaid(overlays):
         return detailed, unified
 
     saved = (atlas_programs.load_sources, atlas_systems.load_sources, atlas_constructions.load_sources)
+    frozen_addressed = atlas_programs.addressed
+    if 'construction_only' in overlays:
+        atlas_programs.addressed = lambda field: construction_only_overlay.addressed(field, frozen_addressed)
     atlas_programs.load_sources = lambda: programs
     atlas_systems.load_sources = lambda: systems
     atlas_constructions.load_sources = lambda: constructions
@@ -96,6 +103,7 @@ def overlaid(overlays):
         yield
     finally:
         atlas_programs.load_sources, atlas_systems.load_sources, atlas_constructions.load_sources = saved
+        atlas_programs.addressed = frozen_addressed
         construction_foundation_release.export_pair = export_pair
 
 

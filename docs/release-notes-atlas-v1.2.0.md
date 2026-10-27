@@ -44,7 +44,20 @@ that had construction sets only
     service shafts;
   - the zero-density schedule rule as everywhere.
 
-  Corridors, stairs, storage, restrooms and utility rooms keep unknown occupancy.
+- **Borrowed values (research assumptions, user decision):** the values these rules
+  left null are borrowed so that every filled export validates (ADR 0039 section 6).
+  - **Occupancy and plug loads of college support rooms:** the same space type of a
+    school or the courthouse in the same template.
+  - **Courthouse plug loads:** the same or an analogous space type (Library from the
+    secondary school, Jury Assembly from Jury Deliberation, Courtroom from
+    Conference, Cell from a hotel guest room, Parking from Storage, Security
+    Screening from the 90.1-2007 courthouse).
+  - **Lighting:** the `#N/A` DOE Ref Courthouse rows from the 90.1-2007 courthouse,
+    and the 90.1-2019 College Entrance Lobby from the 90.1-2019 courthouse.
+  - **Setpoints:** the tall buildings' corridors and the generic office's undefined
+    rows take their building's most common thermostat.
+  - **Undefined rows:** zero occupancy and plug load, like their zero lighting.
+  - **Schedules:** the building's own most common schedule.
 - **Hot water:** 99 services from the prototype inputs.
   - **College, courthouse and the detailed offices:** a lumped building draw.
   - **Laboratory and the tall buildings:** per-space-type draws.
@@ -67,7 +80,7 @@ that had construction sets only
   No earlier program is named for a shaft.
 - **Gaps recorded:** 90 spaces have no standards tags or no matching row (tall
   buildings, detailed-office plenums, laboratory plenums). Spreadsheet errors (`#N/A`)
-  in three DOE Ref Courthouse rows stay unknown.
+  in three DOE Ref Courthouse rows stay unknown in the source export.
 
 ## Exports
 
@@ -75,12 +88,8 @@ The contracts are unchanged from 1.1.0: Program JSON 5.1.0, constructions 4.1.0 
 3.1.0, and building services 1.0.0. They now also accept the release name
 `atlas-release-1.2.0`. Read with `Release(release='1.2.0')`.
 
-- **Source:** every export of the new programs validates.
-- **Filled:** 77 of their exports do not, mixes included. They are the values left
-  unknown by the decisions above:
-  - corridor occupancy and conditioning;
-  - Courthouse plug loads;
-  - the `#N/A` lighting rows, the Entrance Lobby and undefined space types.
+- **Source and filled:** every export of the new programs validates, mixes included.
+  The source export keeps the borrowed values null.
 
 ## Verify
 
@@ -94,4 +103,4 @@ python -m unittest tests.test_construction_only
 
 ## Open decisions
 
-None for this release. Every value left unknown is listed in ADR 0039 section 10.
+None for this release. The borrowed values are listed in ADR 0039 section 6.

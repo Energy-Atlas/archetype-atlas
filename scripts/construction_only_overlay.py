@@ -13,6 +13,14 @@ import copy
 from scripts.common import ROOT, load_json
 
 INPUT = ROOT/'data/program-inputs/construction-only-v1.json'
+BORROWED = {'people_per_m2': ('load', 'occupancy'), 'electric_equipment_W_m2': ('load', 'electric_equipment'),
+            'lighting_W_m2': ('load', 'lighting'), 'activity_schedule_id': ('parameter', 'activity_schedule_id'),
+            'heating_setpoint_schedule_id': ('parameter', 'heating_setpoint_schedule_id'),
+            'cooling_setpoint_schedule_id': ('parameter', 'cooling_setpoint_schedule_id')}
+
+
+def addressed(field, frozen):
+    return [BORROWED[field]] if field in BORROWED else frozen(field)
 
 
 def apply(programs, systems, document=None):
