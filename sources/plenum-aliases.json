@@ -1,0 +1,18 @@
+{
+ "schema_version": "1.0.0",
+ "adr": "docs/adr/0044-lighting-controls.md",
+ "decision": "User decision of 2026-10-27 (plan 2026-10-27-stages-after-release-1-4-0.md, P15 and G-1): the spaces ADR 0039 left unmapped take the template's own Any/Plenum row. Amends ADR 0039, which excluded them.",
+ "target": {"standards_building_type": "Any", "space_type": "Plenum"},
+ "aliases": [
+  {"building_type": "Laboratory", "tag": ["Laboratory", "Plenum"],
+   "reason": "Tagged Laboratory/Plenum, but no 90.1 space-type table has a Laboratory Plenum row. The building-independent Any/Plenum row is the one the builder already uses for a Plenum tag without a building type."},
+  {"building_type": "LargeOfficeDetailed", "spaces": ["GroundFloor_Plenum", "MidFloor_Plenum", "TopFloor_Plenum"],
+   "reason": "Untagged return-air plenums between floors, by name and position; the large office's own plenums take Any/Plenum."},
+  {"building_type": "MediumOfficeDetailed", "spaces": ["FirstFloor_Plenum", "MidFloor_Plenum", "TopFloor_Plenum"],
+   "reason": "Untagged return-air plenums between floors, by name and position; the medium office's own plenums take Any/Plenum."},
+  {"building_type": "TallBuilding", "spaces": ["Hotel_bot_Plenum", "Hotel_mid_Plenum", "Hotel_top_Plenum", "Office_Plenum", "Resi_bot_Plenum", "Resi_mid_Plenum", "Retail_F1_Plenum", "Retail_F2_Plenum"],
+   "reason": "Untagged plenums of the hotel, office, residential and retail floors, by name; no tagged plenum exists in the building, and the floors' own building types have no Plenum row."},
+  {"building_type": "SuperTallBuilding", "spaces": ["Hotel_bot_Plenum", "Hotel_mid_Plenum", "Hotel_top_Plenum", "Office_Plenum", "Resi_bot_Plenum", "Resi_mid_Plenum", "Retail_F1_Plenum", "Retail_F2_Plenum", "Skylobby_Plenum"],
+   "reason": "As the tall building, plus the sky-lobby plenum."}
+ ]
+}

@@ -1,5 +1,20 @@
 # Changelog
 
+## Atlas release 1.5.0 candidate (lighting controls, plenums) — 2026-10-27
+
+Add, as a delta on 1.0.0 that holds release 1.4.0 (ADR 0044):
+- **Lighting controls (stage L):** every commercial program records the daylighting
+  controls of its source model zones: controlled floor and lighting-power fractions,
+  setpoint, control type and minimum fractions, by climate where they differ. IECC
+  and 90.1 values come from the PNNL prototypes (195 programs with controls); DOE Ref
+  programs record a source zero. Occupancy-sensor credits stay in the schedules.
+- **Plenums (stage G1):** the 90 spaces ADR 0039 left unmapped take the Any/Plenum
+  row, adding plenum programs to 19 folders.
+- **Contracts:** Program JSON 5.4.0 for every program of the release.
+
+Answer-key tests compare control fractions with the IDFs when they are present. See
+the [release and migration notes](docs/release-notes-atlas-v1.5.0.md).
+
 ## Atlas release 1.4.0 candidate (residential families) — 2026-10-26
 
 Add the residential tree of ADR 0038 as a delta on 1.0.0 that holds release 1.3.0
