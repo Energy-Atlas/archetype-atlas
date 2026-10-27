@@ -16,6 +16,10 @@ Research assumptions in the new folders (user decisions, ADR 0039):
   lighting, unconditioned spaces and no hot water. In the filled export,
   Courthouse schedules without design days take the Wednesday profile on design
   days, and Courthouse BLDG_EQUIP_SCH takes the Sunday profile on holidays.
+- Values still null after those rules are borrowed in the filled export:
+  densities from the same or an analogous space type elsewhere, schedules and
+  setpoints from the building's most common ones. The source export keeps them
+  null.
 - The generic office has no prototype. Its hot water is the large detailed
   office's lumped main draw divided by that building's counted floor area, as a
   building draw per floor area.
