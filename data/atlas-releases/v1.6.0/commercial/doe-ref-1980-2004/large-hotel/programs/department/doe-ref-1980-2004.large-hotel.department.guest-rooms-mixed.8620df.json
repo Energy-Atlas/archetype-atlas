@@ -1,0 +1,239 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.large-hotel.source.guest-room.f65a18",
+        "represented_area_m2": 624.3157440000001,
+        "source_geometry_file_id": "sourcefile-fbab8dec0b75d715fbdb",
+        "source_program_id": "program-9e45a64340f1a6523584",
+        "weight": 0.13422497045805057
+      },
+      {
+        "program_id": "doe-ref-1980-2004.large-hotel.source.guest-room2.d732d6",
+        "represented_area_m2": 3728.1336399999973,
+        "source_geometry_file_id": "sourcefile-fbab8dec0b75d715fbdb",
+        "source_program_id": "program-4037bbdebf2b78d71ae2",
+        "weight": 0.8015313285014066
+      },
+      {
+        "program_id": "doe-ref-1980-2004.large-hotel.source.guest-room3.613a11",
+        "represented_area_m2": 78.039468,
+        "source_geometry_file_id": "sourcefile-fbab8dec0b75d715fbdb",
+        "source_program_id": "program-d6de8ff161f0206b96b1",
+        "weight": 0.016778121307256318
+      },
+      {
+        "program_id": "doe-ref-1980-2004.large-hotel.source.guest-room4.cee7b2",
+        "represented_area_m2": 220.7749319999999,
+        "source_geometry_file_id": "sourcefile-fbab8dec0b75d715fbdb",
+        "source_program_id": "program-df253ea412f39a61e3c5",
+        "weight": 0.04746557973328653
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-886c2eb0e8c4056f802a07c9"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.large-hotel.department.guest-rooms-mixed.8620df",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-9f2bcacaea2884b42e866fba",
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.large-hotel.guest-rooms-mixed-additional-lighting.cd162b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-35c2bf44ce008392fbb5757e",
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 14.316000854223931
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b62bd82bf83bc62327eaf8d4",
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.large-hotel.guest-rooms-mixed-additional-lighting.cd162b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-67beaba0198fac0a93af73cc",
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.large-hotel.guest-rooms-mixed-hot-water-volume.4d2e7f",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 8.438661437019379e-07
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-67ab4a1109d8e532df8006fe",
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 19.052121437576208
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-84ef40143c36fde0a505209d",
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.05770945144933043
+    }
+  ],
+  "mode": "department",
+  "name": "GuestRooms_Mixed_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.large-hotel.guest-rooms-mixed-activity.76fac8"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.large-hotel.guest-rooms-mixed-cooling-setpoint.d5fb44"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-886c2eb0e8c4056f802a07c9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.large-hotel.guest-rooms-mixed-heating-setpoint.b62275"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "doe-ref-1980-2004.large-hotel.main.a3bd9d",
+    "doe-ref-1980-2004.large-hotel.main.4541e7",
+    "doe-ref-1980-2004.large-hotel.main.468330",
+    "doe-ref-1980-2004.large-hotel.main.f26513"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-77b26e2d7bc65a87aa31f62c",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}

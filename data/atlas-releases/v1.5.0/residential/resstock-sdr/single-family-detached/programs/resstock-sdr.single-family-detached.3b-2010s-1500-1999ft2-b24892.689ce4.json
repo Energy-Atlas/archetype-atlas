@@ -1,0 +1,2155 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_context": {
+    "Geometry Attic Type": "Unvented Attic",
+    "Geometry Building Horizontal Location MF": "None",
+    "Geometry Building Horizontal Location SFA": "None",
+    "Geometry Building Level MF": "None",
+    "Geometry Building Number Units MF": "None",
+    "Geometry Building Number Units SFA": "None",
+    "Geometry Foundation Type": "Vented Crawlspace",
+    "Geometry Garage": "2 Car",
+    "Geometry Stories": "1",
+    "Geometry Wall Exterior Finish": "Vinyl, Light"
+  },
+  "building_type": "SingleFamilyDetached",
+  "climate": "3B",
+  "construction_set_id": "resstock-sdr.single-family-detached.3b-2010s-1500-1999ft2-b24892.fc554a",
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-1847cc9a4f736e0b52f7dc49"
+  ],
+  "filling": {
+    "basis": "research_assumption",
+    "climate": "3B",
+    "controls": {
+      "activity_W_person": 117.22842806888889,
+      "people_radiant_fraction": 0.3141709090909091,
+      "people_sensible_fraction": 0.563030303030303
+    },
+    "loads": [
+      {
+        "basis": "dwelling_unit",
+        "end_use": "clothes_washer",
+        "evidence": {
+          "equivalent_full_load_hours": 79.2268,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 86.4236232320571,
+            "heat_fractions": {
+              "latent": 0.030000000000000027,
+              "lost": 0.7,
+              "radiant": 0.16200000000000003
+            }
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_clothes_washer_energy_gpd",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.030000000000000027,
+          "lost": 0.7,
+          "radiant": 0.16200000000000003
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-b98f440815da14dcd3d2"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.clothes-washer.730103",
+        "type": "equipment",
+        "unit": "W",
+        "value": 1090.838242009738
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "hot_water_clothes_washer",
+        "evidence": {
+          "equivalent_full_load_hours": 181.2439,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "US gal/day",
+          "original_value": {
+            "daily_gallons": 2.9962059873240716,
+            "target_temperature_degC": 51.666666666666664
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_clothes_washer_energy_gpd",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "gal/day * 365 * 0.003785411784 / (schedule EFLH * 3600)"
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-f68863569ae1dcff1f33"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.hot-water-clothes-washer.160dbb",
+        "target_temperature_degC": 51.666666666666664,
+        "type": "water",
+        "unit": "m3/s",
+        "value": 6.344709792644333e-06
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "dishwasher",
+        "evidence": {
+          "equivalent_full_load_hours": 168.3359,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 73.03035207608605,
+            "heat_fractions": {
+              "latent": 0.29999999999999993,
+              "lost": 0.4,
+              "radiant": 0.18
+            }
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_dishwasher_energy_gpd",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.29999999999999993,
+          "lost": 0.4,
+          "radiant": 0.18
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-a8b67ca77f3dee6ad408"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.dishwasher.821dff",
+        "type": "equipment",
+        "unit": "W",
+        "value": 433.83706075819856
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "hot_water_dishwasher",
+        "evidence": {
+          "equivalent_full_load_hours": 138.9646,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "US gal/day",
+          "original_value": {
+            "daily_gallons": 2.13812010047967,
+            "target_temperature_degC": 51.666666666666664
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_dishwasher_energy_gpd",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "gal/day * 365 * 0.003785411784 / (schedule EFLH * 3600)"
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-703057fdbc66dfdb4b54"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.hot-water-dishwasher.30e61e",
+        "target_temperature_degC": 51.666666666666664,
+        "type": "water",
+        "unit": "m3/s",
+        "value": 5.90515644860973e-06
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "clothes_dryer",
+        "evidence": {
+          "equivalent_full_load_hours": 107.5029,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 32.004417692642306,
+            "heat_fractions": {
+              "latent": 0.015000000000000013,
+              "lost": 0.85,
+              "radiant": 0.08100000000000002
+            }
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_clothes_dryer_energy",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.015000000000000013,
+          "lost": 0.85,
+          "radiant": 0.08100000000000002
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-a861a2407cadb405b63d"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.clothes-dryer.adee60",
+        "type": "equipment",
+        "unit": "W",
+        "value": 297.70748224133774
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "clothes_dryer",
+        "evidence": {
+          "equivalent_full_load_hours": 107.5029,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 425.18389983581864,
+            "annual_therm": 14.507876863654975,
+            "heat_fractions": {
+              "latent": 0.015000000000000013,
+              "lost": 0.85,
+              "radiant": 0.08100000000000002
+            }
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_clothes_dryer_energy",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "natural gas",
+        "heat_fractions": {
+          "latent": 0.015000000000000013,
+          "lost": 0.85,
+          "radiant": 0.08100000000000002
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-a861a2407cadb405b63d"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.clothes-dryer.adee60",
+        "type": "equipment",
+        "unit": "W",
+        "value": 3955.092372725002
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "cooking_range",
+        "evidence": {
+          "equivalent_full_load_hours": 283.6697,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 407.83000000000004,
+            "heat_fractions": {
+              "latent": 0.0799999999999999,
+              "lost": 0.2,
+              "radiant": 0.43200000000000005
+            }
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_range_oven_energy",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.0799999999999999,
+          "lost": 0.2,
+          "radiant": 0.43200000000000005
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-11fe73911be9fa0243be"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.cooking-range.2f9564",
+        "type": "equipment",
+        "unit": "W",
+        "value": 1437.693204455746
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "refrigerator",
+        "evidence": {
+          "equivalent_full_load_hours": 6673.181113138686,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 434.0,
+            "heat_fractions": {
+              "latent": 0.0,
+              "lost": 0.0,
+              "radiant": 0.6
+            }
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.calc_fridge_or_freezer_energy",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.0,
+          "lost": 0.0,
+          "radiant": 0.6
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-31462d1d13f0dde30526"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.refrigerator.e8f4fb",
+        "type": "equipment",
+        "unit": "W",
+        "value": 65.03644853059758
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "plug_loads_tv",
+        "evidence": {
+          "equivalent_full_load_hours": 1084.4514,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 583.0631999999999,
+            "heat_fractions": {
+              "latent": 0.0,
+              "lost": 0.0,
+              "radiant": 0.6
+            }
+          },
+          "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_plug_loads; MiscLoads.apply_plug_loads",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.0,
+          "lost": 0.0,
+          "radiant": 0.6
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-2c6159cce8c611fde25f"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.plug-loads-tv.f55731",
+        "type": "equipment",
+        "unit": "W",
+        "value": 537.6572892063213
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "plug_loads_other",
+        "evidence": {
+          "equivalent_full_load_hours": 5292.38,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 1720.9896,
+            "heat_fractions": {
+              "latent": 0.04500000000000001,
+              "lost": 0.1,
+              "radiant": 0.513
+            }
+          },
+          "source_file_sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#Defaults.apply_plug_loads; MiscLoads.apply_plug_loads",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0.04500000000000001,
+          "lost": 0.1,
+          "radiant": 0.513
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-37b9f61d6cbb7861ccfa"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.plug-loads-other.a5989b",
+        "type": "equipment",
+        "unit": "W",
+        "value": 325.1825454710357
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "lighting_interior",
+        "evidence": {
+          "equivalent_full_load_hours": 1716.3416,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 475.40486486486486,
+            "heat_fractions": {
+              "radiant": 0.6,
+              "return_air": 0,
+              "visible": 0.2
+            }
+          },
+          "source_file_sha256": "7a43f98324e344009e8b6ae1c723acc174d82384906a0d76deaf3579301a1464",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/lighting.rb#Lighting.calc_interior_energy; Lighting.apply",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "radiant": 0.6,
+          "return_air": 0,
+          "visible": 0.2
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-a8ebcce56b664f86cc63"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.lighting-interior.aad6ca",
+        "type": "lighting",
+        "unit": "W",
+        "value": 276.9873228411319
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "lighting_exterior",
+        "evidence": {
+          "equivalent_full_load_hours": 4342.857142857143,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 30.816666666666666,
+            "heat_fractions": {
+              "radiant": 0.6,
+              "return_air": 0,
+              "visible": 0.2
+            }
+          },
+          "source_file_sha256": "7a43f98324e344009e8b6ae1c723acc174d82384906a0d76deaf3579301a1464",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/lighting.rb#Lighting.calc_exterior_energy; Lighting.apply",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "radiant": 0.6,
+          "return_air": 0,
+          "visible": 0.2
+        },
+        "host": "outside",
+        "resolutions": [
+          "resolution-df7525d7ef4659fb65eb"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.lighting-exterior.5ce32c",
+        "type": "lighting",
+        "unit": "W",
+        "value": 7.09594298245614
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "lighting_garage",
+        "evidence": {
+          "equivalent_full_load_hours": 1716.3416,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 16.666666666666664,
+            "heat_fractions": {
+              "radiant": 0.6,
+              "return_air": 0,
+              "visible": 0.2
+            }
+          },
+          "source_file_sha256": "7a43f98324e344009e8b6ae1c723acc174d82384906a0d76deaf3579301a1464",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/lighting.rb#Lighting.calc_garage_energy; Lighting.apply",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "radiant": 0.6,
+          "return_air": 0,
+          "visible": 0.2
+        },
+        "host": "garage",
+        "resolutions": [
+          "resolution-8bde9fa21f3e2c67b9a2"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.lighting-garage.76b48c",
+        "type": "lighting",
+        "unit": "W",
+        "value": 9.71057665133017
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "ceiling_fan",
+        "evidence": {
+          "equivalent_full_load_hours": 3260.38604,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "kWh/year",
+          "original_value": {
+            "annual_kwh": 287.4375,
+            "heat_fractions": {
+              "latent": 0,
+              "lost": 0,
+              "radiant": 0.558
+            }
+          },
+          "source_file_sha256": "70bdf4f04ad4c8b584b7d6cac324bada556f13ca07bd7a46f7f6f25904e8ec80",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hvac.rb#HVAC.apply_ceiling_fans; Defaults.get_ceiling_fan_count; Defaults.get_ceiling_fan_power; Defaults.get_ceiling_fan_months",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "annual kWh * 1000 / schedule EFLH"
+        },
+        "fuel": "electricity",
+        "heat_fractions": {
+          "latent": 0,
+          "lost": 0,
+          "radiant": 0.558
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-599160e1bc8f60f8620b"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.ceiling-fan.dcf107",
+        "type": "equipment",
+        "unit": "W",
+        "value": 88.16057254373473
+      },
+      {
+        "basis": "dwelling_unit",
+        "end_use": "hot_water_fixtures",
+        "evidence": {
+          "equivalent_full_load_hours": 702.6979,
+          "extraction_date": "2026-10-11",
+          "interpretation_note": "Executed source operational branch with exact options and source defaults; fixed background schedule variant; per dwelling unit. Source option/default inputs are retained in record metadata.",
+          "original_unit": "US gal/day",
+          "original_value": {
+            "daily_gallons": 35.596000000000004,
+            "target_temperature_degC": 40.55555555555556
+          },
+          "source_file_sha256": "b0dcef4bea2ec73bb332b2bfdc8020ec219dee002196b77695e365b61ff9b3d8",
+          "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/hotwater_appliances.rb#HotWaterAndAppliances.get_fixtures_gpd",
+          "source_project": "ResStock",
+          "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+          "supporting_source_locators": [
+            "resources/options_lookup.tsv",
+            "measures/ResStockArguments/measure.rb#run",
+            "measures/ResStockArgumentsPostHPXML/measure.rb#296-356",
+            "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_*",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb",
+            "resources/hpxml-measures/HPXMLtoOpenStudio/resources/misc_loads.rb"
+          ],
+          "transformation": "gal/day * 365 * 0.003785411784 / (schedule EFLH * 3600)"
+        },
+        "host": "conditioned space",
+        "resolutions": [
+          "resolution-f9b5063b053fa8b90c69"
+        ],
+        "schedule_id": "resstock-sdr.single-family-detached.hot-water-fixtures.a4c801",
+        "target_temperature_degC": 40.55555555555556,
+        "type": "water",
+        "unit": "m3/s",
+        "value": 1.9441780513239427e-05
+      }
+    ],
+    "metadata": {
+      "controls_evidence": {
+        "extraction_date": "2026-10-11",
+        "interpretation_note": "Native People assignment; no People object is required for zero occupants.",
+        "original_unit": "Btu/person/day and hours/day",
+        "original_value": {
+          "hours_per_day": 16.5,
+          "latent_Btu_person_day": 2884,
+          "sensible_Btu_person_day": 3716
+        },
+        "source_file_sha256": "2f2d058233eaefcb9fcf1d99276267344462653f8a91ed21dc9cb248ed870e55",
+        "source_locator": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/internal_gains.rb#InternalGains.apply_building_occupants; defaults.rb#Defaults.get_occupancy_values",
+        "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+        "transformation": "(3716+2884)/16.5 * pinned Btu/hr-to-W; sensible=3716/6600; native People radiant field=0.558*sensible"
+      },
+      "excluded_channels": [
+        "electric_vehicle"
+      ],
+      "expanded_source_arguments": {
+        "advanced_feature": "None",
+        "appliance_clothes_dryer": "Natural Gas, Standard, 100% Usage",
+        "appliance_clothes_dryer_drying_method": "conventional",
+        "appliance_clothes_dryer_efficiency": 3.3,
+        "appliance_clothes_dryer_efficiency_type": "CombinedEnergyFactor",
+        "appliance_clothes_dryer_fuel_type": "natural gas",
+        "appliance_clothes_dryer_location": null,
+        "appliance_clothes_dryer_usage_multiplier": null,
+        "appliance_clothes_washer": "Standard, 2008-2017, 100% Usage",
+        "appliance_clothes_washer_capacity": 3.2,
+        "appliance_clothes_washer_efficiency": 1.21,
+        "appliance_clothes_washer_efficiency_type": "IntegratedModifiedEnergyFactor",
+        "appliance_clothes_washer_label_annual_gas_cost": 27,
+        "appliance_clothes_washer_label_electric_rate": 0.12,
+        "appliance_clothes_washer_label_gas_rate": 1.09,
+        "appliance_clothes_washer_label_usage": 6,
+        "appliance_clothes_washer_location": null,
+        "appliance_clothes_washer_rated_annual_consumption": 380,
+        "appliance_clothes_washer_usage_multiplier": null,
+        "appliance_cooking_range_oven": "Electricity, Standard, Non-Convection, 100% Usage",
+        "appliance_cooking_range_oven_fuel_type": "electricity",
+        "appliance_cooking_range_oven_is_convection": false,
+        "appliance_cooking_range_oven_is_induction": false,
+        "appliance_cooking_range_oven_location": null,
+        "appliance_cooking_range_oven_usage_multiplier": null,
+        "appliance_dehumidifier": "None",
+        "appliance_dehumidifier_setpoint": "50% RH",
+        "appliance_dishwasher": "Federal Minimum, Standard, 100% Usage",
+        "appliance_dishwasher_efficiency": 307.0,
+        "appliance_dishwasher_efficiency_type": "RatedAnnualkWh",
+        "appliance_dishwasher_label_annual_gas_cost": 22.32,
+        "appliance_dishwasher_label_electric_rate": 0.12,
+        "appliance_dishwasher_label_gas_rate": 1.09,
+        "appliance_dishwasher_label_usage": 4,
+        "appliance_dishwasher_location": null,
+        "appliance_dishwasher_place_setting_capacity": 12,
+        "appliance_dishwasher_usage_multiplier": null,
+        "appliance_extra_refrigerator": "None",
+        "appliance_extra_refrigerator_location": null,
+        "appliance_extra_refrigerator_rated_annual_consumption": null,
+        "appliance_extra_refrigerator_usage_multiplier": null,
+        "appliance_freezer": "None",
+        "appliance_freezer_location": null,
+        "appliance_freezer_rated_annual_consumption": null,
+        "appliance_freezer_usage_multiplier": null,
+        "appliance_refrigerator": "434 kWh/yr, 100% Usage",
+        "appliance_refrigerator_location": null,
+        "appliance_refrigerator_rated_annual_consumption": 434,
+        "appliance_refrigerator_usage_multiplier": null,
+        "bathroom_fans_start_hour": "7",
+        "battery": "None",
+        "ceiling_fans": "NumBedrooms+1 Fans, 45.0 W",
+        "ceiling_fans_cooling_setpoint_temperature_offset": null,
+        "ceiling_fans_count": null,
+        "ceiling_fans_efficiency": null,
+        "ceiling_fans_label_energy_use": 45.0,
+        "ceiling_insulation_r": "30",
+        "clothes_dryer_usage_multiplier": "1.0",
+        "clothes_washer_usage_multiplier": "1.0",
+        "cooking_range_oven_usage_multiplier": "1.0",
+        "dhw_distribution": "Uninsulated, Standard",
+        "dhw_drain_water_heat_recovery": "None",
+        "dhw_fixtures": "Standard, 100% Usage",
+        "dhw_fixtures_low_flow_showers": false,
+        "dhw_fixtures_low_flow_sinks": false,
+        "dhw_fixtures_usage_multiplier": null,
+        "dhw_solar_thermal": "None",
+        "dhw_solar_thermal_direction": "Roof Pitch, South",
+        "dhw_water_heater": "Electricity, Tank, UEF 0.92",
+        "dhw_water_heater_efficiency": 0.92,
+        "dhw_water_heater_efficiency_type": "UniformEnergyFactor",
+        "dhw_water_heater_fuel_type": "electricity",
+        "dhw_water_heater_jacket_rvalue": "0",
+        "dhw_water_heater_location": "Garage",
+        "dhw_water_heater_recovery_efficiency": null,
+        "dhw_water_heater_tank_volume": null,
+        "dhw_water_heater_temperature": null,
+        "dhw_water_heater_type": "storage water heater",
+        "dhw_water_heater_usage_bin": null,
+        "dishwasher_usage_multiplier": "1.0",
+        "electric_vehicle": "SUV, 300 Mile Range, 11000 miles/yr",
+        "electric_vehicle_charger": "None",
+        "enclosure_air_leakage": "4 ACH50",
+        "enclosure_ceiling": "R-30",
+        "enclosure_door": "Insulated Fiberglass/Steel, R-5",
+        "enclosure_floor_over_foundation": "Wood Frame, R-19",
+        "enclosure_floor_over_garage": "Wood Frame, R-19",
+        "enclosure_foundation_wall": "Solid Concrete, Uninsulated",
+        "enclosure_radiant_barrier": "None",
+        "enclosure_rim_joist": "Uninsulated",
+        "enclosure_roof": "Uninsulated",
+        "enclosure_roof_material": "Asphalt/Fiberglass Shingles, Medium",
+        "enclosure_slab": "Uninsulated",
+        "enclosure_wall": "Wood Stud, R-11",
+        "enclosure_wall_continuous_insulation": "Uninsulated",
+        "enclosure_wall_siding": "Vinyl, Light",
+        "enclosure_window": "Double, Low-E, Non-Metal, Air, Med Gain",
+        "enclosure_window_exterior_shading": "None",
+        "enclosure_window_insect_screens": "None",
+        "enclosure_window_interior_shading": "Curtains, Light",
+        "enclosure_window_natural_ventilation": "67% Operable Windows",
+        "enclosure_window_storm": "None",
+        "ev_fraction_charged_home": "0.30",
+        "exterior_lighting_usage_multiplier": "1.0",
+        "extra_refrigerator_usage_multiplier": "1.86",
+        "freezer_usage_multiplier": "1.06",
+        "garage_lighting_usage_multiplier": "1.0",
+        "geometry_attic_type": "Attic, Unvented, Gable",
+        "geometry_ceiling_height": "8.0 ft",
+        "geometry_corridor_position": "None",
+        "geometry_door_area": "20",
+        "geometry_eaves": "2 ft",
+        "geometry_facility_type": "single-family detached",
+        "geometry_foundation_type": "Crawlspace, Vented",
+        "geometry_foundation_type_height": 4.0,
+        "geometry_foundation_type_height_above_grade": 1.0,
+        "geometry_foundation_type_rim_joist_height": 9.25,
+        "geometry_foundation_type_type": "VentedCrawlspace",
+        "geometry_garage_type": "2 Car, Right, Half Protruding",
+        "geometry_garage_type_depth": 20,
+        "geometry_garage_type_position": "Right",
+        "geometry_garage_type_protrusion": 0.5,
+        "geometry_garage_type_width": 21,
+        "geometry_neighbor_buildings": "Left/Right at 15ft",
+        "geometry_num_floors_above_grade": "1",
+        "geometry_roof_pitch": "6:12",
+        "geometry_unit_aspect_ratio": "1.8",
+        "geometry_unit_cfa_bin": "1500-1999",
+        "geometry_unit_direction": "Northwest",
+        "geometry_unit_num_bathrooms": "Default",
+        "geometry_unit_num_bedrooms": "3",
+        "geometry_unit_num_occupants": "2",
+        "geometry_window_areas_or_wwrs": "0.12, 0.12, 0.12, 0.12",
+        "hvac_control_cooling_season_period": "Jan 1 - Dec 31",
+        "hvac_control_cooling_weekday_setpoint_offset_magnitude": "9",
+        "hvac_control_cooling_weekday_setpoint_schedule": "0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+        "hvac_control_cooling_weekday_setpoint_temp": "75",
+        "hvac_control_cooling_weekend_setpoint_offset_magnitude": "9",
+        "hvac_control_cooling_weekend_setpoint_schedule": "0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+        "hvac_control_cooling_weekend_setpoint_temp": "75",
+        "hvac_control_heating_season_period": "Jan 1 - Dec 31",
+        "hvac_control_heating_weekday_setpoint_offset_magnitude": "6",
+        "hvac_control_heating_weekday_setpoint_schedule": "0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+        "hvac_control_heating_weekday_setpoint_temp": "70",
+        "hvac_control_heating_weekend_setpoint_offset_magnitude": "6",
+        "hvac_control_heating_weekend_setpoint_schedule": "0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+        "hvac_control_heating_weekend_setpoint_temp": "70",
+        "hvac_cooling_system": "Central AC, SEER2 12.4",
+        "hvac_cooling_system_capacity": "Autosize",
+        "hvac_cooling_system_cooling_load_served": "100%",
+        "hvac_ducts": "10% Leakage, R-6",
+        "hvac_ducts_return_location": "Crawlspace",
+        "hvac_ducts_supply_location": "Crawlspace",
+        "hvac_geothermal_loop": "Default",
+        "hvac_heat_pump": "None",
+        "hvac_heat_pump_backup": "None",
+        "hvac_heat_pump_backup_capacity": "Autosize",
+        "hvac_heat_pump_capacity": "Autosize (ACCA)",
+        "hvac_heat_pump_cooling_load_served": "100%",
+        "hvac_heat_pump_heating_load_served": "100%",
+        "hvac_heat_pump_temperatures": "Default",
+        "hvac_heating_shared_system": "None",
+        "hvac_heating_system": "Electric Resistance",
+        "hvac_heating_system_2": "None",
+        "hvac_heating_system_2_capacity": "Autosize",
+        "hvac_heating_system_2_fuel": "Electricity",
+        "hvac_heating_system_2_heating_load_served": "0%",
+        "hvac_heating_system_capacity": "Autosize",
+        "hvac_heating_system_fuel": "Electricity",
+        "hvac_heating_system_heating_load_served": "100%",
+        "interior_lighting_usage_multiplier": "1.0",
+        "kitchen_fans_start_hour": "17",
+        "lighting": "100% LED, 100% Usage",
+        "lighting_exterior_fraction_cfl": 0.0,
+        "lighting_exterior_fraction_led": 1.0,
+        "lighting_exterior_fraction_lfl": 0.0,
+        "lighting_exterior_usage_multiplier": null,
+        "lighting_garage_fraction_cfl": 0.0,
+        "lighting_garage_fraction_led": 1.0,
+        "lighting_garage_fraction_lfl": 0.0,
+        "lighting_garage_usage_multiplier": null,
+        "lighting_interior_fraction_cfl": 0.0,
+        "lighting_interior_fraction_led": 1.0,
+        "lighting_interior_fraction_lfl": 0.0,
+        "lighting_interior_usage_multiplier": null,
+        "location_epw_path": "../../../weather/G0600610.epw",
+        "location_soil_type": "1.4 Btu/hr-ft-F",
+        "location_zip_code": "95747",
+        "misc_fireplace": "None",
+        "misc_fireplace_annual_energy_use": 0,
+        "misc_fireplace_fuel_type": null,
+        "misc_fireplace_usage_multiplier": null,
+        "misc_gas_lighting": "None",
+        "misc_gas_lighting_annual_energy_use": 0,
+        "misc_gas_lighting_fuel_type": null,
+        "misc_gas_lighting_usage_multiplier": null,
+        "misc_grill": "None",
+        "misc_grill_annual_energy_use": 0,
+        "misc_grill_fuel_type": null,
+        "misc_grill_usage_multiplier": null,
+        "misc_has_pool": "false",
+        "misc_permanent_spa": "None",
+        "misc_permanent_spa_heater_annual_electricity_use": 0,
+        "misc_permanent_spa_heater_annual_natural_gas_use": 0,
+        "misc_permanent_spa_heater_type": null,
+        "misc_permanent_spa_heater_usage_multiplier": null,
+        "misc_permanent_spa_pump_annual_energy_use": 0,
+        "misc_permanent_spa_pump_usage_multiplier": null,
+        "misc_plug_loads": "100% Usage",
+        "misc_plug_loads_annual_energy_use": null,
+        "misc_plug_loads_latent_fraction": null,
+        "misc_plug_loads_other_usage_multiplier": "0.94",
+        "misc_plug_loads_sensible_fraction": null,
+        "misc_plug_loads_television_usage_multiplier": "0.94",
+        "misc_plug_loads_usage_multiplier": null,
+        "misc_pool": "None",
+        "misc_pool_heater_annual_electricity_use": 0,
+        "misc_pool_heater_annual_natural_gas_use": 0,
+        "misc_pool_heater_type": null,
+        "misc_pool_heater_usage_multiplier": null,
+        "misc_pool_pump_annual_energy_use": 0,
+        "misc_pool_pump_usage_multiplier": null,
+        "misc_television": "100% Usage",
+        "misc_television_annual_energy_use": null,
+        "misc_television_usage_multiplier": null,
+        "misc_well_pump": "None",
+        "misc_well_pump_annual_energy_use": 0,
+        "misc_well_pump_usage_multiplier": null,
+        "pv_system": "5.0 kW",
+        "pv_system_direction": "Roof Pitch, Northwest",
+        "refrigerator_usage_multiplier": "1.0",
+        "schedules_space_cooling_unavailable_days": "0",
+        "schedules_space_heating_unavailable_days": "0",
+        "site_iecc_zone": "3B",
+        "vehicle_miles_driven_per_year": "15000",
+        "ventilation_bathroom": "Default",
+        "ventilation_kitchen": "Default",
+        "ventilation_mechanical": "None",
+        "ventilation_whole_house_fan": "None",
+        "vintage": "2010s",
+        "water_fixtures_usage_multiplier": "1.1"
+      },
+      "option_bindings": [
+        {
+          "arguments": {
+            "misc_permanent_spa": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Hot Tub Spa",
+          "source_locator": "line 11045; context line 11045"
+        },
+        {
+          "arguments": {
+            "enclosure_door": "Insulated Fiberglass/Steel, R-5"
+          },
+          "option": "Fiberglass",
+          "parameter": "Doors",
+          "source_locator": "line 9178; context line 9178"
+        },
+        {
+          "arguments": {
+            "clothes_dryer_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Clothes Dryer Usage Level",
+          "source_locator": "line 1267; context line 1267"
+        },
+        {
+          "arguments": {
+            "hvac_control_cooling_weekday_setpoint_schedule": "0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+            "hvac_control_cooling_weekend_setpoint_schedule": "0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+          },
+          "option": "Night Setup +3h",
+          "parameter": "Cooling Setpoint Offset Period",
+          "source_locator": "line 1361; context line 1361"
+        },
+        {
+          "arguments": {
+            "enclosure_foundation_wall": "Solid Concrete, Uninsulated"
+          },
+          "option": "Uninsulated",
+          "parameter": "Insulation Foundation Wall",
+          "source_locator": "line 10029; context line 10029"
+        },
+        {
+          "arguments": {
+            "geometry_unit_num_bathrooms": "Default",
+            "geometry_unit_num_bedrooms": "3"
+          },
+          "option": "3",
+          "parameter": "Bedrooms",
+          "source_locator": "line 101; context line 101"
+        },
+        {
+          "arguments": {
+            "misc_plug_loads": "100% Usage",
+            "misc_television": "100% Usage"
+          },
+          "option": "100%",
+          "parameter": "Plug Load Diversity",
+          "source_locator": "line 13468; context line 13468"
+        },
+        {
+          "arguments": {
+            "enclosure_wall_siding": "Vinyl, Light"
+          },
+          "option": "Vinyl, Light",
+          "parameter": "Geometry Wall Exterior Finish",
+          "source_locator": "line 9633; context line 9633"
+        },
+        {
+          "arguments": {
+            "vintage": "2010s"
+          },
+          "option": "2010s",
+          "parameter": "Vintage",
+          "source_locator": "line 13764; context line 13764"
+        },
+        {
+          "arguments": {
+            "bathroom_fans_start_hour": "7"
+          },
+          "option": "Hour7",
+          "parameter": "Bathroom Spot Vent Hour",
+          "source_locator": "line 93; context line 93"
+        },
+        {
+          "arguments": {
+            "geometry_eaves": "2 ft"
+          },
+          "option": "2 ft",
+          "parameter": "Eaves",
+          "source_locator": "line 9207; context line 9207"
+        },
+        {
+          "arguments": {
+            "misc_plug_loads_other_usage_multiplier": "0.94",
+            "misc_plug_loads_television_usage_multiplier": "0.94"
+          },
+          "option": "94%",
+          "parameter": "Plug Loads",
+          "source_locator": "line 13502; context line 13502"
+        },
+        {
+          "arguments": {
+            "hvac_control_cooling_weekday_setpoint_offset_magnitude": "9",
+            "hvac_control_cooling_weekend_setpoint_offset_magnitude": "9"
+          },
+          "option": "9F",
+          "parameter": "Cooling Setpoint Offset Magnitude",
+          "source_locator": "line 1313; context line 1313"
+        },
+        {
+          "arguments": {
+            "dhw_solar_thermal": "None",
+            "dhw_solar_thermal_direction": "Roof Pitch, South",
+            "dhw_water_heater": "Electricity, Tank, UEF 0.92",
+            "dhw_water_heater_jacket_rvalue": "0"
+          },
+          "option": "Electric Standard",
+          "parameter": "Water Heater Efficiency",
+          "source_locator": "line 13777; context line 13777"
+        },
+        {
+          "arguments": {
+            "schedules_space_heating_unavailable_days": "0"
+          },
+          "option": "Never",
+          "parameter": "Heating Unavailable Days",
+          "source_locator": "line 9922; context line 9922"
+        },
+        {
+          "arguments": {
+            "appliance_refrigerator": "434 kWh/yr, 100% Usage"
+          },
+          "option": "EF 17.6",
+          "parameter": "Refrigerator",
+          "source_locator": "line 13673; context line 13673"
+        },
+        {
+          "arguments": {
+            "enclosure_roof": "Uninsulated"
+          },
+          "option": "Unfinished, Uninsulated",
+          "parameter": "Insulation Roof",
+          "source_locator": "line 10045; context line 10045"
+        },
+        {
+          "arguments": {
+            "hvac_heating_system_2": "None",
+            "hvac_heating_system_2_capacity": "Autosize"
+          },
+          "option": "None",
+          "parameter": "HVAC Secondary Heating Efficiency",
+          "source_locator": "line 9773; context line 9773"
+        },
+        {
+          "arguments": {
+            "geometry_corridor_position": "None"
+          },
+          "option": "Not Applicable",
+          "parameter": "Corridor",
+          "source_locator": "line 1382; context line 1382"
+        },
+        {
+          "arguments": {
+            "enclosure_air_leakage": "4 ACH50"
+          },
+          "option": "4 ACH50",
+          "parameter": "Infiltration",
+          "source_locator": "line 10001; context line 10001"
+        },
+        {
+          "arguments": {
+            "hvac_heating_system_2_fuel": "Electricity"
+          },
+          "option": "None",
+          "parameter": "HVAC Secondary Heating Fuel",
+          "source_locator": "line 9779; context line 9779"
+        },
+        {
+          "arguments": {
+            "advanced_feature": "None",
+            "hvac_geothermal_loop": "Default",
+            "hvac_heat_pump": "None",
+            "hvac_heat_pump_backup": "None",
+            "hvac_heat_pump_backup_capacity": "Autosize",
+            "hvac_heat_pump_capacity": "Autosize (ACCA)",
+            "hvac_heat_pump_cooling_load_served": "100%",
+            "hvac_heat_pump_heating_load_served": "100%",
+            "hvac_heat_pump_temperatures": "Default",
+            "hvac_heating_shared_system": "None",
+            "hvac_heating_system": "Electric Resistance",
+            "hvac_heating_system_capacity": "Autosize",
+            "hvac_heating_system_heating_load_served": "100%"
+          },
+          "option": "Electric Baseboard, 100% Efficiency",
+          "parameter": "HVAC Heating Efficiency",
+          "source_locator": "line 9702; context line 9702"
+        },
+        {
+          "arguments": {
+            "ventilation_bathroom": "Default",
+            "ventilation_kitchen": "Default",
+            "ventilation_mechanical": "None",
+            "ventilation_whole_house_fan": "None"
+          },
+          "option": "None",
+          "parameter": "Mechanical Ventilation",
+          "source_locator": "line 10102; context line 10102"
+        },
+        {
+          "arguments": {
+            "geometry_door_area": "20"
+          },
+          "option": "20 ft^2",
+          "parameter": "Door Area",
+          "source_locator": "line 9175; context line 9175"
+        },
+        {
+          "arguments": {
+            "enclosure_slab": "Uninsulated"
+          },
+          "option": "None",
+          "parameter": "Insulation Slab",
+          "source_locator": "line 10051; context line 10051"
+        },
+        {
+          "arguments": {
+            "site_iecc_zone": "3B"
+          },
+          "option": "3B",
+          "parameter": "ASHRAE IECC Climate Zone 2004",
+          "source_locator": "line 32; context line 32"
+        },
+        {
+          "arguments": {
+            "geometry_window_areas_or_wwrs": "0.12, 0.12, 0.12, 0.12"
+          },
+          "option": "F12 B12 L12 R12",
+          "parameter": "Window Areas",
+          "source_locator": "line 13816; context line 13816"
+        },
+        {
+          "arguments": {
+            "enclosure_radiant_barrier": "None"
+          },
+          "option": "No",
+          "parameter": "Radiant Barrier",
+          "source_locator": "line 13643; context line 13643"
+        },
+        {
+          "arguments": {
+            "geometry_neighbor_buildings": "Left/Right at 15ft"
+          },
+          "option": "Left/Right at 15ft",
+          "parameter": "Neighbors",
+          "source_locator": "line 11068; context line 11068"
+        },
+        {
+          "arguments": {
+            "kitchen_fans_start_hour": "17"
+          },
+          "option": "Hour17",
+          "parameter": "Range Spot Vent Hour",
+          "source_locator": "line 13655; context line 13655"
+        },
+        {
+          "arguments": {
+            "misc_gas_lighting": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Gas Lighting",
+          "source_locator": "line 11042; context line 11042"
+        },
+        {
+          "arguments": {
+            "hvac_control_heating_weekday_setpoint_offset_magnitude": "6",
+            "hvac_control_heating_weekend_setpoint_offset_magnitude": "6"
+          },
+          "option": "6F",
+          "parameter": "Heating Setpoint Offset Magnitude",
+          "source_locator": "line 9881; context line 9881"
+        },
+        {
+          "arguments": {
+            "geometry_num_floors_above_grade": "1"
+          },
+          "option": "1",
+          "parameter": "Geometry Stories",
+          "source_locator": "line 9600; context line 9600"
+        },
+        {
+          "arguments": {
+            "misc_fireplace": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Gas Fireplace",
+          "source_locator": "line 11038; context line 11038"
+        },
+        {
+          "arguments": {
+            "hvac_ducts": "10% Leakage, R-6"
+          },
+          "option": "10% Leakage to Outside, R-6",
+          "parameter": "Duct Leakage and Insulation",
+          "source_locator": "line 9183; context line 9183"
+        },
+        {
+          "arguments": {
+            "geometry_ceiling_height": "8.0 ft",
+            "geometry_facility_type": "single-family detached",
+            "geometry_unit_aspect_ratio": "1.8"
+          },
+          "option": "Single-Family Detached",
+          "parameter": "Geometry Building Type RECS",
+          "source_locator": "line 9366; context line 9366"
+        },
+        {
+          "arguments": {
+            "hvac_control_heating_weekday_setpoint_schedule": "0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+            "hvac_control_heating_weekend_setpoint_schedule": "0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+          },
+          "option": "Night +5h",
+          "parameter": "Heating Setpoint Offset Period",
+          "source_locator": "line 9909; context line 9909"
+        },
+        {
+          "arguments": {
+            "geometry_unit_cfa_bin": "1500-1999"
+          },
+          "option": "1500-1999",
+          "parameter": "Geometry Floor Area",
+          "source_locator": "line 9369; context line 9369"
+        },
+        {
+          "arguments": {
+            "geometry_foundation_type": "Crawlspace, Vented"
+          },
+          "option": "Vented Crawlspace",
+          "parameter": "Geometry Foundation Type",
+          "source_locator": "line 9386; context line 9386"
+        },
+        {
+          "arguments": {
+            "hvac_cooling_system": "Central AC, SEER2 12.4",
+            "hvac_cooling_system_capacity": "Autosize"
+          },
+          "option": "AC, SEER2 12.4",
+          "parameter": "HVAC Cooling Efficiency",
+          "source_locator": "line 9650; context line 9650"
+        },
+        {
+          "arguments": {
+            "enclosure_rim_joist": "Uninsulated"
+          },
+          "option": "Uninsulated",
+          "parameter": "Insulation Rim Joist",
+          "source_locator": "line 10037; context line 10037"
+        },
+        {
+          "arguments": {
+            "location_soil_type": "1.4 Btu/hr-ft-F"
+          },
+          "option": "1.4",
+          "parameter": "Ground Thermal Conductivity",
+          "source_locator": "line 9643; context line 9643"
+        },
+        {
+          "arguments": {
+            "appliance_extra_refrigerator": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Extra Refrigerator",
+          "source_locator": "line 11029; context line 11029"
+        },
+        {
+          "arguments": {
+            "exterior_lighting_usage_multiplier": "1.0",
+            "garage_lighting_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Lighting Other Use",
+          "source_locator": "line 10084; context line 10084"
+        },
+        {
+          "arguments": {
+            "vehicle_miles_driven_per_year": "15000"
+          },
+          "option": "15000",
+          "parameter": "Electric Vehicle Miles Traveled",
+          "source_locator": "line 9232; context line 9232"
+        },
+        {
+          "arguments": {
+            "hvac_cooling_system_cooling_load_served": "100%"
+          },
+          "option": "100% Conditioned",
+          "parameter": "HVAC Cooling Partial Space Conditioning",
+          "source_locator": "line 9665; context line 9665"
+        },
+        {
+          "arguments": {
+            "hvac_heating_system_2_heating_load_served": "0%"
+          },
+          "option": "0%",
+          "parameter": "HVAC Secondary Heating Partial Space Conditioning",
+          "source_locator": "line 9783; context line 9783"
+        },
+        {
+          "arguments": {
+            "extra_refrigerator_usage_multiplier": "1.86",
+            "freezer_usage_multiplier": "1.06"
+          },
+          "option": "CA",
+          "parameter": "State",
+          "source_locator": "line 13693; context line 13693"
+        },
+        {
+          "arguments": {
+            "dhw_water_heater_location": "Garage"
+          },
+          "option": "Garage",
+          "parameter": "Water Heater Location",
+          "source_locator": "line 13810; context line 13810"
+        },
+        {
+          "arguments": {
+            "misc_has_pool": "false"
+          },
+          "option": "None",
+          "parameter": "Misc Pool",
+          "source_locator": "line 11049; context line 11049"
+        },
+        {
+          "arguments": {
+            "ceiling_insulation_r": "30",
+            "enclosure_ceiling": "R-30"
+          },
+          "option": "R-30",
+          "parameter": "Insulation Ceiling",
+          "source_locator": "line 10016; context line 10016"
+        },
+        {
+          "arguments": {
+            "misc_pool": "Unheated, 100% Usage"
+          },
+          "option": "None",
+          "parameter": "Misc Pool Heater",
+          "source_locator": "line 11054; context line 11054"
+        },
+        {
+          "arguments": {
+            "misc_well_pump": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Well Pump",
+          "source_locator": "line 11059; context line 11059"
+        },
+        {
+          "arguments": {
+            "geometry_unit_direction": "Northwest"
+          },
+          "option": "Northwest",
+          "parameter": "Orientation",
+          "source_locator": "line 11088; context line 11088"
+        },
+        {
+          "arguments": {
+            "schedules_space_cooling_unavailable_days": "0"
+          },
+          "option": "Never",
+          "parameter": "Cooling Unavailable Days",
+          "source_locator": "line 1376; context line 1376"
+        },
+        {
+          "arguments": {
+            "enclosure_window_natural_ventilation": "67% Operable Windows"
+          },
+          "option": "Cooling Season, 7 days/wk",
+          "parameter": "Natural Ventilation",
+          "source_locator": "line 11061; context line 11061"
+        },
+        {
+          "arguments": {
+            "hvac_control_heating_season_period": "Jan 1 - Dec 31",
+            "hvac_control_heating_weekday_setpoint_temp": "70",
+            "hvac_control_heating_weekend_setpoint_temp": "70"
+          },
+          "option": "70F",
+          "parameter": "Heating Setpoint",
+          "source_locator": "line 9866; context line 9866"
+        },
+        {
+          "arguments": {
+            "appliance_clothes_dryer": "Natural Gas, Standard, 100% Usage"
+          },
+          "option": "Gas",
+          "parameter": "Clothes Dryer",
+          "source_locator": "line 1263; context line 1263"
+        },
+        {
+          "arguments": {
+            "hvac_ducts_return_location": "Crawlspace",
+            "hvac_ducts_supply_location": "Crawlspace"
+          },
+          "option": "Crawlspace",
+          "parameter": "Duct Location",
+          "source_locator": "line 9200; context line 9200"
+        },
+        {
+          "arguments": {
+            "ceiling_fans": "NumBedrooms+1 Fans, 45.0 W"
+          },
+          "option": "Standard Efficiency",
+          "parameter": "Ceiling Fan",
+          "source_locator": "line 131; context line 131"
+        },
+        {
+          "arguments": {
+            "electric_vehicle_charger": "None"
+          },
+          "option": "None",
+          "parameter": "Electric Vehicle Charger",
+          "source_locator": "line 9226; context line 9226"
+        },
+        {
+          "arguments": {
+            "appliance_cooking_range_oven": "Electricity, Standard, Non-Convection, 100% Usage"
+          },
+          "option": "Electric Resistance",
+          "parameter": "Cooking Range",
+          "source_locator": "line 1281; context line 1281"
+        },
+        {
+          "arguments": {
+            "geometry_garage_type": "2 Car, Right, Half Protruding"
+          },
+          "option": "2 Car",
+          "parameter": "Geometry Garage",
+          "source_locator": "line 9388; context line 9388"
+        },
+        {
+          "arguments": {
+            "enclosure_wall": "Wood Stud, R-11",
+            "enclosure_wall_continuous_insulation": "Uninsulated"
+          },
+          "option": "Wood Stud, R-11",
+          "parameter": "Insulation Wall",
+          "source_locator": "line 10065; context line 10065"
+        },
+        {
+          "arguments": {
+            "appliance_dehumidifier": "None",
+            "appliance_dehumidifier_setpoint": "50% RH"
+          },
+          "option": "None",
+          "parameter": "Dehumidifier",
+          "source_locator": "line 9157; context line 9157"
+        },
+        {
+          "arguments": {
+            "misc_grill": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Gas Grill",
+          "source_locator": "line 11040; context line 11040"
+        },
+        {
+          "arguments": {
+            "pv_system": "5.0 kW"
+          },
+          "option": "5.0 kWDC",
+          "parameter": "PV System Size",
+          "source_locator": "line 13464; context line 13464"
+        },
+        {
+          "arguments": {
+            "ev_fraction_charged_home": "0.30"
+          },
+          "option": "20-39%",
+          "parameter": "Electric Vehicle Charge At Home",
+          "source_locator": "line 9220; context line 9220"
+        },
+        {
+          "arguments": {
+            "refrigerator_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Refrigerator Usage Level",
+          "source_locator": "line 13679; context line 13679"
+        },
+        {
+          "arguments": {
+            "appliance_freezer": "None"
+          },
+          "option": "None",
+          "parameter": "Misc Freezer",
+          "source_locator": "line 11035; context line 11035"
+        },
+        {
+          "arguments": {
+            "geometry_attic_type": "Attic, Unvented, Gable",
+            "geometry_roof_pitch": "6:12"
+          },
+          "option": "Unvented Attic",
+          "parameter": "Geometry Attic Type",
+          "source_locator": "line 9279; context line 9279"
+        },
+        {
+          "arguments": {
+            "appliance_clothes_washer": "Standard, 2008-2017, 100% Usage"
+          },
+          "option": "Standard",
+          "parameter": "Clothes Washer",
+          "source_locator": "line 1272; context line 1272"
+        },
+        {
+          "arguments": {
+            "appliance_dishwasher": "Federal Minimum, Standard, 100% Usage"
+          },
+          "option": "Standard",
+          "parameter": "Dishwasher",
+          "source_locator": "line 9170; context line 9170"
+        },
+        {
+          "arguments": {
+            "water_fixtures_usage_multiplier": "1.1"
+          },
+          "option": "110% Usage",
+          "parameter": "Hot Water Fixtures",
+          "source_locator": "line 9931; context line 9931"
+        },
+        {
+          "arguments": {
+            "enclosure_floor_over_foundation": "Wood Frame, R-19",
+            "enclosure_floor_over_garage": "Wood Frame, R-19"
+          },
+          "option": "Ceiling R-19",
+          "parameter": "Insulation Floor",
+          "source_locator": "line 10023; context line 10023"
+        },
+        {
+          "arguments": {
+            "hvac_heating_system_fuel": "Electricity"
+          },
+          "option": "Electricity",
+          "parameter": "Heating Fuel",
+          "source_locator": "line 9849; context line 9849"
+        },
+        {
+          "arguments": {
+            "electric_vehicle": "SUV, 300 Mile Range, 11000 miles/yr"
+          },
+          "option": "SUV, Battery Electric Vehicle, 300 mile range",
+          "parameter": "Electric Vehicle Battery",
+          "source_locator": "line 9217; context line 9217"
+        },
+        {
+          "arguments": {
+            "dhw_distribution": "Uninsulated, Standard",
+            "dhw_drain_water_heat_recovery": "None",
+            "dhw_fixtures": "Standard, 100% Usage"
+          },
+          "option": "Uninsulated",
+          "parameter": "Hot Water Distribution",
+          "source_locator": "line 9929; context line 9929"
+        },
+        {
+          "arguments": {
+            "pv_system_direction": "Roof Pitch, Northwest"
+          },
+          "option": "Northwest",
+          "parameter": "PV Orientation",
+          "source_locator": "line 13455; context line 13455"
+        },
+        {
+          "arguments": {
+            "cooking_range_oven_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Cooking Range Usage Level",
+          "source_locator": "line 1286; context line 1286"
+        },
+        {
+          "arguments": {
+            "location_epw_path": "../../../weather/G0600610.epw",
+            "location_zip_code": "95747"
+          },
+          "option": "CA, Placer County",
+          "parameter": "County",
+          "source_locator": "line 1600; context line 1600"
+        },
+        {
+          "arguments": {
+            "hvac_control_cooling_season_period": "Jan 1 - Dec 31",
+            "hvac_control_cooling_weekday_setpoint_temp": "75",
+            "hvac_control_cooling_weekend_setpoint_temp": "75"
+          },
+          "option": "75F",
+          "parameter": "Cooling Setpoint",
+          "source_locator": "line 1301; context line 1301"
+        },
+        {
+          "arguments": {
+            "enclosure_window_interior_shading": "Curtains, Light"
+          },
+          "option": "Light Curtains",
+          "parameter": "Interior Shading",
+          "source_locator": "line 10072; context line 10072"
+        },
+        {
+          "arguments": {
+            "geometry_unit_num_occupants": "2"
+          },
+          "option": "2",
+          "parameter": "Occupants",
+          "source_locator": "line 11073; context line 11073"
+        },
+        {
+          "arguments": {
+            "lighting": "100% LED, 100% Usage"
+          },
+          "option": "100% LED",
+          "parameter": "Lighting",
+          "source_locator": "line 10077; context line 10077"
+        },
+        {
+          "arguments": {
+            "battery": "None"
+          },
+          "option": "None",
+          "parameter": "Battery",
+          "source_locator": "line 98; context line 98"
+        },
+        {
+          "arguments": {
+            "interior_lighting_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Lighting Interior Use",
+          "source_locator": "line 10081; context line 10081"
+        },
+        {
+          "arguments": {
+            "enclosure_window": "Double, Low-E, Non-Metal, Air, Med Gain",
+            "enclosure_window_exterior_shading": "None",
+            "enclosure_window_insect_screens": "None",
+            "enclosure_window_storm": "None"
+          },
+          "option": "Double, Low-E, Non-metal, Air, M-Gain",
+          "parameter": "Windows",
+          "source_locator": "line 13834; context line 13834"
+        },
+        {
+          "arguments": {
+            "clothes_washer_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Clothes Washer Usage Level",
+          "source_locator": "line 1277; context line 1277"
+        },
+        {
+          "arguments": {
+            "dishwasher_usage_multiplier": "1.0"
+          },
+          "option": "100% Usage",
+          "parameter": "Dishwasher Usage Level",
+          "source_locator": "line 9172; context line 9172"
+        },
+        {
+          "arguments": {
+            "enclosure_roof_material": "Asphalt/Fiberglass Shingles, Medium"
+          },
+          "option": "Asphalt Shingles, Medium",
+          "parameter": "Roof Material",
+          "source_locator": "line 13682; context line 13682"
+        }
+      ],
+      "original_selected_options": {
+        "ASHRAE IECC Climate Zone 2004": "3B",
+        "Bathroom Spot Vent Hour": "Hour7",
+        "Battery": "None",
+        "Bedrooms": "3",
+        "Ceiling Fan": "Standard Efficiency",
+        "Clothes Dryer": "Gas",
+        "Clothes Dryer Usage Level": "100% Usage",
+        "Clothes Washer": "Standard",
+        "Clothes Washer Usage Level": "100% Usage",
+        "Cooking Range": "Electric Resistance",
+        "Cooking Range Usage Level": "100% Usage",
+        "Cooling Setpoint": "75F",
+        "Cooling Setpoint Offset Magnitude": "9F",
+        "Cooling Setpoint Offset Period": "Night Setup +3h",
+        "Cooling Unavailable Days": "Never",
+        "Corridor": "Not Applicable",
+        "County": "CA, Placer County",
+        "Dehumidifier": "None",
+        "Dishwasher": "Standard",
+        "Dishwasher Usage Level": "100% Usage",
+        "Door Area": "20 ft^2",
+        "Doors": "Fiberglass",
+        "Duct Leakage and Insulation": "10% Leakage to Outside, R-6",
+        "Duct Location": "Crawlspace",
+        "Eaves": "2 ft",
+        "Electric Vehicle Battery": "SUV, Battery Electric Vehicle, 300 mile range",
+        "Electric Vehicle Charge At Home": "20-39%",
+        "Electric Vehicle Charger": "None",
+        "Electric Vehicle Miles Traveled": "15000",
+        "Geometry Attic Type": "Unvented Attic",
+        "Geometry Building Horizontal Location MF": "None",
+        "Geometry Building Horizontal Location SFA": "None",
+        "Geometry Building Level MF": "None",
+        "Geometry Building Number Units MF": "None",
+        "Geometry Building Number Units SFA": "None",
+        "Geometry Building Type RECS": "Single-Family Detached",
+        "Geometry Floor Area": "1500-1999",
+        "Geometry Foundation Type": "Vented Crawlspace",
+        "Geometry Garage": "2 Car",
+        "Geometry Stories": "1",
+        "Geometry Wall Exterior Finish": "Vinyl, Light",
+        "Ground Thermal Conductivity": "1.4",
+        "HVAC Cooling Autosizing Factor": "None",
+        "HVAC Cooling Efficiency": "AC, SEER2 12.4",
+        "HVAC Cooling Partial Space Conditioning": "100% Conditioned",
+        "HVAC Heating Autosizing Factor": "None",
+        "HVAC Heating Efficiency": "Electric Baseboard, 100% Efficiency",
+        "HVAC Secondary Heating Efficiency": "None",
+        "HVAC Secondary Heating Fuel": "None",
+        "HVAC Secondary Heating Partial Space Conditioning": "0%",
+        "HVAC Shared Efficiencies": "None",
+        "HVAC System Single Speed AC Airflow": "None",
+        "HVAC System Single Speed AC Charge": "None",
+        "HVAC System Single Speed ASHP Airflow": "None",
+        "HVAC System Single Speed ASHP Charge": "None",
+        "Heating Fuel": "Electricity",
+        "Heating Setpoint": "70F",
+        "Heating Setpoint Offset Magnitude": "6F",
+        "Heating Setpoint Offset Period": "Night +5h",
+        "Heating Unavailable Days": "Never",
+        "Hot Water Distribution": "Uninsulated",
+        "Hot Water Fixtures": "110% Usage",
+        "Infiltration": "4 ACH50",
+        "Insulation Ceiling": "R-30",
+        "Insulation Floor": "Ceiling R-19",
+        "Insulation Foundation Wall": "Uninsulated",
+        "Insulation Rim Joist": "Uninsulated",
+        "Insulation Roof": "Unfinished, Uninsulated",
+        "Insulation Slab": "None",
+        "Insulation Wall": "Wood Stud, R-11",
+        "Interior Shading": "Light Curtains",
+        "Lighting": "100% LED",
+        "Lighting Interior Use": "100% Usage",
+        "Lighting Other Use": "100% Usage",
+        "Mechanical Ventilation": "None",
+        "Misc Extra Refrigerator": "None",
+        "Misc Freezer": "None",
+        "Misc Gas Fireplace": "None",
+        "Misc Gas Grill": "None",
+        "Misc Gas Lighting": "None",
+        "Misc Hot Tub Spa": "None",
+        "Misc Pool": "None",
+        "Misc Pool Heater": "None",
+        "Misc Pool Pump": "None",
+        "Misc Well Pump": "None",
+        "Natural Ventilation": "Cooling Season, 7 days/wk",
+        "Neighbors": "Left/Right at 15ft",
+        "Occupants": "2",
+        "Orientation": "Northwest",
+        "PV Orientation": "Northwest",
+        "PV System Size": "5.0 kWDC",
+        "Plug Load Diversity": "100%",
+        "Plug Loads": "94%",
+        "Radiant Barrier": "No",
+        "Range Spot Vent Hour": "Hour17",
+        "Refrigerator": "EF 17.6",
+        "Refrigerator Usage Level": "100% Usage",
+        "Roof Material": "Asphalt Shingles, Medium",
+        "State": "CA",
+        "Vacancy Status": "Occupied",
+        "Vintage": "2010s",
+        "Water Heater Efficiency": "Electric Standard",
+        "Water Heater Location": "Garage",
+        "Window Areas": "F12 B12 L12 R12",
+        "Windows": "Double, Low-E, Non-metal, Air, M-Gain"
+      },
+      "scope_note": "Preserves prior schedule-release exclusions. Source geometry defaults only size program loads, not delivered geometry.",
+      "source_cfa_ft2": 1698,
+      "source_garage_area_ft2": 420,
+      "source_option_disabled": [],
+      "water_supply_degF": 125.0,
+      "weather": {
+        "archive_member": "USA_CA_Sacramento.Metro.AP.724839_TMY3.epw",
+        "mapping_file": "resources/hpxml-measures/HPXMLtoOpenStudio/resources/data/zipcode_weather_stations.csv",
+        "mapping_row": {
+          "station_altitude": "10",
+          "station_distance": "20.0888184",
+          "station_filename": "USA_CA_Sacramento.Metro.AP.724839_TMY3.epw",
+          "station_latitude": "38.696",
+          "station_longitude": "-121.59",
+          "station_name": "Sacramento Metro AP",
+          "station_state": "CA",
+          "station_wmo": "724839",
+          "zipcode": "95747",
+          "zipcode_city": "Roseville",
+          "zipcode_energystar_zone": "south_central",
+          "zipcode_iecc_zone": "3B",
+          "zipcode_latitude": "38.7844",
+          "zipcode_longitude": "-121.388",
+          "zipcode_state": "CA",
+          "zipcode_utc_offset": "-8"
+        },
+        "mapping_sha256": "d453ec428e9ddf21375dc1a3c606cb7ec628eed280cd49ca26d3e2c5ff094ecd",
+        "original_path": "../../../weather/G0600610.epw",
+        "sha256": "7c1ba1722d692eb7745aee7417df416f6eaa72dc038b715f6e9169507a6ed74a",
+        "station_filename": "USA_CA_Sacramento.Metro.AP.724839_TMY3.epw",
+        "variant": "ZIP-mapped TMY3 station proxy; original county EPW unavailable (HTTP 403)"
+      }
+    },
+    "resolutions": [
+      "resolution-11fe73911be9fa0243be",
+      "resolution-2c6159cce8c611fde25f",
+      "resolution-31462d1d13f0dde30526",
+      "resolution-37b9f61d6cbb7861ccfa",
+      "resolution-51d7f358c756188ee79d",
+      "resolution-599160e1bc8f60f8620b",
+      "resolution-703057fdbc66dfdb4b54",
+      "resolution-8bde9fa21f3e2c67b9a2",
+      "resolution-960d998eb3a802cfd6d4",
+      "resolution-a861a2407cadb405b63d",
+      "resolution-a8b67ca77f3dee6ad408",
+      "resolution-a8ebcce56b664f86cc63",
+      "resolution-b25c510ac163ad1e28f9",
+      "resolution-b98f440815da14dcd3d2",
+      "resolution-df7525d7ef4659fb65eb",
+      "resolution-ecf636857396ae3ac645",
+      "resolution-f68863569ae1dcff1f33",
+      "resolution-f9b5063b053fa8b90c69"
+    ],
+    "rules": [
+      "executed_residential_profile",
+      "fixed_background_default",
+      "selected_absent_end_use"
+    ],
+    "source": "data/program-inputs/residential-v1.json",
+    "unresolved": [],
+    "vintage": "2010s"
+  },
+  "floor_area_bin": "1500-1999",
+  "gate": [
+    "residential"
+  ],
+  "id": "resstock-sdr.single-family-detached.3b-2010s-1500-1999ft2-b24892.689ce4",
+  "loads": [
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-77ccbd2ae8d6130f0169ac74",
+      "evidence_id": "evidence-2e84bbce1696b56cf886f4d5",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.occupants.fa6181",
+      "scope": "whole_dwelling",
+      "status": "known",
+      "unit": "person/dwelling",
+      "unresolved_reason": null,
+      "value": 2.0
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-247dbde8c9aba290b4f31879",
+      "evidence_id": "evidence-27d5315dcbe83f3bf6d496ba",
+      "quantity": "plug_loads_other",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.plug-loads-other.a5989b",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "W/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-9a7246e596a2ec836c96940c",
+      "evidence_id": "evidence-ebbb9aa5b67ec5635d6b94b6",
+      "quantity": "plug_loads_tv",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.plug-loads-tv.f55731",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "W/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-b520c941003437ff2bbce10a",
+      "evidence_id": "evidence-8224d7897beb6adafdc11c45",
+      "quantity": "lighting_interior",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.lighting-interior.aad6ca",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "W/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-1613c7e7dd5aab84709260fc",
+      "evidence_id": "evidence-7dfcdf9476ffb11d96649551",
+      "quantity": "hot_water_clothes_washer",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.hot-water-clothes-washer.160dbb",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "m3/s/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-cbb3dc6661789276967e7f92",
+      "evidence_id": "evidence-17b61b7e5dbabd48611f9976",
+      "quantity": "clothes_washer",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.clothes-washer.730103",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "W/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-5d9c24f436f7a15f108715ae",
+      "evidence_id": "evidence-9aa6b8341ceb2fe58db6aac3",
+      "quantity": "clothes_dryer",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.clothes-dryer.adee60",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "W/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-b71d19149d3852ff17c85a74",
+      "evidence_id": "evidence-e06b7d740308da8a0a5b579e",
+      "quantity": "cooking_range",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.cooking-range.2f9564",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "W/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    },
+    {
+      "basis": "dwelling_unit",
+      "demand_id": "residential-demand-ae2a68575356b3328a72fdad",
+      "evidence_id": "evidence-d823a68f4c5b1c4f48a1a11d",
+      "quantity": "hot_water_fixtures",
+      "required_inputs": [
+        "dwelling_unit_count"
+      ],
+      "schedule_id": "resstock-sdr.single-family-detached.hot-water-fixtures.a4c801",
+      "scope": "whole_dwelling",
+      "status": "unknown",
+      "unit": "m3/s/dwelling",
+      "unresolved_reason": "Normalized profile exists; required magnitude/default operands not resolved by schedule-only execution",
+      "value": null
+    }
+  ],
+  "name": "Whole dwelling / source_building_24892",
+  "parameters": {
+    "conditioned_floor_area": {
+      "evidence_id": "evidence-1847cc9a4f736e0b52f7dc49",
+      "required_inputs": [
+        "conditioned_floor_area"
+      ],
+      "status": "unknown",
+      "unit": "m2",
+      "value": null
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-cd656cb01b7789007b53e27a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "resstock-sdr.single-family-detached.cooling-setpoint.0d132e"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-cd656cb01b7789007b53e27a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "resstock-sdr.single-family-detached.heating-setpoint.c1243c"
+    }
+  },
+  "readiness": "explicitly_incomplete",
+  "required_inputs": [
+    "dwelling_unit_count"
+  ],
+  "scope": "whole_dwelling",
+  "service_ids": [],
+  "source_family": "existing_stock_source_fixture",
+  "source_id": "residential_archetype-7b43ef491bfd6a6d7b2a",
+  "template": "ResStock SDR source fixture",
+  "unresolved_options": [
+    {
+      "option": "None",
+      "parameter": "Geometry Building Number Units SFA",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "Geometry Building Horizontal Location SFA",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "Occupied",
+      "parameter": "Vacancy Status",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC Cooling Autosizing Factor",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC Heating Autosizing Factor",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC Shared Efficiencies",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC System Single Speed AC Airflow",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC System Single Speed AC Charge",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC System Single Speed ASHP Airflow",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "HVAC System Single Speed ASHP Charge",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "Geometry Building Level MF",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "Geometry Building Number Units MF",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "Geometry Building Horizontal Location MF",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    },
+    {
+      "option": "None",
+      "parameter": "Misc Pool Pump",
+      "reason": "No exact option in pinned lookup; no replacement inferred"
+    }
+  ],
+  "vintage": "2010s"
+}

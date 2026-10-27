@@ -1,0 +1,306 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "SecondarySchool",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-025685f7b5b9397a3bc99c13",
+    "evidence-3ccd068deb49669e28854d26",
+    "evidence-4bcd4da6840e7f6a1464f749",
+    "evidence-71e9785e639b3318fd1bf58e",
+    "evidence-77dedf12381cb32469c5d095",
+    "evidence-97c0ecf4cdb8c01600b09769",
+    "evidence-99091bcb062eec8b189248cd",
+    "evidence-b19692aa7e82589c3838ccbb",
+    "evidence-b436ae2e913efb1e4a2e2462",
+    "evidence-c80a7999aa174658f1ae71c0",
+    "evidence-d095f232006d16ff32457299",
+    "evidence-e0137543b2390a9445a0cee9",
+    "evidence-e0932f52e10bcfe1c3891ba5",
+    "evidence-e0a57baef8b3e92cc53d943c",
+    "evidence-e29ad4c0dc93449be32aadef",
+    "evidence-f0ab7d7e1ea45cba8d8c09e6"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-025685f7b5b9397a3bc99c13",
+    "roof": 0.0,
+    "wwr": {
+      "E": 0.3,
+      "N": null,
+      "S": 0.3,
+      "W": null
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2015.secondary-school.source.office.ef50f6",
+  "lighting_controls": {
+    "daylighting": {
+      "availability": "all_days_except_design_days",
+      "control_type": "continuous_off",
+      "controlled_floor_fraction": 1.0,
+      "controlled_lighting_fraction": 0.23,
+      "controlled_zones": 2,
+      "illuminance_setpoint_lux": 323.0,
+      "method": "split_flux",
+      "minimum_input_power_fraction": 0.15,
+      "minimum_light_output_fraction": 0.15,
+      "stepped_control_steps": 3,
+      "zones": 2
+    },
+    "evidence_id": "evidence-e29ad4c0dc93449be32aadef",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-05633525b895c8849e09c812",
+      "evidence_id": "evidence-97c0ecf4cdb8c01600b09769",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.secondary-school.bldg-occ-sch-offices-w-sb.bc91c7",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.05382421013
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-edea187057acb3352403f0d9",
+      "evidence_id": "evidence-4bcd4da6840e7f6a1464f749",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.secondary-school.ltg-sch-office.cf9637",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-4bcd4da6840e7f6a1464f749",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.37
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-4bcd4da6840e7f6a1464f749",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-4bcd4da6840e7f6a1464f749",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 10.252251
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b6d086cbee28e3d7598e8753",
+      "evidence_id": "evidence-b436ae2e913efb1e4a2e2462",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.secondary-school.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-d0a141a1317041769acda453",
+      "evidence_id": "evidence-e0932f52e10bcfe1c3891ba5",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.secondary-school.bldg-equip-sch.cda386",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-e0932f52e10bcfe1c3891ba5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-e0932f52e10bcfe1c3891ba5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-e0932f52e10bcfe1c3891ba5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 10.8
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e9d32603459f10adfa978b1b",
+      "evidence_id": "evidence-77dedf12381cb32469c5d095",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.secondary-school.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-dbbe87eb74b5a5101addd4dc",
+      "evidence_id": "evidence-e0a57baef8b3e92cc53d943c",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.secondary-school.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Office_SecondarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-99091bcb062eec8b189248cd",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.secondary-school.activity-sch.4b040a"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-c80a7999aa174658f1ae71c0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-d095f232006d16ff32457299",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.secondary-school.clgsetp-sch-yes-optimum.ad537d"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-71e9785e639b3318fd1bf58e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.secondary-school.htgsetp-sch-yes-optimum.bd07e7"
+    }
+  },
+  "pnnl_building_type": "SchoolSecondary",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-3ccd068deb49669e28854d26",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-8783e83839cef36de21f",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 532.0,
+      "multiplier": 1,
+      "name": "Offices_ZN_1_FLR_1"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 532.0,
+      "multiplier": 1,
+      "name": "Offices_ZN_1_FLR_2"
+    }
+  ],
+  "standards_building_type": "SecondarySchool",
+  "template": "IECC 2015"
+}

@@ -1,0 +1,210 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Hospital",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-pre-1980.hospital.source.lab.18bd41",
+        "represented_area_m2": 529.5473280000001,
+        "source_geometry_file_id": "sourcefile-bd0e0dc4716975a0f6f2",
+        "source_program_id": "program-ed9cc634cc8164456fa1",
+        "weight": 0.35185185185185186
+      },
+      {
+        "program_id": "doe-ref-pre-1980.hospital.source.phys-therapy.6ee230",
+        "represented_area_m2": 487.7409600000001,
+        "source_geometry_file_id": "sourcefile-bd0e0dc4716975a0f6f2",
+        "source_program_id": "program-f248c240da4880b3bb7b",
+        "weight": 0.32407407407407407
+      },
+      {
+        "program_id": "doe-ref-pre-1980.hospital.source.radiology.ef6721",
+        "represented_area_m2": 487.7409600000001,
+        "source_geometry_file_id": "sourcefile-bd0e0dc4716975a0f6f2",
+        "source_program_id": "program-fed01e74e11ca581b058",
+        "weight": 0.32407407407407407
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-185d08c062dafb0bd2a3a3ca"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.hospital.department.diagnostics-mixed.268a91",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-15d4da43c7770ace32d55891",
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.hospital.diagnostics-mixed-additional-lighting.abf7e2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-988ba77ab3b21d7ffb07c7df",
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.hospital.diagnostics-mixed-electric-equipment.3dd33f",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 37.57900391315186
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a65982c3f0b0ab92e90d3108",
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.hospital.diagnostics-mixed-additional-lighting.abf7e2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-859ed0bfec585c79ceb10d0b",
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.hospital.diagnostics-mixed-lighting.71344e",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 24.418130111980386
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-5a6425056158093fba80e08d",
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.hospital.diagnostics-mixed-occupancy.1305ee",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.05381955208354861
+    }
+  ],
+  "mode": "department",
+  "name": "Diagnostics_Mixed_Hospital",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.hospital.diagnostics-mixed-activity.24aa0f"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.hospital.diagnostics-mixed-cooling-setpoint.8935e2"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-185d08c062dafb0bd2a3a3ca",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.hospital.diagnostics-mixed-heating-setpoint.3b12ed"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-85e67c7fd0b6f2ae51c8df46",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref Pre-1980"
+}

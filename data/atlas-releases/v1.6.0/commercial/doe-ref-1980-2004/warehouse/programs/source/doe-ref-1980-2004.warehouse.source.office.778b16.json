@@ -1,0 +1,327 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "Warehouse",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0f69e942b6e1d2b550232cbb",
+    "evidence-1ad6a944f2fa962326a528f9",
+    "evidence-1ba3068541347d81b56fd67c",
+    "evidence-26433c01172b39b2c536530f",
+    "evidence-2edd6ce649df02ac0225250b",
+    "evidence-302dd189e85bff5c635d13ce",
+    "evidence-5bc12883df9d5125e18caccf",
+    "evidence-61740fd70005fd701d511a2c",
+    "evidence-8975e68406bf9a61218f6a80",
+    "evidence-8b32ed2e1bd1bf0bec0db61d",
+    "evidence-904dd71e7f26b0bca6256bb7",
+    "evidence-a729c7b40e00589fd64504f6",
+    "evidence-bb81ee346e0d7da479d90533",
+    "evidence-c61bd854a3677c74cda68e5e",
+    "evidence-e03dc6a20d7b0de0ec045a18",
+    "evidence-eda117d3f5dd1b2308037b51",
+    "evidence-f7b17495a8524f683a90dd68",
+    "evidence-f9b223275f992a26fefc6fbc"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-0f69e942b6e1d2b550232cbb",
+    "roof": null,
+    "wwr": {
+      "E": 0.0,
+      "N": 0.0,
+      "S": 0.1009,
+      "W": 0.1668
+    }
+  },
+  "filling_evidence_ids": [
+    "evidence-0151bff22a9a0143eacc62a0",
+    "evidence-a2fe1fead79b7c10489b6896",
+    "evidence-e26f34eb77b3d7e216521e1f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.warehouse.source.office.778b16",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-f9b223275f992a26fefc6fbc",
+    "source": "doe_reference",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "alternates": [
+        {
+          "evidence_id": "evidence-bb81ee346e0d7da479d90533",
+          "reason_id": "R-NEWER-DOCUMENTED",
+          "schedule_id": "doe-ref-1980-2004.warehouse.bldg-occ-sch.479231",
+          "source_family": "doe-reference"
+        }
+      ],
+      "basis": "floor_area",
+      "demand_id": "demand-e144e9cf250b6b1296489e57",
+      "evidence_id": "evidence-a729c7b40e00589fd64504f6",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.warehouse-bldg-occ.dfba62",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.021097264416751055
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-2d6fd319e9d9e0ac257bfd68",
+      "evidence_id": "evidence-e03dc6a20d7b0de0ec045a18",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.bldg-light-sch.cb3bbc",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-baccd4dc2c47e86651f0bf25",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-1b87b534a754fb9fbb64dc7d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-659d0539e715d627e130a754",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 21.689999595276966
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-53f8e9f94c18fe2d3719b758",
+      "evidence_id": "evidence-904dd71e7f26b0bca6256bb7",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.bldg-light-sch.cb3bbc",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-baccd4dc2c47e86651f0bf25",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-1b87b534a754fb9fbb64dc7d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-659d0539e715d627e130a754",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-38094640f31217092bd53838",
+      "evidence_id": "evidence-c61bd854a3677c74cda68e5e",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.bldg-equip-sch.1351c0",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-80f518e5fb79690111b224ee",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-24c55879c46befb25fe892c9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-7f0c305f46704dff74845127",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 8.069999646943739
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-71df50ca89b519470433112e",
+      "evidence_id": "evidence-eda117d3f5dd1b2308037b51",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-71514c78e46ddd5dc694",
+          "resolution-aede7b3bc65ca86afb05"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.warehouse.doe-reference-no-object-constant-0.47b394",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-f61892403857c89eb751f9b6",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-63e22b1c1edc954f8ab8c39a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-f71e32b1f8be447b8e5a6e65",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Office_Warehouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-8b32ed2e1bd1bf0bec0db61d",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.warehouse.warehouse-activity.cbff26"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-61740fd70005fd701d511a2c",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.warehouse.clgsetp-sch.a06ee7"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-302dd189e85bff5c635d13ce",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.warehouse.htgsetp-sch.f54604"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-1ad6a944f2fa962326a528f9",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "source_id": "program-706c230c72457d2a96f7",
+  "template": "DOE Ref 1980-2004"
+}

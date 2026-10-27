@@ -1,0 +1,262 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "Warehouse",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0c857a8d37d45ad067dae246",
+    "evidence-15b7aab0a3cd51b8287dade3",
+    "evidence-4a5cc24fb2e678b9efb78e62",
+    "evidence-4ca7378ddb8bdbbe899b670a",
+    "evidence-5a6c0c3f538e5891d23c8465",
+    "evidence-80319f6653cdefec10a456c5",
+    "evidence-9e1c733f6537083bb175b769",
+    "evidence-e9c162a9323d4bec09f4caf0",
+    "evidence-eb7d472ebabfc63340be4629",
+    "evidence-ec1d4997f185f9180c1f645a"
+  ],
+  "filling_evidence_ids": [
+    "evidence-4b9067c62fa9ed180ff9e5e6",
+    "evidence-f6fe62965d34c4635fc3109a"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2007.warehouse.source.bulk.4d91a7",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-0c857a8d37d45ad067dae246",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "standards_rule": {
+      "daylighting_appropriate": true,
+      "evidence_id": "evidence-eb7d472ebabfc63340be4629",
+      "target_illuminance_setpoint_lux": null
+    },
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-074bf91bc459b234e486f551",
+      "evidence_id": "evidence-5a6c0c3f538e5891d23c8465",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.warehouse.warehouse-bldg-occ-sch.a66bc2",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-776f081ab02af124fa91bf1b",
+      "evidence_id": "evidence-9e1c733f6537083bb175b769",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.warehouse.warehouse-bldg-light-storage-sch.0a783e",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-430fd47a10d8f8af86c18872",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.42
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-e474644e9718d851232efce6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-fe582c17e6c91a6f94cb3893",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.18
+        }
+      },
+      "unit": "W/m2",
+      "value": 9.68751937503875
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-dc94e30c19207365d445dec9",
+      "evidence_id": "evidence-ec1d4997f185f9180c1f645a",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.warehouse.warehouse-bldg-light-storage-sch.0a783e",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-430fd47a10d8f8af86c18872",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.42
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-e474644e9718d851232efce6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-fe582c17e6c91a6f94cb3893",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.18
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4c0c30cdb8c99625450f633e",
+      "evidence_id": "evidence-80319f6653cdefec10a456c5",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.warehouse.warehouse-bldg-equip.8cccc5",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-be7fcdde22241c9db3edfd5f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-4df51e8e21066b92b83b2907",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-ce31ad4ee79070b658e8d21f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 2.5584161508600793
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0e773550a10e7835b8bc5085",
+      "evidence_id": "evidence-15b7aab0a3cd51b8287dade3",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-4b9067c62fa9ed180ff9e5e6"
+        ],
+        "resolutions": [
+          "resolution-20e8e850338dc74e0467",
+          "resolution-fc28b088424abeeeb716"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-4b9067c62fa9ed180ff9e5e6",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-836736e22ef5003a8fb9d6e3",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-49833a7e0cbff88e7b1b5638",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-4b9414789e9792d8afdae9e1",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Bulk_Warehouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-4a5cc24fb2e678b9efb78e62",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.warehouse.warehouse-office-activity-schedule.bcb1e6"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-4ca7378ddb8bdbbe899b670a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.warehouse.warehouse-clg-setp-bulk-storage.0b2d21"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-e9c162a9323d4bec09f4caf0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.warehouse.warehouse-bulk-storage-heating-setpoint-schedule.2e9879"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-e339fa82f0004045d254",
+  "template": "90.1-2007",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2007.large-hotel.source.retail.e2b8a9",
+        "represented_area_m2": 67.07136200000001,
+        "source_geometry_file_id": "sourcefile-fcf637334a2c36105be6",
+        "source_program_id": "program-f74441fbab6b01261071",
+        "weight": 0.4633912138913339
+      },
+      {
+        "program_id": "90-1-2007.large-hotel.source.retail2.7253bd",
+        "represented_area_m2": 77.66889200000001,
+        "source_geometry_file_id": "sourcefile-fcf637334a2c36105be6",
+        "source_program_id": "program-798ad2ce91e5ff904773",
+        "weight": 0.5366087861086661
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-2274b622945369693221e56c"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2007.large-hotel.department.retail-mixed.f2e061",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f3965f8eb7b0bd113c7907d3",
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-8e63f60e159cc6c6d553b781",
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.retail-mixed-electric-equipment.bcb330",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 10.763910416709724
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7cd89c711ef73b9464ef4b6e",
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-033cacb7669f62867c90",
+          "resolution-64b8cc4a5554a991bdd1",
+          "resolution-b048cc4b8766c16d9d50",
+          "resolution-ee7b9b77e5138eb5e3ed"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2007.large-hotel.retail-mixed-gas-equipment.910c7c",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d9358fd424246cc3f9f69471",
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.retail-mixed-lighting.63e4b5",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 16.145865625064584
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-537f8f59c3b71b47b182d3d5",
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.large-hotel.retail-mixed-occupancy.7a3169",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.16145865625064587
+    }
+  ],
+  "mode": "department",
+  "name": "Retail_Mixed_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.large-hotel.retail-mixed-activity.d88216"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.large-hotel.retail-mixed-cooling-setpoint.dd293b"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-2274b622945369693221e56c",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.large-hotel.retail-mixed-heating-setpoint.606e4e"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2007"
+}

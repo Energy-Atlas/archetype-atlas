@@ -309,3 +309,20 @@ Carried over from the residential plan (G1–G6), with these changes:
 | 2026-10-27 | P1 | decided | openstudio-standards stays the 90.1 construction authority; prototype assemblies are alternates above 1% difference. |
 | 2026-10-27 | X-1 | decided | Release 2.0.0 approved as the last stage. |
 | 2026-10-27 | H | not approved | No HVAC work, not even the ADR draft. |
+| 2026-10-27 | run | started | User: run S, L, G1, R1, U and X1 through. S proposed as its own session (`codex/atlas-site`, ADR 0043); the data chain runs in the main session. Generator branch confirmed on `main` (X1 stop condition does not apply). |
+| 2026-10-27 | L | done | Release 1.5.0 on `codex/lighting-controls`, ADR 0044. 195 programs with controls, 1,178 source zeros; 17 vary by climate (6A–8A skylights). No DOE, residential or manufactured model has controls (0 of 768, 11,840, 1,216). |
+| 2026-10-27 | L-2 | agent decision | The pinned openstudio-standards cache has no template daylighting rules, so 90.1 control settings come from the PNNL 90.1 prototypes (same family); the openstudio-standards inputs ride along as `standards_rule`; fractions marked geometry-dependent (ADR 0044 decision 4.1). |
+| 2026-10-27 | L | agent decisions | Mixes carry no block; types without a prototype are `unknown`, not zero; lighting-power weighting; availability stored as a descriptor; dwellings export 5.4.0 through a wrapper because release 1.4.0 pins the residential exporters (ADR 0044 section 4). |
+| 2026-10-27 | L | open | ADR 0044 section 5: make the 90.1 daylit fractions plain values? Fetch the openstudio-standards template rules (a download) to check them? |
+| 2026-10-27 | G1 | done | 90 spaces aliased to Any/Plenum; 38 programs (19 folders); no mix, system or service changes; stored as a delta input so `construction-only-v1.json` stays as 1.2.0 pinned it. |
+| 2026-10-27 | G1 | fixed | The export sweep found the 19 new plenum twins could not export `filled` (conditioning unresolved). They now take the 1.0.0 policy's plenum rules (no occupancy, lighting, hot water; unconditioned), as the 1.0.0 office plenums do. |
+| 2026-10-27 | finding | issue | Pinned modules hard-code release enums (`prototype_dwellings.construction_schema`, `residential_exports.program_schema`); every later release needs a wrapper until X1 rewrites them. |
+| 2026-10-27 | R1 | done | `docs/reviews/resstock-vs-iecc-residential.md`: 10 pairs. ResStock interior lighting runs at a median 0.41× the prototypes, hot water 0.45×, electric equipment 0.87×; window SHGC lower in every prototype. One ResStock 5+ multifamily dwelling records only its refrigerator. |
+| 2026-10-27 | L, G1, R1 | PR | #21 (`codex/lighting-controls`), stacked on #19. |
+| 2026-10-27 | U | done | Release 1.6.0, ADR 0045, PR #22 (`codex/unified-iecc`). All 1,824 IECC contexts export unified 3.1.0 `ready`; weights are IDF net surface areas; no interpreter pin needed. |
+| 2026-10-27 | U | finding | PNNL gives some adiabatic core floors an F-factor construction (570 contexts); left out of the fits and listed in the unified provenance (ADR 0045 decision 4.1). |
+| 2026-10-27 | U | open | ADR 0045 section 5: move the 90.1 recipe IDs to interpreter-independent hashing in 2.0.0? |
+| 2026-10-27 | X1 | phase 1 done | `scripts.atlas_snapshot`, ADR 0046, PR on `codex/release-2-0-0`: 2.0.0 = resolved 1.6.0 with equal values, compact (439 → 337 MB), generator recipes for 610 90.1 programs in `generator.json`. |
+| 2026-10-27 | X1 | blocked | Phase 2 (ADR 0046 section 4): commit the 337 MB folder only with the deltas' retirement (your go-ahead); DOE Ref recipes are stale since 1.1.0 and need regeneration (generator owner); retiring the frozen folders needs stage S merged (the current site reads them); rewritten writers and P1 alternates follow. |
+| 2026-10-27 | finding | issue | Repository size: the six 1.x deltas take about 1.1 GB on top of 1.0.0's 216 MB, because each delta repeats every change since 1.0.0. |
+| 2026-10-27 | R1 | open | Pair 2010s ResStock with IECC 2009 or 2012? A weather-based conversion of the prototype leakage areas for a like-for-like infiltration comparison? |

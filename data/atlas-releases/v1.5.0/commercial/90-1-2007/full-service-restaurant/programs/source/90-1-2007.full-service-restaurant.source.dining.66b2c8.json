@@ -1,0 +1,262 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "FullServiceRestaurant",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-02014e071d624df67a05a78e",
+    "evidence-12445f9ebf988a68c1cb4ac6",
+    "evidence-22beae41321bca9ceee749f7",
+    "evidence-3eecd2a759f347e6d341b0e2",
+    "evidence-4f7b41bbdc01cd668f45422c",
+    "evidence-6f01694d5d1eb0b983de75a2",
+    "evidence-71a5b73219dcab1df7d211a2",
+    "evidence-82d3ab98906c932745255fa0",
+    "evidence-ba93075f77c1b8f9e37b0e7a",
+    "evidence-d78e58cf25a7ab8627399dc2"
+  ],
+  "filling_evidence_ids": [
+    "evidence-2c3e4f8a6f932ecefda812ea",
+    "evidence-9a0581f6259ce584be4f4da3"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2007.full-service-restaurant.source.dining.66b2c8",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-3eecd2a759f347e6d341b0e2",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "standards_rule": {
+      "daylighting_appropriate": true,
+      "evidence_id": "evidence-82d3ab98906c932745255fa0",
+      "target_illuminance_setpoint_lux": null
+    },
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-aa68290939ee6eca64d96741",
+      "evidence_id": "evidence-22beae41321bca9ceee749f7",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.full-service-restaurant.restaurant-sit-down-bldg-occ-sch.e48cb4",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.7534737291696806
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e7cf4b60b85d2a349cc8662c",
+      "evidence_id": "evidence-71a5b73219dcab1df7d211a2",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.full-service-restaurant.restaurant-sit-down-bldg-light-kitchen-sch-2004-2007.683406",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-e3d57c60c1e74cd24193095b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-9110b6019f9c198f22957daa",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-2ceb2148b97b56c2c49b558a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 22.604211875090417
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0ad0a7fcc02a65d0c01e21f6",
+      "evidence_id": "evidence-4f7b41bbdc01cd668f45422c",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.full-service-restaurant.restaurant-sit-down-bldg-light-kitchen-sch-2004-2007.683406",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-e3d57c60c1e74cd24193095b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-9110b6019f9c198f22957daa",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-2ceb2148b97b56c2c49b558a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-68e45294f93cda35db3cae3e",
+      "evidence_id": "evidence-12445f9ebf988a68c1cb4ac6",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2007.full-service-restaurant.restaurant-sit-down-bldg-equip-sch.0bd00e",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-5692cc5ff1821f4c70eddd0c",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.25
+        },
+        "lost": {
+          "evidence_id": "evidence-00b87d449f812db86d88fc8f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-ca0b794c4b5aa26fb172020b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.3
+        }
+      },
+      "unit": "W/m2",
+      "value": 64.92790763359304
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9d1873e0347ff8ecbb20d7f0",
+      "evidence_id": "evidence-ba93075f77c1b8f9e37b0e7a",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-9a0581f6259ce584be4f4da3"
+        ],
+        "resolutions": [
+          "resolution-1b44fc4a4d84d465d4c3",
+          "resolution-7326a76c4fcd497482ee"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-9a0581f6259ce584be4f4da3",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-68b3cefe33cdcca1e3afd716",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-d843753af49237670db5b312",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-1dc2830a49ff36819a1600b5",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Dining_FullServiceRestaurant",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-6f01694d5d1eb0b983de75a2",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.full-service-restaurant.restaurant-sit-down-activity-sch.010019"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-d78e58cf25a7ab8627399dc2",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.full-service-restaurant.restaurant-sit-down-clgsetp-sch-no-setback.2fa9c3"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-02014e071d624df67a05a78e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2007.full-service-restaurant.restaurant-sit-down-htgsetp-sch-no-optimum.cf3990"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-afad0f7b2a135ceb16e5",
+  "template": "90.1-2007",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}

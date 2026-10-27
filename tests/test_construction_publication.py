@@ -13,20 +13,28 @@ def job(name):
     return next(j for j in workflow('validate.yml')['jobs'].values() if j.get('name')==name)
 
 
+REQUIRED=('atlas (ubuntu-latest, 3.11)','atlas (windows-latest, 3.14)')
+
+
+def gated(name):
+    """The jobs a required check passes on: its gate's needs."""
+    jobs=workflow('validate.yml')['jobs']
+    return [jobs[n] for n in job(name)['needs']]
+
+
 class FoundationPublicationTests(unittest.TestCase):
     def test_exact_combined_reproduction_stays_on_pinned_windows_producer(self):
-        windows=job('atlas (windows-latest, 3.14)');steps=windows['steps']
-        self.assertEqual(windows['runs-on'],'windows-latest')
-        selected=[s for s in steps if 'scripts.construction_foundation_release --check --examples' in s.get('run','')]
+        windows=gated('atlas (windows-latest, 3.14)')
+        self.assertEqual({j['runs-on'] for j in windows},{'windows-latest'})
+        selected=[(j,s) for j in windows for s in j['steps'] if 'scripts.construction_foundation_release --check --examples' in s.get('run','')]
         self.assertEqual(len(selected),1,'Combined release must have an exact producer reproduction gate')
-        producer=next(i for i,s in enumerate(steps) if s.get('with',{}).get('python-version')=='3.14.7')
-        self.assertLess(producer,steps.index(selected[0]))
-        platform_runtime=next(i for i,s in enumerate(steps) if s.get('with',{}).get('python-version')=='3.14')
-        self.assertLess(steps.index(selected[0]),platform_runtime)
+        steps=selected[0][0]['steps'];before=steps[:steps.index(selected[0][1])]
+        versions=[s['with']['python-version'] for s in before if 'python-version' in s.get('with',{})]
+        self.assertEqual(versions,['3.14.7'])
 
     def test_both_platforms_validate_combined_pairs_and_frozen_recovery_receipts(self):
         jobs=workflow('validate.yml')['jobs'];linux=job('atlas (ubuntu-latest, 3.11)')
-        platforms={'windows':job('atlas (windows-latest, 3.14)')['steps'],
+        platforms={'windows':[s for j in gated('atlas (windows-latest, 3.14)') for s in j['steps']],
                    'linux':[s for name in linux['needs'] for s in jobs[name]['steps']]}
         for command in ('scripts.validate_construction_foundation --all','scripts.recover_construction_foundations --check',
                         'scripts.construction_foundation_airflow --check','scripts.construction_foundation_smoke',
@@ -41,13 +49,19 @@ class FoundationPublicationTests(unittest.TestCase):
 
     def test_linux_check_passes_only_when_every_linux_job_passes(self):
         jobs=workflow('validate.yml')['jobs'];linux=job('atlas (ubuntu-latest, 3.11)')
-        self.assertEqual(set(linux['needs']),{k for k,j in jobs.items() if j['runs-on']=='ubuntu-latest' and j.get('name')!=linux['name']})
+        self.assertEqual(set(linux['needs']),{k for k,j in jobs.items() if j['runs-on']=='ubuntu-latest' and j.get('name') not in REQUIRED})
         self.assertEqual(linux['if'],'always()')
         self.assertIn('needs.*.result',linux['steps'][0]['env']['RESULTS'])
         runs='\n'.join(s.get('run','') for j in jobs.values() for s in j['steps'])
         for command in ('unittest discover -s tests','scripts.program_completeness --check','scripts.smoke_catalogue',
                         'scripts.construction_base_reproduce','scripts.definition_release --reproduce','scripts.audit'):
             self.assertIn(command,runs)
+
+    def test_windows_check_passes_only_when_every_windows_job_passes(self):
+        jobs=workflow('validate.yml')['jobs'];windows=job('atlas (windows-latest, 3.14)')
+        self.assertEqual(set(windows['needs']),{k for k,j in jobs.items() if j['runs-on']=='windows-latest'})
+        self.assertEqual(windows['if'],'always()')
+        self.assertIn('needs.*.result',windows['steps'][0]['env']['RESULTS'])
 
     def test_build_verifies_the_suite_site_before_upload(self):
         jobs=workflow('catalogue-site.yml')['jobs'];steps=jobs['build']['steps']

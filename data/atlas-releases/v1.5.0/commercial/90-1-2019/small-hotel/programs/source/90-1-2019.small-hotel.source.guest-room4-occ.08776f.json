@@ -1,0 +1,279 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-12536b261156b37e7b3606a6",
+    "evidence-25530ee6cb6eed8841a9f5f4",
+    "evidence-2af071b92339830493704be6",
+    "evidence-3c6ea4c942c10cc717d3e287",
+    "evidence-5561eeb0df3931a468891b9d",
+    "evidence-63c230921532fa82899f5c61",
+    "evidence-88946aff1460dd4e69ce6b0e",
+    "evidence-a059c0398ffa4fbe762ce7c9",
+    "evidence-c2eca832aa9348ca8f415eae",
+    "evidence-f37446ed11836e5a11898b9f"
+  ],
+  "filling_evidence_ids": [
+    "evidence-5b397b7f6593f5888caa6e47",
+    "evidence-89c11132c5cff39c2722fa7b"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.small-hotel.source.guest-room4-occ.08776f",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-25530ee6cb6eed8841a9f5f4",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "standards_rule": {
+      "daylighting_appropriate": true,
+      "evidence_id": "evidence-5561eeb0df3931a468891b9d",
+      "target_illuminance_setpoint_lux": null
+    },
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0e5e07b86469d4b36b269a17",
+      "evidence_id": "evidence-12536b261156b37e7b3606a6",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-guest-room-occ-sch.4de87c",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.045961897479350505
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-76559d64aff351282fedbbb6",
+      "evidence_id": "evidence-63c230921532fa82899f5c61",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-bldg-light-guestroom-sch-2013.4f381a",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-b4ffb80e49df282107222164",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-42c0cfe806aeb1fd197d812a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-93bac2412690ab5b5ff1817b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.413203270850985
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-40fb5bb674172decfac30a33",
+      "evidence_id": "evidence-a059c0398ffa4fbe762ce7c9",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-bldg-light-guestroom-sch-2013.4f381a",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-b4ffb80e49df282107222164",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-42c0cfe806aeb1fd197d812a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-93bac2412690ab5b5ff1817b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ac21fd59560ea42e032fe8ea",
+      "evidence_id": "evidence-c2eca832aa9348ca8f415eae",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-guest-room-eqp-sch-adva.3a7707",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-6ba69fcec7c5e3119e964f7b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-0325918c1d48321dc6eab39e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-632ea5d90c01f28246e58151",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 11.840301458380695
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-27cf3774cdbd1c4627d39799",
+      "evidence_id": "evidence-3c6ea4c942c10cc717d3e287",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-5b397b7f6593f5888caa6e47"
+        ],
+        "resolutions": [
+          "resolution-11ee4a3ac8b253c4a864",
+          "resolution-92af4bdc017ca04e1074"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-5b397b7f6593f5888caa6e47",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-89565c1f01aec41eb5eb0517",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-97521ceec3631cd2b58e3fee",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-74fb4ed55d82adc04a13d48b",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "90-1-2019.small-hotel.main.46d2e2",
+      "evidence_id": "evidence-42df203ee9747aa559d80042",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.small-hotel.hotel-small-guest-room-shw-sch.3f9aa7",
+      "scope": "program_service",
+      "service_id": "90-1-2019.small-hotel.main.46d2e2",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 7.158574707427662e-08,
+      "zone_heat_assignment": "unresolved"
+    }
+  ],
+  "mode": "source",
+  "name": "GuestRoom4Occ_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-2af071b92339830493704be6",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.small-hotel.hotel-small-activity-sch.36215a"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-f37446ed11836e5a11898b9f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.small-hotel.hotel-small-adva-occ-guest-room-clg-sp-sch.2e0a3a"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-88946aff1460dd4e69ce6b0e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.small-hotel.hotel-small-adva-occ-guest-room-htg-sp-sch.310ea2"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "90-1-2019.small-hotel.main.46d2e2"
+  ],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-e3e4706899457f11e2fe",
+  "template": "90.1-2019"
+}

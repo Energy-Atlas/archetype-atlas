@@ -1,0 +1,189 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SecondarySchool",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.secondary-school.source.computer-room.6af71f",
+        "represented_area_m2": 954.0,
+        "source_geometry_file_id": "sourcefile-8b7867083e821c67dc9d",
+        "source_program_id": "program-af90d73d7f0c1d50a4be",
+        "weight": 0.15884115884115885
+      },
+      {
+        "program_id": "90-1-2013.secondary-school.source.gym.9622d3",
+        "represented_area_m2": 3224.0,
+        "source_geometry_file_id": "sourcefile-8b7867083e821c67dc9d",
+        "source_program_id": "program-3663010156fc2b6923fd",
+        "weight": 0.5367965367965368
+      },
+      {
+        "program_id": "90-1-2013.secondary-school.source.library.8393a8",
+        "represented_area_m2": 840.0,
+        "source_geometry_file_id": "sourcefile-8b7867083e821c67dc9d",
+        "source_program_id": "program-507b384e86482753de04",
+        "weight": 0.13986013986013987
+      },
+      {
+        "program_id": "90-1-2013.secondary-school.source.auditorium.808f36",
+        "represented_area_m2": 988.0,
+        "source_geometry_file_id": "sourcefile-8b7867083e821c67dc9d",
+        "source_program_id": "program-8cc259a6497c6c9c11ea",
+        "weight": 0.1645021645021645
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-602cb263176ee0a192ed3e6e"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.secondary-school.department.activity-mixed.09431c",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-c55907e11f358b100e74a8fb",
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0e1f294bc1400bebf9382fdd",
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.activity-mixed-electric-equipment.2186a8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 8.049189841303425
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d3347b406d95eb3c11cea540",
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-04221974fd88fa949eba",
+          "resolution-054f963d82233a999496",
+          "resolution-75d4b4dd35dd75efd4e1",
+          "resolution-7d475f97877f419c2a6d",
+          "resolution-830bcdfa8985b105b936",
+          "resolution-8c667258c07292b78595",
+          "resolution-91171cb3e2e3922ea313",
+          "resolution-dd75cce6620176d99d54"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.secondary-school.activity-mixed-gas-equipment.f71242",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a1ff3f5e3746259dea692869",
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.activity-mixed-lighting.9ff55a",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 9.187282499329124
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-da4825db5dbcdcfe322a8eb6",
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.secondary-school.activity-mixed-occupancy.ef6874",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.5138396196428313
+    }
+  ],
+  "mode": "department",
+  "name": "Activity_Mixed_SecondarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.secondary-school.activity-mixed-activity.9c797c"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.secondary-school.activity-mixed-cooling-setpoint.cacd3f"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-602cb263176ee0a192ed3e6e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.secondary-school.activity-mixed-heating-setpoint.d32c46"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013"
+}

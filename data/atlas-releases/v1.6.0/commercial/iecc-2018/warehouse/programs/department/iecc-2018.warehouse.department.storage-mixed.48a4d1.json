@@ -1,0 +1,170 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Warehouse",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2018.warehouse.source.bulk.53ebdc",
+        "represented_area_m2": 3204.842277266893,
+        "source_geometry_file_id": "sourcefile-ae51bb7fbb292bcf55e7",
+        "source_program_id": "program-91c35fc968129f4d918b",
+        "weight": 0.7348242811501589
+      },
+      {
+        "program_id": "iecc-2018.warehouse.source.fine.ee177a",
+        "represented_area_m2": 1156.530039187623,
+        "source_geometry_file_id": "sourcefile-ae51bb7fbb292bcf55e7",
+        "source_program_id": "program-4d3c792d9f5859dc4ec7",
+        "weight": 0.26517571884984115
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-6d0ae30b7dde1fec640c7658"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2018.warehouse.department.storage-mixed.48a4d1",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d526130d741856738e34857a",
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.warehouse.storage-mixed-additional-lighting.6279ce",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b18035e9c35c48b7f3f3033d",
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.warehouse.storage-mixed-electric-equipment.2d903b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 1.8801696816992628
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ebed2855e69eaa740055b3ea",
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.warehouse.storage-mixed-additional-lighting.6279ce",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4f83da314d080dea53980147",
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.warehouse.storage-mixed-additional-lighting.6279ce",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-bc924d4eb25cae212b07ba8e",
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.warehouse.storage-mixed-lighting.aed808",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 4.264048380191697
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b958f5133162f54f69f9456f",
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.warehouse.storage-mixed-occupancy.12a61e",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.02269927738701598
+    }
+  ],
+  "mode": "department",
+  "name": "Storage_Mixed_Warehouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.warehouse.storage-mixed-activity.29d604"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-6d0ae30b7dde1fec640c7658",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.warehouse.storage-mixed-heating-setpoint.69fc84"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2018"
+}

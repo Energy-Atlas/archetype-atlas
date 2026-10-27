@@ -1,0 +1,188 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Hospital",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2015.hospital.source.er-exam.2f7da4",
+        "represented_area_m2": 222.967296,
+        "source_geometry_file_id": "sourcefile-a557baf425ba1638719d",
+        "source_program_id": "program-3434a008779b7e0eeb95",
+        "weight": 0.13714285714285715
+      },
+      {
+        "program_id": "iecc-2015.hospital.source.er-nurse-stn.31cb8b",
+        "represented_area_m2": 1235.610432,
+        "source_geometry_file_id": "sourcefile-a557baf425ba1638719d",
+        "source_program_id": "program-94d45ccdbe13b23205ad",
+        "weight": 0.76
+      },
+      {
+        "program_id": "iecc-2015.hospital.source.er-trauma.5b9029",
+        "represented_area_m2": 55.741824,
+        "source_geometry_file_id": "sourcefile-a557baf425ba1638719d",
+        "source_program_id": "program-a194ddcb2bd5c5a5273d",
+        "weight": 0.03428571428571429
+      },
+      {
+        "program_id": "iecc-2015.hospital.source.er-triage.3c6002",
+        "represented_area_m2": 111.483648,
+        "source_geometry_file_id": "sourcefile-a557baf425ba1638719d",
+        "source_program_id": "program-84c495101cab311396f0",
+        "weight": 0.06857142857142857
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-7bdbd614bd88e1cbde7bbefe"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2015.hospital.department.er-mixed.719863",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-61273b99a90015e5f8cf43cd",
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.hospital.er-mixed-additional-lighting.ce457a",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-dc04310b034065cea2c85271",
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.hospital.er-mixed-electric-equipment.de035b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 16.284087766588012
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-c84937e04fe4009e186edf80",
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.hospital.er-mixed-additional-lighting.ce457a",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0304b7de997a183ab80dc458",
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.hospital.er-mixed-hot-water-volume.cb93cc",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 9.08952e-09
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0eac479571e7bdf7806e406d",
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.hospital.er-mixed-lighting.769bbd",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 9.64643724
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7266a9914d2b5a033e6b2515",
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.hospital.er-mixed-occupancy.432259",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.06254957549576
+    }
+  ],
+  "mode": "department",
+  "name": "ER_Mixed_Hospital",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.hospital.er-mixed-activity.90c206"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.hospital.er-mixed-cooling-setpoint.bd32c5"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-7bdbd614bd88e1cbde7bbefe",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.hospital.er-mixed-heating-setpoint.2320c3"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2015.hospital.main.6b1769",
+    "iecc-2015.hospital.main.a24c13",
+    "iecc-2015.hospital.main.b4c954"
+  ],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2015"
+}

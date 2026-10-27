@@ -1,0 +1,1420 @@
+{
+  "common": {
+    "detailed": {
+      "fields": {
+        "components": {
+          "BuildingShading": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "object_type": "Shading",
+              "shading_scope": "building"
+            }
+          },
+          "ExteriorDoor": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "Door"
+            }
+          },
+          "ExteriorFloor": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "Floor"
+            }
+          },
+          "ExteriorRoof": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.roof1-construction.32db51",
+                "evidence_ids": [
+                  "construction-evidence-0832177b8d1db18546f61c7c",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  },
+                  "roof": {
+                    "applicability": "source_pitch_only",
+                    "different_pitch_policy": "source_recipe_reevaluation_required",
+                    "source_film_rule": "Roof film R = (0.002*exp(0.0398*pitch_degrees)+0.608 + 0.32*exp(-0.0154*pitch_degrees)+0.6)/2 h*ft2*F/Btu; exterior R=0.197. Pinned Material.AirFilmRoof.",
+                    "source_pitch_rad": 0.0,
+                    "unit": "rad"
+                  }
+                },
+                "id": "construction-assignment-3fc635ce0eb87486274b5d0c",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Roof1"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "outside",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "Roof"
+            }
+          },
+          "ExteriorWall": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.wall1-construction.58d1c5",
+                "evidence_ids": [
+                  "construction-evidence-39c0138f5df6a8717161ac1e",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  }
+                },
+                "id": "construction-assignment-13446b7e7e91414bc4a77927",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Wall1",
+                  "Wall4"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "outside",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "Wall"
+            }
+          },
+          "ExteriorWindow": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.window-construction.b94c2c",
+                "evidence_ids": [
+                  "construction-evidence-f995051c6d7b511a1931e2ad",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  },
+                  "overhang": {
+                    "depth_m": 0.6096,
+                    "distance_to_bottom_of_window_m": 1.31064,
+                    "distance_to_top_of_window_m": 0.3048,
+                    "evidence_id": "construction-evidence-83471cb3882cd330cd9cca9b"
+                  }
+                },
+                "id": "construction-assignment-f9efec77f3e1eaf2a238536b",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Window1"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "outside",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              },
+              {
+                "assembly_id": "resstock-sdr.window-construction.66ed06",
+                "evidence_ids": [
+                  "construction-evidence-f995051c6d7b511a1931e2ad",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  },
+                  "overhang": {
+                    "depth_m": 0.6096,
+                    "distance_to_bottom_of_window_m": 1.40208,
+                    "distance_to_top_of_window_m": 0.3048,
+                    "evidence_id": "construction-evidence-24907d9d579ac738ed48027d"
+                  }
+                },
+                "id": "construction-assignment-3195fa3c80a89d716aea8cbe",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Window3"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "outside",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "Window"
+            }
+          },
+          "FloorOverFoundation": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Floor"
+            }
+          },
+          "FoundationWall": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Ground",
+                "GroundFCfactorMethod",
+                "Foundation",
+                "Surface",
+                "Adiabatic",
+                "Outdoors"
+              ],
+              "surface_type": "Wall"
+            }
+          },
+          "GlassDoor": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "GlassDoor"
+            }
+          },
+          "GroundFloor": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Ground",
+                "GroundFCfactorMethod",
+                "Foundation"
+              ],
+              "surface_type": "Floor"
+            }
+          },
+          "InteriorCeiling": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Ceiling"
+            }
+          },
+          "InteriorDoor": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.door.93786c",
+                "evidence_ids": [
+                  "construction-evidence-cbfe86ae229a01b617b2b4c5",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  }
+                },
+                "id": "construction-assignment-26926ce892101633c00e7c16",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Door1"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "other housing unit",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "boundary_conditions": [
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Door"
+            }
+          },
+          "InteriorFloor": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.floor1-construction.178c81",
+                "evidence_ids": [
+                  "construction-evidence-af97af9745ae0164690197cf",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  }
+                },
+                "id": "construction-assignment-6e0a6d2ac10bbc5535a8c1f7",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Floor1"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "other housing unit",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "boundary_conditions": [
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Floor"
+            }
+          },
+          "InteriorPartition": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.partition-wall-construction.9890a7",
+                "evidence_ids": [
+                  "construction-evidence-6b134c26ba6a0c7726acacc1",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "area_convention": "source exposed partition area, both sides",
+                    "area_per_conditioned_floor_area": 1.0,
+                    "method": "source_partition_cfa_scaling",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  }
+                },
+                "id": "construction-assignment-f3e3e11910ae969438d1a8f1",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "partition wall mass"
+                ],
+                "source_selector": null,
+                "when": {
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "object_type": "InternalMass"
+            }
+          },
+          "InteriorWall": {
+            "assignments": [
+              {
+                "assembly_id": "resstock-sdr.wall2-construction.7e74e7",
+                "evidence_ids": [
+                  "construction-evidence-646e90d7c4e7dffb2727c044",
+                  "construction-evidence-1ca8ea57b8a11122229a40df"
+                ],
+                "geometry": {
+                  "area": {
+                    "method": "bem_surface_area",
+                    "unit": "m2"
+                  },
+                  "layers": {
+                    "orientation": "exterior_to_interior",
+                    "paired_surface_policy": "reverse_order",
+                    "source_reference_reversed": false
+                  }
+                },
+                "id": "construction-assignment-0ccc12d8e9523c43f62cd807",
+                "source_definition_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "source_element_ids": [
+                  "Wall2",
+                  "Wall3"
+                ],
+                "source_selector": null,
+                "when": {
+                  "exterior_space_type": "other housing unit",
+                  "interior_space_type": "conditioned space",
+                  "scope": "whole_dwelling"
+                }
+              }
+            ],
+            "disposition": "provided",
+            "target": {
+              "boundary_conditions": [
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Wall"
+            }
+          },
+          "InteriorWindow": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Window"
+            }
+          },
+          "OverheadDoor": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "OverheadDoor"
+            }
+          },
+          "RimJoist": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors",
+                "Surface",
+                "Adiabatic"
+              ],
+              "surface_type": "Wall"
+            }
+          },
+          "SiteShading": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "object_type": "Shading",
+              "shading_scope": "site"
+            }
+          },
+          "Skylight": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "boundary_conditions": [
+                "Outdoors"
+              ],
+              "surface_type": "Skylight"
+            }
+          },
+          "SpaceShading": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "object_type": "Shading",
+              "shading_scope": "space"
+            }
+          },
+          "TubularDaylightDiffuser": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "surface_type": "TubularDaylightDiffuser"
+            }
+          },
+          "TubularDaylightDome": {
+            "assignments": [],
+            "disposition": "source_absent",
+            "target": {
+              "surface_type": "TubularDaylightDome"
+            }
+          }
+        },
+        "evidence": [
+          "construction-evidence-0832177b8d1db18546f61c7c",
+          "construction-evidence-08bd36c6b418682c773db244",
+          "construction-evidence-1a13c1127cc30208eb8e8c3a",
+          "construction-evidence-1ca8ea57b8a11122229a40df",
+          "construction-evidence-24907d9d579ac738ed48027d",
+          "construction-evidence-34bb781f901f820bedbe726a",
+          "construction-evidence-387e685385ff9681b3f87dfc",
+          "construction-evidence-39c0138f5df6a8717161ac1e",
+          "construction-evidence-5a4e9b38cf3ad0ac972f0d24",
+          "construction-evidence-646e90d7c4e7dffb2727c044",
+          "construction-evidence-6b134c26ba6a0c7726acacc1",
+          "construction-evidence-73a436b060be4d4e33c9638c",
+          "construction-evidence-83471cb3882cd330cd9cca9b",
+          "construction-evidence-979503620bd98d1edf6b8144",
+          "construction-evidence-9c8925f2a13257b11b8d74b2",
+          "construction-evidence-a7755fa52882b3571a7c19e9",
+          "construction-evidence-af97af9745ae0164690197cf",
+          "construction-evidence-bdd3792d7ca1dce3f19d403f",
+          "construction-evidence-c0d2c4b2d3a4296f09f86253",
+          "construction-evidence-c0eb2e3e8c19be4be909bc3d",
+          "construction-evidence-cbfe86ae229a01b617b2b4c5",
+          "construction-evidence-d40bad50a8719860f39eb4b5",
+          "construction-evidence-d555707ee22e9ebef3aa67f1",
+          "construction-evidence-de9578d0898bc3d2d39246e9",
+          "construction-evidence-e2c6aefac78c0afb93976af6",
+          "construction-evidence-f0b9f8e723b1ba62ae24f232",
+          "construction-evidence-f995051c6d7b511a1931e2ad",
+          "foundation-evidence-08283eff046ea70df09f6b91"
+        ],
+        "export_mode": "source_ready",
+        "foundation_ground": {
+          "configuration": {
+            "reason": "Effective source configuration: Above Apartment",
+            "type": "no_direct_ground_contact"
+          },
+          "methods": {},
+          "model_parameters": {},
+          "required_geometry": {}
+        },
+        "id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7.3-c",
+        "infiltration": {
+          "method": "fixed_source_annual_average_natural_ach",
+          "natural_ach": {
+            "evidence_id": "construction-evidence-9c8925f2a13257b11b8d74b2",
+            "unit": "1/s",
+            "value": 2.8647135333333338e-05
+          },
+          "reference_id": "residential_archetype-86fae2427a5cc0916a50"
+        },
+        "kind": "construction_set",
+        "mass_accounting": {
+          "added_mass_policy": "additional source furnishings/partition objects are separate from explicit surfaces",
+          "additional_mass": {
+            "allocation_policy": "Precomputed source-scope quantities normalized by building counted floor area; preserve source scopes. If absent in consumer geometry, require an explicit consumer allocation policy.",
+            "entries": [
+              {
+                "area_convention": "source exposed partition area, both sides",
+                "area_per_counted_floor_area": 1.0,
+                "capacity_per_counted_floor_area_J_m2_K": 25981.48957561821,
+                "id": "source-mass-quantity-35e14f95c831ccd4d8a5d476",
+                "recipe_id": "resstock-sdr.partition-wall-construction.9890a7",
+                "reference_area_m2": 29.914778880000004,
+                "scope": {
+                  "counted_floor_area": true,
+                  "kind": "whole_dwelling"
+                },
+                "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50/assembly_areas/residential-assembly-6fe820229542760891d3",
+                "source_operands": {
+                  "source_area_per_conditioned_floor_area": 1.0,
+                  "source_conditioned_floor_area_m2": 29.914778880000004
+                }
+              }
+            ],
+            "legacy_partition_selector_policy": "InteriorPartition is a retained material selector. Instantiate additional mass from this inventory only; never instantiate both representations of the same source object.",
+            "status": "provided"
+          },
+          "floor_pair_policy": "one physical slab; do not add both floor and ceiling capacity",
+          "paired_face_area_policy": "mean_zone_weighted_faces",
+          "paired_surface_policy": {
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "canonical_side": "InteriorFloor",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          },
+          "physical_capacity_budgets": {
+            "InteriorFloor": [
+              {
+                "area_per_counted_floor_area": 1.0000000000000007,
+                "capacity_per_counted_floor_area_J_m2_K": 27489.370482985454,
+                "reference_area_m2": 29.914778880000025,
+                "source_areal_capacity_J_m2_K": 27489.370482985436,
+                "source_assembly_id": "resstock-sdr.floor1-construction.178c81",
+                "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50/assembly_areas/residential-assembly-11907acc7fdfb0571dd5"
+              }
+            ],
+            "InteriorWall": [
+              {
+                "area_per_counted_floor_area": 0.8683078341598125,
+                "capacity_per_counted_floor_area_J_m2_K": 34000.05547993153,
+                "reference_area_m2": 25.975236858662505,
+                "source_areal_capacity_J_m2_K": 39156.684003468064,
+                "source_assembly_id": "resstock-sdr.wall2-construction.7e74e7",
+                "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50/assembly_areas/residential-assembly-32f6b5c932b89a186d32"
+              }
+            ]
+          },
+          "physical_inventory_profile_id": "residential_archetype-86fae2427a5cc0916a50",
+          "provenance": {
+            "extraction_date": "2026-10-16",
+            "interpretation_note": "Quantities describe the selected source archetype, not a population weight or consumer geometry. Additional mass is independent of residual restoration.",
+            "original_unit": "m2, m3, SI material properties, and dimensionless source multipliers/scaling coefficients",
+            "original_value": {
+              "counted_floor_area_m2": 29.914778880000004,
+              "profile_provenance": {
+                "extraction_date": "2026-10-14",
+                "interpretation_note": "Geometry and native HPXML values are source reference evidence only; normalized executable SI engine materials are in assemblies[].layers[].properties.",
+                "original_unit": {
+                  "area": "ft2",
+                  "azimuth": "degree",
+                  "insulation_assembly_r_value": "h*ft2*F/Btu",
+                  "interior_finish_thickness": "in",
+                  "overhangs_depth": "ft",
+                  "overhangs_distance_to_bottom_of_window": "ft",
+                  "overhangs_distance_to_top_of_window": "ft",
+                  "pitch": "inch rise per 12 inch run",
+                  "r_value": "h*ft2*F/Btu",
+                  "shading_factors_coverage_shgc_absorptance_emittance": "1",
+                  "source_types_ids_flags": "categorical identifiers and boolean default flags",
+                  "ufactor": "Btu/(h*ft2*F)"
+                },
+                "original_value": "source_surface_attributes and partition_wall_mass hold original HPXML field values",
+                "source_file_sha256": {
+                  "resstock/resources/hpxml-measures/BuildResidentialHPXML/measure.rb": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                  "resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6"
+                },
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_roofs; set_walls; set_floors; set_windows; set_skylights; set_doors; resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#apply_roofs; apply_walls; apply_floors; apply_windows; apply_skylights; apply_doors; apply_partition_wall_mass",
+                "source_project": "ResStock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "transformation": "Original expanded/defaulted HPXML values, with *_isdefaulted flags. No geometry delivered; deterministic Index/vertex secondary sort only stabilizes generated evidence names."
+              }
+            },
+            "source_file_sha256": {
+              "data/construction-inputs/residential-assemblies-v1.json": "1163f41618296a464c31457a7255122655199402c7204c77686504034370619b",
+              "data/program-support/construction-weighting-v1.1.0/profiles.json": "aa2621fdfd837ceacf454070482aa3863de93bf1a5f3c1f85d7ffd607791681c"
+            },
+            "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50",
+            "source_project": "ResStock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "transformation": "Copy frozen source quantities; divide area and capacity by counted reference floor area. Use source multiplier once. Select wall/slab recipes with detailed source precedence."
+          },
+          "recipes": {
+            "resstock-sdr.partition-wall-construction.9890a7": {
+              "capacity_J_m2_K": 25981.48957561821,
+              "interpretation": "Original source mass material layers; no equivalent fitting or added air films.",
+              "layers": [
+                {
+                  "model": "StandardOpaqueMaterial",
+                  "properties": {
+                    "conductivity_W_m_K": 0.1602906,
+                    "density_kg_m3": 801.0,
+                    "roughness": "Rough",
+                    "solar_absorptance": 0.6,
+                    "specific_heat_J_kg_K": 837.4,
+                    "thermal_absorptance": 0.9,
+                    "thickness_m": 0.0127,
+                    "visible_absorptance": 0.6
+                  }
+                },
+                {
+                  "model": "StandardOpaqueMaterial",
+                  "properties": {
+                    "conductivity_W_m_K": 0.391763531157105,
+                    "density_kg_m3": 83.034082224,
+                    "roughness": "Rough",
+                    "solar_absorptance": 0.7,
+                    "specific_heat_J_kg_K": 1211.67419087611,
+                    "thermal_absorptance": 0.9,
+                    "thickness_m": 0.0889,
+                    "visible_absorptance": 0.7
+                  }
+                },
+                {
+                  "model": "StandardOpaqueMaterial",
+                  "properties": {
+                    "conductivity_W_m_K": 0.1602906,
+                    "density_kg_m3": 801.0,
+                    "roughness": "Rough",
+                    "solar_absorptance": 0.6,
+                    "specific_heat_J_kg_K": 837.4,
+                    "thermal_absorptance": 0.9,
+                    "thickness_m": 0.0127,
+                    "visible_absorptance": 0.6
+                  }
+                }
+              ],
+              "model": "opaque_layers",
+              "source_locator": "data/construction-inputs/residential-assemblies-v1.json#/records/residential_archetype-86fae2427a5cc0916a50/assemblies/7/layers"
+            }
+          },
+          "reference": {
+            "counted_floor_area_m2": 29.914778880000004,
+            "profile_id": "residential_archetype-86fae2427a5cc0916a50",
+            "quantity_basis": "multiply normalized quantities by actual counted building floor area"
+          },
+          "reference_area_approximation": {
+            "evidence_profile_id": "residential_archetype-86fae2427a5cc0916a50",
+            "interpretation": "Mean of multiplied face areas where multipliers differ; preserve the frozen source inventory. Residential inferred adiabatic floor/ceiling object quantities retain their source convention.",
+            "unequal_multiplier_pair_counts": {
+              "floor_pairs": 0,
+              "wall_pairs": 0
+            }
+          },
+          "removed_wall_policy": "Restore only unrepresented InteriorWall capacity using source or equivalent recipes; exchange equivalence remains approximate",
+          "residual_floor_policy": "Restore only unrepresented InteriorFloor capacity; explicit slabs retain their capacity",
+          "residual_policy": "max(0, reference minus represented); report signed difference and excess; never subtract mass",
+          "schema_version": "1.0.0",
+          "status": "ready"
+        },
+        "metadata": {
+          "assignment_policy": {
+            "evidence_id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24",
+            "precedence": "space_type_then_story_then_building_default",
+            "source_absent_override": "inherit_building_default",
+            "unmatched_or_ambiguous": "error",
+            "variant_resolution": "explicit_assignment_id_or_unique_compatible_rule"
+          },
+          "input_sha256": {
+            "data/construction-inputs/fixed-ach-v1.json": "41bcb8c3c6c44b73a6f1d445914615c764598ec7cfeba192fc31af9b39cb7828",
+            "data/construction-inputs/geometry-v1.json": "66274536119e312f296abc05c98223e69f296c8560fff4670589216b4a581bf0",
+            "data/construction-inputs/residential-assemblies-v1.json": "1163f41618296a464c31457a7255122655199402c7204c77686504034370619b",
+            "data/construction-inputs/selector-closure-v1.json": "f1e4919912f67a173f0a1be4ec30af9467702cca90fda759ab5220bf6a08d1dc",
+            "data/construction-releases/v1.0.0/catalogue.json": "0e45b78fcb3f78142a80f62aa401a7725c9ba56a78fc0fc803a6cb40b6c2c6a4",
+            "data/construction-releases/v1.0.0/manifest.json": "57c1e8f21a73ba182b1ef11b54cf2fa9087a66f82b7f4b51f0f33f2b85f99ec1",
+            "data/construction-releases/v2.0.0/manifest.json": "d3de9efa1327a28f8f9618d87d043342fb63116ad96421770e0f8b8af29abb93",
+            "data/definition-releases/v0.1.1/constructions.json": "5b15d8a47b971a56024e2ad3d3c59829b964faabc647bf9581289896d0a3dab5",
+            "schemas/construction-applicability-v1.schema.json": "4f1860c9e4c24d9231511ad4712b9abd4339a34917db8681487082c51468e1b5",
+            "schemas/construction-catalogue-v2.schema.json": "6201c393afb924472e82f83da1cafd9554c4a6567ec5b296e556dd59a0dbde2c",
+            "schemas/construction-json-v1.schema.json": "6d8e94910cb47a034fde3ec26be9bca69bde11b859e4565594339257b646d6d3",
+            "schemas/construction-json-v2.schema.json": "81eb75e3d0dd4306078fe906cf23ddfb1dd1df23256c2af8e30cc0e9ae4b48f3",
+            "scripts/common.py": "7a1883f76a990fda09923e4431b2a8f856ed4557ef387c944a4759f04de93c73",
+            "scripts/construction_export.py": "27e8479c58f6736a73b80456e3f2d6cdcb5f874972bccd0733c60e750434b8fc",
+            "scripts/construction_hotel_applicability.py": "0f405fcf967b4149c1424373f222b2dd88af69d25d8b23402c4174f7d9ea7b7b",
+            "scripts/construction_set_export.py": "95c4be0c99767db084e7adf8d6837b4c778224d7733447a86fc4f0401b08891c",
+            "scripts/construction_set_geometry.py": "d82b0fc8d7fb7f835b5f541b862f94c11782a4975a0fd8840adb01b0dee6d2a4",
+            "scripts/construction_set_release.py": "64a33fa36b85fe87b2d0a15ffc0990ecd59d66a7c89f1a6311b0bedaaafb24a1",
+            "scripts/construction_set_validation.py": "42b2ab6bed058461b0b4c446a80a77642b262b169cfb649289138b7642ebbfaf",
+            "scripts/construction_validation.py": "4b500c934bda363e235049f1d71beed34480a32984b503ef9d9eba70b2268917",
+            "scripts/definition_contract.py": "93433fb3aa70067e2761960a86338bb98fe4b4d5fe668913c64f177981f87eba",
+            "scripts/energy_json_review.py": "3951ac739823585b5eab74fef60b3fc7de31c86cb8519cd3c022341d1cdc56a8",
+            "scripts/recover_construction_selectors.py": "1d1f4b3125c78247e7c6273657382fac55758b0b1abf3157fdea825945767c03",
+            "sources/construction-v2-source-lock.json": "52dd272415d624afea038795ba4fb2fa4d81486ee043588d3184ca78edd3ec7a",
+            "sources/hotel-guestroom-applicability-v1.json": "dee876044bec9391344caf92a16b0f68fce04a3928bcc4bfb4f40491b419d86b"
+          },
+          "migration": {
+            "physics": "unchanged",
+            "review_status": "design_accepted",
+            "source_contract": "construction-json/1.0.0",
+            "translator_owner": "BEMGen"
+          },
+          "selection_decisions": [],
+          "source_definition_ids": [
+            "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7"
+          ],
+          "source_files": {
+            "atlas-foundation-host_airflow": {
+              "sha256": "1f73fe7461655a235f1a017b4e4ca8ed1f820763891fdf404381c125b3d28e6f",
+              "source_revision": "foundation-execution/1.0.0"
+            },
+            "atlas-foundation-native_capture": {
+              "sha256": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83",
+              "source_revision": "foundation-execution/1.0.0"
+            },
+            "openstudio-construction-inheritance": {
+              "cache_path": "build/construction-set-v2/Space-3.10.0.html",
+              "extraction_date": "2026-10-14",
+              "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration.",
+              "sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+              "source_locator": "Space#getDefaultConstructionWithSearchDistance",
+              "source_revision": "OpenStudio-3.10.0-documentation",
+              "url": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html"
+            },
+            "residential/EnergyPlus/Energy+.idd": {
+              "sha256": "2fcdc6554412164c26252f7f9029471ad6004b04896dfac4c32c3710ea84ee55",
+              "source_revision": "OpenStudio-3.10.0+86d7e215a1/EnergyPlus-25.1.0"
+            },
+            "residential/resstock/resources/hpxml-measures/BuildResidentialHPXML/resources/geometry.rb": {
+              "sha256": "14fc9a343de1fb16e5c6899282b1b4fb30158834d66b9c0a55695b619a6de10c",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/constructions.rb": {
+              "sha256": "4d21db2a0b3242d3b6d8676c83f9fc88139ee90a2f2bdb847f5f13305672a2a7",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb": {
+              "sha256": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/geometry.rb": {
+              "sha256": "652b6d5480e3a8ce09183753ec315830e54961b8d4d6d0fcc1495ffb45d609fd",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/materials.rb": {
+              "sha256": "e89b718a14c48bd74f88efb21123845a719bdb4a03c40d037b9371eabba24992",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/model.rb": {
+              "sha256": "2114c4ff07d1c474a8542f93cd355aa0fa5e0e6d3998cc2effd5c2659cc3461f",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/unit_conversions.rb": {
+              "sha256": "f8d47059a0bed4e10ccce8d410e5ba56633235801f2c142ee449da72ed0734f8",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            },
+            "residential/resstock/resources/hpxml-measures/HPXMLtoOpenStudio/tests/test_defaults.rb": {
+              "sha256": "580bbfe8080298b3ef820fed4e7c719f4befa45508b36a9fefff16a823a833ad",
+              "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649"
+            }
+          },
+          "variant_selections": {}
+        },
+        "name": "Dwelling enclosure / source_building_331250",
+        "schema_version": "3.0.0",
+        "scope": "whole_dwelling",
+        "source": {
+          "building_type": "MultiFamily5PlusLowRise",
+          "climate": {
+            "status": "exact",
+            "value": "3C"
+          },
+          "construction_set_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+          "definition_release": "v0.1.1",
+          "evidence": [
+            {
+              "extraction_date": "2026-10-14",
+              "id": "construction-evidence-5a4e9b38cf3ad0ac972f0d24",
+              "interpretation_note": "Space-type defaults precede story defaults, which precede building defaults; no explicit-space defaults are added by this migration.",
+              "original_unit": "ordered categorical construction scopes",
+              "original_value": [
+                "space",
+                "space_type",
+                "building_story",
+                "building",
+                "building_space_type"
+              ],
+              "source_file_sha256": "b19090cba76ab3c115fb6ed6d9c58bdccd09ab72a9fe7d5194edbcc7beec3d2d",
+              "source_locator": "https://openstudio-sdk-documentation.s3.amazonaws.com/cpp/OpenStudio-3.10.0-doc/model/html/classopenstudio_1_1model_1_1_space.html#getDefaultConstructionWithSearchDistance",
+              "source_project": "OpenStudio SDK",
+              "source_revision": "OpenStudio-3.10.0-documentation",
+              "transformation": "Retain the source space-type, story and building hierarchy for recovered construction defaults."
+            },
+            {
+              "extraction_date": "2026-10-14",
+              "id": "construction-evidence-9c8925f2a13257b11b8d74b2",
+              "interpretation_note": "Source fixture climate retained; no new residential assembly applicability inferred. Fixed catalogue constant; not hourly AIM-2 parity.",
+              "original_unit": "SI 1/s; inspection ACH 1/h",
+              "original_value": {
+                "construction_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+                "evidence_id": "residential/residential_archetype-86fae2427a5cc0916a50",
+                "inspection_ach_per_h": 0.10312968720000001,
+                "interpretation_note": "Source fixture climate retained; no new residential assembly applicability inferred. Fixed catalogue constant; not hourly AIM-2 parity.",
+                "method": "resstock_source_annual_average",
+                "natural_ach": {
+                  "unit": "1/s",
+                  "value": 2.8647135333333338e-05
+                },
+                "original_unit": "1/s per WSF and dimensionless",
+                "original_value": {
+                  "source_sensitivity_per_s_per_wsf": 7.161783833333334e-05,
+                  "wsf": 0.4
+                },
+                "reference_climate_labels": [
+                  "3C"
+                ],
+                "reference_id": "residential_archetype-86fae2427a5cc0916a50",
+                "source_climate_label": "3C",
+                "transformation": "recovered annual exterior-ACH sensitivity * adopted WSF; exposure is already included"
+              },
+              "source_file_sha256": "41bcb8c3c6c44b73a6f1d445914615c764598ec7cfeba192fc31af9b39cb7828",
+              "source_locator": "data/construction-inputs/fixed-ach-v1.json#/residential/reference_id=residential_archetype-86fae2427a5cc0916a50",
+              "source_project": "atlas_source_derivation",
+              "source_revision": "fixed-ach-v1/1.0.0",
+              "transformation": "recovered annual exterior-ACH sensitivity * adopted WSF; exposure is already included"
+            }
+          ],
+          "evidence_view": "source",
+          "reference_variant_id": "residential_archetype-86fae2427a5cc0916a50",
+          "source_climate_label": "3C",
+          "source_family": "existing_stock_source_fixture",
+          "source_fixture_id": "residential_archetype-86fae2427a5cc0916a50",
+          "space_type": null,
+          "template": "ResStock SDR source fixture",
+          "vintage": {
+            "kind": "stock_vintage",
+            "status": "exact",
+            "value": "1980s"
+          }
+        }
+      },
+      "lists": {},
+      "partial": {}
+    },
+    "unified": {
+      "fields": {
+        "assemblies": [
+          "resstock-sdr.opaque-layers.1bbe42",
+          "resstock-sdr.opaque-layers.258c43",
+          "resstock-sdr.opaque-layers.27dbe5",
+          "resstock-sdr.opaque-layers.3dc6a3",
+          "resstock-sdr.opaque-layers.98f22e",
+          "resstock-sdr.opaque-layers.c880c9",
+          "resstock-sdr.opaque-layers.fbda56",
+          "resstock-sdr.simple-glazing.91000b"
+        ],
+        "climate_zone": "3C",
+        "components": {
+          "BuildingShading": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "ExteriorDoor": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "ExteriorFloor": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "ExteriorRoof": {
+            "assembly_id": "resstock-sdr.opaque-layers.c880c9",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.roof1-construction.32db51",
+                  "reference_area_m2": 29.91477888000002,
+                  "weight": 1.0
+                }
+              ],
+              "source_reference_area_m2": 29.91477888000002,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "status": "ready"
+          },
+          "ExteriorWall": {
+            "assembly_id": "resstock-sdr.opaque-layers.fbda56",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.wall1-construction.58d1c5",
+                  "reference_area_m2": 23.658303009863126,
+                  "weight": 1.0
+                }
+              ],
+              "source_reference_area_m2": 23.658303009863126,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "status": "ready"
+          },
+          "ExteriorWindow": {
+            "assembly_id": "resstock-sdr.simple-glazing.91000b",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.window-construction.66ed06",
+                  "reference_area_m2": 0.8946161499955779,
+                  "weight": 0.5454347114650352
+                },
+                {
+                  "assembly_id": "resstock-sdr.window-construction.b94c2c",
+                  "reference_area_m2": 0.745573099406322,
+                  "weight": 0.4545652885349648
+                }
+              ],
+              "geometry_evidence": [
+                {
+                  "overhang_geometry": {
+                    "depth_m": 0.6096,
+                    "distance_to_bottom_of_window_m": 1.40208,
+                    "distance_to_top_of_window_m": 0.3048,
+                    "evidence_id": "construction-evidence-24907d9d579ac738ed48027d"
+                  },
+                  "source_assembly_id": "resstock-sdr.window-construction.66ed06"
+                },
+                {
+                  "overhang_geometry": {
+                    "depth_m": 0.6096,
+                    "distance_to_bottom_of_window_m": 1.31064,
+                    "distance_to_top_of_window_m": 0.3048,
+                    "evidence_id": "construction-evidence-83471cb3882cd330cd9cca9b"
+                  },
+                  "source_assembly_id": "resstock-sdr.window-construction.b94c2c"
+                }
+              ],
+              "geometry_policy": "consumer_overhang_geometry_by_BEMGen",
+              "source_reference_area_m2": 1.6401892494019,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "status": "ready"
+          },
+          "FloorDistributedMass": {
+            "assembly_id": "resstock-sdr.opaque-layers.27dbe5",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.floor1-construction.178c81",
+                  "reference_area_m2": 29.91477888000002,
+                  "weight": 1.0
+                }
+              ],
+              "weight_basis": "unique_physical_floor_inventory"
+            },
+            "quantity": {
+              "application": "residual_floor_mass_only; deduct explicitly represented physical slabs once",
+              "area_per_counted_floor_area": 1.0000000000000007,
+              "unit": "m2/m2"
+            },
+            "status": "ready"
+          },
+          "FloorOverFoundation": {
+            "assembly_id": null,
+            "reason": "Source configuration has no applicable FloorOverFoundation",
+            "status": "not_applicable"
+          },
+          "FoundationWall": {
+            "assembly_id": null,
+            "reason": "Source configuration has no applicable FoundationWall",
+            "status": "not_applicable"
+          },
+          "GlassDoor": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "GroundFloor": {
+            "assembly_id": null,
+            "reason": "Source configuration has no applicable GroundFloor",
+            "status": "not_applicable"
+          },
+          "InteriorCeiling": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "InteriorDoor": {
+            "assembly_id": "resstock-sdr.opaque-layers.3dc6a3",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.door.93786c",
+                  "reference_area_m2": 1.8580607999999939,
+                  "weight": 1.0
+                }
+              ],
+              "source_reference_area_m2": 1.8580607999999939,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "status": "ready"
+          },
+          "InteriorFloor": {
+            "assembly_id": "resstock-sdr.opaque-layers.1bbe42",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.floor1-construction.178c81",
+                  "reference_area_m2": 29.91477888000002,
+                  "weight": 1.0
+                }
+              ],
+              "source_reference_area_m2": 29.91477888000002,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "status": "ready"
+          },
+          "InteriorWall": {
+            "assembly_id": "resstock-sdr.opaque-layers.98f22e",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.wall2-construction.7e74e7",
+                  "reference_area_m2": 25.975236858662505,
+                  "weight": 1.0
+                }
+              ],
+              "source_reference_area_m2": 25.975236858662505,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "status": "ready"
+          },
+          "InteriorWindow": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "InternalMass": {
+            "assembly_id": "resstock-sdr.opaque-layers.258c43",
+            "derivation": {
+              "contributors": [
+                {
+                  "assembly_id": "resstock-sdr.partition-wall-construction.9890a7",
+                  "reference_area_m2": 29.914778880000004,
+                  "weight": 1.0
+                }
+              ],
+              "source_reference_area_m2": 29.914778880000004,
+              "weight_basis": "source_archetype_net_component_area"
+            },
+            "quantity": {
+              "application": "additional_source_mass_only",
+              "area_per_counted_floor_area": 1.0,
+              "unit": "m2/m2"
+            },
+            "status": "ready"
+          },
+          "OverheadDoor": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "RimJoist": {
+            "assembly_id": null,
+            "reason": "Source configuration has no applicable RimJoist",
+            "status": "not_applicable"
+          },
+          "SiteShading": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "Skylight": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "SpaceShading": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "TubularDaylightDiffuser": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          },
+          "TubularDaylightDome": {
+            "assembly_id": null,
+            "reason": "source_absent",
+            "status": "not_applicable"
+          }
+        },
+        "consumer_inputs": [
+          "actual component areas and geometry",
+          "actual counted floor area",
+          "physical mass already represented by instantiated interior surfaces",
+          "actual overhang geometry resolved by BEMGen; source dimensions are evidence only"
+        ],
+        "detailed_context_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7.3-c",
+        "evidence": [
+          "foundation-evidence-08283eff046ea70df09f6b91"
+        ],
+        "foundation_ground": {
+          "configuration": {
+            "reason": "Effective source configuration: Above Apartment",
+            "type": "no_direct_ground_contact"
+          },
+          "methods": {},
+          "model_parameters": {},
+          "required_geometry": {}
+        },
+        "id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7.3-c.unified",
+        "infiltration": {
+          "method": "fixed_source_annual_average_natural_ach",
+          "natural_ach": {
+            "evidence_id": "construction-evidence-9c8925f2a13257b11b8d74b2",
+            "unit": "1/s",
+            "value": 2.8647135333333338e-05
+          },
+          "reference_id": "residential_archetype-86fae2427a5cc0916a50"
+        },
+        "kind": "building_level_equivalent",
+        "mass_accounting": {
+          "added_mass_policy": "additional source furnishings/partition objects are separate from explicit surfaces",
+          "additional_mass": {
+            "allocation_policy": "Precomputed source-scope quantities normalized by building counted floor area; preserve source scopes. If absent in consumer geometry, require an explicit consumer allocation policy.",
+            "entries": [
+              {
+                "area_convention": "source exposed partition area, both sides",
+                "area_per_counted_floor_area": 1.0,
+                "capacity_per_counted_floor_area_J_m2_K": 25981.48957561821,
+                "id": "source-mass-quantity-35e14f95c831ccd4d8a5d476",
+                "recipe_id": "resstock-sdr.partition-wall-construction.9890a7",
+                "reference_area_m2": 29.914778880000004,
+                "scope": {
+                  "counted_floor_area": true,
+                  "kind": "whole_dwelling"
+                },
+                "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50/assembly_areas/residential-assembly-6fe820229542760891d3",
+                "source_operands": {
+                  "source_area_per_conditioned_floor_area": 1.0,
+                  "source_conditioned_floor_area_m2": 29.914778880000004
+                }
+              }
+            ],
+            "legacy_partition_selector_policy": "InteriorPartition is a retained material selector. Instantiate additional mass from this inventory only; never instantiate both representations of the same source object.",
+            "status": "provided"
+          },
+          "floor_pair_policy": "one physical slab; do not add both floor and ceiling capacity",
+          "paired_face_area_policy": "mean_zone_weighted_faces",
+          "paired_surface_policy": {
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "canonical_side": "InteriorFloor",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          },
+          "physical_capacity_budgets": {
+            "InteriorFloor": [
+              {
+                "area_per_counted_floor_area": 1.0000000000000007,
+                "capacity_per_counted_floor_area_J_m2_K": 27489.370482985454,
+                "reference_area_m2": 29.914778880000025,
+                "source_areal_capacity_J_m2_K": 27489.370482985436,
+                "source_assembly_id": "resstock-sdr.floor1-construction.178c81",
+                "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50/assembly_areas/residential-assembly-11907acc7fdfb0571dd5"
+              }
+            ],
+            "InteriorWall": [
+              {
+                "area_per_counted_floor_area": 0.8683078341598125,
+                "capacity_per_counted_floor_area_J_m2_K": 34000.05547993153,
+                "reference_area_m2": 25.975236858662505,
+                "source_areal_capacity_J_m2_K": 39156.684003468064,
+                "source_assembly_id": "resstock-sdr.wall2-construction.7e74e7",
+                "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50/assembly_areas/residential-assembly-32f6b5c932b89a186d32"
+              }
+            ]
+          },
+          "physical_inventory_profile_id": "residential_archetype-86fae2427a5cc0916a50",
+          "provenance": {
+            "extraction_date": "2026-10-16",
+            "interpretation_note": "Quantities describe the selected source archetype, not a population weight or consumer geometry. Additional mass is independent of residual restoration.",
+            "original_unit": "m2, m3, SI material properties, and dimensionless source multipliers/scaling coefficients",
+            "original_value": {
+              "counted_floor_area_m2": 29.914778880000004,
+              "profile_provenance": {
+                "extraction_date": "2026-10-14",
+                "interpretation_note": "Geometry and native HPXML values are source reference evidence only; normalized executable SI engine materials are in assemblies[].layers[].properties.",
+                "original_unit": {
+                  "area": "ft2",
+                  "azimuth": "degree",
+                  "insulation_assembly_r_value": "h*ft2*F/Btu",
+                  "interior_finish_thickness": "in",
+                  "overhangs_depth": "ft",
+                  "overhangs_distance_to_bottom_of_window": "ft",
+                  "overhangs_distance_to_top_of_window": "ft",
+                  "pitch": "inch rise per 12 inch run",
+                  "r_value": "h*ft2*F/Btu",
+                  "shading_factors_coverage_shgc_absorptance_emittance": "1",
+                  "source_types_ids_flags": "categorical identifiers and boolean default flags",
+                  "ufactor": "Btu/(h*ft2*F)"
+                },
+                "original_value": "source_surface_attributes and partition_wall_mass hold original HPXML field values",
+                "source_file_sha256": {
+                  "resstock/resources/hpxml-measures/BuildResidentialHPXML/measure.rb": "d830d412ad2a736a6d13ecb306290578ee54054f57095b4ea5ce71788fa4769e",
+                  "resstock/resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb": "863bc3d3699d0e321882fc4de8b01310592317c59e94f39c3855549b2866fbf6"
+                },
+                "source_locator": "resources/hpxml-measures/BuildResidentialHPXML/measure.rb#set_roofs; set_walls; set_floors; set_windows; set_skylights; set_doors; resources/hpxml-measures/HPXMLtoOpenStudio/resources/defaults.rb#apply_roofs; apply_walls; apply_floors; apply_windows; apply_skylights; apply_doors; apply_partition_wall_mass",
+                "source_project": "ResStock",
+                "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+                "transformation": "Original expanded/defaulted HPXML values, with *_isdefaulted flags. No geometry delivered; deterministic Index/vertex secondary sort only stabilizes generated evidence names."
+              }
+            },
+            "source_file_sha256": {
+              "data/construction-inputs/residential-assemblies-v1.json": "1163f41618296a464c31457a7255122655199402c7204c77686504034370619b",
+              "data/program-support/construction-weighting-v1.1.0/profiles.json": "aa2621fdfd837ceacf454070482aa3863de93bf1a5f3c1f85d7ffd607791681c"
+            },
+            "source_locator": "data/program-support/construction-weighting-v1.1.0/profiles.json#/profiles/residential_archetype-86fae2427a5cc0916a50",
+            "source_project": "ResStock",
+            "source_revision": "dd25369f41a83a0767aefeeac0b6f8a0b0edd649",
+            "transformation": "Copy frozen source quantities; divide area and capacity by counted reference floor area. Use source multiplier once. Select wall/slab recipes with detailed source precedence."
+          },
+          "recipes": {
+            "resstock-sdr.partition-wall-construction.9890a7": {
+              "capacity_J_m2_K": 25981.48957561821,
+              "interpretation": "Original source mass material layers; no equivalent fitting or added air films.",
+              "layers": [
+                {
+                  "model": "StandardOpaqueMaterial",
+                  "properties": {
+                    "conductivity_W_m_K": 0.1602906,
+                    "density_kg_m3": 801.0,
+                    "roughness": "Rough",
+                    "solar_absorptance": 0.6,
+                    "specific_heat_J_kg_K": 837.4,
+                    "thermal_absorptance": 0.9,
+                    "thickness_m": 0.0127,
+                    "visible_absorptance": 0.6
+                  }
+                },
+                {
+                  "model": "StandardOpaqueMaterial",
+                  "properties": {
+                    "conductivity_W_m_K": 0.391763531157105,
+                    "density_kg_m3": 83.034082224,
+                    "roughness": "Rough",
+                    "solar_absorptance": 0.7,
+                    "specific_heat_J_kg_K": 1211.67419087611,
+                    "thermal_absorptance": 0.9,
+                    "thickness_m": 0.0889,
+                    "visible_absorptance": 0.7
+                  }
+                },
+                {
+                  "model": "StandardOpaqueMaterial",
+                  "properties": {
+                    "conductivity_W_m_K": 0.1602906,
+                    "density_kg_m3": 801.0,
+                    "roughness": "Rough",
+                    "solar_absorptance": 0.6,
+                    "specific_heat_J_kg_K": 837.4,
+                    "thermal_absorptance": 0.9,
+                    "thickness_m": 0.0127,
+                    "visible_absorptance": 0.6
+                  }
+                }
+              ],
+              "model": "opaque_layers",
+              "source_locator": "data/construction-inputs/residential-assemblies-v1.json#/records/residential_archetype-86fae2427a5cc0916a50/assemblies/7/layers"
+            }
+          },
+          "reference": {
+            "counted_floor_area_m2": 29.914778880000004,
+            "profile_id": "residential_archetype-86fae2427a5cc0916a50",
+            "quantity_basis": "multiply normalized quantities by actual counted building floor area"
+          },
+          "reference_area_approximation": {
+            "evidence_profile_id": "residential_archetype-86fae2427a5cc0916a50",
+            "interpretation": "Mean of multiplied face areas where multipliers differ; preserve the frozen source inventory. Residential inferred adiabatic floor/ceiling object quantities retain their source convention.",
+            "unequal_multiplier_pair_counts": {
+              "floor_pairs": 0,
+              "wall_pairs": 0
+            }
+          },
+          "removed_wall_policy": "Restore only unrepresented InteriorWall capacity using source or equivalent recipes; exchange equivalence remains approximate",
+          "residual_floor_policy": "Restore only unrepresented InteriorFloor capacity; explicit slabs retain their capacity",
+          "residual_policy": "max(0, reference minus represented); report signed difference and excess; never subtract mass",
+          "schema_version": "1.0.0",
+          "status": "ready"
+        },
+        "materials": [],
+        "name": "Dwelling enclosure / source_building_331250 / building-level equivalent",
+        "provenance": {
+          "detailed_release": "v2.2.0",
+          "foundation_ground": {
+            "source_locator": "data/construction-inputs/foundation-execution-v1.json#/residential/residential_archetype-86fae2427a5cc0916a50",
+            "source_sha256": {
+              "host_airflow": "1f73fe7461655a235f1a017b4e4ca8ed1f820763891fdf404381c125b3d28e6f",
+              "native_capture": "c460845172e07c264dc740dfb2ebc1d725ad2a7c4fa505b90bea9af4b770fd83"
+            }
+          },
+          "interpretation_note": "Additive approximation, not replacement detailed rules. Reported fit errors are not building energy error bounds.",
+          "original_unit": "source SI layers and archetype reference areas",
+          "profile_release": "construction-weighting-v1.1.0",
+          "transformation": "Source precedence, precomputed area weights, fixed two-parameter thermal approximation; fixed ACH unchanged"
+        },
+        "reference_id": "residential_archetype-86fae2427a5cc0916a50",
+        "schema_version": "2.0.0",
+        "scope": "whole_dwelling",
+        "source": {
+          "building_type": "MultiFamily5PlusLowRise",
+          "construction_set_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+          "definition_release": "v0.1.1",
+          "evidence_view": "source",
+          "source_climate_label": "3C",
+          "source_family": "existing_stock_source_fixture",
+          "source_fixture_id": "residential_archetype-86fae2427a5cc0916a50",
+          "space_type": null,
+          "template": "ResStock SDR source fixture",
+          "vintage": {
+            "kind": "stock_vintage",
+            "status": "exact",
+            "value": "1980s"
+          }
+        },
+        "status": "ready",
+        "supporting_profile_id": "residential_archetype-86fae2427a5cc0916a50",
+        "weighting_policy": "precomputed_source_archetype"
+      },
+      "lists": {},
+      "partial": {}
+    }
+  },
+  "contexts": {
+    "3-c": {
+      "detailed": {
+        "fields": {},
+        "refs": {}
+      },
+      "unified": {
+        "fields": {},
+        "refs": {}
+      }
+    }
+  },
+  "id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+  "name": "Dwelling enclosure / source_building_331250",
+  "scope": "whole_dwelling",
+  "source": {
+    "building_type": "MultiFamily5PlusLowRise",
+    "construction_set_id": "resstock-sdr.multifamily-5-plus-low-rise.3c-1980s-0-499ft2-b331250.c0f4d7",
+    "definition_release": "v0.1.1",
+    "evidence_view": "source",
+    "source_climate_label": "3C",
+    "source_family": "existing_stock_source_fixture",
+    "source_fixture_id": "residential_archetype-86fae2427a5cc0916a50",
+    "space_type": null,
+    "template": "ResStock SDR source fixture",
+    "vintage": {
+      "kind": "stock_vintage",
+      "status": "exact",
+      "value": "1980s"
+    }
+  },
+  "values": {}
+}

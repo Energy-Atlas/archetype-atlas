@@ -1,0 +1,223 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SecondarySchool",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-pre-1980.secondary-school.source.gym.8c78b9",
+        "represented_area_m2": 1976.0,
+        "source_geometry_file_id": "sourcefile-3f22e6bf6a53e4ddf09b",
+        "source_program_id": "program-d80860cf95f61f3aa24d",
+        "weight": 0.391132224861441
+      },
+      {
+        "program_id": "doe-ref-pre-1980.secondary-school.source.library.3f3c68",
+        "represented_area_m2": 840.0,
+        "source_geometry_file_id": "sourcefile-3f22e6bf6a53e4ddf09b",
+        "source_program_id": "program-d29e35b12b4f1b376050",
+        "weight": 0.166270783847981
+      },
+      {
+        "program_id": "doe-ref-pre-1980.secondary-school.source.auditorium.ac0ad8",
+        "represented_area_m2": 988.0,
+        "source_geometry_file_id": "sourcefile-3f22e6bf6a53e4ddf09b",
+        "source_program_id": "program-0e76579df4b3a22cdee4",
+        "weight": 0.1955661124307205
+      },
+      {
+        "program_id": "doe-ref-pre-1980.secondary-school.source.gym-audience.14a025",
+        "represented_area_m2": 1248.0,
+        "source_geometry_file_id": "sourcefile-3f22e6bf6a53e4ddf09b",
+        "source_program_id": "program-7d9999bdac8544663166",
+        "weight": 0.24703087885985753
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-3249844ac9808acb63829c57"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.secondary-school.department.activity-mixed.f2f7cf",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-580daceacd681ae4093cfede",
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-1a3073203f3d35be6839ffd1",
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.secondary-school.activity-mixed-electric-equipment.1faa80",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 5.7925689881466855
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ad738b4ab6e056778ff734ca",
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.secondary-school.activity-mixed-gas-equipment.f7afdf",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ffb3e9fe94c782c4f55057fe",
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.secondary-school.activity-mixed-lighting.f90584",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 12.35932136683487
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4da29c2a92a62d3d50f9ea03",
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.secondary-school.activity-mixed-occupancy.da8d5c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.6993110614619223
+    }
+  ],
+  "mode": "department",
+  "name": "Activity_Mixed_SecondarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.secondary-school.activity-mixed-activity.c19020"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.secondary-school.activity-mixed-cooling-setpoint.776ccd"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-3249844ac9808acb63829c57",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-pre-1980.secondary-school.activity-mixed-heating-setpoint.0a8df0"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-9e8e1b3426d628d3332aacdf",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref Pre-1980",
+  "unresolved_loads": [
+    {
+      "quantity": "hot_water_volume",
+      "reason": "missing or multiple source demands; source member references retained"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.outpatient.source.office.19b766",
+        "represented_area_m2": 538.46601984,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-b111f94e41f280fba96a",
+        "weight": 0.7409869598568141
+      },
+      {
+        "program_id": "90-1-2013.outpatient.source.conference.aabb8b",
+        "represented_area_m2": 31.21542144,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-22061eca972b88bd30dd",
+        "weight": 0.042955765788800816
+      },
+      {
+        "program_id": "90-1-2013.outpatient.source.outpatient-floor2-work.1f1ebb",
+        "represented_area_m2": 157.00613760000007,
+        "source_geometry_file_id": "sourcefile-00c65f6d9c947f889348",
+        "source_program_id": "program-b242e89b58223a336ca0",
+        "weight": 0.21605727435438513
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-79553c1e8c2e141030b05316"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.outpatient.department.office-mixed.8d50e8",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-72ed2d2ca8c64d84a43f29be",
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-f57564ee6401daddf8dda5a4",
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.outpatient.office-mixed-electric-equipment.170fc7",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.352196239151988
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-806e6839f44187a29a776ed0",
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-28f88519fdc7146b957f",
+          "resolution-5557fc71561b3699e015",
+          "resolution-79b05029580eef31b81e",
+          "resolution-7d5957911bf8e7b2d447",
+          "resolution-dbdecf0d8c1c1904d602",
+          "resolution-e4a69465a2fe0b1ddf6c"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.outpatient.office-mixed-gas-equipment.17e600",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d2c2e4b0003fb42f07cc6c81",
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.outpatient.office-mixed-lighting.a260db",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 12.00342520432761
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-282c0da20fb7857cdaa2aa7f",
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.outpatient.office-mixed-occupancy.6928e6",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.07460317415023875
+    }
+  ],
+  "mode": "department",
+  "name": "Office_Mixed_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.outpatient.office-mixed-activity.bb5199"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.outpatient.office-mixed-cooling-setpoint.1c093c"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-79553c1e8c2e141030b05316",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.outpatient.office-mixed-heating-setpoint.ebc7e6"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013"
+}

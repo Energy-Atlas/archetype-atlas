@@ -1,0 +1,414 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "HighriseApartment",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0521940701d351577461c2eb",
+    "evidence-07a35e05dbe12ec71409dcc9",
+    "evidence-0c974c12dd518c742dc5dd94",
+    "evidence-0f4f12eac955a79820dddd8c",
+    "evidence-2a31a7ebd91e458bd9cd7acb",
+    "evidence-404a8aa61c39f0288f9bc4eb",
+    "evidence-47fc0ba2cb52dfb8f33ffffd",
+    "evidence-51a6ecfc28c851eedafb1138",
+    "evidence-522215c8baa69a224b4ba8d4",
+    "evidence-55dbecec30bf294b94fa99e9",
+    "evidence-5684e8ee7a079083e6d30e87",
+    "evidence-5a215867801bc63288427036",
+    "evidence-64864c22fb9cabf2d846f81b",
+    "evidence-6704e7d281cd626965b6f306",
+    "evidence-6b39ce315053248c78fdedec",
+    "evidence-7c005bacd401d3cdb9a26f7c",
+    "evidence-865268dbb9a231182b007a68",
+    "evidence-89f4e686fe4c7898030495a8",
+    "evidence-8dfeb5cf19b70a42895a1b70",
+    "evidence-9408e5f635a6147b2347944a",
+    "evidence-9df6566edc411794752f507b",
+    "evidence-b3a564f69756820aaec16388",
+    "evidence-b6a4f0ce9741f125b4917430",
+    "evidence-bf6303d395af2d4179588353",
+    "evidence-bf6df7c8080f9a11e18087a4",
+    "evidence-c6566dcf64f82988c8b6febf",
+    "evidence-c75ae492eb419a11c958eba7",
+    "evidence-c9698822786576becd416030",
+    "evidence-c9ea8dfd72bea0d62b950eaf",
+    "evidence-cc8ded90059ee8beb8c9bcea",
+    "evidence-d5ebfa35567128999cd430cc",
+    "evidence-da00086bff9a9007165c8612",
+    "evidence-ddb4c986374f8e3eae93b3b5",
+    "evidence-dfb199d54ae29fb1fe78e508",
+    "evidence-f329f6ca595667c436a9b2e1"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-5684e8ee7a079083e6d30e87",
+    "roof": 0.0,
+    "wwr": {
+      "E": null,
+      "N": 0.3,
+      "S": 0.3,
+      "W": null
+    }
+  },
+  "gate": [
+    "residential"
+  ],
+  "id": "iecc-2021.highrise-apartment.source.apartment-topfloor-ns.db8d61",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-0f4f12eac955a79820dddd8c",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-5dabb30c30a10c5706ccfb23",
+      "evidence_id": "evidence-64864c22fb9cabf2d846f81b",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.highrise-apartment.occ-apt-sch-stay-home-family.8c8cc2",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.028329034577
+    },
+    {
+      "basis": "floor_area",
+      "climate_evidence_ids": {
+        "2A": "evidence-6b39ce315053248c78fdedec",
+        "2B": "evidence-c9698822786576becd416030",
+        "3B": "evidence-d5ebfa35567128999cd430cc",
+        "3C": "evidence-c9ea8dfd72bea0d62b950eaf",
+        "4B": "evidence-cc8ded90059ee8beb8c9bcea",
+        "4C": "evidence-0521940701d351577461c2eb",
+        "5C": "evidence-9408e5f635a6147b2347944a",
+        "7A": "evidence-bf6303d395af2d4179588353",
+        "8A": "evidence-8dfeb5cf19b70a42895a1b70"
+      },
+      "demand_id": "demand-cdf860203f3de0522f9d6099",
+      "evidence_id": "evidence-b3a564f69756820aaec16388",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.highrise-apartment.ltg-sch-apartment-hardwired.6add57",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-b3a564f69756820aaec16388",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-b3a564f69756820aaec16388",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-b3a564f69756820aaec16388",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 3.76736,
+      "value_by_climate": {
+        "2A": 3.390624,
+        "2B": 3.390624,
+        "3B": 3.390624,
+        "3C": 3.390624,
+        "4B": 3.390624,
+        "4C": 3.390624,
+        "5C": 3.390624,
+        "7A": 3.390624,
+        "8A": 3.390624
+      }
+    },
+    {
+      "basis": "floor_area",
+      "climate_evidence_ids": {
+        "2A": "evidence-7c005bacd401d3cdb9a26f7c",
+        "2B": "evidence-f329f6ca595667c436a9b2e1",
+        "3B": "evidence-dfb199d54ae29fb1fe78e508",
+        "3C": "evidence-865268dbb9a231182b007a68",
+        "4B": "evidence-2a31a7ebd91e458bd9cd7acb",
+        "4C": "evidence-47fc0ba2cb52dfb8f33ffffd",
+        "5C": "evidence-522215c8baa69a224b4ba8d4",
+        "7A": "evidence-5a215867801bc63288427036",
+        "8A": "evidence-9df6566edc411794752f507b"
+      },
+      "demand_id": "demand-c34ed813bbf8b3ddc91ff32b",
+      "evidence_id": "evidence-0c974c12dd518c742dc5dd94",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.highrise-apartment.ltg-sch-apartment-plugin.fb32c5",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-0c974c12dd518c742dc5dd94",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-0c974c12dd518c742dc5dd94",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-0c974c12dd518c742dc5dd94",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.96875,
+      "value_by_climate": {
+        "2A": 0.871875,
+        "2B": 0.871875,
+        "3B": 0.871875,
+        "3C": 0.871875,
+        "4B": 0.871875,
+        "4C": 0.871875,
+        "5C": 0.871875,
+        "7A": 0.871875,
+        "8A": 0.871875
+      }
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-7663fa5370b4bb1be6a93e0f",
+      "evidence_id": "evidence-55dbecec30bf294b94fa99e9",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.highrise-apartment.eqp-apt-sch.58949d",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-55dbecec30bf294b94fa99e9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-55dbecec30bf294b94fa99e9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-55dbecec30bf294b94fa99e9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.67
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-83941d3760a2d9257e7a99cf",
+      "evidence_id": "evidence-c6566dcf64f82988c8b6febf",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.highrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2021.highrise-apartment.main.91daf1",
+      "evidence_id": "evidence-89f4e686fe4c7898030495a8",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.highrise-apartment.apt-dhw-sch.1729b4",
+      "scope": "program_service",
+      "service_id": "iecc-2021.highrise-apartment.main.91daf1",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {
+        "latent": "fraction of the water that can evaporate",
+        "latent_fraction": {
+          "evidence_id": "evidence-89f4e686fe4c7898030495a8",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.05
+        },
+        "semantics": "EnergyPlus WaterUse:Equipment",
+        "sensible": "fraction x mass flow x cp x (mixed - zone air temperature)",
+        "sensible_fraction": {
+          "evidence_id": "evidence-89f4e686fe4c7898030495a8",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        },
+        "zone_gains": "applied"
+      },
+      "unit": "m3/s/m2",
+      "value": 4.1474e-08,
+      "zone_heat_assignment": "program_zones"
+    }
+  ],
+  "mode": "source",
+  "name": "Apartment_topfloor_NS_HighriseApartment",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-b6a4f0ce9741f125b4917430",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.highrise-apartment.activity-schedule.9c23e9"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-bf6df7c8080f9a11e18087a4",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-6704e7d281cd626965b6f306",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.highrise-apartment.n-clgsetp-apt-sch.72c024"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-51a6ecfc28c851eedafb1138",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.highrise-apartment.n-htgsetp-apt-sch.57f644"
+    }
+  },
+  "pnnl_building_type": "ApartmentHighRise",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2021.highrise-apartment.main.91daf1"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-c75ae492eb419a11c958eba7",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-e78027a6831c4ece98e2",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 88.24868328,
+      "multiplier": 1,
+      "name": "T N1 Apartment"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 88.24868328,
+      "multiplier": 1,
+      "name": "T N2 Apartment"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 88.24868328,
+      "multiplier": 1,
+      "name": "T S1 Apartment"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 88.24868328,
+      "multiplier": 1,
+      "name": "T S2 Apartment"
+    }
+  ],
+  "standards_building_type": "HighriseApartment",
+  "template": "IECC 2021"
+}

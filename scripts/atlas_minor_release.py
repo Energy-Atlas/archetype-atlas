@@ -439,5 +439,148 @@ def main():
 # <<< release 1.4.0
 
 
+# >>> release 1.5.0
+# Release 1.5.0 adds the lighting controls of the source models to the commercial programs and
+# programs for the plenums ADR 0039 left unmapped (ADR 0044), beside everything of release 1.4.0.
+# Added as a tagged block for the reason the 1.3.0 block gives.
+from scripts import lighting_controls, plenum_aliases  # noqa: E402
+
+LIGHTING = ('data/program-inputs/lighting-controls-v1.json', 'scripts/lighting_controls.py',
+            'data/program-inputs/plenum-aliases-v1.json', 'sources/plenum-aliases.json', 'scripts/plenum_aliases.py')
+RELEASES['1.5.0'] = {
+    'overlays': ('reconciliation', 'construction_only', 'iecc_commercial', 'plenum_aliases', 'lighting_controls', 'residential'),
+    'inputs': (*RELEASES['1.4.0']['inputs'][:-1], *LIGHTING, 'scripts/atlas_minor_release.py'),
+    'decisions': (*RELEASES['1.4.0']['decisions'], 'docs/adr/0044-lighting-controls.md'),
+    'scope': 'commercial and residential',
+    'readme': '''# Energy Archetype Atlas release 1.5.0 (commercial and residential, delta)
+
+A delta on release 1.0.0 (ADR 0036): this folder holds only the files that differ
+from `data/atlas-releases/v1.0.0`, and `manifest.json` names that base with its
+manifest's SHA-256 and lists deleted files. Resolve it by reading the base and
+replacing or removing the files listed here (`scripts.atlas_minor_release.files`).
+
+Everything of release 1.4.0 (the DOE reference reconciliation, ADR 0037, the
+construction-only programs, ADR 0039, the IECC commercial family, ADR 0040, and the
+residential tree, ADR 0038, 0041, 0042), and (docs/adr/0044-lighting-controls.md):
+- Lighting controls: every commercial source program and twin records its
+  `lighting_controls`. IECC and 90.1 programs take the daylighting controls of the
+  PNNL prototype zones they represent (floor and lighting-power fractions controlled,
+  setpoint, control type, minimum fractions), with the locations that differ in
+  `daylighting_by_climate`; 90.1 programs also carry the openstudio-standards
+  space-type inputs. No DOE reference model has daylighting controls, so the DOE Ref
+  programs record a source zero. Occupancy-sensor credits stay inside the lighting
+  schedules. Values come from data/program-inputs/lighting-controls-v1.json.
+- Plenums: the 90 spaces ADR 0039 left without a standards row (tall-building,
+  detailed-office and laboratory plenums) take the template's Any/Plenum row by the
+  alias table sources/plenum-aliases.json, adding a plenum program and its reviewed
+  twin to 19 folders. They do not count toward floor area, so no mix changes.
+
+Exports: commercial programs as Program JSON 5.4.0 (5.2.0 and the dwelling fields of
+5.3.0, plus `lighting_controls`); dwelling programs as Program JSON 5.3.0.
+
+Verify with `python -m scripts.atlas_minor_release --release 1.5.0 --verify`; rebuild
+and compare with `--check`. Upstream notices are in `notices/` of either folder;
+original Atlas work remains unlicensed (see `LICENSE`).
+'''}
+
+_overlaid_before_1_5_0 = overlaid
+
+
+@contextlib.contextmanager
+def overlaid(overlays):
+    """The earlier overlays, then the plenum programs (after the construction-only programs) and the
+    lighting controls of every commercial program (ADR 0044)."""
+    later = ('plenum_aliases', 'lighting_controls')
+    with _overlaid_before_1_5_0(tuple(o for o in overlays if o not in later)):
+        if 'plenum_aliases' in overlays:
+            plenum_aliases.apply(atlas_programs.load_sources())
+        if 'lighting_controls' in overlays:
+            lighting_controls.apply(atlas_programs.load_sources())
+        yield
+# <<< release 1.5.0
+
+
+# >>> release 1.6.0
+# Release 1.6.0 replaces the deferred unified stubs of the IECC commercial sets by building-level
+# equivalents weighted by the IDF net surface areas (ADR 0045), beside everything of release 1.5.0.
+# Added as a tagged block for the reason the 1.3.0 block gives.
+from scripts import iecc_commercial_documents, iecc_unified  # noqa: E402
+from scripts.common import load_json  # noqa: E402
+
+UNIFIED = ('data/program-inputs/iecc-unified-areas-v1.json', 'scripts/iecc_unified.py')
+RELEASES['1.6.0'] = {
+    'overlays': (*RELEASES['1.5.0']['overlays'][:-1], 'iecc_unified', 'residential'),
+    'inputs': (*RELEASES['1.5.0']['inputs'][:-1], *UNIFIED, 'scripts/atlas_minor_release.py'),
+    'decisions': (*RELEASES['1.5.0']['decisions'], 'docs/adr/0045-iecc-unified-constructions.md'),
+    'scope': 'commercial and residential',
+    'readme': '''# Energy Archetype Atlas release 1.6.0 (commercial and residential, delta)
+
+A delta on release 1.0.0 (ADR 0036): this folder holds only the files that differ
+from `data/atlas-releases/v1.0.0`, and `manifest.json` names that base with its
+manifest's SHA-256 and lists deleted files. Resolve it by reading the base and
+replacing or removing the files listed here (`scripts.atlas_minor_release.files`).
+
+Everything of release 1.5.0 (the DOE reference reconciliation, ADR 0037, the
+construction-only programs, ADR 0039, the IECC commercial family, ADR 0040, the
+residential tree, ADR 0038, 0041, 0042, and the lighting controls and plenum programs,
+ADR 0044), and (docs/adr/0045-iecc-unified-constructions.md):
+- Unified constructions of the IECC commercial sets: every one of the 1,824 contexts
+  now holds a building-level equivalent in place of the deferred stub. Component
+  recipes use the existing equivalence physics, weighted by the net surface areas of
+  the source IDFs (data/program-inputs/iecc-unified-areas-v1.json); F- and C-factor
+  ground constructions keep their native assemblies; mass accounting, foundation
+  methods and design-flow infiltration equal the detailed documents'.
+
+Exports: IECC unified contexts as construction-equivalent 3.1.0; programs as Program
+JSON 5.4.0, as in release 1.5.0.
+
+Verify with `python -m scripts.atlas_minor_release --release 1.6.0 --verify`; rebuild
+and compare with `--check`. Upstream notices are in `notices/` of either folder;
+original Atlas work remains unlicensed (see `LICENSE`).
+'''}
+# What release 1.6.0 still leaves out: release 1.4.0's list without the IECC unified representation.
+DEFERRED_1_6_0 = ('generator recipes in program files', 'systems and water heaters of the IECC commercial family (ADR 0040)',
+                  'systems and water heaters of the residential families (ADR 0038 section 7)')
+
+_overlaid_before_1_6_0 = overlaid
+
+
+@contextlib.contextmanager
+def overlaid(overlays):
+    """The earlier overlays; with `iecc_unified`, the IECC construction documents' unified member is the
+    building-level equivalent of ADR 0045 instead of the deferred stub."""
+    if 'iecc_unified' not in overlays:
+        with _overlaid_before_1_6_0(overlays):
+            yield
+        return
+    areas = load_json(iecc_unified.OUTPUT)['areas']
+    stub = iecc_commercial_documents.Documents.pair
+
+    def pair(self, cid):
+        detailed, _ = stub(self, cid)
+        edition, building_type, climate = self.where[cid]
+        return detailed, iecc_unified.unified(detailed, areas[edition][building_type][climate])
+    with _overlaid_before_1_6_0(tuple(o for o in overlays if o != 'iecc_unified')):
+        iecc_commercial_documents.Documents.pair = pair
+        try:
+            yield
+        finally:
+            iecc_commercial_documents.Documents.pair = stub
+
+
+_assemble_before_1_6_0 = assemble
+
+
+def assemble(release):
+    """The 1.4.0 assembly; a release with the IECC unified constructions no longer defers them."""
+    out = _assemble_before_1_6_0(release)
+    if 'iecc_unified' in RELEASES[release]['overlays']:
+        manifest = json.loads(out['manifest.json'])
+        manifest['deferred'] = list(DEFERRED_1_6_0)
+        out['manifest.json'] = suite_bytes(manifest)
+    return out
+# <<< release 1.6.0
+
+
 if __name__ == '__main__':
     main()

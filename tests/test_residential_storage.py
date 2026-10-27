@@ -46,6 +46,11 @@ class ResStockMigrationTests(unittest.TestCase):
         cls.programs = program_files(cls.files)
         cls.records = {r['id']: r for r in cls.sources.records}
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.module, cls.sources, cls.ids, cls.files, cls.programs, cls.records
+
     def stored(self, record):
         return self.programs[self.ids[record['id']]]
 
@@ -145,6 +150,11 @@ class ResStockExportTests(unittest.TestCase):
         for record in sorted(records, key=lambda r: r['id']):
             first.setdefault(record['building_type'], record)
         cls.sample = list(first.values())
+
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.ids, cls.dwellings, cls.bundle, cls.v3, cls.v4, cls.old_schedules, cls.sample
 
     def normal(self, document):
         out = anonymous({k: v for k, v in document.items() if k not in ('schema_version', 'export_mode', 'version', 'id', 'dwelling')})

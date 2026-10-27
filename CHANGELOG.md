@@ -17,6 +17,38 @@ CI caches the generated tree under an input digest. The old generators (`active_
 browser scripts and tests) are retired. Old record URLs return the 404 page. No
 deployment is claimed.
 
+## Atlas release 2.0.0 candidate (full snapshot, phase 1) — 2026-10-27
+
+A full snapshot of release 1.6.0 that ends the delta chain (ADR 0046, stage X1 phase 1):
+same values, indented JSON one record per line (439 → 337 MB), and the generator
+recipes of 610 90.1 programs in each folder's `generator.json`. The folder is built by
+`python -m scripts.atlas_snapshot` and not committed until the 1.x deltas and frozen
+folders retire (phase 2). See the [release notes](docs/release-notes-atlas-v2.0.0.md).
+
+## Atlas release 1.6.0 candidate (IECC unified constructions) — 2026-10-27
+
+Add, as a delta on 1.0.0 that holds release 1.5.0 (ADR 0045, stage U): building-level
+equivalent (unified) constructions for all 1,824 IECC commercial contexts, weighted by
+the net surface areas of the source IDFs and computed with the existing equivalence
+physics. F- and C-factor ground constructions keep their native assemblies; adiabatic
+core floors that PNNL gives an F-factor construction are left out of the fits and
+listed. See the [release notes](docs/release-notes-atlas-v1.6.0.md).
+
+## Atlas release 1.5.0 candidate (lighting controls, plenums) — 2026-10-27
+
+Add, as a delta on 1.0.0 that holds release 1.4.0 (ADR 0044):
+- **Lighting controls (stage L):** every commercial program records the daylighting
+  controls of its source model zones: controlled floor and lighting-power fractions,
+  setpoint, control type and minimum fractions, by climate where they differ. IECC
+  and 90.1 values come from the PNNL prototypes (195 programs with controls); DOE Ref
+  programs record a source zero. Occupancy-sensor credits stay in the schedules.
+- **Plenums (stage G1):** the 90 spaces ADR 0039 left unmapped take the Any/Plenum
+  row, adding plenum programs to 19 folders.
+- **Contracts:** Program JSON 5.4.0 for every program of the release.
+
+Answer-key tests compare control fractions with the IDFs when they are present. See
+the [release and migration notes](docs/release-notes-atlas-v1.5.0.md).
+
 ## Atlas release 1.4.0 candidate (residential families) — 2026-10-26
 
 Add the residential tree of ADR 0038 as a delta on 1.0.0 that holds release 1.3.0

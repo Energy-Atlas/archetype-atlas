@@ -1,0 +1,171 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SuperMarket",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2013.super-market.source.office.fb358a",
+        "represented_area_m2": 27.835994100000676,
+        "source_geometry_file_id": "sourcefile-6e44b92c003c2d9a28dd",
+        "source_program_id": "program-921229df310a4205f8e1",
+        "weight": 0.37467332859388613
+      },
+      {
+        "program_id": "90-1-2013.super-market.source.meeting.fab1ba",
+        "represented_area_m2": 46.458042800001124,
+        "source_geometry_file_id": "sourcefile-6e44b92c003c2d9a28dd",
+        "source_program_id": "program-55cd3cebafd43940ef67",
+        "weight": 0.6253266714061139
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-40a0ddf44482efa3fcc41cfb"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.super-market.department.office-mixed.1a61e7",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-9990060d40c69fddba3019a0",
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-b7aa16d97c63f7fe34fd7084",
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.super-market.office-mixed-electric-equipment.ec1b43",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-771d688a75dc587eee66a229",
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-0387edff87ebfcf881d2",
+          "resolution-397984a590a82ebc67d5",
+          "resolution-9fd313ecfd2598f91f45",
+          "resolution-b7ec51112710aefc52d2"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2013.super-market.office-mixed-gas-equipment.0d6e5d",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-15e77f8b16aa0900a4d00907",
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.super-market.office-mixed-lighting.7f42df",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 12.755655795211155
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-36be72f63e0d002f81c3e388",
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.super-market.office-mixed-occupancy.3ab78e",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.3567127643323095
+    }
+  ],
+  "mode": "department",
+  "name": "Office_Mixed_SuperMarket",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.super-market.office-mixed-activity.b13f53"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.super-market.office-mixed-cooling-setpoint.0b5aad"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-40a0ddf44482efa3fcc41cfb",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.super-market.office-mixed-heating-setpoint.61bcfc"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2013"
+}

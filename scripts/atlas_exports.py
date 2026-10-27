@@ -16,6 +16,10 @@ infiltration method); the IECC sets have no unified representation yet.
 Release 1.4.0 holds release 1.3.0 and adds the residential tree (ADR 0038): dwelling
 programs export as Program JSON 5.3.0 (scripts.residential_exports) and IDF-derived construction sets as source
 model constructions 1.0.0 (scripts.prototype_dwellings).
+Release 1.5.0 adds the lighting controls (ADR 0044): every program exports as Program JSON 5.4.0, 5.3.0
+with `lighting_controls` on commercial programs. Release 1.6.0 adds the unified constructions of the IECC
+commercial sets (ADR 0045), exported as construction-equivalent 3.1.0. Release 2.0.0 is the full snapshot of
+1.6.0 (ADR 0046) and exports as 1.6.0 does.
 
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
@@ -24,6 +28,7 @@ python -m scripts.atlas_exports --release 1.1.0 --building-services doe-ref-1980
 python -m scripts.atlas_exports --release 1.4.0 --program resstock-sdr.single-family-detached.<...> --version filled
 """
 import argparse
+import contextlib
 import copy
 import json
 import sys
@@ -39,14 +44,16 @@ from scripts.common import ROOT, load_json
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0', '1.4.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
+# Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
 SOURCE_METHOD = 'source_design_flow'
 NATURAL_ACH = ('fixed_source_reference_natural_ach', 'fixed_source_annual_average_natural_ach')
 CONSTRUCTION_SCHEMAS = {'detailed': ('construction-json-v4.schema.json', 'construction-json-v3.schema.json', '4.0.0',
@@ -104,8 +111,90 @@ def derived_schemas():
     out[IECC['detailed'][0]] = construction_minor_iecc(out[MINOR['detailed'][0]])
     from scripts import prototype_dwellings, residential_exports
     out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
-    out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = prototype_dwellings.construction_schema()
+    out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
+    out[LIGHTING['program'][0]] = program_minor_lighting(out[residential_exports.PROGRAM_MINOR[0]])
     return out
+
+
+def source_model_schema(frozen=None):
+    """Source model constructions 1.0.0, its release enum extended to the later releases (additive)."""
+    from scripts import prototype_dwellings
+    schema = (frozen or prototype_dwellings.construction_schema)()
+    schema['properties']['release']['enum'] += [f'atlas-release-{r}' for r in LIGHTING['releases']]
+    return schema
+
+
+RATIO = {'type': 'number', 'minimum': 0, 'maximum': 1}
+DAYLIGHTING = {
+    'type': 'object', 'additionalProperties': False,
+    'required': ['controlled_floor_fraction', 'controlled_lighting_fraction', 'controlled_zones', 'zones', 'illuminance_setpoint_lux',
+                 'control_type', 'method', 'availability', 'minimum_input_power_fraction', 'minimum_light_output_fraction',
+                 'stepped_control_steps'],
+    'description': 'The Daylighting:Controls of the source model zones the program represents (ADR 0044). The fractions hold '
+                   'for the source model geometry; the settings are those of the zone with the most lighting power.',
+    'properties': {
+        'controlled_floor_fraction': {**RATIO, 'description': 'Floor area of the zones with controls over the program floor area.'},
+        'controlled_lighting_fraction': {**RATIO, 'description': 'Fraction of the program lighting power the reference points control.'},
+        'controlled_zones': {'type': 'integer', 'minimum': 1}, 'zones': {'type': 'integer', 'minimum': 1},
+        'illuminance_setpoint_lux': {'type': 'number', 'exclusiveMinimum': 0},
+        'control_type': {'enum': ['continuous', 'stepped', 'continuous_off']}, 'method': {'enum': ['split_flux', 'delight']},
+        'availability': {'enum': ['all_days_except_design_days']},
+        'minimum_input_power_fraction': RATIO, 'minimum_light_output_fraction': RATIO,
+        'stepped_control_steps': {'type': 'integer', 'minimum': 1},
+        'settings_conflict': {'type': 'boolean', 'description': 'Zones of the program differ in their settings.'}}}
+LIGHTING_CONTROLS = {
+    'type': 'object', 'additionalProperties': False, 'required': ['status', 'source'],
+    'description': 'Lighting controls of the program (ADR 0044). `daylighting` null is a source zero: the complete source model '
+                   'has no daylighting controls in these zones. Occupancy-sensor credits are inside the lighting schedule.',
+    'properties': {
+        'status': {'enum': ['known', 'unknown']}, 'source': {'enum': ['pnnl_prototype', 'doe_reference']},
+        'geometry_dependent': {'type': 'boolean'}, 'daylighting': {'anyOf': [DAYLIGHTING, {'type': 'null'}]},
+        'daylighting_by_climate': {'type': 'object', 'propertyNames': {'pattern': '^[0-8][A-C]$'},
+                                   'additionalProperties': {'anyOf': [DAYLIGHTING, {'type': 'null'}]},
+                                   'description': 'Daylighting for the climate zones where the source differs from `daylighting`.'},
+        'climate_evidence_ids': {'type': 'object', 'additionalProperties': {'type': 'string', 'minLength': 1}},
+        'evidence_id': {'type': 'string', 'minLength': 1}, 'reason': {'type': 'string', 'minLength': 1},
+        'standards_rule': {'type': 'object', 'additionalProperties': False,
+                           'required': ['target_illuminance_setpoint_lux', 'daylighting_appropriate', 'evidence_id'],
+                           'description': 'The openstudio-standards space-type daylighting inputs (90.1 templates).',
+                           'properties': {'target_illuminance_setpoint_lux': {'anyOf': [{'type': 'number'}, {'type': 'null'}]},
+                                          'daylighting_appropriate': {'type': 'boolean'},
+                                          'primary_sidelit_nongeometry_fraction': RATIO,
+                                          'secondary_sidelit_nongeometry_fraction': RATIO,
+                                          'evidence_id': {'type': 'string', 'minLength': 1}}}},
+    'allOf': [{'if': {'properties': {'status': {'const': 'known'}}},
+               'then': {'required': ['daylighting', 'evidence_id']}, 'else': {'required': ['reason']}}]}
+
+
+@contextlib.contextmanager
+def later_residential(release):
+    """Release 1.5.0 on, the residential exporters, which release 1.4.0 pins, write Program JSON 5.4.0 and
+    accept the later releases in source model constructions, for the length of one export."""
+    if release not in LIGHTING['releases']:
+        yield
+        return
+    from scripts import prototype_dwellings, residential_exports
+    saved = residential_exports.PROGRAM_MINOR, prototype_dwellings.construction_schema
+    residential_exports.PROGRAM_MINOR = LIGHTING['program']
+    prototype_dwellings.construction_schema = lambda: source_model_schema(saved[1])
+    try:
+        yield
+    finally:
+        residential_exports.PROGRAM_MINOR, prototype_dwellings.construction_schema = saved
+
+
+def program_minor_lighting(minor):
+    """Program JSON 5.4.0: 5.3.0 with the lighting controls (ADR 0044), optional."""
+    schema = json.loads(json.dumps(minor).replace('urn:archetype-atlas:program-json:5.3.0', 'urn:archetype-atlas:program-json:5.4.0'))
+    schema['title'] = 'Self-contained program JSON 5.4.0'
+    schema['description'] += (' 5.4.0 (release 1.5.0, ADR 0044) adds lighting_controls: the daylighting controls of the source '
+                              'model zones, by climate where they differ; every 5.3.0 field keeps its meaning.')
+    for version in VERSIONS:
+        variant = schema['$defs'][version]
+        variant['properties']['schema_version'] = {'const': LIGHTING['program'][1]}
+        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in LIGHTING['releases']]}
+        variant['properties']['lighting_controls'] = copy.deepcopy(LIGHTING_CONTROLS)
+    return schema
 
 
 NULLABLE_RATIO = {'anyOf': [{'type': 'number', 'minimum': 0, 'maximum': 1}, {'type': 'null'}]}
@@ -354,6 +443,9 @@ class Release:
         if files is None and release == '1.1.0':
             from scripts import atlas_delta_release
             files = atlas_delta_release.files()
+        elif files is None and release == '2.0.0':
+            from scripts import atlas_snapshot
+            files = atlas_snapshot.files()
         elif files is None and release != '1.0.0':
             from scripts import atlas_minor_release
             files = atlas_minor_release.files(release)
@@ -455,7 +547,8 @@ class Release:
         if version not in VERSIONS:
             raise ValueError('Unknown program version: '+version)
         if program_id not in self.programs and program_id in self.dwellings.programs:
-            return self.dwellings.program(program_id, version)
+            with later_residential(self.release):
+                return self.dwellings.program(program_id, version)
         if version == 'filled' and str(self.programs[program_id][1].get('template', '')).startswith('IECC '):
             raise ValueError(program_id+': IECC programs export as source only. They hold source values with no fillings, and the '
                              'filled version folds water heating into its source heaters, which are deferred with the systems '
@@ -474,9 +567,19 @@ class Release:
             document, schema = self.program_minor(document, program_id, version), MINOR['program'][0]
         if self.release in IECC['releases']:
             document, schema = self.program_iecc(document, program_id, version), IECC['program'][0]
+        if self.release in LIGHTING['releases']:
+            document, schema = self.program_lighting(document, program_id), LIGHTING['program'][0]
         errors = [e.message for e in validator(schema).iter_errors(document)]
         if errors:
             raise ValueError(program_id+': '+'; '.join(errors[:5]))
+        return document
+
+    def program_lighting(self, document, program_id):
+        """Program JSON 5.4.0 from a 5.2.0 document: the stored lighting controls (ADR 0044)."""
+        document = {**document, 'schema_version': LIGHTING['program'][1]}
+        stored = self.programs[program_id][1]
+        if 'lighting_controls' in stored:
+            document['lighting_controls'] = copy.deepcopy(stored['lighting_controls'])
         return document
 
     def program_iecc(self, document, program_id, version):
@@ -587,7 +690,8 @@ class Release:
         if set_id.startswith(('iecc-', 'hud-code.', 'doe-final-rule.')) and any(
                 p.startswith('residential/') and p.endswith(f'/constructions/{set_id}.json') for p in self.files):
             from scripts import prototype_dwellings
-            return prototype_dwellings.construction(self, set_id, key)
+            with later_residential(self.release):
+                return prototype_dwellings.construction(self, set_id, key)
         if self.release != '1.0.0':
             name, version, _ = MINOR[representation]
         if self.release in IECC['releases'] and representation == 'detailed':
@@ -630,7 +734,7 @@ def main():
                 path.write_bytes(suite_bytes(schema))
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
-        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 3.0.0 / 3.1.0, '
+        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 3.0.0 / 3.1.0, '
               'source model constructions 1.0.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return
