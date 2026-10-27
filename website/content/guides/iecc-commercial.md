@@ -48,7 +48,10 @@ which are deferred with the systems.
   the `source_design_flow` method. There is no natural-ACH value.
 - **Window ratios:** the 15 whole-building values are on the set; programs carry their
   own by direction.
-- **Unified representation:** deferred. The export refuses it for these sets.
+- **Unified representation:** from release 1.6.0 (ADR 0045). Each context holds a
+  building-level equivalent weighted by the net surface areas of its IDF;
+  `--representation unified` exports it as construction-equivalent 3.1.0. Release 1.3.0
+  to 1.5.0 refuse it.
 
 ## Services and water
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## Atlas release 1.6.0 candidate (IECC unified constructions) — 2026-10-27
+
+Add, as a delta on 1.0.0 that holds release 1.5.0 (ADR 0045, stage U): building-level
+equivalent (unified) constructions for all 1,824 IECC commercial contexts, weighted by
+the net surface areas of the source IDFs and computed with the existing equivalence
+physics. F- and C-factor ground constructions keep their native assemblies; adiabatic
+core floors that PNNL gives an F-factor construction are left out of the fits and
+listed. See the [release notes](docs/release-notes-atlas-v1.6.0.md).
+
 ## Atlas release 1.5.0 candidate (lighting controls, plenums) — 2026-10-27
 
 Add, as a delta on 1.0.0 that holds release 1.4.0 (ADR 0044):
