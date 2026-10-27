@@ -18,6 +18,11 @@ class Release140Tests(unittest.TestCase):
         cls.listed = atlas_minor_release.verify('1.4.0')
         cls.release = Release(release='1.4.0')
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.listed, cls.release
+
     def test_release_holds_release_1_3_0_unchanged(self):
         earlier = json.loads((ROOT/'data/atlas-releases/v1.3.0/manifest.json').read_text())
         changed = [p for p, e in earlier['files'].items() if self.listed['files'].get(p) != e]
