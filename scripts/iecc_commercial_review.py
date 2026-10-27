@@ -8,6 +8,12 @@ editions of comparable vintage. It is evidence only: it creates no pairing and n
 records. Program densities of both families are weighted by the IECC zone floor areas
 of the same space types; envelope values are the 5A contexts' exterior wall, roof and
 window assemblies by area-dominant building default.
+
+A 90.1 mean is printed only when the 90.1 template has a program for every counted IECC
+zone: by the same name, or by the template's own tag where 90.1-2019 split it (the
+large office's 'WholeBuilding - Lg Office-basement' and '-others' are 90.1-2007's
+'WholeBuilding - Lg Office'). Otherwise the cell is a dash and a note gives the share
+of the floor area that matched.
 """
 import argparse
 import json
@@ -43,16 +49,31 @@ def ninety_one():
     return out
 
 
+def area(p):
+    return math.fsum(z['floor_area_m2']*z['multiplier'] for z in p['source_zones'] if z['counted'])
+
+
 def weighted(programs, values, quantity):
-    total = area = 0.0
+    total = counted = 0.0
     for p in programs:
         v = values(p).get(quantity)
-        a = math.fsum(z['floor_area_m2']*z['multiplier'] for z in p['source_zones'] if z['counted'])
+        a = area(p)
         if v is None or a == 0:
             continue
         total += v*a
-        area += a
-    return total/area if area else None
+        counted += a
+    return total/counted if counted else None
+
+
+def matched(reference, template, building_type, name):
+    """The 90.1 values of an IECC program: the same name, or the tag 90.1-2019 split into '-basement' and '-others'."""
+    if (template, building_type, name) in reference:
+        return reference[(template, building_type, name)]
+    tag, _, rest = name.partition('_')
+    for split in ('-basement', '-others'):
+        if tag.endswith(split):
+            return reference.get((template, building_type, tag[:-len(split)]+'_'+rest))
+    return None
 
 
 def envelope(payload):
@@ -87,7 +108,9 @@ def build():
              'nothing here pairs editions or shares records. Editions are set side by side by vintage only.', '',
              '- **Densities** are whole-building means over the counted IECC zones, both families weighted by the '
              'IECC zone floor areas of the same space types. 90.1 lighting includes additional lighting; filled 90.1 '
-             'values are used where the source is unknown. A dash: the space type has no 90.1 program of that name.',
+             'values are used where the source is unknown. A 90.1 dash: the template has no program for part of the '
+             'counted IECC floor area (by name, or by the tag 90.1-2019 split); the notes below each table give the '
+             'share that matched.',
              '- **Envelope** is the 5A (Buffalo) context: layer conductance without films (W/m²K) of the area-dominant '
              'exterior wall and roof, window U (W/m²K) and SHGC, and the whole-building window-to-wall ratio over true '
              'outdoor walls (north, east, south, west).', '']
@@ -100,8 +123,14 @@ def build():
         lines += [f'## IECC {edition} and {ninety}', '',
                   '| Type | LPD IECC | LPD 90.1 | EPD IECC | EPD 90.1 | Occ. IECC | Occ. 90.1 | Wall | Roof | Window | WWR N/E/S/W |',
                   '| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- |']
+        notes = []
         for building_type in sorted(TYPES.values()):
             ps = programs[building_type]
+            total = math.fsum(area(p) for p in ps)
+            covered = math.fsum(area(p) for p in ps if matched(reference, ninety, building_type, p['name']) is not None)
+            complete = total > 0 and covered == total
+            if not complete:
+                notes.append(f'- {building_type}: {ninety} programs match {covered/total:.0%} of the counted IECC floor area.')
 
             def iecc(p):
                 values = {l['quantity']: l['value'] for l in p['loads']}
@@ -111,13 +140,16 @@ def build():
             for quantity, _ in QUANTITIES:
                 scale = 100.0 if quantity == 'occupancy' else 1.0
                 row.append(fmt(weighted(ps, iecc, quantity), scale))
-                row.append(fmt(weighted(ps, lambda p: reference.get((ninety, building_type, p['name']), {}), quantity), scale))
+                row.append(fmt(weighted(ps, lambda p: matched(reference, ninety, building_type, p['name']) or {}, quantity),
+                               scale) if complete else '–')
             env = envelope(document['envelope'][building_type])
             wwr = env['wwr']
             row += [env['ExteriorWall'] or '–', env['ExteriorRoof'] or '–', env['ExteriorWindow'] or '–',
                     '/'.join('–' if wwr[d] is None else f'{wwr[d]:.2f}' for d in 'NESW')]
             lines.append('| ' + ' | '.join(row) + ' |')
         lines.append('')
+        if notes:
+            lines += notes + ['']
     lines += ['## Climate dependence', '',
               'Loads that differ by location within an edition (stored as `value_by_climate`, plan C6):', '']
     for edition in ('2006', '2009', '2012', '2015', '2018', '2021'):
