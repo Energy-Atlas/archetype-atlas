@@ -18,6 +18,11 @@ class CompositionTests(unittest.TestCase):
         cls.documents = iecc_commercial_overlay.constructions()
         cls.areas = load_json(iecc_unified.OUTPUT)['areas']
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.documents, cls.areas
+
     def unified(self, cid):
         edition, building_type, climate = self.documents.where[cid]
         detailed, _ = self.documents.pair(cid)
@@ -62,6 +67,11 @@ class Release160Tests(unittest.TestCase):
         from scripts.atlas_exports import Release
         cls.listed = atlas_minor_release.verify('1.6.0')
         cls.release = Release(release='1.6.0')
+
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.listed, cls.release
 
     def test_iecc_contexts_export_unified(self):
         sets = [s for s in self.release.constructions.sets if s.startswith('iecc-') and
