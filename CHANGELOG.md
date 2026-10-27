@@ -1,5 +1,13 @@
 # Changelog
 
+## Atlas release 2.0.0 candidate (full snapshot, phase 1) — 2026-10-27
+
+A full snapshot of release 1.6.0 that ends the delta chain (ADR 0046, stage X1 phase 1):
+same values, indented JSON one record per line (439 → 337 MB), and the generator
+recipes of 610 90.1 programs in each folder's `generator.json`. The folder is built by
+`python -m scripts.atlas_snapshot` and not committed until the 1.x deltas and frozen
+folders retire (phase 2). See the [release notes](docs/release-notes-atlas-v2.0.0.md).
+
 ## Atlas release 1.6.0 candidate (IECC unified constructions) — 2026-10-27
 
 Add, as a delta on 1.0.0 that holds release 1.5.0 (ADR 0045, stage U): building-level

@@ -18,7 +18,8 @@ programs export as Program JSON 5.3.0 (scripts.residential_exports) and IDF-deri
 model constructions 1.0.0 (scripts.prototype_dwellings).
 Release 1.5.0 adds the lighting controls (ADR 0044): every program exports as Program JSON 5.4.0, 5.3.0
 with `lighting_controls` on commercial programs. Release 1.6.0 adds the unified constructions of the IECC
-commercial sets (ADR 0045), exported as construction-equivalent 3.1.0.
+commercial sets (ADR 0045), exported as construction-equivalent 3.1.0. Release 2.0.0 is the full snapshot of
+1.6.0 (ADR 0046) and exports as 1.6.0 does.
 
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
@@ -43,16 +44,16 @@ from scripts.common import ROOT, load_json
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
-LIGHTING = {'releases': ('1.5.0', '1.6.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
 SOURCE_METHOD = 'source_design_flow'
 NATURAL_ACH = ('fixed_source_reference_natural_ach', 'fixed_source_annual_average_natural_ach')
 CONSTRUCTION_SCHEMAS = {'detailed': ('construction-json-v4.schema.json', 'construction-json-v3.schema.json', '4.0.0',
@@ -442,6 +443,9 @@ class Release:
         if files is None and release == '1.1.0':
             from scripts import atlas_delta_release
             files = atlas_delta_release.files()
+        elif files is None and release == '2.0.0':
+            from scripts import atlas_snapshot
+            files = atlas_snapshot.files()
         elif files is None and release != '1.0.0':
             from scripts import atlas_minor_release
             files = atlas_minor_release.files(release)
