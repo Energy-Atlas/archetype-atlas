@@ -1,5 +1,100 @@
 # Changelog
 
+## Atlas release 2.0.0 candidate (full snapshot, phase 1) — 2026-10-27
+
+A full snapshot of release 1.6.0 that ends the delta chain (ADR 0046, stage X1 phase 1):
+same values, indented JSON one record per line (439 → 337 MB), and the generator
+recipes of 610 90.1 programs in each folder's `generator.json`. The folder is built by
+`python -m scripts.atlas_snapshot` and not committed until the 1.x deltas and frozen
+folders retire (phase 2). See the [release notes](docs/release-notes-atlas-v2.0.0.md).
+
+## Atlas release 1.6.0 candidate (IECC unified constructions) — 2026-10-27
+
+Add, as a delta on 1.0.0 that holds release 1.5.0 (ADR 0045, stage U): building-level
+equivalent (unified) constructions for all 1,824 IECC commercial contexts, weighted by
+the net surface areas of the source IDFs and computed with the existing equivalence
+physics. F- and C-factor ground constructions keep their native assemblies; adiabatic
+core floors that PNNL gives an F-factor construction are left out of the fits and
+listed. See the [release notes](docs/release-notes-atlas-v1.6.0.md).
+
+## Atlas release 1.5.0 candidate (lighting controls, plenums) — 2026-10-27
+
+Add, as a delta on 1.0.0 that holds release 1.4.0 (ADR 0044):
+- **Lighting controls (stage L):** every commercial program records the daylighting
+  controls of its source model zones: controlled floor and lighting-power fractions,
+  setpoint, control type and minimum fractions, by climate where they differ. IECC
+  and 90.1 values come from the PNNL prototypes (195 programs with controls); DOE Ref
+  programs record a source zero. Occupancy-sensor credits stay in the schedules.
+- **Plenums (stage G1):** the 90 spaces ADR 0039 left unmapped take the Any/Plenum
+  row, adding plenum programs to 19 folders.
+- **Contracts:** Program JSON 5.4.0 for every program of the release.
+
+Answer-key tests compare control fractions with the IDFs when they are present. See
+the [release and migration notes](docs/release-notes-atlas-v1.5.0.md).
+
+## Atlas release 1.4.0 candidate (residential families) — 2026-10-26
+
+Add the residential tree of ADR 0038 as a delta on 1.0.0 that holds release 1.3.0
+(and so 1.1.0 and 1.2.0) unchanged:
+- **ResStock (S12a):** the 41 SDR fixture dwellings, one program each with its
+  annual series and fillings, and one construction set of one context. Every value
+  equals its frozen source; exports equal the frozen exporters' documents.
+- **IECC residential (S12, ADR 0041):** editions 2006 to 2024, single-family and
+  per-unit multifamily, one program per appliance fuel, entries with `applies_with`
+  for foundation, climate code and heating system; 14 construction sets with 1,036
+  climate × foundation contexts. Extracted offline from 4,144 pinned models.
+- **Manufactured housing (S13, ADR 0042):** HUD Code and DOE Final Rule 2022
+  (tier 1 and 2), single- and multi-section; contexts per location with the five 3A
+  cities as sub-contexts. Gap: no existing-building category.
+- **Contracts:** Program JSON 5.3.0 (additive minor for dwellings) and source model
+  constructions 1.0.0; `idf_schedules` reads Schedule:Year, Week and Day objects.
+
+Answer-key tests compare every IECC edition in 4A and 1AWH and every
+manufactured-housing location under the HUD Code with the IDFs when they are present.
+No hosted check or deployment is claimed. See the
+[release and migration notes](docs/release-notes-atlas-v1.4.0.md).
+
+## Atlas release 1.3.0 candidate (IECC commercial prototypes) — 2026-10-26
+
+Add the IECC commercial prototype family (ADR 0040). It covers 16 PNNL building types in
+the IECC 2006, 2009, 2012, 2015, 2018 and 2021 editions, in 96 folders under
+`commercial/iecc-<year>/`.
+- Values are extracted offline from the pinned PNNL IDFs into six definition inputs.
+  Each IDF is checked against its archive record, and every schedule conversion over
+  the full year.
+- 1,134 programs and mixes. Zones map to standards space types through one lookup
+  table with a reasoned alias table. Absent objects are source zeros, and the 2021
+  lighting that differs by climate is stored as `value_by_climate`.
+- 1,077 building services and hot-water draws with zone gains.
+- 96 detailed construction sets of 19 contexts, with the IDF design-flow infiltration
+  and the whole-building window ratios. The unified representation is deferred.
+- Additive exports Program JSON 5.2.0 and detailed constructions 4.2.0.
+- Answer-key tests compare the release with the IDFs in Buffalo, Miami and Fairbanks.
+- An evidence-only report compares IECC with 90.1.
+- The delta `data/atlas-releases/v1.3.0` holds releases 1.1.0 and 1.2.0 unchanged.
+
+No frozen release or existing record changes. See the
+[release and migration notes](docs/release-notes-atlas-v1.3.0.md) and the agent
+decisions in ADR 0040.
+
+## Atlas release 1.2.0 candidate (construction-only programs) — 2026-10-26
+
+Add programs to the 51 template × building-type folders that had construction sets
+only (ADR 0039). The new types are college, courthouse, laboratory, data centres,
+detailed offices, the generic office, and tall buildings.
+- 819 source programs, 39 general mixes, 193 HVAC systems and 99 hot-water services.
+  They are built offline from pinned openstudio-standards sources by the existing
+  builder, definition, composition and resolution code.
+- User-approved fillings follow the resolution policy's rules.
+- Courthouse design days and one Courthouse holiday rule are completed in the filled
+  export. The generic office's hot water is a per-area estimate from the large
+  detailed office, recorded as a research assumption.
+- The delta `data/atlas-releases/v1.2.0` holds release 1.1.0's changes unchanged.
+- Release 1.2.0 also records the residential storage decisions (ADR 0038).
+
+No frozen release or existing record changes. See the
+[release and migration notes](docs/release-notes-atlas-v1.2.0.md).
+
 ## Atlas release 1.1.0 candidate (DOE reference reconciliation) — 2026-10-25
 
 Reconcile the DOE Ref templates with the pinned DOE v1.4_7.2 post-1980 and

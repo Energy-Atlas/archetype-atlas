@@ -1,0 +1,346 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-20415d3665e8a08f1cccd5c7",
+    "evidence-336d4fe12598556c6c53fa34",
+    "evidence-4299c914bead3579cf2f8283",
+    "evidence-444948afd385dd2c6a6d94e7",
+    "evidence-56f590d63947c65228a7a456",
+    "evidence-76746ff612b45a8f4f1c0066",
+    "evidence-76f94fd39629743b6598c7ff",
+    "evidence-87c9d15b67e601c938ab53b2",
+    "evidence-9f1d8bd0da1fa474ff400637",
+    "evidence-a16cfb4e469943957ce872e2",
+    "evidence-acbef6f42bcbb4de125d7666",
+    "evidence-bfbebd3cfc5ffaf813792231",
+    "evidence-c64ae2c3779cf1f0a109d8db",
+    "evidence-d48c358324b010172e669cf0",
+    "evidence-e1315041e9f189095a6e7ab2",
+    "evidence-e94a953e94b07e5d71d824f5",
+    "evidence-ff640c8ae1104efca5ce108f"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-87c9d15b67e601c938ab53b2",
+    "roof": null,
+    "wwr": {
+      "E": 0.1236,
+      "N": null,
+      "S": null,
+      "W": null
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2018.small-hotel.source.laundry.e26c48",
+  "lighting_controls": {
+    "daylighting": {
+      "availability": "all_days_except_design_days",
+      "control_type": "stepped",
+      "controlled_floor_fraction": 1.0,
+      "controlled_lighting_fraction": 0.26,
+      "controlled_zones": 1,
+      "illuminance_setpoint_lux": 323.0,
+      "method": "split_flux",
+      "minimum_input_power_fraction": 0.3,
+      "minimum_light_output_fraction": 0.2,
+      "stepped_control_steps": 3,
+      "zones": 1
+    },
+    "evidence_id": "evidence-bfbebd3cfc5ffaf813792231",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1ceb4c66568375686958bf9d",
+      "evidence_id": "evidence-4299c914bead3579cf2f8283",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.laundry-room-occ-sch.6385e7",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.107639104166
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-733632ac5c8f90ac7e1c28dd",
+      "evidence_id": "evidence-444948afd385dd2c6a6d94e7",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.ltg-sch-laundry.242357",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-444948afd385dd2c6a6d94e7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-444948afd385dd2c6a6d94e7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-444948afd385dd2c6a6d94e7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.165632
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-be6be2f730c6c2c129c3e74d",
+      "evidence_id": "evidence-76f94fd39629743b6598c7ff",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-d6a4384191c455f8222b37ee",
+      "evidence_id": "evidence-c64ae2c3779cf1f0a109d8db",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.laundry-room-eqp-elec-sch.af82a1",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-c64ae2c3779cf1f0a109d8db",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-c64ae2c3779cf1f0a109d8db",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-c64ae2c3779cf1f0a109d8db",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 27.69253619364
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-74b24b518d4358b89d659877",
+      "evidence_id": "evidence-336d4fe12598556c6c53fa34",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.laundry-room-eqp-gas-sch.05b250",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-336d4fe12598556c6c53fa34",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-336d4fe12598556c6c53fa34",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-336d4fe12598556c6c53fa34",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 409.867097808594
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2018.small-hotel.main.b0f610",
+      "evidence_id": "evidence-e94a953e94b07e5d71d824f5",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.laundry-room-shw-sch.11a222",
+      "scope": "program_service",
+      "service_id": "iecc-2018.small-hotel.main.b0f610",
+      "status": "known",
+      "target_temperature_degC": 82.22,
+      "thermal_effects": {
+        "latent": "fraction of the water that can evaporate",
+        "latent_fraction": {
+          "evidence_id": "evidence-e94a953e94b07e5d71d824f5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.05
+        },
+        "semantics": "EnergyPlus WaterUse:Equipment",
+        "sensible": "fraction x mass flow x cp x (mixed - zone air temperature)",
+        "sensible_fraction": {
+          "evidence_id": "evidence-e94a953e94b07e5d71d824f5",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        },
+        "zone_gains": "applied"
+      },
+      "unit": "m3/s/m2",
+      "value": 1.322029e-06,
+      "zone_heat_assignment": "program_zones"
+    }
+  ],
+  "mode": "source",
+  "name": "Laundry_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d48c358324b010172e669cf0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.small-hotel.activity-sch.55cb0f"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-56f590d63947c65228a7a456",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": false,
+        "heating_enabled": false
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-ff640c8ae1104efca5ce108f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-a16cfb4e469943957ce872e2",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "pnnl_building_type": "HotelSmall",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2018.small-hotel.main.b0f610"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-acbef6f42bcbb4de125d7666",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-363f099e3546cbbadba2",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 97.826901120823,
+      "multiplier": 1,
+      "name": "LaundryRoomFlr1"
+    }
+  ],
+  "standards_building_type": "SmallHotel",
+  "template": "IECC 2018"
+}

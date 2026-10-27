@@ -14,6 +14,11 @@ class MinorExportTests(unittest.TestCase):
     def setUpClass(cls):
         cls.release = Release(release='1.1.0')
 
+    @classmethod
+    def tearDownClass(cls):
+        # unittest keeps every test class until the run ends; free the release state.
+        del cls.release
+
     def program(self, prefix):
         return next(p for p in self.release.program_ids() if p.startswith(prefix))
 

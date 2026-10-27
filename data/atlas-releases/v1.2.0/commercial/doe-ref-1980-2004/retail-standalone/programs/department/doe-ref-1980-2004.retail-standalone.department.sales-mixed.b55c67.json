@@ -1,0 +1,203 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.retail-standalone.source.point-of-sale.10a9de",
+        "represented_area_m2": 150.81,
+        "source_geometry_file_id": "sourcefile-8d150ba530d87a2bdc18",
+        "source_program_id": "program-ad808b11256faea0629f",
+        "weight": 0.07928593137626783
+      },
+      {
+        "program_id": "doe-ref-1980-2004.retail-standalone.source.retail.ba654f",
+        "represented_area_m2": 1751.2929,
+        "source_geometry_file_id": "sourcefile-8d150ba530d87a2bdc18",
+        "source_program_id": "program-25c4c5373e0c32d574c7",
+        "weight": 0.9207140686237322
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-1e3d73d77b9d836c931f2b84"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.retail-standalone.department.sales-mixed.b55c67",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-580e1eecf38af84c1b1cc41f",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-additional-lighting.bbaa9c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-44320ee1c1210109194b3487",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-electric-equipment.5f373b",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 4.679998451500136
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-dfca33d87d27fbed8b4faf9a",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-additional-lighting.bbaa9c",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7fba34368c3715c8aa8cae4b",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-lighting.c39e23",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 36.274378104311765
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-281519a99f4557bf4217d910",
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.retail-standalone.sales-mixed-occupancy.014be0",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.16145865625064584
+    }
+  ],
+  "mode": "department",
+  "name": "Sales_Mixed_RetailStandalone",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.retail-standalone.sales-mixed-activity.f4b9d5"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.retail-standalone.sales-mixed-cooling-setpoint.ba1ffb"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-1e3d73d77b9d836c931f2b84",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.retail-standalone.sales-mixed-heating-setpoint.d87b7f"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-2517b8e81006fbbfd3294c94",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004"
+}

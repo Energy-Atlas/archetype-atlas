@@ -1,0 +1,340 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-03a6b93f5302084636626a6d",
+    "evidence-0404a9a53c1706e76cf2be46",
+    "evidence-0fbaf4b38ff350ccd744b648",
+    "evidence-4323d934d29143909eaa82e6",
+    "evidence-679e688300d7728a9611ab51",
+    "evidence-71d7af5aab9c513616381428",
+    "evidence-76122fd8cb17b9c69c0c5c39",
+    "evidence-89e601047f305ff60369ed3d",
+    "evidence-92cb421a3122fd0586e64c61",
+    "evidence-d9e015297267819485a77d6c",
+    "evidence-e2ef417d736fe40e61652651",
+    "evidence-e88bf0e5c6533fff7cd0ba47",
+    "evidence-f0414f8c6e09a33c8cb2d9f5"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-0404a9a53c1706e76cf2be46",
+    "roof": null,
+    "wwr": {
+      "E": null,
+      "N": 0.0,
+      "S": null,
+      "W": null
+    }
+  },
+  "filling_evidence_ids": [
+    "evidence-1fc52bddc852a2c6e0db9ce2",
+    "evidence-27ee39e4fdb2959916363423",
+    "evidence-59924c6c446af4f41b61baa2",
+    "evidence-6b398ca36e69b23d5942c0cf",
+    "evidence-6bc9f1a0e893ca2a1b201cfc",
+    "evidence-8473e28bc9d9a71c71e4dabc"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-pre-1980.small-hotel.source.elec-mech-room.b0a89b",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0a866b9f9f01fd3d3a7262fc",
+      "evidence_id": "evidence-d9e015297267819485a77d6c",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": {
+        "constant": 0
+      },
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-626fdc400f7a9d50eb03e9ca",
+      "evidence_id": "evidence-03a6b93f5302084636626a6d",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": {
+        "constant": 0
+      },
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-e1a9e9fb6e1f441641f677d6",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-42423d0ab0a2d338dd328d48",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "visible": {
+          "evidence_id": "evidence-3172ef4f04d636193ab7cace",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-7cdf8d3eeac01ef0209fa86f",
+      "evidence_id": "evidence-92cb421a3122fd0586e64c61",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": {
+        "constant": 0
+      },
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-e1a9e9fb6e1f441641f677d6",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-42423d0ab0a2d338dd328d48",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "visible": {
+          "evidence_id": "evidence-3172ef4f04d636193ab7cace",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-4f2a5090939f614fb7cf5cd4",
+      "evidence_id": "evidence-0fbaf4b38ff350ccd744b648",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-hotel.small-hotel-bldg-elevators.6e40be",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-c04ed0155d581b31c36d813d",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-42e13a0124a54842d49509fc",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-cbcb83c4a6111498cacd363b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a3a7cf39e63bfcfc81148350",
+      "evidence_id": "evidence-e2ef417d736fe40e61652651",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-4831bb351f552a1d5625",
+          "resolution-7eae2d83012921de91a2"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": {
+            "constant": 0
+          }
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-pre-1980.small-hotel.doe-reference-no-object-constant-0.47b394",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-27f66137d58c66edaf5e2617",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-e90372559b53a95c0b499c06",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-177a1a7ec5f846848623f1ce",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Elec/MechRoom_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-76122fd8cb17b9c69c0c5c39",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "conditioning": {
+      "filling": {
+        "basis": "executed_upstream",
+        "evidence": [
+          "evidence-6bc9f1a0e893ca2a1b201cfc"
+        ],
+        "resolutions": [
+          "resolution-7febbd5a25a5743363d4"
+        ],
+        "rules": [
+          "inspected_inactive_controls"
+        ],
+        "set": {
+          "evidence_id": "evidence-6bc9f1a0e893ca2a1b201cfc",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "state",
+          "value": {
+            "cooling_enabled": false,
+            "heating_enabled": false
+          }
+        }
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-e88bf0e5c6533fff7cd0ba47",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-679e688300d7728a9611ab51",
+      "required_inputs": [],
+      "status": "unknown",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-71d7af5aab9c513616381428",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "source_id": "program-5cda7f2858c06aa1f40e",
+  "template": "DOE Ref Pre-1980"
+}

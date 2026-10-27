@@ -9,14 +9,26 @@ rebuilt from the release, so their physics and policies are unchanged.
 
 Release 1.1.0 (the DOE reference reconciliation, ADR 0037) exports the additive
 minors Program JSON 5.1.0 and constructions 4.1.0 / 3.1.0, and building services
-1.0.0 per folder: `Release(release='1.1.0')`.
+1.0.0 per folder: `Release(release='1.1.0')`; release 1.2.0 adds the construction-only folders' programs (ADR 0039).
+Release 1.3.0 adds the IECC commercial family (ADR 0040) and exports Program JSON 5.2.0
+(loads by climate, source zones) and detailed constructions 4.2.0 (the source design-flow
+infiltration method); the IECC sets have no unified representation yet.
+Release 1.4.0 holds release 1.3.0 and adds the residential tree (ADR 0038): dwelling
+programs export as Program JSON 5.3.0 (scripts.residential_exports) and IDF-derived construction sets as source
+model constructions 1.0.0 (scripts.prototype_dwellings).
+Release 1.5.0 adds the lighting controls (ADR 0044): every program exports as Program JSON 5.4.0, 5.3.0
+with `lighting_controls` on commercial programs. Release 1.6.0 adds the unified constructions of the IECC
+commercial sets (ADR 0045), exported as construction-equivalent 3.1.0. Release 2.0.0 is the full snapshot of
+1.6.0 (ADR 0046) and exports as 1.6.0 does.
 
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
 python -m scripts.atlas_exports --construction SET --context KEY --representation detailed
 python -m scripts.atlas_exports --release 1.1.0 --building-services doe-ref-1980-2004/hospital
+python -m scripts.atlas_exports --release 1.4.0 --program resstock-sdr.single-family-detached.<...> --version filled
 """
 import argparse
+import contextlib
 import copy
 import json
 import sys
@@ -32,11 +44,18 @@ from scripts.common import ROOT, load_json
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'release': 'atlas-release-1.1.0', 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
+# Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+        'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
+# Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+SOURCE_METHOD = 'source_design_flow'
+NATURAL_ACH = ('fixed_source_reference_natural_ach', 'fixed_source_annual_average_natural_ach')
 CONSTRUCTION_SCHEMAS = {'detailed': ('construction-json-v4.schema.json', 'construction-json-v3.schema.json', '4.0.0',
                                      'urn:archetype-atlas:construction-set:4.0.0'),
                         'unified': ('construction-equivalent-v3.schema.json', 'construction-equivalent-v2.schema.json', '3.0.0',
@@ -88,7 +107,94 @@ def derived_schemas():
     for representation, (name, _, version, _) in CONSTRUCTION_SCHEMAS.items():
         out[MINOR[representation][0]] = construction_minor(out[name], representation)
     out[MINOR['services'][0]] = services_schema()
+    out[IECC['program'][0]] = program_minor_iecc(out[MINOR['program'][0]])
+    out[IECC['detailed'][0]] = construction_minor_iecc(out[MINOR['detailed'][0]])
+    from scripts import prototype_dwellings, residential_exports
+    out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
+    out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
+    out[LIGHTING['program'][0]] = program_minor_lighting(out[residential_exports.PROGRAM_MINOR[0]])
     return out
+
+
+def source_model_schema(frozen=None):
+    """Source model constructions 1.0.0, its release enum extended to the later releases (additive)."""
+    from scripts import prototype_dwellings
+    schema = (frozen or prototype_dwellings.construction_schema)()
+    schema['properties']['release']['enum'] += [f'atlas-release-{r}' for r in LIGHTING['releases']]
+    return schema
+
+
+RATIO = {'type': 'number', 'minimum': 0, 'maximum': 1}
+DAYLIGHTING = {
+    'type': 'object', 'additionalProperties': False,
+    'required': ['controlled_floor_fraction', 'controlled_lighting_fraction', 'controlled_zones', 'zones', 'illuminance_setpoint_lux',
+                 'control_type', 'method', 'availability', 'minimum_input_power_fraction', 'minimum_light_output_fraction',
+                 'stepped_control_steps'],
+    'description': 'The Daylighting:Controls of the source model zones the program represents (ADR 0044). The fractions hold '
+                   'for the source model geometry; the settings are those of the zone with the most lighting power.',
+    'properties': {
+        'controlled_floor_fraction': {**RATIO, 'description': 'Floor area of the zones with controls over the program floor area.'},
+        'controlled_lighting_fraction': {**RATIO, 'description': 'Fraction of the program lighting power the reference points control.'},
+        'controlled_zones': {'type': 'integer', 'minimum': 1}, 'zones': {'type': 'integer', 'minimum': 1},
+        'illuminance_setpoint_lux': {'type': 'number', 'exclusiveMinimum': 0},
+        'control_type': {'enum': ['continuous', 'stepped', 'continuous_off']}, 'method': {'enum': ['split_flux', 'delight']},
+        'availability': {'enum': ['all_days_except_design_days']},
+        'minimum_input_power_fraction': RATIO, 'minimum_light_output_fraction': RATIO,
+        'stepped_control_steps': {'type': 'integer', 'minimum': 1},
+        'settings_conflict': {'type': 'boolean', 'description': 'Zones of the program differ in their settings.'}}}
+LIGHTING_CONTROLS = {
+    'type': 'object', 'additionalProperties': False, 'required': ['status', 'source'],
+    'description': 'Lighting controls of the program (ADR 0044). `daylighting` null is a source zero: the complete source model '
+                   'has no daylighting controls in these zones. Occupancy-sensor credits are inside the lighting schedule.',
+    'properties': {
+        'status': {'enum': ['known', 'unknown']}, 'source': {'enum': ['pnnl_prototype', 'doe_reference']},
+        'geometry_dependent': {'type': 'boolean'}, 'daylighting': {'anyOf': [DAYLIGHTING, {'type': 'null'}]},
+        'daylighting_by_climate': {'type': 'object', 'propertyNames': {'pattern': '^[0-8][A-C]$'},
+                                   'additionalProperties': {'anyOf': [DAYLIGHTING, {'type': 'null'}]},
+                                   'description': 'Daylighting for the climate zones where the source differs from `daylighting`.'},
+        'climate_evidence_ids': {'type': 'object', 'additionalProperties': {'type': 'string', 'minLength': 1}},
+        'evidence_id': {'type': 'string', 'minLength': 1}, 'reason': {'type': 'string', 'minLength': 1},
+        'standards_rule': {'type': 'object', 'additionalProperties': False,
+                           'required': ['target_illuminance_setpoint_lux', 'daylighting_appropriate', 'evidence_id'],
+                           'description': 'The openstudio-standards space-type daylighting inputs (90.1 templates).',
+                           'properties': {'target_illuminance_setpoint_lux': {'anyOf': [{'type': 'number'}, {'type': 'null'}]},
+                                          'daylighting_appropriate': {'type': 'boolean'},
+                                          'primary_sidelit_nongeometry_fraction': RATIO,
+                                          'secondary_sidelit_nongeometry_fraction': RATIO,
+                                          'evidence_id': {'type': 'string', 'minLength': 1}}}},
+    'allOf': [{'if': {'properties': {'status': {'const': 'known'}}},
+               'then': {'required': ['daylighting', 'evidence_id']}, 'else': {'required': ['reason']}}]}
+
+
+@contextlib.contextmanager
+def later_residential(release):
+    """Release 1.5.0 on, the residential exporters, which release 1.4.0 pins, write Program JSON 5.4.0 and
+    accept the later releases in source model constructions, for the length of one export."""
+    if release not in LIGHTING['releases']:
+        yield
+        return
+    from scripts import prototype_dwellings, residential_exports
+    saved = residential_exports.PROGRAM_MINOR, prototype_dwellings.construction_schema
+    residential_exports.PROGRAM_MINOR = LIGHTING['program']
+    prototype_dwellings.construction_schema = lambda: source_model_schema(saved[1])
+    try:
+        yield
+    finally:
+        residential_exports.PROGRAM_MINOR, prototype_dwellings.construction_schema = saved
+
+
+def program_minor_lighting(minor):
+    """Program JSON 5.4.0: 5.3.0 with the lighting controls (ADR 0044), optional."""
+    schema = json.loads(json.dumps(minor).replace('urn:archetype-atlas:program-json:5.3.0', 'urn:archetype-atlas:program-json:5.4.0'))
+    schema['title'] = 'Self-contained program JSON 5.4.0'
+    schema['description'] += (' 5.4.0 (release 1.5.0, ADR 0044) adds lighting_controls: the daylighting controls of the source '
+                              'model zones, by climate where they differ; every 5.3.0 field keeps its meaning.')
+    for version in VERSIONS:
+        variant = schema['$defs'][version]
+        variant['properties']['schema_version'] = {'const': LIGHTING['program'][1]}
+        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in LIGHTING['releases']]}
+        variant['properties']['lighting_controls'] = copy.deepcopy(LIGHTING_CONTROLS)
+    return schema
 
 
 NULLABLE_RATIO = {'anyOf': [{'type': 'number', 'minimum': 0, 'maximum': 1}, {'type': 'null'}]}
@@ -145,7 +251,7 @@ def program_minor(major):
     for version in VERSIONS:
         variant = schema['$defs'][version]
         variant['properties']['schema_version'] = {'const': '5.1.0'}
-        variant['properties']['source']['properties']['release'] = {'const': MINOR['release']}
+        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in MINOR['releases']]}
         variant['properties'].update(copy.deepcopy(added))
         controls = variant['$defs']['controls']['properties']
         for field in HUMIDITY:
@@ -189,6 +295,65 @@ def construction_minor(major, representation):
     return schema
 
 
+BY_CLIMATE = {'type': 'object', 'propertyNames': {'pattern': '^[0-8][A-C]$'}, 'additionalProperties': {'type': 'number'},
+              'description': 'Values for the climate zones where the source differs from `value` (ADR 0040, plan C6).'}
+SCHEDULE_BY_CLIMATE = {'type': 'object', 'propertyNames': {'pattern': '^[0-8][A-C]$'}, 'additionalProperties': {'type': 'string', 'minLength': 1},
+                       'description': 'Schedules for the climate zones where a mix\'s trajectory differs from `schedule_id`; each is in `schedules`.'}
+
+
+def program_minor_iecc(minor):
+    """Program JSON 5.2.0: 5.1.0 with loads by climate, the source zones and the PNNL type name, all optional."""
+    schema = json.loads(json.dumps(minor).replace('urn:archetype-atlas:program-json:5.1.0', 'urn:archetype-atlas:program-json:5.2.0'))
+    schema['title'] = 'Self-contained program JSON 5.2.0'
+    schema['description'] += (' 5.2.0 (release 1.3.0, ADR 0040) adds value_by_climate and schedule_id_by_climate on loads, window ratios '
+                              'by climate, the source zones and the PNNL type name; every 5.1.0 field keeps its meaning.')
+    zones = {'type': 'array', 'description': 'The source model zones this program represents, with floor area (one zone) and multiplier.',
+             'items': {'type': 'object', 'additionalProperties': False, 'required': ['name', 'floor_area_m2', 'multiplier', 'counted'],
+                       'properties': {'name': {'type': 'string'}, 'floor_area_m2': {'type': 'number', 'minimum': 0},
+                                      'multiplier': {'type': 'integer', 'minimum': 1}, 'counted': {'type': 'boolean'}}}}
+    ratios = {'type': 'object', 'additionalProperties': False, 'required': ['wwr', 'roof'],
+              'properties': {'wwr': {'type': 'object', 'additionalProperties': False, 'required': ['N', 'E', 'S', 'W'],
+                                     'properties': {d: NULLABLE_RATIO for d in 'NESW'}}, 'roof': NULLABLE_RATIO}}
+    for version in VERSIONS:
+        variant = schema['$defs'][version]
+        variant['properties']['schema_version'] = {'const': IECC['program'][1]}
+        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in IECC['releases']]}
+        variant['properties']['source_zones'] = zones
+        variant['properties']['pnnl_building_type'] = {'type': 'string', 'description': 'The PNNL prototype type name (plan C3).'}
+        variant['properties']['standards_building_type'] = {'type': 'string'}
+        variant['properties']['fenestration']['properties']['value_by_climate'] = {
+            'type': 'object', 'propertyNames': {'pattern': '^[0-8][A-C]$'}, 'additionalProperties': ratios,
+            'description': 'Window ratios for the climate zones where the source differs (skylights in some zones).'}
+        for definition in variant['$defs'].values():
+            properties = definition.get('properties', {})
+            if 'demand_id' in properties and 'value' in properties:
+                properties['value_by_climate'] = copy.deepcopy(BY_CLIMATE)
+                properties['schedule_id_by_climate'] = copy.deepcopy(SCHEDULE_BY_CLIMATE)
+    return schema
+
+
+def construction_minor_iecc(minor):
+    """Detailed constructions 4.2.0: 4.1.0 with the source design-flow infiltration method, which needs no natural ACH."""
+    name, version, identity = IECC['detailed']
+    schema = copy.deepcopy(minor)
+    schema['$id'] = identity
+    schema['title'] = schema['title'].rsplit('(', 1)[0] + f'(release minor {version})'
+    schema['properties']['schema_version'] = {'const': version}
+    infiltration = schema['$defs']['infiltration']
+    for key in ('method', 'default_method'):
+        infiltration['properties'][key] = {'enum': [*NATURAL_ACH, SOURCE_METHOD]}
+    flow = copy.deepcopy(infiltration['properties']['methods']['properties']['doe_design_flow'])
+    flow['description'] = ('The source model\'s ZoneInfiltration:DesignFlowRate rules per zone with their schedules inline '
+                           '(ADR 0040 item 7); consumers supply each zone\'s exterior surface or wall area, floor area or volume.')
+    infiltration['properties']['methods']['properties'][SOURCE_METHOD] = flow
+    infiltration['required'] = [r for r in infiltration['required'] if r != 'natural_ach']
+    infiltration['allOf'] = [
+        {'if': {'properties': {'method': {'enum': list(NATURAL_ACH)}}}, 'then': {'required': ['natural_ach']}},
+        {'if': {'properties': {'method': {'const': SOURCE_METHOD}}},
+         'then': {'required': ['methods'], 'properties': {'methods': {'required': [SOURCE_METHOD]}}}}]
+    return schema
+
+
 def services_schema():
     return {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$id': 'urn:archetype-atlas:building-services:1.0.0',
             'title': 'Building services 1.0.0',
@@ -198,7 +363,7 @@ def services_schema():
             'type': 'object', 'additionalProperties': False,
             'required': ['schema_version', 'kind', 'release', 'template', 'building_type', 'services', 'schedules'],
             'properties': {'schema_version': {'const': '1.0.0'}, 'kind': {'const': 'building_services'},
-                           'release': {'const': MINOR['release']}, 'template': {'type': 'string'}, 'building_type': {'type': 'string'},
+                           'release': {'enum': [f'atlas-release-{r}' for r in MINOR['releases']]}, 'template': {'type': 'string'}, 'building_type': {'type': 'string'},
                            'services': {'type': 'array', 'items': {'type': 'object', 'required': ['id', 'end_use', 'load', 'beneficiary_program_ids']}},
                            'schedules': {'type': 'object'}, 'evidence': {'type': 'object'}}}
 
@@ -233,26 +398,76 @@ def constants(record, prefix, schedules):
     return walk(record)
 
 
+COURTHOUSE_DESIGN_DAYS = {'Courthouse ' + n for n in (
+    'CELL_OCC_SCH', 'COURTROOM_LIGHT_SCH', 'GENERAL_LIGHT_SCH', 'JUDGES_CHAMBER_LIGHT_SCH',
+    'JUDGES_CHAMBER_OCC_SCH', 'JURY_ASSEMBLY_LIGHT_SCH', 'JURY_ASSEMBLY_OCC_SCH', 'JURY_DELIBERATION_LIGHT_SCH',
+    'JURY_DELIBERATION_OCC_SCH', 'OFFICE_OCC_SCH')}
+
+
+def complete_design_days(schedule):
+    """User-approved completion (ADR 0039 F3) of the Courthouse schedules, which give every weekday,
+    weekends and holidays but no Default or design-day rule: design days take the Wednesday profile."""
+    if schedule.get('source_name') not in COURTHOUSE_DESIGN_DAYS:
+        return
+    tokens = [set(r['day_types'].split('|')) for r in schedule['rules']]
+    if any(t & {'SmrDsn', 'WntrDsn', 'Default'} for t in tokens):
+        return  # this template's variant already covers design days
+    weekday = [r for r, t in zip(schedule['rules'], tokens) if t & {'Wed', 'Wkdy'}]
+    if not weekday or any(r['start_date'][5:10] != '01-01' or r['end_date'][5:10] != '12-31' for r in weekday):
+        raise ValueError('Unexpected weekday rules: '+schedule['source_name'])
+    schedule['rules'] = [*schedule['rules'], *({**copy.deepcopy(weekday[-1]), 'day_types': d} for d in ('SmrDsn', 'WntrDsn'))]
+    schedule['completion'] = 'accepted-design-day-weekday (ADR 0039 F3): design days take the Wednesday profile'
+
+
+def complete_holidays(schedule):
+    """User-approved completion (ADR 0039, 2026-10-26) of Courthouse BLDG_EQUIP_SCH, which has design days
+    but no holiday or Default rule: holidays take the Sunday profile, as accepted-holiday-sunday does."""
+    if schedule.get('source_name') != 'Courthouse BLDG_EQUIP_SCH':
+        return
+    tokens = [set(r['day_types'].split('|')) for r in schedule['rules']]
+    if any(t & {'Hol', 'Default'} for t in tokens):
+        return  # this template's variant already covers holidays
+    sunday = [r for r, t in zip(schedule['rules'], tokens) if t == {'Sun'}]
+    if len(sunday) != 1 or sunday[0]['start_date'][5:10] != '01-01' or sunday[0]['end_date'][5:10] != '12-31':
+        raise ValueError('Unexpected Sunday rule: '+schedule['source_name'])
+    schedule['rules'] = [*schedule['rules'], {**copy.deepcopy(sunday[0]), 'day_types': 'Hol'}]
+    schedule['completion'] = 'accepted-holiday-sunday (ADR 0039): holidays take the Sunday profile'
+
+
 class Release:
     """A written release folder, exported for consumers."""
 
     def __init__(self, files=None, root=TARGET, release='1.0.0'):
-        if release not in ('1.0.0', '1.1.0'):
+        if release not in ('1.0.0', *MINOR['releases']):
             raise ValueError('Unknown release: '+release)
         if files is None and release == '1.1.0':
             from scripts import atlas_delta_release
             files = atlas_delta_release.files()
+        elif files is None and release == '2.0.0':
+            from scripts import atlas_snapshot
+            files = atlas_snapshot.files()
+        elif files is None and release != '1.0.0':
+            from scripts import atlas_minor_release
+            files = atlas_minor_release.files(release)
         if files is None:
             root = Path(root)
             files = {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob('*') if p.is_file()}
         self.files, self.release = files, release
         self.programs = {}
         for path, data in files.items():
-            if '/programs/' in path:
+            if '/programs/' in path and path.startswith('commercial/'):
                 program = json.loads(data)
                 self.programs[program['id']] = (path.split('/programs/')[0]+'/', program)
         self.constructions = atlas_constructions.read_files(files)
-        self._suites, self._bundles, self._exporters = {}, {}, {}
+        self._suites, self._bundles, self._exporters, self._dwellings = {}, {}, {}, None
+
+    @property
+    def dwellings(self):
+        """The residential tree (ADR 0038, release 1.4.0 on)."""
+        if self._dwellings is None:
+            from scripts.residential_exports import Dwellings
+            self._dwellings = Dwellings(self.files, self.release)
+        return self._dwellings
 
     def program_ids(self):
         return sorted(self.programs)
@@ -285,6 +500,10 @@ class Release:
                                          'evidence_view': record['evidence_view'], 'method': stored['composition']['method'],
                                          'members': copy.deepcopy(stored['composition']['members'])})
                 programs.append(record)
+            if version == 'filled' and self.release != '1.0.0':
+                for schedule in schedules.values():
+                    complete_design_days(schedule)
+                    complete_holidays(schedule)
             services = [{**row, 'id': sid} for p, d in sorted(self.files.items()) if p.endswith('/services.json')
                         for sid, row in json.loads(d).items()]
             provenance = [decode(eid, row, glossary) for p, d in sorted(self.files.items())
@@ -327,6 +546,13 @@ class Release:
         """Program JSON 5.0.0 in one version."""
         if version not in VERSIONS:
             raise ValueError('Unknown program version: '+version)
+        if program_id not in self.programs and program_id in self.dwellings.programs:
+            with later_residential(self.release):
+                return self.dwellings.program(program_id, version)
+        if version == 'filled' and str(self.programs[program_id][1].get('template', '')).startswith('IECC '):
+            raise ValueError(program_id+': IECC programs export as source only. They hold source values with no fillings, and the '
+                             'filled version folds water heating into its source heaters, which are deferred with the systems '
+                             '(ADR 0040 item 10).')
         exporter = self.exporter(version)
         document = exporter.export(program_id, 'raw') if version == 'source' else exporter.export(program_id)
         document.pop('export_mode')
@@ -337,11 +563,52 @@ class Release:
         document = {'schema_version': '5.0.0', 'version': version, **{k: v for k, v in document.items() if k != 'schema_version'}}
         document['id'] = program_id
         schema = PROGRAM_SCHEMA
-        if self.release == '1.1.0':
+        if self.release != '1.0.0':
             document, schema = self.program_minor(document, program_id, version), MINOR['program'][0]
+        if self.release in IECC['releases']:
+            document, schema = self.program_iecc(document, program_id, version), IECC['program'][0]
+        if self.release in LIGHTING['releases']:
+            document, schema = self.program_lighting(document, program_id), LIGHTING['program'][0]
         errors = [e.message for e in validator(schema).iter_errors(document)]
         if errors:
             raise ValueError(program_id+': '+'; '.join(errors[:5]))
+        return document
+
+    def program_lighting(self, document, program_id):
+        """Program JSON 5.4.0 from a 5.2.0 document: the stored lighting controls (ADR 0044)."""
+        document = {**document, 'schema_version': LIGHTING['program'][1]}
+        stored = self.programs[program_id][1]
+        if 'lighting_controls' in stored:
+            document['lighting_controls'] = copy.deepcopy(stored['lighting_controls'])
+        return document
+
+    def program_iecc(self, document, program_id, version):
+        """Program JSON 5.2.0 from a 5.1.0 document: loads by climate (plan C6), source zones and the PNNL type name."""
+        from scripts.schedule_json import normalize_schedule
+        folder, stored = self.programs[program_id]
+        document = {**document, 'schema_version': IECC['program'][1]}
+        for key in ('source_zones', 'pnnl_building_type', 'standards_building_type'):
+            if key in stored:
+                document[key] = copy.deepcopy(stored[key])
+        schedules = self.bundle(version)['schedules_by_id']
+        services = self.folder_services(folder)
+        variants = {}
+        for load in [*self.suite(folder).export(program_id, version)['loads'], *(s['load'] for s in services.values())]:
+            for item in [load, *(c['load'] for c in load.get('source_components', []))]:
+                if item.get('value_by_climate') or item.get('schedule_id_by_climate'):
+                    variants[item['demand_id']] = item
+        targets = [*document['loads'], *(l for s in document.get('shared_services') or [] for l in s.get('loads', [])),
+                   *(document.get('water_heating') or [])]
+        for target in targets:
+            variant = variants.get(target.get('demand_id'))
+            if not variant:
+                continue
+            if variant.get('value_by_climate'):
+                target['value_by_climate'] = dict(variant['value_by_climate'])
+            if variant.get('schedule_id_by_climate'):
+                target['schedule_id_by_climate'] = dict(variant['schedule_id_by_climate'])
+                for sid in variant['schedule_id_by_climate'].values():
+                    document['schedules'][sid] = normalize_schedule(schedules[sid])
         return document
 
     def folder_services(self, folder):
@@ -354,7 +621,7 @@ class Release:
         exported = self.suite(folder).export(program_id, version)
         schedules = self.bundle(version)['schedules_by_id']
         document = {**document, 'schema_version': MINOR['program'][1]}
-        document['source']['release'] = MINOR['release']
+        document['source']['release'] = f'atlas-release-{self.release}'
         for key in ('fenestration', 'source_calendar', 'source_spaces', 'excluded_source_spaces'):
             if key in stored:
                 document[key] = copy.deepcopy(stored[key])
@@ -392,8 +659,8 @@ class Release:
     def building_services(self, folder):
         """Building services 1.0.0 for one folder, e.g. `doe-ref-1980-2004/hospital`."""
         from scripts.schedule_json import normalize_schedule
-        if self.release != '1.1.0':
-            raise ValueError('Building services are exported from release 1.1.0')
+        if self.release == '1.0.0':
+            raise ValueError('Building services are exported from release 1.1.0 on')
         services = self.folder_services(f'commercial/{folder}/')
         suite = self.suite(f'commercial/{folder}/')
         added = {sid: s for sid, s in services.items() if s['load'].get('quantity') != 'hot_water_volume'}
@@ -407,7 +674,7 @@ class Release:
                     schedules[sid] = normalize_schedule({**suite.schedule(sid), 'id': sid})
         evidence = json.loads(self.files[f'evidence/commercial/{folder}.json'])
         first = next(iter(added.values()))
-        document = {'schema_version': MINOR['services'][1], 'kind': 'building_services', 'release': MINOR['release'],
+        document = {'schema_version': MINOR['services'][1], 'kind': 'building_services', 'release': f'atlas-release-{self.release}',
                     'template': first['template'], 'building_type': first['building_type'],
                     'services': [{**copy.deepcopy(s), 'id': sid} for sid, s in sorted(added.items())], 'schedules': schedules,
                     'evidence': {e: evidence[e] for s in added.values() for e in s['evidence_ids'] if e in evidence}}
@@ -419,9 +686,19 @@ class Release:
     def construction(self, set_id, key, representation):
         """Construction detailed 4.0.0 or unified 3.0.0 for one context of a set."""
         name, _, version, _ = CONSTRUCTION_SCHEMAS[representation]
-        if self.release == '1.1.0':
+        # IDF-derived dwelling sets live under residential/; commercial IECC sets share the `iecc-` prefix.
+        if set_id.startswith(('iecc-', 'hud-code.', 'doe-final-rule.')) and any(
+                p.startswith('residential/') and p.endswith(f'/constructions/{set_id}.json') for p in self.files):
+            from scripts import prototype_dwellings
+            with later_residential(self.release):
+                return prototype_dwellings.construction(self, set_id, key)
+        if self.release != '1.0.0':
             name, version, _ = MINOR[representation]
+        if self.release in IECC['releases'] and representation == 'detailed':
+            name, version, _ = IECC['detailed']
         document = self.constructions.export(set_id, key, representation)
+        if document.get('status') == 'deferred':
+            raise ValueError(f'{set_id} {key}: no {representation} representation; {document["reason"]}')
         document['schema_version'] = version
         errors = [e.message for e in validator(name).iter_errors(document)]
         if errors:
@@ -447,7 +724,7 @@ def main():
     parser.add_argument('--construction')
     parser.add_argument('--context')
     parser.add_argument('--representation', choices=tuple(CONSTRUCTION_SCHEMAS), default='detailed')
-    parser.add_argument('--release', choices=('1.0.0', '1.1.0'), default='1.0.0')
+    parser.add_argument('--release', choices=('1.0.0', *MINOR['releases']), default='1.0.0')
     parser.add_argument('--building-services', metavar='FOLDER', help='e.g. doe-ref-1980-2004/hospital (release 1.1.0)')
     args = parser.parse_args()
     if args.schemas or args.check_schemas:
@@ -457,7 +734,8 @@ def main():
                 path.write_bytes(suite_bytes(schema))
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
-        print('Program 5.0.0 / 5.1.0, construction 4.0.0 / 4.1.0 / 3.0.0 / 3.1.0 and building services 1.0.0 schemas '
+        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 3.0.0 / 3.1.0, '
+              'source model constructions 1.0.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return
     release = Release(release=args.release)

@@ -1,0 +1,261 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes"
+  ],
+  "building_type": "Outpatient",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-0679b5988d407be4bc999742",
+    "evidence-136ec68ff2944830d4f7bf8e",
+    "evidence-2af243139520aab6f8eb69ef",
+    "evidence-6257dd91d92f37b5b7a3bc2f",
+    "evidence-7158a834441647152c3971bf",
+    "evidence-965f502ee776823021ef9b5f",
+    "evidence-b14a5419a6c0a53ba7964957",
+    "evidence-b5808c785d22a4009ee38d27",
+    "evidence-e39c579d20b3dbcd605d8a63",
+    "evidence-f80ebc3c17896311dc022f1d"
+  ],
+  "filling_evidence_ids": [
+    "evidence-42e408ba10be189bf45131c5",
+    "evidence-8e7b21fc683c5eaa882182af",
+    "evidence-d83700d5b78e9d99c0723265"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.outpatient.source.toilet.961c1e",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-f80ebc3c17896311dc022f1d",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "standards_rule": {
+      "daylighting_appropriate": true,
+      "evidence_id": "evidence-e39c579d20b3dbcd605d8a63",
+      "target_illuminance_setpoint_lux": null
+    },
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-d0006080ad9119deaac2f964",
+      "evidence_id": "evidence-7158a834441647152c3971bf",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.outpatient.out-patient-health-care-bldg-occ-sch.179a7c",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9934f3aff0ad948ac76300c9",
+      "evidence_id": "evidence-b5808c785d22a4009ee38d27",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.outpatient.out-patient-health-care-bldg-light-sch.862c99",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-09f2ce2a873aa44051ba399b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-687db7ef1d2dcf19db487683",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-fe3433fdc4b4b536c7c0a72b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.7812635625271245
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9d08e610dffcf7fca9f5b25c",
+      "evidence_id": "evidence-0679b5988d407be4bc999742",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.outpatient.out-patient-health-care-bldg-light-sch.862c99",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-09f2ce2a873aa44051ba399b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-687db7ef1d2dcf19db487683",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-fe3433fdc4b4b536c7c0a72b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-3e595beb9624f11aae1c4420",
+      "evidence_id": "evidence-136ec68ff2944830d4f7bf8e",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.outpatient.out-patient-health-care-bldg-equip-sch-2013.d729cf",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-2208fce136a7452eb3c1b78f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-118fc7fff4bd34c4ee8b9a0c",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-8e623c1e1781b04e109e8522",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.305564166683889
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a8eac96cec99ea18da3c2ea3",
+      "evidence_id": "evidence-965f502ee776823021ef9b5f",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-8e7b21fc683c5eaa882182af"
+        ],
+        "resolutions": [
+          "resolution-1a0f623c8bef82e61f36",
+          "resolution-8d3257aba81f7bb7e8b8"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-8e7b21fc683c5eaa882182af",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-6eac470178ddb04eb10c55aa",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-7aca81ab8c2a66875f66b532",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-e4d983b56bf073d386c558af",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Toilet_Outpatient",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-2af243139520aab6f8eb69ef",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.outpatient.out-patient-health-care-activity-sch.872f7a"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-6257dd91d92f37b5b7a3bc2f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.outpatient.out-patient-health-care-clgsetp-sch-yes-optimum.9099ac"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-b14a5419a6c0a53ba7964957",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.outpatient.out-patient-health-care-htgsetp-sch-yes-optimum.e1f69e"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-af55a7ff0fa4c364d3ce",
+  "template": "90.1-2019"
+}

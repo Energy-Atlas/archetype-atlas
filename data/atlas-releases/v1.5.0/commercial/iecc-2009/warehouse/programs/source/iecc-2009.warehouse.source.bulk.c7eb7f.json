@@ -1,0 +1,265 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "Warehouse",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-2aa873f52f5655b8b9319f5e",
+    "evidence-2ab3a8aba03dc0b56499200a",
+    "evidence-307508bef7a2416ab59cd1b2",
+    "evidence-52ccdf7929df1f67ed6d7709",
+    "evidence-561283f0844e0abfac16961f",
+    "evidence-6c7db73d504f68c1e8dc8a5d",
+    "evidence-76036dc2d74a1399659d1e04",
+    "evidence-97cd3a13aac50721a86fd7ff",
+    "evidence-aac66e99a3aaa96add0c75be",
+    "evidence-b8031287d04a13feef37dbdf",
+    "evidence-ce4325ea5a248a3ceb24df5d",
+    "evidence-d073a3d4ab49bc00c526be2a",
+    "evidence-d23cfcaf9b58b22cc7b2d7c4",
+    "evidence-ef3eed52c199bb68bbbac6f7",
+    "evidence-f3cabae108b457918540d0a2",
+    "evidence-f6897c31f7e0ef8c5cb7a0d0"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-b8031287d04a13feef37dbdf",
+    "roof": 0.0046,
+    "wwr": {
+      "E": 0.0,
+      "N": 0.0,
+      "S": 0.0,
+      "W": null
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2009.warehouse.source.bulk.c7eb7f",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-307508bef7a2416ab59cd1b2",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a1db3c29712f70429cb56f25",
+      "evidence_id": "evidence-d23cfcaf9b58b22cc7b2d7c4",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.warehouse.bldg-occ-sch.fa0b46",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.021529920673
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1064a3acbea5c8b26626e626",
+      "evidence_id": "evidence-561283f0844e0abfac16961f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.warehouse.ltg-sch-bulk-storage.f5e54d",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-561283f0844e0abfac16961f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.42
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-561283f0844e0abfac16961f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-561283f0844e0abfac16961f",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.18
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.60823
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-dcc1134224044a06ab74cd95",
+      "evidence_id": "evidence-ef3eed52c199bb68bbbac6f7",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.warehouse.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-97f50d3a5d4a771dcdba25bd",
+      "evidence_id": "evidence-52ccdf7929df1f67ed6d7709",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.warehouse.bulk-storage-plug-schedule.ca5567",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 2.558665697269
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b0f5b116b6926feb6e89e0d8",
+      "evidence_id": "evidence-2ab3a8aba03dc0b56499200a",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.warehouse.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-55915beb2677be16984c1880",
+      "evidence_id": "evidence-2aa873f52f5655b8b9319f5e",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2009.warehouse.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Bulk_Warehouse",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-97cd3a13aac50721a86fd7ff",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2009.warehouse.zone3-bulk-storage-activity-schedule.13225b"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-d073a3d4ab49bc00c526be2a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": false,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-f3cabae108b457918540d0a2",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-6c7db73d504f68c1e8dc8a5d",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2009.warehouse.bulk-storage-heating-setpoint-schedule.993a2f"
+    }
+  },
+  "pnnl_building_type": "Warehouse",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-ce4325ea5a248a3ceb24df5d",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "01/01"
+      },
+      {
+        "name": "ML King Birthday",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Washington's Birthday",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Fourth of July",
+        "rule": "07/04"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "11/11"
+      },
+      {
+        "name": "Thanksgiving Day",
+        "rule": "4th Thursday in November"
+      },
+      {
+        "name": "Christmas Day",
+        "rule": "12/25"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-225e8acac30a543ef186",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 3204.842277266893,
+      "multiplier": 1,
+      "name": "Zone3 Bulk Storage"
+    }
+  ],
+  "standards_building_type": "Warehouse",
+  "template": "IECC 2009"
+}

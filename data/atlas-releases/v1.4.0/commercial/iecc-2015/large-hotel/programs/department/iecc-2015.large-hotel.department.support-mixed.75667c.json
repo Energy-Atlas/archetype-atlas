@@ -1,0 +1,177 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "LargeHotel",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2015.large-hotel.source.mechanical.410749",
+        "represented_area_m2": 164.243187,
+        "source_geometry_file_id": "sourcefile-a06276e10b03be9a8e4d",
+        "source_program_id": "program-fbb3b8a5700baed16e12",
+        "weight": 0.48730788024482197
+      },
+      {
+        "program_id": "iecc-2015.large-hotel.source.laundry.f98489",
+        "represented_area_m2": 78.039468,
+        "source_geometry_file_id": "sourcefile-a06276e10b03be9a8e4d",
+        "source_program_id": "program-ae1c8f18fb256e7bb560",
+        "weight": 0.23154231491205543
+      },
+      {
+        "program_id": "iecc-2015.large-hotel.source.storage.607820",
+        "represented_area_m2": 94.759272,
+        "source_geometry_file_id": "sourcefile-a06276e10b03be9a8e4d",
+        "source_program_id": "program-594e813395c0f2fa9eb7",
+        "weight": 0.28114980484312263
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-c89f970d445a2446e0e99923"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2015.large-hotel.department.support-mixed.75667c",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-ecd8045b846a1d5491efe4f0",
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.large-hotel.support-mixed-additional-lighting.6d4ad9",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-def2aa5cd1919bc8a634591c",
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.large-hotel.support-mixed-electric-equipment.321da2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 17.659539135022825
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d333bfb558eef274e33efd1f",
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.large-hotel.support-mixed-gas-equipment.07ce37",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 124.0719493631426
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-e3665a8f0cd2517956d18c34",
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.large-hotel.support-mixed-additional-lighting.6d4ad9",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-9acffdfd9f6d9db26ba909e5",
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.large-hotel.support-mixed-lighting.435d04",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 7.546493799629166
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a5f24cd76afc09983ac288d8",
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2015.large-hotel.support-mixed-occupancy.0b0ade",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.038843832031442455
+    }
+  ],
+  "mode": "department",
+  "name": "Support_Mixed_LargeHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.large-hotel.support-mixed-activity.d79b24"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.large-hotel.support-mixed-cooling-setpoint.a8a9cf"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-c89f970d445a2446e0e99923",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2015.large-hotel.support-mixed-heating-setpoint.49565f"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2015"
+}

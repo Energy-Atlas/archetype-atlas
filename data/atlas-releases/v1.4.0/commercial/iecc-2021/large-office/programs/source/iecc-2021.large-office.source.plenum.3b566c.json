@@ -1,0 +1,244 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "LargeOffice",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-257683e5e8df7002e5cf7379",
+    "evidence-2efb808cccdd3438880cd828",
+    "evidence-325563d730cceaf8e20188eb",
+    "evidence-44f06bae491357e123ad89c2",
+    "evidence-5d4eb6d9311d07e01841b5eb",
+    "evidence-6a54171c657af210c970cbb2",
+    "evidence-91ebddac4b5ce267d0c78f0e",
+    "evidence-94ffd1997626a26bcfecdb92",
+    "evidence-ae5cc56526fbdd59cdc7a8c2",
+    "evidence-b32a2c15a58af4bcfd6094b0",
+    "evidence-cb99fe111e3dbd70590167ac",
+    "evidence-f75cc81fb2787db721fa7ab9"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-2efb808cccdd3438880cd828",
+    "roof": 0.0,
+    "wwr": {
+      "E": 0.0,
+      "N": 0.0,
+      "S": 0.0,
+      "W": 0.0
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2021.large-office.source.plenum.3b566c",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e39d3c62e2831de00a68d4ed",
+      "evidence_id": "evidence-f75cc81fb2787db721fa7ab9",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.large-office.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-bd8ed27c24d91499b40b508f",
+      "evidence_id": "evidence-257683e5e8df7002e5cf7379",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.large-office.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1cd34c38ba340ef82529093b",
+      "evidence_id": "evidence-325563d730cceaf8e20188eb",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.large-office.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-7ac5030163bb9e6c43de7115",
+      "evidence_id": "evidence-cb99fe111e3dbd70590167ac",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.large-office.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-aa427adac9a1d0f8610a53ad",
+      "evidence_id": "evidence-91ebddac4b5ce267d0c78f0e",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.large-office.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-3d1293c20a8cd1332a5f5261",
+      "evidence_id": "evidence-6a54171c657af210c970cbb2",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.large-office.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Plenum_LargeOffice",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-ae5cc56526fbdd59cdc7a8c2",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "conditioning": {
+      "evidence_id": "evidence-94ffd1997626a26bcfecdb92",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": false,
+        "heating_enabled": false
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-44f06bae491357e123ad89c2",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-b32a2c15a58af4bcfd6094b0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "pnnl_building_type": "OfficeLarge",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-5d4eb6d9311d07e01841b5eb",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-f59300ecf3673dd07263",
+  "source_zones": [
+    {
+      "counted": false,
+      "floor_area_m2": 0.0,
+      "multiplier": 1,
+      "name": "GroundFloor_Plenum"
+    },
+    {
+      "counted": false,
+      "floor_area_m2": 0.0,
+      "multiplier": 10,
+      "name": "MidFloor_Plenum"
+    },
+    {
+      "counted": false,
+      "floor_area_m2": 0.0,
+      "multiplier": 1,
+      "name": "TopFloor_Plenum"
+    }
+  ],
+  "standards_building_type": "LargeOffice",
+  "template": "IECC 2021"
+}

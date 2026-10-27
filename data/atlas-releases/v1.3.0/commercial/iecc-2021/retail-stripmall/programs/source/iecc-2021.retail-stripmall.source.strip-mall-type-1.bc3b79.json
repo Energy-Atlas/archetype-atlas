@@ -1,0 +1,313 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "RetailStripmall",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-038aef01d1f4502ac336a4af",
+    "evidence-0b8fedd8eada2651d7ccfb87",
+    "evidence-0c0166cd9c20839a21d92ac4",
+    "evidence-401d6528f287c31a1c0e3f20",
+    "evidence-45050e2fb6928c78e32a07d4",
+    "evidence-4e58b030491f950cc07b226c",
+    "evidence-52cdeda2d7007d7922dc6a4a",
+    "evidence-5ebe0e3c3419537eca82b5a8",
+    "evidence-6e026176bfb664f1aafba426",
+    "evidence-72e7456e49ab3cb42e6b18ec",
+    "evidence-78fba50e3a40908f99285b1a",
+    "evidence-9e180d4220fc2838fe6cc0dd",
+    "evidence-a2045d96d38a5be26bfcd29b",
+    "evidence-c80ab1c9d88f840539158346",
+    "evidence-d58f590c4a87230bbd045b6b",
+    "evidence-ff45f2d7cd9e02e66bdff710"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-72e7456e49ab3cb42e6b18ec",
+    "roof": 0.0,
+    "wwr": {
+      "E": null,
+      "N": 0.0,
+      "S": 0.263,
+      "W": 0.0
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2021.retail-stripmall.source.strip-mall-type-1.bc3b79",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b5d74e9686bd2bc919e9dc4f",
+      "evidence_id": "evidence-45050e2fb6928c78e32a07d4",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-stripmall.type1-occ-sch.db66e9",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.161458637115
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b1d987f45fd748822506dfc2",
+      "evidence_id": "evidence-d58f590c4a87230bbd045b6b",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-stripmall.ltg-sch-base-lpd1.367bc6",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-d58f590c4a87230bbd045b6b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-d58f590c4a87230bbd045b6b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-d58f590c4a87230bbd045b6b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 8.679333
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a0510e5797e041d52295075d",
+      "evidence_id": "evidence-5ebe0e3c3419537eca82b5a8",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-stripmall.ltg-sch-display-lpd-type3-lgstore.59bf69",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-5ebe0e3c3419537eca82b5a8",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-5ebe0e3c3419537eca82b5a8",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-5ebe0e3c3419537eca82b5a8",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 5.988684
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-0667028d230ae070ff10fe8a",
+      "evidence_id": "evidence-c80ab1c9d88f840539158346",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-stripmall.type1-equip-sch.a3a01b",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-c80ab1c9d88f840539158346",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-c80ab1c9d88f840539158346",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-c80ab1c9d88f840539158346",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.300000038272
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b87dbb8bef1ef6baacb15358",
+      "evidence_id": "evidence-9e180d4220fc2838fe6cc0dd",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-stripmall.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2021.retail-stripmall.main.eab41a",
+      "evidence_id": "evidence-0c0166cd9c20839a21d92ac4",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-stripmall.type1-swh-sch.4d0261",
+      "scope": "program_service",
+      "service_id": "iecc-2021.retail-stripmall.main.eab41a",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 7.233e-09,
+      "zone_heat_assignment": "unresolved"
+    }
+  ],
+  "mode": "source",
+  "name": "Strip mall - type 1_RetailStripmall",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-0b8fedd8eada2651d7ccfb87",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.retail-stripmall.activity-sch.72d84b"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-ff45f2d7cd9e02e66bdff710",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-038aef01d1f4502ac336a4af",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.retail-stripmall.type1-clgsetp-sch-yes-optimum-startstop.dc5d4f"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-a2045d96d38a5be26bfcd29b",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.retail-stripmall.type1-htgsetp-sch-yes-optimum-startstop.9940b1"
+    }
+  },
+  "pnnl_building_type": "RetailStripmall",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2021.retail-stripmall.main.eab41a"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-78fba50e3a40908f99285b1a",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-c53d22689ae41702ded0",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 348.3864,
+      "multiplier": 1,
+      "name": "LGstore1"
+    },
+    {
+      "counted": true,
+      "floor_area_m2": 174.1932,
+      "multiplier": 1,
+      "name": "SMstore1"
+    }
+  ],
+  "standards_building_type": "StripMall",
+  "template": "IECC 2021"
+}

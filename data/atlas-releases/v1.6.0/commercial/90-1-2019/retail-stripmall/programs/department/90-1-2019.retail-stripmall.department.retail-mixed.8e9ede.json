@@ -1,0 +1,188 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "RetailStripmall",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "90-1-2019.retail-stripmall.source.strip-mall-type-1.fd5e4f",
+        "represented_area_m2": 522.5796,
+        "source_geometry_file_id": "sourcefile-e7ad002e648c144e06a1",
+        "source_program_id": "program-c3a4537c8fa39c1c21ee",
+        "weight": 0.25
+      },
+      {
+        "program_id": "90-1-2019.retail-stripmall.source.strip-mall-type-2.603a25",
+        "represented_area_m2": 522.5796,
+        "source_geometry_file_id": "sourcefile-e7ad002e648c144e06a1",
+        "source_program_id": "program-10b91a70c9be0490ff14",
+        "weight": 0.25
+      },
+      {
+        "program_id": "90-1-2019.retail-stripmall.source.strip-mall-type-3.c98338",
+        "represented_area_m2": 1045.1592,
+        "source_geometry_file_id": "sourcefile-e7ad002e648c144e06a1",
+        "source_program_id": "program-4bb46a62064a95e846aa",
+        "weight": 0.5
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-94b4d723cfd1bef908fdcc4f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.retail-stripmall.department.retail-mixed.8e9ede",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-db003b4874ff50de2347f41b",
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-stripmall.retail-mixed-additional-lighting.2e23fc",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 3.401391108945412
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-1a8106cbad7bfc5dd4c39f3f",
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-stripmall.retail-mixed-electric-equipment.76fca8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 4.305564166683889
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-e488bd32191a343c0177b701",
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-2f40954ed5886e427e77",
+          "resolution-56feadc44cebf2d114f1",
+          "resolution-62d24f665b3049a4ddea",
+          "resolution-707bbb3df4f8080c5916",
+          "resolution-9da63b1aa2eb9fcf7cb0",
+          "resolution-ba12c1aab4d26a7bc31e"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "90-1-2019.retail-stripmall.retail-mixed-gas-equipment.86e98f",
+          "status": "known",
+          "value": 0.0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-a264dbf6f61530ce96666fd5",
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-stripmall.retail-mixed-lighting.4d7546",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 9.041684750036167
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-6d049947ad6fb6417db3cf70",
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.retail-stripmall.retail-mixed-occupancy.495bf8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.08611128333367778
+    }
+  ],
+  "mode": "department",
+  "name": "Retail_Mixed_RetailStripmall",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.retail-stripmall.retail-mixed-activity.779498"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.retail-stripmall.retail-mixed-cooling-setpoint.d9a79c"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-94b4d723cfd1bef908fdcc4f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.retail-stripmall.retail-mixed-heating-setpoint.abd0b3"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "90-1-2019.retail-stripmall.main.66954d",
+    "90-1-2019.retail-stripmall.main.09130c",
+    "90-1-2019.retail-stripmall.main.a0e079",
+    "90-1-2019.retail-stripmall.main.7e9714",
+    "90-1-2019.retail-stripmall.main.58d1ee",
+    "90-1-2019.retail-stripmall.main.a6cc24",
+    "90-1-2019.retail-stripmall.main.f0b795"
+  ],
+  "source_family": "code_prototype_rules",
+  "template": "90.1-2019"
+}

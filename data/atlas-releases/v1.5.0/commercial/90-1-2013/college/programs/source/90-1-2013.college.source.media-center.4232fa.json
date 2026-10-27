@@ -1,0 +1,250 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "College",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-16b11b3bbe7cec0bd783aa7e",
+    "evidence-1ea0d930aa86143538921e06",
+    "evidence-31a8c612ae875cba76f60e40",
+    "evidence-5f9bc800a8bb462a0272de2b",
+    "evidence-603b621b6b2c7d8cd2a6e369",
+    "evidence-ab8867c6566f8ab1d49fa7b4",
+    "evidence-f390265c20df9485df3c8cc3",
+    "evidence-f9cdc11ac8207c120446fb43"
+  ],
+  "filling_evidence_ids": [
+    "evidence-563db511a7de093031886e33",
+    "evidence-865b9ce4798ddcdcbeb7bfa9"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.college.source.media-center.4232fa",
+  "lighting_controls": {
+    "reason": "No PNNL prototype zone carries this space type, and the pinned openstudio-standards cache holds the space-type data but not the template daylighting rules, so the controls are unknown (ADR 0044).",
+    "source": "pnnl_prototype",
+    "status": "unknown"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-c099b9bb8410b0335555613a",
+      "evidence_id": "evidence-1ea0d930aa86143538921e06",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.college.college-bldg-lecture-occ-sch.bfc331",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.10763910416709722
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-04c979a199810821f5851bed",
+      "evidence_id": "evidence-5f9bc800a8bb462a0272de2b",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.college.college-bldg-light-sch.f5ad1e",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3555664254ca542e95482016",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-65cb503496d071c18eb54c7c",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "visible": {
+          "evidence_id": "evidence-1ab98d2665a63e353e710eef",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": 11.409745041712306
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ef45b66304d50e2fa492e3a0",
+      "evidence_id": "evidence-f9cdc11ac8207c120446fb43",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.college.college-bldg-light-sch.f5ad1e",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3555664254ca542e95482016",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-65cb503496d071c18eb54c7c",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "visible": {
+          "evidence_id": "evidence-1ab98d2665a63e353e710eef",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-f9336324074854f45c046652",
+      "evidence_id": "evidence-f390265c20df9485df3c8cc3",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.college.college-bldg-equip-sch-base.3395b0",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-662bd55e9afdf1b6dfbf809e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-84740e30b7300fb0520e7f39",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-969c2eb01bf97422b92b6f59",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 10.010436687540041
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-bb945ccf05a24445f951ad06",
+      "evidence_id": "evidence-ab8867c6566f8ab1d49fa7b4",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-865b9ce4798ddcdcbeb7bfa9"
+        ],
+        "resolutions": [
+          "resolution-23f1f08f3705f4d450c6",
+          "resolution-49eaf4ae840d383dae13"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-865b9ce4798ddcdcbeb7bfa9",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-6c0048c12f756932114f1971",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-d3e564d663ea2a9267afb19a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-5d2a36e3fe51be15c535ab9e",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Media Center_College",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-603b621b6b2c7d8cd2a6e369",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.college.college-activity-sch.a81da5"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-31a8c612ae875cba76f60e40",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.college.college-clgsetp-sch.1060ba"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-16b11b3bbe7cec0bd783aa7e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.college.college-htgsetp-sch.690834"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-3946c1947bc898f8b958",
+  "template": "90.1-2013"
+}

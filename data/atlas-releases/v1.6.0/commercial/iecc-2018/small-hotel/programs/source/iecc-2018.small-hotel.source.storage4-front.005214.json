@@ -1,0 +1,286 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-003c7b7f71886153851a9580",
+    "evidence-0aac0bd3c2e8e8ba95cde06d",
+    "evidence-1b5dc0ea5c1bf7c466efbf0a",
+    "evidence-28c70e0beecf9d5f6e1203e6",
+    "evidence-4954d68e978ed19fba8d5ed4",
+    "evidence-5e24836826d1e1b6eada2ad0",
+    "evidence-68fcb2a4b5b8d86d5c08444a",
+    "evidence-7d33e528987b753b82236751",
+    "evidence-857c3abbd8fb8be46e2ddb1b",
+    "evidence-91618779d0923a8fce5404e8",
+    "evidence-acbef6f42bcbb4de125d7666",
+    "evidence-bde6932af0bd5cfcae2f0da7",
+    "evidence-d48c358324b010172e669cf0",
+    "evidence-e7cca57582fe0436d2b61adc",
+    "evidence-f6503ff8186784106b283dd3"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-f6503ff8186784106b283dd3",
+    "roof": 0.0,
+    "wwr": {
+      "E": 0.0,
+      "N": null,
+      "S": null,
+      "W": null
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2018.small-hotel.source.storage4-front.005214",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-0aac0bd3c2e8e8ba95cde06d",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b553f1fe3ce736322c517205",
+      "evidence_id": "evidence-28c70e0beecf9d5f6e1203e6",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.always-off.b249a9",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.021527820833
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-c02657c430296a3119c573a2",
+      "evidence_id": "evidence-68fcb2a4b5b8d86d5c08444a",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.ltg-sch-storage.25819b",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-68fcb2a4b5b8d86d5c08444a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-68fcb2a4b5b8d86d5c08444a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-68fcb2a4b5b8d86d5c08444a",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.456251
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-42ff993e500533c2f81c3b02",
+      "evidence_id": "evidence-4954d68e978ed19fba8d5ed4",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-d9613522288d09bb572f9c74",
+      "evidence_id": "evidence-bde6932af0bd5cfcae2f0da7",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.always-off.b249a9",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-bde6932af0bd5cfcae2f0da7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-bde6932af0bd5cfcae2f0da7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-bde6932af0bd5cfcae2f0da7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1db0bda83312e4b17478fd1f",
+      "evidence_id": "evidence-91618779d0923a8fce5404e8",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-234bdfedb15b27145500de38",
+      "evidence_id": "evidence-e7cca57582fe0436d2b61adc",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2018.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Storage4Front_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d48c358324b010172e669cf0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2018.small-hotel.activity-sch.55cb0f"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-5e24836826d1e1b6eada2ad0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": false,
+        "heating_enabled": false
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-003c7b7f71886153851a9580",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-7d33e528987b753b82236751",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "pnnl_building_type": "HotelSmall",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-acbef6f42bcbb4de125d7666",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-54d7ec076386b7b9e3dc",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 12.5419104,
+      "multiplier": 1,
+      "name": "FrontStorageFlr4"
+    }
+  ],
+  "standards_building_type": "SmallHotel",
+  "template": "IECC 2018"
+}

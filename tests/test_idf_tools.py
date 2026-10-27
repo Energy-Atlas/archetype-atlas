@@ -88,6 +88,56 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(idf_schedules.classify(keys, days), 'holidays and design days only')
 
 
+YEAR_SCHEDULES = """
+Version,23.1;
+Schedule:Day:Hourly,Wkday,Fraction,0,0,0,0,0,0,0.5,1,1,1,1,1,1,1,1,1,1,0.5,0,0,0,0,0,0;
+Schedule:Day:Hourly,Wkend,Fraction,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2;
+Schedule:Day:Interval,Summer,Fraction,No,Until: 06:30,0.1,Until: 24:00,0.9;
+Schedule:Week:Compact,Normal,For: Weekdays,Wkday,For: CustomDay1,Wkend,For: AllOtherDays,Wkend;
+Schedule:Week:Compact,Flat,AllDays,Summer;
+Schedule:Week:Daily,Daily,Wkend,Wkday,Wkday,Wkday,Wkday,Wkday,Wkend,Wkend,Summer,Wkend,Wkend,Wkend;
+Schedule:Year,Occ,Fraction,Normal,1,1,5,31,Flat,6,1,8,31,Daily,9,1,12,31;
+Schedule:Constant,Setpoint,Temperature,22.2;
+Schedule:Compact,NoColon,Temperature,Through: 12/31,For: AllDays,Until 6:00,20,Until 24:00,22;
+"""
+
+
+class YearScheduleTests(unittest.TestCase):
+    """Schedule:Year, Week and Day objects convert to atlas rules that match them on every day."""
+
+    def schedules(self):
+        return idf_schedules.Schedules(idf_reader.parse(YEAR_SCHEDULES))
+
+    def test_year_schedule_converts_and_checks_over_the_full_year(self):
+        s = self.schedules()
+        days = idf_schedules.calendar_days([])
+        rules = s.checked_ruleset('Occ', days)
+        self.assertEqual([(r['day_types'], r['start_date'], r['end_date']) for r in rules],
+                         [('Default', '2000-01-01', '2000-05-31'), ('Wknd|Hol|SmrDsn|WntrDsn', '2000-01-01', '2000-05-31'),
+                          ('Default', '2000-06-01', '2000-08-31'),
+                          ('Default', '2000-09-01', '2000-12-31'), ('Wknd|Hol|WntrDsn', '2000-09-01', '2000-12-31'),
+                          ('SmrDsn', '2000-09-01', '2000-12-31')])
+        self.assertAlmostEqual(rules[2]['values'][6], 0.5)  # 06:30 inside the hour: energy-conserving mean
+        values = s.evaluate('Occ', days)
+        self.assertAlmostEqual(values['2006-07-04'][7], 0.9, places=12)
+        self.assertAlmostEqual(values['2006-01-02'][8], 1.0, places=12)  # a Monday
+        self.assertAlmostEqual(values['2006-01-01'][8], 0.2, places=12)  # a Sunday
+
+    def test_constant_and_colonless_compact_schedules(self):
+        s = self.schedules()
+        self.assertEqual(s.checked_ruleset('Setpoint'),
+                         [{'day_types': 'Default', 'start_date': '2000-01-01', 'end_date': '2000-12-31',
+                           'type': 'Constant', 'values': [22.2]}])
+        rules = s.checked_ruleset('NoColon')
+        self.assertEqual(rules[0]['values'][:7], [20.0] * 6 + [22.0])
+
+    def test_a_wrong_conversion_is_caught(self):
+        s = self.schedules()
+        s.ruleset = lambda name: [idf_schedules.rule('Default', (1, 1), (12, 31), [0.2])]
+        with self.assertRaises(ValueError):
+            s.checked_ruleset('Occ')
+
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -1,0 +1,307 @@
+{
+  "$id": "urn:archetype-atlas:source-model-construction:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One context (climate code and foundation, or location) of a construction set read from code-prototype EnergyPlus models: assemblies by surface class with their summed source areas, windows, doors, internal mass, window shading control and the source infiltration method. Layers run outside to inside; U-factors are layer-only (no air films); glazing carries its simple-glazing U-factor and SHGC.",
+  "properties": {
+    "assemblies": {
+      "additionalProperties": {
+        "properties": {
+          "layer_orientation": {
+            "const": "outside_to_inside"
+          },
+          "layer_u_factor_W_m2_K": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "layers": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "solar_heat_gain_coefficient": {
+            "type": "number"
+          },
+          "u_factor_W_m2_K": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "layers",
+          "layer_orientation"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "climate": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "climate_zone": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "components": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "boundary": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "surface_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "boundary",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "construction_set_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "context": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "design": {
+      "enum": [
+        "standard",
+        "tropical_semi_conditioned"
+      ]
+    },
+    "doors": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "boundary": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "surface_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "boundary",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "foundation": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "infiltration": {
+      "minProperties": 1,
+      "properties": {
+        "airflow_network": {
+          "type": "object"
+        },
+        "design_flow_rate": {
+          "type": "array"
+        },
+        "effective_leakage_area": {
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "internal_mass": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "kind": {
+      "const": "source_model_construction"
+    },
+    "location": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "materials": {
+      "additionalProperties": {
+        "required": [
+          "model",
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "release": {
+      "enum": [
+        "atlas-release-1.4.0",
+        "atlas-release-1.5.0",
+        "atlas-release-1.6.0",
+        "atlas-release-2.0.0"
+      ]
+    },
+    "schedules": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source": {
+      "type": "object"
+    },
+    "source_climate_code": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_location": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "tropical": {
+      "type": "boolean"
+    },
+    "warm_humid": {
+      "type": "boolean"
+    },
+    "window_shading": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "windows": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "boundary": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "surface_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "boundary",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "construction_set_id",
+    "context",
+    "name",
+    "release",
+    "source",
+    "climate",
+    "components",
+    "windows",
+    "doors",
+    "internal_mass",
+    "window_shading",
+    "infiltration",
+    "assemblies",
+    "materials",
+    "schedules",
+    "evidence"
+  ],
+  "title": "Source model constructions 1.0.0",
+  "type": "object"
+}

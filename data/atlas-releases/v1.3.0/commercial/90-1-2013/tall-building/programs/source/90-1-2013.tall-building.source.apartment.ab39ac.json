@@ -1,0 +1,265 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "TallBuilding",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-11e6c8eee29c33144eba7bd3",
+    "evidence-4c24306dc87ed1334db3b749",
+    "evidence-4f51275b5e5107d1d5288246",
+    "evidence-5bf2f2ca0cb499990d7912df",
+    "evidence-873ddd88b0565910020cf0e9",
+    "evidence-9998e39b2fa1171be1c85bea",
+    "evidence-cc2b86652661005827ba56e3",
+    "evidence-f80ebe7c7c838e69c2515584"
+  ],
+  "filling_evidence_ids": [
+    "evidence-ab121a13a3f52224037fd0f1",
+    "evidence-fb57c7716121191153d0029e"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.tall-building.source.apartment.ab39ac",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-e319933f5b03c50a8548c808",
+      "evidence_id": "evidence-4f51275b5e5107d1d5288246",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.tall-building.apartment-high-rise-occ-apt-sch.65ec63",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.02830908439594657
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-1b39ab1707f55d2db9b5718e",
+      "evidence_id": "evidence-5bf2f2ca0cb499990d7912df",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.tall-building.apartment-high-rise-ltg-apt-sch.53c1cf",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3b94399a985d73c98e405725",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-164f1d250223111e4fca2e00",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-d23614af00ba74cf5c02b51b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 11.517384145879403
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-62baf4cb7d1e763a22c0879e",
+      "evidence_id": "evidence-f80ebe7c7c838e69c2515584",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.tall-building.apartment-high-rise-ltg-apt-sch.53c1cf",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3b94399a985d73c98e405725",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-164f1d250223111e4fca2e00",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-d23614af00ba74cf5c02b51b",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 2.906255812511625
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-aab233aa5dee3d1bb2a47d6f",
+      "evidence_id": "evidence-4c24306dc87ed1334db3b749",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.tall-building.apartment-high-rise-eqp-apt-sch.048138",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-f763471f1a5f53c3abe318f7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-9274fac2aa6383ef5a68d42e",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-03439f7de77c212e6e570003",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.67
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-f4eacc98e6ab7954d7cae155",
+      "evidence_id": "evidence-9998e39b2fa1171be1c85bea",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-ab121a13a3f52224037fd0f1"
+        ],
+        "resolutions": [
+          "resolution-3ea355fbc44be98ab677",
+          "resolution-f9f13a519a1663c5c97d"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-ab121a13a3f52224037fd0f1",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-8e56718278bd934c11db091c",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-3338879a7f0d52af1820d9d8",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-5c09b24dc1cc18e59c7ba05a",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "90-1-2013.tall-building.main.c94e16",
+      "evidence_id": "evidence-9e4a370cd4d4f71015bc6d29",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.tall-building.apartment-high-rise-apt-dhw-sch.b79fa5",
+      "scope": "program_service",
+      "service_id": "90-1-2013.tall-building.main.c94e16",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 4.146067251759837e-08,
+      "zone_heat_assignment": "unresolved"
+    }
+  ],
+  "mode": "source",
+  "name": "Apartment_TallBuilding",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-873ddd88b0565910020cf0e9",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.tall-building.apartment-mid-rise-activity-schedule.df03d0"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-cc2b86652661005827ba56e3",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.tall-building.apartment-high-rise-clgsetp-apt-sch.980bb6"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-11e6c8eee29c33144eba7bd3",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.tall-building.apartment-high-rise-htgsetp-apt-sch.9b21f2"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "90-1-2013.tall-building.main.c94e16"
+  ],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-3ebabfc51a29648955bf",
+  "template": "90.1-2013"
+}

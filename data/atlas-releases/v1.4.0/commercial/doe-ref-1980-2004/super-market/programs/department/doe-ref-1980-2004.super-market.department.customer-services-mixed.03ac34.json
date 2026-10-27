@@ -1,0 +1,250 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "SuperMarket",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.vestibule.e0975e",
+        "represented_area_m2": 27.87091199999901,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-7bd78f1c1bf8ad7b8472",
+        "weight": 0.02285580503753791
+      },
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.bakery.3004b9",
+        "represented_area_m2": 209.03302484999813,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-242c048cbab38e346203",
+        "weight": 0.17141950942898976
+      },
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.deli.230228",
+        "represented_area_m2": 224.69973752999977,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-45d8884188cebd023a79",
+        "weight": 0.18426714536545477
+      },
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.dining.a33a84",
+        "represented_area_m2": 46.45822877500127,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-7a0b0d0f9c00f490ab0d",
+        "weight": 0.03809850999030101
+      },
+      {
+        "program_id": "doe-ref-1980-2004.super-market.source.produce.ef02d1",
+        "represented_area_m2": 711.3618692399967,
+        "source_geometry_file_id": "sourcefile-b1d08f2d2bf13f7857cb",
+        "source_program_id": "program-51408f266f732dcc9aa0",
+        "weight": 0.5833590301777165
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-d58f7afadb3aee7108580e2f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "doe-ref-1980-2004.super-market.department.customer-services-mixed.03ac34",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-d256e15c21af5be84ccd7cb3",
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-5e0761b928348029f399a28a",
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.super-market.customer-services-mixed-electric-equipment.76f3e8",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 23.852008698419006
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-6f8981fed21ed356113f282e",
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [],
+        "resolutions": [
+          "resolution-2abaa254de170b50d5d9",
+          "resolution-68ab97c8971a8ddc057d",
+          "resolution-b2c47633b0a7b6f6a946",
+          "resolution-d134d3953429b337788c",
+          "resolution-d50718399ab164b356af",
+          "resolution-f0e7822870060138ffcb"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "schedule_id": "doe-ref-1980-2004.super-market.customer-services-mixed-gas-equipment.ff2d6c",
+          "status": "known",
+          "value": 9.571050924415125
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "composed_program",
+      "status": "unknown",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-0a7e2668e4cabf138f3ba4d4",
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.super-market.customer-services-mixed-lighting.93e1d4",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 28.8214115571808
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-c1d7ed69db66c7c39b8ed019",
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "doe-ref-1980-2004.super-market.customer-services-mixed-occupancy.358289",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.11153679814351244
+    }
+  ],
+  "mode": "department",
+  "name": "CustomerServices_Mixed_SuperMarket",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.super-market.customer-services-mixed-activity.69c4aa"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.super-market.customer-services-mixed-cooling-setpoint.d82b94"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-d58f7afadb3aee7108580e2f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "doe-ref-1980-2004.super-market.customer-services-mixed-heating-setpoint.6d7da5"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-3d24fa01f1ec612b31ab303a",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "existing_stock_benchmark",
+  "template": "DOE Ref 1980-2004",
+  "unresolved_loads": [
+    {
+      "quantity": "hot_water_volume",
+      "reason": "missing or multiple source demands; source member references retained"
+    }
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "TallBuilding",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-41880620b0a744da45778111",
+    "evidence-54080441682a55e05daca0fe",
+    "evidence-890f300a5c56dcaacf82c111",
+    "evidence-8c241c21e4ca476271e9696b",
+    "evidence-de8518f81e1f73f61deb7359",
+    "evidence-e223e48893b8a34385de2a62",
+    "evidence-eb161ed1900f2c553b10d02e",
+    "evidence-f67ef0a6e3c478df94ab08d9"
+  ],
+  "filling_evidence_ids": [
+    "evidence-c74cef49a5bfffec554e4e39",
+    "evidence-d9427d79ff22cdab605f4312"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2019.tall-building.source.guest-room5.49f379",
+  "lighting_controls": {
+    "reason": "No PNNL prototype zone carries this space type, and the pinned openstudio-standards cache holds the space-type data but not the template daylighting rules, so the controls are unknown (ADR 0044).",
+    "source": "pnnl_prototype",
+    "status": "unknown"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-98ad9e15a022844d29a7ddc7",
+      "evidence_id": "evidence-54080441682a55e05daca0fe",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.tall-building.hotel-large-guest-room-occ-sch.54b7a8",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.04655391255226955
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-092ff292c86e3af03a88dc86",
+      "evidence_id": "evidence-e223e48893b8a34385de2a62",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.tall-building.hotel-large-bldg-light-guestroom-sch-2013.4b241b",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3f70d0936a034fee484c5389",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-141e473554bdcd3b27342c40",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-cebec5ba99bdab66302377b6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.413203270850985
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-c12f52fcf15c6f1c1e04e5a6",
+      "evidence_id": "evidence-de8518f81e1f73f61deb7359",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.tall-building.hotel-large-bldg-light-guestroom-sch-2013.4b241b",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3f70d0936a034fee484c5389",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-141e473554bdcd3b27342c40",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-cebec5ba99bdab66302377b6",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-82f96dbf579f206fa36acca7",
+      "evidence_id": "evidence-f67ef0a6e3c478df94ab08d9",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.tall-building.hotel-large-guest-room-eqp-sch-base.cc7846",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-ec3ccd27b91050286a4af062",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-4df6f00fcddb883b24923d01",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-4b27b6c068b6a72d55f592ef",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 8.169808006282679
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-6b38dbe5bf7075794471b4e1",
+      "evidence_id": "evidence-8c241c21e4ca476271e9696b",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-d9427d79ff22cdab605f4312"
+        ],
+        "resolutions": [
+          "resolution-9f191cae09fb78b08c0a",
+          "resolution-d968bc337904dfcfa575"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-d9427d79ff22cdab605f4312",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-ca9a34bf2aa0417f5d24b6ca",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-ab5461480f78a6006cf602af",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-1326c63e3a504a53916907bc",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "90-1-2019.tall-building.main.51c3a9",
+      "evidence_id": "evidence-9eb5b68649f32a23de34864a",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2019.tall-building.hotel-large-guest-room-swh-sch.e122bc",
+      "scope": "program_service",
+      "service_id": "90-1-2019.tall-building.main.51c3a9",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 4.079544059313657e-08,
+      "zone_heat_assignment": "unresolved"
+    }
+  ],
+  "mode": "source",
+  "name": "GuestRoom5_TallBuilding",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-41880620b0a744da45778111",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.tall-building.hotel-large-activity-sch.35e756"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-eb161ed1900f2c553b10d02e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.tall-building.hotel-large-adva-occ-guest-room-clg-sp-sch.869aaa"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-890f300a5c56dcaacf82c111",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2019.tall-building.hotel-large-adva-occ-guest-room-htg-sp-sch.dee751"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "90-1-2019.tall-building.main.51c3a9"
+  ],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-4d28c5e5ff55f7cec70a",
+  "template": "90.1-2019"
+}

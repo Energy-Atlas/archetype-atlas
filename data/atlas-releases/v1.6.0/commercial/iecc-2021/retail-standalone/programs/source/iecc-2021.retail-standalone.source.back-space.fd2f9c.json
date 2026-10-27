@@ -1,0 +1,294 @@
+{
+  "available_details": [
+    "SourcePrograms",
+    "DepartmentMixes",
+    "GeneralMix"
+  ],
+  "building_type": "RetailStandalone",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-02dfde9b9699f1d9cb5d4470",
+    "evidence-073ee668a9fea4fc4fda47d3",
+    "evidence-3026f9da61ab721f3c1f6a7a",
+    "evidence-526404e1640048d4175b768e",
+    "evidence-61d52526a1a0652469930a10",
+    "evidence-6a097615534f6155547be339",
+    "evidence-6bd3478ca5143adcba755ca4",
+    "evidence-6ed32d5c1937aba28dffbbb9",
+    "evidence-763c8bc1698157f81816a7ec",
+    "evidence-8aa7f163f3156914b5ab1114",
+    "evidence-8fd6b130736cfc974500fd08",
+    "evidence-b1b6c5fa12199298afa75e89",
+    "evidence-baff6cdf26704eaf2de84309",
+    "evidence-d3dfbc87cdf71991e85ec494",
+    "evidence-e233aca45fb3cb02155bce54",
+    "evidence-e421b4bcbb77bae7138d08f6"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-61d52526a1a0652469930a10",
+    "roof": 0.0,
+    "wwr": {
+      "E": 0.0,
+      "N": 0.0,
+      "S": null,
+      "W": 0.0
+    }
+  },
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2021.retail-standalone.source.back-space.fd2f9c",
+  "lighting_controls": {
+    "daylighting": null,
+    "evidence_id": "evidence-073ee668a9fea4fc4fda47d3",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-b20709dd073a3281121a58dd",
+      "evidence_id": "evidence-8aa7f163f3156914b5ab1114",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-standalone.bldg-occ-sch.ce817d",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.021527598381
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-2e7d4cbc9ced8635749f9ff2",
+      "evidence_id": "evidence-763c8bc1698157f81816a7ec",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-standalone.ltg-sch-back.053dce",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-763c8bc1698157f81816a7ec",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-763c8bc1698157f81816a7ec",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-763c8bc1698157f81816a7ec",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.206537
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-61d64a351a38a94ae54d556b",
+      "evidence_id": "evidence-6ed32d5c1937aba28dffbbb9",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-9697c6c82de329f596113315",
+      "evidence_id": "evidence-baff6cdf26704eaf2de84309",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-standalone.bldg-equip-sch.a210f0",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-baff6cdf26704eaf2de84309",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-baff6cdf26704eaf2de84309",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-baff6cdf26704eaf2de84309",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 8.07
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-18574cd5fc71f11df450b421",
+      "evidence_id": "evidence-d3dfbc87cdf71991e85ec494",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "iecc-2021.retail-standalone.main.add576",
+      "evidence_id": "evidence-8fd6b130736cfc974500fd08",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.retail-standalone.bldg-swh-sch.777a6b",
+      "scope": "program_service",
+      "service_id": "iecc-2021.retail-standalone.main.add576",
+      "status": "known",
+      "target_temperature_degC": 60.0,
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 4.9751e-08,
+      "zone_heat_assignment": "unresolved"
+    }
+  ],
+  "mode": "source",
+  "name": "Back_Space_RetailStandalone",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-3026f9da61ab721f3c1f6a7a",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.retail-standalone.activity-sch.bc5d0c"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-02dfde9b9699f1d9cb5d4470",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": true,
+        "heating_enabled": true
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-b1b6c5fa12199298afa75e89",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.retail-standalone.clgsetp-sch-yes-optimum-startstop.65b8aa"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-e233aca45fb3cb02155bce54",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.retail-standalone.htgsetp-sch-yes-optimum-startstop.4421a4"
+    }
+  },
+  "pnnl_building_type": "RetailStandalone",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [
+    "iecc-2021.retail-standalone.main.add576"
+  ],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-6a097615534f6155547be339",
+    "holidays": [
+      {
+        "name": "New Years Day",
+        "rule": "January 1"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Labor Day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-c609c056c909a20f0c8f",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 379.89,
+      "multiplier": 1,
+      "name": "Back_Space"
+    }
+  ],
+  "standards_building_type": "Retail",
+  "template": "IECC 2021"
+}

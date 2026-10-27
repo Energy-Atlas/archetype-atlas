@@ -4,8 +4,10 @@ on:
 permissions:
   contents: read
 # Research checks run as parallel Linux jobs; the required "atlas (ubuntu-latest, 3.11)"
-# check passes only when all of them pass. The required Windows check keeps the
-# pinned-producer reproductions and this platform's consumer-document validation.
+# check passes only when all of them pass. The required "atlas (windows-latest, 3.14)"
+# check passes only when the parallel Windows jobs pass: the pinned-producer
+# reproductions, split in two to stay within the job timeout, and this platform's
+# consumer-document validation.
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -66,8 +68,24 @@ jobs:
           python -m scripts.program_completeness --check
           python -m scripts.atlas_release --verify
           python -m scripts.atlas_delta_release --verify
+          python -m scripts.atlas_minor_release --release 1.2.0 --verify
+          python -m scripts.atlas_minor_release --release 1.3.0 --verify
+          python -m scripts.atlas_minor_release --release 1.4.0 --verify
+          python -m scripts.atlas_minor_release --release 1.5.0 --verify
+          python -m scripts.atlas_minor_release --release 1.6.0 --verify
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
+          python -m scripts.resstock_iecc_review --check
+      - name: Reproduce the construction-only program definitions from pinned sources
+        run: |
+          python -m scripts.fetch --lock sources/construction-only-programs-lock.json
+          python -m scripts.fetch --lock sources/openstudio-area-default-lock.json
+          python -m scripts.construction_only_programs --check
+          python -m scripts.plenum_aliases --check
+      - name: Reproduce atlas release 1.3.0 (IECC commercial) byte for byte and its evidence report
+        run: |
+          python -m scripts.atlas_minor_release --release 1.3.0 --check
+          python -m scripts.iecc_commercial_review --check
       - run: python -m scripts.audit
 
   construction-validation:
@@ -150,8 +168,7 @@ jobs:
           echo "Linux research jobs: $RESULTS"
           for result in $RESULTS; do [ "$result" = success ] || exit 1; done
 
-  atlas-windows:
-    name: atlas (windows-latest, 3.14)
+  windows-early-releases:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -180,6 +197,40 @@ jobs:
           python -m scripts.fetch --lock sources/definition-evidence-lock.json
       - name: Reproduce the 1.1.0 delta release with pinned producer
         run: python -m scripts.atlas_delta_release --check
+      - name: Reproduce the 1.2.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.2.0 --check
+
+  windows-later-releases:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      # Exact fitted IDs require the original producer's Python and math library.
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.14.7'
+      - run: python -m pip install -r requirements.txt
+      - name: Fetch pinned sources
+        run: |
+          python -m scripts.fetch
+          python -m scripts.fetch --lock sources/definition-evidence-lock.json
+      # The residential tree reads the committed definition inputs, never the IDFs.
+      - name: Reproduce the 1.4.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.4.0 --check
+      - name: Reproduce the 1.5.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.5.0 --check
+      - name: Reproduce the 1.6.0 delta release with pinned producer
+        run: python -m scripts.atlas_minor_release --release 1.6.0 --check
+
+  windows-validation:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
@@ -192,3 +243,17 @@ jobs:
           python -m scripts.construction_foundation_airflow --check
           python -m scripts.construction_foundation_smoke
           python -m scripts.validate_construction_foundation --all
+
+  atlas-windows:
+    name: atlas (windows-latest, 3.14)
+    needs: [windows-early-releases, windows-later-releases, windows-validation]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every Windows job to pass
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Windows jobs: $RESULTS"
+          for result in $RESULTS; do [ "$result" = success ] || exit 1; done

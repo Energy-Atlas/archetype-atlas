@@ -1,0 +1,287 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "MidriseApartment",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-1b7f0bacc91d2efa5533790f",
+    "evidence-2174744885f6b974778f4a81",
+    "evidence-2b38ca146c07ae7ad9dfa717",
+    "evidence-429400387bc1e1dd5ce9fd6e",
+    "evidence-4817ff9133724b13b56ff8cd",
+    "evidence-4c5b90a71ff5a05d99875f9c",
+    "evidence-541d87648902b88bd076a285",
+    "evidence-56448ccd06d50fdc84555317",
+    "evidence-65571f90365680d3391984f8",
+    "evidence-65baa161580a4ab8b8f0fa06",
+    "evidence-6d710a23d9fbe1d7604ca9f3",
+    "evidence-6f3ecbbc2431688be6f8af16",
+    "evidence-6fccdfbb7faaf5295f6a1ce0",
+    "evidence-705eaf5cb22fa29d4b4045cf",
+    "evidence-70dfeff1bb3bbb64f1f7f7f2",
+    "evidence-7446716b49e7bb932bcaf79a",
+    "evidence-92ce2e57c2358d198780d58c",
+    "evidence-af46a96aa0561c07c5948c8f",
+    "evidence-b8056d4073bde825a4dbb926",
+    "evidence-c17580b7357418e05fc228ec",
+    "evidence-ce04c55fbbf1bd0dd4c0894b",
+    "evidence-dfe7076448bbd296afd2b8a2",
+    "evidence-eae19d311e596303b2b432ad"
+  ],
+  "fenestration": {
+    "basis": "program_zone_surfaces",
+    "evidence_id": "evidence-4c5b90a71ff5a05d99875f9c",
+    "roof": 0.0,
+    "wwr": {
+      "E": 0.0,
+      "N": null,
+      "S": null,
+      "W": 0.2182
+    }
+  },
+  "gate": [
+    "residential"
+  ],
+  "id": "iecc-2021.midrise-apartment.source.corridor-topfloor.b7d717",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-66730400f5671439ccb8a63c",
+      "evidence_id": "evidence-b8056d4073bde825a4dbb926",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.midrise-apartment.occ-apt-sch-corridor.3c5acb",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.053824809222
+    },
+    {
+      "basis": "floor_area",
+      "climate_evidence_ids": {
+        "2A": "evidence-af46a96aa0561c07c5948c8f",
+        "2B": "evidence-56448ccd06d50fdc84555317",
+        "3B": "evidence-6d710a23d9fbe1d7604ca9f3",
+        "3C": "evidence-2174744885f6b974778f4a81",
+        "4B": "evidence-541d87648902b88bd076a285",
+        "4C": "evidence-70dfeff1bb3bbb64f1f7f7f2",
+        "5C": "evidence-6f3ecbbc2431688be6f8af16",
+        "7A": "evidence-92ce2e57c2358d198780d58c",
+        "8A": "evidence-eae19d311e596303b2b432ad"
+      },
+      "demand_id": "demand-f467837e7afb41bab277b11b",
+      "evidence_id": "evidence-c17580b7357418e05fc228ec",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.midrise-apartment.ltg-sch-corridor.b69dec",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-c17580b7357418e05fc228ec",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.6
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-c17580b7357418e05fc228ec",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-c17580b7357418e05fc228ec",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 4.7623,
+      "value_by_climate": {
+        "2A": 4.28607,
+        "2B": 4.28607,
+        "3B": 4.28607,
+        "3C": 4.28607,
+        "4B": 4.28607,
+        "4C": 4.28607,
+        "5C": 4.28607,
+        "7A": 4.28607,
+        "8A": 4.28607
+      }
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-254ef2b81c3be1b67f04ab05",
+      "evidence_id": "evidence-7446716b49e7bb932bcaf79a",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.midrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-d9c7beee6910983ac52896a9",
+      "evidence_id": "evidence-ce04c55fbbf1bd0dd4c0894b",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.midrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-eb28432a0a46a6074f8b0682",
+      "evidence_id": "evidence-4817ff9133724b13b56ff8cd",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.midrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-c2236289c1a173f9d45c3dec",
+      "evidence_id": "evidence-1b7f0bacc91d2efa5533790f",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.midrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "m3/s/m2",
+      "value": 0.0
+    }
+  ],
+  "mode": "source",
+  "name": "Corridor_topfloor_MidriseApartment",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-65baa161580a4ab8b8f0fa06",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.midrise-apartment.activity-schedule.d2bc7a"
+    },
+    "conditioning": {
+      "evidence_id": "evidence-429400387bc1e1dd5ce9fd6e",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "state",
+      "value": {
+        "cooling_enabled": false,
+        "heating_enabled": false
+      }
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-2b38ca146c07ae7ad9dfa717",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-6fccdfbb7faaf5295f6a1ce0",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": null
+    }
+  },
+  "pnnl_building_type": "ApartmentMidRise",
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_calendar": {
+    "daylight_saving": {
+      "applied": false,
+      "end": "1st Sunday in November",
+      "start": "2nd Sunday in March"
+    },
+    "evidence_id": "evidence-dfe7076448bbd296afd2b8a2",
+    "holidays": [
+      {
+        "name": "New Year's Day",
+        "rule": "Jan 1"
+      },
+      {
+        "name": "MLK Day",
+        "rule": "3rd Monday in January"
+      },
+      {
+        "name": "Presidents Day",
+        "rule": "3rd Monday in February"
+      },
+      {
+        "name": "Memorial Day",
+        "rule": "Last Monday in May"
+      },
+      {
+        "name": "Independence Day",
+        "rule": "July 4"
+      },
+      {
+        "name": "Labor day",
+        "rule": "1st Monday in September"
+      },
+      {
+        "name": "Columbus Day",
+        "rule": "2nd Monday in October"
+      },
+      {
+        "name": "Thanksgiving",
+        "rule": "4th Thursday in November"
+      },
+      {
+        "name": "Veterans Day",
+        "rule": "November 11"
+      },
+      {
+        "name": "Christmas",
+        "rule": "December 25"
+      }
+    ]
+  },
+  "source_family": "iecc_commercial_prototype",
+  "source_id": "program-46d293474c9c67b3c125",
+  "source_zones": [
+    {
+      "counted": true,
+      "floor_area_m2": 77.659355610438,
+      "multiplier": 1,
+      "name": "T Corridor"
+    }
+  ],
+  "standards_building_type": "MidriseApartment",
+  "template": "IECC 2021"
+}

@@ -1,0 +1,177 @@
+{
+  "available_details": [
+    "DepartmentMixes"
+  ],
+  "building_type": "PrimarySchool",
+  "climate": null,
+  "composition": {
+    "members": [
+      {
+        "program_id": "iecc-2021.primary-school.source.computer-room.b1edb1",
+        "represented_area_m2": 162.0,
+        "source_geometry_file_id": "sourcefile-bd2af2dd3d36b9ae9451",
+        "source_program_id": "program-634243bc695125d35602",
+        "weight": 0.17647058823529413
+      },
+      {
+        "program_id": "iecc-2021.primary-school.source.gym.47d374",
+        "represented_area_m2": 357.0,
+        "source_geometry_file_id": "sourcefile-bd2af2dd3d36b9ae9451",
+        "source_program_id": "program-4c9e266fb9a77c51826d",
+        "weight": 0.38888888888888895
+      },
+      {
+        "program_id": "iecc-2021.primary-school.source.library.fa08f5",
+        "represented_area_m2": 399.0,
+        "source_geometry_file_id": "sourcefile-bd2af2dd3d36b9ae9451",
+        "source_program_id": "program-d9b3ab89ed64ebfeb976",
+        "weight": 0.434640522875817
+      }
+    ],
+    "method": "ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+  },
+  "derivation": "composed",
+  "evidence_ids": [
+    "evidence-24e6952564fb06380e873f3f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "iecc-2021.primary-school.department.activity-mixed.22b3e5",
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-e3f21d75bc33ec767331d234",
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.primary-school.activity-mixed-additional-lighting.d6c6a2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-147d12df3d00aff63fd896a0",
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.primary-school.activity-mixed-electric-equipment.f9eaa5",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 11.993464052287582
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-717207855a2774974e01cfad",
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.primary-school.activity-mixed-additional-lighting.d6c6a2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-fdc04dc548b0199996845884",
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "quantity": "hot_water_volume",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.primary-school.activity-mixed-additional-lighting.d6c6a2",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "m3/s/m2",
+      "value": 0.0
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-7b8f9f790bb277c27bb190b1",
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.primary-school.activity-mixed-lighting.b4f443",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "W/m2",
+      "value": 8.951334588235294
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "mixed-demand-4344d32fba8dbf149b5a44ef",
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "iecc-2021.primary-school.activity-mixed-occupancy.e1d7d0",
+      "scope": "composed_program",
+      "status": "known",
+      "thermal_effects": {
+        "method": "evaluate each source component effect on its conserved trajectory; do not independently average fractions"
+      },
+      "unit": "person/m2",
+      "value": 0.21989038441659478
+    }
+  ],
+  "mode": "department",
+  "name": "Activity_Mixed_PrimarySchool",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.primary-school.activity-mixed-activity.6d9322"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.primary-school.activity-mixed-cooling-setpoint.4936d3"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-24e6952564fb06380e873f3f",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "iecc-2021.primary-school.activity-mixed-heating-setpoint.cd2e47"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "iecc_commercial_prototype",
+  "template": "IECC 2021"
+}

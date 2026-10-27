@@ -1,0 +1,274 @@
+{
+  "available_details": [
+    "SourcePrograms"
+  ],
+  "building_type": "SmallHotel",
+  "climate": null,
+  "derivation": "normalized",
+  "evidence_ids": [
+    "evidence-151ddd67264d0c88d206065f",
+    "evidence-2c6ff7490e280cf8120f8070",
+    "evidence-3913f1560ed3e551fad70a90",
+    "evidence-395604a5ff3a45a201723129",
+    "evidence-4112422afba6e2600bdfdb4d",
+    "evidence-448c8d50f75ab8828588052a",
+    "evidence-5374777aa5236dc80edcdda9",
+    "evidence-7aaf98d903e2c80a76492bdc",
+    "evidence-d7627b06e1222aacdabc8bbd",
+    "evidence-fe0a4320f7078d20ea576715"
+  ],
+  "filling_evidence_ids": [
+    "evidence-8fc1e3e8a58b99aea311ed07",
+    "evidence-d20c3907906fce1254ac7f6f"
+  ],
+  "gate": [
+    "nonresidential"
+  ],
+  "id": "90-1-2013.small-hotel.source.meeting.3201ef",
+  "lighting_controls": {
+    "daylighting": {
+      "availability": "all_days_except_design_days",
+      "control_type": "stepped",
+      "controlled_floor_fraction": 1.0,
+      "controlled_lighting_fraction": 0.56,
+      "controlled_zones": 1,
+      "illuminance_setpoint_lux": 323.0,
+      "method": "split_flux",
+      "minimum_input_power_fraction": 0.3,
+      "minimum_light_output_fraction": 0.2,
+      "stepped_control_steps": 3,
+      "zones": 1
+    },
+    "evidence_id": "evidence-395604a5ff3a45a201723129",
+    "geometry_dependent": true,
+    "source": "pnnl_prototype",
+    "standards_rule": {
+      "daylighting_appropriate": true,
+      "evidence_id": "evidence-5374777aa5236dc80edcdda9",
+      "target_illuminance_setpoint_lux": 323.0
+    },
+    "status": "known"
+  },
+  "loads": [
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-3a8218b69fbddc9a8f7f216c",
+      "evidence_id": "evidence-7aaf98d903e2c80a76492bdc",
+      "quantity": "occupancy",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.hotel-small-meeting-room-occ-sch.7718c3",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {},
+      "unit": "person/m2",
+      "value": 0.538195520835486
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-a85debe8355566cd17b4bb71",
+      "evidence_id": "evidence-151ddd67264d0c88d206065f",
+      "quantity": "lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.hotel-small-bldg-light-meetingroom-sch.771e6c",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3abe4d12f0d1ed49de68d883",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-fa3d064d356030fa25bb7af2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-b77f3cf29d9d1959ce13d9be",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": 13.239609812552958
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-99a28974d6ea829e692b3d39",
+      "evidence_id": "evidence-fe0a4320f7078d20ea576715",
+      "quantity": "additional_lighting",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.hotel-small-bldg-light-meetingroom-sch.771e6c",
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "radiant": {
+          "evidence_id": "evidence-3abe4d12f0d1ed49de68d883",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.7
+        },
+        "to_return_air": {
+          "evidence_id": "evidence-fa3d064d356030fa25bb7af2",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "visible": {
+          "evidence_id": "evidence-b77f3cf29d9d1959ce13d9be",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.2
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-83c98a4c910103bc19cbfa72",
+      "evidence_id": "evidence-3913f1560ed3e551fad70a90",
+      "quantity": "electric_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": "90-1-2013.small-hotel.hotel-small-meeting-room-eqp-sch.fe9c60",
+      "scope": "program",
+      "status": "known",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-f9dff896d78fa3c66d0d0854",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "lost": {
+          "evidence_id": "evidence-47cb305f83898bb73f9586c7",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.0
+        },
+        "radiant": {
+          "evidence_id": "evidence-6d919d94fcd4db5911865ba9",
+          "required_inputs": [],
+          "status": "known",
+          "unit": "1",
+          "value": 0.5
+        }
+      },
+      "unit": "W/m2",
+      "value": 6.17848457919138
+    },
+    {
+      "basis": "floor_area",
+      "demand_id": "demand-ca0f06cee48c5a15eeb5114a",
+      "evidence_id": "evidence-448c8d50f75ab8828588052a",
+      "filling": {
+        "basis": "research_assumption",
+        "evidence": [
+          "evidence-d20c3907906fce1254ac7f6f"
+        ],
+        "resolutions": [
+          "resolution-977f9e2a84c81287157e",
+          "resolution-bfa82abfae7b38d9999c"
+        ],
+        "rules": [
+          "reviewed_no_gas_equipment"
+        ],
+        "set": {
+          "evidence_id": "evidence-d20c3907906fce1254ac7f6f",
+          "schedule_id": {
+            "constant": 0
+          },
+          "status": "known",
+          "value": 0
+        }
+      },
+      "quantity": "gas_equipment",
+      "required_inputs": [
+        "floor_area"
+      ],
+      "schedule_id": null,
+      "scope": "program",
+      "status": "unknown",
+      "thermal_effects": {
+        "latent": {
+          "evidence_id": "evidence-69df95c84dc2a3e0dce1518b",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "lost": {
+          "evidence_id": "evidence-86bc1995a1217841d3e43363",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        },
+        "radiant": {
+          "evidence_id": "evidence-507d3009d3f850bc03557cc0",
+          "required_inputs": [],
+          "status": "unknown",
+          "unit": "1",
+          "value": null
+        }
+      },
+      "unit": "W/m2",
+      "value": null
+    }
+  ],
+  "mode": "source",
+  "name": "Meeting_SmallHotel",
+  "optional": false,
+  "parameters": {
+    "activity_schedule_id": {
+      "evidence_id": "evidence-d7627b06e1222aacdabc8bbd",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.small-hotel.hotel-small-activity-sch.36215a"
+    },
+    "cooling_setpoint_schedule_id": {
+      "evidence_id": "evidence-4112422afba6e2600bdfdb4d",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.small-hotel.hotel-small-common-area-clg-sp-sch.64c15c"
+    },
+    "heating_setpoint_schedule_id": {
+      "evidence_id": "evidence-2c6ff7490e280cf8120f8070",
+      "required_inputs": [],
+      "status": "known",
+      "unit": "schedule reference",
+      "value": "90-1-2013.small-hotel.hotel-small-common-area-htg-sp-sch.3b90f7"
+    }
+  },
+  "required_inputs": [
+    "floor_area"
+  ],
+  "service_ids": [],
+  "source_family": "code_prototype_rules",
+  "source_id": "program-1f6f1ab9ebf34706f379",
+  "template": "90.1-2013",
+  "unresolved": {
+    "service_water_heating_schedule_id": "u-b10d86"
+  }
+}
