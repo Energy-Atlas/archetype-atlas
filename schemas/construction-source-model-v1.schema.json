@@ -51,6 +51,10 @@
       "minLength": 1,
       "type": "string"
     },
+    "climate_zone": {
+      "minLength": 1,
+      "type": "string"
+    },
     "components": {
       "items": {
         "properties": {
@@ -92,6 +96,12 @@
     "context": {
       "minLength": 1,
       "type": "string"
+    },
+    "design": {
+      "enum": [
+        "standard",
+        "tropical_semi_conditioned"
+      ]
     },
     "doors": {
       "items": {
@@ -212,6 +222,20 @@
     },
     "source": {
       "type": "object"
+    },
+    "source_climate_code": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_location": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "tropical": {
+      "type": "boolean"
+    },
+    "warm_humid": {
+      "type": "boolean"
     },
     "window_shading": {
       "items": {
