@@ -30,8 +30,7 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
-  # navigation.instant stays off: record pages use a compact shell and catalogue
-  # scripts initialise on page load (spec section 0.12).
+  # navigation.instant stays off: suite-page scripts initialise on page load (spec section 0.12).
   features:
     - navigation.tabs
     - navigation.path
@@ -57,16 +56,10 @@ extra_css:
   - assets/fonts.css
   - assets/site.css
 extra_javascript:
-  - assets/definition_core.js
-  - assets/definition.js
-  - assets/object.js
-  - assets/construction_core.js
-  - assets/construction.js
-  - assets/schedule_core.js
-  - assets/schedule.js
+  - assets/suite.js
 nav:
   - Home: index.md
-  - Catalogue: catalogue.md
+  - Catalogue: catalogue/index.md
   - How to use:
       - Selection workflow: guides/selection.md
       - Schedule inspection: guides/schedules.md

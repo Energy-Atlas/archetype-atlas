@@ -1,53 +1,41 @@
-"""Keep record titles searchable without duplicating full canonical evidence."""
-import json
+"""Index each suite page once, by its summary, so search stays small (ADR 0043).
+
+The generator writes `search-summaries.json` ({page location: summary}) beside the pages.
+Their section entries are dropped and the page entry's text becomes the summary: the
+name, ID, template, building type and kind. Guides keep MkDocs' full-text entries.
+"""
 import html
+import json
 from pathlib import Path
 
 
-def compact_records(index,record_titles):
-    docs=[];seen=set()
+def compact(index, summaries):
+    docs, seen = [], set()
     for entry in index['docs']:
-        location=entry['location'].split('#',1)[0]
-        if location in record_titles:
-            if location in seen:
-                continue
-            seen.add(location)
-            docs.append({**entry,'location':location,'text':''})
-        else:
+        location = entry['location'].split('#', 1)[0]
+        if location not in summaries:
             docs.append(entry)
-    # Some existing detail kinds intentionally opt out of full-text indexing.
-    # Their exact generated page names still provide safe, small title entries.
-    for location,title in sorted(record_titles.items()):
-        if location not in seen:
-            docs.append({'location':location,'title':html.escape(title),'text':''})
-    return {**index,'docs':docs}
+            continue
+        if location in seen or '#' in entry['location']:
+            continue
+        seen.add(location)
+        docs.append({**entry, 'location': location, 'text': html.escape(summaries[location])})
+    for location in sorted(set(summaries) - seen):
+        docs.append({'location': location, 'title': html.escape(summaries[location].split(' · ', 1)[0]),
+                     'text': html.escape(summaries[location])})
+    return {**index, 'docs': docs}
 
 
 def on_post_build(config):
-    path=Path(config['site_dir'])/'search/search_index.json'
-    record_titles={}
-    for catalogue in (Path(config['docs_dir'])/'releases').glob('*/catalogue.json'):
-        packet=json.loads(catalogue.read_text(encoding='utf-8'))
-        record_titles.update({entry['path'].removesuffix('.md')+'/':entry['name'] for entry in packet['entries']})
-    for finder in (Path(config['docs_dir'])/'catalogue').glob('*/*/entries.json'):
-        for entry in json.loads(finder.read_text(encoding='utf-8')):
-            record_titles['definitions/'+entry['id']+'/']=entry['name']
-    objects=Path(config['docs_dir'])/'object-index.json'
-    if objects.exists():
-        for row in json.loads(objects.read_text(encoding='utf-8')).values():
-            if row['path'].endswith('.md'):
-                record_titles[row['path'].removesuffix('.md')+'/']=row['name']
-            elif row['table'] in {'construction_assemblies','construction_materials'}:
-                record_titles[row['path'].removesuffix('index.html')]=row['name']
-    index=json.loads(path.read_text(encoding='utf-8'))
-    result=compact_records(index,record_titles)
-    indexed={entry['location'].split('#',1)[0] for entry in result['docs']}
-    if not set(record_titles)<=indexed:
-        raise ValueError('Derived search index lacks one or more catalogue record titles')
-    path.write_text(json.dumps(result,ensure_ascii=False,allow_nan=False,separators=(',',':'))+'\n',
-                    encoding='utf-8',newline='\n')
+    summaries_path = Path(config['docs_dir'])/'search-summaries.json'
+    if not summaries_path.exists():
+        return
+    summaries = json.loads(summaries_path.read_text(encoding='utf-8'))
+    path = Path(config['site_dir'])/'search/search_index.json'
+    index = compact(json.loads(path.read_text(encoding='utf-8')), summaries)
+    path.write_bytes((json.dumps(index, ensure_ascii=False, allow_nan=False, separators=(',', ':'))+'\n').encode('utf-8'))
 
 
 # MkDocs' public event-priority attribute keeps this hook after search generation.
 # Avoid a MkDocs import so pure data checks run with the base research dependencies.
-on_post_build.mkdocs_priority=-100
+on_post_build.mkdocs_priority = -100
