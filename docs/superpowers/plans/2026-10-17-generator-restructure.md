@@ -642,3 +642,34 @@ Stages B1-B6 do not depend on programme IDs and may start before milestone B
   CHANGELOG, generator docs.
 - B10 Validation: tests on 3.14 and 3.11, catalogue smoke, regenerated answer
   keys, before/after report; then ask before the first push and one PR.
+
+Stage log B1-B6 (2026-10-28, local commits on `codex/schedule-power-binding`):
+- B1 pins: `sources/resstock-characteristics-lock.json` (185 raw git blobs at
+  dd25369f, each equal to the pinned commit archive member apart from the
+  archive's CRLF line endings). The pinned runtimes were extracted to a short
+  folder outside the repository (`python -m scripts.runtime --destination`),
+  because this worktree's path exceeds the Windows path limit.
+- B2 tables: `scripts/build_resstock_characteristics.py` (multifamily rows,
+  per-state shards, gzip, 6 MB; `--check`).
+- B3 sampler: `residential/characteristics.py`, exact conditioning; tests
+  compare with rejection from forward sampling.
+- B4 arguments: `residential/arguments.py`; all 5,867 shared argument values
+  of the 41 recovered records equal the Ruby inputs.
+- B5 equations: `residential/annual.py`; `scripts/validate_resstock_annual.py`
+  ran the pinned Ruby on 240 sampled units in 12 states: every end use within
+  1e-9 relative (`docs/validation/resstock-annual-equivalence.json`, answer key
+  `tests/answer_keys/resstock-annual.json`).
+- B6 adapter: `residential/apartment.py`; a recipe with a `resstock_unit`
+  block (building type, height, vintages, HVAC, hot water per person) takes
+  the ResStock path; prototype recipes keep the old path until B7 writes the
+  block. Request schema 3.0.0 adds `residents: "resstock"` and the location's
+  `climate_zone` and `weather_id`; 2.0.0 stays accepted until B10 regenerates
+  the answer keys.
+- Agent decisions (routine, reversible): a unit's exterior and garage lighting
+  are left to the building (the prototype's exterior lighting covers the
+  site); pools are not modelled in units (the closure has no pool heater or
+  pump characteristics, and `Misc Pool` only says whether one exists); a unit
+  without `weather_id` takes the nearest packaged TMY3 station in its state
+  for ceiling-fan months; fixture events that outlast a departure stay as
+  upstream (0.6 % of a one-resident unit's water in empty hours, against 30 %
+  under the prototype schedule).

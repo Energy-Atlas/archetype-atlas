@@ -1,6 +1,8 @@
-"""Parse and validate a generator request (schema 2.0.0).
+"""Parse and validate a generator request (schema 2.0.0 or 3.0.0).
 
 All validation happens here, once. Kernels and mixtures trust what this returns.
+3.0.0 adds, for ResStock apartment units, `residents: "resstock"` and the location's
+`climate_zone` and `weather_id`.
 """
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -15,7 +17,8 @@ from .errors import GeneratorError
 from .residential.rng import MODES
 from .seeds import check_master_seed
 
-SCHEMA = Path(__file__).resolve().parent / "schemas" / "request-v2.schema.json"
+SCHEMAS = {"2.0.0": Path(__file__).resolve().parent / "schemas" / "request-v2.schema.json",
+           "3.0.0": Path(__file__).resolve().parent / "schemas" / "request-v3.schema.json"}
 BASIS_UNITS = {"floor_area": "m2", "dwelling_unit": "dwelling", "person": "person", "absolute": "1"}
 
 
@@ -25,6 +28,8 @@ class Location:
     latitude: float
     longitude: float
     utc_offset: float
+    climate_zone: str | None = None
+    weather_id: str | None = None
 
 
 @dataclass
@@ -37,7 +42,7 @@ class Instance:
     extent: dict = field(default_factory=dict)
     multiplicity: float = 1.0
     operating_group: str | None = None
-    residents: int | None = None
+    residents: int | str | None = None   # "resstock": ResStock draws them (3.0.0)
     location: Location | None = None
     service_links: dict = field(default_factory=dict)
     composition_basis: str | None = None
@@ -72,15 +77,19 @@ class Request:
     instances: list
     mixture: Mixture | None
     occupancy: tuple = ("state", "2003-2019")   # (mix, ATUS window), residential/occupancy.py
+    schema_version: str = "2.0.0"
 
 
-@lru_cache(maxsize=1)
-def _validator():
-    return jsonschema.Draft202012Validator(json.loads(SCHEMA.read_text(encoding="utf-8")))
+@lru_cache(maxsize=None)
+def _validator(version: str):
+    return jsonschema.Draft202012Validator(json.loads(SCHEMAS[version].read_text(encoding="utf-8")))
 
 
 def _schema_errors(document: dict) -> None:
-    errors = sorted(_validator().iter_errors(document), key=lambda e: list(e.path))
+    version = document.get("schema_version") if isinstance(document, dict) else None
+    if version not in SCHEMAS:
+        raise GeneratorError("invalid_request", "/schema_version", f"Supported versions are {sorted(SCHEMAS)}")
+    errors = sorted(_validator(version).iter_errors(document), key=lambda e: list(e.path))
     if errors:
         first = errors[0]
         path = "/" + "/".join(str(p) for p in first.path)
@@ -133,7 +142,7 @@ def parse_request(document: dict, residential_rng: str = "pcg64", flat_days: str
         _check_mixture(mixture, set(keys), set(services))
     occupancy = document.get("occupancy", {})
     return Request(document["seed"], residential_rng, flat_days, instances, mixture,
-                   (occupancy.get("mix", "state"), occupancy.get("window", "2003-2019")))
+                   (occupancy.get("mix", "state"), occupancy.get("window", "2003-2019")), document["schema_version"])
 
 
 def _check_mixture(mixture: Mixture, keys: set, service_keys: set) -> None:
