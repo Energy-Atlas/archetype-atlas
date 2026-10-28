@@ -1,5 +1,12 @@
 # Changelog
 
+## Construction exports no longer follow the hash seed — 2026-10-28
+
+- `ConstructionSuite.export` merged the shared and per-context fields through a set, so the order of
+  a document's top-level fields, and with it the exported bytes, changed with `PYTHONHASHSEED`. The
+  values were always equal. It now keeps the stored order; a test exports the IECC 2021 sets under
+  three seeds and compares the bytes. Found by BEMGen's byte-for-byte fixture check (its D-173).
+
 ## BEMGen's 2.0.0 report: schema fixes and the IECC ground-floor erratum — 2026-10-28
 
 - Shared mass-accounting contract 1.1.0 (`schemas/construction-mass-accounting-v1.1.schema.json`):
