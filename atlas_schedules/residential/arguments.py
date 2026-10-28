@@ -21,10 +21,9 @@ def _arguments() -> dict:
     return json.loads(gzip.decompress((DATA / "arguments.json.gz").read_bytes()))
 
 
-def unit_arguments(characteristics: dict) -> dict:
-    """{argument: value} for one unit's {characteristic: option}."""
-    data = _arguments()
-    lookup = data["lookup"]
+def lookup_arguments(characteristics: dict) -> dict:
+    """Steps 1 and 2: {argument: value} before option properties."""
+    lookup = _arguments()["lookup"]
     arguments = {}
     for name, option in characteristics.items():
         options = lookup.get(name)
@@ -39,14 +38,25 @@ def unit_arguments(characteristics: dict) -> dict:
             arguments[key] = value
     if arguments.get("misc_has_pool") == "false":
         arguments["misc_pool"] = "None"  # ResStockArguments.run
-    for table, record in data["properties"].items():
+    return arguments
+
+
+def expand_properties(arguments: dict) -> dict:
+    """Step 3: a copy with the option properties of every argument that names an option table."""
+    expanded = dict(arguments)
+    for table, record in _arguments()["properties"].items():
         option = arguments.get(table)
         if option is None:
             continue
         if option not in record["rows"]:
             raise GeneratorError("source_undefined", f"/arguments/{table}", f"No option {option!r} in {table}.tsv")
         for key, value in zip(record["keys"], record["rows"][option]):
-            if arguments.get(key) is not None:
+            if expanded.get(key) is not None:
                 raise GeneratorError("source_undefined", f"/arguments/{key}", "Duplicate option property")
-            arguments[key] = value
-    return arguments
+            expanded[key] = value
+    return expanded
+
+
+def unit_arguments(characteristics: dict) -> dict:
+    """{argument: value} for one unit's {characteristic: option}."""
+    return expand_properties(lookup_arguments(characteristics))
