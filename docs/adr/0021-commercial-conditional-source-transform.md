@@ -114,3 +114,11 @@ actual pinned `_com_execute_samples`; wrapper seed reproducibility is tested
 separately. Continuous comparison uses the named source policy, with exact
 source options, rule days and minute times where discrete. Upstream license
 notices remain packaged; original work remains unlicensed by user choice.
+
+## Amendment (generator 3.0.0, 2026-10-28)
+
+Amended by [ADR 0047](0047-resstock-apartment-units-and-source-magnitudes.md) (user
+decision O15): a commercial load no longer holds a known annual target with a fitted
+effective amplitude. Its amplitude is the source magnitude (W/m², or the service's peak
+flow), bound to the sampled schedule as ComStock binds it, and its annual energy or volume
+is an output of each draw. The transform boundary above is unchanged.

@@ -97,3 +97,11 @@ branches. Package-local schema copies are byte-checked against canonical schemas
 in development tests and remain available when the package runs independently.
 Development JSON Schema tests remain the oracle. Runtime requires only Python's
 standard library and packaged immutable resources.
+
+## Amendment (generator 3.0.0, 2026-10-28)
+
+Amended by [ADR 0047](0047-resstock-apartment-units-and-source-magnitudes.md) (O15):
+commercial and service members bind their source magnitudes, so their annual totals are
+generated, not original. The mixed shape is still `Σ factor × amplitude × shape`, now
+weighted by source magnitudes, and the mixed annual target is the same scaled sum of
+member totals; it no longer equals the scaled sum of original targets.

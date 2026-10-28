@@ -77,3 +77,10 @@ The correction addresses an actual pre-shipment self-review failure where a cohe
 
 
 The C5 inventory-to-alias relation is qualified for exactly one physical main fixture per required source SID/channel in each restaurant context. It does not certify a general one-to-many mapping for LargeOffice cores or repeated Hotel rooms that share a source SID. Those later families need explicit physical coverage and source-parameter versus aggregate-budget qualification; selecting one fixture, merging physical IDs or multiplying canonical programme budgets is not implied by this contract.
+
+## Amendment (generator 3.0.0, 2026-10-28)
+
+Amended by [ADR 0047](0047-resstock-apartment-units-and-source-magnitudes.md) (O15): a
+generated service owner binds its per-area peak flow to the sampled schedule, and its
+annual volume follows the draw; the original per-area annual volume is no longer held
+before amplitude binding.

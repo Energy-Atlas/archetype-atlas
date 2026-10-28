@@ -1,5 +1,27 @@
 # Changelog
 
+## Generator 3.0.0: ResStock apartment units and source-magnitude binding — 2026-10-28
+
+Breaking (ADR 0047; user decisions O15 to O21):
+- **Apartment units are ResStock multifamily units.** Each unit draws its ResStock housing
+  characteristics (a port of the sampler over 67 pinned tables, conditioned on the request's
+  state, climate zone, floor area and residents and on the programme's building type, height,
+  era and HVAC). It then takes every internal load's annual energy from the ported
+  OpenStudio-HPXML equations, its schedules from the ResStock generator, and its thermostat
+  from the same draw. Hot water is the prototype's 66.33 L per design person per day × the
+  unit's residents, timed by the unit's own fixture events. The 38 apartment recipes are
+  rewritten by `scripts/build_apartment_units.py`; the prototype apartment path is removed.
+- **Commercial loads bind their source magnitude.** Lighting, plug and gas densities and
+  shared-water peak flows are the amplitudes; annual energy and volume follow the sampled
+  hours, as in ComStock. ResStock dwellings keep their annual totals.
+- **Request and bundle schema 3.0.0**: `residents: "resstock"`, `location.climate_zone` and
+  `location.weather_id`; apartment units need `extent.floor_area`.
+
+Validation: the annual equations match the pinned Ruby for 240 units × 21 end uses within
+1e-9 (`docs/validation/resstock-annual-equivalence.json`); the measure arguments match all
+5,867 recovered Ruby inputs; the sampler matches rejection sampling. Release 2.0.0 keeps
+its 2.x apartment recipes in `generator.json`; the next release carries the new ones.
+
 ## Construction exports no longer follow the hash seed — 2026-10-28
 
 - `ConstructionSuite.export` merged the shared and per-context fields through a set, so the order of
