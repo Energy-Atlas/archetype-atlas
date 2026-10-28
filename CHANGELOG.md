@@ -1,5 +1,14 @@
 # Changelog
 
+## BEMGen's 2.0.0 report: schema fixes — 2026-10-28
+
+- Shared mass-accounting contract 1.1.0 (`schemas/construction-mass-accounting-v1.1.schema.json`):
+  1.0.0 with the optional `evidence_id` on additional-mass entries that constructions 4.1.0 / 3.1.0
+  embed, now derived from them so the two cannot drift.
+- Program JSON 5.4.0: the daylighting description says the fractions are applied as given.
+- No release data changes. The IECC ground-floor misfiling is recorded in
+  `docs/bemgen-handoff-release-2-0-0.md` section 4.
+
 ## Atlas release 2.0.0 released (milestone B) — 2026-10-28
 
 Release 2.0.0 is declared released after milestone B (ADR 0046 sections 8 to 10).

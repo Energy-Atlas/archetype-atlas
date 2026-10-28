@@ -143,6 +143,14 @@ class ExportSchemaTests(unittest.TestCase):
             self.assertEqual(load_json(ROOT/'schemas'/name), schema, name)
             Draft202012Validator.check_schema(schema)
 
+    def test_the_shared_mass_contract_is_the_one_the_constructions_embed(self):
+        from scripts.atlas_exports import ALTERNATES, MASS, MINOR
+        shared = load_json(ROOT/'schemas'/MASS[0])['$defs']
+        self.assertIn('evidence_id', shared['massEntry']['properties'])
+        for name in (ALTERNATES['detailed'][0], MINOR['unified'][0]):
+            embedded = load_json(ROOT/'schemas'/name)['$defs']
+            self.assertEqual({k: embedded[k] for k in shared}, shared, name)
+
     def test_only_release_2_0_0_reads_from_the_tree(self):
         from scripts.atlas_exports import Release
         with self.assertRaisesRegex(ValueError, 'frozen-data-2026-10-27'):

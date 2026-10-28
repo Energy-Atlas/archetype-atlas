@@ -1,5 +1,11 @@
 # Shared construction mass-accounting contract 1.0.0
 
+**1.1.0 (2026-10-28).** `schemas/construction-mass-accounting-v1.1.schema.json` adds an optional
+`evidence_id` on `additional_mass.entries`, as detailed constructions 4.1.0 and later and unified
+constructions 3.1.0 already embed it. `scripts/atlas_exports.py` derives 1.1.0 from the definitions
+the detailed schema embeds, so the shared contract and the constructions cannot drift. Every 1.0.0
+field keeps its meaning.
+
 Detailed construction JSON **2.1.0** and unified construction JSON **1.2.0** embed
 the same `mass_accounting` object for the same selected source context. The
 reference and quantity data are independent of the representation's layer format.
