@@ -13,12 +13,17 @@ dependency closure of the apartment-unit load and thermostat characteristics.
   county and PUMA out exactly (the sampler draws them as hidden variables and reports neither).
 - Each table records its source path and SHA-256 from the lock.
 
-Output: atlas_schedules/data/residential/characteristics/national.json.gz and states/<ST>.json.gz
+- arguments.json.gz: the options_lookup arguments of these characteristics and the BuildResidentialHPXML
+  option-property tables those arguments name, typed as `get_csv_data_for_tsv_file` types them.
+
+Output: atlas_schedules/data/residential/characteristics/national.json.gz, arguments.json.gz and states/<ST>.json.gz
 (gzip, mtime 0; `--check` compares the decompressed JSON).
 Usage: python -m scripts.build_resstock_characteristics          (write the tables)
        python -m scripts.build_resstock_characteristics --check  (rebuild and compare)
 """
+import csv
 import gzip
+import io
 import json
 from pathlib import Path
 import sys
@@ -145,7 +150,87 @@ def build() -> dict:
     national.update(meta)
     for state in states:
         shards[state].update(meta)
-    return {"national.json.gz": national, **{f"states/{state}.json.gz": shards[state] for state in states}}
+    arguments = option_arguments(set(tables))
+    produced = {name for options in arguments["lookup"].values() for args in options.values() for name in args}
+    arguments["properties"] = option_properties(produced)
+    arguments.update(source_revision=meta["source_revision"], lock=meta["lock"], interpretation_note=(
+        "options_lookup arguments of the sampled characteristics, and the BuildResidentialHPXML option tables "
+        "those arguments name, typed as BuildResidentialHPXML get_csv_data_for_tsv_file types them."))
+    return {"national.json.gz": national, "arguments.json.gz": arguments,
+            **{f"states/{state}.json.gz": shards[state] for state in states}}
+
+
+def option_arguments(characteristics) -> dict:
+    """options_lookup rows: {characteristic: {option: {argument: value}}} (ResStockArguments only)."""
+    entry_path = "resources/options_lookup.tsv"
+    lock = {f["path"]: f for f in json.loads(LOCK.read_text(encoding="utf-8"))["files"]}
+    rows = csv.reader(io.StringIO((RAW / entry_path).read_text(encoding="utf-8")), delimiter="\t")
+    header = next(rows)
+    if header[:3] != ["Parameter Name", "Option Name", "Measure Dir"]:
+        raise ValueError("Unexpected options_lookup header")
+    lookup = {}
+    for row in rows:
+        if not row or row[0] not in characteristics or row[0] in GEOGRAPHY_MAPS:
+            continue
+        arguments = {}
+        if len(row) > 2 and row[2]:
+            if row[2] != "ResStockArguments":
+                raise ValueError(f"{row[0]}={row[1]}: unexpected measure {row[2]}")
+            for cell in row[3:]:
+                if cell:
+                    name, value = cell.split("=", 1)
+                    arguments[name] = value
+        if row[1] in lookup.setdefault(row[0], {}):
+            raise ValueError(f"Duplicate options_lookup row {row[0]}={row[1]}")
+        lookup[row[0]][row[1]] = arguments
+    return {"lookup": lookup, "source": {"path": entry_path, "sha256": lock[entry_path]["sha256"]}}
+
+
+def option_properties(names) -> dict:
+    """BuildResidentialHPXML option tables, typed as `get_csv_data_for_tsv_file` types them."""
+    lock = {f["path"]: f for f in json.loads(LOCK.read_text(encoding="utf-8"))["files"]}
+    tables = {}
+    for name in sorted(names):
+        path = f"resources/hpxml-measures/BuildResidentialHPXML/resources/options/{name}.tsv"
+        if path not in lock:
+            continue
+        rows = list(csv.reader(io.StringIO((RAW / path).read_text(encoding="utf-8")), delimiter="\t"))
+        header, body = rows[0], [r for r in rows[1:] if r and r[0] and not r[0].startswith("#")]
+        columns = header[1:]
+        kinds = []
+        for i in range(1, len(header)):
+            seen = set()
+            for row in body:
+                value = row[i] if i < len(row) else ""
+                if not value:
+                    continue
+                try:
+                    number = float(value)
+                    seen.add("integer" if number % 1 == 0 else "float")
+                except ValueError:
+                    seen.add("boolean" if value.upper() in ("TRUE", "FALSE") else "string")
+            kinds.append("float" if seen == {"float", "integer"} else "string" if len(seen) > 1 else
+                         (seen.pop() if seen else "string"))
+        keys = [f"{name}_" + (c[:c.index("[")].strip() if "[" in c else c).lower().replace(" ", "_").replace("-", "_")
+                for c in columns]
+        typed = {}
+        for row in body:
+            values = []
+            for i, kind in enumerate(kinds, start=1):
+                value = row[i] if i < len(row) else ""
+                if not value:
+                    values.append(None)
+                elif kind == "integer":
+                    values.append(int(float(value)))
+                elif kind == "float":
+                    values.append(float(value))
+                elif kind == "boolean":
+                    values.append(value.upper() == "TRUE")
+                else:
+                    values.append(value)
+            typed[row[0]] = values
+        tables[name] = {"keys": keys, "rows": typed, "source": {"path": path, "sha256": lock[path]["sha256"]}}
+    return tables
 
 
 def serialise(value) -> str:
