@@ -587,3 +587,25 @@ Decisions, 2026-10-28 (logged; implement later together with O15):
   O21 direction for apartment units. Setpoints follow ResStock: they depend
   on climate zone, building type, HVAC type and tenure, not on the occupancy
   draw.
+- Pre-start DECISIONS (user, 2026-10-28):
+  - Residents: both modes. The caller's count per unit (sampler conditioned
+    on it), or ResStock samples residents, vacancy included.
+  - Sampler geography: state + IECC 2004 climate zone from the request
+    location; county and PUMA summed out within each cell (consistent with
+    O14's state level; finer resolution deferred). Building conditioning:
+    floor-area bin, construction era (`Vintage` and `Vintage ACS` from the
+    template), building type and height from the programme. HVAC fixed to the
+    prototype: heating fuel, heating type, cooling type, shared system, zonal
+    electric heating (heating fuel also shifts gas cooking and dryer odds).
+  - Common laundry: accept the ResStock gap and document it.
+  - Gas loads in apartment units: keep as sampled.
+  - O18: apartment thermostat settings from the same sampled draw as the
+    unit's loads.
+  - Commercial daylighting: keep the ADR 0044 controls as programme records;
+    document the possible partial double count with ComStock schedules.
+  - Commercial lighting density: the template's code value.
+  - Order: start after milestone B's programme re-ID (U) merges.
+  - Versioning: generator request and output schema 3.0.0, answer keys
+    regenerated; release data changes go into milestone B's release.
+  - Delivery: one branch (`codex/schedule-power-binding`), one PR at the end;
+    ask before the first push.
