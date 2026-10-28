@@ -3,11 +3,12 @@ on:
   workflow_call:
 permissions:
   contents: read
-# Research checks run as parallel Linux jobs; the required "atlas (ubuntu-latest, 3.11)"
-# check passes only when all of them pass. The required "atlas (windows-latest, 3.14)"
-# check passes only when the parallel Windows jobs pass: the pinned-producer
-# reproductions, split in two to stay within the job timeout, and this platform's
-# consumer-document validation.
+# Research checks run as parallel jobs behind the two required checks: "atlas
+# (ubuntu-latest, 3.11)" passes only when every Linux job passes, and "atlas
+# (windows-latest, 3.14)" only when every Windows job passes. Release 2.0.0 is the
+# only release in the tree (ADR 0046 section 7): it is verified by its file
+# checksums; the frozen releases and their reproductions live at the tag
+# frozen-data-2026-10-27.
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -25,12 +26,9 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-          python -m scripts.fetch --lock sources/water-evidence-lock.json
-          python -m scripts.fetch --lock sources/completion-evidence-lock.json
-          python -m scripts.fetch --lock sources/definition-evidence-lock.json
       - run: python -m unittest discover -s tests -v
 
-  releases:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -42,96 +40,17 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements-site.txt
       - name: Fetch pinned sources
+        run: python -m scripts.fetch
+      - name: Verify release 2.0.0, its export schemas and the source pipeline
         run: |
-          python -m scripts.fetch
-          python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-          python -m scripts.fetch --lock sources/water-evidence-lock.json
-          python -m scripts.fetch --lock sources/completion-evidence-lock.json
-          python -m scripts.fetch --lock sources/definition-evidence-lock.json
-      - name: Validate, reproduce and verify every frozen research release
-        run: |
+          python -m scripts.atlas_snapshot --verify
+          python -m scripts.atlas_exports --check-schemas
+          python -m scripts.reconciliation_page --check
           python -m scripts.validate
           python -m scripts.reproduce
           python -m scripts.compare --report build/source-comparison.json
           python -m scripts.coverage --report build/coverage.json
-          python -m scripts.release --verify
-          python -m scripts.release --verify --target data/releases/v0.1.0
-          python -m scripts.resolve --verify
-          python -m scripts.resolve --verify --target data/resolution-releases/v0.1.0
-          python -m scripts.resolve --verify --target data/resolution-releases/v0.2.0
-          python -m scripts.resolve --verify --target data/resolution-releases/v0.3.0
-          python -m scripts.commercial_completion --verify
-          python -m scripts.water_equivalent --verify
-          python -m scripts.water_reporting --verify
-          python -m scripts.definition_release --verify
-          python -m scripts.definition_release --reproduce
-          python -m scripts.program_completeness --check
-          python -m scripts.atlas_release --verify
-          python -m scripts.atlas_delta_release --verify
-          python -m scripts.atlas_minor_release --release 1.2.0 --verify
-          python -m scripts.atlas_minor_release --release 1.3.0 --verify
-          python -m scripts.atlas_minor_release --release 1.4.0 --verify
-          python -m scripts.atlas_minor_release --release 1.5.0 --verify
-          python -m scripts.atlas_minor_release --release 1.6.0 --verify
-          python -m scripts.atlas_exports --check-schemas
-          python -m scripts.reconciliation_page --check
-          python -m scripts.resstock_iecc_review --check
-      - name: Reproduce the construction-only program definitions from pinned sources
-        run: |
-          python -m scripts.fetch --lock sources/construction-only-programs-lock.json
-          python -m scripts.fetch --lock sources/openstudio-area-default-lock.json
-          python -m scripts.construction_only_programs --check
-          python -m scripts.plenum_aliases --check
-      - name: Reproduce atlas release 1.3.0 (IECC commercial) byte for byte and its evidence report
-        run: |
-          python -m scripts.atlas_minor_release --release 1.3.0 --check
-          python -m scripts.iecc_commercial_review --check
       - run: python -m scripts.audit
-
-  construction-validation:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.11'
-      - run: python -m pip install -r requirements-site.txt
-      - name: Validate all frozen construction consumer documents on this platform
-        run: python -m scripts.construction_delivery_validate
-      - name: Validate combined foundation documents and frozen source receipts
-        run: |
-          python -m scripts.recover_construction_foundations --check
-          python -m scripts.construction_foundation_airflow --check
-          python -m scripts.construction_foundation_smoke
-          python -m scripts.validate_construction_foundation --all
-
-  construction-reproduction:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.11'
-      - run: python -m pip install -r requirements-site.txt
-      - name: Fetch pinned sources
-        run: |
-          python -m scripts.fetch
-          python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-          python -m scripts.fetch --lock sources/water-evidence-lock.json
-          python -m scripts.fetch --lock sources/completion-evidence-lock.json
-          python -m scripts.fetch --lock sources/definition-evidence-lock.json
-      - name: Verify frozen profiles and reproduce detailed and unified constructions
-        run: |
-          python -m scripts.construction_base_reproduce --quiet
-          python -m scripts.construction_hotel_applicability --check
-          python -m scripts.construction_distribution --check
-          python -c "from scripts.construction_weighting import load_profiles; load_profiles(); print('Frozen construction profiles and input checksums verified')"
 
   schedules:
     runs-on: ubuntu-latest
@@ -144,19 +63,11 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements-site.txt
-      - name: Fetch pinned sources
-        run: |
-          python -m scripts.fetch
-          python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-          python -m scripts.fetch --lock sources/water-evidence-lock.json
-          python -m scripts.fetch --lock sources/completion-evidence-lock.json
-          python -m scripts.fetch --lock sources/definition-evidence-lock.json
-      - run: python -m scripts.schedule_coverage --report build/schedule-coverage.json
       - run: python -m scripts.smoke_catalogue
 
   atlas-linux:
     name: atlas (ubuntu-latest, 3.11)
-    needs: [unit-tests, releases, construction-validation, construction-reproduction, schedules]
+    needs: [unit-tests, release, schedules]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -168,63 +79,7 @@ jobs:
           echo "Linux research jobs: $RESULTS"
           for result in $RESULTS; do [ "$result" = success ] || exit 1; done
 
-  windows-early-releases:
-    runs-on: windows-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      # Exact fitted IDs require the original producer's Python and math library.
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.14.7'
-      - run: python -m pip install -r requirements.txt
-      - name: Reproduce unified constructions and shared mass with pinned producer
-        run: |
-          python --version
-          python -m scripts.construction_equivalent_release --check
-          python -m scripts.construction_mass_release --check --examples
-      - name: Reproduce combined foundation delivery with pinned producer
-        run: python -m scripts.construction_foundation_release --check --examples
-      # Its construction documents come from the combined delivery, so it shares the pinned producer.
-      - name: Reproduce the ADR 0036 release with pinned producer
-        run: python -m scripts.atlas_release --check
-      # The 1.1.0 delta recomposes the DOE Ref mixes from the pinned geometry sources.
-      - name: Fetch pinned sources for the 1.1.0 delta
-        run: |
-          python -m scripts.fetch
-          python -m scripts.fetch --lock sources/definition-evidence-lock.json
-      - name: Reproduce the 1.1.0 delta release with pinned producer
-        run: python -m scripts.atlas_delta_release --check
-      - name: Reproduce the 1.2.0 delta release with pinned producer
-        run: python -m scripts.atlas_minor_release --release 1.2.0 --check
-
-  windows-later-releases:
-    runs-on: windows-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      # Exact fitted IDs require the original producer's Python and math library.
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version: '3.14.7'
-      - run: python -m pip install -r requirements.txt
-      - name: Fetch pinned sources
-        run: |
-          python -m scripts.fetch
-          python -m scripts.fetch --lock sources/definition-evidence-lock.json
-      # The residential tree reads the committed definition inputs, never the IDFs.
-      - name: Reproduce the 1.4.0 delta release with pinned producer
-        run: python -m scripts.atlas_minor_release --release 1.4.0 --check
-      - name: Reproduce the 1.5.0 delta release with pinned producer
-        run: python -m scripts.atlas_minor_release --release 1.5.0 --check
-      - name: Reproduce the 1.6.0 delta release with pinned producer
-        run: python -m scripts.atlas_minor_release --release 1.6.0 --check
-
-  windows-validation:
+  windows-tests:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -235,18 +90,17 @@ jobs:
         with:
           python-version: '3.14'
       - run: python -m pip install -r requirements-site.txt
-      - name: Validate all frozen construction consumer documents on this platform
-        run: python -m scripts.construction_delivery_validate
-      - name: Validate combined foundation documents and frozen source receipts
+      - name: Fetch pinned sources the suite reads
         run: |
-          python -m scripts.recover_construction_foundations --check
-          python -m scripts.construction_foundation_airflow --check
-          python -m scripts.construction_foundation_smoke
-          python -m scripts.validate_construction_foundation --all
+          python -m scripts.fetch
+          python -m scripts.fetch --lock sources/schedule-evidence-lock.json
+      - name: Verify release 2.0.0 on this platform
+        run: python -m scripts.atlas_snapshot --verify
+      - run: python -m unittest discover -s tests -v
 
   atlas-windows:
     name: atlas (windows-latest, 3.14)
-    needs: [windows-early-releases, windows-later-releases, windows-validation]
+    needs: [windows-tests]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5

@@ -34,8 +34,8 @@ from pathlib import Path
 
 from atlas_schedules.commercial.profiles import round_half_up, stored_value
 from scripts import idf_reader
-from scripts.build_family_recipes import (LOAD_SLOTS, SAMPLING, SETPOINTS, TEMPLATES, WATER_CONTROLS, WATER_FRACTIONS, _known_positive,
-                                          _load, _residential, heat_fractions, programme_recipe)
+from scripts.recipe_shapes import (LOAD_SLOTS, SAMPLING, SETPOINTS, TEMPLATES, WATER_CONTROLS, WATER_FRACTIONS,
+                                   _known_positive, _load, _residential, heat_fractions, programme_recipe)
 from scripts.common import ROOT, load_json
 from scripts.reconciliation_register import NEW_PROGRAMS
 from scripts.reference_extras import zone_floors
@@ -140,8 +140,7 @@ def commercial_recipes(template, building_type, programs, people, invert):
                 'slots': [], 'demands': [], 'controls': [], 'companions': {}, 'required_services': [],
                 'composition': {'composition_id': record['id'], 'members': members}})
         else:
-            recipe = programme_recipe(adapted(record), people, configuration, SAMPLING[building_type], invert)
-            recipe['source']['definition'] = path
+            recipe = programme_recipe(adapted(record), people, configuration, SAMPLING[building_type], invert, path)
             recipes.append(recipe)
     record = {'configuration_id': configuration, 'building_type': SAMPLING[building_type], 'people': people,
               'invert_rule_days': invert}

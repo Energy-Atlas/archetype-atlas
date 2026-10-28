@@ -32,8 +32,7 @@ REPRESENTATIONS = ('detailed', 'unified')
 GUIDES = ('selection.md', 'schedules.md', 'program-json.md', 'construction-json.md', 'definitions.md',
           'doe-reference-reconciliation.md', 'construction-only-programs.md', 'iecc-commercial.md',
           'residential-dwellings.md', 'iecc-residential.md', 'manufactured-housing.md')
-DIGEST_INPUTS = ('scripts', 'website', 'schemas', 'mkdocs.yml', 'requirements-site.txt',
-                 'data/definition-releases/v0.1.1/manifest.json')
+DIGEST_INPUTS = ('scripts', 'website', 'schemas', 'mkdocs.yml', 'requirements-site.txt')
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._:-]{5,}$')
 # Not `library/`: a template library page must never share a path with a building-type folder page.
 LIBRARY = 'template-library'

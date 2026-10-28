@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from scripts import build_reference_recipes as m
-from scripts.build_family_recipes import SAMPLING
+from scripts.recipe_shapes import SAMPLING
 from scripts.common import ROOT, load_json
 
 DATA = ROOT/'atlas_schedules/data'

@@ -2,12 +2,46 @@
 import copy
 import datetime as dt
 import math
+import re
 from collections import defaultdict
 from scripts.common import load_json
 from scripts.definition_contract import DefinitionBundle, DefinitionError, evidence, parameter, record, stable_id
 from scripts.fetch import fetch_file
 from scripts.semantics import spaces, osm_objects, profile, DAY_TYPES
-from scripts.water_reporting import floor_areas
+
+
+def floor_geometry(text):
+    """Floor polygons with full SI vertex tuples; the generic tagged parser keeps only X
+    (moved from scripts.water_reporting in stage X1.3)."""
+    result=[]
+    for block in re.findall(r'OS:Surface,.*?;[^\n]*',text,re.DOTALL):
+        o=osm_objects(block)[0]['fields']
+        if o.get('Surface Type')!='Floor':continue
+        vertices=[]
+        for line in block.splitlines():
+            body,_,comment=line.partition('!')
+            if re.search(r'X\s*,\s*Y\s*,\s*Z\s+Vertex',comment):
+                values=[float(v.strip()) for v in body.rstrip(' ,;').split(',')]
+                if len(values)!=3 or any(not math.isfinite(v) for v in values):
+                    raise ValueError('Invalid floor vertex tuple')
+                vertices.append(values)
+        if len(vertices)<3:raise ValueError('Missing floor vertices')
+        normal=[math.fsum(a[(i+1)%3]*b[(i+2)%3]-a[(i+2)%3]*b[(i+1)%3]
+                    for a,b in zip(vertices,vertices[1:]+vertices[:1])) for i in range(3)]
+        norm=math.sqrt(math.fsum(v*v for v in normal));area=norm/2
+        if not math.isfinite(area) or area<=0:raise ValueError('Invalid floor area')
+        origin=vertices[0]
+        if any(abs(math.fsum((v[i]-origin[i])*normal[i]/norm for i in range(3)))>1e-5 for v in vertices):
+            raise ValueError('Nonplanar floor polygon')
+        result.append({'handle':o['Handle'],'space_handle':o['Space Name'],
+                       'vertices_m':vertices,'area_m2':area})
+    return result
+
+
+def floor_areas(text):
+    result=defaultdict(float)
+    for f in floor_geometry(text):result[f['space_handle']]+=f['area_m2']
+    return dict(result)
 
 
 def represented_weights(rows):

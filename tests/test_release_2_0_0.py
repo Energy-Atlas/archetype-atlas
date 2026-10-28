@@ -1,29 +1,20 @@
-"""Release 2.0.0: the full snapshot of release 1.6.0 (ADR 0046, phase 1)."""
+"""Release 2.0.0: the full snapshot of release 1.6.0 (ADR 0046), the only release in the tree."""
 import io
 import json
-import os
 import unittest
 from unittest import mock
 
-from scripts import atlas_minor_release, atlas_snapshot
+from jsonschema import Draft202012Validator
+
+from scripts import atlas_snapshot
 from scripts.atlas_exports import EXPORTER_INPUTS
+from scripts.common import ROOT, load_json
 
 FROZEN = ('releases', 'definition-releases', 'resolution-releases', 'water-reporting-releases', 'completion-releases',
           'construction-releases', 'construction-equivalent-releases', 'construction-mass-releases',
           'construction-foundation-releases', 'water-releases')
 
 
-class EncodingTests(unittest.TestCase):
-    def test_indented_json_keeps_its_value(self):
-        data = b'{\n  "a": {\n    "b": [1, 2, {"c": null}]\n  }\n}\n'
-        out = atlas_snapshot.encode('x.json', data)
-        self.assertEqual(json.loads(out), json.loads(data))
-        table = b'{\n"k":{"v":1}\n}\n'
-        self.assertEqual(atlas_snapshot.encode('t.json', table), table)
-        self.assertEqual(atlas_snapshot.encode('README.md', data), data)
-
-
-@unittest.skipUnless((atlas_snapshot.TARGET/'manifest.json').exists(), 'release 2.0.0 not written')
 class Release200Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -35,27 +26,16 @@ class Release200Tests(unittest.TestCase):
         # unittest keeps every test class until the run ends; free the release state.
         del cls.listed, cls.files
 
-    def test_full_snapshot_with_the_values_of_1_6_0(self):
+    def test_full_snapshot_of_1_6_0_and_the_only_release(self):
         self.assertIsNone(self.listed['base_release'])
-        self.assertEqual(self.listed['snapshot_of']['release'], '1.6.0')
-        source = atlas_minor_release.files('1.6.0')
-        for path, data in source.items():
-            if path in ('manifest.json', 'README.md'):
-                continue
-            with self.subTest(path=path):
-                self.assertIn(path, self.files)
-                if path.endswith('.json'):  # the one change: daylighting as plain values (user decision L-1)
-                    self.assertEqual(json.loads(self.files[path]), json.loads(atlas_snapshot.plain_daylighting(path, data)))
-                else:
-                    self.assertEqual(self.files[path], data)
-        extra = set(self.files) - set(source)
-        self.assertTrue(all(p.endswith('/generator.json') or p == EXPORTER_INPUTS for p in extra))
+        self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'candidate'))
+        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0'])
+        self.assertIn(EXPORTER_INPUTS, self.files)
 
-    def test_generator_recipes_for_the_90_1_programs(self):
+    def test_generator_recipes_for_the_90_1_and_doe_ref_programs(self):
         counts = self.listed['counts']
         self.assertEqual(counts['programs_with_recipes'] + counts['programs_without_recipes'], counts['programs'])
         generators = [p for p in self.files if p.endswith('/generator.json')]
-        self.assertTrue(generators)
         self.assertTrue(all(p.split('/')[1].startswith(('90-1-', 'doe-ref-')) for p in generators))
         recipes = json.loads(self.files[next(p for p in generators if '/90-1-2019/medium-office/' in p)])
         entry = next(iter(recipes.values()))
@@ -73,12 +53,10 @@ class Release200Tests(unittest.TestCase):
         self.assertEqual(self.listed['counts']['plain_daylighting_programs'],
                          sum(1 for c in controls if c['source'] == 'pnnl_prototype' and c['status'] == 'known'))
 
-    def test_exporter_inputs_are_those_release_1_6_0_reads(self):
-        from scripts.atlas_exports import Release
+    def test_exporter_inputs(self):
         carried = json.loads(self.files[EXPORTER_INPUTS])
-        services, programs = Release(release='1.6.0').capped()
-        self.assertEqual((set(carried['capped_services']), set(carried['capped_programs'])), (services, programs))
-        self.assertEqual(len(carried['inactive_controls']), 43)
+        self.assertEqual((len(carried['capped_services']), len(carried['capped_programs']), len(carried['inactive_controls'])),
+                         (3, 3, 43))
 
     def test_exports_open_no_frozen_folder(self):
         from scripts.atlas_exports import Release
@@ -88,7 +66,7 @@ class Release200Tests(unittest.TestCase):
 
         def guarded(file, *args, **kwargs):
             path = str(file).replace('\\', '/')
-            if any('/data/'+name+'/' in path for name in FROZEN):
+            if any('/data/'+name+'/' in path for name in FROZEN) or '/data/atlas-releases/v1.' in path:
                 opened.append(path)
             return real(file, *args, **kwargs)
         programs = sorted(release.program_ids())
@@ -111,13 +89,20 @@ class Release200Tests(unittest.TestCase):
         program_id = next(p for p in release.program_ids() if p.startswith('90-1-2019.medium-office.source.whole'))
         document = release.program(program_id, 'filled')
         self.assertEqual((document['schema_version'], document['source']['release']), ('5.4.0', 'atlas-release-2.0.0'))
+        self.assertNotIn('geometry_dependent', document.get('lighting_controls', {}))
 
 
-@unittest.skipUnless((atlas_snapshot.TARGET/'manifest.json').exists() and os.environ.get('ATLAS_RELEASE_CHECK'),
-                     'set ATLAS_RELEASE_CHECK=1 to rebuild release 2.0.0')
-class Release200CheckTests(unittest.TestCase):
-    def test_release_reproduces_byte_for_byte(self):
-        atlas_snapshot.check()
+class ExportSchemaTests(unittest.TestCase):
+    def test_schemas_are_derived_from_the_previous_majors(self):
+        from scripts import atlas_exports
+        for name, schema in atlas_exports.derived_schemas().items():
+            self.assertEqual(load_json(ROOT/'schemas'/name), schema, name)
+            Draft202012Validator.check_schema(schema)
+
+    def test_only_release_2_0_0_reads_from_the_tree(self):
+        from scripts.atlas_exports import Release
+        with self.assertRaisesRegex(ValueError, 'frozen-data-2026-10-27'):
+            Release(release='1.6.0')
 
 
 if __name__ == '__main__':

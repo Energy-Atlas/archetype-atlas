@@ -52,7 +52,7 @@ def complete_approved_schedule(original):
 
 
 # Set for the length of an export by readers of a release that carries the inactive controls (ADR 0046),
-# for exporters built by pinned modules; None reads them from the frozen v0.2.0 programs.
+# for exporters built by pinned modules.
 INACTIVE_CONTROLS = None
 
 
@@ -72,9 +72,7 @@ class ProgramExporter(HistoricalExporter):
         if inactive_controls is None:
             inactive_controls = INACTIVE_CONTROLS
         if inactive_controls is None:
-            commercial = load_json(ROOT / 'data/releases/v0.2.0/programs.json')
-            inactive_controls = {r['id'] for r in commercial if r['heating_setpoint_schedule_id'] is None
-                                 and r['cooling_setpoint_schedule_id'] is None}
+            raise ValueError('Pass the inactive controls of the release (exporter-inputs.json, ADR 0046)')
         self.inactive_controls = set(inactive_controls)
         self._ready_cache = {}
 

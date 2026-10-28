@@ -1,9 +1,9 @@
 """Opt-in Program JSON 4: source-backed draw-only fuel energy recipes.
 
-python -m scripts.program_water_heating --program PROGRAM_ID --output FILE
-No fixed climate, fluid properties, geometry or annual energy is assumed.
+No fixed climate, fluid properties, geometry or annual energy is assumed. Release readers
+(scripts.atlas_exports) run it over records rebuilt from the release; its command line read the
+frozen definitions and left with them in stage X1.3 (ADR 0046 section 7).
 """
-import argparse
 import copy
 import math
 import hashlib
@@ -11,9 +11,8 @@ from collections import Counter
 
 from jsonschema import Draft202012Validator
 
-from scripts.common import ROOT, load_json, dump_json
+from scripts.common import ROOT, load_json
 from scripts.definition_contract import stable_id
-from scripts.definition_release import read_bundle
 from scripts.program_json_v3 import ProgramExporter as V3Exporter
 
 SOLAR = 'program-1a9bafb870d938bc1ff6a0ee'
@@ -312,17 +311,3 @@ class ProgramExporter:
             errors.append('Missing water physics/weather bindings')
         errors.extend(self.base.validate(base))
         return errors
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--program', required=True)
-    parser.add_argument('--output', required=True)
-    args = parser.parse_args()
-    exporter = ProgramExporter(read_bundle(ROOT/'data/definition-releases/v0.1.1'))
-    dump_json(ROOT/args.output, exporter.export(args.program))
-    print('Validated draw-only program export: '+args.program)
-
-
-if __name__ == '__main__':
-    main()

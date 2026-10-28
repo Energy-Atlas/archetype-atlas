@@ -86,20 +86,6 @@ class ProgramJSONContractTests(unittest.TestCase):
                         inlet = selected[load['inlet_temperature_schedule_id']]
                         self.assertTrue(all(t >= i for t, i in zip(target, inlet)))
 
-    def test_known_source_values_and_rule_order_preserved(self):
-        source = next(x for x in read('data/definition-releases/v0.1.1/programs.json')
-                      if x['id'] == self.ready['source']['program_id'])
-        for before, after in zip(source['loads'], self.ready['loads']):
-            if before['value'] is not None:
-                self.assertEqual(before['value'], after['value'])
-        for sid, raw_schedule in self.raw['schedules'].items():
-            variants = [s for s in self.ready['schedules'].values()
-                        if s['id'] == sid or s.get('source_context', {}).get('id') == sid]
-            self.assertEqual(len(variants), 1)
-            variant = variants[0]
-            source_rules = variant['rules'][1:] if variant['id'] != sid else variant['rules']
-            self.assertEqual(source_rules, raw_schedule['rules'])
-
     def test_raw_unknowns_and_explicit_assumptions(self):
         self.assertIsNone(self.raw['loads'][2]['value'])
         self.assertEqual(self.ready['loads'][2]['value'], 0)

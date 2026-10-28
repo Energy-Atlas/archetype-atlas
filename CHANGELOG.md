@@ -1,5 +1,16 @@
 # Changelog
 
+## Frozen folders retired (X1.3) — 2026-10-27
+
+Release 2.0.0 is the only release in the tree (ADR 0046 section 7). Releases 1.0.0 to
+1.6.0, the v0.x, definition, resolution, completion, water and construction releases and
+their inputs (about 2.45 GB) are removed, with the 80 scripts and 68 test modules that
+wrote, verified or investigated them. They stay readable at the tag
+`frozen-data-2026-10-27`. `atlas_exports` reads 2.0.0 by default; `atlas_snapshot` is a
+reader. CI keeps the three required checks: Linux unit tests, release and smoke jobs; the
+unit tests on Windows with Python 3.14; the site build. The README describes release
+2.0.0.
+
 ## Atlas release 2.0.0 candidate: DOE Ref recipes and plain daylighting (X1.2) — 2026-10-27
 
 The DOE Ref generator recipes are rebuilt from release 2.0.0 under release IDs
