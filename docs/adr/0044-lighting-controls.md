@@ -139,3 +139,16 @@ Answered by the user on 2026-10-27 (plan register, L-1 and L-2):
   side is listed in `docs/bemgen-handoff-release-2-0-0.md`.
 - **Fetch the template rules** in milestone B, pinned in a source lock, to check the
   90.1 records against them.
+
+Done in milestone B, stage B2 (2026-10-28). The rules are pinned in
+`sources/daylighting-rules-lock.json`, and `python -m scripts.daylighting_rules_review`
+writes `docs/reviews/daylighting-rules-90-1.md`. No values change.
+
+| Check | Result |
+| --- | --- |
+| 90.1-2007 controls | none, as its rules require |
+| Control type, minimum input-power and light-output fractions (2013, 2019) | agree with the rules |
+| Stepped-control steps | three 2013 Outpatient programs have 1 step where the rules give 3 |
+| Illuminance setpoints | eight school setpoints (four per edition) are PNNL values that differ from openstudio-standards' space-type table |
+| Office whole-building fractions | within the non-geometry caps |
+| Which zones get controls, and the other fractions | not checked: they follow from window geometry |
