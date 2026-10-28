@@ -60,8 +60,8 @@ section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7
    laundry rooms are not represented. Gas loads in units are kept as sampled.
 9. **Commercial daylighting and density.** The ADR 0044 daylighting controls stay as
    programme records; lighting density is the template's code value.
-10. **Versioning and delivery.** Request and bundle schema 3.0.0; one branch and one pull
-    request.
+10. **Versioning and delivery.** Request and bundle schema 3.0.0 (2.0.0 requests are no
+    longer accepted); one branch and one pull request.
 
 ## 3. Method
 
@@ -107,6 +107,13 @@ section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7
 - Commercial binding: every legacy and native case keeps its shapes; the legacy totals
   now differ by exactly the ratio of source to fitted amplitude
   (`tests/schedules/helpers.py`, `assert_binding`).
+- Before and after (`docs/validation/generator-3-0-0-before-after.md`, every 10th
+  commercial recipe at seeds 42 and 51): annual lighting is 0.79 / 0.84 / 1.14 × the 2.x
+  total (p05 / median / p95) and plug loads 0.75 / 0.91 / 1.36 ×; under 2.x the peak
+  exceeded the rating in 62 % of lighting and 45 % of plug loads. 80 m² apartment units in
+  Hickory NC use a median 3,350 to 4,160 kWh/yr of electricity for 1 to 4 residents, against
+  3,680 to 4,040 kWh/yr under the 2.x prototype densities.
+- Schedules suite (87 tests) on Python 3.14 and 3.11; catalogue smoke with no failures.
 
 ## 5. Consequences
 

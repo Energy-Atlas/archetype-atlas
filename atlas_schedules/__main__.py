@@ -10,7 +10,7 @@ from .generator import generate
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="atlas_schedules", description="Generate a schedule bundle from a request.")
-    parser.add_argument("request", type=Path, help="request JSON (schema 2.0.0)")
+    parser.add_argument("request", type=Path, help="request JSON (schema 3.0.0)")
     parser.add_argument("-o", "--output", type=Path, help="write the bundle here instead of standard output")
     args = parser.parse_args(argv)
     try:

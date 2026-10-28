@@ -61,7 +61,7 @@ def main() -> None:
                                   "operating_group": "building"})
             instances[0]["service_links"] = links
         try:
-            generate({"schema_version": "2.0.0", "seed": 1, "instances": instances})
+            generate({"schema_version": "3.0.0", "seed": 1, "instances": instances})
             counts[recipe["kind"]] += 1
         except GeneratorError as error:
             failures[error.code].append(recipe["program_id"])
@@ -72,7 +72,7 @@ def main() -> None:
             instance = {"key": "water", "service_id": service["service_id"], "configuration_id": configuration_id,
                         "physical_id": "fixture", "extent": {basis: 1.0}, "operating_group": "building"}
             try:
-                generate({"schema_version": "2.0.0", "seed": 1, "instances": [instance]})
+                generate({"schema_version": "3.0.0", "seed": 1, "instances": [instance]})
                 counts["service_variant"] += 1
             except GeneratorError as error:
                 failures[error.code].append(f"{service['service_id']}@{configuration_id}")

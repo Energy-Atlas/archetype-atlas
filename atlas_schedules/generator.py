@@ -1,4 +1,4 @@
-"""Generate a schedule bundle from a request (schema 2.0.0).
+"""Generate a schedule bundle from a request (schema 3.0.0).
 
 Steps:
 1. parse and validate the request;
@@ -369,7 +369,7 @@ def generate(document: dict, *, residential_rng: str = "pcg64", flat_days: str =
         for slot, (unit, values) in owner.schedules.items():
             bundle_schedules[schedule_id(owner.key, slot)] = {"unit": unit, "values": np.asarray(values).tolist()}
     return {
-        "schema_version": "2.0.0",
+        "schema_version": "3.0.0",
         "generator_version": __version__,
         "seed": request.seed,
         "residential_rng": request.residential_rng,

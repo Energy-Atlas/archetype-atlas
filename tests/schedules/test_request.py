@@ -23,7 +23,7 @@ DEPARTMENT = "doe-ref-1980-2004.hospital.department.diagnostics-mixed.407fa7"  #
 
 
 def request(*instances, **extra) -> dict:
-    return {"schema_version": "2.0.0", "seed": 7, "instances": list(instances), **extra}
+    return {"schema_version": "3.0.0", "seed": 7, "instances": list(instances), **extra}
 
 
 class Validation(unittest.TestCase):

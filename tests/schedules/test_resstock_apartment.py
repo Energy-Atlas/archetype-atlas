@@ -75,7 +75,7 @@ class Units(unittest.TestCase):
     def test_requests_and_determinism(self):
         self.assertEqual(generate(unit("u", 2)), generate(unit("u", 2)))
         with self.assertRaises(GeneratorError) as caught:
-            generator.generate({"schema_version": "2.0.0", "seed": 7, "instances": [unit("u", "resstock")]})
+            generator.generate({"schema_version": "2.0.0", "seed": 7, "instances": [unit("u", 2)]})   # 2.0.0 retired
         self.assertEqual(caught.exception.code, "invalid_request")
         drawn = next(o for o in generate(unit("u", "resstock"))["owners"] if o["key"] == "u")
         self.assertEqual(drawn["generation"]["residents_mode"], "resstock")

@@ -1,8 +1,8 @@
-"""Parse and validate a generator request (schema 2.0.0 or 3.0.0).
+"""Parse and validate a generator request (schema 3.0.0).
 
 All validation happens here, once. Kernels and mixtures trust what this returns.
 3.0.0 adds, for ResStock apartment units, `residents: "resstock"` and the location's
-`climate_zone` and `weather_id`.
+`climate_zone` and `weather_id`; 2.0.0 requests are no longer accepted (ADR 0047).
 """
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -17,8 +17,7 @@ from .errors import GeneratorError
 from .residential.rng import MODES
 from .seeds import check_master_seed
 
-SCHEMAS = {"2.0.0": Path(__file__).resolve().parent / "schemas" / "request-v2.schema.json",
-           "3.0.0": Path(__file__).resolve().parent / "schemas" / "request-v3.schema.json"}
+SCHEMAS = {"3.0.0": Path(__file__).resolve().parent / "schemas" / "request-v3.schema.json"}
 BASIS_UNITS = {"floor_area": "m2", "dwelling_unit": "dwelling", "person": "person", "absolute": "1"}
 
 
@@ -77,7 +76,7 @@ class Request:
     instances: list
     mixture: Mixture | None
     occupancy: tuple = ("state", "2003-2019")   # (mix, ATUS window), residential/occupancy.py
-    schema_version: str = "2.0.0"
+    schema_version: str = "3.0.0"
 
 
 @lru_cache(maxsize=None)

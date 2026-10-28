@@ -90,7 +90,7 @@ def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
             v2["composition_basis"] = COMPOSITION_BASIS[inputs["composition_basis_mode"]]
         instances.append(v2)
     # Native and legacy keys used ResStock's national occupant-type shares.
-    return {"schema_version": "2.0.0", "seed": seed, "occupancy": {"mix": "national"}, "instances": instances}, keys
+    return {"schema_version": "3.0.0", "seed": seed, "occupancy": {"mix": "national"}, "instances": instances}, keys
 
 
 def retired(*texts) -> bool:

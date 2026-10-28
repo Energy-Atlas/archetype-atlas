@@ -708,3 +708,12 @@ Composition parents' mixed loads are checked against their members instead
 (`test_request`), since source magnitudes now weight the member shapes. A native
 `flat_days` data-centre load binds a zero schedule and gives zero energy instead
 of `zero_generated_integral`. 87 schedules tests pass.
+
+Stage log B10 (2026-10-28): request schema 2.0.0 retired (`request-v2.schema.json`
+removed; bundles say 3.0.0; `__version__` 3.0.0.dev0); examples, smoke and tests
+moved to 3.0.0. Schedules suite 87 tests pass on Python 3.14 and 3.11; catalogue
+smoke 0 failures (38 apartment units, 1,101 commercial, 310 compositions, 318
+service variants). `scripts/generator_3_0_0_report.py` writes the before/after
+report (`docs/validation/generator-3-0-0-before-after.md`). No answer key needed
+regeneration: the native and legacy keys describe upstream and v0.8.0 runs, and
+the tests now check the new binding against them.
