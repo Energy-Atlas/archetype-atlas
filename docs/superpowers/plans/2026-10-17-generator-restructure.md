@@ -550,3 +550,12 @@ Decisions, 2026-10-28 (logged; implement later together with O15):
   40-unit test, building fixture heat is about 0.48× the prototype's (1
   resident 0.20×, 4 residents 1.00×; 15 °C mains assumed) and peak heat
   0.78×.
+- O20 DECISION (user, 2026-10-28): option D. Apartment hot water keeps the
+  prototype's volume (ADR 0029 density × unit floor area) and takes the
+  ResStock fixture-event timing from the unit's own draw; the peak flow is
+  fitted to the draw (annual volume ÷ full-load hours), as OpenStudio-HPXML
+  `calc_peak_flow_from_daily_gpm` does. In the 40-unit test the unit peak is
+  about 6.6× the prototype's and the building peak 1.9×. Holding the
+  prototype peak flow fixed instead would cut the volume to about 0.15×,
+  because the prototype peak belongs to its flat schedule (4,592 full-load
+  hours); to confirm with the user.
