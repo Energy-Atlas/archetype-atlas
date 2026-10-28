@@ -559,3 +559,16 @@ Decisions, 2026-10-28 (logged; implement later together with O15):
   prototype peak flow fixed instead would cut the volume to about 0.15×,
   because the prototype peak belongs to its flat schedule (4,592 full-load
   hours); to confirm with the user.
+- O20 basis DECISION (user, 2026-10-28): P2, per resident. An apartment
+  unit's annual hot-water volume = the prototype's volume per design person
+  × the unit's residents; zero for a vacant unit. The per-person figure pairs
+  two fields of the same openstudio-standards space type: the per-apartment
+  peak flow (`service_water_heating_peak_flow_rate` 3.48 gal/h for
+  `service_water_heating_area` 950 ft², 90.1-2007) on the prototype schedule
+  (4,592 full-load hours, about 166 L/day at 60 °C), divided by the design
+  occupants (`occupancy_per_area` 2.63 people/1000 ft², 2.50 per apartment),
+  about 66 L/person·day. Timing is option D (ResStock fixture events from the
+  unit's draw) with the peak flow fitted to the draw. This resolves the
+  volume-or-peak question. The program water draw gains a per-person basis
+  (minor schema bump). To check per template and for the DOE Ref apartments
+  that both source fields exist.
