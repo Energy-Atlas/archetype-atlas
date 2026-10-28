@@ -1,0 +1,136 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"SecondarySchool",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2009.secondary-school.source.cafeteria.bd7eec","represented_area_m2":624.0,"source_geometry_file_id":"sourcefile-01b6f192b17aab75d147","source_program_id":"program-51e951ed9ae313e98496","weight":0.7428571428571429},
+   {"program_id":"iecc-2009.secondary-school.source.kitchen.7ff14e","represented_area_m2":216.0,"source_geometry_file_id":"sourcefile-01b6f192b17aab75d147","source_program_id":"program-0c89acd4b35a61ab623a","weight":0.2571428571428571}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-d9aae5f707bca95da12f23bf"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2009.secondary-school.department.food-service-mixed.025b64",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-ba5215044f7668e642cdf3c8",
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.secondary-school.food-service-mixed-additional-lighting.6e8c17",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-af5c79490cdb3ec844b3b885",
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.secondary-school.food-service-mixed-electric-equipment.2da47d",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":114.28514285714286
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7e9e119bbd426b9bc5820adb",
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.secondary-school.food-service-mixed-gas-equipment.339916",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":431.63999999999993
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-c594e01fd7591c8c83d0b956",
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.secondary-school.food-service-mixed-hot-water-volume.ac4139",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":3.9719905714285714e-07
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-2745e85f00ba00e5f5807a7a",
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.secondary-school.food-service-mixed-lighting.078cbd",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":14.852778571428573
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-c809b7805c16ada5415f1e14",
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.secondary-school.food-service-mixed-occupancy.03be59",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.8549928443282857
+  }
+ ],
+ "mode":"department",
+ "name":"FoodService_Mixed_SecondarySchool",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2009.secondary-school.food-service-mixed-activity.cf49ba"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2009.secondary-school.food-service-mixed-cooling-setpoint.f752b2"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-d9aae5f707bca95da12f23bf",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2009.secondary-school.food-service-mixed-heating-setpoint.eade10"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "iecc-2009.secondary-school.main.281a4c"
+ ],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2009"
+}

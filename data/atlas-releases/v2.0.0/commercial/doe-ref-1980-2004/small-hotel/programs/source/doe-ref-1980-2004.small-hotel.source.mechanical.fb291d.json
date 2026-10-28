@@ -1,0 +1,171 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"SmallHotel",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-016f8a2fc72869778ff60219",
+  "evidence-071ed928f584005540e08d96",
+  "evidence-1473707dd6e01f08390a5f90",
+  "evidence-1bc3fa4d2dc44d8b478b4e56",
+  "evidence-549cadcc0bf1bf1ac20a3b4f",
+  "evidence-684691fbaf573c48f6a4c1b2",
+  "evidence-781c2bf06e836b47a03883fa",
+  "evidence-8521708e9472389f7a701caa",
+  "evidence-94d7bd69efe7bcf9f4b743fc",
+  "evidence-985008533180497d0203f6f2",
+  "evidence-9b2393524df5363b27da4f56",
+  "evidence-a6dd6e15dbd2e62abadae026",
+  "evidence-f1b9ebb8d9e6a34f51997122",
+  "evidence-f9b223275f992a26fefc6fbc"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-549cadcc0bf1bf1ac20a3b4f",
+  "roof":null,
+  "wwr":{
+   "E":null,
+   "N":null,
+   "S":0.0,
+   "W":null
+  }
+ },
+ "filling_evidence_ids":[
+  "evidence-0c0986de34c6988ab1e360d7",
+  "evidence-150527a1234799703248b57c",
+  "evidence-3df772f759bc9a874fa1244a"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.small-hotel.source.mechanical.fb291d",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-f9b223275f992a26fefc6fbc",
+  "source":"doe_reference",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0691d3eb684152a9b737d962",
+   "evidence_id":"evidence-016f8a2fc72869778ff60219",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.small-hotel-bldg-occ.55eeed",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0c749db2ccb02965723d8bf4",
+   "evidence_id":"evidence-071ed928f584005540e08d96",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.bldg-light-sch.395e80",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-7c16ad412d5d8ed8c107051d","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-9a7cc82b3b138ee78fbd50b7","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-bfa7abba58e8683f1b170770","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":10.333354000041332
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-4d394853bf372f97c5d59a55",
+   "evidence_id":"evidence-9b2393524df5363b27da4f56",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.bldg-light-sch.395e80",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-7c16ad412d5d8ed8c107051d","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-9a7cc82b3b138ee78fbd50b7","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-bfa7abba58e8683f1b170770","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-09a8dcc42d94aacd3c01840c",
+   "evidence_id":"evidence-781c2bf06e836b47a03883fa",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.small-hotel-bldg-equip.feba3b",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-9bd662782cd7b7b3b922fa02","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-11f7e28ddccf31ff06f87ebf","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-3c3c25ae8d3b07840b558839","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-6c497b4bf05d248f3b7250a9",
+   "evidence_id":"evidence-1473707dd6e01f08390a5f90",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-05f7ed1b5441cd7483c0","resolution-48afc29c0d85a8d6e1a9"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":{"constant":0}}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.doe-reference-no-object-constant-0.47b394",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-b7dcffab4c32c00046568df6","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-a3f9aa8edadd17cfaff1269e","required_inputs":[],"status":"known","unit":"1","value":0.5},"radiant":{"evidence_id":"evidence-eb6d81e9ef1f94701e6fbf45","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Mechanical_SmallHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-94d7bd69efe7bcf9f4b743fc",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.small-hotel.small-hotel-activity.8d6fb8"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-985008533180497d0203f6f2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.small-hotel.small-hotel-clg-setp.fd5421"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-1bc3fa4d2dc44d8b478b4e56",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.small-hotel.small-hotel-htg-setp.858c6c"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-f1b9ebb8d9e6a34f51997122",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "source_id":"program-0a65d5b8ded5f8906557",
+ "template":"DOE Ref 1980-2004"
+}

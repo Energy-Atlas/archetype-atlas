@@ -1,0 +1,231 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"Outpatient",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-096ddfed5bbcab69c5c33535",
+  "evidence-203a2795ded0c0156bb1b386",
+  "evidence-27280204f522d3c2a968d2bc",
+  "evidence-3e365e9648b1d4c4a19e8e13",
+  "evidence-410f193f6cc6b04958403384",
+  "evidence-48cbacf668cecc0f7252808b",
+  "evidence-52036978bb53951c765a44b9",
+  "evidence-75f5dbcd2175d14fc3a7892b",
+  "evidence-86a1cc0e85011aebacf71131",
+  "evidence-8feabf060366fd4dfc7429ec",
+  "evidence-9f447f92283a488a2c4a647e",
+  "evidence-b687b45b69f14b2e481f70cd",
+  "evidence-bb9ce46fba6166a19c3b34f3",
+  "evidence-c086c40e10d7a4e62676fcee",
+  "evidence-c67b2ce03fa8a91bbaaa7f42",
+  "evidence-c79cc1afb96cfac5d6a4550e",
+  "evidence-ca42049bfa0997084cd7e8a1",
+  "evidence-d40d3c08cc733a27d30a20be",
+  "evidence-ea3872f12a2cf4b565e3df1c"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-410f193f6cc6b04958403384",
+  "roof":null,
+  "wwr":{
+   "E":0.2556,
+   "N":null,
+   "S":0.24,
+   "W":null
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2012.outpatient.source.or.dfb2a7",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-c79cc1afb96cfac5d6a4550e",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-dddc52038176783a9ae7ddd6",
+   "evidence_id":"evidence-d40d3c08cc733a27d30a20be",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.bldg-occ-sch.ac514a",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.215299158
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-6665baf0fb010cb950de9b0c",
+   "evidence_id":"evidence-27280204f522d3c2a968d2bc",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.ltg-sch-operation.09adf5",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-27280204f522d3c2a968d2bc","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-27280204f522d3c2a968d2bc","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-27280204f522d3c2a968d2bc","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":20.128493
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-5a139d4a60ea0eb436f69e1e",
+   "evidence_id":"evidence-86a1cc0e85011aebacf71131",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-d055335449790d6b6a40feca",
+   "evidence_id":"evidence-75f5dbcd2175d14fc3a7892b",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.bldg-equip-sch.8f7696",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-75f5dbcd2175d14fc3a7892b","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-75f5dbcd2175d14fc3a7892b","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-75f5dbcd2175d14fc3a7892b","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":43.060000442427
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-9c739c556320f282458608bf",
+   "evidence_id":"evidence-52036978bb53951c765a44b9",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.bldg-equip-sch-base.aaafdc",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-52036978bb53951c765a44b9","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-52036978bb53951c765a44b9","required_inputs":[],"status":"known","unit":"1","value":0.5},"radiant":{"evidence_id":"evidence-52036978bb53951c765a44b9","required_inputs":[],"status":"known","unit":"1","value":0.0}},
+   "unit":"W/m2",
+   "value":75.300000308687
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"iecc-2012.outpatient.main.9f6245",
+   "evidence_id":"evidence-48cbacf668cecc0f7252808b",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.bldg-swh-sch.e54f65",
+   "scope":"program_service",
+   "service_id":"iecc-2012.outpatient.main.9f6245",
+   "status":"known",
+   "target_temperature_degC":60.0,
+   "thermal_effects":{"latent":"fraction of the water that can evaporate","latent_fraction":{"evidence_id":"evidence-48cbacf668cecc0f7252808b","required_inputs":[],"status":"known","unit":"1","value":0.05},"semantics":"EnergyPlus WaterUse:Equipment","sensible":"fraction x mass flow x cp x (mixed - zone air temperature)","sensible_fraction":{"evidence_id":"evidence-48cbacf668cecc0f7252808b","required_inputs":[],"status":"known","unit":"1","value":0.2},"zone_gains":"applied"},
+   "unit":"m3/s/m2",
+   "value":2.87595e-07,
+   "zone_heat_assignment":"program_zones"
+  }
+ ],
+ "mode":"source",
+ "name":"OR_Outpatient",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-b687b45b69f14b2e481f70cd",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.activity-sch.347de2"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-bb9ce46fba6166a19c3b34f3",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-c086c40e10d7a4e62676fcee",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.or-clgsetp-sch.b3611a"
+  },
+  "dehumidifying_setpoint_schedule_id":{
+   "evidence_id":"evidence-096ddfed5bbcab69c5c33535",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.max-rel-hum-set-sch.9ba536"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-8feabf060366fd4dfc7429ec",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.or-htgsetp-sch.9f078e"
+  },
+  "humidifying_setpoint_schedule_id":{
+   "evidence_id":"evidence-3e365e9648b1d4c4a19e8e13",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.min-rel-hum-set-sch.6803da"
+  }
+ },
+ "pnnl_building_type":"OutPatientHealthCare",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "iecc-2012.outpatient.main.9f6245"
+ ],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-ea3872f12a2cf4b565e3df1c",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-3bb075411a45f5005023",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":42.7353984,
+   "multiplier":1,
+   "name":"Floor 1 Operating Room 1"
+  },
+  {
+   "counted":true,
+   "floor_area_m2":44.5934592,
+   "multiplier":1,
+   "name":"Floor 1 Operating Room 2"
+  },
+  {
+   "counted":true,
+   "floor_area_m2":44.22184704,
+   "multiplier":1,
+   "name":"Floor 1 Operating Room 3"
+  }
+ ],
+ "standards_building_type":"Outpatient",
+ "template":"IECC 2012"
+}

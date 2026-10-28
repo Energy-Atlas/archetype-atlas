@@ -1,0 +1,197 @@
+{
+ "available_details":[
+  "SourcePrograms",
+  "DepartmentMixes"
+ ],
+ "building_type":"RetailStandalone",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-1b8b6c11839796f4a72bb904",
+  "evidence-34b35ab87226b592666eecf9",
+  "evidence-4d8febd0d8453cde0dce5911",
+  "evidence-55af4f5ac1b35a4a81f78a70",
+  "evidence-5aaba905670b54c1f6a5114f",
+  "evidence-79604bde4ef7840610e8c49f",
+  "evidence-9e163db50e4119b5cb668367",
+  "evidence-a8210584fe20217050a95fab",
+  "evidence-aa8048ae6e6348a2f4b46069",
+  "evidence-add9a3f5d7526a76561dd671",
+  "evidence-bd15a11e8f8779c706d72ffa",
+  "evidence-c9337df58b27740436697bf6",
+  "evidence-ec3de5966e773388fac74cbe",
+  "evidence-ec3fd186ab2c2c0b75194836",
+  "evidence-ee3d25ef00bd120877c50fa9"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-c9337df58b27740436697bf6",
+  "roof":0.0,
+  "wwr":{
+   "E":null,
+   "N":null,
+   "S":0.3211,
+   "W":null
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2018.retail-standalone.source.entry.7bf1ed",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-4d8febd0d8453cde0dce5911",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-d4dc981bfe816ba864bfc809",
+   "evidence_id":"evidence-55af4f5ac1b35a4a81f78a70",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.retail-standalone.bldg-occ-sch.15bc17",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.1615
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-e60860c0fdb6eff0f7e896a2",
+   "evidence_id":"evidence-bd15a11e8f8779c706d72ffa",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.retail-standalone.ltg-sch-entry.ecce29",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-bd15a11e8f8779c706d72ffa","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-bd15a11e8f8779c706d72ffa","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-bd15a11e8f8779c706d72ffa","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":8.060004
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-9806ad174671999c844d3096",
+   "evidence_id":"evidence-add9a3f5d7526a76561dd671",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-883544b61ef9a99612519f5b",
+   "evidence_id":"evidence-9e163db50e4119b5cb668367",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-8a6b074956c0ffcfae9bfc65",
+   "evidence_id":"evidence-5aaba905670b54c1f6a5114f",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-cceb6e725b861106456f9cca",
+   "evidence_id":"evidence-aa8048ae6e6348a2f4b46069",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Entry_RetailStandalone",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-1b8b6c11839796f4a72bb904",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2018.retail-standalone.activity-sch.002a92"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-a8210584fe20217050a95fab",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":false,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-ee3d25ef00bd120877c50fa9",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-79604bde4ef7840610e8c49f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2018.retail-standalone.htgsetp-sch-front-entry-std2013.ca453f"
+  }
+ },
+ "pnnl_building_type":"RetailStandalone",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-ec3de5966e773388fac74cbe",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-c9e8f25183e1eacbfce7",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":12.0,
+   "multiplier":1,
+   "name":"Front_Entry"
+  }
+ ],
+ "standards_building_type":"Retail",
+ "template":"IECC 2018"
+}

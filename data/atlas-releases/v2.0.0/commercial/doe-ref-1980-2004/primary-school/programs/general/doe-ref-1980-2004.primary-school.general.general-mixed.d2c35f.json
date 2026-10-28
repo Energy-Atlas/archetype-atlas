@@ -1,0 +1,155 @@
+{
+ "available_details":[
+  "GeneralMix"
+ ],
+ "building_type":"PrimarySchool",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-1980-2004.primary-school.source.cafeteria.ed9312","represented_area_m2":315.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-d74584da0453a37e6362","weight":0.054792137763089235},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.classroom.719746","represented_area_m2":3294.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-11087f9575e9f3e72598","weight":0.572969212036876},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.computer-room.6a768c","represented_area_m2":162.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-770202c8f7899ab5e0d8","weight":0.028178813706731604},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.gym.de5ceb","represented_area_m2":357.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-7efcda51de8142d9c21f","weight":0.06209775613150113},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.kitchen.37bf3a","represented_area_m2":168.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-d4a10c5d992384d99ae1","weight":0.029222473473647592},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.library.e62423","represented_area_m2":399.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-69ccd84c3ca11e8209b3","weight":0.06940337449991303},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.lobby.109c7e","represented_area_m2":171.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-fa06519fc62b5094965b","weight":0.029744303357105584},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.mechanical.16cccf","represented_area_m2":252.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-0bc75854bbebf5bf1cca","weight":0.04383371021047138},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.office.9ebd74","represented_area_m2":441.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-71eef6cfb7c2c660799c","weight":0.07670899286832493},
+   {"program_id":"doe-ref-1980-2004.primary-school.source.restroom.1f1fab","represented_area_m2":190.0,"source_geometry_file_id":"sourcefile-e10be0a03f8dc86739a8","source_program_id":"program-bed3edd29a5d452ee34d","weight":0.033049225952339535}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-7173ffeed360f3f845dc6009"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.primary-school.general.general-mixed.d2c35f",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0c63af09df50a9cab15c66ff",
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-a85cb25c433b5d85eb643483",
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.primary-school.general-mixed-electric-equipment.362c0c",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":18.69449251548046
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-4bb17ea22f04a5633d984f7e",
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.primary-school.general-mixed-gas-equipment.58bc7a",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":27.89516416570207
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-2c52a6ccad51c7659c9e62af",
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.primary-school.general-mixed-lighting.08d9e8",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":19.17329062924259
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-224707c9200236f5b9658bde",
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.primary-school.general-mixed-occupancy.a03156",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.23755763425001908
+  }
+ ],
+ "mode":"general",
+ "name":"General_Mixed_PrimarySchool",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.primary-school.general-mixed-activity.bf3b13"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.primary-school.general-mixed-cooling-setpoint.9a41c4"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-7173ffeed360f3f845dc6009",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.primary-school.general-mixed-heating-setpoint.3af4e3"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-4fc0730c06a5220636d90e29",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref 1980-2004",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

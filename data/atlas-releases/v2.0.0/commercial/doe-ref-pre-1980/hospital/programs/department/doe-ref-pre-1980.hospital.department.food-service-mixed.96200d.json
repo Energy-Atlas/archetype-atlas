@@ -1,0 +1,147 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Hospital",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-pre-1980.hospital.source.kitchen.83f399","represented_area_m2":929.0303999999999,"source_geometry_file_id":"sourcefile-bd0e0dc4716975a0f6f2","source_program_id":"program-a2625363c76a73285faf","weight":0.5714285714285714},
+   {"program_id":"doe-ref-pre-1980.hospital.source.dining.dddb40","represented_area_m2":696.7728000000001,"source_geometry_file_id":"sourcefile-bd0e0dc4716975a0f6f2","source_program_id":"program-428cdee3d0057e29249d","weight":0.42857142857142866}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-8d831e291125f6e5cbf75128"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-pre-1980.hospital.department.food-service-mixed.96200d",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-418e7e9a886a81d9bc3c59e5",
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.hospital.food-service-mixed-additional-lighting.eb1fe6",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-f8edbacb18de9bce245f1083",
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.hospital.food-service-mixed-electric-equipment.bfd7f1",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":50.74414910734583
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d073b850409394cbb924d288",
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.hospital.food-service-mixed-gas-equipment.5e9adb",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":174.3136714557696
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0222414abd7c57d831c342e8",
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.hospital.food-service-mixed-lighting.8f94d5",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":20.612888447999122
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-a2fc9946ac4c86f087519c39",
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.hospital.food-service-mixed-occupancy.bfb1a5",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.07688507440506945
+  }
+ ],
+ "mode":"department",
+ "name":"FoodService_Mixed_Hospital",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.hospital.food-service-mixed-activity.f57cbb"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.hospital.food-service-mixed-cooling-setpoint.17b8c8"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-8d831e291125f6e5cbf75128",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.hospital.food-service-mixed-heating-setpoint.950f17"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-85e67c7fd0b6f2ae51c8df46",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref Pre-1980",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

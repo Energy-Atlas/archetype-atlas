@@ -1,0 +1,123 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Outpatient",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"90-1-2019.outpatient.source.office.e1e427","represented_area_m2":538.46601984,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-d896f25090a7b0da6682","weight":0.7409869598568141},
+   {"program_id":"90-1-2019.outpatient.source.conference.c8dd28","represented_area_m2":31.21542144,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-85d725bc24330efe8e3f","weight":0.042955765788800816},
+   {"program_id":"90-1-2019.outpatient.source.outpatient-floor2-work.52d792","represented_area_m2":157.00613760000007,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-da82202ff0d90c67e1df","weight":0.21605727435438513}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-f21aaefe833a6cd6a6d549b2"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"90-1-2019.outpatient.department.office-mixed.a9c7bd",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-27a78e30026b6a05886fb1cd",
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0caed55d08a48ecb20746aeb",
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2019.outpatient.office-mixed-electric-equipment.acf61b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":11.352196239151988
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-e315d2fcd0ac394c0bf98487",
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-3ed23a20d19c806bdffa","resolution-46392f3f963699a21829","resolution-54e03cd676d82cd851f5","resolution-7ec8c7cb68e62875b0c6","resolution-bfc77329c53af5534f72","resolution-e23c5a172890334cb630"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":"90-1-2019.outpatient.office-mixed-gas-equipment.e22916","status":"known","value":0.0}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-cbe3172677f23395a1946ce6",
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2019.outpatient.office-mixed-lighting.78b827",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":8.071639271776512
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d2c2e08971096eafa18a1164",
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2019.outpatient.office-mixed-occupancy.03bd43",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.07460317415023875
+  }
+ ],
+ "mode":"department",
+ "name":"Office_Mixed_Outpatient",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2019.outpatient.office-mixed-activity.3b882e"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2019.outpatient.office-mixed-cooling-setpoint.c9750e"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-f21aaefe833a6cd6a6d549b2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2019.outpatient.office-mixed-heating-setpoint.d85b6d"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"code_prototype_rules",
+ "template":"90.1-2019"
+}

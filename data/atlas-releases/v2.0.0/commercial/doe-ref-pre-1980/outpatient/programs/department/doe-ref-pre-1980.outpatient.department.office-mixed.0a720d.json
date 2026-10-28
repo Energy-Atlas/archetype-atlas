@@ -1,0 +1,141 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Outpatient",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-pre-1980.outpatient.source.office.fd076b","represented_area_m2":695.47215744,"source_geometry_file_id":"sourcefile-037f2e5b0a7cc5a21232","source_program_id":"program-d2f1caddd27a480d0e54","weight":0.9570442342111991},
+   {"program_id":"doe-ref-pre-1980.outpatient.source.conference.37b352","represented_area_m2":31.21542144,"source_geometry_file_id":"sourcefile-037f2e5b0a7cc5a21232","source_program_id":"program-f191c9b237ee2a4a250f","weight":0.042955765788800816}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-9994e25edd72c3ba68bf935e"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-pre-1980.outpatient.department.office-mixed.0a720d",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-cf4fd086ea07993b0764e10d",
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.outpatient.office-mixed-additional-lighting.39ea54",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-bfc051e1c070a38b9d96fa19",
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.outpatient.office-mixed-electric-equipment.93ba4a",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":11.794064256897512
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-85e0eda6b7d1061d282323b9",
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.outpatient.office-mixed-additional-lighting.39ea54",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-2e85733bdb4b3b36bf187566",
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.outpatient.office-mixed-lighting.017ca6",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":19.375038750077497
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-1a6a27990cbbd9a2a49756e8",
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.outpatient.office-mixed-occupancy.1e072c",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.06937933365767013
+  }
+ ],
+ "mode":"department",
+ "name":"Office_Mixed_Outpatient",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.outpatient.office-mixed-activity.f11368"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.outpatient.office-mixed-cooling-setpoint.d7a801"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-9994e25edd72c3ba68bf935e",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.outpatient.office-mixed-heating-setpoint.c53361"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-7826fe13c1006b2691f1d380",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref Pre-1980"
+}

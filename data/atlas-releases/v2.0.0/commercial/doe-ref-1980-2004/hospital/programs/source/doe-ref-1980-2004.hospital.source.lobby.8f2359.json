@@ -1,0 +1,191 @@
+{
+ "available_details":[
+  "SourcePrograms",
+  "DepartmentMixes",
+  "GeneralMix"
+ ],
+ "building_type":"Hospital",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-06bd86b8aef00bfd2d5eb0b3",
+  "evidence-0a76ae9e6f9ae082c1b70af6",
+  "evidence-37f7a64e48b775533e2a4ba5",
+  "evidence-440dd60635f9a96901b98595",
+  "evidence-588d4d0c35f1200374422a8a",
+  "evidence-5eb6b7a5aa6a5e65f9e6df5b",
+  "evidence-61e6c30ad0dba49e0018ecff",
+  "evidence-66c9fcf149f21780f424878c",
+  "evidence-6e24634645098162e7aa5998",
+  "evidence-72026b85ef6164d5425a291e",
+  "evidence-7fb5405dd526973ef4e57c09",
+  "evidence-819c3c1a71588412648c9252",
+  "evidence-9166e7164a98f3e689bde03d",
+  "evidence-9c27a6bf5e6d44553af9f6d4",
+  "evidence-ac85d84edd4e3c042f12e1e9",
+  "evidence-de5e8efb12a35bf20553a47d",
+  "evidence-e255c08487a3c4a874a5c267",
+  "evidence-f81fd24b48c578871401c294",
+  "evidence-f9b223275f992a26fefc6fbc"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-f81fd24b48c578871401c294",
+  "roof":null,
+  "wwr":{
+   "E":null,
+   "N":0.0,
+   "S":0.0,
+   "W":0.2751
+  }
+ },
+ "filling_evidence_ids":[
+  "evidence-815c32ea6634a7c6b8320aca",
+  "evidence-94c366a2466772fdcf1c5fc2"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.hospital.source.lobby.8f2359",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-f9b223275f992a26fefc6fbc",
+  "source":"doe_reference",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "alternates":[{"evidence_id":"evidence-de5e8efb12a35bf20553a47d","reason_id":"R-EXISTING-DENSITY","source_family":"doe-reference","value":0.0143}],
+   "basis":"floor_area",
+   "demand_id":"demand-c113265598ecd4358722a7b2",
+   "evidence_id":"evidence-5eb6b7a5aa6a5e65f9e6df5b",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.admin-occ-sch.e5d701",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.07685432037530741
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-72723178629a06b8dea90cfb",
+   "evidence_id":"evidence-9166e7164a98f3e689bde03d",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.admin-light-sch.f06e03",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-66840706f8141a5daab4767a","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-54c5ef6598e5b0fb951bcbdc","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-e7b6b66083ef305d145dcfa3","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":11.086827729211015
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-c4a9592c64f3565aff059671",
+   "evidence_id":"evidence-440dd60635f9a96901b98595",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.admin-light-sch.f06e03",
+   "scope":"program",
+   "status":"unknown",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-66840706f8141a5daab4767a","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-54c5ef6598e5b0fb951bcbdc","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-e7b6b66083ef305d145dcfa3","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-095a7a969d1748197c59aa07",
+   "evidence_id":"evidence-06bd86b8aef00bfd2d5eb0b3",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.admin-equip-sch.883b5f",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-40e758609a39d0cf639a9df7","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-95a94865e79ad832259e0b7f","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-9c2ca9b001a3b08c2e2e5a80","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":1.076391041670972
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-7817dd54503a7b85c7e31809",
+   "evidence_id":"evidence-0a76ae9e6f9ae082c1b70af6",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-18df4fc0aef4871e0800","resolution-eb566b49d0e90e2e9f61"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":{"constant":0}}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.doe-reference-no-object-constant-0.47b394",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-c5439e45ea02b8d20e57b09b","required_inputs":[],"status":"unknown","unit":"1","value":null},"lost":{"evidence_id":"evidence-77e798ea8bf9d9f414a990bc","required_inputs":[],"status":"unknown","unit":"1","value":null},"radiant":{"evidence_id":"evidence-f2093919e930004cb1131c8a","required_inputs":[],"status":"unknown","unit":"1","value":null}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-4b02efe29c434f85fb46d047",
+   "evidence_id":"evidence-e255c08487a3c4a874a5c267",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.doe-reference-no-object-constant-0.47b394",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Lobby_Hospital",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-61e6c30ad0dba49e0018ecff",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.hospital.hospital-activity.6634f0"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-ac85d84edd4e3c042f12e1e9",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.hospital.admin-clgsetp-sch.850408"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-819c3c1a71588412648c9252",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.hospital.admin-htgsetp-sch.bbb433"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-66c9fcf149f21780f424878c",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "source_id":"program-33b5ffa1a82ade1e807a",
+ "template":"DOE Ref 1980-2004"
+}

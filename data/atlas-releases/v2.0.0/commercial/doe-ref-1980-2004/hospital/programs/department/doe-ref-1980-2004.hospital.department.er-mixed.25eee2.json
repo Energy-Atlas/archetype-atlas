@@ -1,0 +1,149 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Hospital",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-1980-2004.hospital.source.er-exam.77bfa9","represented_area_m2":222.96729600000003,"source_geometry_file_id":"sourcefile-bd0e0dc4716975a0f6f2","source_program_id":"program-b2d279cd8aceb6523ce1","weight":0.1371428571428572},
+   {"program_id":"doe-ref-1980-2004.hospital.source.er-nurse-stn.0814b5","represented_area_m2":1235.6104319999997,"source_geometry_file_id":"sourcefile-bd0e0dc4716975a0f6f2","source_program_id":"program-4516588559bcd0c6dbc2","weight":0.7600000000000002},
+   {"program_id":"doe-ref-1980-2004.hospital.source.er-trauma.1dde46","represented_area_m2":55.741823999999895,"source_geometry_file_id":"sourcefile-bd0e0dc4716975a0f6f2","source_program_id":"program-e564b43a04f002b983a4","weight":0.03428571428571423},
+   {"program_id":"doe-ref-1980-2004.hospital.source.er-triage.a35b84","represented_area_m2":111.48364799999945,"source_geometry_file_id":"sourcefile-bd0e0dc4716975a0f6f2","source_program_id":"program-a4ffe6755aa603f0cfcd","weight":0.06857142857142826}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-277fa063f3169ceb474a8a54"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.hospital.department.er-mixed.25eee2",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-326e41e146a9831d266294e2",
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.er-mixed-additional-lighting.09dbcb",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-3bbae3144bc66935a2445491",
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.er-mixed-electric-equipment.57ae5f",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":16.808061378154495
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-623162b6faaede4f7eae66c8",
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.er-mixed-additional-lighting.09dbcb",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7390048ab5343c9876162f0b",
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.er-mixed-lighting.fe08d1",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":23.502352560260668
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-ffe934ca206f7a33d3569b12",
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.hospital.er-mixed-occupancy.6429a8",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.10279534447957779
+  }
+ ],
+ "mode":"department",
+ "name":"ER_Mixed_Hospital",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.hospital.er-mixed-activity.250ced"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.hospital.er-mixed-cooling-setpoint.732bcc"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-277fa063f3169ceb474a8a54",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.hospital.er-mixed-heating-setpoint.6e2e5a"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-66c9fcf149f21780f424878c",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref 1980-2004",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

@@ -1,0 +1,135 @@
+{
+ "available_details":[
+  "GeneralMix"
+ ],
+ "building_type":"LargeHotel",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2021.large-hotel.source.corridor.cfa613","represented_area_m2":412.124713,"source_geometry_file_id":"sourcefile-9dbc29bd0ebc430c1e4b","source_program_id":"program-c383fc9ad5d2dd8074ed","weight":0.20922761239165474},
+   {"program_id":"iecc-2021.large-hotel.source.corridor2.00665b","represented_area_m2":1557.618708,"source_geometry_file_id":"sourcefile-9dbc29bd0ebc430c1e4b","source_program_id":"program-7d7ea72ab11a572d8745","weight":0.7907723876083453}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-aded094182f8055c05635cc0"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2021.large-hotel.general.corridor-mixed.d5a603",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-077684098219bfd9aeeabf21",
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.large-hotel.corridor-mixed-additional-lighting.7c9c7b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-403608ed2e4c5bea927f9458",
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.large-hotel.corridor-mixed-additional-lighting.7c9c7b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-68d657015bfeeb3479810859",
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.large-hotel.corridor-mixed-additional-lighting.7c9c7b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-af90213b6c7dbd0ca30da05c",
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.large-hotel.corridor-mixed-additional-lighting.7c9c7b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0b8ecace792bfc7a68080d14",
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.large-hotel.corridor-mixed-lighting.c20848",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":4.413200000000001,
+   "value_by_climate":{"2A":3.97188,"2B":3.97188,"3B":3.97188,"3C":3.97188,"4B":3.97188,"4C":3.97188,"5C":3.97188,"7A":3.97188,"8A":3.97188}
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-8995a88c0acdc2438216775a",
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.large-hotel.corridor-mixed-occupancy.a19e6b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.05381817696150364
+  }
+ ],
+ "mode":"general",
+ "name":"Corridor_Mixed_LargeHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2021.large-hotel.corridor-mixed-activity.5d9649"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2021.large-hotel.corridor-mixed-cooling-setpoint.c798e1"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-aded094182f8055c05635cc0",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2021.large-hotel.corridor-mixed-heating-setpoint.2d9a2d"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2021"
+}
