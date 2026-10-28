@@ -18,7 +18,7 @@ from atlas_schedules.commercial.transform import Slot, transform
 from atlas_schedules.generator import load_service
 from atlas_schedules.programmes import configuration_people, load_configuration, load_recipe, schedules
 from atlas_schedules.seeds import commercial_group_seed
-from tests.schedules.helpers import TOLERANCE, unpack_days
+from tests.schedules.helpers import TOLERANCE, retired, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/family-programmes.json.gz"
 GROUP = "building"
@@ -42,6 +42,8 @@ class FamilyProgrammes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.data = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))
+        # DOE Ref cases name recipes replaced in stage X1.2
+        cls.compared = [c for c in cls.data["cases"] if not retired(c["subject"], c["configuration_id"], c["case_id"])]
 
     def test_every_family_template_is_covered(self):
         configurations = {c["configuration_id"] for c in self.data["cases"]}
@@ -50,7 +52,7 @@ class FamilyProgrammes(unittest.TestCase):
     def test_sampler_still_gives_the_captured_parameters(self):
         # Drift guard: the captures used this sampler (itself checked against
         # native tsv_sampling.py draws in test_sampler).
-        for case in self.data["cases"]:
+        for case in self.compared:
             building_type = load_configuration(case["configuration_id"])["building_type"]
             sampled = sample_operating_parameters(load_tables(building_type), building_type,
                                                   commercial_group_seed(case["seed"], GROUP))
@@ -59,7 +61,7 @@ class FamilyProgrammes(unittest.TestCase):
                                  case["operating"])
 
     def test_slots_match_native_output(self):
-        for case in self.data["cases"]:
+        for case in self.compared:
             configuration = load_configuration(case["configuration_id"])
             slots = _slots(case)
             self.assertEqual(sorted(slots), sorted(case["expected"]), case["case_id"])

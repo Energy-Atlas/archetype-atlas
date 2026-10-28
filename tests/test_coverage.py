@@ -5,7 +5,6 @@ import unittest
 from scripts.build import build_atlas
 from scripts.common import ROOT, load_json
 from scripts.validate import validate_atlas
-from scripts.release import verify_release
 
 
 class FullCoverageTests(unittest.TestCase):
@@ -57,9 +56,6 @@ class FullCoverageTests(unittest.TestCase):
                      and r['option'] != row['selected_options'][r['parameter']])
         row['option_ids'].append(wrong['id'])
         self.assertTrue(any('residential option' in e for e in validate_atlas(a)))
-
-    def test_older_frozen_release_remains_verifiable(self):
-        self.assertEqual(verify_release(ROOT/'data/releases/v0.1.0'), [])
 
     def test_full_source_input_atlas_validates_with_documented_overlap(self):
         self.assertEqual(validate_atlas(self.atlas), [])

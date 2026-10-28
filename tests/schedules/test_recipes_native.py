@@ -18,7 +18,7 @@ import numpy as np
 from atlas_schedules.commercial.transform import Slot, transform
 from atlas_schedules.generator import load_service
 from atlas_schedules.programmes import configuration_people, load_configuration, load_recipe, schedules
-from tests.schedules.helpers import TOLERANCE, unpack_days
+from tests.schedules.helpers import TOLERANCE, retired, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/families.json.gz"
 
@@ -35,7 +35,9 @@ def _recipe(case_id: str) -> dict:
 class RecipesAgainstNative(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["programme_cases"]
+        cases = json.loads(gzip.decompress(ANSWER_KEY.read_bytes()))["programme_cases"]
+        # DOE Ref cases name recipes replaced in stage X1.2
+        cls.cases = [c for c in cases if not retired(c["case_id"], c["configuration_id"])]
 
     def test_recipe_slots_match_native_output(self):
         table = schedules()

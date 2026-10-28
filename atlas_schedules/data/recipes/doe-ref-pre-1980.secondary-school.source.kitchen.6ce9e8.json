@@ -1,0 +1,145 @@
+{
+ "commercial": {
+  "configuration_id": "secondary_school__doe_ref_pre_1980__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "gas_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.1666253332506665,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "radiant": 0.37,
+    "to_return_air": 0.0,
+    "visible": 0.2
+   },
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 16.791700250067166
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.25,
+    "lost": 0.2,
+    "radiant": 0.3
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 222.27475010505574
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "natural gas",
+   "heat_fractions": {
+    "latent": 0.1,
+    "lost": 0.7,
+    "radiant": 0.2
+   },
+   "host": "assigned_zone",
+   "quantity": "gas_equipment",
+   "slot": "gas_equipment",
+   "unit": "W/m2",
+   "value": 1119.5642554228757
+  }
+ ],
+ "kind": "commercial",
+ "name": "Kitchen_SecondarySchool",
+ "program_id": "doe-ref-pre-1980.secondary-school.source.kitchen.6ce9e8",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "doe-ref-pre-1980.secondary-school.bldg-occ-sch.33ec27",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-pre-1980.secondary-school.bldg-light-sch.2d4b03",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-pre-1980.secondary-school.kitchen-elec-equip-sch.dfa0ff",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-pre-1980.secondary-school.kitchen-gas-equip-sch.a00737",
+   "slot": "gas_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-pre-1980.secondary-school.secondary-school-htg-setp-bath-corr-mech-kitchen.a2445d",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-pre-1980.secondary-school.secondary-school-clg-setp-bath-corr-mech-kitchen.a4bd02",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-pre-1980.secondary-school.secondary-school-activity.8f4e1b",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "SecondarySchool",
+  "climate": null,
+  "definition": "data/atlas-releases/v2.0.0/commercial/doe-ref-pre-1980/secondary-school/programs/source/doe-ref-pre-1980.secondary-school.source.kitchen.6ce9e8.json",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-3b4ec5dbb8f17511e2dc",
+  "template": "DOE Ref Pre-1980",
+  "view": "source",
+  "vintage": null
+ }
+}

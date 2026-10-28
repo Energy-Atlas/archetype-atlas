@@ -1,0 +1,124 @@
+{
+ "commercial": {
+  "configuration_id": "strip_mall__doe_ref_1980_2004__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.16145865625064584,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "radiant": 0.7,
+    "to_return_air": 0.0,
+    "visible": 0.2
+   },
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 35.52090437514208
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 4.305564166683889
+  }
+ ],
+ "kind": "commercial",
+ "name": "Strip mall - type 2_RetailStripmall",
+ "program_id": "doe-ref-1980-2004.retail-stripmall.source.strip-mall-type-2.22f6e3",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "doe-ref-1980-2004.retail-stripmall.bldg-occ-sch.cd4b22",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-1980-2004.retail-stripmall.bldg-light-sch.c85747",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-1980-2004.retail-stripmall.bldg-equip-sch.45803a",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.retail-stripmall.htgsetp-sch.d20ac5",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.retail-stripmall.clgsetp-sch.d71187",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.retail-stripmall.strip-mall-activity.7c705c",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "RetailStripmall",
+  "climate": null,
+  "definition": "data/atlas-releases/v2.0.0/commercial/doe-ref-1980-2004/retail-stripmall/programs/source/doe-ref-1980-2004.retail-stripmall.source.strip-mall-type-2.22f6e3.json",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-f034ddfd7419add53010",
+  "template": "DOE Ref 1980-2004",
+  "view": "source",
+  "vintage": null
+ }
+}

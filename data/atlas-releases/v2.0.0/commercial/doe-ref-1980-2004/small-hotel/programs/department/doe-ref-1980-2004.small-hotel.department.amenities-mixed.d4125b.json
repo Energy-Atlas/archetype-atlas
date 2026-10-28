@@ -1,0 +1,142 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"SmallHotel",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-1980-2004.small-hotel.source.exercise.8b592a","represented_area_m2":32.60896704000001,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-ca6415cba1d9b0570ef4","weight":0.11817422061865376},
+   {"program_id":"doe-ref-1980-2004.small-hotel.source.meeting.31e144","represented_area_m2":80.27407871999998,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-ce0a37365dac8d1fe728","weight":0.2909115973216812},
+   {"program_id":"doe-ref-1980-2004.small-hotel.source.guest-lounge.ec3cb6","represented_area_m2":163.0567224,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-042cb856e51c9a9108a5","weight":0.5909141820596651}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-f51ebb5d4f8d16657d6f410f"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.small-hotel.department.amenities-mixed.d4125b",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-deb3053452934565fdf4be47",
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.amenities-mixed-additional-lighting.856746",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-1f44cf046a57269f96ecc82d",
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":14.2142562094125
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7c9f50263d587427aa69ffac",
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.small-hotel.amenities-mixed-additional-lighting.856746",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-142707aae7f60ef049638a92",
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":16.744747675005012
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-5aba153e2c923dcca1bb29ad",
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.38723602219966574
+  }
+ ],
+ "mode":"department",
+ "name":"Amenities_Mixed_SmallHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.small-hotel.amenities-mixed-activity.e55e75"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.small-hotel.amenities-mixed-cooling-setpoint.d32239"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-f51ebb5d4f8d16657d6f410f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.small-hotel.amenities-mixed-heating-setpoint.42b861"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-f1b9ebb8d9e6a34f51997122",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref 1980-2004"
+}

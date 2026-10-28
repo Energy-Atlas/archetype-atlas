@@ -1,0 +1,161 @@
+{
+ "available_details":[
+  "GeneralMix"
+ ],
+ "building_type":"SmallHotel",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.elec-mech-room.e5e5ea","represented_area_m2":15.050292479999996,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-5cda7f2858c06aa1f40e","weight":0.004316337116020761},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.elevator-core.ed111a","represented_area_m2":45.15087743999999,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-e767a4d5ce39a70ec1b0","weight":0.01294901134806228},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.exercise.97ede8","represented_area_m2":32.60896704000001,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-36188c5fb03603a3d6ab","weight":0.00935206375137832},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.guest-lounge.1e61fd","represented_area_m2":163.0567224,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-5b5462a1af7c0b54468f","weight":0.04676372793732005},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.guest-room.c71326","represented_area_m2":2533.5673991999997,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-91c1fe30a785dc4393c2","weight":0.7266125236861276},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.laundry.59507a","represented_area_m2":97.82690112000006,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-758d224ed4a92e25675f","weight":0.028056191254134968},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.mechanical.97ba76","represented_area_m2":32.61134448000002,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-e230b5be8837671afd03","weight":0.009352745587464016},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.meeting.2d368a","represented_area_m2":80.27407871999998,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-7dcae7baf4ef3419f555","weight":0.02302214298452679},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.office.755c3e","represented_area_m2":130.43586815999998,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-864465471c2b102cfa6d","weight":0.037408255005513265},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.public-restroom.04bb2d","represented_area_m2":32.61134447999998,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-10c09b5aaf1d4824ae41","weight":0.009352745587464004},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.staff-lounge.8b20bc","represented_area_m2":32.60896704000004,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-1aca963361591fffdb16","weight":0.009352063751378328},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.stair.683ba4","represented_area_m2":160.55620415999996,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-bd115f8e4fb71b1d9b41","weight":0.046046593721959},
+   {"program_id":"doe-ref-pre-1980.small-hotel.source.storage.5b2dde","represented_area_m2":130.46147279999997,"source_geometry_file_id":"sourcefile-2f403ab95a9d93a0a4b4","source_program_id":"program-41c67935fe65059e9b27","weight":0.03741559826865058}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-7cebc5a32009438c5c3d4afe"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-pre-1980.small-hotel.general.general-mixed.bcb20d",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-1c7caa4eb9e5f6db87332d52",
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.small-hotel.general-mixed-additional-lighting.bf7f09",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-ef942cf7c7a16eb25fe5eeea",
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":13.445750367110493
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-ad337b1b95f26d577d8bebff",
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.small-hotel.general-mixed-gas-equipment.9021e5",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":5.168738794285559
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0ad94f7880997e846acd5612",
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":17.018577490536508
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-55c77f7faae5e5cae35b0527",
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.07103187064582316
+  }
+ ],
+ "mode":"general",
+ "name":"General_Mixed_SmallHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-7cebc5a32009438c5c3d4afe",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "doe-ref-pre-1980.small-hotel.main.80eaf3",
+  "doe-ref-pre-1980.small-hotel.main.9f582c"
+ ],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-71d7af5aab9c513616381428",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref Pre-1980",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

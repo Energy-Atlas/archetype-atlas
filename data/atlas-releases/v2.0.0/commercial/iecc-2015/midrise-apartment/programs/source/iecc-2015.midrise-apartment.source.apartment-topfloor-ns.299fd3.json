@@ -1,0 +1,221 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"MidriseApartment",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-0c191eda3fa3b64df215d69b",
+  "evidence-1e8badefb8e30da9b800fc58",
+  "evidence-1f6436b418dba5887664f27a",
+  "evidence-2c2cd73e24e017e58091fff1",
+  "evidence-3e71756467562b840dbc8647",
+  "evidence-4ea99ee61d91545cad4f92b4",
+  "evidence-62c1202d673ea2780126f691",
+  "evidence-7c73dc81a0aa767413a9a1a4",
+  "evidence-9ecb544442e649109fc9bc40",
+  "evidence-9f8dd74e6e4cf03eda7c9dc3",
+  "evidence-a9dadbcb0d1442620413f600",
+  "evidence-b279a7c56016e18afb99e0c2",
+  "evidence-b2bc17635c8a7ae5c50107c2",
+  "evidence-c69cd400642f7434a06bf16c",
+  "evidence-ce0501c758b8e99e45581096",
+  "evidence-f22e9dcbb0a1dd5631b975e4",
+  "evidence-fb50794d6b47195ac49db63f"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-b2bc17635c8a7ae5c50107c2",
+  "roof":0.0,
+  "wwr":{
+   "E":null,
+   "N":0.2,
+   "S":0.2,
+   "W":null
+  }
+ },
+ "gate":[
+  "residential"
+ ],
+ "id":"iecc-2015.midrise-apartment.source.apartment-topfloor-ns.299fd3",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-f22e9dcbb0a1dd5631b975e4",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-1896b16af8b2d545324b5035",
+   "evidence_id":"evidence-0c191eda3fa3b64df215d69b",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.midrise-apartment.occ-apt-sch-stay-home-family.5b3649",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.028328844866
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0c6efec7c397f3b27f35d508",
+   "evidence_id":"evidence-9f8dd74e6e4cf03eda7c9dc3",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.midrise-apartment.ltg-sch-apartment-hardwired.8138bb",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-9f8dd74e6e4cf03eda7c9dc3","required_inputs":[],"status":"known","unit":"1","value":0.6},"to_return_air":{"evidence_id":"evidence-9f8dd74e6e4cf03eda7c9dc3","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-9f8dd74e6e4cf03eda7c9dc3","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":8.428131
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-827c5ab20d60229f31f11aac",
+   "evidence_id":"evidence-c69cd400642f7434a06bf16c",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.midrise-apartment.ltg-sch-apartment-plugin.2191d3",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-c69cd400642f7434a06bf16c","required_inputs":[],"status":"known","unit":"1","value":0.6},"to_return_air":{"evidence_id":"evidence-c69cd400642f7434a06bf16c","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-c69cd400642f7434a06bf16c","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.871875
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-2290089139b67f354788a42e",
+   "evidence_id":"evidence-b279a7c56016e18afb99e0c2",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.midrise-apartment.eqp-apt-sch.61d43d",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-b279a7c56016e18afb99e0c2","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-b279a7c56016e18afb99e0c2","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-b279a7c56016e18afb99e0c2","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":6.67
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-6a8bc5986c32de66d4f87404",
+   "evidence_id":"evidence-fb50794d6b47195ac49db63f",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.midrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"iecc-2015.midrise-apartment.main.69b3fd",
+   "evidence_id":"evidence-9ecb544442e649109fc9bc40",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.midrise-apartment.apt-dhw-sch.216060",
+   "scope":"program_service",
+   "service_id":"iecc-2015.midrise-apartment.main.69b3fd",
+   "status":"known",
+   "target_temperature_degC":60.0,
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":4.1473e-08,
+   "zone_heat_assignment":"unresolved"
+  }
+ ],
+ "mode":"source",
+ "name":"Apartment_topfloor_NS_MidriseApartment",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-3e71756467562b840dbc8647",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.midrise-apartment.activity-schedule.f21800"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-1f6436b418dba5887664f27a",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-ce0501c758b8e99e45581096",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.midrise-apartment.n-clgsetp-apt-sch.b4855a"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-a9dadbcb0d1442620413f600",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.midrise-apartment.n-htgsetp-apt-sch.7fd5d5"
+  }
+ },
+ "pnnl_building_type":"ApartmentMidRise",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "iecc-2015.midrise-apartment.main.69b3fd"
+ ],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-7c73dc81a0aa767413a9a1a4",
+  "holidays":[
+   {"name":"New Year's Day","rule":"Jan 1"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"Labor day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-36e9e5c7a6f23fa8790e",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":88.24927425738,
+   "multiplier":1,
+   "name":"T N1 Apartment"
+  },
+  {
+   "counted":true,
+   "floor_area_m2":88.24927425738,
+   "multiplier":1,
+   "name":"T N2 Apartment"
+  },
+  {
+   "counted":true,
+   "floor_area_m2":88.24927425738,
+   "multiplier":1,
+   "name":"T S1 Apartment"
+  },
+  {
+   "counted":true,
+   "floor_area_m2":88.24927425738,
+   "multiplier":1,
+   "name":"T S2 Apartment"
+  }
+ ],
+ "standards_building_type":"MidriseApartment",
+ "template":"IECC 2015"
+}

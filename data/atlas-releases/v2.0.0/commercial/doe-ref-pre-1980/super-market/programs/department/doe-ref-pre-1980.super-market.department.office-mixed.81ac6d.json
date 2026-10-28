@@ -1,0 +1,155 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"SuperMarket",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-pre-1980.super-market.source.office.ce7202","represented_area_m2":27.835994100000676,"source_geometry_file_id":"sourcefile-b1d08f2d2bf13f7857cb","source_program_id":"program-63b91d56bd9f7bc61eeb","weight":0.37467332859388613},
+   {"program_id":"doe-ref-pre-1980.super-market.source.meeting.2c24ed","represented_area_m2":46.458042800001124,"source_geometry_file_id":"sourcefile-b1d08f2d2bf13f7857cb","source_program_id":"program-d76826d25e180af690e1","weight":0.6253266714061139}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-e07236484c3911fae83e09f8"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-pre-1980.super-market.department.office-mixed.81ac6d",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-a7e4954948290ad512745155",
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-589deebdda5ea21ebb977fd6",
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.super-market.office-mixed-electric-equipment.44d21c",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":8.072932812532292
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-3e46c644aa6e4cec166d0435",
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-82a9b0e1124f2d82824c","resolution-8b8700da06687d25e400","resolution-bf8e48523a6c26edc194","resolution-c93e5fba167c34fc9c1e"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":"doe-ref-pre-1980.super-market.office-mixed-gas-equipment.3ee37c","status":"known","value":0.0}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-b8f95c7764690f4f92ace9de",
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.super-market.office-mixed-hot-water-volume.9166f2",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-8655d22a0d36b2fda42e545c",
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.super-market.office-mixed-lighting.edbac7",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":31.215340208458194
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-79e5df69a024d21d651642b3",
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.super-market.office-mixed-occupancy.40991f",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.3567127643323095
+  }
+ ],
+ "mode":"department",
+ "name":"Office_Mixed_SuperMarket",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.super-market.office-mixed-activity.d60dd4"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.super-market.office-mixed-cooling-setpoint.9cb2d0"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-e07236484c3911fae83e09f8",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.super-market.office-mixed-heating-setpoint.13ca91"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-30fd82a15576bb01cdd1565c",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref Pre-1980"
+}

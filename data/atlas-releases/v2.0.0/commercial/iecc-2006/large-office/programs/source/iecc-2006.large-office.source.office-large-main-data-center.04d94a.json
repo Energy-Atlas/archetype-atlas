@@ -1,0 +1,193 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"LargeOffice",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-0e0c8e56c2e0dc218f4197b6",
+  "evidence-1111c2de9c7b82fca4d510e3",
+  "evidence-4be0ce79bbdb63c8bb599e63",
+  "evidence-7c1198b178b0a11be30c2cca",
+  "evidence-93bf42f6fefdbc8822ca6e0f",
+  "evidence-946458a05b1a1b2701faecae",
+  "evidence-ae31ca46874a2d2d1bdb6ac5",
+  "evidence-af07e926bed134a4e60ab03b",
+  "evidence-af7775c72635e42d4bfdcc5c",
+  "evidence-b43a4cac79c2038d1b87dc53",
+  "evidence-bf8e070a90ad084d0a7a1741",
+  "evidence-c877bc934a9b6bb3bea15fa7",
+  "evidence-d3c92f6b361945767996aa5a",
+  "evidence-dd9fc083ae6319880493a814",
+  "evidence-e57b7f194412ee98aace1777",
+  "evidence-edeadd94fa0bf7d2200af7b1"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2006.large-office.source.office-large-main-data-center.04d94a",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-e57b7f194412ee98aace1777",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-347583e3e76b12ab7030a637",
+   "evidence_id":"evidence-1111c2de9c7b82fca4d510e3",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.large-office.bldg-occ-sch-wo-sb.6f164f",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.053824806213
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-9bf0be7aab322e0fc56fcc77",
+   "evidence_id":"evidence-d3c92f6b361945767996aa5a",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.large-office.ltg-sch-office.210a6d",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-d3c92f6b361945767996aa5a","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-d3c92f6b361945767996aa5a","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-d3c92f6b361945767996aa5a","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":11.00132
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-10bea1b33e78552209d9b0b6",
+   "evidence_id":"evidence-946458a05b1a1b2701faecae",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.large-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-ca6123e23f48d40c4c8b0694",
+   "evidence_id":"evidence-93bf42f6fefdbc8822ca6e0f",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.large-office.data-center-equip-sch.6b68e1",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-93bf42f6fefdbc8822ca6e0f","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-93bf42f6fefdbc8822ca6e0f","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-93bf42f6fefdbc8822ca6e0f","required_inputs":[],"status":"known","unit":"1","value":0.1}},
+   "unit":"W/m2",
+   "value":484.423246742185
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-1d87e5b958c85ebbac1f4c90",
+   "evidence_id":"evidence-af07e926bed134a4e60ab03b",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.large-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0ee9ebbd77f28c10afb21924",
+   "evidence_id":"evidence-ae31ca46874a2d2d1bdb6ac5",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.large-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"OfficeLarge Main Data Center_LargeOffice",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-c877bc934a9b6bb3bea15fa7",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2006.large-office.activity-sch.d2fc92"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-0e0c8e56c2e0dc218f4197b6",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-4be0ce79bbdb63c8bb599e63",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2006.large-office.clgsetp-dc-sch.c596b1"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-bf8e070a90ad084d0a7a1741",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2006.large-office.htgsetp-dc-sch.990dc7"
+  },
+  "humidifying_setpoint_schedule_id":{
+   "evidence_id":"evidence-af7775c72635e42d4bfdcc5c",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2006.large-office.dc-min-rel-hum-set-sch.8b8187"
+  }
+ },
+ "pnnl_building_type":"OfficeLarge",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-b43a4cac79c2038d1b87dc53",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-8b129e554ee7901c0fa8",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":783.67940514,
+   "multiplier":1,
+   "name":"DataCenter_basement_ZN_6"
+  }
+ ],
+ "standards_building_type":"Office",
+ "template":"IECC 2006"
+}

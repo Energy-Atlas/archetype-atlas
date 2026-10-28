@@ -21,24 +21,25 @@ with `lighting_controls` on commercial programs. Release 1.6.0 adds the unified 
 commercial sets (ADR 0045), exported as construction-equivalent 3.1.0. Release 2.0.0 is the full snapshot of
 1.6.0 (ADR 0046) and exports as 1.6.0 does.
 
+Only release 2.0.0 is in the tree (ADR 0046 section 7); releases 1.0.0 to 1.6.0 are read from the tag
+`frozen-data-2026-10-27`. The release enums of the schemas keep every release.
+
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
 python -m scripts.atlas_exports --construction SET --context KEY --representation detailed
-python -m scripts.atlas_exports --release 1.1.0 --building-services doe-ref-1980-2004/hospital
-python -m scripts.atlas_exports --release 1.4.0 --program resstock-sdr.single-family-detached.<...> --version filled
+python -m scripts.atlas_exports --building-services doe-ref-1980-2004/hospital
+python -m scripts.atlas_exports --program resstock-sdr.single-family-detached.<...> --version filled
 """
 import argparse
 import contextlib
 import copy
 import json
 import sys
-from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
 from scripts import atlas_constructions, atlas_programs
 from scripts.atlas_format import h6, slug, suite_bytes
-from scripts.atlas_release import TARGET
 from scripts.common import ROOT, load_json
 
 RELEASE = 'atlas-release-1.0.0'
@@ -439,21 +440,14 @@ def complete_holidays(schedule):
 class Release:
     """A written release folder, exported for consumers."""
 
-    def __init__(self, files=None, root=TARGET, release='1.0.0'):
+    def __init__(self, files=None, release='2.0.0'):
         if release not in ('1.0.0', *MINOR['releases']):
             raise ValueError('Unknown release: '+release)
-        if files is None and release == '1.1.0':
-            from scripts import atlas_delta_release
-            files = atlas_delta_release.files()
-        elif files is None and release == '2.0.0':
+        if files is None and release == '2.0.0':
             from scripts import atlas_snapshot
             files = atlas_snapshot.files()
-        elif files is None and release != '1.0.0':
-            from scripts import atlas_minor_release
-            files = atlas_minor_release.files(release)
-        if files is None:
-            root = Path(root)
-            files = {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+        elif files is None:
+            raise ValueError(f'Release {release} is not in the tree; read it from the tag frozen-data-2026-10-27 (ADR 0046)')
         self.files, self.release = files, release
         self.programs = {}
         for path, data in files.items():
@@ -551,21 +545,10 @@ class Release:
         path and programs by upstream source ID and name, which the release keeps. A full
         snapshot carries the matched IDs.
         """
-        if self.exporter_inputs():
-            inputs = self.exporter_inputs()
-            return set(inputs['capped_services']), set(inputs['capped_programs'])
-        from scripts.program_water_heating import CAPPED_PROGRAMS, CAPPED_SERVICES
-        definitions = ROOT/'data/definition-releases/v0.1.1'
-        old_services = {s['id']: s for s in load_json(definitions/'services.json')}
-        old_programs = {p['id']: p for p in load_json(definitions/'programs.json')}
-        by_path = {row['path_id']: sid for p, d in self.files.items() if p.endswith('/services.json')
-                   for sid, row in json.loads(d).items()}
-        by_source = {(p['source_id'], p['name']): pid for pid, (_, p) in self.programs.items() if p.get('source_id')}
-        source = lambda r: old_programs.get(r.get('source_definition_id'), r)
-        services = {by_path[old_services[s]['path_id']] for s in CAPPED_SERVICES if old_services[s]['path_id'] in by_path}
-        programs = {by_source[k] for k in ((source(old_programs[p])['source_id'], source(old_programs[p])['name'])
-                                           for p in CAPPED_PROGRAMS) if k in by_source}
-        return services, programs
+        inputs = self.exporter_inputs()
+        if inputs is None:
+            raise ValueError('Only a full snapshot carries the capped-delivery IDs (exporter-inputs.json, ADR 0046)')
+        return set(inputs['capped_services']), set(inputs['capped_programs'])
 
     def program(self, program_id, version):
         """Program JSON 5.0.0 in one version."""
@@ -749,7 +732,7 @@ def main():
     parser.add_argument('--construction')
     parser.add_argument('--context')
     parser.add_argument('--representation', choices=tuple(CONSTRUCTION_SCHEMAS), default='detailed')
-    parser.add_argument('--release', choices=('1.0.0', *MINOR['releases']), default='1.0.0')
+    parser.add_argument('--release', choices=('2.0.0',), default='2.0.0')
     parser.add_argument('--building-services', metavar='FOLDER', help='e.g. doe-ref-1980-2004/hospital (release 1.1.0)')
     args = parser.parse_args()
     if args.schemas or args.check_schemas:

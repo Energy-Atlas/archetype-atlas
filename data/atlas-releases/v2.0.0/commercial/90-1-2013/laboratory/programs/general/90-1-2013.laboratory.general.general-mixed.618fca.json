@@ -1,0 +1,134 @@
+{
+ "available_details":[
+  "GeneralMix"
+ ],
+ "building_type":"Laboratory",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"90-1-2013.laboratory.source.equipment-corridor.3d39b0","represented_area_m2":418.06368000091436,"source_geometry_file_id":"sourcefile-303a9e1ccfbba02f75e3","source_program_id":"program-3cd68995f22a41dfaf35","weight":0.049999999999981774},
+   {"program_id":"90-1-2013.laboratory.source.lab-with-fume-hood.ba0a9b","represented_area_m2":836.1273600048768,"source_geometry_file_id":"sourcefile-303a9e1ccfbba02f75e3","source_program_id":"program-1aa943111876d1879078","weight":0.10000000000032809},
+   {"program_id":"90-1-2013.laboratory.source.office.041c44","represented_area_m2":4180.636800006096,"source_geometry_file_id":"sourcefile-303a9e1ccfbba02f75e3","source_program_id":"program-697b9ee59c0911c71d89","weight":0.4999999999994532},
+   {"program_id":"90-1-2013.laboratory.source.open-lab.6fe9bf","represented_area_m2":2926.4457600094493,"source_geometry_file_id":"sourcefile-303a9e1ccfbba02f75e3","source_program_id":"program-b801a0205c22d91cf3fa","weight":0.350000000000237}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-7270f0ba75a7418122bcded2"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"90-1-2013.laboratory.general.general-mixed.618fca",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-8dfea64d18f83b873e9f7ef5",
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7a2d07968e22babd23a7d92e",
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":32.614648562646195
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-eb96e205c25adb246ef97241",
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-459753a51487e9e72031","resolution-47455829e0aa5404d416","resolution-5b9a3d5bf74b9214925a","resolution-5f289a2b2e4113572626","resolution-6a6e962a93d8a0ea8a2e","resolution-7c4e912e1986bf21c5c4","resolution-a1ece1f1f0e71d06ce06","resolution-dcc176937d2837a3b7b8"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":"90-1-2013.laboratory.general-mixed-gas-equipment.e18f0e","status":"known","value":0.0}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-fd18709d61dcf5c0e40a3792",
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":14.396730182354364
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-42b2faf9bdfe8aaa4439d83d",
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2013.laboratory.general-mixed-occupancy.fd60ab",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.05247406328145941
+  }
+ ],
+ "mode":"general",
+ "name":"General_Mixed_Laboratory",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2013.laboratory.general-mixed-activity.e9b0c8"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2013.laboratory.general-mixed-cooling-setpoint.4579ee"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-7270f0ba75a7418122bcded2",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2013.laboratory.general-mixed-heating-setpoint.f9d686"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "90-1-2013.laboratory.main.834c28",
+  "90-1-2013.laboratory.main.8a3401",
+  "90-1-2013.laboratory.main.5c2210"
+ ],
+ "source_family":"code_prototype_rules",
+ "template":"90.1-2013",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

@@ -1,0 +1,134 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Warehouse",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2021.warehouse.source.bulk.0eb5e7","represented_area_m2":3204.842277266893,"source_geometry_file_id":"sourcefile-c318826c10fb1ffd4aa9","source_program_id":"program-4e86755d623d17c8ff5b","weight":0.7348242811501589},
+   {"program_id":"iecc-2021.warehouse.source.fine.a971a5","represented_area_m2":1156.530039187623,"source_geometry_file_id":"sourcefile-c318826c10fb1ffd4aa9","source_program_id":"program-9d37c2795c70f48c6806","weight":0.26517571884984115}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-ccd47df777039419311c550b"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2021.warehouse.department.storage-mixed.46822c",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-5033cbbcd269ee2953dbd8dc",
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.warehouse.storage-mixed-additional-lighting.d65407",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-ab91464d7d16accb7080423c",
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.warehouse.storage-mixed-electric-equipment.50872c",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":1.8801696816992628
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-832fcb8bce8f32ea12b2c6ac",
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.warehouse.storage-mixed-additional-lighting.d65407",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-79fe18007b3f3aa5d21a09e1",
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.warehouse.storage-mixed-additional-lighting.d65407",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-a4822f864d474f487c0c7f7e",
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.warehouse.storage-mixed-lighting.5956f2",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":4.121681319488821
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-1847c681468b45bc178725ae",
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2021.warehouse.storage-mixed-occupancy.816897",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.02269927738701598
+  }
+ ],
+ "mode":"department",
+ "name":"Storage_Mixed_Warehouse",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2021.warehouse.storage-mixed-activity.5df06e"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-ccd47df777039419311c550b",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2021.warehouse.storage-mixed-heating-setpoint.80dc3e"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2021"
+}

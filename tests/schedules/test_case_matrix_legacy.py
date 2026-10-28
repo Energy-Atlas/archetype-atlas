@@ -13,7 +13,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.helpers import assert_schedule, rebuilt, translate, without_rebuilt
+from tests.schedules.helpers import assert_schedule, rebuilt, retired, translate, without_rebuilt
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/case-matrix.json.gz"
 
@@ -27,8 +27,8 @@ class LegacyCaseMatrix(unittest.TestCase):
             owners = {o["key"]: o for o in bundle["owners"]}
             compared = 0
             for legacy in case["owners"]:
-                if rebuilt(legacy.get("program_id")):
-                    continue
+                if rebuilt(legacy.get("program_id")) or retired(legacy["instance_key"]) or legacy["instance_key"] not in keys:
+                    continue  # rebuilt families, DOE Ref services replaced in stage X1.2, and the water of removed units
                 compared += 1
                 key = keys.get(legacy["instance_key"], legacy["instance_key"])
                 with self.subTest(case=case["case_id"], owner=legacy["instance_key"]):

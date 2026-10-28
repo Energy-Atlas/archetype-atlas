@@ -1,0 +1,146 @@
+{
+ "available_details":[
+  "GeneralMix"
+ ],
+ "building_type":"SecondarySchool",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2015.secondary-school.source.auditorium.d421c8","represented_area_m2":988.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-e830db8d8b55cd907cde","weight":0.06418918918918919},
+   {"program_id":"iecc-2015.secondary-school.source.cafeteria.92ad2a","represented_area_m2":624.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-94a18dc46f84cf28e20d","weight":0.04054054054054054},
+   {"program_id":"iecc-2015.secondary-school.source.classroom.008d7f","represented_area_m2":5958.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-54fb95dc397026c7b9cf","weight":0.3870841995841996},
+   {"program_id":"iecc-2015.secondary-school.source.computer-room.dd4e0f","represented_area_m2":954.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-a5d1c7fc50c9d2e599ee","weight":0.06198024948024948},
+   {"program_id":"iecc-2015.secondary-school.source.gym.f5a9ac","represented_area_m2":3224.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-0e8f659f2a1479d31a52","weight":0.20945945945945946},
+   {"program_id":"iecc-2015.secondary-school.source.kitchen.2e9a89","represented_area_m2":216.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-b8724df3eae212d7057b","weight":0.014033264033264032},
+   {"program_id":"iecc-2015.secondary-school.source.library.a2f05d","represented_area_m2":840.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-0a470a1f63b737707fbb","weight":0.05457380457380457},
+   {"program_id":"iecc-2015.secondary-school.source.lobby.6b2328","represented_area_m2":420.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-13e28a35c65d1d4392be","weight":0.027286902286902285},
+   {"program_id":"iecc-2015.secondary-school.source.mechanical.e48df4","represented_area_m2":684.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-c232461b3cf7e1463bf2","weight":0.04443866943866944},
+   {"program_id":"iecc-2015.secondary-school.source.office.ef50f6","represented_area_m2":1064.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-8783e83839cef36de21f","weight":0.06912681912681913},
+   {"program_id":"iecc-2015.secondary-school.source.restroom.7ef890","represented_area_m2":420.0,"source_geometry_file_id":"sourcefile-c395b79f58effc3ffd9a","source_program_id":"program-b2ae6a2909566dafefb5","weight":0.027286902286902285}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-0ff92f7401740e553c0fb364"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2015.secondary-school.general.general-mixed.e856a0",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7b037dfb1806e0e49dbff753",
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.secondary-school.general-mixed-additional-lighting.324999",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-4227f82518162f2cd027265c",
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.secondary-school.general-mixed-electric-equipment.df04c6",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":14.404022869022869
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-b95f50d57ce201459e4790d2",
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.secondary-school.general-mixed-gas-equipment.22e53e",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":23.556237006237005
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-a0419bfb31222026f36cc98f",
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.secondary-school.general-mixed-hot-water-volume.510014",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":3.1288966216216216e-08
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0b4950362396e548f0e8d024",
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.secondary-school.general-mixed-lighting.a6a59e",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":10.989589310550935
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-64e98e06d0417fb07681ecbd",
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.secondary-school.general-mixed-occupancy.611f07",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.40192284536615097
+  }
+ ],
+ "mode":"general",
+ "name":"General_Mixed_SecondarySchool",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.secondary-school.general-mixed-activity.1818e1"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.secondary-school.general-mixed-cooling-setpoint.f72c86"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-0ff92f7401740e553c0fb364",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.secondary-school.general-mixed-heating-setpoint.43ebda"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "iecc-2015.secondary-school.main.8ff402",
+  "iecc-2015.secondary-school.main.5aec0d"
+ ],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2015"
+}

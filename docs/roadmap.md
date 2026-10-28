@@ -206,6 +206,9 @@ linked above. A release (version, checksum manifest) remains a separate, deferre
 - [ ] Send the handoff to the identified BEMGen task, covering both JSON schema
   updates and the missing typology plan generators.
 - [ ] Record the receiving task and acknowledged scope.
+- [ ] Hand over the release 2.0.0 updates in
+  [bemgen-handoff-release-2-0-0.md](bemgen-handoff-release-2-0-0.md) (daylighting
+  fractions as plain values, and what milestone A adds).
 - [ ] Define representative detailed/unified translation tests, confirm valid
   EnergyPlus inputs, resolve Atlas-side issues and record test acceptance.
 

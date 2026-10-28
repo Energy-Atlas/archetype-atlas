@@ -1,0 +1,134 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"SmallHotel",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2018.small-hotel.source.staff-lounge.99f6e3","represented_area_m2":32.60896704,"source_geometry_file_id":"sourcefile-27bac453903c39d14c9c","source_program_id":"program-657689a6f232288b1669","weight":0.1999999999989905},
+   {"program_id":"iecc-2018.small-hotel.source.office.b71347","represented_area_m2":130.435868160823,"source_geometry_file_id":"sourcefile-27bac453903c39d14c9c","source_program_id":"program-aa124b374cc972e08ece","weight":0.8000000000010096}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-44693813154d5e26a775b7b4"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2018.small-hotel.department.staff-office-mixed.b0a9bd",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-895e226e52b5d8dd831b2239",
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-hotel.staff-office-mixed-additional-lighting.658083",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7e4d038650705f3e78e7f4d9",
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":15.325999999992199
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-343cbe1f309fd42104dba4af",
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-hotel.staff-office-mixed-additional-lighting.658083",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-5c8a2cea5726cabc7800fadf",
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-hotel.staff-office-mixed-additional-lighting.658083",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-15feb8d9b67fb6deed7ad6a5",
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-hotel.staff-office-mixed-lighting.2e44a5",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":8.176258800002739
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-a0d1a3b8135d3cd9d4d263a6",
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.17173190408372016
+  }
+ ],
+ "mode":"department",
+ "name":"StaffOffice_Mixed_SmallHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2018.small-hotel.staff-office-mixed-activity.175eb0"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2018.small-hotel.staff-office-mixed-cooling-setpoint.f2ab5e"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-44693813154d5e26a775b7b4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2018.small-hotel.staff-office-mixed-heating-setpoint.24b3b7"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2018"
+}

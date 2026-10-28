@@ -1,0 +1,125 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"SuperMarket",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"90-1-2013.super-market.source.vestibule.b4ee92","represented_area_m2":27.87091199999901,"source_geometry_file_id":"sourcefile-6e44b92c003c2d9a28dd","source_program_id":"program-f9f4687b34221cbc9d5f","weight":0.02285580503753791},
+   {"program_id":"90-1-2013.super-market.source.bakery.1ac426","represented_area_m2":209.03302484999813,"source_geometry_file_id":"sourcefile-6e44b92c003c2d9a28dd","source_program_id":"program-8d9a3ff0cca6b4d1b0c5","weight":0.17141950942898976},
+   {"program_id":"90-1-2013.super-market.source.deli.66eb94","represented_area_m2":224.69973752999977,"source_geometry_file_id":"sourcefile-6e44b92c003c2d9a28dd","source_program_id":"program-a70ff64e246a96e79662","weight":0.18426714536545477},
+   {"program_id":"90-1-2013.super-market.source.dining.f8ac4f","represented_area_m2":46.45822877500127,"source_geometry_file_id":"sourcefile-6e44b92c003c2d9a28dd","source_program_id":"program-d28ddfd5f9ff729186f4","weight":0.03809850999030101},
+   {"program_id":"90-1-2013.super-market.source.produce.0cd529","represented_area_m2":711.3618692399967,"source_geometry_file_id":"sourcefile-6e44b92c003c2d9a28dd","source_program_id":"program-5d7f44a929e2f4c9e84f","weight":0.5833590301777165}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-77702679fbfc1be8236c0297"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"90-1-2013.super-market.department.customer-services-mixed.a8eac2",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-9c6179fe3d808da6aac988f8",
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-b72e857a1d31423ebea6939b",
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2013.super-market.customer-services-mixed-electric-equipment.14891d",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":3.5493044201713535
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-f7145b49fe2d162f861c485b",
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-3a8a8e5af37454e63b27","resolution-5600e6b8c6e0e3a55bb2","resolution-9f2168ac6e0f4b2b9c11","resolution-b6055a1937bf71019d91","resolution-c5be96d20cc1ca673964","resolution-d5da24a4432ae3b14e0a"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":"90-1-2013.super-market.customer-services-mixed-gas-equipment.6fd3bb","status":"known","value":9.570645634080913}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-133e5130921f341ddeb2e91d",
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2013.super-market.customer-services-mixed-lighting.7c462b",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":14.103593580744617
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-44b35cd10da8cc54c845f7bc",
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2013.super-market.customer-services-mixed-occupancy.d6931e",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.11153679814351244
+  }
+ ],
+ "mode":"department",
+ "name":"CustomerServices_Mixed_SuperMarket",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2013.super-market.customer-services-mixed-activity.1949cc"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2013.super-market.customer-services-mixed-cooling-setpoint.1ba2ea"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-77702679fbfc1be8236c0297",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2013.super-market.customer-services-mixed-heating-setpoint.0a8ba7"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"code_prototype_rules",
+ "template":"90.1-2013"
+}

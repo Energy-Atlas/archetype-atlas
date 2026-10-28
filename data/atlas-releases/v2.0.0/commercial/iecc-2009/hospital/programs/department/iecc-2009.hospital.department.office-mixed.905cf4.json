@@ -1,0 +1,134 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Hospital",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2009.hospital.source.hospital-office-flr1.611534","represented_area_m2":69.67728,"source_geometry_file_id":"sourcefile-54930ce7d52c9e65a18f","source_program_id":"program-e9d761d17e8198648001","weight":0.10869255127949105},
+   {"program_id":"iecc-2009.hospital.source.hospital-office-flr5.b4224c","represented_area_m2":571.371984,"source_geometry_file_id":"sourcefile-54930ce7d52c9e65a18f","source_program_id":"program-cdaaf51cc0a1553581a2","weight":0.891307448720509}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-d8d9564667353688b42883c4"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2009.hospital.department.office-mixed.905cf4",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0a051967026caea5d6ff66dc",
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.hospital.office-mixed-additional-lighting.cf7288",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-270dc6cc22491d13c7a497c5",
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.hospital.office-mixed-electric-equipment.902d6a",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":10.87738757625338
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-6e7cb4201a7bb1785e5ab309",
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.hospital.office-mixed-additional-lighting.cf7288",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d1c4d52baed34761b2cc8971",
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.hospital.office-mixed-additional-lighting.cf7288",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-9837bc64529594eb5ff03c29",
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.hospital.office-mixed-lighting.168d84",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":12.097119277665666
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-bc9bcc4e07e6fb226eba868e",
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2009.hospital.office-mixed-occupancy.84fb61",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.07532899998744942
+  }
+ ],
+ "mode":"department",
+ "name":"Office_Mixed_Hospital",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2009.hospital.office-mixed-activity.7759c5"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2009.hospital.office-mixed-cooling-setpoint.c13e67"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-d8d9564667353688b42883c4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2009.hospital.office-mixed-heating-setpoint.f5bf5e"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2009"
+}

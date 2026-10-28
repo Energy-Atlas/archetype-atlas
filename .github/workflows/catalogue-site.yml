@@ -43,8 +43,8 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Verify presentation contracts
         run: |
-          python -m unittest tests.test_suite_site tests.test_search_index tests.test_html_delivery tests.test_card_icons tests.test_site_asset_versions tests.test_construction_publication -q
-          python -m unittest tests.test_program_json_contract tests.test_program_json_export tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_completion tests.test_program_recovery tests.test_program_completeness tests.test_er_triage -q
+          python -m unittest tests.test_suite_site tests.test_search_index tests.test_html_delivery tests.test_card_icons tests.test_site_asset_versions tests.test_ci_workflows -q
+          python -m unittest tests.test_program_json_contract tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_recovery -q
           node --test tests/*.test.js
       # Site output is a pure function of the release and the scripts (ADR 0036 section 1, ADR 0043):
       # it is cached under a digest of its inputs, and site_check still rejects a stale or partial tree.

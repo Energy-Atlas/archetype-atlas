@@ -120,11 +120,13 @@
         },
         "program_id": {
           "type": "string",
-          "pattern": "^program-[0-9a-f]{24}$"
+          "pattern": "^(program-[0-9a-f]{24}|[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6})$",
+          "description": "A definition program ID (program-...) or an atlas release program ID (DOE Ref recipes, ADR 0046)."
         },
         "service_id": {
           "type": "string",
-          "pattern": "^service-[0-9a-f]{24}$"
+          "pattern": "^(service-[0-9a-f]{24}|[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6})$",
+          "description": "A definition service ID (service-...) or an atlas release service ID."
         },
         "configuration_id": {
           "type": "string",
@@ -163,7 +165,7 @@
         "service_links": {
           "type": "object",
           "propertyNames": {
-            "pattern": "^service-[0-9a-f]{24}$"
+            "pattern": "^(service-[0-9a-f]{24}|[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6})$"
           },
           "additionalProperties": {
             "type": "string",

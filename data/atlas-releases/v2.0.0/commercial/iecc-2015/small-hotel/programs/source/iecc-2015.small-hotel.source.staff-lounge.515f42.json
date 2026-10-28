@@ -1,0 +1,197 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"SmallHotel",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-0f57352aefe83a13e6df8835",
+  "evidence-26770130d7a3d1b48356e8f4",
+  "evidence-2a494077b142253696c9b559",
+  "evidence-4aa516c43d5ffbe25d0cdc14",
+  "evidence-51d5a88c50c39ca8a4775b29",
+  "evidence-5b08b398bc2e600185ec66f8",
+  "evidence-81e60f88577b9717acb413c0",
+  "evidence-82ce324da29a59466b80e3c6",
+  "evidence-880c4d086e457bc75e0c7e68",
+  "evidence-934588c3184fcaf68ae06a30",
+  "evidence-b8ac8e5071efb1453b9d7443",
+  "evidence-cdce4a68286a807d0c9fa797",
+  "evidence-cf02ab19db3eb1966a321454",
+  "evidence-d86b7e6a5bf2cd8afee31bbc",
+  "evidence-e9adad83f7bd85493cbbe64d",
+  "evidence-f6ada267d720c62e9510a645"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-82ce324da29a59466b80e3c6",
+  "roof":null,
+  "wwr":{
+   "E":0.1236,
+   "N":null,
+   "S":null,
+   "W":null
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2015.small-hotel.source.staff-lounge.515f42",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-cdce4a68286a807d0c9fa797",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-cec89910e72cce7851c786a1",
+   "evidence_id":"evidence-2a494077b142253696c9b559",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.small-hotel.employee-lounge-occ-sch.8469d4",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.551995405985
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-996bef8562050fc1b57ff419",
+   "evidence_id":"evidence-934588c3184fcaf68ae06a30",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.small-hotel.ltg-sch-lounge.7e9ad2",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-934588c3184fcaf68ae06a30","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-934588c3184fcaf68ae06a30","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-934588c3184fcaf68ae06a30","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":7.071885
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-3ff650abc34f20ff1fb23d4b",
+   "evidence_id":"evidence-26770130d7a3d1b48356e8f4",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-afd955014afdffc1b8920d75",
+   "evidence_id":"evidence-4aa516c43d5ffbe25d0cdc14",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.small-hotel.employee-lounge-eqp-sch.8264f0",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-4aa516c43d5ffbe25d0cdc14","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-4aa516c43d5ffbe25d0cdc14","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-4aa516c43d5ffbe25d0cdc14","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":21.51
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-d01d0a4da3007f480b65406e",
+   "evidence_id":"evidence-0f57352aefe83a13e6df8835",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-1d29fbafb4c8123bf9907aab",
+   "evidence_id":"evidence-880c4d086e457bc75e0c7e68",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.small-hotel.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"StaffLounge_SmallHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-81e60f88577b9717acb413c0",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.small-hotel.activity-sch.0b25c3"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-b8ac8e5071efb1453b9d7443",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-cf02ab19db3eb1966a321454",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.small-hotel.common-area-clg-sp-sch.6c5192"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-f6ada267d720c62e9510a645",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.small-hotel.common-area-htg-sp-sch.d42b8c"
+  }
+ },
+ "pnnl_building_type":"HotelSmall",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-51d5a88c50c39ca8a4775b29",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-da821bb934d550640709",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":32.60896704,
+   "multiplier":1,
+   "name":"EmployeeLoungeFlr1"
+  }
+ ],
+ "standards_building_type":"SmallHotel",
+ "template":"IECC 2015"
+}

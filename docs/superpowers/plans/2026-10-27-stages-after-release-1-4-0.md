@@ -299,7 +299,28 @@ Carried over from the residential plan (G1–G6), with these changes:
 
 ## 5a. X1 phase 2 stages
 
-Ordered by dependency; each ends in its own PR.
+Ordered by dependency. X1.1 merged as PR #25. X1.2 to X1.3 run as **milestone A** on
+one branch (`codex/release-2-0-0-milestone-a`) and end in one PR, updated with further
+commits rather than replaced (user, 2026-10-27); X1.4 opens milestone B. Milestone A
+also carries these user answers of 2026-10-27 (register):
+
+- **X1.2a Daylighting as plain values** (L-1), before 2.0.0 is committed: 2.0.0
+  drops `lighting_controls.geometry_dependent` (1,373 programs); the "equal values"
+  check allows this one change. Program IDs stay those of 1.6.0 (agent decision, ADR
+  0046 section 6): milestone B re-derives every ID once, with one map. BEMGen's side:
+  `docs/bemgen-handoff-release-2-0-0.md`.
+- **X1.3 without stopping:** the agent decides the removal list and writes it into the
+  PR description with a reason for each item; an annotated tag
+  `frozen-data-2026-10-27` on `main` before removal; releases 1.0.0 to 1.6.0 removed
+  from the tree and verifiable from the tag; git history left alone.
+- **Status:** 2.0.0 stays `candidate` through milestone A; it becomes `released` in
+  milestone B, after the 90.1 IDs move to interpreter-independent hashing (U).
+- **PR description:** the agent decisions of ADRs 0040 to 0042, one line each, for
+  review (P5).
+
+Milestone B: X1.4 rewritten writers with the interpreter-independent 90.1 IDs (U),
+the construction alternates field (P1), the openstudio-standards daylighting rules
+fetched and checked (L-2), then 2.0.0 `released` and minor releases on it.
 
 1. **X1.1 Self-contained 2.0.0.** Freeze the run-time inputs into the release
    (`evidence/exporter-inputs.json`: the capped services and programs under release
@@ -314,8 +335,9 @@ Ordered by dependency; each ends in its own PR.
    deltas and the v0.x, resolution, water-reporting, completion and construction
    release folders with their builders, recovery scripts and tests; 1.x stays
    verifiable from the tag. CI keeps the 2.0.0 checks; the reproduction jobs of the
-   retired releases go, and the required check names stay. **Asks first:** the list of
-   removed scripts, tests and CI jobs.
+   retired releases go, and the required check names stay. The list of removed
+   scripts, tests and CI jobs goes into the PR description (user, 2026-10-27; replaces
+   "asks first").
 4. **X1.4 Rewritten writers.** Writers that read and write the 2.0.0 layout, with
    release enums read from the release, selection decisions in the evidence tree, and
    the construction alternates field (P1). The next minor release is a delta on 2.0.0.
@@ -354,3 +376,23 @@ Ordered by dependency; each ends in its own PR.
 | 2026-10-27 | X1 phase 2 | decided | User: commit 2.0.0; regenerate the DOE Ref recipes; rewrite the pinned writers after the merges. |
 | 2026-10-27 | X1 | correction | ADR 0046 section 4 item 2 said regeneration re-baselines the generator answer keys; they hold no DOE Ref cases, so only the packaged recipes and configurations change, checked by the catalogue smoke and coverage runs. |
 | 2026-10-27 | X1 | finding | Every `atlas_exports.Release`, 2.0.0 included, still reads the frozen folders at run time: release verification re-hashes their manifests, filled exports read `definition-releases/v0.1.1` (capped delivery, ADR 0018), and the source exporter reads `data/releases/v0.2.0/programs.json` (inactive controls). 2.0.0 must carry these before the folders can go. |
+| 2026-10-27 | milestone A | decided | User: run X1.2, commit 2.0.0 and X1.3 as one milestone on one branch, with one PR at the end, updated with further commits rather than replaced. |
+| 2026-10-27 | X1.3 tag | decided | Push an annotated tag `frozen-data-2026-10-27` on `main` before the frozen folders are removed. |
+| 2026-10-27 | X-2 | decided | Releases 1.0.0 to 1.6.0 leave the tree (about 1.3 GB) and stay verifiable from the tag; replaces "verify-only in the tree". |
+| 2026-10-27 | X1.3 list | decided | The agent decides the removal list and writes it into the PR description with a reason per item; no stop mid-run. |
+| 2026-10-27 | finding (repository size) | resolved | User: leave git history alone for now (no filter-repo purge, no new repository); removing the folders shrinks the checkout, not the clone. Reopen if clone size becomes a problem. |
+| 2026-10-27 | X1 status | decided | 2.0.0 stays `candidate` through milestone A and is declared `released` in milestone B, after the 90.1 IDs change (U). |
+| 2026-10-27 | U | decided | The 90.1 construction IDs move to interpreter-independent hashing in milestone B (X1.4), with a published map from old to new IDs; the Windows pinned-producer jobs then go. |
+| 2026-10-27 | L-1 (ADR 0044 §5) | decided | Daylit fractions become plain values now: 2.0.0 drops `geometry_dependent` (stage X1.2a). BEMGen's updates are logged in `docs/bemgen-handoff-release-2-0-0.md`. |
+| 2026-10-27 | L-2 (ADR 0044 §5) | decided | Fetch the openstudio-standards template daylighting rules in milestone B, pinned in a source lock, and check the 90.1 records against them. The download is approved by this answer. |
+| 2026-10-27 | R1-a | discussed | User asked why ResStock existing stock is paired with a new-construction code. Answer: the IECC prototypes are the only code-labelled reference with the same end uses; the edition stands for the code in force when the dwelling was built. Only envelope and interior lighting differ by edition (IECC 2009 and 2012 require 50% and 75% high-efficacy lamps); equipment and hot water are the prototypes' fixed reference-home assumptions. Revised recommendation in chat; waits for the user. |
+| 2026-10-27 | R1-b | decided | Convert the prototype leakage areas to annual-average ACH only once a consumer needs the comparison; until then the review states the caveat. |
+| 2026-10-27 | P5 | decided | The agent decisions of ADRs 0040 to 0042 go into the milestone A PR description, one line each, for review there. |
+| 2026-10-27 | X1.2 | done | `scripts/build_reference_recipes.py` writes the DOE Ref recipes from release 2.0.0 under release IDs (279 commercial, 72 composition, 6 Midrise; 30 configurations; 54 services; 422 schedules), with People topology from the DOE file zones; it replaces 786 packaged files built from the frozen definitions. `tests/test_reference_recipes.py` checks every value against the release. |
+| 2026-10-27 | X1.2 | correction | The DOE Ref answer-key claim (row "X1 correction") was wrong: the native and legacy keys capture 66 + 96 programs, 60 configurations and 149 legacy programs of the replaced recipes. Agent decision: keep the captures, list the replaced IDs in `tests/answer_keys/retired-doe-ref.json`, skip those cases in the tests (ADR 0046 section 6, decision 4). |
+| 2026-10-27 | X1.2 | agent decisions | Source recipes only for DOE Ref (the fills change no slot); the generator request schema accepts release IDs (additive); Midrise keeps the frozen recipe shapes; types without a sampler stay without recipes (ADR 0046 section 6). |
+| 2026-10-27 | X1.2a | done, agent decision | 2.0.0 drops `geometry_dependent` from 1,373 programs. Program IDs stay those of 1.6.0 rather than being re-hashed now and again in milestone B (ADR 0046 section 6, decision 1). |
+| 2026-10-27 | X1.2 | done | 2.0.0 committed (`b44984ec`); the full site builds from it (3,051 program, 291 construction and 255 folder pages, not partial). `mkdocs build` and `site_check` run in CI (mkdocs-material is not installed locally). |
+| 2026-10-27 | X1.3 | done | Tag `frozen-data-2026-10-27` pushed on `main` (`fdb07f9d`). About 2.45 GB of frozen folders and inputs, 80 scripts and 68 test modules removed (list in the PR description); readers rewired to 2.0.0; CI reshaped under the same required checks (ADR 0046 section 7). |
+| 2026-10-27 | X1.3 | agent decisions | Kept: the construction-equivalence fitting engine (U needs it), the DOE reconciliation tooling and `atlas_programs.Sources` (unreachable from CI; milestone B replaces them), `data/processed` and its pipeline. Retired with their inputs: `schedule_coverage`, `program_completeness`, `build_family_recipes`, the IECC and ResStock review generators (their reports stay). The Program JSON v3 exporter tests that ran on the frozen definitions went; the full site build exports every 2.0.0 program in CI. |
+| 2026-10-28 | R1-a | deferred | User: defer. The review pairs 2000s dwellings with IECC 2006 and 2010s with 2012; 2009, 2015, 2018, 2021 and 2024 are compared against nothing. Proposed when reopened: an edition ladder (loads against the reference-home assumptions once; envelope and lighting against every edition in force per vintage; 2018 to 2024 as a new-construction reference only). |

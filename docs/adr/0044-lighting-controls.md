@@ -131,3 +131,11 @@ Each entry: decision; alternatives; reason; evidence.
   daylighting method.
 - Whether to fetch the openstudio-standards template rules (a download) so the 90.1
   records can be checked against the rules that generate them.
+
+Answered by the user on 2026-10-27 (plan register, L-1 and L-2):
+
+- **Plain values now**, without waiting for BEMGen: release 2.0.0 drops
+  `geometry_dependent`, and consumers apply the recorded fractions as given. BEMGen's
+  side is listed in `docs/bemgen-handoff-release-2-0-0.md`.
+- **Fetch the template rules** in milestone B, pinned in a source lock, to check the
+  90.1 records against them.

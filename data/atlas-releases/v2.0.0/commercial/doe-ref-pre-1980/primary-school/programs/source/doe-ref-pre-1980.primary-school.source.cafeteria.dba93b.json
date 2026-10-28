@@ -1,0 +1,188 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"PrimarySchool",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-1e5f8a4fc530217bc440a8f3",
+  "evidence-21e142cc2db20445f4c0dbdf",
+  "evidence-342ac43b8db813b325534072",
+  "evidence-4332568de2a2fdf1cf948ff6",
+  "evidence-435dc80bda1b07c362621780",
+  "evidence-64d8239cf9051911a74c0dec",
+  "evidence-864d437927ac6998ce5f1132",
+  "evidence-a481d5d56d69a27a232a3e0f",
+  "evidence-aa000fab5484cb138ce000e1",
+  "evidence-af6be767c5633d268e981c87",
+  "evidence-cbac968a10b673f0c6dc31e0",
+  "evidence-cc7f845f1063893b8b1f347b",
+  "evidence-dd70ab1182a0324d695e702d",
+  "evidence-dd80bd0f96d04381f57f6e6b",
+  "evidence-dd9cf663f8a809a57e4ffeed",
+  "evidence-f17cf78f8acce2ca2b007b6f",
+  "evidence-f413f8555a030ba0c6497d60",
+  "evidence-f86802f69867a3e24d21d75a",
+  "evidence-ff905008e4e599409ac0eca5"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-f413f8555a030ba0c6497d60",
+  "roof":0.0,
+  "wwr":{
+   "E":0.35,
+   "N":0.35,
+   "S":null,
+   "W":null
+  }
+ },
+ "filling_evidence_ids":[
+  "evidence-02badccc689d085b36145182",
+  "evidence-7a4a53634dc32632f802ef6b"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-pre-1980.primary-school.source.cafeteria.dba93b",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-435dc80bda1b07c362621780",
+  "source":"doe_reference",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-d6eb20190a5d67786819077a",
+   "evidence_id":"evidence-64d8239cf9051911a74c0dec",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.primary-school.bldg-occ-sch-cafeteria.7dea47",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.7176299074820371
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-669d81282c391f8b29aeba69",
+   "evidence_id":"evidence-dd9cf663f8a809a57e4ffeed",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.primary-school.bldg-light-sch.bf0e06",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-e132bb73ca41a276c4d6bc22","required_inputs":[],"status":"known","unit":"1","value":0.37},"to_return_air":{"evidence_id":"evidence-0af95565ba49f3a51b0c4497","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-c44e3d445da5bfca88423af5","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":15.06947458339361
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-5815d731110ab6141a1de1e4",
+   "evidence_id":"evidence-4332568de2a2fdf1cf948ff6",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.primary-school.bldg-light-sch.bf0e06",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-e132bb73ca41a276c4d6bc22","required_inputs":[],"status":"known","unit":"1","value":0.37},"to_return_air":{"evidence_id":"evidence-0af95565ba49f3a51b0c4497","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-c44e3d445da5bfca88423af5","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-d938034cc8ad0f2eda0aa333",
+   "evidence_id":"evidence-864d437927ac6998ce5f1132",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.primary-school.kitchen-elec-equip-sch.356e69",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-58db63425a5017b507dfb8e3","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-e3032ee6d30fc169b37053c9","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-9626dd9b1d141c8e11676e14","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":25.402828583434943
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-bbc9d3fda0a743d13040d15c",
+   "evidence_id":"evidence-ff905008e4e599409ac0eca5",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-654fa42f518866f6a805","resolution-d39079d8159ce43164ad"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":{"constant":0}}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.primary-school.doe-reference-no-object-constant-0.47b394",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-bafd45ac9fbbd333895cecaf","required_inputs":[],"status":"unknown","unit":"1","value":null},"lost":{"evidence_id":"evidence-6fcaf6beee7c473f02c8de48","required_inputs":[],"status":"unknown","unit":"1","value":null},"radiant":{"evidence_id":"evidence-7399df28353e65660b8bc0e4","required_inputs":[],"status":"unknown","unit":"1","value":null}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-cf45f469dd57c6ab5fb5b453",
+   "evidence_id":"evidence-21e142cc2db20445f4c0dbdf",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.primary-school.doe-reference-no-object-constant-0.47b394",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Cafeteria_PrimarySchool",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-f86802f69867a3e24d21d75a",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.primary-school.primary-school-activity.c9d4d2"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-a481d5d56d69a27a232a3e0f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.primary-school.clgsetp-sch.7b4c0c"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-aa000fab5484cb138ce000e1",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.primary-school.htgsetp-sch.fb1dc1"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-1e5f8a4fc530217bc440a8f3",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "source_id":"program-8939f915b2c7d4a79e21",
+ "template":"DOE Ref Pre-1980"
+}

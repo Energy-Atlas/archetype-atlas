@@ -1,0 +1,174 @@
+{
+ "available_details":[
+  "SourcePrograms",
+  "DepartmentMixes"
+ ],
+ "building_type":"RetailStandalone",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-0c76965eed0928ab64d5e869",
+  "evidence-0d599fac84e65d270c965106",
+  "evidence-2517b8e81006fbbfd3294c94",
+  "evidence-260a6ab4ac1d57f627f2c99a",
+  "evidence-4076a75578d122b5388c17ce",
+  "evidence-597ac5df51d934cc266f8526",
+  "evidence-66579b0771679a161814c6e6",
+  "evidence-6e34f4a5d1162492eb057ce6",
+  "evidence-716cf73b1f75e70786062ef6",
+  "evidence-915568ba8b34b2fab494e149",
+  "evidence-a7e645d5f2ea27163e941d45",
+  "evidence-e01cdc858363b91d94ac45d7",
+  "evidence-e753997a6d55f50c833bff32",
+  "evidence-ee1aa60661b4d9c1bf21f9b6",
+  "evidence-f9b223275f992a26fefc6fbc",
+  "evidence-fcd172509607cf94eb67d29e"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-4076a75578d122b5388c17ce",
+  "roof":0.0,
+  "wwr":{
+   "E":null,
+   "N":null,
+   "S":0.3211,
+   "W":null
+  }
+ },
+ "filling_evidence_ids":[
+  "evidence-352fcbe15feebce474ae306a",
+  "evidence-b3b1a4bd140f775e816388a9",
+  "evidence-fa50508f508e361a6e7e6fda"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.retail-standalone.source.entry.8a740b",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-f9b223275f992a26fefc6fbc",
+  "source":"doe_reference",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-aaf920da8f95b2cc163568a4",
+   "evidence_id":"evidence-66579b0771679a161814c6e6",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.bldg-occ-sch.ff003f",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.16145865625064584
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0c13ba023b3251dee9568a1a",
+   "evidence_id":"evidence-716cf73b1f75e70786062ef6",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.bldg-light-sch.13ba72",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-e72c2cbdbf88ed946fff7046","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-7e61292e2fec9ae3f8d1d501","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-c48fcc37887e4b69525a4ea9","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":36.274378104311765
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-f5953f025ac7187bb6a9af1f",
+   "evidence_id":"evidence-a7e645d5f2ea27163e941d45",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.bldg-light-sch.13ba72",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-e72c2cbdbf88ed946fff7046","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-7e61292e2fec9ae3f8d1d501","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-c48fcc37887e4b69525a4ea9","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-8dc633f5971a2cb59c315567",
+   "evidence_id":"evidence-0c76965eed0928ab64d5e869",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.retail-bldg-equip.29e05c",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-a46eff267393d62d52eae9f4","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-88d0f9c823482e964ded9486","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-8bf909872093999214c18ee3","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-dab82ffdd3530da5d2fde55d",
+   "evidence_id":"evidence-e01cdc858363b91d94ac45d7",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-31c4389ced7a0f86ccc8","resolution-e0a0bc1699bd3b73949a"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":{"constant":0}}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.doe-reference-no-object-constant-0.47b394",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-dd0972ceeb321d975c2994fe","required_inputs":[],"status":"unknown","unit":"1","value":null},"lost":{"evidence_id":"evidence-26f3407d2ff2ec512101bddd","required_inputs":[],"status":"unknown","unit":"1","value":null},"radiant":{"evidence_id":"evidence-764b6f5ca97d45199fd2749d","required_inputs":[],"status":"unknown","unit":"1","value":null}},
+   "unit":"W/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Entry_RetailStandalone",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-fcd172509607cf94eb67d29e",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.retail-standalone.retail-activity.f62ced"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-260a6ab4ac1d57f627f2c99a",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.retail-standalone.retail-front-entry-cooling.59cc47"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-6e34f4a5d1162492eb057ce6",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.retail-standalone.htgsetp-sch.f760f7"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-2517b8e81006fbbfd3294c94",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "source_id":"program-f120474b79ac03451896",
+ "template":"DOE Ref 1980-2004"
+}

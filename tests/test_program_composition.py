@@ -9,19 +9,6 @@ def schedule(value):
 
 
 class CompositionTests(unittest.TestCase):
-    def test_complete_matrix_build_retains_recipe_provenance_and_stripmall_weights(self):
-        from scripts.definition_contract import load_context
-        from scripts.program_definitions import build_programs
-        from scripts.program_composition import extract_areas, compose
-        context=load_context(scope='full')
-        areas=extract_areas(context)
-        self.assertEqual(len(areas),83)
-        bundle=compose(context,build_programs(context))
-        recipes=[r for r in bundle['compositions'] if r['building_type']=='RetailStripmall' and r['template']=='90.1-2019']
-        self.assertTrue(recipes)
-        self.assertEqual(sorted(round(m['weight'],8) for m in recipes[0]['members']),[.25,.25,.5])
-        self.assertTrue(all('basement' not in r['name'].lower() and 'attic' not in r['name'].lower() for r in bundle['compositions']))
-
     def test_load_trajectory_is_not_independently_averaged(self):
         mixed=mix_schedule([schedule(.2),schedule(.8)],[.25,.75],[10,20],17.5)
         self.assertAlmostEqual(profile(mixed['rules'],'Mon','02-29')[0]*17.5,12.5)

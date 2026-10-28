@@ -1,0 +1,142 @@
+{
+ "available_details":[
+  "GeneralMix"
+ ],
+ "building_type":"RetailStandalone",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"doe-ref-1980-2004.retail-standalone.source.entry.8a740b","represented_area_m2":12.0,"source_geometry_file_id":"sourcefile-8d150ba530d87a2bdc18","source_program_id":"program-f120474b79ac03451896","weight":0.006269255430311505},
+   {"program_id":"doe-ref-1980-2004.retail-standalone.source.point-of-sale.0749bd","represented_area_m2":150.81,"source_geometry_file_id":"sourcefile-8d150ba530d87a2bdc18","source_program_id":"program-ad808b11256faea0629f","weight":0.07878886762043984},
+   {"program_id":"doe-ref-1980-2004.retail-standalone.source.retail.9de0c8","represented_area_m2":1751.2929,"source_geometry_file_id":"sourcefile-8d150ba530d87a2bdc18","source_program_id":"program-25c4c5373e0c32d574c7","weight":0.9149418769492487}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-a98d1bf78b6a0bdcf11ac3b4"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.retail-standalone.general.general-mixed.b5553f",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d111273a3116d14f9fb8901c",
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.general-mixed-additional-lighting.53e587",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-f238a6ffeef148195998f138",
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.general-mixed-electric-equipment.4e5238",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":4.65065834579422
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d8d4f122e22fb03502c1c02a",
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.general-mixed-additional-lighting.53e587",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0bd2c236c41c018f96bd3950",
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.general-mixed-lighting.5b689e",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":36.274378104311765
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-7c68970107f8805e809f397b",
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.retail-standalone.general-mixed-occupancy.52d41d",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.16145865625064584
+  }
+ ],
+ "mode":"general",
+ "name":"General_Mixed_RetailStandalone",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.retail-standalone.general-mixed-activity.23badf"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.retail-standalone.general-mixed-cooling-setpoint.4626a9"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-a98d1bf78b6a0bdcf11ac3b4",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.retail-standalone.general-mixed-heating-setpoint.cec2b1"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-2517b8e81006fbbfd3294c94",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "template":"DOE Ref 1980-2004"
+}
