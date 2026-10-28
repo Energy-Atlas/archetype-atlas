@@ -609,3 +609,36 @@ Decisions, 2026-10-28 (logged; implement later together with O15):
     regenerated; release data changes go into milestone B's release.
   - Delivery: one branch (`codex/schedule-power-binding`), one PR at the end;
     ask before the first push.
+
+## 8. Work stages for O15-O21 (2026-10-28)
+
+Stages B1-B6 do not depend on programme IDs and may start before milestone B
+(PR #27) merges; B7-B10 wait for it.
+
+- B1 Pins: ResStock housing-characteristics tables (67), `options_lookup.tsv`
+  and the OpenStudio-HPXML equation sources at dd25369f in
+  `sources/generator-source-lock.json`; restore the pinned runtime
+  (`sources/runtime-lock.json`: OpenStudio 3.10.0 Windows, 275 MB; ResStock
+  archive, 128 MB) for validation only.
+- B2 Characteristic tables: build script with `--check`; county and PUMA
+  summed out exactly within state × climate-zone cells.
+- B3 Sampler: dependency-ordered draw, rejection on the caller's inputs,
+  HVAC and heating fuel fixed to the prototype, residents in two modes.
+- B4 Option arguments: the `options_lookup` rows for the sampled
+  characteristics (lamp fractions, appliance properties, usage multipliers,
+  thermostat).
+- B5 Equations: OpenStudio-HPXML annual equations and the usage-level
+  calibration; equivalence study against the Ruby recovery on sampled units
+  (new driver; the old Python driver was retired in X1.3).
+- B6 Apartment adapter: sampler + equations + full ResStock channels, the
+  thermostat from the same draw, P2 per-resident hot water with fixture
+  timing; request and output schema 3.0.0.
+- B7 Rebase on milestone B; apartment recipes carry the conditioning inputs
+  and the P2 per-person source fields (checked per template and DOE Ref).
+- B8 O15: fixed commercial magnitudes × sampled schedules (lighting,
+  additional lighting, plug, gas, shared water).
+- B9 ADRs (amend 0021, 0022, 0023, 0027, 0029; new apartment-unit ADR with
+  the laundry gap, daylighting double-count risk and setpoint notes),
+  CHANGELOG, generator docs.
+- B10 Validation: tests on 3.14 and 3.11, catalogue smoke, regenerated answer
+  keys, before/after report; then ask before the first push and one PR.
