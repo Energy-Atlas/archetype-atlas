@@ -120,6 +120,21 @@ class AlternateTests(unittest.TestCase):
                     if any('alternates' in c.get('detailed', {}).get('fields', {}) for c in record['contexts'].values())}
         self.assertEqual(carriers, {'90-1-2007', '90-1-2013', '90-1-2019'})
 
+    def test_every_prototype_assembly_and_material_is_a_valid_library_record(self):
+        schema = load_json(ROOT/'schemas/construction-json-v4.3.schema.json')
+        checks = {table: Draft202012Validator({'$ref': f'#/$defs/{definition}', '$defs': schema['$defs']})
+                  for table, definition in (('assemblies', 'assembly'), ('materials', 'material'))}
+        counted = 0
+        for template in ('90-1-2007', '90-1-2013', '90-1-2019'):
+            for table, check in checks.items():
+                records = load_json(ROOT/f'data/atlas-releases/v2.0.0/commercial/{template}/library/{table}.json')
+                prototype = [r for r in records.values() if r.get('source_family') == 'pnnl_prototype'
+                             or any(str(e).startswith('construction-evidence-') for e in r.get('property_evidence', {}).values())]
+                for record in prototype:
+                    self.assertEqual([e.message for e in check.iter_errors(record)], [], record['id'])
+                counted += len(prototype)
+        self.assertGreater(counted, 1000)
+
 
 class ExportSchemaTests(unittest.TestCase):
     def test_schemas_are_derived_from_the_previous_majors(self):

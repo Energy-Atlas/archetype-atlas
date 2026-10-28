@@ -216,6 +216,9 @@ def set_alternates(out, path, contexts, document, suite, evidence, add, template
                                     template=template.replace('90-1-', '90.1-'), climate_group=None, applicability={},
                                     source_attributes={'pnnl_construction': source['name']}, source_surface_ids=[],
                                     source_adjacency=[], source_parameters={}, target_adjustment=None)
+                    # Simple glazing carries no layer metrics, as the openstudio-standards glazing assemblies.
+                    assembly.setdefault('layer_orientation', 'exterior_to_interior')
+                    assembly.setdefault('metrics', {})
                 assembly['evidence_ids'] = [row['id']]
                 variants.append({'construction': variant['construction'], 'area_share': variant['area_share'],
                                  'values': variant['values'], 'assembly_id': add('assemblies', variant['assembly'], assembly),
