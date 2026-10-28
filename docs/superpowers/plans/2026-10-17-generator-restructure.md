@@ -535,3 +535,18 @@ Decisions, 2026-10-28 (logged; implement later together with O15):
   7 %). Options: keep; gate to occupied hours; scale by occupancy; ResStock
   fixture-event timing with the prototype's annual volume (building peak
   1.9× the prototype in that test).
+- O16 lamp mix DECISION (user, 2026-10-28): apartment units sample
+  ResStock's lighting options for multifamily units (not one fixed option
+  per programme).
+- O21 (direction, user leaning 2026-10-28): ResStock multifamily generates
+  each apartment unit's internal loads (all end uses, values and schedules),
+  replacing the prototype's lumped plug density and additional lighting.
+  This removes the O19 blockers (per-unit appliance options; electricity
+  double count), so O19 and O20 would follow it. Evidence: eight ResStock
+  5+ unit records give 1,900-5,200 kWh/yr non-lighting per unit (some with
+  gas cooking, freezers or grills) vs about 3,080 kWh for an 80 m² 90.1-2007
+  prototype unit, and 190-1,220 kWh lighting vs about 610 kWh.
+- O20 option F added: ResStock fixture timing and ResStock volume. In the
+  40-unit test, building fixture heat is about 0.48× the prototype's (1
+  resident 0.20×, 4 residents 1.00×; 15 °C mains assumed) and peak heat
+  0.78×.
