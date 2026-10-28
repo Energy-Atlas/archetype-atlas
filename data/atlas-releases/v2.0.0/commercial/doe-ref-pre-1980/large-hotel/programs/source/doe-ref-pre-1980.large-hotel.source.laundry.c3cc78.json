@@ -1,0 +1,184 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"LargeHotel",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-173ab7e29e3d766bce53f85d",
+  "evidence-31dbbdb2a8d743bd337de234",
+  "evidence-36fd9b626b5c93be48b4edb9",
+  "evidence-3aaa076f8c06c02951ebff34",
+  "evidence-435dc80bda1b07c362621780",
+  "evidence-5ed294a9f2dc03ac341be328",
+  "evidence-6cc39fe7dd62a8ebef026fc1",
+  "evidence-994288ebba6c375246aff720",
+  "evidence-ab38b5fa81292c1616d2eaa2",
+  "evidence-bf338cc354103a28a8aa7303",
+  "evidence-c17862ff8e573c6c320811a6",
+  "evidence-d9bec01b3d65ca75d70ea956",
+  "evidence-e55e0144177bb246e1fbc7d1",
+  "evidence-e665b164acbdc111696ae448",
+  "evidence-eb7aa2b0d06d2db788da2d2e"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-173ab7e29e3d766bce53f85d",
+  "roof":null,
+  "wwr":{
+   "E":0.0,
+   "N":0.0,
+   "S":null,
+   "W":null
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-pre-1980.large-hotel.source.laundry.c3cc78",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-435dc80bda1b07c362621780",
+  "source":"doe_reference",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-c2fbab1052011542733593ef",
+   "evidence_id":"evidence-bf338cc354103a28a8aa7303",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.large-hotel.common-occ-sch.291205",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.04305564166683889
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-51c874001613eede07e014ff",
+   "evidence_id":"evidence-c17862ff8e573c6c320811a6",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.large-hotel.bldg-light-sch.5731d2",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-5be0337d97695a223478197e","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-582d0ff66ebedf6f391d82db","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-ec48e2329123f3f93e48fe4a","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":12.270857875049082
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-efb90120a5afa8b088f990b5",
+   "evidence_id":"evidence-36fd9b626b5c93be48b4edb9",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.large-hotel.bldg-light-sch.5731d2",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-5be0337d97695a223478197e","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-582d0ff66ebedf6f391d82db","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-ec48e2329123f3f93e48fe4a","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-e49d8a158ead99d65caa9f3b",
+   "evidence_id":"evidence-6cc39fe7dd62a8ebef026fc1",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.large-hotel.large-hotel-laundry-room-equip.8a927b",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-947fec3fd47ddd0b5616ab87","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-f622ad6a0ca9ececb1d14534","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-7eb3035e9a3a12bff1684cbe","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":61.67720668774671
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-5b86f6096102531eb479399b",
+   "evidence_id":"evidence-e55e0144177bb246e1fbc7d1",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.large-hotel.large-hotel-laundry-room-gas.cce75b",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-ccdd307b2ef8abba3d737773","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-4b915320f9b8e499292f4e3c","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-3d0ea540a5b9ab9e34a947c8","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":536.2804266607183
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"doe-ref-pre-1980.large-hotel.main.e91da8",
+   "evidence_id":"evidence-e496b798e7fa9f52747b471a",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-pre-1980.large-hotel.hotel-large-laundry-room-swh-sch-pre2004.50cdb0",
+   "scope":"program_service",
+   "service_id":"doe-ref-pre-1980.large-hotel.main.e91da8",
+   "status":"known",
+   "target_temperature_degC":60.0,
+   "thermal_effects":{"latent":"fraction of the water that can evaporate","latent_fraction":{"evidence_id":"evidence-3aaa076f8c06c02951ebff34","required_inputs":[],"status":"known","unit":"1","value":0.05},"semantics":"EnergyPlus WaterUse:Equipment","sensible":"fraction x mass flow x cp x (mixed - zone air temperature)","sensible_fraction":{"evidence_id":"evidence-3aaa076f8c06c02951ebff34","required_inputs":[],"status":"known","unit":"1","value":0.2},"zone_gains":"applied"},
+   "unit":"m3/s/m2",
+   "value":2.1100520830099533e-06,
+   "zone_heat_assignment":"program_zones"
+  }
+ ],
+ "mode":"source",
+ "name":"Laundry_LargeHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-5ed294a9f2dc03ac341be328",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.large-hotel.large-hotel-activity.b88610"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-e665b164acbdc111696ae448",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.large-hotel.large-hotel-clg-setp.62b406"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-994288ebba6c375246aff720",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-pre-1980.large-hotel.large-hotel-htg-setp.4838ac"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "doe-ref-pre-1980.large-hotel.main.e91da8"
+ ],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-31dbbdb2a8d743bd337de234",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "source_id":"program-81acfafa3e0ef34a5efe",
+ "template":"DOE Ref Pre-1980"
+}

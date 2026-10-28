@@ -73,9 +73,12 @@ class ConstructionSuite:
                 document[field][sub] = sorted(set(shared) | set(document[field].get(sub, [])))
         document.update({k: v for k, v in delta.items() if k not in merged})
         derived = closures(document, self.library, self.evidence)
+        # Alternates (release 2.0.0, ADR 0046 section 9) add resources to lists the 1.x writer stored explicitly.
+        extra = closures(document['alternates'], self.library, self.evidence) if 'alternates' in document else \
+            {t: [] for t in (*RESOURCES, 'evidence')}
         for table in RESOURCES:
-            document[table] = {i: self.library[table][i] for i in document.get(table, derived[table])}
-        document['evidence'] = {i: self.evidence[i] for i in document.get('evidence', derived['evidence'])}
+            document[table] = {i: self.library[table][i] for i in sorted({*document.get(table, derived[table]), *extra[table]})}
+        document['evidence'] = {i: self.evidence[i] for i in sorted({*document.get('evidence', derived['evidence']), *extra['evidence']})}
         return json.loads(json.dumps(document))
 
 

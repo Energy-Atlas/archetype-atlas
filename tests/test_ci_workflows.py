@@ -1,4 +1,5 @@
 """The CI gates: required check names, what they run, and no step reading a retired release (ADR 0046)."""
+import re
 import unittest
 
 import yaml
@@ -56,8 +57,9 @@ class WorkflowTests(unittest.TestCase):
     def test_no_step_reads_a_retired_release(self):
         for name in ('validate.yml', 'catalogue-site.yml'):
             commands = runs(workflow(name)['jobs'].values())
-            for retired in RETIRED:
-                self.assertNotIn(retired, commands, f'{name}: {retired}')
+            for retired in RETIRED:  # whole names: scripts.release_editor is not scripts.release
+                self.assertIsNone(re.search(re.escape(retired)+r'(?![A-Za-z0-9_])' if retired[-1].isalnum() else re.escape(retired), commands),
+                                  f'{name}: {retired}')
 
     def test_build_verifies_the_suite_site_before_upload(self):
         jobs = workflow('catalogue-site.yml')['jobs']

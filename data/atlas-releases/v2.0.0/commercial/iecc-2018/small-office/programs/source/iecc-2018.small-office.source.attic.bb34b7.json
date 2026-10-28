@@ -1,0 +1,194 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"SmallOffice",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-1305d2fea5a1dc0fd46f0699",
+  "evidence-1c3fe73a33050a4e244c97a0",
+  "evidence-2e00045c0b03350def3698dd",
+  "evidence-39db1e5bd2e093cffe4f27ae",
+  "evidence-5b45720b636c2aaca02e9659",
+  "evidence-5ca9286d91996a8e7a2baea1",
+  "evidence-663dec482b64e84b64f6696f",
+  "evidence-8036be5b60570e981c251c36",
+  "evidence-83a89262f49a3dd076e987e5",
+  "evidence-91641b2a3cd3fe2f0c3a29bf",
+  "evidence-a87700a810792b77c5033cfd",
+  "evidence-ca219bf3c38618063be4300a",
+  "evidence-d9a6b1563403efd1f995a16e"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-663dec482b64e84b64f6696f",
+  "roof":0.0,
+  "wwr":{
+   "E":null,
+   "N":null,
+   "S":null,
+   "W":null
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2018.small-office.source.attic.bb34b7",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-83a89262f49a3dd076e987e5",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0e1710fe75e1b2937e55f4a4",
+   "evidence_id":"evidence-1305d2fea5a1dc0fd46f0699",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-718b71e317044ee895340812",
+   "evidence_id":"evidence-5b45720b636c2aaca02e9659",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-3dcb7b9d0226832eb7c59d53",
+   "evidence_id":"evidence-5ca9286d91996a8e7a2baea1",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-7aabcab345de5634fd4fd084",
+   "evidence_id":"evidence-1c3fe73a33050a4e244c97a0",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-212664203f80bf164a67a644",
+   "evidence_id":"evidence-d9a6b1563403efd1f995a16e",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0db9d36fd533ff093c9f53ea",
+   "evidence_id":"evidence-8036be5b60570e981c251c36",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2018.small-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Attic_SmallOffice",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-91641b2a3cd3fe2f0c3a29bf",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "conditioning":{
+   "evidence_id":"evidence-a87700a810792b77c5033cfd",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":false,"heating_enabled":false}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-ca219bf3c38618063be4300a",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-2e00045c0b03350def3698dd",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":null
+  }
+ },
+ "pnnl_building_type":"OfficeSmall",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-39db1e5bd2e093cffe4f27ae",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-30da0999db7d49ba5c20",
+ "source_zones":[
+  {
+   "counted":false,
+   "floor_area_m2":567.9774,
+   "multiplier":1,
+   "name":"Attic"
+  }
+ ],
+ "standards_building_type":"Office",
+ "template":"IECC 2018"
+}

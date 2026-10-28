@@ -46,6 +46,7 @@ jobs:
       - name: Verify release 2.0.0, its export schemas and the source pipeline
         run: |
           python -m scripts.atlas_snapshot --verify
+          python -m scripts.release_editor --check
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
           python -m scripts.daylighting_rules_review --check
