@@ -493,3 +493,45 @@ remaining decisions):
   (`add_daylighting_controls: nil`); only `upgrade_light_lighting_controls`
   adds them, and it models occupancy sensors as a density reduction. ADR 0044
   records the PNNL prototypes' controls instead.
+
+Decisions, 2026-10-28 (logged; implement later together with O15):
+- O16 DECISION (user, 2026-10-28): magnitudes follow each upstream's own
+  method. Commercial programmes keep the programme's rating fixed and take
+  ComStock schedules (O15 confirmed). ResStock gives both the values and the
+  schedules for residential dwellings and for apartment (dwelling) units. For
+  apartment-unit interior lighting this replaces the prototype density: the
+  annual energy comes from ResStock's `Lighting.calc_interior_energy` (unit
+  floor area, lamp mix, usage multiplier), the schedule from the ResStock
+  draw, and the design level is annual ÷ full-load hours, as
+  OpenStudio-HPXML `calc_design_level_from_annual_kwh` does. The
+  peak-matched prototype method was considered and not adopted.
+  - Open within O16: the lamp-mix and usage-multiplier source for apartment
+    units (sample ResStock's options for multifamily units, or a fixed
+    option per programme); whether apartment additional lighting and plug
+    loads also move to ResStock equations (to confirm with the user).
+- O17 DECISION (user, 2026-10-28): no fixed rating for residential end uses.
+  ResStock fixes each unit's annual energy from its equations (floor area,
+  resident count through bedroom-equivalents, label ratings, sampled usage
+  level) and fits the design level to the draw; the atlas keeps that. Why:
+  ResStock has no installed rating for lighting, cooking or plug loads, its
+  event model's raw magnitudes are uncalibrated (fixture water about 3-4×
+  the equation figure), and a draw-driven annual would double-count the
+  sampled usage level.
+- O18 DECISION (user, 2026-10-28): controls stay as upstream. Commercial
+  setpoints and activity stay hours-transformed; dwelling setpoints stay
+  translated ResStock options with constant activity. Apartment units take
+  ResStock's sampled thermostat options (setpoints, setback size and period)
+  instead of the prototype's rules; not linked to the occupant draw. Not
+  started.
+- O19 (deferred by the user, 2026-10-28): apartment hot-water volumes are not
+  borrowed from ResStock (fixtures, clothes washer, dishwasher); ADR 0029
+  volumes stay. Costs recorded: per-unit appliance options, the electricity
+  double count against the prototype plug density, mixed vs hot temperatures,
+  central-plant peaks and sizing, schema with one draw per component.
+- O20 (open): apartment hot-water timing vs the drawn occupancy. Today the
+  prototype schedule runs regardless of the unit's draw. In a 40-unit test
+  (90.1-2007 high-rise, 80 m², Hickory NC), the prototype draws 30 % of a
+  one-resident unit's volume while the unit is empty (median over all units
+  7 %). Options: keep; gate to occupied hours; scale by occupancy; ResStock
+  fixture-event timing with the prototype's annual volume (building peak
+  1.9× the prototype in that test).
