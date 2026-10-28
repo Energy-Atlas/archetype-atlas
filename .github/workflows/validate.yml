@@ -40,12 +40,16 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements-site.txt
       - name: Fetch pinned sources
-        run: python -m scripts.fetch
+        run: |
+          python -m scripts.fetch
+          python -m scripts.fetch --lock sources/daylighting-rules-lock.json
       - name: Verify release 2.0.0, its export schemas and the source pipeline
         run: |
           python -m scripts.atlas_snapshot --verify
+          python -m scripts.release_editor --check
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
+          python -m scripts.daylighting_rules_review --check
           python -m scripts.validate
           python -m scripts.reproduce
           python -m scripts.compare --report build/source-comparison.json

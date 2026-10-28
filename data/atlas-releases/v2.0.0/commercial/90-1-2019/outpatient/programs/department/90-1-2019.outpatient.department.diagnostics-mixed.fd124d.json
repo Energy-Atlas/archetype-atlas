@@ -1,0 +1,136 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Outpatient",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"90-1-2019.outpatient.source.exam.6c488f","represented_area_m2":391.40050752,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-6e97d6127aa9e81a5524","weight":0.5533955076842244},
+   {"program_id":"90-1-2019.outpatient.source.mri.c960b2","represented_area_m2":40.877337600000004,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-87a533b54a4769d0666d","weight":0.057795875476159206},
+   {"program_id":"90-1-2019.outpatient.source.mri-control.346bb7","represented_area_m2":15.607710720000002,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-7cdfabbb2c324f9a9fed","weight":0.02206751609089715},
+   {"program_id":"90-1-2019.outpatient.source.xray.57a105","represented_area_m2":83.612736,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-deb827b7aebea913fe3d","weight":0.11821883620123472},
+   {"program_id":"90-1-2019.outpatient.source.physical-therapy.e9d4c4","represented_area_m2":175.77255168,"source_geometry_file_id":"sourcefile-00c65f6d9c947f889348","source_program_id":"program-bf51d163af5dc4abdf5a","weight":0.24852226454748455}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-036e6431f6d21852e6ad8caa"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"90-1-2019.outpatient.department.diagnostics-mixed.fd124d",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-e12d526e792093a709aa7918",
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-9e819fd3e454c9090881766b",
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2019.outpatient.diagnostics-mixed-electric-equipment.625025",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":31.886370273317045
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-4cbd8246ca914691715d137f",
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-0c3abe437bad0d950f58","resolution-1bde67ef58fe4de31b65","resolution-1e2cfb72cdcc43637a5e","resolution-2ed70d2df1cdc43bd87d","resolution-3e2e9ea417fd57e1cfbc","resolution-a5e667f96e589fc97fb0","resolution-c25cb4b2956f87432565","resolution-d1d5654e6f2b028a38f5","resolution-d5da215062ed1036c9dc","resolution-ef53fa5bf02128f3c8cb"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":"90-1-2019.outpatient.diagnostics-mixed-gas-equipment.037990","status":"known","value":0.0}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-12ad892f781fbc4d2f7d7510",
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2019.outpatient.diagnostics-mixed-lighting.a12402",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":12.777905498015121
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d0f466d60f89a719d3f528e1",
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2019.outpatient.diagnostics-mixed-occupancy.0739d9",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.21549348654252864
+  }
+ ],
+ "mode":"department",
+ "name":"Diagnostics_Mixed_Outpatient",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2019.outpatient.diagnostics-mixed-activity.2de88d"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2019.outpatient.diagnostics-mixed-cooling-setpoint.079757"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-036e6431f6d21852e6ad8caa",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"90-1-2019.outpatient.diagnostics-mixed-heating-setpoint.5140b5"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "90-1-2019.outpatient.main.fe9449",
+  "90-1-2019.outpatient.main.7b4350",
+  "90-1-2019.outpatient.main.0741dc",
+  "90-1-2019.outpatient.main.d82499"
+ ],
+ "source_family":"code_prototype_rules",
+ "template":"90.1-2019",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

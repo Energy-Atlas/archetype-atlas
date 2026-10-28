@@ -55,6 +55,10 @@ IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0'), 'program': ('
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
 LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+# Release 2.0.0, milestone B (ADR 0046 section 9): detailed constructions 4.3.0, 4.2.0 with the PNNL prototype alternates.
+ALTERNATES = {'releases': ('2.0.0',),
+              'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
+ROLES = ('ExteriorWall', 'ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
 # Inputs a full snapshot carries so that its exports read no frozen folder (ADR 0046).
 EXPORTER_INPUTS = 'exporter-inputs.json'
 SOURCE_METHOD = 'source_design_flow'
@@ -112,6 +116,7 @@ def derived_schemas():
     out[MINOR['services'][0]] = services_schema()
     out[IECC['program'][0]] = program_minor_iecc(out[MINOR['program'][0]])
     out[IECC['detailed'][0]] = construction_minor_iecc(out[MINOR['detailed'][0]])
+    out[ALTERNATES['detailed'][0]] = construction_minor_alternates(out[IECC['detailed'][0]])
     from scripts import prototype_dwellings, residential_exports
     out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
     out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
@@ -354,6 +359,34 @@ def construction_minor_iecc(minor):
         {'if': {'properties': {'method': {'enum': list(NATURAL_ACH)}}}, 'then': {'required': ['natural_ach']}},
         {'if': {'properties': {'method': {'const': SOURCE_METHOD}}},
          'then': {'required': ['methods'], 'properties': {'methods': {'required': [SOURCE_METHOD]}}}}]
+    return schema
+
+
+def construction_minor_alternates(minor):
+    """Detailed constructions 4.3.0: 4.2.0 with `alternates`, the PNNL prototype constructions of a role that differ
+    from the openstudio-standards building default by more than 1% (user decision P1)."""
+    name, version, identity = ALTERNATES['detailed']
+    schema = copy.deepcopy(minor)
+    schema['$id'] = identity
+    schema['title'] = schema['title'].rsplit('(', 1)[0] + f'(release minor {version})'
+    schema['properties']['schema_version'] = {'const': version}
+    number = {'type': 'number'}
+    variant = {'type': 'object', 'additionalProperties': False,
+               'required': ['construction', 'area_share', 'values', 'assembly_id', 'evidence_id'],
+               'properties': {'construction': {'type': 'string', 'minLength': 1},
+                              'area_share': {'type': 'number', 'exclusiveMinimum': 0, 'maximum': 1},
+                              'values': {'type': 'object', 'minProperties': 1, 'additionalProperties': number},
+                              'assembly_id': {'type': 'string', 'minLength': 1}, 'evidence_id': {'type': 'string', 'minLength': 1}}}
+    schema['properties']['alternates'] = {
+        'type': 'object', 'propertyNames': {'enum': list(ROLES)},
+        'description': 'PNNL prototype constructions of a component role that differ from the building-default assembly by more '
+                       'than 1% in layer resistance (without air films), U-factor, SHGC or F-factor. openstudio-standards stays '
+                       'the authority; an alternate is the same edition, type and climate as the PNNL prototype builds it, with '
+                       'the share of the role\'s net area each variant covers (ADR 0046 section 9).',
+        'additionalProperties': {'type': 'object', 'additionalProperties': False, 'required': ['source', 'atlas_values', 'variants'],
+                                 'properties': {'source': {'const': 'pnnl_prototype'},
+                                                'atlas_values': {'type': 'object', 'additionalProperties': number},
+                                                'variants': {'type': 'array', 'minItems': 1, 'items': variant}}}}
     return schema
 
 
@@ -704,6 +737,8 @@ class Release:
             name, version, _ = MINOR[representation]
         if self.release in IECC['releases'] and representation == 'detailed':
             name, version, _ = IECC['detailed']
+        if self.release in ALTERNATES['releases'] and representation == 'detailed':
+            name, version, _ = ALTERNATES['detailed']
         document = self.constructions.export(set_id, key, representation)
         if document.get('status') == 'deferred':
             raise ValueError(f'{set_id} {key}: no {representation} representation; {document["reason"]}')
@@ -742,7 +777,7 @@ def main():
                 path.write_bytes(suite_bytes(schema))
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
-        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 3.0.0 / 3.1.0, '
+        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 4.3.0 / 3.0.0 / 3.1.0, '
               'source model constructions 1.0.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return

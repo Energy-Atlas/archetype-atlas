@@ -28,7 +28,7 @@ class Release200Tests(unittest.TestCase):
 
     def test_full_snapshot_of_1_6_0_and_the_only_release(self):
         self.assertIsNone(self.listed['base_release'])
-        self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'candidate'))
+        self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'released'))
         self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0'])
         self.assertIn(EXPORTER_INPUTS, self.files)
 
@@ -90,6 +90,50 @@ class Release200Tests(unittest.TestCase):
         document = release.program(program_id, 'filled')
         self.assertEqual((document['schema_version'], document['source']['release']), ('5.4.0', 'atlas-release-2.0.0'))
         self.assertNotIn('geometry_dependent', document.get('lighting_controls', {}))
+
+
+class AlternateTests(unittest.TestCase):
+    """The PNNL prototype constructions recorded as alternates (stage B3, user decision P1)."""
+
+    def test_alternates_export_with_their_assemblies_and_evidence(self):
+        from scripts.atlas_exports import Release
+        from scripts.construction_alternates import differs
+        release = Release()
+        sid = next(s for s in sorted(release.constructions.sets) if s.startswith('90-1-2019.medium-office.'))
+        document = release.construction(sid, '5-b', 'detailed')
+        self.assertEqual(document['schema_version'], '4.3.0')
+        wall = document['alternates']['ExteriorWall']
+        self.assertEqual([v['construction'] for v in wall['variants']], ['nonres_ext_wall_grd', 'nonres_ext_wall_mid', 'nonres_ext_wall_top'])
+        self.assertAlmostEqual(sum(v['area_share'] for v in wall['variants']), 1.0, places=5)
+        self.assertTrue(any(differs(v['values']['layer_resistance'], wall['atlas_values']['layer_resistance']) for v in wall['variants']))
+        for variant in wall['variants']:
+            assembly = document['assemblies'][variant['assembly_id']]
+            self.assertEqual(assembly['source_family'], 'pnnl_prototype')
+            self.assertTrue(all(layer['material_id'] in document['materials'] for layer in assembly['layers']))
+            self.assertIn(variant['evidence_id'], document['evidence'])
+        self.assertNotIn('GroundFloor', document['alternates'])  # the F-factors agree (review S3)
+
+    def test_only_the_90_1_templates_carry_alternates(self):
+        from scripts.atlas_exports import Release
+        release = Release()
+        carriers = {sid.split('.')[0] for sid, record in release.constructions.sets.items()
+                    if any('alternates' in c.get('detailed', {}).get('fields', {}) for c in record['contexts'].values())}
+        self.assertEqual(carriers, {'90-1-2007', '90-1-2013', '90-1-2019'})
+
+    def test_every_prototype_assembly_and_material_is_a_valid_library_record(self):
+        schema = load_json(ROOT/'schemas/construction-json-v4.3.schema.json')
+        checks = {table: Draft202012Validator({'$ref': f'#/$defs/{definition}', '$defs': schema['$defs']})
+                  for table, definition in (('assemblies', 'assembly'), ('materials', 'material'))}
+        counted = 0
+        for template in ('90-1-2007', '90-1-2013', '90-1-2019'):
+            for table, check in checks.items():
+                records = load_json(ROOT/f'data/atlas-releases/v2.0.0/commercial/{template}/library/{table}.json')
+                prototype = [r for r in records.values() if r.get('source_family') == 'pnnl_prototype'
+                             or any(str(e).startswith('construction-evidence-') for e in r.get('property_evidence', {}).values())]
+                for record in prototype:
+                    self.assertEqual([e.message for e in check.iter_errors(record)], [], record['id'])
+                counted += len(prototype)
+        self.assertGreater(counted, 1000)
 
 
 class ExportSchemaTests(unittest.TestCase):

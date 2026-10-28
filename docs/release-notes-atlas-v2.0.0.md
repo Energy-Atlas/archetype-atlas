@@ -2,8 +2,8 @@
 
 Release 2.0.0 is a full snapshot ([ADR 0046](adr/0046-release-2-0-0.md)): it names no
 base release and holds the resolved release 1.6.0 with the same values, apart from
-daylighting as plain values. It is the only release in the tree; status `candidate`
-until milestone B.
+daylighting as plain values, and edited in milestone B. It is the only release in the
+tree; status `released` (2026-10-28).
 
 ## What changes for readers
 
@@ -28,6 +28,21 @@ until milestone B.
   (capped-delivery IDs, programs with no setpoint schedules), so reading and exporting
   2.0.0 needs no other folder (ADR 0046 section 5).
 
+## Milestone B (2026-10-28)
+
+- **IDs re-derived once** (ADR 0046 section 8): every commercial content-hashed ID follows
+  a rule a consumer can recompute on any interpreter. Library and set hashes round floats to
+  nine significant digits; program hashes are exact. 11,507 IDs changed; `id-map.json` at the
+  release root maps them. 57 pairs of fitted assemblies that agree to nine digits became one
+  record each (values move by at most 1e-9 relative). `python -m scripts.release_editor --check`
+  verifies the rules.
+- **Construction alternates** (ADR 0046 section 9, user decision P1): detailed constructions
+  4.3.0 add `alternates` where the PNNL 90.1 prototype builds a component differently by more
+  than 1% (2,722 component contexts: walls, doors, roofs, exposed floors and some glazing).
+  openstudio-standards stays the building default.
+- **Daylighting rules review** (`docs/reviews/daylighting-rules-90-1.md`, user decision L-2).
+- The DOE Ref generator recipes follow their programs' new IDs.
+
 ## Earlier releases
 
 Releases 1.0.0 to 1.6.0 and every frozen folder before them left the tree in stage X1.3
@@ -38,8 +53,7 @@ Releases 1.0.0 to 1.6.0 and every frozen folder before them left the tree in sta
 
 - Recipes for the later families (IECC, residential, construction-only, plenum) and
   for the DOE Ref types without a sampling building type.
-- Rewritten writers (milestone B): the next release is a delta on 2.0.0, written by
-  them; the 90.1 construction IDs move to interpreter-independent hashing with a map.
+- Writers for new releases from source inputs: the next release is a delta on 2.0.0.
 - Selection decisions in the evidence tree.
 
 ## Verify

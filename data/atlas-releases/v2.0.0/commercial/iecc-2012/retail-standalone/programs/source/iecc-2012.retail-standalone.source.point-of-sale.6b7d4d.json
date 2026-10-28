@@ -1,0 +1,197 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"RetailStandalone",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-09ba26a47e2b47e391921087",
+  "evidence-0d491a45de4410ec4646e622",
+  "evidence-29e76d17300d01d4ea290f22",
+  "evidence-475de05816b7b1169dd00189",
+  "evidence-4a74973a868fc55a1aeb504c",
+  "evidence-5db11f0c17b9bcae37c6f29f",
+  "evidence-613e1c3a64f6bf324173de96",
+  "evidence-6568b346b6ffffbaa7f0c572",
+  "evidence-6b8bc307e3bc6f12f0e58050",
+  "evidence-7e2901fa3fc939c3b3bb5553",
+  "evidence-95af2bea3b84b4e43f4ee21a",
+  "evidence-9813895afd9c36bd435c98e8",
+  "evidence-a1b454799e3d387bec4c835e",
+  "evidence-ae9b38028a071a1cf5c227b6",
+  "evidence-cb21fbb2894c4404423fab06",
+  "evidence-ee46348603f4429d87a432cb"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-9813895afd9c36bd435c98e8",
+  "roof":0.0,
+  "wwr":{
+   "E":null,
+   "N":null,
+   "S":0.2484,
+   "W":0.0
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2012.retail-standalone.source.point-of-sale.6b7d4d",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-cb21fbb2894c4404423fab06",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-fb5171dc71ffa47d75236a50",
+   "evidence_id":"evidence-613e1c3a64f6bf324173de96",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.retail-standalone.bldg-occ-sch.ce0527",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.161472630389
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-817262131b503670a3ebe96b",
+   "evidence_id":"evidence-09ba26a47e2b47e391921087",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.retail-standalone.ltg-sch-sale.55bc96",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-09ba26a47e2b47e391921087","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-09ba26a47e2b47e391921087","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-09ba26a47e2b47e391921087","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":14.638904
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-ed4e47122f195285dc7e01f6",
+   "evidence_id":"evidence-6b8bc307e3bc6f12f0e58050",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-40220e5a84bcff81e0ed8097",
+   "evidence_id":"evidence-29e76d17300d01d4ea290f22",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.retail-standalone.bldg-equip-sch.8a17f8",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-29e76d17300d01d4ea290f22","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-29e76d17300d01d4ea290f22","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-29e76d17300d01d4ea290f22","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":21.52
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-67a9571fbe0854c5ee23b308",
+   "evidence_id":"evidence-4a74973a868fc55a1aeb504c",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-d7f1c3195022c2b56c75fad3",
+   "evidence_id":"evidence-ae9b38028a071a1cf5c227b6",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.retail-standalone.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Point_of_Sale_RetailStandalone",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-a1b454799e3d387bec4c835e",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.retail-standalone.activity-sch.6257b4"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-5db11f0c17b9bcae37c6f29f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-95af2bea3b84b4e43f4ee21a",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.retail-standalone.clgsetp-sch-yes-optimum.dc05ba"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-0d491a45de4410ec4646e622",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.retail-standalone.htgsetp-sch-yes-optimum.c92562"
+  }
+ },
+ "pnnl_building_type":"RetailStandalone",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-475de05816b7b1169dd00189",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-4e83ce3cf8cee4041a5e",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":150.81,
+   "multiplier":1,
+   "name":"Point_Of_Sale"
+  }
+ ],
+ "standards_building_type":"Retail",
+ "template":"IECC 2012"
+}

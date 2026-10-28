@@ -1,0 +1,134 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"SmallHotel",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"90-1-2007.small-hotel.source.mechanical.1979d5","represented_area_m2":32.61128108281923,"source_geometry_file_id":"sourcefile-4097594cd2e6a33bb1d7","source_program_id":"program-b0e3c8d565e01d456cae","weight":0.11817853953501063},
+   {"program_id":"90-1-2007.small-hotel.source.elec-mech-room.55e131","represented_area_m2":15.05029247999994,"source_geometry_file_id":"sourcefile-4097594cd2e6a33bb1d7","source_program_id":"program-c4499355455babeb6bb1","weight":0.054540070975567595},
+   {"program_id":"90-1-2007.small-hotel.source.laundry.dd72f7","represented_area_m2":97.8269011208231,"source_geometry_file_id":"sourcefile-4097594cd2e6a33bb1d7","source_program_id":"program-33a9eee73f39e0a89695","weight":0.3545104613441736},
+   {"program_id":"90-1-2007.small-hotel.source.storage.873935","represented_area_m2":97.84559247941195,"source_geometry_file_id":"sourcefile-4097594cd2e6a33bb1d7","source_program_id":"program-9433dcd64d153874367e","weight":0.3545781961091571},
+   {"program_id":"90-1-2007.small-hotel.source.storage4-front.312285","represented_area_m2":12.541910400000013,"source_geometry_file_id":"sourcefile-4097594cd2e6a33bb1d7","source_program_id":"program-d4ef20f8accbd0e32b73","weight":0.045450059146306565},
+   {"program_id":"90-1-2007.small-hotel.source.storage4-rear.f68cf9","represented_area_m2":20.07328709305602,"source_geometry_file_id":"sourcefile-4097594cd2e6a33bb1d7","source_program_id":"program-86c1d6ce898dfa67b0cd","weight":0.07274267288978457}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-cdd8044d49caf287d069add9"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"90-1-2007.small-hotel.department.support-mixed.8690ee",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-014f23921c7a18d95fece52a",
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-346ec18ca5faf9915ac0809a",
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2007.small-hotel.support-mixed-electric-equipment.dc90d0",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":126.16308307039279
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-75ee13ec4dba68caaf20c222",
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "filling":{"basis":"research_assumption","evidence":[],"resolutions":["resolution-2eed2fccaabf4b8cf0cf","resolution-31120d8c313d5bf912aa","resolution-3a903b50fcfd5e92828f","resolution-4874c11514e659104e31","resolution-5506df7759f3627a36d0","resolution-62c25f9f054eb18b1e20","resolution-ba0554c865eee6523e7a","resolution-e017bb98c91efee51b8b","resolution-e78a5dedcac53b473371","resolution-fe7c3ed2f380e59ee86e"],"rules":["reviewed_no_gas_equipment"],"set":{"schedule_id":"90-1-2007.small-hotel.support-mixed-gas-equipment.c0dcd0","status":"known","value":145.27177110792857}},
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":null,
+   "scope":"composed_program",
+   "status":"unknown",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":null
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-03cdfec35892a7889e8e82cc",
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2007.small-hotel.support-mixed-lighting.82f9c2",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":8.268737262259865
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0890fd93d521cc5f9399d3eb",
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"90-1-2007.small-hotel.support-mixed-occupancy.718ab4",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.03815918847695119
+  }
+ ],
+ "mode":"department",
+ "name":"Support_Mixed_SmallHotel",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-cdd8044d49caf287d069add9",
+   "required_inputs":[],
+   "status":"unknown",
+   "unit":"schedule reference",
+   "value":null
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "90-1-2007.small-hotel.main.1d7d9b"
+ ],
+ "source_family":"code_prototype_rules",
+ "template":"90.1-2007",
+ "unresolved_loads":[
+  {
+   "quantity":"hot_water_volume",
+   "reason":"missing or multiple source demands; source member references retained"
+  }
+ ]
+}

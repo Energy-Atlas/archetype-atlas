@@ -1,0 +1,196 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"HighriseApartment",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-0d51d0d8610c7c0352f7ff4b",
+  "evidence-2c683a8c772b5b7c8ff605c5",
+  "evidence-3268313ff2def21a5fdcfc50",
+  "evidence-47b0a6ec8af6eccadb1ed8fc",
+  "evidence-645e2afef74c248c329cb99d",
+  "evidence-6e8aaea6c1484fc33565e266",
+  "evidence-8905339cd7662d73a90c4ac4",
+  "evidence-9c1915e1f605360876fb4e2e",
+  "evidence-a7b19c90a53c69a00c3441c8",
+  "evidence-b572cc35994801f8d58de82f",
+  "evidence-c8d380506d257d9fc39cf6c5",
+  "evidence-e40ab9c25536c95c9736693d",
+  "evidence-eb170ea20be32dd492928581",
+  "evidence-f2c8eabc44f03cdaf15b75bc",
+  "evidence-f5f97aa0bcabfb59e561b2f6"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-47b0a6ec8af6eccadb1ed8fc",
+  "roof":0.0,
+  "wwr":{
+   "E":0.2182,
+   "N":null,
+   "S":null,
+   "W":0.2182
+  }
+ },
+ "gate":[
+  "residential"
+ ],
+ "id":"iecc-2006.highrise-apartment.source.corridor-topfloor.0994a8",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-8905339cd7662d73a90c4ac4",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-11b6bec36b34c266aac4374a",
+   "evidence_id":"evidence-3268313ff2def21a5fdcfc50",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.highrise-apartment.occ-apt-sch-corridor.5698b2",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.053825434825
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-702bba2909948231491faf63",
+   "evidence_id":"evidence-0d51d0d8610c7c0352f7ff4b",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.highrise-apartment.ltg-sch-corridor.bc4b01",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-0d51d0d8610c7c0352f7ff4b","required_inputs":[],"status":"known","unit":"1","value":0.6},"to_return_air":{"evidence_id":"evidence-0d51d0d8610c7c0352f7ff4b","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-0d51d0d8610c7c0352f7ff4b","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":5.23151
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-1236b4330ee7b1466fa3c4bf",
+   "evidence_id":"evidence-f5f97aa0bcabfb59e561b2f6",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.highrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-dfddabdfcf0ca7bb72dc1474",
+   "evidence_id":"evidence-645e2afef74c248c329cb99d",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.highrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-87a812263394311548cfc2ee",
+   "evidence_id":"evidence-f2c8eabc44f03cdaf15b75bc",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.highrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-e05bc3e0aabb5843436f73e8",
+   "evidence_id":"evidence-a7b19c90a53c69a00c3441c8",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2006.highrise-apartment.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Corridor_topfloor_HighriseApartment",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-6e8aaea6c1484fc33565e266",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2006.highrise-apartment.activity-schedule.779fbd"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-9c1915e1f605360876fb4e2e",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":false,"heating_enabled":false}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-c8d380506d257d9fc39cf6c5",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":null
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-eb170ea20be32dd492928581",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":null
+  }
+ },
+ "pnnl_building_type":"ApartmentHighRise",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-b572cc35994801f8d58de82f",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-89411bfa480622d2d44f",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":77.65845299,
+   "multiplier":1,
+   "name":"T Corridor"
+  }
+ ],
+ "standards_building_type":"HighriseApartment",
+ "template":"IECC 2006"
+}

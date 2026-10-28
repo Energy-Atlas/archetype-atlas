@@ -1,0 +1,137 @@
+{
+ "available_details":[
+  "DepartmentMixes"
+ ],
+ "building_type":"Outpatient",
+ "climate":null,
+ "composition":{
+  "members":[
+   {"program_id":"iecc-2012.outpatient.source.clean-work.5a7f4c","represented_area_m2":27.034784639999998,"source_geometry_file_id":"sourcefile-20536d85b77d54a39e67","source_program_id":"program-281bec0e7761543c7586","weight":0.18920676202860856},
+   {"program_id":"iecc-2012.outpatient.source.soil-work.b7400a","represented_area_m2":33.63090048,"source_geometry_file_id":"sourcefile-20536d85b77d54a39e67","source_program_id":"program-00dfd763fbb5da16b5fc","weight":0.235370611183355},
+   {"program_id":"iecc-2012.outpatient.source.nurse-station.46f066","represented_area_m2":71.81404992,"source_geometry_file_id":"sourcefile-20536d85b77d54a39e67","source_program_id":"program-5669b7dfadc4dae0fd97","weight":0.5026007802340702},
+   {"program_id":"iecc-2012.outpatient.source.med-gas.9ff2ca","represented_area_m2":5.20257024,"source_geometry_file_id":"sourcefile-20536d85b77d54a39e67","source_program_id":"program-3e47a115bc94461a866f","weight":0.036410923276983094},
+   {"program_id":"iecc-2012.outpatient.source.bio-hazard.7fecde","represented_area_m2":5.20257024,"source_geometry_file_id":"sourcefile-20536d85b77d54a39e67","source_program_id":"program-132d8d0b127e51ecf143","weight":0.036410923276983094}
+  ],
+  "method":"ADR 0012; unrounded represented area; pointwise setpoints and conserved load trajectories"
+ },
+ "derivation":"composed",
+ "evidence_ids":[
+  "evidence-00cb4735f4564a4a550ec943"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2012.outpatient.department.clinical-support-mixed.d71a3f",
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-49fdba1f265e9ca0648aee3a",
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.clinical-support-mixed-additional-lighting.6cfe15",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-334bd1b887c7729ddfe36b07",
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.clinical-support-mixed-electric-equipment.e2caf0",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":20.04079220826411
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-105cc10d04b65aaf4d691e69",
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.clinical-support-mixed-additional-lighting.6cfe15",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-d62766042c9d931da9baa983",
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.clinical-support-mixed-additional-lighting.6cfe15",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"m3/s/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-70283662d0b16897564b051e",
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.clinical-support-mixed-lighting.f7b973",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"W/m2",
+   "value":11.73527548797139
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"mixed-demand-0b91a4483234c6bb14b0c005",
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.outpatient.clinical-support-mixed-occupancy.42541c",
+   "scope":"composed_program",
+   "status":"known",
+   "thermal_effects":{"method":"evaluate each source component effect on its conserved trajectory; do not independently average fractions"},
+   "unit":"person/m2",
+   "value":0.17412776339876201
+  }
+ ],
+ "mode":"department",
+ "name":"ClinicalSupport_Mixed_Outpatient",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.clinical-support-mixed-activity.e26972"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.clinical-support-mixed-cooling-setpoint.8b1006"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-00cb4735f4564a4a550ec943",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.outpatient.clinical-support-mixed-heating-setpoint.17e980"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_family":"iecc_commercial_prototype",
+ "template":"IECC 2012"
+}

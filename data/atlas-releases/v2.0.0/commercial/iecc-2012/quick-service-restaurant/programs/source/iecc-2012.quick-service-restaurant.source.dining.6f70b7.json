@@ -1,0 +1,197 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"QuickServiceRestaurant",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-09e458f9aa8695f422d52de7",
+  "evidence-2afe700ed10d47d65d810a02",
+  "evidence-31c238f9e8f282d653311cbd",
+  "evidence-4837fe2929958d5e21abc8db",
+  "evidence-4903ace1cc2df426c2d1c09f",
+  "evidence-4aea94f9b8b7da33063623fe",
+  "evidence-6b00f0d8b664a01b35a1e7c4",
+  "evidence-70c576c6cf5513b2dd0864ed",
+  "evidence-8e30eb2b3a3be1617bf0fa4d",
+  "evidence-aa8290266fea43387d7ff8f6",
+  "evidence-bb3d046167effdcfee0cfa61",
+  "evidence-c10a0c12db81f02a10875940",
+  "evidence-cf33fea834514faf5636d918",
+  "evidence-d22292c12d1ae3474ee48657",
+  "evidence-e08f9352ccf94843f55def1e",
+  "evidence-e67718fc0c9dd7296600f95a"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-6b00f0d8b664a01b35a1e7c4",
+  "roof":null,
+  "wwr":{
+   "E":0.2799,
+   "N":null,
+   "S":0.2799,
+   "W":0.2799
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2012.quick-service-restaurant.source.dining.6f70b7",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-e67718fc0c9dd7296600f95a",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-7cc71eae6f029987aa636ddc",
+   "evidence_id":"evidence-c10a0c12db81f02a10875940",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.quick-service-restaurant.bldg-occ-sch.649820",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.753579502638
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-10f69023bd8abc2cc374d985",
+   "evidence_id":"evidence-4aea94f9b8b7da33063623fe",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.quick-service-restaurant.ltg-sch-dining.601adb",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-4aea94f9b8b7da33063623fe","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-4aea94f9b8b7da33063623fe","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-4aea94f9b8b7da33063623fe","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":11.3960435
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-a927e3aa42d9bfa1a9ab880a",
+   "evidence_id":"evidence-31c238f9e8f282d653311cbd",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.quick-service-restaurant.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-297a87d7c040a88e528f6a11",
+   "evidence_id":"evidence-09e458f9aa8695f422d52de7",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.quick-service-restaurant.bldg-equip-sch.89e212",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-09e458f9aa8695f422d52de7","required_inputs":[],"status":"known","unit":"1","value":0.25},"lost":{"evidence_id":"evidence-09e458f9aa8695f422d52de7","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-09e458f9aa8695f422d52de7","required_inputs":[],"status":"known","unit":"1","value":0.3}},
+   "unit":"W/m2",
+   "value":116.786939242667
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-fee1366a0f4701508fe880fe",
+   "evidence_id":"evidence-e08f9352ccf94843f55def1e",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.quick-service-restaurant.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-b1c430d420744e427810c405",
+   "evidence_id":"evidence-8e30eb2b3a3be1617bf0fa4d",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2012.quick-service-restaurant.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"Dining_QuickServiceRestaurant",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-d22292c12d1ae3474ee48657",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.quick-service-restaurant.activity-sch.df620f"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-4837fe2929958d5e21abc8db",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-4903ace1cc2df426c2d1c09f",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.quick-service-restaurant.clgsetp-sch-yes-optimum.6080e4"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-bb3d046167effdcfee0cfa61",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2012.quick-service-restaurant.htgsetp-sch-yes-optimum.0c89fa"
+  }
+ },
+ "pnnl_building_type":"RestaurantFastFood",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-2afe700ed10d47d65d810a02",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-3f2290354839031bf431",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":116.17147592,
+   "multiplier":1,
+   "name":"Dining"
+  }
+ ],
+ "standards_building_type":"QuickServiceRestaurant",
+ "template":"IECC 2012"
+}

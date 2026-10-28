@@ -1,0 +1,185 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"LargeOffice",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-0266b7789a69a53ef7fef901",
+  "evidence-17a058ff156ff882fc48fc98",
+  "evidence-5168a93ef8c4cd6d697cf201",
+  "evidence-6051e8030d7881d914cb463e",
+  "evidence-732ca5b82dc258bb757f2227",
+  "evidence-7f8cc3875ced35af65df334b",
+  "evidence-9e3f4533557c09f59b13ff8a",
+  "evidence-a93203c16dcfdf89314e5b04",
+  "evidence-b8eaad7dd30b02001f032b57",
+  "evidence-c0d3edadb3665ea65d01a4c2",
+  "evidence-e344438a3b8c853cfc1d4f8b",
+  "evidence-e6263bdd90f9e85abc7536ef",
+  "evidence-ea836554deaafe22e21ef2cd",
+  "evidence-eec9971eecfb3db62824a0c3",
+  "evidence-f250527e6557df20b020bfc6"
+ ],
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"iecc-2015.large-office.source.whole-building-lg-office-basement.a52d16",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-c0d3edadb3665ea65d01a4c2",
+  "source":"pnnl_prototype",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-e3d3323e2fb5248c84d9c24c",
+   "evidence_id":"evidence-eec9971eecfb3db62824a0c3",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.large-office.bldg-occ-sch-wo-sb.6858c6",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.053824806213
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-0895429de61e500376e4b382",
+   "evidence_id":"evidence-17a058ff156ff882fc48fc98",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.large-office.ltg-sch-office.3f0930",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-17a058ff156ff882fc48fc98","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-17a058ff156ff882fc48fc98","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-17a058ff156ff882fc48fc98","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":9.327942
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-176438d9934fe6615c24945c",
+   "evidence_id":"evidence-6051e8030d7881d914cb463e",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.large-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-9f770c7d64dc1f6b63ff3a7c",
+   "evidence_id":"evidence-f250527e6557df20b020bfc6",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.large-office.always-on.51a010",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-f250527e6557df20b020bfc6","required_inputs":[],"status":"known","unit":"1","value":0.0},"lost":{"evidence_id":"evidence-f250527e6557df20b020bfc6","required_inputs":[],"status":"known","unit":"1","value":0.0},"radiant":{"evidence_id":"evidence-f250527e6557df20b020bfc6","required_inputs":[],"status":"known","unit":"1","value":0.5}},
+   "unit":"W/m2",
+   "value":4.841841805477
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-5e6fb395c9a2e48e28ed78d2",
+   "evidence_id":"evidence-b8eaad7dd30b02001f032b57",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.large-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-ec2e9ad2d00a85b5c576630f",
+   "evidence_id":"evidence-5168a93ef8c4cd6d697cf201",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"iecc-2015.large-office.iecc-prototype-no-object-constant-0.d5d267",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"m3/s/m2",
+   "value":0.0
+  }
+ ],
+ "mode":"source",
+ "name":"WholeBuilding - Lg Office-basement_LargeOffice",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-ea836554deaafe22e21ef2cd",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.large-office.activity-sch.25870a"
+  },
+  "conditioning":{
+   "evidence_id":"evidence-9e3f4533557c09f59b13ff8a",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"state",
+   "value":{"cooling_enabled":true,"heating_enabled":true}
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-a93203c16dcfdf89314e5b04",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.large-office.clgsetp-sch-yes-optimum.f67ccb"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-e344438a3b8c853cfc1d4f8b",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"iecc-2015.large-office.htgsetp-sch-yes-optimum.d0d716"
+  }
+ },
+ "pnnl_building_type":"OfficeLarge",
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-0266b7789a69a53ef7fef901",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"iecc_commercial_prototype",
+ "source_id":"program-e54eb3abd139de9e8946",
+ "source_zones":[
+  {
+   "counted":true,
+   "floor_area_m2":2779.426619180001,
+   "multiplier":1,
+   "name":"Basement"
+  }
+ ],
+ "standards_building_type":"Office",
+ "template":"IECC 2015"
+}

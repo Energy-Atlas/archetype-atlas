@@ -15,7 +15,7 @@ and coverage are recorded under `docs/` and `sources/`.
 
 ## Release 2.0.0
 
-**Atlas release 2.0.0** (`data/atlas-releases/v2.0.0`, status `candidate`) is the
+**Atlas release 2.0.0** (`data/atlas-releases/v2.0.0`, status `released`) is the
 only release in the tree ([ADR 0046](docs/adr/0046-release-2-0-0.md),
 [release notes](docs/release-notes-atlas-v2.0.0.md)). It is a full snapshot: open
 the folder alone, with no base release to resolve. It holds:
@@ -26,10 +26,13 @@ the folder alone, with no base release to resolve. It holds:
 - detailed and unified construction sets;
 - the generator recipes of the 90.1 and DOE Ref programs in each folder's
   `generator.json`;
+- the PNNL prototype constructions of the 90.1 templates where they differ from
+  openstudio-standards, as `alternates` (detailed constructions 4.3.0);
 - the evidence tree and upstream notices.
 
 ```console
 python -m scripts.atlas_snapshot --verify                 # every file against the manifest
+python -m scripts.release_editor --check                  # IDs follow their rules (id-map.json lists the changes)
 python -m scripts.atlas_exports --program ID --version filled
 python -m scripts.atlas_exports --construction SET --context KEY --representation detailed
 ```

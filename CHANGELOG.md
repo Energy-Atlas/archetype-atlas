@@ -1,5 +1,19 @@
 # Changelog
 
+## Atlas release 2.0.0 released (milestone B) — 2026-10-28
+
+Release 2.0.0 is declared released after milestone B (ADR 0046 sections 8 to 10).
+`scripts/release_editor.py` edits it in place:
+- every commercial content-hashed ID re-derived under interpreter-independent rules (11,507 in
+  `id-map.json`; 57 near-identical fitted assemblies merged);
+- the PNNL 90.1 prototype constructions recorded as `alternates` where they differ from
+  openstudio-standards by more than 1% (`scripts/construction_alternates.py`, detailed
+  constructions 4.3.0).
+
+The openstudio-standards daylighting rules are pinned and the 90.1 daylighting records checked
+against them (`docs/reviews/daylighting-rules-90-1.md`). CI runs `release_editor --check` and the
+daylighting review.
+
 ## Frozen folders retired (X1.3) — 2026-10-27
 
 Release 2.0.0 is the only release in the tree (ADR 0046 section 7). Releases 1.0.0 to

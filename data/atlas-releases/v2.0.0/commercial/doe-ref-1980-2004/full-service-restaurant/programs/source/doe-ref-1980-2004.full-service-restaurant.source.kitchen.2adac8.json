@@ -1,0 +1,183 @@
+{
+ "available_details":[
+  "SourcePrograms"
+ ],
+ "building_type":"FullServiceRestaurant",
+ "climate":null,
+ "derivation":"normalized",
+ "evidence_ids":[
+  "evidence-135da57d68c006f361cb9a8c",
+  "evidence-155826290522d20dfc57762e",
+  "evidence-24e9df0d13e8723e6615aea1",
+  "evidence-38a914fb00acbf607ab7c310",
+  "evidence-3ccd29b5fd45ee7e7f3e5851",
+  "evidence-602807fdf1eb1f30eec64b70",
+  "evidence-68fabd7c250957ea561f5827",
+  "evidence-9116960bb8c4670e8e022050",
+  "evidence-9776fd94672ba114d0ab815b",
+  "evidence-bf04e22a3838eba8589ade04",
+  "evidence-df1a06811b387f139a9f6f7f",
+  "evidence-e7e8f0bdf3a7547df8512b2d",
+  "evidence-f73ab6853bd0a1b79325af0b",
+  "evidence-f9b223275f992a26fefc6fbc"
+ ],
+ "fenestration":{
+  "basis":"program_zone_surfaces",
+  "evidence_id":"evidence-24e9df0d13e8723e6615aea1",
+  "roof":null,
+  "wwr":{
+   "E":0.0,
+   "N":0.0,
+   "S":null,
+   "W":0.0
+  }
+ },
+ "gate":[
+  "nonresidential"
+ ],
+ "id":"doe-ref-1980-2004.full-service-restaurant.source.kitchen.2adac8",
+ "lighting_controls":{
+  "daylighting":null,
+  "evidence_id":"evidence-f9b223275f992a26fefc6fbc",
+  "source":"doe_reference",
+  "status":"known"
+ },
+ "loads":[
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-273ece7f6078b92aa08d964b",
+   "evidence_id":"evidence-bf04e22a3838eba8589ade04",
+   "quantity":"occupancy",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.full-service-restaurant.bldg-occ-sch.360984",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{},
+   "unit":"person/m2",
+   "value":0.05381955208354861
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-1be2af7768cb0fc86eb7425c",
+   "evidence_id":"evidence-38a914fb00acbf607ab7c310",
+   "quantity":"lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-bldg-light.a94636",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-22f89956b422cbe8edca7d45","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-6ac4807af634bbd8e2a4a732","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-fe81e6e612e2e44bb2fdf5df","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":16.361143833398778
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-38c8f0af46140c0ce940aaca",
+   "evidence_id":"evidence-9116960bb8c4670e8e022050",
+   "quantity":"additional_lighting",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-bldg-light.a94636",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"radiant":{"evidence_id":"evidence-22f89956b422cbe8edca7d45","required_inputs":[],"status":"known","unit":"1","value":0.7},"to_return_air":{"evidence_id":"evidence-6ac4807af634bbd8e2a4a732","required_inputs":[],"status":"known","unit":"1","value":0.0},"visible":{"evidence_id":"evidence-fe81e6e612e2e44bb2fdf5df","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":0.0
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-7c2a89889cac256233398311",
+   "evidence_id":"evidence-9776fd94672ba114d0ab815b",
+   "quantity":"electric_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-bldg-equip.647fe7",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-3018b5ab8b598eaf8f3c2742","required_inputs":[],"status":"known","unit":"1","value":0.25},"lost":{"evidence_id":"evidence-cf8681b5ffdcc88fdde5eb1a","required_inputs":[],"status":"known","unit":"1","value":0.2},"radiant":{"evidence_id":"evidence-fe143f29d86298f7990a3fc8","required_inputs":[],"status":"known","unit":"1","value":0.3}},
+   "unit":"W/m2",
+   "value":376.73686458484025
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"demand-24a6f769f85851b84cb64abc",
+   "evidence_id":"evidence-3ccd29b5fd45ee7e7f3e5851",
+   "quantity":"gas_equipment",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-gas-equip.0f4771",
+   "scope":"program",
+   "status":"known",
+   "thermal_effects":{"latent":{"evidence_id":"evidence-80418330d8b9b9f340a58f0d","required_inputs":[],"status":"known","unit":"1","value":0.1},"lost":{"evidence_id":"evidence-01d6056b6631bc7b56e45126","required_inputs":[],"status":"known","unit":"1","value":0.7},"radiant":{"evidence_id":"evidence-22c7012ca3ce38a784b460a1","required_inputs":[],"status":"known","unit":"1","value":0.2}},
+   "unit":"W/m2",
+   "value":1194.8012446926296
+  },
+  {
+   "basis":"floor_area",
+   "demand_id":"doe-ref-1980-2004.full-service-restaurant.main.2d698e",
+   "evidence_id":"evidence-7e7db0885a6603de10b4a38d",
+   "quantity":"hot_water_volume",
+   "required_inputs":["floor_area"],
+   "schedule_id":"doe-ref-1980-2004.full-service-restaurant.restaurant-sit-down-bldg-swh-sch.14dcd0",
+   "scope":"program_service",
+   "service_id":"doe-ref-1980-2004.full-service-restaurant.main.2d698e",
+   "status":"known",
+   "target_temperature_degC":60.0,
+   "thermal_effects":{"latent":"fraction of the water that can evaporate","latent_fraction":{"evidence_id":"evidence-f73ab6853bd0a1b79325af0b","required_inputs":[],"status":"known","unit":"1","value":0.05},"semantics":"EnergyPlus WaterUse:Equipment","sensible":"fraction x mass flow x cp x (mixed - zone air temperature)","sensible_fraction":{"evidence_id":"evidence-f73ab6853bd0a1b79325af0b","required_inputs":[],"status":"known","unit":"1","value":0.2},"zone_gains":"applied"},
+   "unit":"m3/s/m2",
+   "value":1.0028861931924306e-06,
+   "zone_heat_assignment":"program_zones"
+  }
+ ],
+ "mode":"source",
+ "name":"Kitchen_FullServiceRestaurant",
+ "optional":false,
+ "parameters":{
+  "activity_schedule_id":{
+   "evidence_id":"evidence-68fabd7c250957ea561f5827",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-activity.e06644"
+  },
+  "cooling_setpoint_schedule_id":{
+   "evidence_id":"evidence-602807fdf1eb1f30eec64b70",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-clg-setp-kitchen.e4985d"
+  },
+  "heating_setpoint_schedule_id":{
+   "evidence_id":"evidence-e7e8f0bdf3a7547df8512b2d",
+   "required_inputs":[],
+   "status":"known",
+   "unit":"schedule reference",
+   "value":"doe-ref-1980-2004.full-service-restaurant.full-service-restaurant-htg-setp-kitchen.a8a3d5"
+  }
+ },
+ "required_inputs":[
+  "floor_area"
+ ],
+ "service_ids":[
+  "doe-ref-1980-2004.full-service-restaurant.main.2d698e"
+ ],
+ "source_calendar":{
+  "daylight_saving":{
+   "applied":false,
+   "end":"1st Sunday in November",
+   "start":"2nd Sunday in March"
+  },
+  "evidence_id":"evidence-155826290522d20dfc57762e",
+  "holidays":[
+   {"name":"New Years Day","rule":"January 1"},
+   {"name":"Veterans Day","rule":"November 11"},
+   {"name":"Christmas","rule":"December 25"},
+   {"name":"Independence Day","rule":"July 4"},
+   {"name":"MLK Day","rule":"3rd Monday in January"},
+   {"name":"Presidents Day","rule":"3rd Monday in February"},
+   {"name":"Memorial Day","rule":"Last Monday in May"},
+   {"name":"Labor Day","rule":"1st Monday in September"},
+   {"name":"Columbus Day","rule":"2nd Monday in October"},
+   {"name":"Thanksgiving","rule":"4th Thursday in November"}
+  ]
+ },
+ "source_family":"existing_stock_benchmark",
+ "source_id":"program-e08b0aaf7a16a790d73a",
+ "template":"DOE Ref 1980-2004"
+}
