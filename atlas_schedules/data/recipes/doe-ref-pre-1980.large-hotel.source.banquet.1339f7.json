@@ -1,0 +1,124 @@
+{
+ "commercial": {
+  "configuration_id": "large_hotel__doe_ref_pre_1980__source",
+  "modes": {
+   "activity": "hours",
+   "cooling_setpoint": "tstat",
+   "electric_equipment": "hours",
+   "heating_setpoint": "tstat",
+   "lighting": "hours",
+   "occupancy": "hours"
+  }
+ },
+ "companions": {},
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.7211819979195514,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "radiant": 0.7,
+    "to_return_air": 0.0,
+    "visible": 0.2
+   },
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting",
+   "unit": "W/m2",
+   "value": 27.55561066677689
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 67.81263562527124
+  }
+ ],
+ "kind": "commercial",
+ "name": "Banquet_LargeHotel",
+ "program_id": "doe-ref-pre-1980.large-hotel.source.banquet.1339f7",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "resident_count",
+   "schedule": "doe-ref-pre-1980.large-hotel.common-occ-sch.291205",
+   "slot": "occupancy",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-pre-1980.large-hotel.bldg-light-sch.5731d2",
+   "slot": "lighting",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-pre-1980.large-hotel.large-hotel-kitchen-elec-equip-sch.74adac",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-pre-1980.large-hotel.large-hotel-htg-setp.4838ac",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-pre-1980.large-hotel.large-hotel-clg-setp.62b406",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-pre-1980.large-hotel.large-hotel-activity.b88610",
+   "slot": "activity",
+   "unit": "W/person"
+  }
+ ],
+ "source": {
+  "building_type": "LargeHotel",
+  "climate": null,
+  "definition": "data/atlas-releases/v2.0.0/commercial/doe-ref-pre-1980/large-hotel/programs/source/doe-ref-pre-1980.large-hotel.source.banquet.1339f7.json",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-45faa5e0589dcd70e324",
+  "template": "DOE Ref Pre-1980",
+  "view": "source",
+  "vintage": null
+ }
+}

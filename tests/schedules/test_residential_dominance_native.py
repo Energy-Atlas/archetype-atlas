@@ -17,7 +17,7 @@ import numpy as np
 
 from atlas_schedules.commercial.transform import Slot, transform
 from atlas_schedules.programmes import load_configuration
-from tests.schedules.helpers import TOLERANCE, unpack_days
+from tests.schedules.helpers import TOLERANCE, retired, unpack_days
 
 KEYS = Path(__file__).resolve().parents[1] / "answer_keys/commercial"
 
@@ -26,7 +26,10 @@ class OccupancyDominance(unittest.TestCase):
     def test_configurations_follow_native_dominance(self):
         rows = json.loads((KEYS / "occupancy-dominance.json").read_text(encoding="utf-8"))["configurations"]
         self.assertEqual(len(rows), 150)
+        self.assertEqual(sum(map(retired, rows)), 60)  # DOE Ref configurations replaced in stage X1.2
         for configuration_id, row in rows.items():
+            if retired(configuration_id):
+                continue
             configuration = load_configuration(configuration_id)
             with self.subTest(configuration=configuration_id):
                 self.assertEqual(configuration["invert_rule_days"], row["residential"] > row["non_residential"])

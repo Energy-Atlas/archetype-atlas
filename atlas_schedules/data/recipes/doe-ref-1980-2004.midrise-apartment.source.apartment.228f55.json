@@ -1,0 +1,158 @@
+{
+ "caller_water": {
+  "controls": {
+   "water_latent_fraction": [
+    "latent_fraction",
+    "fraction",
+    0.05
+   ],
+   "water_sensible_fraction": [
+    "sensible_fraction",
+    "fraction",
+    0.2
+   ],
+   "water_target_temperature": [
+    "temperature",
+    "C",
+    60.0
+   ]
+  },
+  "density": 4.146067251759837e-08,
+  "density_unit": "m3/s/m2",
+  "schedule": "doe-ref-1980-2004.midrise-apartment.apartment-mid-rise-apt-dhw-sch.3a5bbb",
+  "service_id": "doe-ref-1980-2004.midrise-apartment.main.e6e6a3",
+  "source": {
+   "demand": "data/atlas-releases/v2.0.0/commercial/doe-ref-1980-2004/midrise-apartment/programs/source/doe-ref-1980-2004.midrise-apartment.source.apartment.228f55.json#/loads/5",
+   "service": "data/atlas-releases/v2.0.0/commercial/doe-ref-1980-2004/midrise-apartment/services.json#doe-ref-1980-2004.midrise-apartment.main.e6e6a3"
+  }
+ },
+ "companions": {
+  "activity": {
+   "method": "source_rules",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-activity.ee1edd"
+  },
+  "cooling_setpoint": {
+   "method": "source_rules",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-apartment-clg-setp.da8e8e"
+  },
+  "heating_setpoint": {
+   "method": "source_rules",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-apartment-htg-setp.eb9701"
+  }
+ },
+ "controls": [
+  {
+   "people": {
+    "basis": "floor_area",
+    "density": 0.02830908439594657,
+    "unit": "person/m2"
+   },
+   "quantity": "occupancy_fraction",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "quantity": "activity",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "quantity": "temperature",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "demands": [
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "radiant": 0.0,
+    "to_return_air": 0.0,
+    "visible": 0.0
+   },
+   "host": "assigned_zone",
+   "quantity": "lighting",
+   "slot": "lighting_interior",
+   "unit": "W/m2",
+   "value": 3.8750077500154996
+  },
+  {
+   "basis": "floor_area",
+   "fuel": "electricity",
+   "heat_fractions": {
+    "latent": 0.0,
+    "lost": 0.0,
+    "radiant": 0.5
+   },
+   "host": "assigned_zone",
+   "quantity": "electric_equipment",
+   "slot": "electric_equipment",
+   "unit": "W/m2",
+   "value": 5.381955208354861
+  }
+ ],
+ "kind": "apartment_unit",
+ "name": "Apartment_MidriseApartment",
+ "program_id": "doe-ref-1980-2004.midrise-apartment.source.apartment.228f55",
+ "required_services": [],
+ "schema_version": "2.0.0",
+ "slots": [
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-apartment-occ.68074f",
+   "slot": "occupants",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-apartment-light.53e47a",
+   "slot": "lighting_interior",
+   "unit": "fraction"
+  },
+  {
+   "kind": "load",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.apartment-mid-rise-eqp-apt-sch.d5decc",
+   "slot": "electric_equipment",
+   "unit": "fraction"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-activity.ee1edd",
+   "slot": "activity",
+   "unit": "W/person"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-apartment-htg-setp.eb9701",
+   "slot": "heating_setpoint",
+   "unit": "C"
+  },
+  {
+   "kind": "control",
+   "schedule": "doe-ref-1980-2004.midrise-apartment.midrise-apartment-apartment-clg-setp.da8e8e",
+   "slot": "cooling_setpoint",
+   "unit": "C"
+  }
+ ],
+ "source": {
+  "building_type": "MidriseApartment",
+  "climate": null,
+  "definition": "data/atlas-releases/v2.0.0/commercial/doe-ref-1980-2004/midrise-apartment/programs/source/doe-ref-1980-2004.midrise-apartment.source.apartment.228f55.json",
+  "family": "existing_stock_benchmark",
+  "source_id": "program-9c83128cc2eee8833fad",
+  "template": "DOE Ref 1980-2004",
+  "view": "source",
+  "vintage": null
+ },
+ "unit_timing": {
+  "additional_lighting": "lighting_interior",
+  "lighting_interior": "lighting_interior",
+  "occupants": "occupants"
+ }
+}

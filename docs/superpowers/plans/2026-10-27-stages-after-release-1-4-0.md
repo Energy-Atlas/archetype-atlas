@@ -305,9 +305,9 @@ commits rather than replaced (user, 2026-10-27); X1.4 opens milestone B. Milesto
 also carries these user answers of 2026-10-27 (register):
 
 - **X1.2a Daylighting as plain values** (L-1), before 2.0.0 is committed: 2.0.0
-  drops `lighting_controls.geometry_dependent`. Program IDs hash content, so every
-  commercial program with the block takes a new ID; the snapshot publishes the map
-  from 1.6.0 IDs and the "equal values" check allows this one change. BEMGen's side:
+  drops `lighting_controls.geometry_dependent` (1,373 programs); the "equal values"
+  check allows this one change. Program IDs stay those of 1.6.0 (agent decision, ADR
+  0046 section 6): milestone B re-derives every ID once, with one map. BEMGen's side:
   `docs/bemgen-handoff-release-2-0-0.md`.
 - **X1.3 without stopping:** the agent decides the removal list and writes it into the
   PR description with a reason for each item; an annotated tag
@@ -388,3 +388,7 @@ fetched and checked (L-2), then 2.0.0 `released` and minor releases on it.
 | 2026-10-27 | R1-a | discussed | User asked why ResStock existing stock is paired with a new-construction code. Answer: the IECC prototypes are the only code-labelled reference with the same end uses; the edition stands for the code in force when the dwelling was built. Only envelope and interior lighting differ by edition (IECC 2009 and 2012 require 50% and 75% high-efficacy lamps); equipment and hot water are the prototypes' fixed reference-home assumptions. Revised recommendation in chat; waits for the user. |
 | 2026-10-27 | R1-b | decided | Convert the prototype leakage areas to annual-average ACH only once a consumer needs the comparison; until then the review states the caveat. |
 | 2026-10-27 | P5 | decided | The agent decisions of ADRs 0040 to 0042 go into the milestone A PR description, one line each, for review there. |
+| 2026-10-27 | X1.2 | done | `scripts/build_reference_recipes.py` writes the DOE Ref recipes from release 2.0.0 under release IDs (279 commercial, 72 composition, 6 Midrise; 30 configurations; 54 services; 422 schedules), with People topology from the DOE file zones; it replaces 786 packaged files built from the frozen definitions. `tests/test_reference_recipes.py` checks every value against the release. |
+| 2026-10-27 | X1.2 | correction | The DOE Ref answer-key claim (row "X1 correction") was wrong: the native and legacy keys capture 66 + 96 programs, 60 configurations and 149 legacy programs of the replaced recipes. Agent decision: keep the captures, list the replaced IDs in `tests/answer_keys/retired-doe-ref.json`, skip those cases in the tests (ADR 0046 section 6, decision 4). |
+| 2026-10-27 | X1.2 | agent decisions | Source recipes only for DOE Ref (the fills change no slot); the generator request schema accepts release IDs (additive); Midrise keeps the frozen recipe shapes; types without a sampler stay without recipes (ADR 0046 section 6). |
+| 2026-10-27 | X1.2a | done, agent decision | 2.0.0 drops `geometry_dependent` from 1,373 programs. Program IDs stay those of 1.6.0 rather than being re-hashed now and again in milestone B (ADR 0046 section 6, decision 1). |

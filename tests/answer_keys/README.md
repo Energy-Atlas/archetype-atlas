@@ -40,6 +40,11 @@ commit `779f9fb` under `scripts/answer_keys/`, with the migration scripts under
 | `orchestration/case-matrix.json.gz` | two A5 case-matrix requests (365 of 463 owners compared) | frozen v0.8.0 generator | `test_case_matrix_legacy` | `legacy_case_matrix.py` (779f9fb) |
 | `orchestration/mixtures.json.gz` | six mixture scenarios (four compared) | frozen v0.8.0 generator | `test_mixtures_legacy` | `legacy_mixtures.py` (779f9fb) |
 
+`retired-doe-ref.json` lists the DOE Ref recipes, configurations and services
+that stage X1.2 replaced with recipes written from atlas release 2.0.0
+([ADR 0046](../../docs/adr/0046-release-2-0-0.md) section 6). The keys keep
+their captures of those inputs; the tests skip the cases that name them.
+
 The ResStock dwelling, apartment-unit and fixed recipes were converted from the
 legacy package by `scripts/migrate/recipes.py` (779f9fb) and are now plain
 data; the residential and orchestration keys above protect them.

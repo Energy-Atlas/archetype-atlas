@@ -44,8 +44,8 @@ class Release200Tests(unittest.TestCase):
                 continue
             with self.subTest(path=path):
                 self.assertIn(path, self.files)
-                if path.endswith('.json'):
-                    self.assertEqual(json.loads(self.files[path]), json.loads(data))
+                if path.endswith('.json'):  # the one change: daylighting as plain values (user decision L-1)
+                    self.assertEqual(json.loads(self.files[path]), json.loads(atlas_snapshot.plain_daylighting(path, data)))
                 else:
                     self.assertEqual(self.files[path], data)
         extra = set(self.files) - set(source)
@@ -56,11 +56,22 @@ class Release200Tests(unittest.TestCase):
         self.assertEqual(counts['programs_with_recipes'] + counts['programs_without_recipes'], counts['programs'])
         generators = [p for p in self.files if p.endswith('/generator.json')]
         self.assertTrue(generators)
-        self.assertTrue(all(p.split('/')[1].startswith('90-1-') for p in generators))
+        self.assertTrue(all(p.split('/')[1].startswith(('90-1-', 'doe-ref-')) for p in generators))
         recipes = json.loads(self.files[next(p for p in generators if '/90-1-2019/medium-office/' in p)])
         entry = next(iter(recipes.values()))
         self.assertLessEqual(set(entry), {'source', 'reviewed'})
         self.assertIn('slots', entry.get('source') or entry['reviewed'])
+        # DOE Ref recipes are written from the release, under release IDs (stage X1.2)
+        doe = json.loads(self.files['commercial/doe-ref-1980-2004/medium-office/generator.json'])
+        self.assertTrue(all(set(e) == {'source'} and e['source']['program_id'] == pid for pid, e in doe.items()))
+
+    def test_daylighting_fractions_are_plain_values(self):
+        programs = [json.loads(d) for p, d in self.files.items() if p.startswith('commercial/') and '/programs/' in p]
+        controls = [p['lighting_controls'] for p in programs if 'lighting_controls' in p]
+        self.assertTrue(any(c.get('daylighting') for c in controls))
+        self.assertFalse(any('geometry_dependent' in c for c in controls))
+        self.assertEqual(self.listed['counts']['plain_daylighting_programs'],
+                         sum(1 for c in controls if c['source'] == 'pnnl_prototype' and c['status'] == 'known'))
 
     def test_exporter_inputs_are_those_release_1_6_0_reads(self):
         from scripts.atlas_exports import Release

@@ -43,7 +43,10 @@ Every instance has a unique `key`. Keys cannot contain `/`, which is reserved
 for owners the generator derives.
 
 A **programme instance** has a `program_id` (a recipe in
-`atlas_schedules/data/recipes/`). It can also have the following fields:
+`atlas_schedules/data/recipes/`): a definition program ID (`program-…`) or, for
+the DOE Ref recipes, an atlas release program ID such as
+`doe-ref-pre-1980.retail-standalone.source.entry.955efc`. It can also have the
+following fields:
 
 - `extent`: the amount of each basis it represents. The bases are
   `floor_area` (m²), `dwelling_unit`, `person` and `absolute`.
@@ -208,11 +211,15 @@ source, test and extractor.
   both restaurant families), 40 restaurant water cases and the Stripmall pilot.
 - **Packaged recipes**: the same 926 native cases, rebuilt from the packaged
   recipe, its configuration and (for Medium Office water) its linked service,
-  match the native output (`tests/schedules/test_recipes_native.py`). All 15
-  commercial families are built by `scripts/build_family_recipes.py` from the
-  frozen definitions and prototype geometry, and `--check` reproduces every
-  recipe and service. Heat-gain fractions are carried wherever the definitions
-  know them all.
+  match the native output (`tests/schedules/test_recipes_native.py`). The 90.1
+  recipes of the 15 commercial families were built by
+  `scripts/build_family_recipes.py` from the frozen definitions and prototype
+  geometry. The DOE Ref recipes are written from atlas release 2.0.0 under
+  release IDs by `scripts/build_reference_recipes.py` (ADR 0046 section 6),
+  with the People topology from the DOE file zones; the native and legacy cases
+  of the DOE Ref recipes they replaced are skipped
+  (`tests/answer_keys/retired-doe-ref.json`). Heat-gain fractions are carried
+  wherever the source knows them all.
 - **Newer families**: 534 native cases cover Large Office, Large and Small
   Hotel, Hospital, Outpatient, Primary and Secondary School, Supermarket and
   Strip Mall. Each family uses one template (varied across families), both

@@ -11,9 +11,13 @@ Release 2.0.0 is the resolved release 1.6.0 (scripts.atlas_minor_release.files),
 - the generator recipes of atlas_schedules/data/recipes beside the programs they belong to,
   one `generator.json` per folder keyed by release program ID with the source and reviewed
   recipe, for the programs whose definition values are unchanged since release 1.0.0 (the
-  90.1 templates). The DOE Ref programs changed in release 1.1.0 and the later families have
-  no recipes; the manifest lists both as deferred.
-Values do not change: every resolved 1.6.0 file decodes to the same JSON in 2.0.0.
+  90.1 templates), and the source recipe of the DOE Ref programs, which
+  scripts.build_reference_recipes writes from this release under release IDs (stage X1.2).
+  The later families have no recipes; the manifest lists them as deferred.
+Values do not change: every resolved 1.6.0 file decodes to the same JSON in 2.0.0, except one
+user decision (L-1, ADR 0046 section 6): the daylighting fractions are plain program values, so
+`lighting_controls.geometry_dependent` is dropped (`plain_daylighting`). Program IDs stay those
+of 1.6.0; the rewritten writers of milestone B re-derive every ID once, with one map.
 
 The release reads no frozen folder (ADR 0046 phase 2): `exporter-inputs.json` holds what the
 exporters took from them (the capped-delivery services and programs under release IDs, and the
@@ -40,8 +44,8 @@ CURRENT = ('90.1-2007', '90.1-2013', '90.1-2019')  # templates whose definition 
 LEGACY = ROOT/'data/releases/v0.2.0/programs.json'
 INPUTS = ('scripts/atlas_snapshot.py', f'data/atlas-releases/v{SOURCE}/manifest.json', 'data/definition-releases/v0.1.1/programs.json',
           'data/releases/v0.2.0/programs.json')
-DEFERRED = ('generator recipes of the DOE Ref programs (values changed in release 1.1.0) and of the construction-only, '
-            'IECC, plenum and residential programs (none exist)',
+DEFERRED = ('generator recipes of the construction-only, IECC, plenum and residential programs (none exist), and of the '
+            'DOE Ref types without a sampling building type',
             'systems and water heaters of the IECC commercial family (ADR 0040)',
             'systems and water heaters of the residential families (ADR 0038 section 7)',
             'ADR 0046 phase 2: rewritten writers, selection decisions in the evidence tree, frozen folders retired')
@@ -52,7 +56,7 @@ release and names no base. It is release 1.6.0 resolved (the DOE reference
 reconciliation, the construction-only programs, the IECC commercial family, the
 residential tree, the lighting controls and plenum programs, and the IECC unified
 constructions; ADR 0037 to 0045), with the same values, stored more compactly, and
-the generator recipes of the 90.1 programs in each folder's `generator.json`.
+the generator recipes of the 90.1 and DOE Ref programs in each folder's `generator.json`.
 
 Releases 1.1.0 to 1.6.0 are deltas on 1.0.0; later minors are deltas on this release.
 
@@ -94,6 +98,11 @@ def generator_files(files):
         if not (path.startswith('commercial/') and '/programs/' in path):
             continue
         program = json.loads(data)
+        own = RECIPES/f"{program['id']}.json"
+        if own.exists():  # recipes written from the release itself (DOE Ref, scripts.build_reference_recipes)
+            out[path.split('/programs/')[0]+'/generator.json'][program['id']] = {'source': load_json(own)}
+            counts['programs_with_recipes'] += 1
+            continue
         if program.get('template') not in CURRENT:
             counts['programs_without_recipes'] += 1
             continue
@@ -113,6 +122,15 @@ def generator_files(files):
     return {p: (layered(v, 2)+'\n').encode('utf-8') for p, v in out.items()}, dict(counts)
 
 
+def plain_daylighting(path, data):
+    """A program file without `lighting_controls.geometry_dependent` (user decision L-1); other files unchanged."""
+    if not (path.startswith('commercial/') and '/programs/' in path and b'"geometry_dependent"' in data):
+        return data
+    program = json.loads(data)
+    del program['lighting_controls']['geometry_dependent']
+    return suite_bytes(program)
+
+
 def exporter_inputs(source):
     """The frozen-folder values the exporters of the source release read, under release IDs."""
     release = Release(source, release=SOURCE)
@@ -127,7 +145,8 @@ def exporter_inputs(source):
 
 def assemble():
     source = atlas_minor_release.files(SOURCE)
-    files = {p: encode(p, d) for p, d in source.items() if p not in ('manifest.json', 'README.md')}
+    files = {p: encode(p, plain_daylighting(p, d)) for p, d in source.items() if p not in ('manifest.json', 'README.md')}
+    plain = sum(1 for p, d in source.items() if plain_daylighting(p, d) is not d)
     generators, generator_counts = generator_files(source)
     files.update(generators)
     files[EXPORTER_INPUTS] = (layered(exporter_inputs(source), 1)+'\n').encode('utf-8')
@@ -139,7 +158,7 @@ def assemble():
         'decision': [*listed['decision'], 'docs/adr/0046-release-2-0-0.md'], 'deferred': list(DEFERRED),
         'generated_by': 'python -m scripts.atlas_snapshot',
         'input_sha256': {**{p: digest(p) for p in INPUTS}, 'atlas_schedules/data/recipes': recipes_digest()},
-        'counts': {**listed['counts'], **generator_counts},
+        'counts': {**listed['counts'], **generator_counts, 'plain_daylighting_programs': plain},
         'files': {p: {'sha256': atlas_release.sha(d), 'bytes': len(d)} for p, d in sorted(files.items())}}
     return {**files, 'manifest.json': suite_bytes(manifest)}
 

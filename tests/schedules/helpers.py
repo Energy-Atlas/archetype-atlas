@@ -1,4 +1,7 @@
 """Shared helpers for the schedule generator tests."""
+import json
+from pathlib import Path
+
 import numpy as np
 
 from atlas_schedules.programmes import load_recipe
@@ -8,6 +11,10 @@ SAMPLE_HOURS = np.arange(0, 8760, 37)
 # Rebuilt from the definitions after the legacy keys were captured (new configuration
 # ids, water as linked services); the native family keys check them instead.
 REBUILT_BUILDING_TYPES = frozenset({"MediumOffice", "SmallOffice", "Warehouse"})
+# DOE Ref recipes, configurations and services built from the frozen definitions and replaced in stage X1.2
+# (ADR 0046) by recipes written from release 2.0.0; the keys keep their captures, the tests skip them.
+RETIRED = json.loads((Path(__file__).resolve().parents[1] / "answer_keys/retired-doe-ref.json").read_text(encoding="utf-8"))
+RETIRED_IDS = frozenset(RETIRED["program_ids"] + RETIRED["configuration_ids"] + RETIRED["service_ids"])
 COMPOSITION_BASIS = {"source_reference_area_normalized": "reference_area", "caller_parent_floor_area": "caller_area"}
 
 
@@ -68,11 +75,22 @@ def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
     return {"schema_version": "2.0.0", "seed": seed, "occupancy": {"mix": "national"}, "instances": instances}, keys
 
 
+def retired(*texts) -> bool:
+    """Whether a case names a DOE Ref recipe, configuration or service replaced in stage X1.2."""
+    return any(i in text for text in texts if text for i in RETIRED_IDS)
+
+
 def rebuilt(program_id: str | None) -> bool:
     """Whether a programme belongs to a family the legacy keys no longer describe."""
-    return program_id is not None and load_recipe(program_id)["source"].get("building_type") in REBUILT_BUILDING_TYPES
+    return program_id is not None and (program_id in RETIRED_IDS
+                                       or load_recipe(program_id)["source"].get("building_type") in REBUILT_BUILDING_TYPES)
 
 
 def without_rebuilt(legacy_request: dict) -> dict:
-    """The legacy request without instances of rebuilt families."""
-    return {**legacy_request, "instances": [i for i in legacy_request["instances"] if not rebuilt(i.get("program_id"))]}
+    """The legacy request without instances of rebuilt families or retired services, nor the water of removed units."""
+    removed = {(i.get("building_realization_id"), i.get("unit_id")) for i in legacy_request["instances"]
+               if i.get("unit_id") and rebuilt(i.get("program_id"))}
+    return {**legacy_request, "instances": [
+        i for i in legacy_request["instances"] if not rebuilt(i.get("program_id")) and not retired(i.get("source_service_id"))
+        and not (i.get("physical_binding_kind") == "caller_unit_prototype_density_fixed_dhw"
+                 and (i.get("building_realization_id"), i.get("unit_id")) in removed)]}

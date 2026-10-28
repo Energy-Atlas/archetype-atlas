@@ -1,5 +1,15 @@
 # Changelog
 
+## Atlas release 2.0.0 candidate: DOE Ref recipes and plain daylighting (X1.2) — 2026-10-27
+
+The DOE Ref generator recipes are rebuilt from release 2.0.0 under release IDs
+(`scripts/build_reference_recipes.py`, ADR 0046 section 6), with the People topology from
+the DOE file zones. They replace 786 packaged files built from the frozen definitions.
+The generator request accepts release IDs. The answer-key cases of the replaced recipes
+are listed in `tests/answer_keys/retired-doe-ref.json` and skipped. Release 2.0.0 drops
+`lighting_controls.geometry_dependent`, so the daylighting fractions are plain values
+(user decision L-1), and its DOE Ref folders gain `generator.json`.
+
 ## Atlas release 2.0.0 candidate: self-contained (X1.1) — 2026-10-27
 
 Release 2.0.0 now reads and exports with no frozen folder present: `exporter-inputs.json`
