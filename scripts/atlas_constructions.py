@@ -66,7 +66,7 @@ class ConstructionSuite:
             else:
                 delta[field] = record['values'][vid]
         document = dict(common['fields'])
-        merged = set(common['partial']) | set(common['lists'])
+        merged = list(dict.fromkeys([*common['partial'], *common['lists']]))  # stored order: the bytes must not follow the hash seed
         for field in merged:
             document[field] = {**common['partial'].get(field, {}), **delta.get(field, {})}
             for sub, shared in common['lists'].get(field, {}).items():

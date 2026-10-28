@@ -164,6 +164,34 @@ class GroundFloorTests(unittest.TestCase):
         self.assertEqual(corrected, 6*5*19)  # editions x types x climates, one corrected rule each
 
 
+class ExportBytesTests(unittest.TestCase):
+    """The exports are the same bytes whatever the hash seed (BEMGen's fixture check, D-173)."""
+
+    SCRIPT = '''
+import hashlib, json
+from scripts.atlas_constructions import ConstructionSuite
+from scripts.common import ROOT
+release = ROOT/'data/atlas-releases/v2.0.0'
+paths = [*(release/'commercial/iecc-2021').rglob('*.json'), *(release/'evidence/commercial').rglob('*.json')]
+suite = ConstructionSuite({p.relative_to(release).as_posix(): p.read_text(encoding='utf-8') for p in paths
+                           if '/constructions/' in p.as_posix() or '/library/' in p.as_posix() or '/evidence/' in p.as_posix()})
+digest = hashlib.sha256()
+for sid in sorted(suite.sets):
+    for representation in ('detailed', 'unified'):
+        digest.update(json.dumps(suite.export(sid, sorted(suite.sets[sid]['contexts'])[0], representation), indent=2).encode())
+print(len(suite.sets), digest.hexdigest())
+'''
+
+    def test_construction_exports_do_not_follow_the_hash_seed(self):
+        import os
+        import subprocess
+        import sys
+        runs = {subprocess.run([sys.executable, '-c', self.SCRIPT], cwd=ROOT, capture_output=True, text=True, check=True,
+                               env={**os.environ, 'PYTHONHASHSEED': seed}).stdout for seed in ('1', '2', '3')}
+        self.assertEqual(len(runs), 1, runs)
+        self.assertGreater(int(next(iter(runs)).split()[0]), 10)
+
+
 class ExportSchemaTests(unittest.TestCase):
     def test_schemas_are_derived_from_the_previous_majors(self):
         from scripts import atlas_exports
