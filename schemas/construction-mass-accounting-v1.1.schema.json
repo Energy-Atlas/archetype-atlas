@@ -1,0 +1,434 @@
+{
+  "$defs": {
+    "massAccounting": {
+      "additionalProperties": false,
+      "properties": {
+        "added_mass_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "additional_mass": {
+          "additionalProperties": false,
+          "properties": {
+            "allocation_policy": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "entries": {
+              "items": {
+                "$ref": "#/$defs/massEntry"
+              },
+              "type": "array"
+            },
+            "legacy_partition_selector_policy": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "provided",
+                "known_zero"
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "entries",
+            "allocation_policy",
+            "legacy_partition_selector_policy"
+          ],
+          "type": "object"
+        },
+        "floor_pair_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "paired_face_area_policy": {
+          "const": "mean_zone_weighted_faces"
+        },
+        "paired_surface_policy": {
+          "const": {
+            "adjacent_ceiling": "reverse the same canonical floor assembly",
+            "canonical_side": "InteriorFloor",
+            "unpaired_ceiling": "use InteriorCeiling recipe"
+          }
+        },
+        "physical_capacity_budgets": {
+          "additionalProperties": false,
+          "properties": {
+            "InteriorFloor": {
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              },
+              "type": "array"
+            },
+            "InteriorWall": {
+              "items": {
+                "$ref": "#/$defs/massBudget"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "InteriorWall",
+            "InteriorFloor"
+          ],
+          "type": "object"
+        },
+        "physical_inventory_profile_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "provenance": {
+          "additionalProperties": false,
+          "properties": {
+            "extraction_date": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "interpretation_note": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "original_unit": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "original_value": {
+              "type": "object"
+            },
+            "source_file_sha256": {
+              "type": "object"
+            },
+            "source_locator": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_project": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "source_revision": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "transformation": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_project",
+            "source_revision",
+            "source_locator",
+            "source_file_sha256",
+            "extraction_date",
+            "original_unit",
+            "original_value",
+            "transformation",
+            "interpretation_note"
+          ],
+          "type": "object"
+        },
+        "recipes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/massRecipe"
+          },
+          "type": "object"
+        },
+        "reference": {
+          "additionalProperties": false,
+          "properties": {
+            "counted_floor_area_m2": {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            "profile_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "quantity_basis": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "profile_id",
+            "counted_floor_area_m2",
+            "quantity_basis"
+          ],
+          "type": "object"
+        },
+        "reference_area_approximation": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_profile_id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "interpretation": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "unequal_multiplier_pair_counts": {
+              "additionalProperties": false,
+              "properties": {
+                "floor_pairs": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "wall_pairs": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "floor_pairs",
+                "wall_pairs"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "unequal_multiplier_pair_counts",
+            "evidence_profile_id",
+            "interpretation"
+          ],
+          "type": "object"
+        },
+        "removed_wall_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "residual_floor_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "residual_policy": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "status": {
+          "const": "ready"
+        }
+      },
+      "required": [
+        "schema_version",
+        "status",
+        "reference",
+        "floor_pair_policy",
+        "added_mass_policy",
+        "removed_wall_policy",
+        "residual_floor_policy",
+        "residual_policy",
+        "physical_inventory_profile_id",
+        "paired_surface_policy",
+        "paired_face_area_policy",
+        "reference_area_approximation",
+        "physical_capacity_budgets",
+        "additional_mass",
+        "recipes",
+        "provenance"
+      ],
+      "type": "object"
+    },
+    "massBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "area_per_counted_floor_area": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "reference_area_m2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "source_areal_capacity_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "source_assembly_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_assembly_id",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "reference_area_m2",
+        "source_areal_capacity_J_m2_K",
+        "source_locator"
+      ],
+      "type": "object"
+    },
+    "massEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "area_convention": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "area_per_counted_floor_area": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "capacity_per_counted_floor_area_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "evidence_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "recipe_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "reference_area_m2": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "scope": {
+          "$ref": "#/$defs/massScope"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_operands": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "recipe_id",
+        "scope",
+        "reference_area_m2",
+        "area_per_counted_floor_area",
+        "capacity_per_counted_floor_area_J_m2_K",
+        "source_operands",
+        "source_locator",
+        "area_convention"
+      ],
+      "type": "object"
+    },
+    "massLayer": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "enum": [
+            "StandardOpaqueMaterial",
+            "MasslessOpaqueMaterial",
+            "AirGap"
+          ]
+        },
+        "properties": {
+          "minProperties": 1,
+          "type": "object"
+        }
+      },
+      "required": [
+        "model",
+        "properties"
+      ],
+      "type": "object"
+    },
+    "massRecipe": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity_J_m2_K": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "layers": {
+          "items": {
+            "$ref": "#/$defs/massLayer"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "model": {
+          "const": "opaque_layers"
+        },
+        "source_locator": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "model",
+        "layers",
+        "capacity_J_m2_K",
+        "source_locator",
+        "interpretation"
+      ],
+      "type": "object"
+    },
+    "massScope": {
+      "additionalProperties": false,
+      "properties": {
+        "counted_floor_area": {
+          "type": "boolean"
+        },
+        "kind": {
+          "enum": [
+            "source_space",
+            "whole_dwelling"
+          ]
+        },
+        "native_building_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_space_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_space_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_story": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "counted_floor_area"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:archetype-atlas:construction-mass-accounting:1.1.0",
+  "$ref": "#/$defs/massAccounting",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "1.0.0 with an optional `evidence_id` on additional-mass entries, as detailed constructions 4.1.0 and later and unified constructions 3.1.0 embed it; every 1.0.0 field keeps its meaning.",
+  "title": "Shared source construction mass accounting 1.1.0"
+}

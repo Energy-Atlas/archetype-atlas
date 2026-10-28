@@ -58,7 +58,9 @@ LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0'), 'program': ('program-json-v
 # Release 2.0.0, milestone B (ADR 0046 section 9): detailed constructions 4.3.0, 4.2.0 with the PNNL prototype alternates.
 ALTERNATES = {'releases': ('2.0.0',),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
-ROLES = ('ExteriorWall', 'ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
+# The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.
+MASS = ('construction-mass-accounting-v1.1.schema.json', '1.1.0', 'urn:archetype-atlas:construction-mass-accounting:1.1.0')
+ROLES = ('ExteriorWall','ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
 # Inputs a full snapshot carries so that its exports read no frozen folder (ADR 0046).
 EXPORTER_INPUTS = 'exporter-inputs.json'
 SOURCE_METHOD = 'source_design_flow'
@@ -117,6 +119,7 @@ def derived_schemas():
     out[IECC['program'][0]] = program_minor_iecc(out[MINOR['program'][0]])
     out[IECC['detailed'][0]] = construction_minor_iecc(out[MINOR['detailed'][0]])
     out[ALTERNATES['detailed'][0]] = construction_minor_alternates(out[IECC['detailed'][0]])
+    out[MASS[0]] = mass_accounting_minor(out[ALTERNATES['detailed'][0]])
     from scripts import prototype_dwellings, residential_exports
     out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
     out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
@@ -138,8 +141,9 @@ DAYLIGHTING = {
     'required': ['controlled_floor_fraction', 'controlled_lighting_fraction', 'controlled_zones', 'zones', 'illuminance_setpoint_lux',
                  'control_type', 'method', 'availability', 'minimum_input_power_fraction', 'minimum_light_output_fraction',
                  'stepped_control_steps'],
-    'description': 'The Daylighting:Controls of the source model zones the program represents (ADR 0044). The fractions hold '
-                   'for the source model geometry; the settings are those of the zone with the most lighting power.',
+    'description': 'The Daylighting:Controls of the source model zones the program represents (ADR 0044). The fractions are '
+                   'the source model values and are applied as given (release 2.0.0, ADR 0046 section 6); the settings are '
+                   'those of the zone with the most lighting power.',
     'properties': {
         'controlled_floor_fraction': {**RATIO, 'description': 'Floor area of the zones with controls over the program floor area.'},
         'controlled_lighting_fraction': {**RATIO, 'description': 'Fraction of the program lighting power the reference points control.'},
@@ -359,6 +363,18 @@ def construction_minor_iecc(minor):
         {'if': {'properties': {'method': {'enum': list(NATURAL_ACH)}}}, 'then': {'required': ['natural_ach']}},
         {'if': {'properties': {'method': {'const': SOURCE_METHOD}}},
          'then': {'required': ['methods'], 'properties': {'methods': {'required': [SOURCE_METHOD]}}}}]
+    return schema
+
+
+def mass_accounting_minor(detailed):
+    """The standalone mass-accounting contract 1.1.0: its definitions taken from the detailed schema that
+    embeds them, so the shared contract and the constructions cannot drift (BEMGen handoff, 2026-10-28)."""
+    schema = load_json(SCHEMAS/'construction-mass-accounting-v1.schema.json')
+    schema['$id'] = MASS[2]
+    schema['title'] = f'{schema["title"]} {MASS[1]}'
+    schema['description'] = ('1.0.0 with an optional `evidence_id` on additional-mass entries, as detailed constructions 4.1.0 '
+                             'and later and unified constructions 3.1.0 embed it; every 1.0.0 field keeps its meaning.')
+    schema['$defs'] = {name: copy.deepcopy(detailed['$defs'][name]) for name in schema['$defs']}
     return schema
 
 
@@ -778,7 +794,7 @@ def main():
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
         print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 4.3.0 / 3.0.0 / 3.1.0, '
-              'source model constructions 1.0.0 and building services 1.0.0 schemas '
+              'source model constructions 1.0.0, mass accounting 1.1.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return
     release = Release(release=args.release)

@@ -61,3 +61,40 @@ stays the openstudio-standards assembly (user decision P1).
 - [ ] Keep instantiating the assignments as before; `alternates` is information, not an assignment.
 - [ ] To model a component the PNNL way, split its surfaces by the variants' `area_share` (by floor for
   walls: `_grd`, `_mid`, `_top`), each with the variant's assembly.
+
+## 4. BEMGen's report on receiving 2.0.0 (2026-10-28)
+
+BEMGen's branch `claude/atlas-2-0-0-contracts` (D-172, ADR-027) reported six atlas issues.
+
+| Report | Atlas answer |
+| --- | --- |
+| IECC mass entries carry `evidence_id`, which `construction-mass-accounting-v1` forbids | Schema drift: 4.1.0 / 3.1.0 added the optional field and the shared contract was not bumped. Fixed by `construction-mass-accounting-v1.1.schema.json` (1.1.0), derived from the definitions the construction schemas embed, so the two cannot drift again. No data change. |
+| The 5.4.0 daylighting description says the fractions hold only for the source geometry | Fixed: the description now says they are applied as given (decision L-1). No data change. |
+| IECC detailed sets file a ground-storey F-factor floor under `InteriorFloor` | Confirmed and corrected in place (user decision, ADR 0046 section 11), see below. |
+| IECC infiltration is per-zone design flow (`source_design_flow`) | Not a defect: it is the source's method, recorded faithfully. A building-level equivalent belongs to the deferred IECC unified representation (ADR 0040 item 10). |
+| Absorptances such as 0.44999999999999996 | Not a defect: they are fitted assemblies' area-weighted means, so IEEE arithmetic. Library IDs hash floats at nine significant digits; compare with a tolerance. |
+| Alternate `area_share` values sum to 0.999999 or 1.000001 | Not a defect: shares are rounded to six decimals. Normalize if an exact sum is needed. |
+
+**The IECC ground floor.** Every IECC edition files the same surfaces under `InteriorFloor` in five
+building types: Medium Office (`Core_bot_ZN_5_Floor`), Outpatient (29 `Floor 1 … Slab` surfaces),
+Primary School (`Mech_ZN_1_FLR_1_Floor`), Secondary School (`Gym_ZN_1_FLR_1_Floor`,
+`Mech_ZN_1_FLR_1_Floor`) and Small Office (`Core_ZN_floor`). In the PNNL IDFs these slabs have an
+F-factor construction with `PerimeterExposed` 0 and an `Adiabatic` outside boundary, the prototypes' way
+of giving a slab with no exposed edge no ground heat flow. The envelope extractor filed them by their
+boundary (`InteriorFloor`); the document writer then added `boundary_condition: Ground` and an F-factor
+ground method because the construction is F-factor. The assignment contradicts its component's target
+(`Surface`, `Adiabatic`). The 90.1 and DOE Ref sets have no such case.
+
+Corrected in place (ADR 0046 section 11): the slabs join the `GroundFloor` building default, which
+holds the same assembly and ground method; their selection decision has rule
+`source_boundary_correction` and `source_boundary_condition: Adiabatic`; they leave the interior floor
+capacity budgets (zero capacity) and the unified excluded-interior-floor list. 30 construction sets
+have new IDs, mapped in `id-map.json` from both their first-committed and their released IDs.
+
+**BEMGen updates.**
+
+- [ ] Vendor `construction-mass-accounting-v1.1.schema.json` and validate mass accounting against 1.1.0.
+- [ ] Update the vendored 5.4.0 program schema (description text only).
+- [ ] Re-export fixtures pinned to atlas `188c4ead` and re-key their set IDs through `id-map.json`.
+- [ ] Expect the IECC core slabs under `GroundFloor`; their F-factor ground method takes the exposed
+  perimeter from BEMGen's geometry (zero for a core zone).
