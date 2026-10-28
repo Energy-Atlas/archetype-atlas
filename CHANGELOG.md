@@ -1,13 +1,15 @@
 # Changelog
 
-## BEMGen's 2.0.0 report: schema fixes — 2026-10-28
+## BEMGen's 2.0.0 report: schema fixes and the IECC ground-floor erratum — 2026-10-28
 
 - Shared mass-accounting contract 1.1.0 (`schemas/construction-mass-accounting-v1.1.schema.json`):
   1.0.0 with the optional `evidence_id` on additional-mass entries that constructions 4.1.0 / 3.1.0
   embed, now derived from them so the two cannot drift.
 - Program JSON 5.4.0: the daylighting description says the fractions are applied as given.
-- No release data changes. The IECC ground-floor misfiling is recorded in
-  `docs/bemgen-handoff-release-2-0-0.md` section 4.
+- Release 2.0.0 corrected in place (user decision, ADR 0046 section 11): the IECC adiabatic
+  F-factor slabs with no exposed perimeter move from `InteriorFloor` to the `GroundFloor` building
+  default in 30 construction sets, leaving the interior floor capacity budgets (zero capacity).
+  Their new set IDs are in `id-map.json`.
 
 ## Atlas release 2.0.0 released (milestone B) — 2026-10-28
 

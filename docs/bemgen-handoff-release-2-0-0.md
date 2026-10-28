@@ -70,7 +70,7 @@ BEMGen's branch `claude/atlas-2-0-0-contracts` (D-172, ADR-027) reported six atl
 | --- | --- |
 | IECC mass entries carry `evidence_id`, which `construction-mass-accounting-v1` forbids | Schema drift: 4.1.0 / 3.1.0 added the optional field and the shared contract was not bumped. Fixed by `construction-mass-accounting-v1.1.schema.json` (1.1.0), derived from the definitions the construction schemas embed, so the two cannot drift again. No data change. |
 | The 5.4.0 daylighting description says the fractions hold only for the source geometry | Fixed: the description now says they are applied as given (decision L-1). No data change. |
-| IECC detailed sets file a ground-storey F-factor floor under `InteriorFloor` | Confirmed, see below. It changes release data, which ADR 0046 section 10 closed; open for the user. |
+| IECC detailed sets file a ground-storey F-factor floor under `InteriorFloor` | Confirmed and corrected in place (user decision, ADR 0046 section 11), see below. |
 | IECC infiltration is per-zone design flow (`source_design_flow`) | Not a defect: it is the source's method, recorded faithfully. A building-level equivalent belongs to the deferred IECC unified representation (ADR 0040 item 10). |
 | Absorptances such as 0.44999999999999996 | Not a defect: they are fitted assemblies' area-weighted means, so IEEE arithmetic. Library IDs hash floats at nine significant digits; compare with a tolerance. |
 | Alternate `area_share` values sum to 0.999999 or 1.000001 | Not a defect: shares are rounded to six decimals. Normalize if an exact sum is needed. |
@@ -85,7 +85,16 @@ boundary (`InteriorFloor`); the document writer then added `boundary_condition: 
 ground method because the construction is F-factor. The assignment contradicts its component's target
 (`Surface`, `Adiabatic`). The 90.1 and DOE Ref sets have no such case.
 
+Corrected in place (ADR 0046 section 11): the slabs join the `GroundFloor` building default, which
+holds the same assembly and ground method; their selection decision has rule
+`source_boundary_correction` and `source_boundary_condition: Adiabatic`; they leave the interior floor
+capacity budgets (zero capacity) and the unified excluded-interior-floor list. 30 construction sets
+have new IDs, mapped in `id-map.json` from both their first-committed and their released IDs.
+
 **BEMGen updates.**
 
 - [ ] Vendor `construction-mass-accounting-v1.1.schema.json` and validate mass accounting against 1.1.0.
 - [ ] Update the vendored 5.4.0 program schema (description text only).
+- [ ] Re-export fixtures pinned to atlas `188c4ead` and re-key their set IDs through `id-map.json`.
+- [ ] Expect the IECC core slabs under `GroundFloor`; their F-factor ground method takes the exposed
+  perimeter from BEMGen's geometry (zero for a core zone).

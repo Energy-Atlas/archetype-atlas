@@ -43,6 +43,12 @@ tree; status `released` (2026-10-28).
 - **Daylighting rules review** (`docs/reviews/daylighting-rules-90-1.md`, user decision L-2).
 - The DOE Ref generator recipes follow their programs' new IDs.
 
+## Erratum: IECC ground floors (2026-10-28)
+
+The IECC adiabatic F-factor slabs with no exposed perimeter (Medium and Small Office, Outpatient,
+Primary and Secondary School) are now `GroundFloor`, not `InteriorFloor` with a ground condition
+(ADR 0046 section 11). 30 construction sets have new IDs; `id-map.json` maps the old ones.
+
 ## Earlier releases
 
 Releases 1.0.0 to 1.6.0 and every frozen folder before them left the tree in stage X1.3

@@ -1,4 +1,4 @@
-"""Edit release 2.0.0 in place: re-derive its content-hashed IDs, add the construction alternates, declare it (ADR 0046 sections 8-10).
+"""Edit release 2.0.0 in place: re-derive its content-hashed IDs, add the construction alternates, declare it, correct the IECC ground floors (ADR 0046 sections 8-11).
 
 python -m scripts.release_editor            # rewrite data/atlas-releases/v2.0.0 and its id-map.json
 python -m scripts.release_editor --check    # fail unless the release already equals what the editor writes
@@ -25,6 +25,7 @@ Every reference in the release follows (program and set files are renamed), the 
 IDs. Running the editor on its output changes nothing (`--check`).
 """
 import argparse
+import hashlib
 import json
 import re
 from collections import Counter
@@ -41,6 +42,7 @@ ID_MAP = 'id-map.json'
 STATUS = 'released'
 ALTERNATES = ROOT/'data/program-inputs/construction-alternates-v1.json'
 SET = '@set'
+GROUND_MODELS = ('FFactorGroundFloorConstruction', 'CFactorUndergroundWallConstruction')
 DIGITS = 9
 
 
@@ -230,8 +232,114 @@ def set_alternates(out, path, contexts, document, suite, evidence, add, template
     out[path] = (layered(record, 3)+'\n').encode('utf-8')
 
 
+def stored(record, key, representation, field, sub):
+    """One sub-value of a context's document as the reader sees it (context fields, value table, then common)."""
+    member = record['contexts'][key][representation]
+    vid = member['refs'].get(f'{field}/{sub}')
+    if vid:
+        value = record['values'][vid]
+    elif sub in member['fields'].get(field, {}):
+        value = member['fields'][field][sub]
+    else:
+        value = record['common'][representation]['partial'].get(field, {}).get(sub)
+    if isinstance(value, list):
+        value = [record['values'][e[len(atlas_constructions.VALUE):]] if isinstance(e, str) and e.startswith(atlas_constructions.VALUE)
+                 else e for e in value]
+    return json.loads(json.dumps(value))
+
+
+def restore(record, key, representation, field, sub, value):
+    """Write a sub-value back for one context: in the value table if it was there, else in the context's fields."""
+    member = record['contexts'][key][representation]
+    path = f'{field}/{sub}'
+    if path in member['refs']:
+        text = canonical(value)
+        vid = 'v-'+hashlib.sha256(text.encode()).hexdigest()[:10]  # the 1.x writer's value-table rule
+        if record['values'].setdefault(vid, value) != value:
+            raise ValueError('Value ID clash: '+vid)
+        member['refs'][path] = vid
+    else:
+        member['fields'].setdefault(field, {})[sub] = value
+
+
+def unused_values(record):
+    used = {v for c in record['contexts'].values() for m in c.values() for v in m['refs'].values()}
+    used |= {s[len(atlas_constructions.VALUE):] for s in atlas_constructions.strings(record['contexts'])
+             if s.startswith(atlas_constructions.VALUE)}
+    for vid in set(record['values']) - used:
+        del record['values'][vid]
+
+
+def with_ground_floors(files):
+    """IECC slabs filed as interior floors become ground floors (BEMGen's report, ADR 0046 section 11).
+
+    The PNNL IECC models give the slab of a zone with no exposed edge an F-factor construction with
+    `PerimeterExposed` 0 and an `Adiabatic` boundary (Medium and Small Office, Outpatient, Primary and
+    Secondary School, every edition). The 1.x extractor filed those slabs by their boundary, under
+    `InteriorFloor`, and its document writer then gave them a `Ground` condition and the F-factor ground
+    method, contradicting the component's target. Each such slab joins the `GroundFloor` building default,
+    which holds the same assembly and ground method, and its selection decision records the correction.
+    The zero-capacity slabs leave the interior floor capacity budgets, and the unified provenance no longer
+    lists them as excluded interior floors (they stay out of the floor mass). Applying it again changes nothing.
+    """
+    out = dict(files)
+    for path in sorted(p for p in files if p.startswith('commercial/iecc-') and '/constructions/' in p):
+        library = json.loads(files[f'commercial/{path.split("/")[1]}/library/assemblies.json'])
+        ground = {k for k, a in library.items() if a.get('model') in GROUND_MODELS}
+        record = json.loads(files[path])
+        if any([ground_floor_context(record, key, ground) for key in sorted(record['contexts'])]):
+            unused_values(record)
+            out[path] = (layered(record, 3)+'\n').encode('utf-8')
+    return out
+
+
+def ground_floor_context(record, key, ground):
+    if 'detailed' not in record['contexts'][key]:
+        return False
+    interior = stored(record, key, 'detailed', 'components', 'InteriorFloor')
+    allowed = interior['target']['boundary_conditions'] if interior else []
+    moved = [a for a in (interior or {}).get('assignments', []) if a['when'].get('boundary_condition', allowed[0]) not in allowed]
+    if not moved:
+        return False
+    floor = stored(record, key, 'detailed', 'components', 'GroundFloor')
+    decisions = stored(record, key, 'detailed', 'metadata', 'selection_decisions')
+    for assignment in moved:
+        if assignment['assembly_id'] not in ground:
+            raise ValueError(f'{key}: {assignment["id"]} is not a ground construction')
+        target = next(g for g in floor['assignments'] if g['assembly_id'] == assignment['assembly_id']
+                      and g.get('ground_method_id') == assignment.get('ground_method_id') and g['when']['scope'] == 'building_default')
+        interior['assignments'].remove(assignment)
+        target['source_element_ids'] = sorted({*target['source_element_ids'], *assignment['source_element_ids']})
+        target['evidence_ids'] = sorted({*target['evidence_ids'], *assignment['evidence_ids']})
+        decisions = [{'source_selector': 'GroundFloor', 'assignment_id': target['id'], 'rule': 'source_boundary_correction',
+                      'source_element_count': d['source_element_count'], 'evidence_id': d['evidence_id'],
+                      'source_boundary_condition': 'Adiabatic', 'decision': 'docs/adr/0046-release-2-0-0.md'}
+                     if d['assignment_id'] == assignment['id'] else d for d in decisions]
+    if not interior['assignments']:
+        interior['disposition'] = 'source_absent'
+    restore(record, key, 'detailed', 'components', 'InteriorFloor', interior)
+    restore(record, key, 'detailed', 'components', 'GroundFloor', floor)
+    restore(record, key, 'detailed', 'metadata', 'selection_decisions', decisions)
+    slabs = {a['assembly_id'] for a in moved}
+    for representation in record['contexts'][key]:
+        budgets = stored(record, key, representation, 'mass_accounting', 'physical_capacity_budgets')
+        if budgets and any(b['source_assembly_id'] in slabs for b in budgets.get('InteriorFloor', [])):
+            if any(b['capacity_per_counted_floor_area_J_m2_K'] for b in budgets['InteriorFloor'] if b['source_assembly_id'] in slabs):
+                raise ValueError(f'{key}: a ground slab carries interior floor capacity')
+            budgets['InteriorFloor'] = [b for b in budgets['InteriorFloor'] if b['source_assembly_id'] not in slabs]
+            restore(record, key, representation, 'mass_accounting', 'physical_capacity_budgets', budgets)
+    excluded = stored(record, key, 'unified', 'provenance', 'excluded_ground_constructions') if 'unified' in record['contexts'][key] else None
+    if excluded:
+        excluded['entries'] = [e for e in excluded['entries'] if not (e['role'] == 'InteriorFloor' and e['assembly_id'] in slabs)]
+        excluded['interpretation'] = ('F- or C-factor constructions have no layers. The adiabatic F-factor slabs with no exposed perimeter '
+                                      'are ground floors (ADR 0046 section 11) and are left out of the floor mass (ADR 0045).')
+        restore(record, key, 'unified', 'provenance', 'excluded_ground_constructions', excluded)
+    return True
+
+
 def edit(files):
     """(edited files, {old ID: new ID})."""
+    files = with_ground_floors(files)
     files = with_alternates(files)
     library = library_ids(files)
     sets = set_ids(files, library)
@@ -262,7 +370,7 @@ def edit(files):
     if chained:
         record = {'schema_version': '1.0.0', 'decision': 'docs/adr/0046-release-2-0-0.md',
                   'description': 'IDs of release 2.0.0 as first committed (and of release 1.6.0, which it kept) mapped to their '
-                                 're-derived values (ADR 0046 section 8).',
+                                 're-derived values (ADR 0046 sections 8 and 11).',
                   'ids': dict(sorted(chained.items()))}
         out[ID_MAP] = (layered(record, 1)+'\n').encode('utf-8')
     return out, ids
@@ -272,7 +380,7 @@ def manifest(files, listed):
     listed = json.loads(json.dumps(listed))
     listed['files'] = {p: {'sha256': atlas_snapshot.sha(d), 'bytes': len(d)} for p, d in sorted(files.items())}
     edits = [e for e in listed.get('edited_by', []) if e.get('command') != 'python -m scripts.release_editor']
-    listed['edited_by'] = [*edits, {'stages': ['B1', 'B3'], 'command': 'python -m scripts.release_editor', 'id_map': ID_MAP,
+    listed['edited_by'] = [*edits, {'stages': ['B1', 'B3', 'IECC ground floors'], 'command': 'python -m scripts.release_editor', 'id_map': ID_MAP,
                                     'inputs': [ALTERNATES.relative_to(ROOT).as_posix()],
                                     'decision': 'docs/adr/0046-release-2-0-0.md'}]
     listed['status'] = STATUS

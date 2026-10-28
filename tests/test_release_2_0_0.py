@@ -136,6 +136,34 @@ class AlternateTests(unittest.TestCase):
         self.assertGreater(counted, 1000)
 
 
+class GroundFloorTests(unittest.TestCase):
+    """The IECC adiabatic F-factor slabs are ground floors (BEMGen's report, ADR 0046 section 11)."""
+
+    def test_no_assignment_contradicts_its_target_and_no_slab_is_an_interior_floor(self):
+        from scripts.atlas_constructions import ConstructionSuite
+        from scripts.release_editor import GROUND_MODELS
+        release = ROOT/'data/atlas-releases/v2.0.0'
+        evidence = {p.relative_to(release).as_posix(): p.read_text(encoding='utf-8') for p in (release/'evidence/commercial').rglob('*.json')}
+        corrected = 0
+        for folder in sorted((release/'commercial').glob('iecc-*')):
+            files = {p.relative_to(release).as_posix(): p.read_text(encoding='utf-8') for p in folder.rglob('*.json')
+                     if '/constructions/' in p.as_posix() or '/library/' in p.as_posix()}
+            suite = ConstructionSuite({**files, **evidence})
+            ground = {k for k, a in suite.library['assemblies'].items() if a.get('model') in GROUND_MODELS}
+            for sid, record in suite.sets.items():
+                for key in record['contexts']:
+                    document = suite.export(sid, key, 'detailed')
+                    for role, component in document['components'].items():
+                        allowed = component.get('target', {}).get('boundary_conditions')
+                        for assignment in component['assignments']:
+                            if allowed and 'boundary_condition' in assignment['when']:
+                                self.assertIn(assignment['when']['boundary_condition'], allowed, (sid, key, role))
+                    budgets = document['mass_accounting'].get('physical_capacity_budgets', {}).get('InteriorFloor', [])
+                    self.assertFalse(any(b['source_assembly_id'] in ground for b in budgets), (sid, key))
+                    corrected += sum(d['rule'] == 'source_boundary_correction' for d in document['metadata']['selection_decisions'])
+        self.assertEqual(corrected, 6*5*19)  # editions x types x climates, one corrected rule each
+
+
 class ExportSchemaTests(unittest.TestCase):
     def test_schemas_are_derived_from_the_previous_majors(self):
         from scripts import atlas_exports
