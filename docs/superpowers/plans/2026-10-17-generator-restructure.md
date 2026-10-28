@@ -572,3 +572,18 @@ Decisions, 2026-10-28 (logged; implement later together with O15):
   volume-or-peak question. The program water draw gains a per-person basis
   (minor schema bump). To check per template and for the DOE Ref apartments
   that both source fields exist.
+- O21 method DECISION (user, 2026-10-28): port both parts instead of a
+  pinned record pool. (1) ResStock's housing-characteristics sampler for the
+  apartment closure: 37 target characteristics, 67 tables with their
+  dependencies (1.26 M rows at revision dd25369f, mostly county and PUMA
+  geography, marginalised to state when packaged), sampled per unit with
+  rejection on the caller's inputs (state, floor-area bin, residents,
+  template construction era, building type) so the draw is exact for the
+  conditional; HVAC heating and cooling types clamped to the prototype's
+  systems. (2) The OpenStudio-HPXML annual equations (lighting, plug loads,
+  television, appliances, usage-level calibration), validated against the
+  Ruby recovery on a sample of records as the R1/R2 schedule study was. The
+  dwelling thermostat translation is reused. Choosing the method confirms the
+  O21 direction for apartment units. Setpoints follow ResStock: they depend
+  on climate zone, building type, HVAC type and tenure, not on the occupancy
+  draw.
