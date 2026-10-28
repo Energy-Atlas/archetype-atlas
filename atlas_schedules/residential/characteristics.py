@@ -21,8 +21,13 @@ topological order. Table rows are normalised to sum to one.
 
 The draws use their own PCG64 stream (`SeedSequence([unit_seed, STREAM_TAG])`), so the schedule
 streams of the same unit are unchanged.
+
+When ResStock has no unit matching every programme condition (for example no 8+ story 2000s unit
+with a ducted heat pump in New York, or no gas furnace with central AC in Alaska),
+`sample_relaxed` drops programme conditions in the fixed order of `RELAXATIONS` and reports the
+step it used; the caller's location, floor area and residents are never relaxed.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 import gzip
 import json
@@ -49,6 +54,10 @@ POSTERIOR = {"ASHRAE IECC Climate Zone 2004", "County and PUMA", "County", "PUMA
              "Income RECS2015", "Income RECS2020", "Geometry Floor Area", "Geometry Floor Area Bin",
              "Geometry Stories", "Geometry Building Type Height", "Bedrooms", "Occupants", *HVAC,
              "HVAC Heating Efficiency"}
+
+
+class NoUnitMatch(GeneratorError):
+    """The conditions leave zero probability in the source tables."""
 
 
 @dataclass(frozen=True)
@@ -205,8 +214,8 @@ class _Posterior:
                             weights.append(w)
         total = math.fsum(weights)
         if total <= 0:
-            raise GeneratorError("source_undefined", "/characteristics",
-                                 f"ResStock has no multifamily unit matching {conditions}")
+            raise NoUnitMatch("source_undefined", "/characteristics",
+                              f"ResStock has no multifamily unit matching {conditions}")
         self.weights = [w / total for w in weights]
 
     # Likelihood factors -------------------------------------------------------------------------------
@@ -350,3 +359,37 @@ def sample_characteristics(conditions: Conditions, unit_seed: int) -> dict:
     for hidden in ("County and PUMA", "County", "PUMA"):
         values.pop(hidden, None)
     return values
+
+
+def neighbour_vintages(state: str, vintages: tuple) -> tuple:
+    """The vintages and the decades either side of them, in `Vintage` option order."""
+    options = _load(state)[0]["Vintage"].options
+    picked = {i for i, option in enumerate(options) if option in vintages}
+    return tuple(options[i] for i in sorted({j for i in picked for j in (i - 1, i, i + 1) if 0 <= j < len(options)}))
+
+
+# Programme conditions dropped in this order when nothing matches: the height class first (it changes no
+# load), then the template era widened by one decade, then the prototype HVAC.
+RELAXATIONS = ("none", "height", "vintage", "height+vintage", "hvac", "height+vintage+hvac")
+
+
+def relaxed(conditions: Conditions, step: str) -> Conditions:
+    changes = {}
+    if "height" in step:
+        changes["height"] = None
+    if "vintage" in step:
+        changes["vintages"] = neighbour_vintages(conditions.state, conditions.vintages)
+    if "hvac" in step:
+        changes["hvac"] = None
+    return replace(conditions, **changes)
+
+
+def sample_relaxed(conditions: Conditions, unit_seed: int) -> tuple[dict, str]:
+    """(characteristics, relaxation step) from the first step of `RELAXATIONS` with a matching unit."""
+    first = None
+    for step in RELAXATIONS:
+        try:
+            return sample_characteristics(relaxed(conditions, step), unit_seed), step
+        except NoUnitMatch as error:
+            first = first or error
+    raise first

@@ -1,41 +1,25 @@
-"""Apartment units as ResStock multifamily units (rulings 185-187; plan section 8, B6)."""
-import copy
+"""Apartment units as ResStock multifamily units (rulings 185-187; plan section 8, B6-B7)."""
 import math
 import unittest
-from unittest import mock
 
 import numpy as np
 
 from atlas_schedules import generator, programmes
-from atlas_schedules.calendar import evaluate_rules
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.request import Location
 from atlas_schedules.residential.annual import annual_loads
-from atlas_schedules.residential.apartment import FT2_PER_M2, hot_water_m3_per_person, resstock_unit
+from atlas_schedules.residential.apartment import FT2_PER_M2, resstock_unit
 from atlas_schedules.residential.arguments import unit_arguments
 from atlas_schedules.residential.shapes import fan_months
 from atlas_schedules.residential.tables import load_drybulb
 
 APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # 90.1-2007 high-rise apartment unit
+MIDRISE = "doe-ref-pre-1980.midrise-apartment.source.apartment.413afb"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5, "climate_zone": "4A"}
 
 
-def resstock_recipe() -> dict:
-    """The prototype recipe with the ResStock block that stage B7 writes from the release."""
-    recipe = copy.deepcopy(programmes.load_recipe(APARTMENT))
-    shape = evaluate_rules(programmes.schedules()[recipe["caller_water"]["schedule"]])[0]
-    people = next(c for c in recipe["controls"] if c["slot"] == "occupants")["people"]["density"]
-    recipe["resstock_unit"] = {
-        "building_type": "Multi-Family with 5+ Units", "height": "Multi-Family with 5+ Units, 8+ Stories",
-        "vintages": ["2000s"], "hvac": ["Electricity", "Ducted Heat Pump", "Ducted Heat Pump", "None", "No"],
-        "hot_water_m3_per_person": hot_water_m3_per_person(recipe["caller_water"], shape, people)}
-    return recipe
-
-
 def generate(*units, seed=7):
-    recipe, real = resstock_recipe(), generator.load_recipe
-    with mock.patch.object(generator, "load_recipe", lambda pid: recipe if pid == APARTMENT else real(pid)):
-        return generator.generate({"schema_version": "3.0.0", "seed": seed, "instances": list(units)})
+    return generator.generate({"schema_version": "3.0.0", "seed": seed, "instances": list(units)})
 
 
 def unit(key, residents, area=80.0, **location):
@@ -69,7 +53,7 @@ class Units(unittest.TestCase):
     def test_hot_water_is_per_resident_and_timed_by_the_units_fixture_events(self):
         bundle = generate(unit("a", 1), unit("b", 3))
         owners = {o["key"]: o for o in bundle["owners"]}
-        per_person = resstock_recipe()["resstock_unit"]["hot_water_m3_per_person"]
+        per_person = programmes.load_recipe(APARTMENT)["resstock_unit"]["hot_water_m3_per_person"]
         self.assertAlmostEqual(per_person * 1000 / 365, 66.33, places=2)
         for key, residents in (("a", 1), ("b", 3)):
             water = owners[f"{key}/water"]["loads"][0]
@@ -82,7 +66,7 @@ class Units(unittest.TestCase):
 
     def test_drawn_residents_include_vacant_units(self):
         location = Location(**LOCATION)
-        spec = resstock_recipe()["resstock_unit"]
+        spec = programmes.load_recipe(APARTMENT)["resstock_unit"]
         vacant = next(s for s in range(1, 400) if resstock_unit(spec, location, 80.0, "resstock", s, "pcg64", None).generation["residents"] == 0)
         result = resstock_unit(spec, location, 80.0, "resstock", vacant, "pcg64", None)
         self.assertEqual(result.water[0], 0.0)
@@ -91,12 +75,41 @@ class Units(unittest.TestCase):
     def test_requests_and_determinism(self):
         self.assertEqual(generate(unit("u", 2)), generate(unit("u", 2)))
         with self.assertRaises(GeneratorError) as caught:
-            generator.generate({"schema_version": "2.0.0", "seed": 7, "instances": [
-                {k: v for k, v in unit("u", "resstock").items()}]})
+            generator.generate({"schema_version": "2.0.0", "seed": 7, "instances": [unit("u", "resstock")]})
         self.assertEqual(caught.exception.code, "invalid_request")
+        drawn = next(o for o in generate(unit("u", "resstock"))["owners"] if o["key"] == "u")
+        self.assertEqual(drawn["generation"]["residents_mode"], "resstock")
         with self.assertRaises(GeneratorError) as caught:
-            generator.generate({"schema_version": "3.0.0", "seed": 7, "instances": [unit("u", "resstock")]})
-        self.assertEqual(caught.exception.code, "unsupported_input")   # prototype recipe: the caller gives residents
+            generate({k: v for k, v in unit("u", 2).items() if k != "extent"})
+        self.assertEqual(caught.exception.code, "missing_input")
+
+
+class Recipes(unittest.TestCase):
+    def test_every_apartment_recipe_is_a_resstock_unit(self):
+        recipes = [r for r in map(programmes.load_recipe, (p.stem for p in (programmes.DATA / "recipes").glob("*.json")))
+                   if r["kind"] == "apartment_unit"]
+        self.assertEqual(len(recipes), 38)
+        for recipe in recipes:
+            spec = recipe["resstock_unit"]
+            self.assertNotIn("slots", recipe)
+            self.assertAlmostEqual(spec["hot_water_m3_per_person"] * 1000 / 365, 66.33, places=2)
+            midrise = recipe["source"]["building_type"] == "MidriseApartment"
+            self.assertEqual(spec["height"], "Multi-Family with 5+ Units, " + ("4-7" if midrise else "8+") + " Stories")
+            self.assertEqual(spec["hvac"][:3], ["Natural Gas", "Ducted Heating", "Central AC"] if midrise
+                             else ["Electricity", "Ducted Heat Pump", "Ducted Heat Pump"])
+        self.assertEqual(programmes.load_recipe(MIDRISE)["resstock_unit"]["vintages"],
+                         ["<1940", "1940s", "1950s", "1960s", "1970s"])
+
+    def test_programme_conditions_relax_in_order_where_resstock_has_no_match(self):
+        spec = programmes.load_recipe(APARTMENT)["resstock_unit"]
+        cases = (({"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5, "climate_zone": "4A"}, "none"),
+                 # no 8+ story 2000s unit with a ducted heat pump in New York's zone 4A
+                 ({"state": "NY", "latitude": 40.78, "longitude": -73.97, "utc_offset": -5, "climate_zone": "4A"}, "vintage"),
+                 # no unit with a ducted heat pump in Alaska's zone 7
+                 ({"state": "AK", "latitude": 61.22, "longitude": -149.9, "utc_offset": -9, "climate_zone": "7AK"}, "hvac"))
+        for location, step in cases:
+            result = resstock_unit(spec, Location(**location), 80.0, 2, 11, "pcg64", None)
+            self.assertEqual(result.generation["relaxation"], step, location["state"])
 
 
 if __name__ == "__main__":

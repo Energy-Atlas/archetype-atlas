@@ -1,9 +1,11 @@
-"""Annual targets and amplitude fitting.
+"""Annual totals and amplitudes: the two bindings of a load to its schedule.
 
-A load's annual target is fixed from the original source magnitude and the
-original source shape, before any sampling or transform. The generated shape is
-then scaled by an effective amplitude so its annual integral equals that
-target. The amplitude is a fitted value, not an installed rating.
+- Source magnitude (commercial and fixed programmes, shared water services; O15): the
+  amplitude is the installed density or peak flow, and the annual total is
+  `annual_target(magnitude, unit, generated shape)`, so it follows the draw, as in ComStock.
+- Annual (ResStock dwellings and apartment units): the annual total is fixed first, and
+  `fit_amplitude` gives the design level that makes the generated shape integrate to it, as
+  OpenStudio-HPXML `calc_design_level_from_annual_kwh` does.
 """
 import numpy as np
 

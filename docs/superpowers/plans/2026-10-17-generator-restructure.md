@@ -673,3 +673,38 @@ Stage log B1-B6 (2026-10-28, local commits on `codex/schedule-power-binding`):
   for ceiling-fan months; fixture events that outlast a departure stay as
   upstream (0.6 % of a one-resident unit's water in empty hours, against 30 %
   under the prototype schedule).
+
+Stage log B7 (2026-10-28, rebased on main 08a3fbcb after PR #27):
+- `scripts/build_apartment_units.py` (`--check`) writes the 38 apartment-unit
+  recipes (36 from 90.1, 2 from DOE Ref) as ResStock units from release
+  2.0.0's `generator.json`, the prototype geometry and `systems.json`:
+  Midrise (4 stories, 31 apartments) is `Multi-Family with 5+ Units, 4-7
+  Stories` with a gas furnace and central AC; Highrise (10 stories, 79
+  apartments) is `8+ Stories` with a ducted heat pump (ResStock has no
+  water-loop heat pump); eras 90.1-2007 2000s, 90.1-2013 and 2019 2010s,
+  DOE Ref Pre-1980 to the 1970s, DOE Ref 1980-2004 1980s-2000s. Both P2
+  source fields exist for every template and DOE Ref: 66.33 L/person/day for
+  all 38. `scripts/build_reference_recipes.py` writes its two apartments
+  through the same function.
+- The generator's prototype apartment path is removed (every apartment
+  recipe is a ResStock unit); 16 schedules only it used left
+  `schedules.json`. Release 2.0.0 keeps the 2.x apartment recipes in its
+  `generator.json`; the next release carries these.
+- Agent decision (to confirm with the user): in 45 of about 500 state x
+  climate-zone x programme cells ResStock has no unit matching every
+  programme condition (32 cold-climate cells for the high-rise 90.1-2007
+  heat pump, 5 for 90.1-2013, and Alaska zones 7 and 8 for every programme).
+  The sampler then drops programme conditions in a fixed order: the height
+  class, the era widened by one decade, both, the HVAC, all. The caller's
+  location, floor area and residents are never relaxed; each unit records
+  the step in `generation.relaxation`.
+
+Stage log B8 (2026-10-28): commercial and fixed demands and shared water
+services bind their source value (`generator._loads`, `_service_owner`); the
+annual total is `value × Σ generated × s`. ResStock dwellings keep their annual
+totals. The legacy v0.8.0 keys still check every shape; their commercial totals
+are checked through the shape integral (`tests/schedules/helpers.assert_binding`).
+Composition parents' mixed loads are checked against their members instead
+(`test_request`), since source magnitudes now weight the member shapes. A native
+`flat_days` data-centre load binds a zero schedule and gives zero energy instead
+of `zero_generated_integral`. 87 schedules tests pass.

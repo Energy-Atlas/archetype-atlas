@@ -44,7 +44,7 @@ class SeasonShift(unittest.TestCase):
         self.assertAlmostEqual(float(south[january].mean()), float(north[july].mean()), delta=1e-3 * north.mean())
 
     def test_southern_apartment_lights_later_in_january(self):
-        unit = {"key": "u", "program_id": APARTMENT, "residents": 2,
+        unit = {"key": "u", "program_id": APARTMENT, "residents": 2, "extent": {"floor_area": 80.0},
                 "location": {"state": "CA", "latitude": -33.87, "longitude": 151.21, "utc_offset": 10}}
         bundle = generate({"schema_version": "2.0.0", "seed": 7, "instances": [unit]})
         days = np.asarray(bundle["schedules"]["schedule:u:lighting_interior"]["values"]).reshape(365, 24)

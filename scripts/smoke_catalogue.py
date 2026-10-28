@@ -44,7 +44,7 @@ def main() -> None:
     failures = collections.defaultdict(list)
     for path in sorted((DATA / "recipes").glob("*.json")):
         recipe = json.loads(path.read_text(encoding="utf-8"))
-        if not recipe["slots"] and recipe["kind"] not in ("composition",):
+        if not recipe.get("slots") and recipe["kind"] not in ("composition", "apartment_unit"):
             counts["inactive"] += 1
             continue
         instances = [_instance(recipe)]

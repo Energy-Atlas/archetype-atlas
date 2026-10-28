@@ -32,6 +32,24 @@ def assert_schedule(test, label, values, packed):
     test.assertLessEqual(float(np.abs(values[SAMPLE_HOURS] - np.asarray(packed["sample"])).max()), TOLERANCE, label)
 
 
+def assert_binding(test, load, binding, source_value=None):
+    """A load against a legacy binding. ResStock loads (per dwelling) keep their annual totals, so both
+    match. Every other load binds its source magnitude since O15 while the legacy generator fitted an
+    amplitude to a fixed total: both bindings scale the same generated shape, so total / amplitude
+    (its integral) must agree, and the amplitude is the source value where the test knows it."""
+    if load["unit"].endswith("/dwelling"):
+        test.assertAlmostEqual(load["amplitude"] / binding["amplitude"], 1, delta=1e-9)
+        test.assertAlmostEqual(load["annual_total"] / binding["annual_total"], 1, delta=1e-9)
+        return
+    if source_value is not None:
+        test.assertAlmostEqual(load["amplitude"] / source_value, 1, delta=1e-12)
+    if binding["annual_total"] == 0 or binding["amplitude"] == 0:
+        test.assertEqual(load["annual_total"], 0)
+        return
+    ratio = (load["annual_total"] / binding["annual_total"]) / (load["amplitude"] / binding["amplitude"])
+    test.assertAlmostEqual(ratio, 1, delta=1e-9)
+
+
 def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
     """(v2 request, {legacy owner key: v2 owner key})."""
     units = {}
@@ -81,9 +99,14 @@ def retired(*texts) -> bool:
 
 
 def rebuilt(program_id: str | None) -> bool:
-    """Whether a programme belongs to a family the legacy keys no longer describe."""
-    return program_id is not None and (program_id in RETIRED_IDS
-                                       or load_recipe(program_id)["source"].get("building_type") in REBUILT_BUILDING_TYPES)
+    """Whether a programme belongs to a family the legacy keys no longer describe (apartment units are
+    ResStock units since plan section 8, B7)."""
+    if program_id is None:
+        return False
+    if program_id in RETIRED_IDS:
+        return True
+    recipe = load_recipe(program_id)
+    return recipe["kind"] == "apartment_unit" or recipe["source"].get("building_type") in REBUILT_BUILDING_TYPES
 
 
 def without_rebuilt(legacy_request: dict) -> dict:
