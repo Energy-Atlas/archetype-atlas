@@ -17,10 +17,22 @@ readable port of the upstream schedule code
   (revision dd25369f): each apartment unit is drawn as a ResStock multifamily
   unit, with its appliances, lamp mix, thermostat and annual energy per end use.
 
-Generation needs Python 3.11+, numpy and jsonschema (`requirements.txt`). No
-OpenStudio, Ruby or network access is needed at run time.
+Generation needs Python 3.11+, numpy and jsonschema. No OpenStudio, Ruby or
+network access is needed at run time.
 
 ## Quick start
+
+Install the `atlas-schedules` wheel attached to its GitHub release
+([ADR 0049](adr/0049-atlas-schedules-packaging.md); the package is not on PyPI;
+the generator version is the package version, 3.0.0):
+
+```bash
+pip install https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v3.0.0/atlas_schedules-3.0.0-py3-none-any.whl
+atlas-schedules office-and-retail.json -o bundle.json
+```
+
+From a checkout, with `requirements.txt` installed, `python -m atlas_schedules`
+runs the same command:
 
 ```bash
 python -m atlas_schedules docs/examples/schedule-generator/office-and-retail.json -o bundle.json
@@ -31,7 +43,11 @@ from atlas_schedules import generate
 bundle = generate(request)   # request: dict following schema 3.0.0
 ```
 
-Example requests live in `docs/examples/schedule-generator/`.
+Example requests live in `docs/examples/schedule-generator/`. Each bundle
+records its `generator_version`; the packaged recipes of generator 3.0.0 were
+built from atlas release 2.0.0 and are carried by release 2.1.0 (ADR 0049).
+To build the wheel from a checkout: `pip install -r requirements-dev.txt` and
+`python -m build`.
 
 ## Request (schema 3.0.0)
 

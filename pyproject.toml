@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas-schedules"
+# The version is the generator's version constant (ADR 0049); tests/test_package.py keeps them equal.
+dynamic = ["version"]
+description = "Deterministic 8,760-hour schedule generator for the Archetype Atlas: a readable port of the ComStock and ResStock schedule code"
+readme = { file = "docs/schedule-generator.md", content-type = "text/markdown" }
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "The Archetype Atlas authors" }]
+keywords = ["building energy", "schedules", "ComStock", "ResStock", "OpenStudio", "EnergyPlus"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy>=1.26",
+    "jsonschema>=4.18",
+]
+
+[project.urls]
+Repository = "https://github.com/Energy-Atlas/archetype-atlas"
+Documentation = "https://github.com/Energy-Atlas/archetype-atlas/blob/main/docs/schedule-generator.md"
+Changelog = "https://github.com/Energy-Atlas/archetype-atlas/blob/main/CHANGELOG.md"
+
+[project.scripts]
+atlas-schedules = "atlas_schedules.__main__:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.dynamic]
+version = { attr = "atlas_schedules.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["atlas_schedules*"]
+
+[tool.setuptools.package-data]
+# The recipes, pinned tables, weather, notices and the request schema ship with the code.
+atlas_schedules = ["data/**/*.json", "data/**/*.gz", "schemas/*.json"]

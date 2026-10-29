@@ -72,6 +72,19 @@ turns programmes, extents and a seed into 8,760-hour schedules, with each annual
 load target bound to its generated shape. It is a readable port of ComStock /
 openstudio-standards 0.8.6 hours-of-operation sampling and of OpenStudio-HPXML's
 ResStock occupant model ([ADR 0035](docs/adr/0035-readable-generator-restructure.md)).
+
+Install it as the `atlas-schedules` package from the wheel attached to its GitHub
+release ([ADR 0049](docs/adr/0049-atlas-schedules-packaging.md); Python 3.11+, numpy
+and jsonschema; not on PyPI):
+
+```console
+pip install https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v3.0.0/atlas_schedules-3.0.0-py3-none-any.whl
+atlas-schedules request.json -o bundle.json
+```
+
+From a checkout, `python -m pip install -r requirements.txt` and `python -m
+atlas_schedules request.json` run the same code; `python -m build` (pinned in
+`requirements-dev.txt`) builds the wheel.
 - **90.1 recipes:** built from the frozen definitions.
 - **DOE Ref recipes:** written from release 2.0.0 under release IDs
   (`python -m scripts.build_reference_recipes`).
