@@ -1,6 +1,7 @@
 """The release a site build reads (ADR 0043) and the records it publishes.
 
-The newest folder under data/atlas-releases is read unless a release is named. The
+The newest folder under data/atlas-releases is read unless a release is named, or the release
+its manifest exports from (`exports.release`). The
 release is resolved and exported through scripts.atlas_exports.Release, never parsed
 on its own; this module only indexes the resolved files for the pages: folders,
 programs, construction sets, schedules, library tables, folder tables and evidence.
@@ -29,7 +30,13 @@ def releases():
 
 
 def newest():
-    return releases()[-1]
+    """The newest release, or the release its manifest exports from (2.1.0 adds generation parameters
+    only, so the site and the exports read 2.0.0; ADR 0049 section 4)."""
+    number = releases()[-1]
+    manifest = RELEASES/f'v{number}/manifest.json'
+    if manifest.is_file():
+        number = json.loads(manifest.read_bytes()).get('exports', {}).get('release', number)
+    return number
 
 
 def folder_of(path):

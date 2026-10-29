@@ -43,10 +43,11 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/daylighting-rules-lock.json
-      - name: Verify release 2.0.0, its export schemas and the source pipeline
+      - name: Verify releases 2.0.0 and 2.1.0, the export schemas and the source pipeline
         run: |
           python -m scripts.atlas_snapshot --verify
           python -m scripts.release_editor --check
+          python -m scripts.release_2_1_0 --check
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
           python -m scripts.daylighting_rules_review --check

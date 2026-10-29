@@ -1,0 +1,32 @@
+{
+ "configurations":{
+  "warehouse__doe_ref_1980_2004__source":{
+   "building_type":"warehouse",
+   "invert_rule_days":false,
+   "people":[["doe-ref-1980-2004.warehouse.warehouse-bldg-occ.dfba62",4.997475932348392]]
+  }
+ },
+ "programs":{
+  "doe-ref-1980-2004.warehouse.department.storage-mixed.2010e5":{
+   "method":"composition",
+   "schema_version":"1.0.0",
+   "views":{"source":{}}
+  },
+  "doe-ref-1980-2004.warehouse.source.bulk.d40db9":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"warehouse__doe_ref_1980_2004__source"}}
+  },
+  "doe-ref-1980-2004.warehouse.source.fine.7bf7d2":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"warehouse__doe_ref_1980_2004__source"}}
+  },
+  "doe-ref-1980-2004.warehouse.source.office.778b16":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"warehouse__doe_ref_1980_2004__source"}}
+  }
+ },
+ "schema_version":"1.0.0"
+}

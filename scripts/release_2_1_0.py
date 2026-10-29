@@ -1,7 +1,7 @@
 """Write release 2.1.0: the generation parameters with the programs, a delta on 2.0.0 (ADR 0049).
 
 python -m scripts.release_2_1_0            # write data/atlas-releases/v2.1.0 from the packaged recipes
-python -m scripts.release_2_1_0 --check    # stage P1 gate: assemble from 2.0.0 with the derived blocks
+python -m scripts.release_2_1_0 --check    # verify it; before stage P3 also rebuild it and repeat the gate on it
 
 The generator packaged 1,585 recipes, 186 services, 120 configurations and a schedule table that
 repeat release 2.0.0's values. This writes what the release does not already state:
@@ -29,6 +29,7 @@ from pathlib import Path
 from atlas_schedules import programmes
 from atlas_schedules.release import Release
 from scripts.common import ROOT
+from scripts.iecc_commercial_values import layered
 
 RELEASES = ROOT/'data/atlas-releases'
 BASE = RELEASES/'v2.0.0'
@@ -275,11 +276,129 @@ def gate():
     return packaged, docs, definition
 
 
+README = """# Energy Archetype Atlas release 2.1.0 (generation parameters, delta on 2.0.0)
+
+A delta on release 2.0.0 (ADR 0049): this folder holds only its own files, and a reader
+resolves every other path in `../v2.0.0/`, whose manifest hash `manifest.json` records.
+It adds the stochastic schedule generator's parameters to the programs and retires each
+folder's `generator.json`; no program, schedule, service or construction value changes, and
+no ID moves (the program ID rule leaves `generation` out).
+
+- `<family>/<template>/<building type>/generation.json`: the folder's program `generation`
+  blocks (method and, per view, the parameters the record cannot give), its services'
+  blocks and its building configurations. A program reads with its block as `generation`.
+- `definition-map.json`: each definition program ID the generator took before this release,
+  with its release program and view (`values`), and each definition service ID with its
+  release service.
+
+The generator (`atlas_schedules`, generator 3.0.0) reads this release beside its base.
+Program JSON exports stay those of 2.0.0. Write and check with
+`python -m scripts.release_2_1_0 [--check]`. Upstream notices are in `../v2.0.0/notices/`;
+original Atlas data is CC BY 4.0 (see `LICENSE`).
+"""
+
+
+def text(value, depth=3):
+    """Compact storage (ADR 0046 P9): one record per line down to `depth` levels."""
+    return (layered(value, depth)+'\n').encode('utf-8')
+
+
+def digest(folder):
+    """SHA-256 over a packaged folder's relative paths and file hashes."""
+    out = hashlib.sha256()
+    for path in sorted(p for p in folder.rglob('*') if p.is_file()):
+        out.update(path.relative_to(folder).as_posix().encode()+b'\0'+hashlib.sha256(path.read_bytes()).digest())
+    return out.hexdigest()
+
+
+def build():
+    """{release path: bytes} of release 2.1.0, its manifest last."""
+    packaged, docs, definition = gate()
+    base = Release(BASE)
+    files = {f'{folder}/generation.json': text(doc) for folder, doc in docs.items()}
+    files['definition-map.json'] = text(definition, 2)
+    files['README.md'] = README.encode('utf-8')
+    files['LICENSE'] = (ROOT/'LICENSE').read_bytes()
+    methods = defaultdict(int)
+    for doc in docs.values():
+        for block in doc.get('programs', {}).values():
+            methods[block['method']] += 1
+    manifest = {
+        'schema_version': '1.0.0', 'kind': 'atlas_release', 'release': '2.1.0', 'status': 'released',
+        'scope': 'generation parameters of the commercial and residential programs',
+        'decision': ['docs/adr/0049-publishing-programs-and-generator.md'],
+        'base_release': {'release': '2.0.0', 'path': 'data/atlas-releases/v2.0.0', 'manifest_sha256': base.manifest_sha256},
+        'generation': {'schema_version': SCHEMA},
+        'exports': {'release': '2.0.0', 'reason': 'no exported value changes; Program JSON 5.4.0 is read from 2.0.0'},
+        'generated_by': 'python -m scripts.release_2_1_0',
+        'input_sha256': {f'atlas_schedules/data/{name}': digest(DATA/name) for name in ('configurations', 'recipes', 'services')}
+                        | {'atlas_schedules/data/schedules.json': hashlib.sha256((DATA/'schedules.json').read_bytes()).hexdigest()},
+        'counts': {'generation_folders': len(docs), 'programs_with_generation': sum(methods.values()),
+                   'methods': dict(sorted(methods.items())),
+                   'services_with_generation': sum(len(d.get('services', {})) for d in docs.values()),
+                   'configurations': sum(len(d.get('configurations', {})) for d in docs.values()),
+                   'definition_programs': len(definition['programs']), 'definition_services': len(definition['services'])},
+        'retired': sorted(p for p in base.paths if p.endswith('/generator.json')),
+        'files': {p: {'bytes': len(d), 'sha256': hashlib.sha256(d).hexdigest()} for p, d in sorted(files.items())},
+    }
+    files['manifest.json'] = text(manifest)
+    return files
+
+
+def verify(folder=TARGET):
+    """Every listed file has its hash and nothing else is in the folder; the base is the one recorded."""
+    release = Release(folder)
+    listed = release.manifest['files']
+    present = {p.relative_to(folder).as_posix() for p in folder.rglob('*') if p.is_file()} - {'manifest.json'}
+    bad = [p for p, entry in listed.items() if hashlib.sha256((folder/p).read_bytes()).hexdigest() != entry['sha256']]
+    if bad or present != set(listed):
+        raise SystemExit(f'Release 2.1.0: {len(bad)} files differ from the manifest; unlisted {sorted(present - set(listed))[:3]}, '
+                         f'missing {sorted(set(listed) - present)[:3]}')
+    return release
+
+
+def assembles(release):
+    """Every block assembles in every view, and every service and configuration (the release alone)."""
+    count = 0
+    for folder in release.generation_folders():
+        doc = release.generation(folder)
+        for rid, block in doc.get('programs', {}).items():
+            for view in block['views']:
+                programmes.assemble(release, rid, view)
+                count += 1
+        for sid in doc.get('services', {}):
+            programmes.assemble_service(release, sid)
+        for cid in doc.get('configurations', {}):
+            programmes.assemble_configuration(release, cid)
+    return count
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
-    gate()
+    if not args.check:
+        files = build()
+        if TARGET.exists():
+            for path in sorted(p for p in TARGET.rglob('*') if p.is_file()):
+                path.unlink()
+        for path, data in files.items():
+            (TARGET/path).parent.mkdir(parents=True, exist_ok=True)
+            (TARGET/path).write_bytes(data)
+        verify()
+        print(f'Release 2.1.0 written: {len(files)} files')
+        return
+    release = verify()
+    if (DATA/'recipes').is_dir():   # before stage P3: the packaged copies still check the blocks
+        files = build()
+        stale = [p for p, d in files.items() if not (TARGET/p).is_file() or (TARGET/p).read_bytes() != d]
+        if stale:
+            raise SystemExit(f'{len(stale)} release 2.1.0 files differ from the build, e.g. {stale[:3]}')
+        packaged = Packaged(Release(BASE))
+        differ, _ = packaged.check(release)
+        if differ:
+            raise SystemExit(f'Reading release 2.1.0: {len(differ)} differ from the packaged copies, e.g. {differ[:5]}')
+    print(f'Release 2.1.0 verified: {assembles(release)} program views assemble')
 
 
 if __name__ == '__main__':
