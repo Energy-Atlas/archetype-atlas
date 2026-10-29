@@ -1,5 +1,24 @@
 # Changelog
 
+## Zoning recommendations drop 2: the serial costs and the completed study — 2026-10-29
+
+- **Data drop 2** (ADR 0050 section 5): the consolidated files of BEMGen `38ff521`
+  (D-200 to D-203) replace drop 1 in place. `lod-recommendations.json` (schema 1.1.0)
+  keeps R3's 264 cells and recommendations and adds the R5 serial costs, a `cost` object
+  on the 12 timed references and 206 timed test sites and a `timing` block (gate verdict,
+  repeat check, medians by zoning and prototype); `lod-recommendations-ht.json` carries
+  the zoning of its 24 failed small-hotel sites; `provenance.json` records the four
+  BEMGen builds, every stage's suite, run and gate verdict, the report and methodology
+  paths and nothing pending. The schema copy is 1.1.0 and the loader accepts both
+  versions.
+- **Pages**: cost columns (CPU, wall and memory ratio to the reference; "not timed" for
+  the medium office, the primary school and every cell outside the 12 timed ones) in the
+  summary tables and the timed cells' zoning tables; a cost section on the overview with
+  the writer's medians by prototype and by zoning; the status says every stage is
+  complete and links the report, methodology, run plan and results; the method page gains
+  the cost protocol, the reading cautions of the report and D-201's wording for the
+  failed sites.
+
 ## Zoning recommendations of the geometric LOD study on the site — 2026-10-29
 
 - **Data drop 1** (ADR 0050): `data/lod-recommendations/v1/` holds BEMGen's
