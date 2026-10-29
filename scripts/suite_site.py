@@ -11,6 +11,7 @@ function of the release and the scripts; `site-manifest.json` records the releas
 the input digest and every page and export.
 """
 import argparse
+import ast
 import concurrent.futures
 import hashlib
 import json
@@ -32,7 +33,12 @@ REPRESENTATIONS = ('detailed', 'unified')
 GUIDES = ('selection.md', 'schedules.md', 'program-json.md', 'construction-json.md', 'definitions.md',
           'doe-reference-reconciliation.md', 'construction-only-programs.md', 'iecc-commercial.md',
           'residential-dwellings.md', 'iecc-residential.md', 'manufactured-housing.md')
-DIGEST_INPUTS = ('scripts', 'website', 'schemas', 'mkdocs.yml', 'requirements-site.txt')
+# Besides the modules the generator imports (`generator_modules`), and the policy and input files they read.
+DIGEST_INPUTS = ('scripts/__init__.py', 'website', 'schemas', 'mkdocs.yml', 'requirements-site.txt',
+                 'sources/program-composition-policy.json',
+                 'sources/dhw-conversion-evidence-lock.json', 'data/program-inputs/residential-v1.json',
+                 'data/program-inputs/er-triage-v1.json', 'data/program-inputs/dhw-conversion-v1.json',
+                 'data/system-inputs/source-v1.json')
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._:-]{5,}$')
 # Not `library/`: a template library page must never share a path with a building-type folder page.
 LIBRARY = 'template-library'
@@ -90,6 +96,31 @@ def unordered(executor, function, items, window):
 
 # Inputs and placement.
 
+def imported_modules(path):
+    """The repository modules a Python file imports by absolute name."""
+    out = []
+    for node in ast.walk(ast.parse(path.read_text(encoding='utf-8'))):
+        names = [node.module] if isinstance(node, ast.ImportFrom) and node.module and not node.level else \
+            [alias.name for alias in node.names] if isinstance(node, ast.Import) else []
+        out.extend(name for name in names if name.split('.')[0] in ('scripts', 'atlas_schedules'))
+    return out
+
+
+def generator_modules():
+    """The repository modules the generator and the MkDocs hooks import, directly or not, sorted: only these
+    scripts enter the digest."""
+    seen = set()
+    todo = ['scripts.suite_site'] + [m for hook in sorted((ROOT/'website/hooks').glob('*.py')) for m in imported_modules(hook)]
+    while todo:
+        module = todo.pop()
+        path = ROOT/(module.replace('.', '/')+'.py')
+        if module in seen or not path.is_file():
+            continue
+        seen.add(module)
+        todo.extend(imported_modules(path))
+    return sorted(seen)
+
+
 def inputs_digest(number):
     """SHA-256 over the release manifests and everything the generator and MkDocs read from the checkout."""
     paths = []
@@ -98,6 +129,7 @@ def inputs_digest(number):
     paths.append(release/'manifest.json')
     if manifest.get('base_release'):
         paths.append(ROOT/manifest['base_release']['path']/'manifest.json')
+    paths.extend(ROOT/(module.replace('.', '/')+'.py') for module in generator_modules())
     for name in DIGEST_INPUTS:
         path = ROOT/name
         paths.extend(sorted(p for p in path.rglob('*') if p.is_file() and '__pycache__' not in p.parts) if path.is_dir() else [path])

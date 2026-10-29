@@ -4,6 +4,7 @@ import unittest
 
 import yaml
 
+from scripts import ci_tests, suite_site
 from scripts.common import ROOT
 
 REQUIRED = ('atlas (ubuntu-latest, 3.11)', 'atlas (windows-latest, 3.14)')
@@ -39,7 +40,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(linux['if'], 'always()')
         self.assertIn('needs.*.result', linux['steps'][0]['env']['RESULTS'])
         commands = runs(gated(REQUIRED[0]))
-        for command in ('unittest discover -s tests', 'scripts.atlas_snapshot --verify', 'scripts.atlas_exports --check-schemas',
+        for command in ('scripts.ci_tests --shard', 'scripts.atlas_snapshot --verify', 'scripts.atlas_exports --check-schemas',
                         'scripts.smoke_catalogue', 'scripts.audit'):
             self.assertIn(command, commands)
 
@@ -50,9 +51,47 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(windows['if'], 'always()')
         self.assertIn('needs.*.result', windows['steps'][0]['env']['RESULTS'])
         gated_jobs = gated(REQUIRED[1])
-        self.assertIn('unittest discover -s tests', runs(gated_jobs))
+        self.assertIn('scripts.ci_tests --shard', runs(gated_jobs))
         versions = {s['with']['python-version'] for j in gated_jobs for s in j['steps'] if 'python-version' in s.get('with', {})}
         self.assertEqual(versions, {'3.14'})
+
+    def test_unit_jobs_run_every_shard_on_both_platforms(self):
+        jobs = workflow('validate.yml')['jobs']
+        for name in ('unit-tests', 'windows-tests'):
+            self.assertEqual(jobs[name]['strategy']['matrix']['shard'], list(ci_tests.SHARDS), name)
+            self.assertIn('--shard ${{ matrix.shard }}', runs([jobs[name]]))
+
+    def test_shards_partition_the_suite(self):
+        shards = ci_tests.shards()
+        everything = [t.id() for t in ci_tests.flatten(unittest.defaultTestLoader.discover(str(ROOT/'tests')))]
+        ids = [t.id() for tests in shards.values() for t in tests]
+        self.assertEqual(sorted(ids), sorted(everything))
+        self.assertTrue(all(shards.values()))
+        self.assertTrue(all(ci_tests.shard_of(t) == 'schedules' for t in shards['schedules']))
+
+    def test_only_a_main_push_skips_the_full_jobs(self):
+        site = workflow('catalogue-site.yml')
+        self.assertEqual(site['jobs']['research']['with']['full'], "${{ github.event_name != 'push' }}")
+        self.assertIn('schedule', site['on'])
+        jobs = workflow('validate.yml')['jobs']
+        skipped = {name for name, j in jobs.items() if j.get('if') == 'inputs.full'}
+        self.assertEqual(skipped, {'unit-tests', 'schedules', 'windows-tests'})
+        self.assertNotIn('if', jobs['release'])
+        for gate in REQUIRED:  # a skipped job passes a gate only when the run is not full
+            step = job(gate)['steps'][0]
+            self.assertEqual(step['env']['FULL'], '${{ inputs.full }}')
+            self.assertIn('[ "$FULL" = false ] && [ "$result" = skipped ]', step['run'])
+
+    def test_site_cache_key_covers_what_the_site_reads(self):
+        steps = workflow('catalogue-site.yml')['jobs']['build']['steps']
+        cache = next(s for s in steps if s.get('id') == 'cache')
+        self.assertIn('build/site-docs', cache['with']['path'])
+        self.assertIn('build/site', cache['with']['path'].split())
+        self.assertIn('steps.digest.outputs.value', cache['with']['key'])
+        modules = suite_site.generator_modules()
+        for module in ('scripts.suite_site', 'scripts.atlas_exports', 'scripts.site_asset_versions'):  # the last via a hook
+            self.assertIn(module, modules)
+        self.assertNotIn('scripts.ci_tests', modules)
 
     def test_no_step_reads_a_retired_release(self):
         for name in ('validate.yml', 'catalogue-site.yml'):

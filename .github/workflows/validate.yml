@@ -1,6 +1,11 @@
 name: Validate archetype atlas
 on:
   workflow_call:
+    inputs:
+      full:
+        description: Run the unit, Windows and schedule jobs too (false only for a push to protected main)
+        type: boolean
+        default: true
 permissions:
   contents: read
 # Research checks run as parallel jobs behind the two required checks: "atlas
@@ -9,8 +14,17 @@ permissions:
 # only release in the tree (ADR 0046 section 7): it is verified by its file
 # checksums; the frozen releases and their reproductions live at the tag
 # frozen-data-2026-10-27.
+# The unit suite runs as two shards per platform (scripts/ci_tests.py). A push to main
+# runs only the release job: main takes only pull requests tested up to date with it
+# (strict branch protection), and the weekly run in catalogue-site.yml runs everything.
 jobs:
   unit-tests:
+    if: inputs.full
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [atlas, schedules]
+    name: unit-tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -26,7 +40,7 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-      - run: python -m unittest discover -s tests -v
+      - run: python -m scripts.ci_tests --shard ${{ matrix.shard }}
 
   release:
     runs-on: ubuntu-latest
@@ -57,6 +71,7 @@ jobs:
       - run: python -m scripts.audit
 
   schedules:
+    if: inputs.full
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -79,11 +94,18 @@ jobs:
       - name: Require every Linux research job to pass
         env:
           RESULTS: ${{ join(needs.*.result, ' ') }}
+          FULL: ${{ inputs.full }}
         run: |
-          echo "Linux research jobs: $RESULTS"
-          for result in $RESULTS; do [ "$result" = success ] || exit 1; done
+          echo "Linux research jobs: $RESULTS (full: $FULL)"
+          for result in $RESULTS; do [ "$result" = success ] || { [ "$FULL" = false ] && [ "$result" = skipped ]; } || exit 1; done
 
   windows-tests:
+    if: inputs.full
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [atlas, schedules]
+    name: windows-tests (${{ matrix.shard }})
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -99,8 +121,9 @@ jobs:
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
       - name: Verify release 2.0.0 on this platform
+        if: matrix.shard == 'atlas'
         run: python -m scripts.atlas_snapshot --verify
-      - run: python -m unittest discover -s tests -v
+      - run: python -m scripts.ci_tests --shard ${{ matrix.shard }}
 
   atlas-windows:
     name: atlas (windows-latest, 3.14)
@@ -112,6 +135,7 @@ jobs:
       - name: Require every Windows job to pass
         env:
           RESULTS: ${{ join(needs.*.result, ' ') }}
+          FULL: ${{ inputs.full }}
         run: |
-          echo "Windows jobs: $RESULTS"
-          for result in $RESULTS; do [ "$result" = success ] || exit 1; done
+          echo "Windows jobs: $RESULTS (full: $FULL)"
+          for result in $RESULTS; do [ "$result" = success ] || { [ "$FULL" = false ] && [ "$result" = skipped ]; } || exit 1; done
