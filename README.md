@@ -13,19 +13,23 @@ Buildings, DOE/PNNL Prototype Building Models (ASHRAE 90.1 and IECC, commercial
 and residential) and the PNNL manufactured-housing models. Source interpretations
 and coverage are recorded under `docs/` and `sources/`.
 
-## Release 2.0.0
+## Releases 2.0.0 and 2.1.0
 
 **Atlas release 2.0.0** (`data/atlas-releases/v2.0.0`, status `released`) is the
-only release in the tree ([ADR 0046](docs/adr/0046-release-2-0-0.md),
-[release notes](docs/release-notes-atlas-v2.0.0.md)). It is a full snapshot: open
-the folder alone, with no base release to resolve. It holds:
+full snapshot in the tree ([ADR 0046](docs/adr/0046-release-2-0-0.md),
+[release notes](docs/release-notes-atlas-v2.0.0.md)): open the folder alone, with no
+base release to resolve. **Release 2.1.0** (`data/atlas-releases/v2.1.0`) is a delta on
+it that adds the schedule generator's parameters as each program's `generation` block,
+in each folder's `generation.json`, and retires `generator.json`
+([ADR 0049](docs/adr/0049-publishing-programs-and-generator.md)); no program value or ID
+changes, and the exports and the site read 2.0.0. Release 2.0.0 holds:
 - the commercial programs, mixes, services, systems and water of the 90.1, DOE Ref
   and IECC templates, with lighting controls;
 - the residential tree (ResStock dwellings, IECC residential and manufactured-housing
   prototypes);
 - detailed and unified construction sets;
 - the generator recipes of the 90.1 and DOE Ref programs in each folder's
-  `generator.json`;
+  `generator.json` (retired by 2.1.0);
 - the PNNL prototype constructions of the 90.1 templates where they differ from
   openstudio-standards, as `alternates` (detailed constructions 4.3.0);
 - the evidence tree and upstream notices.
@@ -33,6 +37,7 @@ the folder alone, with no base release to resolve. It holds:
 ```console
 python -m scripts.atlas_snapshot --verify                 # every file against the manifest
 python -m scripts.release_editor --check                  # IDs follow their rules (id-map.json lists the changes)
+python -m scripts.release_2_1_0 --check                   # 2.1.0 against its manifest; every generation view assembles
 python -m scripts.atlas_exports --program ID --version filled
 python -m scripts.atlas_exports --construction SET --context KEY --representation detailed
 ```
@@ -72,13 +77,17 @@ turns programmes, extents and a seed into 8,760-hour schedules, with each annual
 load target bound to its generated shape. It is a readable port of ComStock /
 openstudio-standards 0.8.6 hours-of-operation sampling and of OpenStudio-HPXML's
 ResStock occupant model ([ADR 0035](docs/adr/0035-readable-generator-restructure.md)).
-- **90.1 recipes:** built from the frozen definitions.
-- **DOE Ref recipes:** written from release 2.0.0 under release IDs
-  (`python -m scripts.build_reference_recipes`).
+- **Recipes:** assembled from release 2.1.0, each program's record and `generation`
+  block; the generator holds no copy of release values. Requests name release program
+  IDs and a view (`source` or `filled`).
+- **DOE Ref and apartment blocks:** written from the release
+  (`python -m scripts.build_reference_recipes`, `python -m scripts.build_apartment_units`).
+- **Releases:** the generator ships as `generator-v3.0.0` (wheel and sdist) and the data
+  as `v2.1.0` (`python -m scripts.build_generator_release`), each with `SHA256SUMS`.
 - **Validation:** native OpenStudio / Ruby answer keys in `tests/answer_keys/` check
   it to 1e-6.
-- **Catalogue smoke:** `python -m scripts.smoke_catalogue` generates every packaged
-  recipe and service.
+- **Catalogue smoke:** `python -m scripts.smoke_catalogue` generates every program view
+  and service of the release.
 
 ## Source pipeline
 

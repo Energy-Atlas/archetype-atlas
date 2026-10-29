@@ -1,5 +1,34 @@
 # Changelog
 
+## Release 2.1.0 and generator 3.0.0: generation parameters published with the programs — 2026-10-29
+
+Breaking for generator previews (ADR 0049):
+- **Data release 2.1.0**, a delta on 2.0.0 (its manifest hash recorded). Each folder's
+  `generation.json` holds its programs' `generation` blocks (1,008 programs: 734
+  `comstock_hours`, 191 `composition`, 22 `fixed`, 20 `resstock_unit`, 41 `resstock_dwelling`),
+  its shared services' blocks (186) and its building configurations (120).
+  `definition-map.json` maps the 1,216 definition program IDs to release program and view and
+  150 definition service IDs to release services. The 83 `generator.json` files are retired,
+  with the stale 2.x apartment recipes. No program value changes and no ID moves: the program
+  ID rule leaves `generation` out (`release_editor --check`). Program JSON exports and the site
+  stay those of 2.0.0, labelled `atlas-release-2.0.0`.
+- **The generator reads the release.** Recipes, services and configurations are assembled from
+  the release programs and their blocks (`atlas_schedules.programmes.assemble`); the packaged
+  1,585 recipes, 186 services, 120 configurations and the schedule table are deleted. Before the
+  deletion every one equalled its assembled counterpart. Exceptions: 12 hotel corridor compositions
+  without a release program are retired, and 36 90.1 apartment-building fixed recipes take the
+  release heat fractions and drop a zero-density occupancy slot.
+- **Requests take release IDs and a view**: `program_id` is a release ID, with optional
+  `values: "source" | "filled"` (default filled where it exists); `service_id` and
+  `service_links` take release service IDs. `atlas_schedules.release.translate` rewrites a request
+  with definition IDs. Bundles record the release version and manifest hash, and each programme
+  owner its `values`.
+- **Generator 3.0.0** (`__version__`), packaged with `pyproject.toml` (flit_core 3.12.0, pinned
+  in `requirements-build.txt`). `python -m scripts.build_generator_release` builds the wheel and
+  sdist (`generator-v3.0.0`) and the data archive (`v2.1.0`, holding `v2.0.0/` and `v2.1.0/`),
+  each with `SHA256SUMS`. The generator reads releases from `ATLAS_RELEASES` or the source tree.
+  `build_reference_recipes` and `build_apartment_units` write generation blocks.
+
 ## Open licences for original work — 2026-10-29
 
 - Original code is now MIT-licensed and original data and documentation CC BY 4.0 (ADR 0048).

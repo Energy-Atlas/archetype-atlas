@@ -170,7 +170,7 @@ User decisions on the gap review, 2026-10-17:
 | O1 | Native programme-slot keys for the nine newer families | Done: 534 native cases, 2,834 slots exact (`test_family_programmes_native.py`) |
 | O2 | Flat-day zeroing by ComStock's base-to-peak step (data centres, flat weekend days) | Done: documented rule (flat days unchanged), `flat_days="native"` for keys; scan finds 0 zeroed days (was 488 pairs) |
 | O3 | Offices and Warehouse still use recipes migrated from the legacy package | Done: all 15 families builder-made; `test_recipes_native.py`; heat fractions restored |
-| O4 | Release build and checksum manifest | Not yet (user) |
+| O4 | Release build and checksum manifest | Done (ADR 0049): `scripts/build_generator_release.py` builds `generator-v3.0.0` and the `v2.1.0` data archive with `SHA256SUMS`; publishing awaits the user |
 | O5 | Run the updated CI on GitHub | Not now (user) |
 | O6 | Review hygiene: unused `holidays` argument, cross-module test helpers, legacy-key tests that skip silently | Done |
 | O7 | Answer-key extraction scripts cannot be rerun (inputs purged) | Accepted (user) |

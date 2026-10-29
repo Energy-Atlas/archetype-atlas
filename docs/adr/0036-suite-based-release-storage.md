@@ -77,6 +77,12 @@ generator recipe is part of the program file, which retires the separate recipe
 tree and the paired `__source`/`__reviewed` generator configurations. The
 `compositions` table disappears into the mix files.
 
+Amended by [ADR 0049](0049-publishing-programs-and-generator.md) (2026-10-29): the generation part of the recipe is the
+program's `generation` block, outside the program's ID, stored from release 2.1.0 in
+each folder's `generation.json` with the folder's building configurations; a program
+reads with its block. The block keeps a `source` and a `filled` view where the two
+generate differently, so the `__source`/`__reviewed` configurations stay.
+
 ### 4. Values, fillings and the two exports
 
 A program is one record; there are no source/reviewed twins.

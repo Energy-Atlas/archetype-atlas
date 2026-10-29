@@ -45,7 +45,7 @@ and do not supersede this current order.
 | 1 | Publish Program JSON v3 | Complete; live verified 2026-10-12 |
 | 2 | Publish integrated construction foundation/ground JSON and pages | Implemented and locally validated; publication preparation complete; clean-checkout/PR/main deployment gates pending |
 | Deferred | Complete systems JSON and simulation-ready variants | Deferred; not a foundation publication prerequisite |
-| Deferred | Package schedule generators | Readable generator merged, unreleased ([ADR 0035](adr/0035-readable-generator-restructure.md)); release deferred; not a construction publication or BEMGen-test prerequisite |
+| Ready to publish | Package schedule generators | Generator 3.0.0 packaged as its own release, reading the generation parameters of data release 2.1.0 ([ADR 0049](adr/0049-publishing-programs-and-generator.md)); GitHub releases await the user's approval |
 | 3–4 | BEMGen handoff and integration testing | v7 prepared; consumer acceptance pending; resolve reported Atlas defects; use existing schedule contracts |
 | 5 | Lighter site and decoupled artifact generation | Decided in [ADR 0036](adr/0036-suite-based-release-storage.md); implementation started on `codex/atlas-storage-restructure` |
 
@@ -169,8 +169,9 @@ water-use room gains and distribution-waste draws remain outside program scope.
 Shipping is deferred by the 2026-10-15 user decision: existing schedule contracts
 support the first BEMGen integration test, and the generator is not a
 prerequisite for publication. The readable [schedule generator](schedule-generator.md)
-(`atlas_schedules`, unreleased; [ADR 0035](adr/0035-readable-generator-restructure.md))
-is merged. It covers all 1,900 catalogue programmes across 15 ComStock building
+(`atlas_schedules`, [ADR 0035](adr/0035-readable-generator-restructure.md)) is merged,
+and [ADR 0049](adr/0049-publishing-programs-and-generator.md) publishes it as
+`generator-v3.0.0`, with its parameters in data release 2.1.0. It covers all 1,900 catalogue programmes across 15 ComStock building
 types, ResStock dwellings, apartment units and common areas, 186 shared hot-water
 services and the 16 DOE reference locations. Native OpenStudio / Ruby answer
 keys validate it. The earlier bit-exact v0.1.0–v0.8.0 builds were never
