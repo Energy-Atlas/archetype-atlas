@@ -1,5 +1,23 @@
 # Changelog
 
+## Zoning recommendations of the geometric LOD study on the site — 2026-10-29
+
+- **Data drop 1** (ADR 0050): `data/lod-recommendations/v1/` holds BEMGen's
+  `lod-recommendations.json` of the R3 main matrix (264 cells: 11 prototypes × 6 climate
+  zones × 90.1-2007 and 90.1-2019 × 0° and 45°), `lod-recommendations-ht.json` of the R4
+  heat-transfer sub-study (22 cells) and `provenance.json` (BEMGen `b29931c`, D-193, the
+  suite and run IDs, atlas inputs 2.0.0 at `96a2e928`, the threshold, digests). The
+  schema is copied to `schemas/lod-recommendations-v1.schema.json` and
+  `tests/test_lod_site.py` validates the files against it. A consolidated drop after the
+  R5 timing pass and the R6 report replaces the files in place.
+- **Site section "Zoning recommendations"** (`scripts/lod_site.py`, generated with the
+  suite pages): an overview, one page per prototype (climate zone × vintage × orientation
+  rows with the reference's annual sensible heating and cooling, the recommended zoning,
+  its annual errors, CV(RMSE), NMBE and conditioned-area change, then every zoning of
+  every cell and the atlas programs used), the heat-transfer sub-study and a method and
+  caveats page. Program pages the study used link to their prototype's page. The drop
+  joins the site's cache digest; `site_check` requires the pages.
+
 ## Atlas release 2.1.0: the open licence and the generator 3.0.0 recipes — 2026-10-29
 
 Release 2.1.0 is a delta on 2.0.0 (ADR 0046 section 12; `scripts/atlas_delta.py`, `--write`,

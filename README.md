@@ -73,7 +73,10 @@ under `data/atlas-releases` ([ADR 0043](docs/adr/0043-suite-based-site.md)):
   fillings and evidence in place;
 - one page per template × building type folder;
 - a `view/?id=` viewer for any ID;
-- one content-addressed JSON store holding every source and filled export.
+- one content-addressed JSON store holding every source and filled export;
+- the geometric LOD study's zoning recommendations per prototype, climate zone,
+  vintage and orientation, from `data/lod-recommendations/v1`
+  ([ADR 0050](docs/adr/0050-zoning-recommendations-site.md)).
 
 Pages read without JavaScript; `?version=` and context switches narrow them. The
 [site build guide](docs/site-build.md) gives the local build, checks and preview.
