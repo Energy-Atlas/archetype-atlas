@@ -22,7 +22,8 @@ atlas_schedules/residential/apartment.py reads, from the release and its inputs:
 The caller-water block stays: its service and controls describe the building's water service.
 Schedules only the replaced recipes used leave `atlas_schedules/data/schedules.json`.
 scripts/build_reference_recipes.py writes the DOE Ref apartment recipes through `unit_recipe` too.
-Release 2.0.0 keeps the 2.x recipes; the next release carries these.
+Release 2.0.0 keeps the 2.x recipes, which stay this builder's input; release 2.1.0 carries
+these in its `generator.json` files (scripts/atlas_delta.py).
 """
 import argparse
 import json

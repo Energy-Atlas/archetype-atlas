@@ -102,8 +102,9 @@ documentation-only change still reports them. Working-branch pushes do not start
 
 The reusable `validate.yml` research workflow runs these jobs in parallel:
 
-- `release` (Linux): verifies release 2.0.0 against its checksums, the in-place edits,
-  the export schemas, the reconciliation page and the daylighting rules, validates,
+- `release` (Linux): verifies release 2.0.0 against its checksums and the in-place edits,
+  rebuilds the 2.1.0 delta from its pinned inputs (`atlas_delta --check`), checks the
+  export schemas, the reconciliation page and the daylighting rules, validates,
   reproduces and compares the source pipeline, and runs the security audit;
 - `unit-tests (atlas)`, `unit-tests (schedules-commercial)` and `unit-tests (schedules-rest)`
   (Linux, Python 3.11): the Python suite in three shards (`python -m scripts.ci_tests

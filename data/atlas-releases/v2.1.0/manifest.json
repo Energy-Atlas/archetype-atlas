@@ -1,0 +1,99 @@
+{
+  "base_release": {
+    "manifest_sha256": "b7ce92a1694a85b42746bdc57ffa0ed1f21f11384561184af078d95a4865e40e",
+    "path": "data/atlas-releases/v2.0.0",
+    "release": "2.0.0"
+  },
+  "counts": {
+    "construction_contexts": 5097,
+    "construction_sets": 232,
+    "folders": 230,
+    "hvac_systems": 1198,
+    "plain_daylighting_programs": 1373,
+    "programs": 2978,
+    "programs_with_recipes": 967,
+    "programs_without_recipes": 2011,
+    "residential_annual_schedules": 641,
+    "residential_construction_contexts": 1153,
+    "residential_construction_sets": 59,
+    "residential_folders": 25,
+    "residential_programs": 73,
+    "services": 1551,
+    "water_programs": 734
+  },
+  "decision": [
+    "docs/adr/0046-release-2-0-0.md",
+    "docs/adr/0047-resstock-apartment-units-and-source-magnitudes.md",
+    "docs/adr/0048-open-licences.md",
+    "docs/adr/0049-atlas-schedules-packaging.md"
+  ],
+  "deferred": [
+    "generator recipes of the construction-only, IECC, plenum and residential programs (none exist), and of the DOE Ref types without a sampling building type",
+    "systems and water heaters of the IECC commercial family (ADR 0040)",
+    "systems and water heaters of the residential families (ADR 0038 section 7)"
+  ],
+  "files": {
+    "LICENSE": {
+      "bytes": 2207,
+      "sha256": "bbd3eb4ec468402560b25283f02327c700da33425ef4bb8ca494ff298fb0d1b0"
+    },
+    "README.md": {
+      "bytes": 956,
+      "sha256": "2837e439dc5eea294c70cb3eff2a8273db9573b2b39300b139eb1a5ea8779245"
+    },
+    "commercial/90-1-2007/highrise-apartment/generator.json": {
+      "bytes": 19995,
+      "sha256": "f7887f0fc8ade0ff96f1ef6bb33f0467a1130da2b84521441dbdc580349f191a"
+    },
+    "commercial/90-1-2007/midrise-apartment/generator.json": {
+      "bytes": 21765,
+      "sha256": "8d4364635232e3d3236c395b7a8a3494717092e99e7be1f98b0976f9b18a340d"
+    },
+    "commercial/90-1-2013/highrise-apartment/generator.json": {
+      "bytes": 20003,
+      "sha256": "f95fd7ae1c453fe222aeada7973d0c4c51e3aeb3237b1d1c0cb7338ffbe53096"
+    },
+    "commercial/90-1-2013/midrise-apartment/generator.json": {
+      "bytes": 21767,
+      "sha256": "dcae0c223324669e1b476eb7d76851e3ee26c276ad673e67113614a9bdad4b0e"
+    },
+    "commercial/90-1-2019/highrise-apartment/generator.json": {
+      "bytes": 19982,
+      "sha256": "afa9c9675d194aedfc8020e97bd6a1b5218d59a7b4ddfa54b3532680a28d289d"
+    },
+    "commercial/90-1-2019/midrise-apartment/generator.json": {
+      "bytes": 21740,
+      "sha256": "a4ca93722b1d4cfdb65827cae34ff001d2d50e92c4e2c837d1d5f4a9a4bc6847"
+    },
+    "commercial/doe-ref-1980-2004/midrise-apartment/generator.json": {
+      "bytes": 6842,
+      "sha256": "1fa94c101ada74962f85f5cb823a42e4834c4e703b290aaac740facc28f7dfed"
+    },
+    "commercial/doe-ref-pre-1980/midrise-apartment/generator.json": {
+      "bytes": 6819,
+      "sha256": "3cb8a7ce3ee0c594a843d632846157d6de8cf2521ce73a1d3aec5f15dd9b1cea"
+    }
+  },
+  "generated_by": "python -m scripts.atlas_delta --write",
+  "generator": {
+    "package": "atlas-schedules",
+    "recipes_sha256": "bda69907c8782cad1fd6d155da34aa9682764fdd37e39d0c4796815b36b42c49",
+    "release_tag": "atlas-schedules-v3.0.0",
+    "request_schema_version": "3.0.0",
+    "version": "3.0.0",
+    "wheel": "atlas_schedules-3.0.0-py3-none-any.whl"
+  },
+  "input_sha256": {
+    "LICENSE": "bbd3eb4ec468402560b25283f02327c700da33425ef4bb8ca494ff298fb0d1b0",
+    "atlas_schedules/__init__.py": "538130edf769f26e2dfa7638d37c7f2704cf63c043e15c64ec5a612b6359b367",
+    "atlas_schedules/data/recipes": "bda69907c8782cad1fd6d155da34aa9682764fdd37e39d0c4796815b36b42c49",
+    "data/atlas-releases/v2.0.0/manifest.json": "b7ce92a1694a85b42746bdc57ffa0ed1f21f11384561184af078d95a4865e40e",
+    "scripts/atlas_delta.py": "1901c1a4d9b27d416cca276d2fbd946db08c0dbddbac94071ff45d82ec34b01f"
+  },
+  "kind": "atlas_release",
+  "release": "2.1.0",
+  "removed": [],
+  "schema_version": "1.0.0",
+  "scope": "commercial and residential",
+  "status": "released"
+}

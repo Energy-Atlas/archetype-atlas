@@ -13,10 +13,23 @@ Buildings, DOE/PNNL Prototype Building Models (ASHRAE 90.1 and IECC, commercial
 and residential) and the PNNL manufactured-housing models. Source interpretations
 and coverage are recorded under `docs/` and `sources/`.
 
-## Release 2.0.0
+## Release 2.1.0
 
-**Atlas release 2.0.0** (`data/atlas-releases/v2.0.0`, status `released`) is the
-only release in the tree ([ADR 0046](docs/adr/0046-release-2-0-0.md),
+**Atlas release 2.1.0** (`data/atlas-releases/v2.1.0`, status `released`) is a delta on
+the 2.0.0 snapshot ([ADR 0046 section 12](docs/adr/0046-release-2-0-0.md),
+[release notes](docs/release-notes-atlas-v2.1.0.md)): ten files that differ from 2.0.0
+(the open-licence `LICENSE` and the generator 3.0.0 apartment-unit recipes in the eight
+apartment folders' `generator.json`) and a manifest naming 2.0.0 as its base and the
+`atlas-schedules` 3.0.0 wheel that ships the same recipes. Every ID is 2.0.0's.
+
+```console
+python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
+python -m scripts.atlas_delta --check                     # rebuild the delta from its pinned inputs
+python -m scripts.atlas_exports --program ID --version filled    # exports 2.1.0 by default
+```
+
+**Atlas release 2.0.0** (`data/atlas-releases/v2.0.0`, status `released`) is the base
+([ADR 0046](docs/adr/0046-release-2-0-0.md),
 [release notes](docs/release-notes-atlas-v2.0.0.md)). It is a full snapshot: open
 the folder alone, with no base release to resolve. It holds:
 - the commercial programs, mixes, services, systems and water of the 90.1, DOE Ref
@@ -33,7 +46,7 @@ the folder alone, with no base release to resolve. It holds:
 ```console
 python -m scripts.atlas_snapshot --verify                 # every file against the manifest
 python -m scripts.release_editor --check                  # IDs follow their rules (id-map.json lists the changes)
-python -m scripts.atlas_exports --program ID --version filled
+python -m scripts.atlas_exports --release 2.0.0 --program ID --version filled
 python -m scripts.atlas_exports --construction SET --context KEY --representation detailed
 ```
 
