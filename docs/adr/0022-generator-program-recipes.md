@@ -75,3 +75,13 @@ Rebuild with `python -m scripts.schedule_generator_build --scope pilot
 --destination <empty-directory> --tables-destination <directory>`. The four
 inspection tables are generated canonical JSON; package manifest identity is
 computed dynamically from every resource byte and inventory entry.
+
+## Amendment (generator 3.0.0, 2026-10-28)
+
+Amended by [ADR 0047](0047-resstock-apartment-units-and-source-magnitudes.md): an
+`apartment_unit` recipe is a ResStock multifamily unit. It carries `resstock_unit`
+(building type, height class, vintages, HVAC, hot water per person, and their sources) and
+`caller_water` (the building's water service and controls), written by
+`scripts/build_apartment_units.py`; the prototype slots, demands, controls and
+`unit_timing` are gone. Commercial and fixed demands bind their source value; residential
+demands keep their annual evidence.

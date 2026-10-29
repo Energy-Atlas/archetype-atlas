@@ -1,13 +1,14 @@
-"""Generate a schedule bundle from a request (schema 2.0.0).
+"""Generate a schedule bundle from a request (schema 3.0.0).
 
 Steps:
 1. parse and validate the request;
 2. expand composition parents into their member programmes, and give every
-   apartment unit with a floor area its caller-unit water owner;
+   apartment unit (a ResStock multifamily unit: residential/apartment.py) its water owner;
 3. derive seeds: one cumulative chain over residential units (stock dwellings
    and apartment units, including empty ones), one SHA-256 seed per commercial
    operating group;
-4. build every owner (channels, annual targets, fitted amplitudes);
+4. build every owner (channels, and each load bound by its source magnitude or, for
+   ResStock units, its annual total; budgets.py);
 5. combine composition members into their parents, then apply the request mixture;
 6. assemble the bundle.
 """
@@ -22,7 +23,6 @@ import numpy as np
 
 from . import __version__
 from .budgets import annual_target, fit_amplitude
-from .calendar import evaluate_rules
 from .commercial.sampler import load_tables, sample_operating_parameters
 from .commercial.transform import Slot, transform
 from .companions import companion_channels
@@ -30,8 +30,8 @@ from .errors import GeneratorError
 from .mixtures import Load, Owner, mix
 from .programmes import (annual_targets, configuration_people, dwelling_for, instance_channels, load_configuration,
                          load_recipe, occupant_type_probabilities, reference_locations, required_services, schedules)
-from .request import Instance, Request, parse_request
-from .residential.generate import Dwelling, generate_occupancy_and_lighting
+from .request import Instance, Location, Request, parse_request
+from .residential.apartment import resstock_unit
 from .seeds import commercial_group_seed
 
 DATA = Path(__file__).resolve().parent / "data"
@@ -152,12 +152,20 @@ def _group_operating(master: int, planned: list) -> dict:
 
 
 # --------------------------------------------------------------------- owners
-def _loads(recipe_demands: list, channels: dict, targets: list) -> list:
+def _loads(recipe: dict, channels: dict) -> list:
+    """ResStock dwellings hold each annual total and fit the design level (OpenStudio-HPXML);
+    commercial and fixed programmes bind the source magnitude to the generated schedule, as
+    ComStock does, so the annual total follows the draw (O15)."""
     loads = []
-    for demand, total in zip(recipe_demands, targets):
-        slot = demand["slot"]
-        loads.append(Load(slot, demand["quantity"], demand["unit"], demand["basis"], demand["fuel"], demand["host"],
-                          total, fit_amplitude(total, demand["unit"], channels[slot]), demand.get("heat_fractions")))
+    annual = recipe["kind"] == "residential"
+    for demand, target in zip(recipe["demands"], annual_targets(recipe) if annual else [None] * len(recipe["demands"])):
+        slot, unit = demand["slot"], demand["unit"]
+        if annual:
+            total, amplitude = target, fit_amplitude(target, unit, channels[slot])
+        else:
+            total, amplitude = annual_target(demand["value"], unit, channels[slot]), demand["value"]
+        loads.append(Load(slot, demand["quantity"], unit, demand["basis"], demand["fuel"], demand["host"],
+                          total, amplitude, demand.get("heat_fractions")))
     return loads
 
 
@@ -165,78 +173,73 @@ def _slot_units(recipe: dict) -> dict:
     return {s["slot"]: s["unit"] for s in recipe["slots"]}
 
 
-def _programme_owner(item: Planned, request: Request, seeds: dict, operating: dict) -> Owner:
+def _unit_location(instance: Instance) -> Location:
+    if instance.reference_location:
+        row = reference_locations()[instance.reference_location]
+        return Location(row["state"], row["latitude"], row["longitude"], row["utc_offset"], weather_id=row["weather_id"])
+    if instance.location is None:
+        raise GeneratorError("missing_input", f"/instances/{instance.key}/location",
+                             "Apartment units need a location or reference_location")
+    return instance.location
+
+
+def _resstock_unit_owner(item: Planned, request: Request, seeds: dict, units: dict) -> Owner:
+    """A ResStock apartment unit (residential/apartment.py); its draw is kept for the unit's water owner."""
     instance, recipe = item.instance, item.recipe
-    kind = recipe["kind"]
-    targets = annual_targets(recipe)
-    generation = {}
-    if kind == "apartment_unit":
-        channels, shares = _apartment_channels(instance, recipe, seeds.get(instance.key), request.residential_rng,
-                                               request.occupancy)
-        generation["unit_seed"] = seeds.get(instance.key)
-        if shares is not None:
-            generation["occupant_type_probabilities"] = shares
-    else:
-        group_operating = operating.get(instance.group) if kind == "commercial" else None
-        channels = instance_channels(recipe, operating=group_operating, unit_seed=seeds.get(instance.key),
-                                     rng_mode=request.residential_rng, reference_location=instance.reference_location,
-                                     flat_days=request.flat_days, occupancy=request.occupancy)
-        if kind == "commercial":
-            generation["operating_group"] = instance.group
-        if kind == "residential":
-            generation["unit_seed"] = seeds.get(instance.key)
-            shares = occupant_type_probabilities(dwelling_for(recipe, instance.reference_location).state, request.occupancy)
-            generation["occupant_type_probabilities"] = shares
-    units = _slot_units(recipe)
-    schedules_out = {slot: (units.get(slot, "C"), values) for slot, values in channels.items()}
-    return Owner(key=instance.key, kind="program", program_id=instance.program_id, schedules=schedules_out,
-                 loads=_loads(recipe["demands"], channels, targets), controls=recipe["controls"],
-                 extent=instance.extent, multiplicity=instance.multiplicity, generation=generation)
-
-
-def _apartment_channels(instance: Instance, recipe: dict, unit_seed: int | None, rng_mode: str,
-                        occupancy: tuple) -> tuple[dict, list | None]:
-    """(channels, occupant-type shares used, or None for an empty unit)."""
-    table = schedules()
-    channels = {s["slot"]: evaluate_rules(table[s["schedule"]])[0] for s in recipe["slots"] if s["schedule"]}
     if instance.residents is None:
         raise GeneratorError("missing_input", f"/instances/{instance.key}/residents", "Apartment units need residents")
-    if instance.residents > 0:
-        if instance.reference_location:
-            row = reference_locations()[instance.reference_location]
-            dwelling = Dwelling(instance.residents, row["state"], row["latitude"], row["longitude"], row["utc_offset"])
-        elif instance.location is None:
-            raise GeneratorError("missing_input", f"/instances/{instance.key}/location",
-                                 "Occupied apartment units need a location or reference_location")
-        else:
-            where = instance.location
-            dwelling = Dwelling(instance.residents, where.state, where.latitude, where.longitude, where.utc_offset)
-        shares = occupant_type_probabilities(dwelling.state, occupancy)
-        timing = generate_occupancy_and_lighting(dwelling, unit_seed, rng_mode, type_probabilities=shares)
-        for slot, kernel_channel in recipe["unit_timing"].items():
-            channels[slot] = timing[kernel_channel]
-    else:
-        shares = None
-    channels.update(companion_channels(recipe["companions"], table, None))
-    return channels, shares
+    if instance.extent.get("floor_area", 0) <= 0:
+        raise GeneratorError("missing_input", f"/instances/{instance.key}/extent",
+                             "ResStock apartment units need their floor area")
+    location = _unit_location(instance)
+    shares = occupant_type_probabilities(location.state, request.occupancy)
+    unit = resstock_unit(recipe["resstock_unit"], location, instance.extent["floor_area"], instance.residents,
+                         seeds[instance.key], request.residential_rng, shares)
+    units[instance.key] = unit
+    schedule_units = {"activity": "W/person", "heating_setpoint": "C", "cooling_setpoint": "C"}
+    schedules_out = {slot: (schedule_units.get(slot, "fraction"), values) for slot, values in unit.channels.items()}
+    generation = {"unit_seed": seeds[instance.key], "occupant_type_probabilities": shares, **unit.generation}
+    return Owner(key=instance.key, kind="program", program_id=instance.program_id, schedules=schedules_out,
+                 loads=unit.loads, controls=unit.controls, extent={**instance.extent, "dwelling_unit": 1.0},
+                 multiplicity=instance.multiplicity, generation=generation)
 
 
-def _caller_water_owner(item: Planned) -> Owner:
-    """Fixed apartment hot water: source density x the unit's own floor area, no transform."""
+def _resstock_water_owner(item: Planned, units: dict) -> Owner:
+    """Ruling 185 (P2): prototype volume per design person x residents, timed by the unit's fixture events."""
     water = item.recipe["caller_water"]
-    shape = evaluate_rules(schedules()[water["schedule"]])[0]
-    total = annual_target(water["density"], water["density_unit"], shape)
-    load = Load("hot_water_volume", "hot_water_volume", water["density_unit"], "floor_area", "water",
-                "building_service", total, fit_amplitude(total, water["density_unit"], shape))
+    total, shape = units[item.caller_water_of].water
+    load = Load("hot_water_volume", "hot_water_volume", "m3/s/dwelling", "dwelling_unit", "water", "building_service",
+                total, fit_amplitude(total, "m3/s/dwelling", shape))
     schedules_out = {"hot_water_volume": ("fraction", shape)}
     controls = []
     for slot, (quantity, unit, value) in water["controls"].items():
         schedules_out[slot] = (unit, np.full(8760, value))
         controls.append({"slot": slot, "quantity": quantity, "unit": unit})
     return Owner(key=item.instance.key, kind="caller_water", service_id=water["service_id"], schedules=schedules_out,
-                 loads=[load], controls=controls, extent=item.instance.extent,
+                 loads=[load], controls=controls, extent={**item.instance.extent, "dwelling_unit": 1.0},
                  physical_identity=("caller_water", item.caller_water_of),
-                 generation={"unit": item.caller_water_of})
+                 generation={"unit": item.caller_water_of, "basis": "residents x prototype volume per design person"})
+
+
+def _programme_owner(item: Planned, request: Request, seeds: dict, operating: dict) -> Owner:
+    instance, recipe = item.instance, item.recipe
+    kind = recipe["kind"]
+    generation = {}
+    group_operating = operating.get(instance.group) if kind == "commercial" else None
+    channels = instance_channels(recipe, operating=group_operating, unit_seed=seeds.get(instance.key),
+                                 rng_mode=request.residential_rng, reference_location=instance.reference_location,
+                                 flat_days=request.flat_days, occupancy=request.occupancy)
+    if kind == "commercial":
+        generation["operating_group"] = instance.group
+    if kind == "residential":
+        generation["unit_seed"] = seeds.get(instance.key)
+        shares = occupant_type_probabilities(dwelling_for(recipe, instance.reference_location).state, request.occupancy)
+        generation["occupant_type_probabilities"] = shares
+    units = _slot_units(recipe)
+    schedules_out = {slot: (units.get(slot, "C"), values) for slot, values in channels.items()}
+    return Owner(key=instance.key, kind="program", program_id=instance.program_id, schedules=schedules_out,
+                 loads=_loads(recipe, channels), controls=recipe["controls"],
+                 extent=instance.extent, multiplicity=instance.multiplicity, generation=generation)
 
 
 def _service_owner(item: Planned, operating: dict) -> Owner:
@@ -247,8 +250,6 @@ def _service_owner(item: Planned, operating: dict) -> Owner:
                              f"Service {instance.service_id} has no variant for {instance.configuration_id}")
     table = schedules()
     demand = service["demand"]
-    reference = evaluate_rules(table[configuration["schedule"]])[0]
-    total = annual_target(demand["value"], demand["unit"], reference)
     building = load_configuration(instance.configuration_id)
     channels = transform({"hot_water_volume": Slot(table[configuration["schedule"]], "hours")},
                          configuration_people(building), operating[instance.group],
@@ -256,8 +257,10 @@ def _service_owner(item: Planned, operating: dict) -> Owner:
     channels.update(companion_channels(configuration["companions"], table, None))
     if demand["basis"] not in instance.extent:
         raise GeneratorError("invalid_request", f"/instances/{instance.key}/extent", f"Needs a {demand['basis']} extent")
+    # The source peak flow binds the sampled schedule; the annual volume follows the draw (O15).
+    total = annual_target(demand["value"], demand["unit"], channels["hot_water_volume"])
     load = Load("hot_water_volume", demand["quantity"], demand["unit"], demand["basis"], demand["fuel"],
-                demand["host"], total, fit_amplitude(total, demand["unit"], channels["hot_water_volume"]))
+                demand["host"], total, demand["value"])
     units = {c["slot"]: c["unit"] for c in service["controls"]}
     schedules_out = {slot: (units.get(slot, "fraction"), values) for slot, values in channels.items()}
     return Owner(key=instance.key, kind="physical_service", service_id=instance.service_id, schedules=schedules_out,
@@ -344,12 +347,15 @@ def generate(document: dict, *, residential_rng: str = "pcg64", flat_days: str =
     operating = _group_operating(request.seed, planned)
     owners = {}
     water_by_unit = {}
+    units = {}
     for item in planned:
         if item.service:
             owner = _service_owner(item, operating)
         elif item.caller_water_of:
-            owner = _caller_water_owner(item)
+            owner = _resstock_water_owner(item, units)
             water_by_unit[item.caller_water_of] = owner
+        elif item.recipe["kind"] == "apartment_unit":
+            owner = _resstock_unit_owner(item, request, seeds, units)
         else:
             owner = _programme_owner(item, request, seeds, operating)
         owners[owner.key] = owner
@@ -363,7 +369,7 @@ def generate(document: dict, *, residential_rng: str = "pcg64", flat_days: str =
         for slot, (unit, values) in owner.schedules.items():
             bundle_schedules[schedule_id(owner.key, slot)] = {"unit": unit, "values": np.asarray(values).tolist()}
     return {
-        "schema_version": "2.0.0",
+        "schema_version": "3.0.0",
         "generator_version": __version__,
         "seed": request.seed,
         "residential_rng": request.residential_rng,

@@ -10,6 +10,7 @@ import numpy as np
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
+from atlas_schedules.programmes import load_recipe
 
 COMMERCIAL = "program-b910ee0c34e9eeb3ecd573c4"  # Warehouse office area 90.1-2013 (no shared services)
 DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling (2 residents, Anchorage)
@@ -18,10 +19,11 @@ DATA_CENTRE = "program-0d0d5461f1cee89d04d148eb"  # OfficeLarge Data Center 90.1
 RESTAURANT = "program-080dc08cd2d7af6c7d419d0a"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
 WATER = "service-1981fa97b9fd7d47efcf39dd"
 RESTAURANT_CONFIGURATION = "quick_service_restaurant__90_1_2013__source"
+DEPARTMENT = "doe-ref-1980-2004.hospital.department.diagnostics-mixed.407fa7"  # composition of three spaces
 
 
 def request(*instances, **extra) -> dict:
-    return {"schema_version": "2.0.0", "seed": 7, "instances": list(instances), **extra}
+    return {"schema_version": "3.0.0", "seed": 7, "instances": list(instances), **extra}
 
 
 class Validation(unittest.TestCase):
@@ -62,8 +64,8 @@ class Validation(unittest.TestCase):
         self.assert_code("invalid_request", request({"key": "u/water", "program_id": COMMERCIAL}))
 
     def test_residents_follow_the_resstock_range(self):
-        unit = {"key": "u", "program_id": APARTMENT, "location": {"state": "NC", "latitude": 35.741,
-                                                                 "longitude": -81.389, "utc_offset": -5}}
+        unit = {"key": "u", "program_id": APARTMENT, "extent": {"floor_area": 80.0},
+                "location": {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5}}
         self.assert_code("invalid_request", request({**unit, "residents": 12}))
         bundle = generate(request({**unit, "residents": 11}))
         self.assertTrue(bundle["schedules"])
@@ -131,21 +133,44 @@ class Behaviour(unittest.TestCase):
         b = bundle["schedules"]["schedule:b2:occupancy"]["values"]
         self.assertEqual(a, b)
 
-    def test_annual_target_survives_the_transform(self):
-        owner = generate(request({"key": "office", "program_id": COMMERCIAL}))["owners"][0]
-        lighting = next(load for load in owner["loads"] if load["slot"] == "lighting")
-        bundle = generate(request({"key": "office", "program_id": COMMERCIAL}))
-        values = np.asarray(bundle["schedules"]["schedule:office:lighting"]["values"])
-        self.assertAlmostEqual(lighting["amplitude"] * values.sum(), lighting["annual_total"], delta=1e-6)
+    def test_commercial_loads_bind_their_source_magnitude(self):
+        # O15: the density is the amplitude; the annual total follows the sampled hours.
+        recipe = load_recipe(COMMERCIAL)
+        density = next(d["value"] for d in recipe["demands"] if d["slot"] == "lighting")
+        totals = set()
+        for seed in (7, 8):
+            bundle = generate(request({"key": "office", "program_id": COMMERCIAL}, seed=seed))
+            lighting = next(load for load in bundle["owners"][0]["loads"] if load["slot"] == "lighting")
+            values = np.asarray(bundle["schedules"]["schedule:office:lighting"]["values"])
+            self.assertEqual(lighting["amplitude"], density)
+            self.assertAlmostEqual(lighting["amplitude"] * values.sum() / lighting["annual_total"], 1, delta=1e-12)
+            totals.add(round(lighting["annual_total"], 6))
+        self.assertEqual(len(totals), 2)
+
+    def test_composition_parent_weights_members_by_their_source_magnitudes(self):
+        bundle = generate(request({"key": "p", "program_id": DEPARTMENT, "operating_group": "g"}))
+        owners = {o["key"]: o for o in bundle["owners"]}
+        members = [o for k, o in owners.items() if k.startswith("source-member/")]
+        area = sum(m["extent"]["floor_area"] for m in members)
+        values = lambda owner, slot: np.asarray(bundle["schedules"][owner["schedules"][slot]]["values"])
+        for mixed in owners["p"]["loads"]:
+            parts = [(m["extent"]["floor_area"] / area, load, m) for m in members for load in m["loads"]
+                     if (load["quantity"], load["fuel"], load["host"]) == (mixed["quantity"], mixed["fuel"], mixed["host"])]
+            self.assertAlmostEqual(mixed["amplitude"], sum(f * load["amplitude"] for f, load, _ in parts), delta=1e-9)
+            expected = sum(f * load["amplitude"] * values(m, load["slot"]) for f, load, m in parts)
+            got = mixed["amplitude"] * values(owners["p"], mixed["slot"])
+            self.assertLessEqual(float(np.abs(got - expected).max()), 1e-9 * float(expected.max()))
 
     def test_data_centre_plug_loads_stay_constant(self):
         # Documented: base-to-peak leaves flat days unchanged (section 4.6.3).
         document = request({"key": "dc", "program_id": DATA_CENTRE, "operating_group": "office"})
         values = np.asarray(generate(document)["schedules"]["schedule:dc:electric_equipment"]["values"])
         self.assertGreater(float(values.min()), 0)
-        with self.assertRaises(GeneratorError) as caught:
-            generate(document, flat_days="native")
-        self.assertEqual(caught.exception.code, "zero_generated_integral")
+        # Native ComStock clears those days; the source density then binds a zero schedule (O15).
+        native = generate(document, flat_days="native")
+        self.assertEqual(max(native["schedules"]["schedule:dc:electric_equipment"]["values"]), 0)
+        load = next(l for l in native["owners"][0]["loads"] if l["slot"] == "electric_equipment")
+        self.assertEqual(load["annual_total"], 0)
 
     def test_requests_cannot_choose_the_ruby_stream(self):
         with self.assertRaises(GeneratorError) as caught:

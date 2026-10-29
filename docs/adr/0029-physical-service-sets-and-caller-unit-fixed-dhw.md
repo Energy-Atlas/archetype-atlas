@@ -22,3 +22,11 @@ Legacy stock keeps the pinned kernel's original finite nonboolean nonnegative nu
 Source-basis B, original extent A/e, whole input W=B*extent, non-owning programme projection denominator, and root composition denominator are distinct. Fixed caller water uses zero draws and retains positive B/W at N0, with derived volume hosted by `building_service`; original unresolved zone-heat evidence and controls remain provenance, with no heater or thermal-energy inference.
 
 An ongoing generated source-parent graph is incomplete until the actual parent is derived and the independent projections are attached. A private generator-only derivation entry consumes the actual prepared allocation, matching verified ResourceSet/RID and emitted ordered children, repeats identity/method/reference/target/area checks, and calls the same extracted mixture arithmetic as public composition. Exact parents derive only local nonwater channels; water remains owned once by the explicit physical owners and projected afterward. Full canonical originals and selected execution proofs remain intact. The complete final graph always passes public validation. Public incoming composition retains its full checks and fresh ResourceSet verification for known-source allocation; no incoming-validation skip flag or generation use of `_incoming` is introduced.
+
+## Amendment (generator 3.0.0, 2026-10-28)
+
+Amended by [ADR 0047](0047-resstock-apartment-units-and-source-magnitudes.md) (O20, P2):
+an apartment unit's water owner draws the prototype's volume per design person × the
+unit's residents (zero for a vacant unit), timed by the unit's own ResStock fixture
+events, with the peak flow fitted to the draw (`m3/s/dwelling`). The fixed prototype
+density × floor area on the prototype schedule is retired.

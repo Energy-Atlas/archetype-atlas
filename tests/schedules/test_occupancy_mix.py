@@ -15,7 +15,7 @@ DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling in Alaska
 
 
 def request(**extra) -> dict:
-    return {"schema_version": "2.0.0", "seed": 7, "instances": [{"key": "home", "program_id": DWELLING}], **extra}
+    return {"schema_version": "3.0.0", "seed": 7, "instances": [{"key": "home", "program_id": DWELLING}], **extra}
 
 
 class Tables(unittest.TestCase):

@@ -19,9 +19,9 @@ values); release 1.1.0 reconciled the DOE Ref programs with the DOE v1.4_7.2 fil
   (residential space types by name, design people x zone multiplier);
 - one commercial recipe per source program of the 15 sampled types, one composition
   recipe per department or general mix, the shared hot-water services with one
-  configuration each, and the Midrise Apartment programs as an apartment unit (the
-  apartments) or fixed source rule sets (office, corridor), in the shape of the
-  packaged 90.1 Midrise recipes;
+  configuration each, and the Midrise Apartment programs as a ResStock apartment unit
+  (the apartments, through scripts/build_apartment_units.py) or fixed source rule sets
+  (office, corridor);
 - the schedules the recipes use, added to `atlas_schedules/data/schedules.json` under
   their release IDs (days expanded into rules); entries only the replaced recipes used
   are removed.
@@ -34,6 +34,7 @@ from pathlib import Path
 
 from atlas_schedules.commercial.profiles import round_half_up, stored_value
 from scripts import idf_reader
+from scripts.build_apartment_units import unit_recipe
 from scripts.recipe_shapes import (LOAD_SLOTS, SAMPLING, SETPOINTS, TEMPLATES, WATER_CONTROLS, WATER_FRACTIONS,
                                    _known_positive, _load, _residential, heat_fractions, programme_recipe)
 from scripts.common import ROOT, load_json
@@ -247,7 +248,10 @@ def build(idf_root):
                                                      'end_date': r['end_date'], 'values': table['days'][r['day']]}
                                                     for r in schedule['rules']]}
             if building_type == APARTMENT:
-                recipes += apartment_recipes(template, programs, folder_services)
+                # Apartments are ResStock units (scripts/build_apartment_units.py, plan section 8, B7).
+                recipes += [unit_recipe(r, release_folder(folder_template, folder), r['program_id'], VIEW,
+                                        geometry[(template, APARTMENT)]) if r['kind'] == 'apartment_unit' else r
+                            for r in apartment_recipes(template, programs, folder_services)]
                 continue
             path = next((Path(idf_root)/f'refbldg_{key}_{vintage}_v1-4_7-2').glob('*5A_USA_IL_CHICAGO-OHARE.idf'))
             if register['input_sha256'][path.name] != sha256(path):

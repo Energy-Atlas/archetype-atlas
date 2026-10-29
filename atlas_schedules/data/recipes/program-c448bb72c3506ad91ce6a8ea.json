@@ -26,128 +26,45 @@
    "service": "data/definition-releases/v0.1.1/services.json#/73"
   }
  },
- "companions": {
-  "activity": {
-   "method": "source_rules",
-   "schedule": "schedule-6568f04faf314be00a19"
-  },
-  "cooling_setpoint": {
-   "method": "source_rules",
-   "schedule": "schedule-4a3524518d4b8c93b4cd"
-  },
-  "heating_setpoint": {
-   "method": "source_rules",
-   "schedule": "schedule-354c9963a263efc21cf1"
-  }
- },
- "controls": [
-  {
-   "people": {
-    "basis": "floor_area",
-    "density": 0.02830908439594657,
-    "unit": "person/m2"
-   },
-   "quantity": "occupancy_fraction",
-   "slot": "occupants",
-   "unit": "fraction"
-  },
-  {
-   "quantity": "activity",
-   "slot": "activity",
-   "unit": "W/person"
-  },
-  {
-   "quantity": "temperature",
-   "slot": "heating_setpoint",
-   "unit": "C"
-  },
-  {
-   "quantity": "temperature",
-   "slot": "cooling_setpoint",
-   "unit": "C"
-  }
- ],
- "demands": [
-  {
-   "basis": "floor_area",
-   "fuel": "electricity",
-   "heat_fractions": null,
-   "host": "assigned_zone",
-   "quantity": "lighting",
-   "slot": "lighting_interior",
-   "unit": "W/m2",
-   "value": 11.517384145879403
-  },
-  {
-   "basis": "floor_area",
-   "fuel": "electricity",
-   "heat_fractions": null,
-   "host": "assigned_zone",
-   "quantity": "additional_lighting",
-   "slot": "additional_lighting",
-   "unit": "W/m2",
-   "value": 2.906255812511625
-  },
-  {
-   "basis": "floor_area",
-   "fuel": "electricity",
-   "heat_fractions": null,
-   "host": "assigned_zone",
-   "quantity": "electric_equipment",
-   "slot": "electric_equipment",
-   "unit": "W/m2",
-   "value": 6.67
-  }
- ],
  "kind": "apartment_unit",
  "name": "Apartment_HighriseApartment",
  "program_id": "program-c448bb72c3506ad91ce6a8ea",
  "required_services": [],
+ "resstock_unit": {
+  "building_type": "Multi-Family with 5+ Units",
+  "height": "Multi-Family with 5+ Units, 8+ Stories",
+  "hot_water_m3_per_person": 24.209539327055552,
+  "hvac": [
+   "Electricity",
+   "Ducted Heat Pump",
+   "Ducted Heat Pump",
+   "None",
+   "No"
+  ],
+  "source": {
+   "apartments": 79,
+   "era": "90.1-2013: 2013-2015",
+   "geometry": "data/construction-inputs/geometry-v1.json#90.1-2013/HighriseApartment",
+   "hot_water": {
+    "density": 4.146067251759837e-08,
+    "density_unit": "m3/s/m2",
+    "design_people_per_m2": 0.02830908439594657,
+    "full_load_hours": 4591.7,
+    "schedule": "schedule-b390cc186dc47849e5d9"
+   },
+   "release_recipe": "data/atlas-releases/v2.0.0/commercial/90-1-2013/highrise-apartment/generator.json#90-1-2013.highrise-apartment.source.apartment.e5c08d/reviewed",
+   "stories": 10,
+   "system_pair": [
+    "Water To Air Heat Pump",
+    "Water To Air Heat Pump"
+   ],
+   "systems": "data/atlas-releases/v2.0.0/commercial/90-1-2013/highrise-apartment/systems.json"
+  },
+  "vintages": [
+   "2010s"
+  ]
+ },
  "schema_version": "2.0.0",
- "slots": [
-  {
-   "kind": "control",
-   "schedule": "schedule-0d549592289f919b3c1b",
-   "slot": "occupants",
-   "unit": "fraction"
-  },
-  {
-   "kind": "load",
-   "schedule": "schedule-4892de1abba801c3e5d0",
-   "slot": "lighting_interior",
-   "unit": "fraction"
-  },
-  {
-   "kind": "load",
-   "schedule": "schedule-4892de1abba801c3e5d0",
-   "slot": "additional_lighting",
-   "unit": "fraction"
-  },
-  {
-   "kind": "load",
-   "schedule": "schedule-32e343f5673e1021f015",
-   "slot": "electric_equipment",
-   "unit": "fraction"
-  },
-  {
-   "kind": "control",
-   "schedule": "schedule-6568f04faf314be00a19",
-   "slot": "activity",
-   "unit": "W/person"
-  },
-  {
-   "kind": "control",
-   "schedule": "schedule-354c9963a263efc21cf1",
-   "slot": "heating_setpoint",
-   "unit": "C"
-  },
-  {
-   "kind": "control",
-   "schedule": "schedule-4a3524518d4b8c93b4cd",
-   "slot": "cooling_setpoint",
-   "unit": "C"
-  }
- ],
  "source": {
   "building_type": "HighriseApartment",
   "climate": null,
@@ -158,10 +75,5 @@
   "template": "90.1-2013",
   "view": "reviewed",
   "vintage": null
- },
- "unit_timing": {
-  "additional_lighting": "lighting_interior",
-  "lighting_interior": "lighting_interior",
-  "occupants": "occupants"
  }
 }

@@ -12,7 +12,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.helpers import assert_schedule, rebuilt, translate
+from tests.schedules.helpers import assert_binding, assert_schedule, rebuilt, translate
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/mixtures.json.gz"
 
@@ -46,8 +46,7 @@ class LegacyMixtures(unittest.TestCase):
                 expected = [b for b in scenario["bindings"] if b["amplitude"] is not None]
                 self.assertEqual([b["slot"] for b in expected], [load["slot"] for load in mixed["loads"]])
                 for binding, load in zip(expected, mixed["loads"]):
-                    self.assertAlmostEqual(load["amplitude"] / binding["amplitude"], 1, delta=1e-9)
-                    self.assertAlmostEqual(load["annual_total"] / binding["annual_total"], 1, delta=1e-9)
+                    assert_binding(self, load, binding)
 
 
 if __name__ == "__main__":

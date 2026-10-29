@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "atlas-schedules/request-v2",
-  "title": "Schedule generator request 2.0.0",
+  "$id": "atlas-schedules/request-v3",
+  "title": "Schedule generator request 3.0.0",
   "type": "object",
   "required": [
     "schema_version",
@@ -11,7 +11,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "2.0.0"
+      "const": "3.0.0"
     },
     "seed": {
       "type": "integer",
@@ -102,6 +102,33 @@
           "type": "number",
           "minimum": -14,
           "maximum": 14
+        },
+        "climate_zone": {
+          "enum": [
+            "1A",
+            "2A",
+            "2B",
+            "3A",
+            "3B",
+            "3C",
+            "4A",
+            "4B",
+            "4C",
+            "5A",
+            "5B",
+            "6A",
+            "6B",
+            "7A",
+            "7AK",
+            "7B",
+            "8AK"
+          ],
+          "description": "IECC 2004 climate zone for ResStock apartment units; omitted, ResStock draws it within the state."
+        },
+        "weather_id": {
+          "type": "string",
+          "pattern": "^USA_[A-Z]{2}_[A-Za-z0-9.\\-]+_TMY3$",
+          "description": "Packaged TMY3 station for ResStock apartment units (ceiling-fan months); omitted, the nearest station in the state."
         }
       }
     },
@@ -154,10 +181,17 @@
           "description": "Commercial instances sharing one sampled set of operating hours."
         },
         "residents": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 11,
-          "description": "Apartment units: residents N per dwelling unit, 0-11 (ResStock samples 0-9 and '10+', which it runs as 11)."
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            {
+              "const": "resstock"
+            }
+          ],
+          "description": "Apartment units: residents N per dwelling unit, 0-11 (ResStock samples 0-9 and '10+', which it runs as 11). With \"resstock\", ResStock draws the residents of a ResStock apartment unit (vacancy included)."
         },
         "location": {
           "$ref": "#/$defs/location"

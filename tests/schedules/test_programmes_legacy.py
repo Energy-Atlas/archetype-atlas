@@ -3,7 +3,7 @@
 Commercial programmes share the operating group name the legacy request used,
 so they sample the same operating parameters; residential programmes use R1
 streams, so they replay the same draws. Schedules are compared at the
-engineering tolerance and amplitudes relative to their value.
+engineering tolerance and loads with `assert_binding` (source magnitudes since O15).
 """
 import gzip
 import json
@@ -14,7 +14,7 @@ import numpy as np
 
 from atlas_schedules.generator import generate
 from atlas_schedules.programmes import load_recipe
-from tests.schedules.helpers import assert_schedule, rebuilt
+from tests.schedules.helpers import assert_binding, assert_schedule, rebuilt
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/programmes.json.gz"
 UNIT_EXTENT = {"floor_area": 1, "dwelling_unit": 1, "person": 1, "absolute": 1}
@@ -25,7 +25,7 @@ def request_for(program_id: str) -> dict:
     instance = {"key": "unit", "program_id": program_id}
     if recipe["kind"] == "commercial":
         instance["operating_group"] = "group"
-    return {"schema_version": "2.0.0", "seed": 42, "occupancy": {"mix": "national"}, "instances": [instance]}
+    return {"schema_version": "3.0.0", "seed": 42, "occupancy": {"mix": "national"}, "instances": [instance]}
 
 
 class LegacyProgrammes(unittest.TestCase):
@@ -41,9 +41,9 @@ class LegacyProgrammes(unittest.TestCase):
                     values = np.asarray(bundle["schedules"][owner["schedules"][slot]]["values"])
                     assert_schedule(self, slot, values, packed)
                 self.assertEqual([b["slot"] for b in case["bindings"]], [load["slot"] for load in owner["loads"]])
-                for expected, actual in zip(case["bindings"], owner["loads"]):
-                    self.assertAlmostEqual(actual["amplitude"] / expected["amplitude"], 1, delta=1e-9)
-                    self.assertAlmostEqual(actual["annual_total"] / expected["annual_total"], 1, delta=1e-9)
+                demands = load_recipe(case["program_id"])["demands"]
+                for expected, actual, demand in zip(case["bindings"], owner["loads"], demands):
+                    assert_binding(self, actual, expected, demand.get("value"))
 
 
 if __name__ == "__main__":

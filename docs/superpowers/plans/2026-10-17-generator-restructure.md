@@ -453,3 +453,275 @@ Residential review decisions, 2026-10-18:
   started.
 - O13 done (2026-10-19): southern-hemisphere season shift in `residential/seasons.py`, applied to residential monthly multipliers, fixed-background multipliers, the lighting hour and the evening width; tests in `test_seasons.py`.
 - O14 implemented (2026-10-19): `scripts/derive_occupancy_mix.py` (pinned ATUS 2003-2024 and ACS 2024 PUMS, `sources/occupancy-mix-lock.json`) writes `occupancy-mix.json`, with 16 cells x 2 windows and 51 state compositions. `residential/occupancy.py` gives the state mix (children keep national shares). The request option `occupancy` (mix state/national, window 2003-2019/2022-2024) defaults to the state mix, 2003-2019. Native and legacy keys use national. Tests are in `test_occupancy_mix.py`.
+
+Decisions and findings, 2026-10-27 (logged; implement later together with the
+remaining decisions):
+- O15 DECISION (user, 2026-10-27): commercial power loads (lighting,
+  additional lighting, plug loads, gas equipment) and commercial shared
+  hot-water services keep their source magnitude (W/m² density, or m³/s peak
+  flow) fixed and bind it to the sampled schedule, as ComStock does. Annual
+  energy and volume become outputs of each draw. The prototype value ×
+  schedule is one candidate draw of what ResStock or ComStock may produce, so
+  it is not a target to match. This amends ADR 0021 (annual budgets fixed
+  before sampling), ADR 0023 (mixture targets as sums of original targets)
+  and ADR 0027 (original per-area volume targets before amplitude binding).
+  Not started.
+  - Why: the generator holds each load's annual total and refits its
+    amplitude (`budgets.fit_amplitude`), so peak power drifts from the
+    installed value. A catalogue scan (2026-10-27, seeds 42 and 51, 5,778
+    loads) found the peak above the installed value in 53 % of lighting,
+    45 % of plug-load, 23 % of gas-equipment and 27 % of shared-water cases
+    (up to 1.46× power and 2.11× flow). The annual-energy spread that
+    ComStock's hours sampling produces was cancelled.
+  - In ComStock, `create_typical_building_from_model` rewrites schedule
+    values only; `set_interior_lighting_technology` replaces the density and
+    keeps the default schedule; base-to-peak changes schedule values only.
+    Nothing rescales power to hold energy.
+  - Unchanged: residential dwellings (annual totals by ResStock design),
+    fixed programmes, people counts (density × schedule, never fitted),
+    apartment plug loads and unit water (untransformed prototype schedules).
+- O16 (open): apartment-unit lighting and additional lighting combine a
+  prototype density, whose schedule peaks at 0.18, with ResStock timing
+  normalised to a peak of 1. A fixed density would give 2.8–3.6× the
+  prototype energy (90.1) or about 0.47× (DOE Ref Midrise). The ResStock shape
+  carries no installed rating, so these slots stay on the annual binding until
+  their budget source is decided (prototype budget, or a ResStock annual
+  lighting budget).
+- Open findings: ComStock sets lighting density from a sampled lighting
+  generation (technology baseline), while the atlas uses each template's code
+  density. ComStock's baseline adds no daylighting controls
+  (`add_daylighting_controls: nil`); only `upgrade_light_lighting_controls`
+  adds them, and it models occupancy sensors as a density reduction. ADR 0044
+  records the PNNL prototypes' controls instead.
+
+Decisions, 2026-10-28 (logged; implement later together with O15):
+- O16 DECISION (user, 2026-10-28): magnitudes follow each upstream's own
+  method. Commercial programmes keep the programme's rating fixed and take
+  ComStock schedules (O15 confirmed). ResStock gives both the values and the
+  schedules for residential dwellings and for apartment (dwelling) units. For
+  apartment-unit interior lighting this replaces the prototype density: the
+  annual energy comes from ResStock's `Lighting.calc_interior_energy` (unit
+  floor area, lamp mix, usage multiplier), the schedule from the ResStock
+  draw, and the design level is annual ÷ full-load hours, as
+  OpenStudio-HPXML `calc_design_level_from_annual_kwh` does. The
+  peak-matched prototype method was considered and not adopted.
+  - Open within O16: the lamp-mix and usage-multiplier source for apartment
+    units (sample ResStock's options for multifamily units, or a fixed
+    option per programme); whether apartment additional lighting and plug
+    loads also move to ResStock equations (to confirm with the user).
+- O17 DECISION (user, 2026-10-28): no fixed rating for residential end uses.
+  ResStock fixes each unit's annual energy from its equations (floor area,
+  resident count through bedroom-equivalents, label ratings, sampled usage
+  level) and fits the design level to the draw; the atlas keeps that. Why:
+  ResStock has no installed rating for lighting, cooking or plug loads, its
+  event model's raw magnitudes are uncalibrated (fixture water about 3-4×
+  the equation figure), and a draw-driven annual would double-count the
+  sampled usage level.
+- O18 DECISION (user, 2026-10-28): controls stay as upstream. Commercial
+  setpoints and activity stay hours-transformed; dwelling setpoints stay
+  translated ResStock options with constant activity. Apartment units take
+  ResStock's sampled thermostat options (setpoints, setback size and period)
+  instead of the prototype's rules; not linked to the occupant draw. Not
+  started.
+- O19 (deferred by the user, 2026-10-28): apartment hot-water volumes are not
+  borrowed from ResStock (fixtures, clothes washer, dishwasher); ADR 0029
+  volumes stay. Costs recorded: per-unit appliance options, the electricity
+  double count against the prototype plug density, mixed vs hot temperatures,
+  central-plant peaks and sizing, schema with one draw per component.
+- O20 (open): apartment hot-water timing vs the drawn occupancy. Today the
+  prototype schedule runs regardless of the unit's draw. In a 40-unit test
+  (90.1-2007 high-rise, 80 m², Hickory NC), the prototype draws 30 % of a
+  one-resident unit's volume while the unit is empty (median over all units
+  7 %). Options: keep; gate to occupied hours; scale by occupancy; ResStock
+  fixture-event timing with the prototype's annual volume (building peak
+  1.9× the prototype in that test).
+- O16 lamp mix DECISION (user, 2026-10-28): apartment units sample
+  ResStock's lighting options for multifamily units (not one fixed option
+  per programme).
+- O21 (direction, user leaning 2026-10-28): ResStock multifamily generates
+  each apartment unit's internal loads (all end uses, values and schedules),
+  replacing the prototype's lumped plug density and additional lighting.
+  This removes the O19 blockers (per-unit appliance options; electricity
+  double count), so O19 and O20 would follow it. Evidence: eight ResStock
+  5+ unit records give 1,900-5,200 kWh/yr non-lighting per unit (some with
+  gas cooking, freezers or grills) vs about 3,080 kWh for an 80 m² 90.1-2007
+  prototype unit, and 190-1,220 kWh lighting vs about 610 kWh.
+- O20 option F added: ResStock fixture timing and ResStock volume. In the
+  40-unit test, building fixture heat is about 0.48× the prototype's (1
+  resident 0.20×, 4 residents 1.00×; 15 °C mains assumed) and peak heat
+  0.78×.
+- O20 DECISION (user, 2026-10-28): option D. Apartment hot water keeps the
+  prototype's volume (ADR 0029 density × unit floor area) and takes the
+  ResStock fixture-event timing from the unit's own draw; the peak flow is
+  fitted to the draw (annual volume ÷ full-load hours), as OpenStudio-HPXML
+  `calc_peak_flow_from_daily_gpm` does. In the 40-unit test the unit peak is
+  about 6.6× the prototype's and the building peak 1.9×. Holding the
+  prototype peak flow fixed instead would cut the volume to about 0.15×,
+  because the prototype peak belongs to its flat schedule (4,592 full-load
+  hours); to confirm with the user.
+- O20 basis DECISION (user, 2026-10-28): P2, per resident. An apartment
+  unit's annual hot-water volume = the prototype's volume per design person
+  × the unit's residents; zero for a vacant unit. The per-person figure pairs
+  two fields of the same openstudio-standards space type: the per-apartment
+  peak flow (`service_water_heating_peak_flow_rate` 3.48 gal/h for
+  `service_water_heating_area` 950 ft², 90.1-2007) on the prototype schedule
+  (4,592 full-load hours, about 166 L/day at 60 °C), divided by the design
+  occupants (`occupancy_per_area` 2.63 people/1000 ft², 2.50 per apartment),
+  about 66 L/person·day. Timing is option D (ResStock fixture events from the
+  unit's draw) with the peak flow fitted to the draw. This resolves the
+  volume-or-peak question. The program water draw gains a per-person basis
+  (minor schema bump). To check per template and for the DOE Ref apartments
+  that both source fields exist.
+- O21 method DECISION (user, 2026-10-28): port both parts instead of a
+  pinned record pool. (1) ResStock's housing-characteristics sampler for the
+  apartment closure: 37 target characteristics, 67 tables with their
+  dependencies (1.26 M rows at revision dd25369f, mostly county and PUMA
+  geography, marginalised to state when packaged), sampled per unit with
+  rejection on the caller's inputs (state, floor-area bin, residents,
+  template construction era, building type) so the draw is exact for the
+  conditional; HVAC heating and cooling types clamped to the prototype's
+  systems. (2) The OpenStudio-HPXML annual equations (lighting, plug loads,
+  television, appliances, usage-level calibration), validated against the
+  Ruby recovery on a sample of records as the R1/R2 schedule study was. The
+  dwelling thermostat translation is reused. Choosing the method confirms the
+  O21 direction for apartment units. Setpoints follow ResStock: they depend
+  on climate zone, building type, HVAC type and tenure, not on the occupancy
+  draw.
+- Pre-start DECISIONS (user, 2026-10-28):
+  - Residents: both modes. The caller's count per unit (sampler conditioned
+    on it), or ResStock samples residents, vacancy included.
+  - Sampler geography: state + IECC 2004 climate zone from the request
+    location; county and PUMA summed out within each cell (consistent with
+    O14's state level; finer resolution deferred). Building conditioning:
+    floor-area bin, construction era (`Vintage` and `Vintage ACS` from the
+    template), building type and height from the programme. HVAC fixed to the
+    prototype: heating fuel, heating type, cooling type, shared system, zonal
+    electric heating (heating fuel also shifts gas cooking and dryer odds).
+  - Common laundry: accept the ResStock gap and document it.
+  - Gas loads in apartment units: keep as sampled.
+  - O18: apartment thermostat settings from the same sampled draw as the
+    unit's loads.
+  - Commercial daylighting: keep the ADR 0044 controls as programme records;
+    document the possible partial double count with ComStock schedules.
+  - Commercial lighting density: the template's code value.
+  - Order: start after milestone B's programme re-ID (U) merges.
+  - Versioning: generator request and output schema 3.0.0, answer keys
+    regenerated; release data changes go into milestone B's release.
+  - Delivery: one branch (`codex/schedule-power-binding`), one PR at the end;
+    ask before the first push.
+
+## 8. Work stages for O15-O21 (2026-10-28)
+
+Stages B1-B6 do not depend on programme IDs and may start before milestone B
+(PR #27) merges; B7-B10 wait for it.
+
+- B1 Pins: ResStock housing-characteristics tables (67), `options_lookup.tsv`
+  and the OpenStudio-HPXML equation sources at dd25369f in
+  `sources/generator-source-lock.json`; restore the pinned runtime
+  (`sources/runtime-lock.json`: OpenStudio 3.10.0 Windows, 275 MB; ResStock
+  archive, 128 MB) for validation only.
+- B2 Characteristic tables: build script with `--check`; county and PUMA
+  summed out exactly within state × climate-zone cells.
+- B3 Sampler: dependency-ordered draw, rejection on the caller's inputs,
+  HVAC and heating fuel fixed to the prototype, residents in two modes.
+- B4 Option arguments: the `options_lookup` rows for the sampled
+  characteristics (lamp fractions, appliance properties, usage multipliers,
+  thermostat).
+- B5 Equations: OpenStudio-HPXML annual equations and the usage-level
+  calibration; equivalence study against the Ruby recovery on sampled units
+  (new driver; the old Python driver was retired in X1.3).
+- B6 Apartment adapter: sampler + equations + full ResStock channels, the
+  thermostat from the same draw, P2 per-resident hot water with fixture
+  timing; request and output schema 3.0.0.
+- B7 Rebase on milestone B; apartment recipes carry the conditioning inputs
+  and the P2 per-person source fields (checked per template and DOE Ref).
+- B8 O15: fixed commercial magnitudes × sampled schedules (lighting,
+  additional lighting, plug, gas, shared water).
+- B9 ADRs (amend 0021, 0022, 0023, 0027, 0029; new apartment-unit ADR with
+  the laundry gap, daylighting double-count risk and setpoint notes),
+  CHANGELOG, generator docs.
+- B10 Validation: tests on 3.14 and 3.11, catalogue smoke, regenerated answer
+  keys, before/after report; then ask before the first push and one PR.
+
+Stage log B1-B6 (2026-10-28, local commits on `codex/schedule-power-binding`):
+- B1 pins: `sources/resstock-characteristics-lock.json` (185 raw git blobs at
+  dd25369f, each equal to the pinned commit archive member apart from the
+  archive's CRLF line endings). The pinned runtimes were extracted to a short
+  folder outside the repository (`python -m scripts.runtime --destination`),
+  because this worktree's path exceeds the Windows path limit.
+- B2 tables: `scripts/build_resstock_characteristics.py` (multifamily rows,
+  per-state shards, gzip, 6 MB; `--check`).
+- B3 sampler: `residential/characteristics.py`, exact conditioning; tests
+  compare with rejection from forward sampling.
+- B4 arguments: `residential/arguments.py`; all 5,867 shared argument values
+  of the 41 recovered records equal the Ruby inputs.
+- B5 equations: `residential/annual.py`; `scripts/validate_resstock_annual.py`
+  ran the pinned Ruby on 240 sampled units in 12 states: every end use within
+  1e-9 relative (`docs/validation/resstock-annual-equivalence.json`, answer key
+  `tests/answer_keys/resstock-annual.json`).
+- B6 adapter: `residential/apartment.py`; a recipe with a `resstock_unit`
+  block (building type, height, vintages, HVAC, hot water per person) takes
+  the ResStock path; prototype recipes keep the old path until B7 writes the
+  block. Request schema 3.0.0 adds `residents: "resstock"` and the location's
+  `climate_zone` and `weather_id`; 2.0.0 stays accepted until B10 regenerates
+  the answer keys.
+- Agent decisions (routine, reversible): a unit's exterior and garage lighting
+  are left to the building (the prototype's exterior lighting covers the
+  site); pools are not modelled in units (the closure has no pool heater or
+  pump characteristics, and `Misc Pool` only says whether one exists); a unit
+  without `weather_id` takes the nearest packaged TMY3 station in its state
+  for ceiling-fan months; fixture events that outlast a departure stay as
+  upstream (0.6 % of a one-resident unit's water in empty hours, against 30 %
+  under the prototype schedule).
+
+Stage log B7 (2026-10-28, rebased on main 08a3fbcb after PR #27):
+- `scripts/build_apartment_units.py` (`--check`) writes the 38 apartment-unit
+  recipes (36 from 90.1, 2 from DOE Ref) as ResStock units from release
+  2.0.0's `generator.json`, the prototype geometry and `systems.json`:
+  Midrise (4 stories, 31 apartments) is `Multi-Family with 5+ Units, 4-7
+  Stories` with a gas furnace and central AC; Highrise (10 stories, 79
+  apartments) is `8+ Stories` with a ducted heat pump (ResStock has no
+  water-loop heat pump); eras 90.1-2007 2000s, 90.1-2013 and 2019 2010s,
+  DOE Ref Pre-1980 to the 1970s, DOE Ref 1980-2004 1980s-2000s. Both P2
+  source fields exist for every template and DOE Ref: 66.33 L/person/day for
+  all 38. `scripts/build_reference_recipes.py` writes its two apartments
+  through the same function.
+- The generator's prototype apartment path is removed (every apartment
+  recipe is a ResStock unit); 16 schedules only it used left
+  `schedules.json`. Release 2.0.0 keeps the 2.x apartment recipes in its
+  `generator.json`; the next release carries these.
+- In 45 of about 500 state x climate-zone x programme cells ResStock has
+  no unit matching every programme condition (32 cold-climate cells for the
+  high-rise 90.1-2007 heat pump, 5 for 90.1-2013, and Alaska zones 7 and 8
+  for every programme). User decision (2026-10-29, ruling 191): condition on
+  climate zone x programme, pooling every state in the zone. That leaves
+  only Alaska (no 5+ unit apartment with central AC or a ducted heat pump),
+  where the HVAC condition is dropped: of 666 state x zone x programme
+  cells, 654 match fully and 12 (Alaska) drop the HVAC. The fixed relaxation
+  ladder is withdrawn.
+
+Stage log B8 (2026-10-28): commercial and fixed demands and shared water
+services bind their source value (`generator._loads`, `_service_owner`); the
+annual total is `value × Σ generated × s`. ResStock dwellings keep their annual
+totals. The legacy v0.8.0 keys still check every shape; their commercial totals
+are checked through the shape integral (`tests/schedules/helpers.assert_binding`).
+Composition parents' mixed loads are checked against their members instead
+(`test_request`), since source magnitudes now weight the member shapes. A native
+`flat_days` data-centre load binds a zero schedule and gives zero energy instead
+of `zero_generated_integral`. 87 schedules tests pass.
+
+Stage log B10 (2026-10-28): request schema 2.0.0 retired (`request-v2.schema.json`
+removed; bundles say 3.0.0; `__version__` 3.0.0.dev0); examples, smoke and tests
+moved to 3.0.0. Schedules suite 87 tests pass on Python 3.14 and 3.11; catalogue
+smoke 0 failures (38 apartment units, 1,101 commercial, 310 compositions, 318
+service variants). `scripts/generator_3_0_0_report.py` writes the before/after
+report (`docs/validation/generator-3-0-0-before-after.md`). No answer key needed
+regeneration: the native and legacy keys describe upstream and v0.8.0 runs, and
+the tests now check the new binding against them.
+
+Stage log B11 (2026-10-29, ruling 191): the apartment sampler conditions on
+climate zone x programme (`characteristics.sample_unit`: the zone given or drawn
+from the state, every state in it pooled by its share of matching units; the
+relaxation ladder is removed and only Alaska drops the HVAC). Schedules suite 92
+tests pass on Python 3.14 and 3.11; catalogue smoke 0 failures; the before/after
+report's apartment rows were regenerated (commercial rows unchanged).

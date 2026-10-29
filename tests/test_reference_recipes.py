@@ -46,7 +46,7 @@ class ReleaseValueTests(unittest.TestCase):
 
     def test_demands_and_slots_are_the_release_values(self):
         for recipe in self.recipes:
-            if recipe['kind'] == 'composition':
+            if recipe['kind'] in ('composition', 'apartment_unit'):
                 continue
             _, record = self.programs[recipe['program_id']]
             loads = {l['quantity']: l for l in record['loads']}
@@ -65,6 +65,18 @@ class ReleaseValueTests(unittest.TestCase):
                 positive = {q for q, l in loads.items() if l['status'] == 'known' and (l['value'] or 0) > 0
                             and not l.get('service_id') and q in ('lighting', 'electric_equipment', 'gas_equipment')}
                 self.assertLessEqual(positive, {d['quantity'] for d in recipe['demands']})
+
+    def test_apartment_units_are_resstock_units_of_their_era(self):
+        # ADR 0047: the unit's loads come from ResStock, so it carries no prototype demands or slots.
+        eras = {'DOE Ref Pre-1980': ['<1940', '1940s', '1950s', '1960s', '1970s'],
+                'DOE Ref 1980-2004': ['1980s', '1990s', '2000s']}
+        units = [r for r in self.recipes if r['kind'] == 'apartment_unit']
+        self.assertTrue(units)
+        for recipe in units:
+            with self.subTest(program=recipe['program_id']):
+                self.assertNotIn('demands', recipe)
+                self.assertNotIn('slots', recipe)
+                self.assertEqual(recipe['resstock_unit']['vintages'], eras[recipe['source']['template']])
 
     def test_compositions_list_the_release_members(self):
         for recipe in (r for r in self.recipes if r['kind'] == 'composition'):
