@@ -155,14 +155,14 @@
     });
     function apply() {
       const wanted = Object.fromEntries(selects.map(s => [s.dataset.filter, s.value]));
+      const visible = element => Object.entries(wanted).every(([axis, value]) => matches(axis, element.dataset[axis], value));
       let shown = 0;
-      sections.forEach((section, i) => {
-        const visible = Object.entries(wanted).every(([axis, value]) => matches(axis, section.dataset[axis], value));
-        section.hidden = !visible;
-        if (rows[i]) rows[i].hidden = !visible;
-        if (visible) shown += 1;
+      sections.forEach(section => {
+        section.hidden = !visible(section);
+        if (!section.hidden) shown += 1;
       });
-      count.textContent = shown + ' of ' + sections.length + ' contexts';
+      rows.forEach(row => { row.hidden = !visible(row); });
+      count.textContent = shown + ' of ' + sections.length + ' ' + (form.dataset.unit || 'contexts');
       const next = new URLSearchParams(location.search);
       Object.entries(wanted).forEach(([axis, value]) => { if (value) next.set(axis, value); else next.delete(axis); });
       const query = next.toString();

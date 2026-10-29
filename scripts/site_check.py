@@ -143,6 +143,14 @@ def check_coverage(root, manifest, release_ids=None):
     return errors
 
 
+def check_zoning(root, manifest):
+    """Every zoning page the manifest names is built (ADR 0050); an older manifest without the section passes."""
+    root = Path(root)
+    pages = manifest.get('zoning', {}).get('pages', {})
+    return [f'Missing zoning page: {url}' for url in pages.values()
+            if not (root/url/'index.md').is_file() and not (root/url/'index.html').is_file()]
+
+
 def check_retired(root):
     root = Path(root)
     errors = [f'Retired route present: {name}/' for name in RETIRED if (root/name).exists()]
@@ -198,7 +206,7 @@ def check(site, prefix='/archetype-atlas/', complete=False):
     manifest = json.loads((site/'site-manifest.json').read_text(encoding='utf-8'))
     pages = parse(site)
     errors = check_links(site, pages, prefix)+check_store(site, pages)+check_retired(site)
-    errors += check_coverage(site, manifest)+check_search(site, manifest)+check_viewer(site)+check_size(site)
+    errors += check_coverage(site, manifest)+check_zoning(site, manifest)+check_search(site, manifest)+check_viewer(site)+check_size(site)
     if complete:
         if manifest.get('partial'):
             errors.append('Partial build (--only) cannot be published')

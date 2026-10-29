@@ -2070,6 +2070,14 @@ html[data-ea-version="filled"] .ea-suite .ea-filling { outline: 1px solid var(--
 .ea-suite .ea-plot .ea-scale { text-anchor: start; }
 .ea-suite .ea-schedule, .ea-suite .ea-evidence, .ea-suite .ea-row, .ea-suite .ea-library-row, .ea-suite .ea-context { border-top: 1px dashed var(--ea-border-subtle); padding-top: 0.4rem; margin-top: 0.8rem; }
 .ea-suite .ea-note { color: var(--ea-text-muted); }
+/* Zoning recommendation pages (ADR 0050): the recommended rows, unjudged loads and the runner's flags. */
+.ea-suite tr.ea-recommended td { background: var(--ea-accent-tint); }
+.ea-suite tr.ea-failed td { color: var(--ea-text-muted); }
+.ea-suite .ea-unjudged { color: var(--ea-text-muted); }
+.ea-suite abbr.ea-flagged { font-style: italic; text-decoration: underline dotted; }
+.ea-suite .ea-duplicates { font-size: 0.66rem; }
+.ea-suite .ea-zonings td:nth-child(n+2), .ea-suite .ea-recommendations td:nth-child(n+4) { text-align: right; white-space: nowrap; }
+.ea-suite .ea-zonings td:first-child, .ea-suite .ea-zonings td:last-child, .ea-suite .ea-recommendations td:nth-child(7) { text-align: left; white-space: normal; }
 .ea-suite :target { scroll-margin-top: 4rem; outline: 2px solid var(--ea-accent); outline-offset: 2px; }
 .ea-suite .ea-viewer__json { max-height: 70vh; overflow: auto; }
 .ea-suite .ea-kicker code, .ea-suite .ea-fields code { overflow-wrap: anywhere; word-break: break-word; }

@@ -89,6 +89,8 @@ def program_page(site, pid, url, folder, mode, record, exports, schedules, evide
     facts = [('Name', esc(record.get('name', pid))), ('Template', esc(record.get('template', folder.template))),
              ('Building type', esc(record.get('building_type', folder.building_type))), ('Mode', esc(mode)),
              ('Folder', f'<a href="{esc(page.rel(trail[-1][1]))}">{esc(folder.path)}</a>')]
+    if site.zoning_of.get(pid):  # the LOD study used this program (ADR 0050)
+        facts.append(('Zoning recommendations', ', '.join(f'<a href="{esc(page.rel(u))}">{esc(t)}</a>' for t, u in site.zoning_of[pid])))
     overview, keys = split(record, RECORD_OMIT+('name', 'id'))
     body = [crumbs(page, trail), header(page, pid, facts, site.release.number), buttons, VERSION_SWITCH, notice]
     toc = [('overview', 'Overview')]+[(k, title_of(k)) for k in keys]

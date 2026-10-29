@@ -118,9 +118,10 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('build/site', cache['with']['path'].split())
         self.assertIn('steps.digest.outputs.value', cache['with']['key'])
         modules = suite_site.generator_modules()
-        for module in ('scripts.suite_site', 'scripts.atlas_exports', 'scripts.site_asset_versions'):  # the last via a hook
+        for module in ('scripts.suite_site', 'scripts.atlas_exports', 'scripts.lod_site', 'scripts.site_asset_versions'):  # the last via a hook
             self.assertIn(module, modules)
         self.assertNotIn('scripts.ci_tests', modules)
+        self.assertIn('data/lod-recommendations', suite_site.DIGEST_INPUTS)  # the zoning pages' data drop (ADR 0050)
 
     def test_no_step_reads_a_retired_release(self):
         for name in ('validate.yml', 'catalogue-site.yml'):

@@ -102,6 +102,19 @@ mean simulation readiness: geometry, population weights, activity assumptions,
 missing infiltration, system choices and annual calendars belong to the consumer.
 Water attribution is not automatically a physical zone fixture or heat gain.
 
+## Zoning recommendations
+
+The geometric LOD study's recommendations are not query records. They are published
+as whole documents on the [zoning recommendations](../zoning/index.md) pages: the
+main matrix (`lod-recommendations.json`, one entry per prototype × climate zone ×
+vintage × orientation, indexed by atlas program ID in `by_program`), the heat-transfer
+sub-study and the provenance sidecar, each with verified copy and download, and one
+slice per prototype on its page. The repository holds them under
+`data/lod-recommendations/v1/` with the schema at
+`schemas/lod-recommendations-v1.schema.json` (ADR 0050). The threshold behind each
+recommendation is recorded in every file; a later consolidated drop replaces the files
+in place, so retain the drop number and digest with a model that cites them.
+
 ## Updating and reproducing
 
 Resolve latest once at the start of an operation and retain that manifest
