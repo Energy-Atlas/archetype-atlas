@@ -2,11 +2,15 @@ name: Catalogue site
 
 # One pipeline per pull request or main push; working branches can be checked manually.
 # Do not path-filter required checks: even a docs-only PR must report its gates.
+# A push to main skips the jobs its pull request already passed (validate.yml); the weekly
+# run and manual runs run everything.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '17 6 * * 1'
   workflow_dispatch:
     inputs:
       deploy:
@@ -25,6 +29,8 @@ concurrency:
 jobs:
   research:
     uses: ./.github/workflows/validate.yml
+    with:
+      full: ${{ github.event_name != 'push' }}
 
   build:
     runs-on: ubuntu-latest
@@ -47,20 +53,24 @@ jobs:
           python -m unittest tests.test_program_json_contract tests.test_program_json_aggregation tests.test_program_v3_schema tests.test_program_recovery -q
           node --test tests/*.test.js
       # Site output is a pure function of the release and the scripts (ADR 0036 section 1, ADR 0043):
-      # it is cached under a digest of its inputs, and site_check still rejects a stale or partial tree.
+      # the generated pages and the MkDocs build are cached under a digest of their inputs, and
+      # site_check and site_smoke still run on every tree, cached or not.
       - name: Digest the site inputs
         id: digest
         run: echo "value=$(python -m scripts.suite_site --digest)" >> "$GITHUB_OUTPUT"
-      - name: Restore the generated catalogue
+      - name: Restore the generated and built catalogue
         id: cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          path: build/site-docs
-          key: suite-site-docs-${{ steps.digest.outputs.value }}
+          path: |
+            build/site-docs
+            build/site
+          key: suite-site-built-${{ steps.digest.outputs.value }}
       - name: Generate the suite catalogue of the newest release
         if: steps.cache.outputs.cache-hit != 'true'
         run: python -m scripts.suite_site
       - name: Build
+        if: steps.cache.outputs.cache-hit != 'true'
         run: python -m mkdocs build --strict
       - name: Verify all links and browser behavior
         run: |

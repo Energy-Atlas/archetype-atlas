@@ -82,9 +82,11 @@ with ADR 0043; it remains in the repository history.
 ## Release gate
 
 Every run of the catalogue workflow's build job runs the site unit and Node tests,
-computes the input digest (`python -m scripts.suite_site --digest`) and restores
-`build/site-docs` from the Actions cache under that digest, or generates it. It then
-builds with `mkdocs build --strict`, and passes `site_check --require-complete` (which
+computes the input digest (`python -m scripts.suite_site --digest`: the release
+manifest, the scripts the generator and the MkDocs hooks import, `website/`, `schemas/`,
+`mkdocs.yml`, the site requirements and the policy files those scripts read) and restores
+`build/site-docs` and the built `build/site` from the Actions cache under that digest, or
+generates and builds them with `mkdocs build --strict`. Either way it then passes `site_check --require-complete` (which
 also rejects a cached tree whose recorded digest differs from the checkout) and the
 Chromium smoke test before it uploads the Pages artifact. The same pipeline calls the
 reusable `validate.yml` research jobs. Deployment requires both the build and research
@@ -92,39 +94,30 @@ validation to succeed for the same commit. It runs only on `main`, automatically
 pushes or after a manual dispatch with `deploy` set. The production environment also
 permits `main` only. See [branch and publication policy](branch-policy.md).
 
-Automatic runs cover every pull request targeting `main` and every push to
-`main`. There are no path filters on these required checks, avoiding missing
-checks on documentation changes and stale filters when a schema version changes.
-Working-branch pushes do not start CI; use `gh workflow run catalogue-site.yml
---ref BRANCH` for a manual validation run. Its default `deploy=false` does not
-publish; even `deploy=true` cannot publish from a working branch.
+Automatic runs cover every pull request targeting `main`, every push to `main`, and a
+weekly run (Monday 06:17 UTC). There are no path filters on the required checks, so a
+documentation-only change still reports them. Working-branch pushes do not start CI; use
+`gh workflow run catalogue-site.yml --ref BRANCH` for a manual validation run. Its default
+`deploy=false` does not publish; even `deploy=true` cannot publish from a working branch.
 
-The build job does not repeat the frozen-release checks; the reusable
-`validate.yml` research workflow runs them on every pipeline run, as parallel
-Linux jobs:
+The reusable `validate.yml` research workflow runs these jobs in parallel:
 
-- `unit-tests`: fetches the pinned sources and runs the full Python suite;
-- `releases`: fetches the sources, validates, reproduces and compares the atlas,
-  verifies every frozen atlas, resolution, completion, water and water-reporting
-  release, verifies and reproduces the definition release, reproduces the v3
-  program completeness receipt, checks every file of the ADR 0036 release
-  `data/atlas-releases/v1.0.0` against its manifest and runs the security audit;
-- `construction-validation`: validates all frozen construction consumer documents
-  and the combined foundation documents and receipts;
-- `construction-reproduction`: reproduces the frozen detailed and unified
-  constructions and verifies the construction profiles;
-- `schedules`: reports schedule coverage and generates every packaged programme
-  once (`smoke_catalogue`).
+- `release` (Linux): verifies release 2.0.0 against its checksums, the in-place edits,
+  the export schemas, the reconciliation page and the daylighting rules, validates,
+  reproduces and compares the source pipeline, and runs the security audit;
+- `unit-tests (atlas)` and `unit-tests (schedules)` (Linux, Python 3.11): the Python suite
+  in two shards (`python -m scripts.ci_tests --shard atlas|schedules`; the shards
+  partition `unittest discover -s tests`);
+- `schedules` (Linux): generates every packaged programme once (`smoke_catalogue`);
+- `windows-tests (atlas)` and `windows-tests (schedules)` (Windows, Python 3.14): the same
+  shards, and the release checksums on that platform.
 
-The required `research / atlas (ubuntu-latest, 3.11)` check passes only when every
-one of these jobs passes. The required `research / atlas (windows-latest, 3.14)`
-check runs the pinned-producer reproductions (including a byte-for-byte rebuild of
-the ADR 0036 release, whose construction documents come from the combined
-delivery) and the Windows consumer-document
-validation described below. A pipeline run takes about as long as its slowest
-job, the full Python suite, rather than the sum of all checks. Site generation is
-cached by input digest ([ADR 0036](adr/0036-suite-based-release-storage.md) section 1,
-[ADR 0043](adr/0043-suite-based-site.md)).
+The required `research / atlas (ubuntu-latest, 3.11)` check passes only when every Linux
+job passes, and `research / atlas (windows-latest, 3.14)` only when both Windows shards
+pass. A push to `main` runs only `release`: branch protection admits only pull requests
+whose checks passed against an up-to-date `main`, so the merge commit's tree was already
+tested; the gates then accept the skipped jobs. The weekly and manual runs run every job.
+A pipeline run takes about as long as its slowest job rather than the sum of all checks.
 
 The research workflow additionally reproduces frozen construction base v2.0.0,
 applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with
