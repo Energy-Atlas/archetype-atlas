@@ -171,14 +171,16 @@ each unit, from its own seed:
 1. **Characteristics.** The ResStock housing characteristics are drawn
    (`residential/characteristics.py`, tables in
    `atlas_schedules/data/residential/characteristics/`), conditioned exactly on
-   the request (state, climate zone, the unit's floor-area bin, residents) and
-   on the programme's `resstock_unit` block: building type, height class,
-   construction era and the prototype's HVAC. Midrise programmes are
+   climate zone × programme: the request's climate zone (or one drawn from its
+   state), pooling every state in that zone, the unit's floor-area bin and
+   residents, and the programme's `resstock_unit` block: building type, height
+   class, construction era and the prototype's HVAC. Midrise programmes are
    `Multi-Family with 5+ Units, 4-7 Stories` with a gas furnace and central AC;
-   Highrise programmes are `8+ Stories` with a ducted heat pump. Where ResStock
-   has no unit matching every programme condition, the sampler drops them in a
-   fixed order (height class, era widened by a decade, both, HVAC, all) and
-   records the step in `generation.relaxation`.
+   Highrise programmes are `8+ Stories` with a ducted heat pump. Pooled this way,
+   every climate zone has a matching unit except Alaska's 7AK and 8AK, where no
+   5+ unit apartment has central AC or a ducted heat pump; there the HVAC
+   condition is dropped. `generation.relaxation` records `none` or `hvac`, and
+   `characteristics.State` the state the unit was drawn from.
 2. **Annual energy.** The OpenStudio-HPXML annual equations
    (`residential/annual.py`) give each end use's energy from the draw, the
    residents and the unit's floor area: lighting from the sampled lamp mix,

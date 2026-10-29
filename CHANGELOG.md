@@ -4,9 +4,10 @@
 
 Breaking (ADR 0047; user decisions O15 to O21):
 - **Apartment units are ResStock multifamily units.** Each unit draws its ResStock housing
-  characteristics (a port of the sampler over 67 pinned tables, conditioned on the request's
-  state, climate zone, floor area and residents and on the programme's building type, height,
-  era and HVAC). It then takes every internal load's annual energy from the ported
+  characteristics (a port of the sampler over 67 pinned tables, conditioned on climate zone ×
+  programme: the request's climate zone, or one drawn from its state, with every state in the
+  zone pooled; the floor area and residents; and the programme's building type, height, era and
+  HVAC, dropped only in Alaska, where no apartment has the prototype HVAC). It then takes every internal load's annual energy from the ported
   OpenStudio-HPXML equations, its schedules from the ResStock generator, and its thermostat
   from the same draw. Hot water is the prototype's 66.33 L per design person per day × the
   unit's residents, timed by the unit's own fixture events. The 38 apartment recipes are

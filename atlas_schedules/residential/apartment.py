@@ -1,10 +1,11 @@
 """An apartment unit as a ResStock multifamily unit (rulings 185-187; plan section 8, B6).
 
 Inside the unit everything is ResStock's, from one draw per unit:
-1. characteristics: residential/characteristics.py, conditioned on the request location (state, climate
-   zone), the unit's floor-area bin and residents, and the programme's building type, height class,
-   vintages and HVAC (`recipe["resstock_unit"]`, scripts/build_apartment_units.py), relaxed in the
-   sampler's fixed order where ResStock has no matching unit;
+1. characteristics: residential/characteristics.py `sample_unit`, conditioned on climate zone x programme
+   (the request's climate zone, or one drawn from its state; every state in the zone pooled), the unit's
+   floor-area bin and residents, and the programme's building type, height class, vintages and HVAC
+   (`recipe["resstock_unit"]`, scripts/build_apartment_units.py); the HVAC is dropped only where the zone
+   has no unit with it (Alaska);
 2. annual energy per end use: residential/arguments.py and residential/annual.py with the caller's exact
    floor area; the design level of each load is fitted to its generated schedule (annual / full-load
    hours), as OpenStudio-HPXML `calc_design_level_from_annual_kwh` does;
@@ -31,7 +32,7 @@ from ..errors import GeneratorError
 from ..mixtures import Load
 from .annual import annual_loads
 from .arguments import unit_arguments
-from .characteristics import Conditions, floor_area_option, occupants_option, sample_relaxed
+from .characteristics import Conditions, floor_area_option, occupants_option, sample_unit
 from .generate import Dwelling, generate_dwelling
 from .shapes import fan_months
 from .tables import DATA as TABLES_DATA, load_drybulb
@@ -94,7 +95,7 @@ def conditions_for(spec: dict, location, floor_area_m2: float, residents) -> Con
 def resstock_unit(spec: dict, location, floor_area_m2: float, residents, unit_seed: int, rng_mode: str,
                   type_probabilities) -> UnitResult:
     """One apartment unit; residents is an integer or "resstock" (drawn, vacancy included)."""
-    characteristics, relaxation = sample_relaxed(conditions_for(spec, location, floor_area_m2, residents), unit_seed)
+    characteristics, relaxation = sample_unit(conditions_for(spec, location, floor_area_m2, residents), unit_seed)
     arguments = unit_arguments(characteristics)
     count = int(arguments["geometry_unit_num_occupants"]) if residents == "resstock" else int(residents)
     bedrooms = int(arguments["geometry_unit_num_bedrooms"])

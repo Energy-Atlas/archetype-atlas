@@ -690,14 +690,15 @@ Stage log B7 (2026-10-28, rebased on main 08a3fbcb after PR #27):
   recipe is a ResStock unit); 16 schedules only it used left
   `schedules.json`. Release 2.0.0 keeps the 2.x apartment recipes in its
   `generator.json`; the next release carries these.
-- Agent decision (to confirm with the user): in 45 of about 500 state x
-  climate-zone x programme cells ResStock has no unit matching every
-  programme condition (32 cold-climate cells for the high-rise 90.1-2007
-  heat pump, 5 for 90.1-2013, and Alaska zones 7 and 8 for every programme).
-  The sampler then drops programme conditions in a fixed order: the height
-  class, the era widened by one decade, both, the HVAC, all. The caller's
-  location, floor area and residents are never relaxed; each unit records
-  the step in `generation.relaxation`.
+- In 45 of about 500 state x climate-zone x programme cells ResStock has
+  no unit matching every programme condition (32 cold-climate cells for the
+  high-rise 90.1-2007 heat pump, 5 for 90.1-2013, and Alaska zones 7 and 8
+  for every programme). User decision (2026-10-29, ruling 191): condition on
+  climate zone x programme, pooling every state in the zone. That leaves
+  only Alaska (no 5+ unit apartment with central AC or a ducted heat pump),
+  where the HVAC condition is dropped: of 666 state x zone x programme
+  cells, 654 match fully and 12 (Alaska) drop the HVAC. The fixed relaxation
+  ladder is withdrawn.
 
 Stage log B8 (2026-10-28): commercial and fixed demands and shared water
 services bind their source value (`generator._loads`, `_service_owner`); the
@@ -717,3 +718,10 @@ service variants). `scripts/generator_3_0_0_report.py` writes the before/after
 report (`docs/validation/generator-3-0-0-before-after.md`). No answer key needed
 regeneration: the native and legacy keys describe upstream and v0.8.0 runs, and
 the tests now check the new binding against them.
+
+Stage log B11 (2026-10-29, ruling 191): the apartment sampler conditions on
+climate zone x programme (`characteristics.sample_unit`: the zone given or drawn
+from the state, every state in it pooled by its share of matching units; the
+relaxation ladder is removed and only Alaska drops the HVAC). Schedules suite 92
+tests pass on Python 3.14 and 3.11; catalogue smoke 0 failures; the before/after
+report's apartment rows were regenerated (commercial rows unchanged).

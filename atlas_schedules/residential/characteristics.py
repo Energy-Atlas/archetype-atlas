@@ -4,8 +4,8 @@ Draws a unit's characteristics from the packaged ResStock tables
 (scripts/build_resstock_characteristics.py), conditioned exactly on what the caller and the
 programme fix:
 
-- location: state, and the IECC 2004 climate zone if given (otherwise drawn within the state);
-  county and PUMA are drawn as hidden variables, so they are summed out;
+- location: the IECC 2004 climate zone (given, or drawn from the caller's state); county and PUMA
+  are drawn as hidden variables, so they are summed out;
 - building: `Geometry Building Type RECS`, the `Geometry Building Type Height` class for 5+ units,
   the allowed `Vintage` options (from the template), and the `Geometry Floor Area` bin of the unit;
 - HVAC, fixed to the prototype: heating fuel, heating type, cooling type, shared system and zonal
@@ -22,10 +22,13 @@ topological order. Table rows are normalised to sum to one.
 The draws use their own PCG64 stream (`SeedSequence([unit_seed, STREAM_TAG])`), so the schedule
 streams of the same unit are unchanged.
 
-When ResStock has no unit matching every programme condition (for example no 8+ story 2000s unit
-with a ducted heat pump in New York, or no gas furnace with central AC in Alaska),
-`sample_relaxed` drops programme conditions in the fixed order of `RELAXATIONS` and reports the
-step it used; the caller's location, floor area and residents are never relaxed.
+`sample_characteristics` is the exact sampler within one state. `sample_unit` conditions on climate
+zone x programme: it pools every state in the zone, choosing the state by its share of the zone's
+matching units (cell weights are national, so this is the exact posterior over the whole zone),
+then samples within it. Where the zone has no unit with the prototype HVAC (Alaska's 7AK and 8AK:
+no 5+ unit apartment there has central AC or a ducted heat pump), the HVAC condition is dropped and
+the unit takes the zone's own HVAC; `RELAXATIONS` names the two steps. The caller's floor area and
+residents are never relaxed.
 """
 from dataclasses import dataclass, replace
 from functools import lru_cache
@@ -121,7 +124,7 @@ class Table:
         return self.options[winners[0]]
 
 
-@lru_cache(maxsize=8)
+@lru_cache(maxsize=64)
 def _load(state: str) -> tuple:
     try:
         shard = json.loads(gzip.decompress((DATA / "states" / f"{state}.json.gz").read_bytes()))
@@ -212,11 +215,9 @@ class _Posterior:
                         if w > 0:
                             self.candidates.append(values)
                             weights.append(w)
-        total = math.fsum(weights)
-        if total <= 0:
-            raise NoUnitMatch("source_undefined", "/characteristics",
-                              f"ResStock has no multifamily unit matching {conditions}")
-        self.weights = [w / total for w in weights]
+        # Unnormalised: P(zone, cell, evidence) summed over this state's cells, comparable across states.
+        self.total = math.fsum(weights)
+        self.weights = [w / self.total for w in weights] if self.total > 0 else []
 
     # Likelihood factors -------------------------------------------------------------------------------
     def _height(self, values: dict) -> float:
@@ -339,7 +340,7 @@ def _pick_row(stream, table: Table, values: dict) -> str:
     return table.options[weighted_choice(stream, table.distribution(values))]
 
 
-@lru_cache(maxsize=64)
+@lru_cache(maxsize=256)
 def _posterior(conditions: Conditions) -> _Posterior:
     return _Posterior(conditions)
 
@@ -349,9 +350,14 @@ def characteristics_stream(unit_seed: int) -> Pcg64Stream:
 
 
 def sample_characteristics(conditions: Conditions, unit_seed: int) -> dict:
-    """{characteristic: option} for one unit; County and PUMA are drawn but not returned."""
-    stream = characteristics_stream(unit_seed)
+    """{characteristic: option} for one unit within `conditions.state`; County and PUMA are drawn but not returned."""
+    return _draw(conditions, characteristics_stream(unit_seed))
+
+
+def _draw(conditions: Conditions, stream) -> dict:
     posterior = _posterior(conditions)
+    if posterior.total <= 0:
+        raise NoUnitMatch("source_undefined", "/characteristics", f"ResStock has no multifamily unit matching {conditions}")
     values = posterior.draw(stream)
     tables = posterior.tables
     for name in _forward_order(tables):
@@ -361,35 +367,54 @@ def sample_characteristics(conditions: Conditions, unit_seed: int) -> dict:
     return values
 
 
-def neighbour_vintages(state: str, vintages: tuple) -> tuple:
-    """The vintages and the decades either side of them, in `Vintage` option order."""
-    options = _load(state)[0]["Vintage"].options
-    picked = {i for i, option in enumerate(options) if option in vintages}
-    return tuple(options[i] for i in sorted({j for i in picked for j in (i - 1, i, i + 1) if 0 <= j < len(options)}))
+@lru_cache(maxsize=1)
+def _zone_states() -> dict:
+    """{climate zone: {state: P(zone, state)}} over the packaged shards."""
+    zones = _national()["tables"]["ASHRAE IECC Climate Zone 2004"]
+    table = Table("ASHRAE IECC Climate Zone 2004", zones)
+    p_zone = dict(zip(table.options, table.distribution({})))
+    out = {}
+    for path in sorted((DATA / "states").glob("*.json.gz")):
+        state = path.name.split(".")[0]
+        for cell in json.loads(gzip.decompress(path.read_bytes()))["cells"]:
+            for zone, p in cell["probability_given_climate_zone"].items():
+                shares = out.setdefault(zone, {})
+                shares[state] = shares.get(state, 0.0) + p_zone[zone] * p
+    return out
 
 
-# Programme conditions dropped in this order when nothing matches: the height class first (it changes no
-# load), then the template era widened by one decade, then the prototype HVAC.
-RELAXATIONS = ("none", "height", "vintage", "height+vintage", "hvac", "height+vintage+hvac")
+def _zone(conditions: Conditions, stream) -> str:
+    """The given climate zone (checked against the state), or one drawn from P(zone | state)."""
+    shares = {zone: states[conditions.state] for zone, states in _zone_states().items() if states.get(conditions.state)}
+    if not shares:
+        raise GeneratorError("unsupported_input", "/location/state", f"No ResStock tables for state {conditions.state!r}")
+    if conditions.climate_zone is not None:
+        if conditions.climate_zone not in shares:
+            raise GeneratorError("unsupported_input", "/location/climate_zone",
+                                 f"Climate zone {conditions.climate_zone!r} does not occur in {conditions.state!r}")
+        return conditions.climate_zone
+    return _pick(stream, sorted(shares.items()))
 
 
-def relaxed(conditions: Conditions, step: str) -> Conditions:
-    changes = {}
-    if "height" in step:
-        changes["height"] = None
-    if "vintage" in step:
-        changes["vintages"] = neighbour_vintages(conditions.state, conditions.vintages)
-    if "hvac" in step:
-        changes["hvac"] = None
-    return replace(conditions, **changes)
+@lru_cache(maxsize=64)
+def _pool(conditions: Conditions) -> tuple:
+    """((state, weight), ...) of the states in `conditions.climate_zone` with a matching unit."""
+    pooled = [(state, _posterior(replace(conditions, state=state)).total) for state in sorted(_zone_states()[conditions.climate_zone])]
+    return tuple((state, w) for state, w in pooled if w > 0)
 
 
-def sample_relaxed(conditions: Conditions, unit_seed: int) -> tuple[dict, str]:
-    """(characteristics, relaxation step) from the first step of `RELAXATIONS` with a matching unit."""
-    first = None
+# Programme conditions dropped when the climate zone has no matching unit: only the prototype HVAC
+# (Alaska, where no 5+ unit apartment has central AC or a ducted heat pump).
+RELAXATIONS = ("none", "hvac")
+
+
+def sample_unit(conditions: Conditions, unit_seed: int) -> tuple[dict, str]:
+    """(characteristics, relaxation step) for one unit, conditioned on climate zone x programme."""
+    stream = characteristics_stream(unit_seed)
+    zone = _zone(conditions, stream)
     for step in RELAXATIONS:
-        try:
-            return sample_characteristics(relaxed(conditions, step), unit_seed), step
-        except NoUnitMatch as error:
-            first = first or error
-    raise first
+        key = replace(conditions, state=None, climate_zone=zone, hvac=None if step == "hvac" else conditions.hvac)
+        pool = _pool(key)
+        if pool:
+            return _draw(replace(key, state=_pick(stream, list(pool))), stream), step
+    raise NoUnitMatch("source_undefined", "/characteristics", f"ResStock has no multifamily unit matching {conditions}")

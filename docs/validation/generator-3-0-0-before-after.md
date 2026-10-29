@@ -21,14 +21,14 @@ source value (commercial, shared water) or uses ResStock units (apartments).
 | Programme | Residents | Electricity kWh/yr, p05 / median / p95 | Other fuels kWh/yr, median | Hot water m³/yr, median |
 |---|---|---|---:|---:|
 | 90.1-2007 Midrise | 2.x prototype | 4042 | 0 | 54.8 |
-| 90.1-2007 Midrise | 1 | 1903 / 3352 / 5204 | 0 | 24.2 |
-| 90.1-2007 Midrise | 2 | 1991 / 3388 / 5695 | 0 | 48.4 |
-| 90.1-2007 Midrise | 3 | 2696 / 3612 / 4602 | 727 | 72.6 |
-| 90.1-2007 Midrise | 4 | 2257 / 3964 / 7422 | 821 | 96.8 |
+| 90.1-2007 Midrise | 1 | 1741 / 2786 / 4665 | 383 | 24.2 |
+| 90.1-2007 Midrise | 2 | 2284 / 3805 / 5214 | 791 | 48.4 |
+| 90.1-2007 Midrise | 3 | 2391 / 4394 / 6170 | 0 | 72.6 |
+| 90.1-2007 Midrise | 4 | 2433 / 4174 / 6576 | 821 | 96.8 |
 | 90.1-2007 Highrise | 2.x prototype | 3683 | 0 | 54.8 |
-| 90.1-2007 Highrise | 1 | 1976 / 3463 / 5204 | 0 | 24.2 |
-| 90.1-2007 Highrise | 2 | 2041 / 3388 / 5789 | 0 | 48.4 |
-| 90.1-2007 Highrise | 3 | 2794 / 3769 / 5476 | 0 | 72.6 |
-| 90.1-2007 Highrise | 4 | 2535 / 4156 / 7670 | 0 | 96.8 |
+| 90.1-2007 Highrise | 1 | 1991 / 3004 / 5348 | 0 | 24.2 |
+| 90.1-2007 Highrise | 2 | 2537 / 4017 / 6683 | 0 | 48.4 |
+| 90.1-2007 Highrise | 3 | 2435 / 4085 / 6961 | 0 | 72.6 |
+| 90.1-2007 Highrise | 4 | 2627 / 5051 / 7059 | 0 | 96.8 |
 
 The 2.x prototype figures are per unit regardless of residents; 2.x had no gas in units.

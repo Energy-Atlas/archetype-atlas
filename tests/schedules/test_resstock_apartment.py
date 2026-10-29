@@ -100,16 +100,18 @@ class Recipes(unittest.TestCase):
         self.assertEqual(programmes.load_recipe(MIDRISE)["resstock_unit"]["vintages"],
                          ["<1940", "1940s", "1950s", "1960s", "1970s"])
 
-    def test_programme_conditions_relax_in_order_where_resstock_has_no_match(self):
+    def test_units_pool_their_climate_zone_and_drop_hvac_only_in_alaska(self):
         spec = programmes.load_recipe(APARTMENT)["resstock_unit"]
         cases = (({"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5, "climate_zone": "4A"}, "none"),
-                 # no 8+ story 2000s unit with a ducted heat pump in New York's zone 4A
-                 ({"state": "NY", "latitude": 40.78, "longitude": -73.97, "utc_offset": -5, "climate_zone": "4A"}, "vintage"),
-                 # no unit with a ducted heat pump in Alaska's zone 7
+                 # New York's own zone 4A has no 8+ story 2000s unit with a ducted heat pump; the pooled zone does
+                 ({"state": "NY", "latitude": 40.78, "longitude": -73.97, "utc_offset": -5, "climate_zone": "4A"}, "none"),
+                 # no 5+ unit apartment in Alaska has a ducted heat pump
                  ({"state": "AK", "latitude": 61.22, "longitude": -149.9, "utc_offset": -9, "climate_zone": "7AK"}, "hvac"))
         for location, step in cases:
             result = resstock_unit(spec, Location(**location), 80.0, 2, 11, "pcg64", None)
             self.assertEqual(result.generation["relaxation"], step, location["state"])
+            self.assertEqual(result.generation["characteristics"]["ASHRAE IECC Climate Zone 2004"], location["climate_zone"])
+            self.assertEqual(result.generation["characteristics"]["Vintage"], "2000s")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 Status: accepted for generator 3.0.0 (2026-10-28). The choices are user decisions O15 to
 O21 (plan `docs/superpowers/plans/2026-10-17-generator-restructure.md`, sections 7 and 8;
-ledger rulings 181 to 189). Choices the plan left open are agent decisions, listed in
+ledger rulings 181 to 191). Choices the plan left open are agent decisions, listed in
 section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7).
 
 ## 1. Context
@@ -50,12 +50,17 @@ section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7
    openstudio-standards space type: the per-apartment peak flow on the prototype schedule
    (4,592 full-load hours) over the design occupants, 66.33 L/person·day at 60 °C for
    every template and both DOE Ref vintages.
-7. **Sampler conditioning.** State and IECC 2004 climate zone from the request (county and
-   PUMA summed out within each cell); the unit's floor-area bin; the template's era
+7. **Sampler conditioning: climate zone × programme.** The IECC 2004 climate zone from the
+   request, or drawn from the request's state; every state in the zone is pooled, chosen by
+   its share of the zone's matching units (county and PUMA summed out within each cell); the unit's floor-area bin; the template's era
    (`Vintage`); the prototype's building type, height class and HVAC (heating fuel,
    heating type, cooling type, shared system, zonal electric heating). Residents in two
    modes: the caller's count, on which the draw is conditioned, or `"resstock"`, which
-   draws them, vacancy included.
+   draws them, vacancy included. Where the zone has no unit with the prototype HVAC (only
+   Alaska's 7AK and 8AK: no 5+ unit apartment there has central AC or a ducted heat pump),
+   the HVAC condition is dropped and `generation.relaxation` records `hvac`; otherwise
+   `none`. Of 666 state × zone × programme cells, 654 match fully and 12 (Alaska) drop the
+   HVAC.
 8. **Accepted gaps.** Common laundry: ResStock gives in-unit appliances or none, so shared
    laundry rooms are not represented. Gas loads in units are kept as sampled.
 9. **Commercial daylighting and density.** The ADR 0044 daylighting controls stay as
@@ -111,9 +116,12 @@ section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7
   commercial recipe at seeds 42 and 51): annual lighting is 0.79 / 0.84 / 1.14 × the 2.x
   total (p05 / median / p95) and plug loads 0.75 / 0.91 / 1.36 ×; under 2.x the peak
   exceeded the rating in 62 % of lighting and 45 % of plug loads. 80 m² apartment units in
-  Hickory NC use a median 3,350 to 4,160 kWh/yr of electricity for 1 to 4 residents, against
-  3,680 to 4,040 kWh/yr under the 2.x prototype densities.
-- Schedules suite (87 tests) on Python 3.14 and 3.11; catalogue smoke with no failures.
+  climate zone 4A (Hickory NC, every 4A state pooled) use a median 2,790 to 4,390 kWh/yr of
+  electricity for 1 to 4 residents (Midrise) and 3,000 to 5,050 kWh/yr (Highrise), against
+  4,040 and 3,680 kWh/yr under the 2.x prototype densities.
+- Climate zone × programme: of 666 state × zone × programme cells, 654 match every
+  programme condition and the 12 Alaska cells drop the HVAC.
+- Schedules suite (92 tests) on Python 3.14 and 3.11; catalogue smoke with no failures.
 
 ## 5. Consequences
 
@@ -136,13 +144,8 @@ section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7
 - Fixture events that outlast a departure stay as upstream.
 - ResStock has no water-loop heat pump, so the high-rise water-to-air heat pumps on a
   shared loop become a unit's ducted heat pump with no shared system.
-- **Relaxation (to confirm).** In 45 of about 500 state × climate-zone × programme cells
-  ResStock has no unit matching every programme condition: 32 cold-climate cells for the
-  high-rise 90.1-2007 heat pump, 5 for 90.1-2013, and Alaska zones 7 and 8 for every
-  programme. The sampler then drops programme conditions in a fixed order (the height
-  class, the era widened by one decade, both, the HVAC, all) and records the step in
-  `generation.relaxation`. The caller's location, floor area and residents are never
-  relaxed; a caller resident count with no match in its floor-area bin fails.
+- A caller resident count with no ResStock match in its floor-area bin fails; residents
+  and floor area are never relaxed.
 
 ## 7. Amendments
 

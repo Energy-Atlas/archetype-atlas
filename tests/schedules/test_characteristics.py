@@ -1,5 +1,6 @@
 """ResStock housing-characteristics sampler for apartment units (plan section 8, B3)."""
 import collections
+from dataclasses import replace
 import math
 import random
 import unittest
@@ -97,6 +98,46 @@ class Draws(unittest.TestCase):
         with self.assertRaises(GeneratorError):
             ch.sample_characteristics(ch.Conditions(state="NC", building_type=FIVE_PLUS, floor_area="750-999",
                                                     vintages=("2000s",), climate_zone="8AK"), 1)
+
+
+class ClimateZonePool(unittest.TestCase):
+    high_rise = dict(building_type=FIVE_PLUS, floor_area="750-999", vintages=("2000s",),
+                     height="Multi-Family with 5+ Units, 8+ Stories",
+                     hvac=("Electricity", "Ducted Heat Pump", "Ducted Heat Pump", "None", "No"))
+
+    def test_states_are_chosen_by_their_share_of_the_zone(self):
+        conditions = ch.Conditions(state="NY", climate_zone="4A", **self.high_rise)
+        pool = dict(ch._pool(replace(conditions, state=None)))
+        self.assertNotIn("NY", pool)       # New York's 4A has none; the zone does
+        for state, weight in pool.items():
+            self.assertEqual(weight, ch._posterior(replace(conditions, state=state)).total)
+        draws = [ch.sample_unit(conditions, seed) for seed in range(200)]
+        self.assertEqual({step for _, step in draws}, {"none"})
+        counts = collections.Counter(d["State"] for d, _ in draws)
+        total = sum(pool.values())
+        for state, weight in pool.items():
+            p = weight / total
+            self.assertLess(abs(counts[state] / 200 - p), 4.5 * math.sqrt(p * (1 - p) / 200) + 2e-3, state)
+
+    def test_the_request_state_does_not_change_the_draw_within_a_zone(self):
+        a = ch.sample_unit(ch.Conditions(state="NY", climate_zone="4A", **self.high_rise), 9)
+        b = ch.sample_unit(ch.Conditions(state="NC", climate_zone="4A", **self.high_rise), 9)
+        self.assertEqual(a, b)
+
+    def test_zone_is_drawn_from_the_state_when_not_given(self):
+        zones = {ch.sample_unit(ch.Conditions(state="NY", **self.high_rise), seed)[0]["ASHRAE IECC Climate Zone 2004"]
+                 for seed in range(60)}
+        self.assertLessEqual(zones, {"4A", "5A", "6A"})
+        self.assertGreater(len(zones), 1)
+
+    def test_a_zone_outside_the_state_is_rejected(self):
+        with self.assertRaises(GeneratorError) as raised:
+            ch.sample_unit(ch.Conditions(state="NC", climate_zone="8AK", **self.high_rise), 1)
+        self.assertEqual(raised.exception.code, "unsupported_input")
+
+    def test_only_alaska_drops_the_hvac(self):
+        _, step = ch.sample_unit(ch.Conditions(state="AK", climate_zone="8AK", **self.high_rise), 1)
+        self.assertEqual(step, "hvac")
 
 
 class Exactness(unittest.TestCase):
