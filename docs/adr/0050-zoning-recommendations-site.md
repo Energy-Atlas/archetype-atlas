@@ -114,3 +114,52 @@ reversible by the next data drop).
   `scripts/lod_site.py` with the loader changes the new fields need.
 - The threshold on the pages is the one in the files; a drop with another threshold
   changes every page at the next build and nothing else.
+
+## 5. Drop 2 (2026-10-29): the consolidated drop after R5 and R6
+
+Applied per section 4 from BEMGen `38ff521` (the merge of its R6 pull request; D-200 to
+D-203), with the files copied from `research/lod-study/results/` rather than from a report
+folder, since BEMGen now commits its published results.
+
+- **What changed in the data.** `lod-recommendations.json` is R3's 264 cells unchanged
+  (the recommendations are drop 1's) plus the serial costs of the R5 timing pass: a
+  `cost` object on the 12 timed references and 206 timed test sites (medians over three
+  repeats of processor time, wall clock and peak committed memory, each test site's ratio
+  to its reference, the per-site CV) and a top-level `timing` block (the pass, its gate
+  verdict, the repeat check, the writer's medians by zoning and by prototype). The file is
+  written compact (7.8 MB against 11 MB). `lod-recommendations-ht.json` is R4 written
+  again by the fixed writer so that its 24 failed small-hotel sites carry their zoning
+  from the suite instead of null (D-203); nothing else differs. The sidecar records
+  drop 2, the four BEMGen builds (`2ed856c` runs, `b29931c` timing, `d32fa2a` repeat
+  check, `38ff521` writer and schema), every stage with its suite, run and gate verdict,
+  the report and methodology paths, the digests (the HT file's `source_sha256` is BEMGen's
+  CRLF file, `sha256` the LF copy; the main file needed no normalisation) and an empty
+  `pending` list.
+- **Schema 1.1.0.** A minor bump that adds optional members only (`timing`, `cost`); the
+  copy in `schemas/` is replaced verbatim, `MAJOR` stays `1`, and the loader accepts both
+  versions, which `tests/test_lod_site.py` shows with a 1.0.0 and a 1.1.0 document. The
+  sub-study file stays a 1.0.0 document.
+- **What the pages add**, all generated from the files and shown only when the document
+  carries a timing block, so a 1.0.0 drop renders as before: cost columns (CPU, wall and
+  memory ratio of the zoning to its reference) in every summary table of the main matrix,
+  "not timed" spanning them where a cell was not timed (the medium office and the primary
+  school were not among the 12 timed cells); the same columns in the zoning table of each
+  timed cell, with the reference's seconds and MiB in its benchmark sentence; a
+  "Serial cost" fact per prototype; a "Cost" section on the overview with the pass in
+  brief and the writer's medians by prototype and by zoning; a status section saying
+  every stage is complete, linking the report, methodology, run plan and results at the
+  writer's commit, and tabulating the stages' gate verdicts; on the method page a "Cost
+  protocol" section (the R5 protocol, the gate numbers, the repeat check, why costs are
+  medians), a "Reading the recommendations" section with the report's two cautions (an
+  "off" recommendation in the sub-study is often the deduplicated twin of the both-on
+  zoning; "coarsest" counts modelled zones and can exceed the reference's, the restaurant
+  in 4A being the case, counted from the file), D-201's "not applicable" wording for the
+  failed sites, which are now listed with their zoning, and the extra builds and documents
+  under provenance.
+- **Agent decisions.** The cost columns stay on every prototype page of a costed drop,
+  untimed rows saying so, rather than appearing on the nine timed prototypes only, so the
+  tables read alike across pages; the per-cell zoning tables carry them in the timed cells
+  only, since 24 rows of "not timed" per untimed cell would say nothing. Ratios are shown
+  to three decimals, as the report prints them. The overview's cost tables are the
+  writer's own medians, not recomputed. The writer's zoning labels in the timing block are
+  re-cased to the pages' labels for a consistent read.

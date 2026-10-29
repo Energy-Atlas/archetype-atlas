@@ -2,13 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://energy-atlas.github.io/BEMGen-docs/schemas/lod-recommendations-v1.schema.json",
   "title": "BEMGen LOD recommendations, version 1",
+  "$comment": "Versions: 1.0.0 (D-188), the R3 and R4 drops; 1.1.0 (D-203), a minor bump that adds only optional members: the top-level timing block (the serial timing pass R5, its gate verdict, and its medians by zoning and prototype), and a cost object on a reference and on a zoning that pass timed. A 1.0.0 document still validates.",
   "description": "The zoning recommendations of the geometric LOD study for publication on the atlas site (docs/plans/2026-10-29-lod-study-run-plan.md, 'Publication on the atlas site'), written by scripts/lod-study/report.py. One entry per test case: a DOE prototype in one climate zone, vintage, and orientation, with the atlas program IDs of its program keys, the reference site's benchmark values, every test zoning's paired evaluation metrics (experiment outputs §10, the batch runner's own values) and conditioned-area change, and the coarsest zonings that meet the threshold. by_program indexes the entries by atlas program ID.",
   "type": "object",
   "additionalProperties": false,
   "required": ["format", "version", "source", "metrics", "coarseness", "threshold", "entries", "by_program"],
   "properties": {
     "format": { "const": "bemgen-lod-recommendations" },
-    "version": { "const": "1.0.0" },
+    "version": { "enum": ["1.0.0", "1.1.0"] },
     "source": { "type": "string", "description": "The run or merged folder the values come from, by name." },
     "metrics": { "type": "array", "items": { "type": "string" } },
     "coarseness": { "type": "string" },
@@ -27,10 +28,45 @@
       }
     },
     "entries": { "type": "array", "items": { "$ref": "#/$defs/entry" } },
+    "timing": {
+      "type": "object",
+      "description": "Since 1.1.0: the serial timing pass (R5) whose costs the entries carry: its suite, run, build, protocol, statistic, timed test cases and prototypes, the coefficient-of-variation gate and its verdict, medians by zoning and by prototype, and an optional repeat check.",
+      "required": ["stage", "suite", "run", "protocol", "statistic", "test_cases", "gate"],
+      "properties": {
+        "stage": { "type": "string" },
+        "suite": { "type": "string" },
+        "run": { "type": "string" },
+        "protocol": { "type": "string" },
+        "statistic": { "type": "string" },
+        "test_cases": { "type": "array", "items": { "type": "string" } },
+        "untimed_prototypes": { "type": "array", "items": { "type": "string" } },
+        "gate": { "type": "object", "required": ["limit_pct", "sites", "pass", "miss", "verdict"] },
+        "by_zoning": { "type": "array", "items": { "type": "object" } },
+        "by_prototype": { "type": "array", "items": { "type": "object" } },
+        "recheck": { "type": ["object", "null"] }
+      }
+    },
     "by_program": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } }
   },
   "$defs": {
     "number": { "type": ["number", "null"] },
+    "cost": {
+      "type": "object",
+      "description": "Since 1.1.0: the serial timing pass's measures of this site (its medians over the completed repeats and, for a test site, their ratios to its reference's medians, the runner's site_timing_summary), the coefficient of variation of its processor time over the repeats, and the timed site's name. Unlike metrics.cpu_time_ratio, which is from the parallel run, these are serial.",
+      "additionalProperties": false,
+      "required": ["cpu_time_s", "wall_clock_s", "memory_peak_commit_mib", "repeats", "cpu_time_cv_pct", "timing_site_name"],
+      "properties": {
+        "cpu_time_ratio": { "$ref": "#/$defs/number" },
+        "wall_clock_ratio": { "$ref": "#/$defs/number" },
+        "memory_peak_commit_ratio": { "$ref": "#/$defs/number" },
+        "cpu_time_s": { "$ref": "#/$defs/number" },
+        "wall_clock_s": { "$ref": "#/$defs/number" },
+        "memory_peak_commit_mib": { "$ref": "#/$defs/number" },
+        "repeats": { "type": "integer" },
+        "cpu_time_cv_pct": { "$ref": "#/$defs/number" },
+        "timing_site_name": { "type": "string" }
+      }
+    },
     "zoning": {
       "type": "object",
       "additionalProperties": false,
@@ -61,7 +97,8 @@
           "required": ["site_name", "zoning", "conditioned_area_m2", "sensible_heating_kwh_m2_conditioned", "sensible_cooling_kwh_m2_conditioned", "sensible_heating_max_kw", "sensible_cooling_max_kw"],
           "properties": {
             "site_name": { "type": "string" },
-            "zoning": { "$ref": "#/$defs/zoning" }
+            "zoning": { "$ref": "#/$defs/zoning" },
+            "cost": { "$ref": "#/$defs/cost" }
           },
           "additionalProperties": { "$ref": "#/$defs/number" }
         },
@@ -81,7 +118,8 @@
               "metrics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/number" } },
               "flags": { "type": "object", "additionalProperties": { "type": "string" } },
               "meets_threshold": { "type": "boolean" },
-              "misses": { "type": "array", "items": { "type": "string" } }
+              "misses": { "type": "array", "items": { "type": "string" } },
+              "cost": { "$ref": "#/$defs/cost" }
             }
           }
         },
