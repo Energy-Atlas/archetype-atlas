@@ -1,5 +1,25 @@
 # Changelog
 
+## The atlas-schedules package and a lighter pull-request CI — 2026-10-29
+
+- **`atlas-schedules` 3.0.0 as a pip package** (ADR 0049): `pyproject.toml` builds the
+  `atlas_schedules` package with its recipes, tables, notices and request schema; the
+  console script `atlas-schedules` runs the same command as `python -m atlas_schedules`.
+  The package version is `atlas_schedules.__version__` (now `3.0.0`, no longer
+  `3.0.0.dev0`), which every bundle names as `generator_version`. A tag
+  `atlas-schedules-vX.Y.Z` builds the wheel and attaches it to that tag's GitHub release
+  (`.github/workflows/atlas-schedules-release.yml`); the package is not on PyPI.
+  `requirements-dev.txt` pins `build`. Generator 3.0.0's packaged recipes were built
+  from atlas release 2.0.0 and are carried by release 2.1.0.
+- **CI workload pass 2.** The schedules unit shard is split in two (`scripts/ci_tests.py`),
+  the catalogue smoke generates a deterministic sample of two recipes per family and two
+  configurations per service on pull requests (`smoke_catalogue --sample 2`; the full
+  catalogue runs on pushes to `main`, weekly and manually), and a `package` job builds
+  the wheel, installs it in a clean environment and generates the quick-start example.
+  Required check names are unchanged.
+- Plan `docs/superpowers/plans/2026-10-29-public-release-stages.md` records the public
+  release stages (atlas A1 to A3, BEMGen B1 to B3, LOD study C1 to C4).
+
 ## Open licences for original work — 2026-10-29
 
 - Original code is now MIT-licensed and original data and documentation CC BY 4.0 (ADR 0048).

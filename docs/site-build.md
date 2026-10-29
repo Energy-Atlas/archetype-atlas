@@ -105,19 +105,37 @@ The reusable `validate.yml` research workflow runs these jobs in parallel:
 - `release` (Linux): verifies release 2.0.0 against its checksums, the in-place edits,
   the export schemas, the reconciliation page and the daylighting rules, validates,
   reproduces and compares the source pipeline, and runs the security audit;
-- `unit-tests (atlas)` and `unit-tests (schedules)` (Linux, Python 3.11): the Python suite
-  in two shards (`python -m scripts.ci_tests --shard atlas|schedules`; the shards
-  partition `unittest discover -s tests`);
-- `schedules` (Linux): generates every packaged programme once (`smoke_catalogue`);
-- `windows-tests (atlas)` and `windows-tests (schedules)` (Windows, Python 3.14): the same
-  shards, and the release checksums on that platform.
+- `unit-tests (atlas)`, `unit-tests (schedules-commercial)` and `unit-tests (schedules-rest)`
+  (Linux, Python 3.11): the Python suite in three shards (`python -m scripts.ci_tests
+  --shard NAME`; the shards partition `unittest discover -s tests`; the two schedules
+  shards split `tests/schedules` into the ComStock answer-key modules and the rest, about
+  half the time each);
+- `schedules` (Linux): generates the packaged catalogue (`smoke_catalogue`): every
+  programme and service variant on a push to `main`, weekly and manually; on a pull
+  request a deterministic sample of two recipes per family (kind × template × building
+  type) and two configurations per service (`--sample 2`, about a quarter of the time);
+- `package` (Linux): builds the `atlas-schedules` wheel, installs it in a clean virtual
+  environment and generates the quick-start example from outside the checkout with the
+  console script and `python -m atlas_schedules` (ADR 0049);
+- `windows-tests (atlas)`, `windows-tests (schedules-commercial)` and
+  `windows-tests (schedules-rest)` (Windows, Python 3.14): the same shards, and the
+  release checksums on that platform.
 
 The required `research / atlas (ubuntu-latest, 3.11)` check passes only when every Linux
-job passes, and `research / atlas (windows-latest, 3.14)` only when both Windows shards
-pass. A push to `main` runs only `release`: branch protection admits only pull requests
-whose checks passed against an up-to-date `main`, so the merge commit's tree was already
-tested; the gates then accept the skipped jobs. The weekly and manual runs run every job.
-A pipeline run takes about as long as its slowest job rather than the sum of all checks.
+job passes, and `research / atlas (windows-latest, 3.14)` only when every Windows shard
+passes. A push to `main` runs `release`, `package` and the full `schedules` smoke, and
+skips the unit shards: branch protection admits only pull requests whose checks passed
+against an up-to-date `main`, so the merge commit's tree was already tested; the gates then
+accept the skipped jobs. The weekly and manual runs run every job. A pipeline run takes
+about as long as its slowest job rather than the sum of all checks.
+
+Measured on pull request #32 (2026-10-29, before this shape): `build` 19 to 34 min on a
+cache miss (catalogue generation 10 to 17 min, MkDocs 7 to 13 min; a hit skips both),
+`schedules` 11 min, unit shards 5.5 min (atlas) and 9 to 11.5 min (schedules, both
+platforms), `release` 2.4 min. The build job's dependency step (pip and the Playwright
+Chromium) takes 0.6 min and is kept on cache hits too: `site_smoke` needs Chromium on every
+tree. A separate workflow, `atlas-schedules-release.yml`, runs only for tags
+`atlas-schedules-v*` and attaches the wheel to that tag's GitHub release.
 
 The research workflow additionally reproduces frozen construction base v2.0.0,
 applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with

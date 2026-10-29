@@ -67,20 +67,49 @@ class WorkflowTests(unittest.TestCase):
         ids = [t.id() for tests in shards.values() for t in tests]
         self.assertEqual(sorted(ids), sorted(everything))
         self.assertTrue(all(shards.values()))
-        self.assertTrue(all(ci_tests.shard_of(t) == 'schedules' for t in shards['schedules']))
+        for name in ('schedules-commercial', 'schedules-rest'):
+            self.assertTrue(all(type(t).__module__.startswith('schedules.') for t in shards[name]), name)
+        self.assertEqual({type(t).__module__ for t in shards['schedules-commercial']}, set(ci_tests.COMMERCIAL))
+        self.assertTrue(all(ci_tests.shard_of(t) == 'atlas' for t in shards['atlas']))
+        self.assertTrue(all(not type(t).__module__.startswith('schedules.') for t in shards['atlas']))
 
-    def test_only_a_main_push_skips_the_full_jobs(self):
+    def test_only_a_main_push_skips_the_unit_shards_and_samples_nothing(self):
         site = workflow('catalogue-site.yml')
         self.assertEqual(site['jobs']['research']['with']['full'], "${{ github.event_name != 'push' }}")
+        self.assertEqual(site['jobs']['research']['with']['full_catalogue'], "${{ github.event_name != 'pull_request' }}")
         self.assertIn('schedule', site['on'])
         jobs = workflow('validate.yml')['jobs']
         skipped = {name for name, j in jobs.items() if j.get('if') == 'inputs.full'}
-        self.assertEqual(skipped, {'unit-tests', 'schedules', 'windows-tests'})
-        self.assertNotIn('if', jobs['release'])
+        self.assertEqual(skipped, {'unit-tests', 'windows-tests'})
+        self.assertEqual(jobs['schedules']['if'], 'inputs.full || inputs.full_catalogue')
+        smoke = next(s for s in jobs['schedules']['steps'] if 'smoke_catalogue' in s.get('run', ''))
+        self.assertEqual(smoke['env']['FULL_CATALOGUE'], '${{ inputs.full_catalogue }}')
+        self.assertIn('if [ "$FULL_CATALOGUE" = true ]; then python -m scripts.smoke_catalogue; else python -m scripts.smoke_catalogue --sample 2; fi', smoke['run'])
+        for name in ('release', 'package'):
+            self.assertNotIn('if', jobs[name])
         for gate in REQUIRED:  # a skipped job passes a gate only when the run is not full
             step = job(gate)['steps'][0]
             self.assertEqual(step['env']['FULL'], '${{ inputs.full }}')
             self.assertIn('[ "$FULL" = false ] && [ "$result" = skipped ]', step['run'])
+
+    def test_package_job_builds_installs_and_runs_the_wheel_outside_the_checkout(self):
+        package = workflow('validate.yml')['jobs']['package']
+        self.assertEqual(package['runs-on'], 'ubuntu-latest')
+        commands = runs([package])
+        for command in ('requirements-dev.txt', 'python -m build --wheel', 'python -m venv', 'pip install dist/*.whl', 'cd /tmp/quick-start',
+                        'atlas-schedules office-and-retail.json', 'python -m atlas_schedules office-and-retail.json', "m.version('atlas-schedules')"):
+            self.assertIn(command, commands)
+        self.assertIn('package', job(REQUIRED[0])['needs'])
+
+    def test_sampled_smoke_spreads_over_every_family(self):
+        from scripts import smoke_catalogue
+        sampled = smoke_catalogue.recipes(2)
+        everything = smoke_catalogue.recipes(None)
+        self.assertEqual({smoke_catalogue.family(r) for r in sampled}, {smoke_catalogue.family(r) for r in everything})
+        self.assertLess(len(sampled), len(everything) / 4)
+        self.assertEqual([r['program_id'] for r in sampled], [r['program_id'] for r in smoke_catalogue.recipes(2)])  # deterministic
+        self.assertEqual(smoke_catalogue.spread(list(range(10)), 3), [0, 4, 8])
+        self.assertEqual(smoke_catalogue.spread(list(range(3)), 3), [0, 1, 2])
 
     def test_site_cache_key_covers_what_the_site_reads(self):
         steps = workflow('catalogue-site.yml')['jobs']['build']['steps']

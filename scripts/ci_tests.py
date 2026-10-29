@@ -1,10 +1,13 @@
 """Run one shard of the unit suite, so CI can run the shards as parallel jobs.
 
-python -m scripts.ci_tests --shard atlas        # every test outside tests/schedules
-python -m scripts.ci_tests --shard schedules    # tests/schedules
+python -m scripts.ci_tests --shard atlas                  # every test outside tests/schedules
+python -m scripts.ci_tests --shard schedules-commercial   # the ComStock port against its native answer keys
+python -m scripts.ci_tests --shard schedules-rest         # the rest of tests/schedules
 
 The shards partition `python -m unittest discover -s tests`: every discovered test,
-including a module that fails to import, belongs to exactly one shard.
+including a module that fails to import, belongs to exactly one shard. The two
+schedules shards take about the same time (2026-10-29, Windows laptop: 230 s each of
+455 s; the commercial answer keys are the five modules below).
 """
 import argparse
 import sys
@@ -12,11 +15,16 @@ import unittest
 
 from scripts.common import ROOT
 
-SHARDS = ('atlas', 'schedules')
+SHARDS = ('atlas', 'schedules-commercial', 'schedules-rest')
+COMMERCIAL = frozenset({'schedules.test_commercial_families', 'schedules.test_commercial_kernel', 'schedules.test_recipes_native',
+                        'schedules.test_family_programmes_native', 'schedules.test_stripmall'})
 
 
 def shard_of(test):
-    return 'schedules' if type(test).__module__.startswith('schedules.') else 'atlas'
+    module = type(test).__module__
+    if not module.startswith('schedules.'):
+        return 'atlas'
+    return 'schedules-commercial' if module in COMMERCIAL else 'schedules-rest'
 
 
 def flatten(suite):
