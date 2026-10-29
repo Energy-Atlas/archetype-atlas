@@ -14,10 +14,10 @@ permissions:
   contents: read
 # Research checks run as parallel jobs behind the two required checks: "atlas
 # (ubuntu-latest, 3.11)" passes only when every Linux job passes, and "atlas
-# (windows-latest, 3.14)" only when every Windows job passes. Release 2.0.0 is the
-# only release in the tree (ADR 0046 section 7): it is verified by its file
-# checksums; the frozen releases and their reproductions live at the tag
-# frozen-data-2026-10-27.
+# (windows-latest, 3.14)" only when every Windows job passes. The 2.0.0 snapshot and
+# its delta 2.1.0 are the releases in the tree (ADR 0046 sections 7 and 12): they are
+# verified by their file checksums and the delta is rebuilt from its pinned inputs; the
+# frozen releases and their reproductions live at the tag frozen-data-2026-10-27.
 # The unit suite runs as three shards per platform (scripts/ci_tests.py). A push to main
 # runs the release and package jobs and the full catalogue smoke: main takes only pull
 # requests tested up to date with it (strict branch protection), so the unit shards are
@@ -63,10 +63,11 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/daylighting-rules-lock.json
-      - name: Verify release 2.0.0, its export schemas and the source pipeline
+      - name: Verify releases 2.0.0 and 2.1.0, their export schemas and the source pipeline
         run: |
           python -m scripts.atlas_snapshot --verify
           python -m scripts.release_editor --check
+          python -m scripts.atlas_delta --check
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
           python -m scripts.daylighting_rules_review --check
@@ -155,9 +156,11 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-      - name: Verify release 2.0.0 on this platform
+      - name: Verify releases 2.0.0 and 2.1.0 on this platform
         if: matrix.shard == 'atlas'
-        run: python -m scripts.atlas_snapshot --verify
+        run: |
+          python -m scripts.atlas_snapshot --verify
+          python -m scripts.atlas_delta --verify
       - run: python -m scripts.ci_tests --shard ${{ matrix.shard }}
 
   atlas-windows:

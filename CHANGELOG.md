@@ -1,5 +1,21 @@
 # Changelog
 
+## Atlas release 2.1.0: the open licence and the generator 3.0.0 recipes — 2026-10-29
+
+Release 2.1.0 is a delta on 2.0.0 (ADR 0046 section 12; `scripts/atlas_delta.py`, `--write`,
+`--check`, `--verify`), status `released`, with ten files and the manifest:
+- `LICENSE`: the open-licence text (ADR 0048);
+- `generator.json` of the eight apartment folders: the 38 apartment-unit recipes are the
+  generator 3.0.0 ResStock multifamily unit recipes (ADR 0047), as the `atlas-schedules` 3.0.0
+  package ships them; 1,506 other recipes unchanged;
+- `manifest.json`: `base_release` 2.0.0 with its manifest digest; `generator` names the
+  generator version, package, wheel and tag (ADR 0049); pinned inputs.
+
+Every ID is 2.0.0's. `atlas_exports.Release` defaults to the newest release in the tree, the
+export schemas admit `atlas-release-2.1.0`, the site shows 2.1.0, and CI runs
+`atlas_delta --check` beside the 2.0.0 checks. Release notes:
+`docs/release-notes-atlas-v2.1.0.md`.
+
 ## The atlas-schedules package and a lighter pull-request CI — 2026-10-29
 
 - **`atlas-schedules` 3.0.0 as a pip package** (ADR 0049): `pyproject.toml` builds the

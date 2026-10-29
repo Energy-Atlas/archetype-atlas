@@ -29,7 +29,7 @@ class Release200Tests(unittest.TestCase):
     def test_full_snapshot_of_1_6_0_and_the_only_release(self):
         self.assertIsNone(self.listed['base_release'])
         self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'released'))
-        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0'])
+        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0'])
         self.assertIn(EXPORTER_INPUTS, self.files)
 
     def test_generator_recipes_for_the_90_1_and_doe_ref_programs(self):

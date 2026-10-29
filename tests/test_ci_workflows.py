@@ -40,8 +40,8 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(linux['if'], 'always()')
         self.assertIn('needs.*.result', linux['steps'][0]['env']['RESULTS'])
         commands = runs(gated(REQUIRED[0]))
-        for command in ('scripts.ci_tests --shard', 'scripts.atlas_snapshot --verify', 'scripts.atlas_exports --check-schemas',
-                        'scripts.smoke_catalogue', 'scripts.audit'):
+        for command in ('scripts.ci_tests --shard', 'scripts.atlas_snapshot --verify', 'scripts.atlas_delta --check',
+                        'scripts.atlas_exports --check-schemas', 'scripts.smoke_catalogue', 'scripts.audit'):
             self.assertIn(command, commands)
 
     def test_windows_check_runs_the_suite_on_python_3_14(self):

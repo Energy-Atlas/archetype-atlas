@@ -214,7 +214,8 @@ each unit, from its own seed:
 
 Not covered: shared laundry rooms (ResStock gives in-unit appliances or none);
 a unit's own pool; water-loop heat pumps, which ResStock has no option for.
-`scripts/build_apartment_units.py` writes the recipes from release 2.0.0.
+`scripts/build_apartment_units.py` writes the recipes from release 2.0.0's prototype
+recipes; release 2.1.0 carries them in its `generator.json` files.
 
 ## Residential occupant types
 
