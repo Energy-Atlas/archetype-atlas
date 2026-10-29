@@ -22,6 +22,7 @@ import tempfile
 from pathlib import Path
 
 from scripts.common import ROOT
+from scripts.lod_site import write_zoning
 from scripts.site_pages import (construction_page, context_facets, folder_page, glossary_page, library_page, markdown,
                                 program_page)
 from scripts.site_release import FAMILIES, RELEASES, SiteRelease, page_slug
@@ -38,7 +39,7 @@ DIGEST_INPUTS = ('scripts/__init__.py', 'website', 'schemas', 'mkdocs.yml', 'req
                  'sources/program-composition-policy.json',
                  'sources/dhw-conversion-evidence-lock.json', 'data/program-inputs/residential-v1.json',
                  'data/program-inputs/er-triage-v1.json', 'data/program-inputs/dhw-conversion-v1.json',
-                 'data/system-inputs/source-v1.json')
+                 'data/system-inputs/source-v1.json', 'data/lod-recommendations')
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._:-]{5,}$')
 # Not `library/`: a template library page must never share a path with a building-type folder page.
 LIBRARY = 'template-library'
@@ -167,6 +168,7 @@ class Site:
         self.store = Store(target)
         self.schedule_json = {}
         self.urls, self.summaries, self.written = {}, {}, set()
+        self.zoning_of = {}  # program ID: [(prototype name, zoning page URL)] (ADR 0050)
 
     def folder_url(self, folder):
         return 'catalogue/'+folder
@@ -226,6 +228,7 @@ def generate(target, number=None, jobs=None, only=None):
     release = SiteRelease(number)
     site = Site(release, target)
     site.place()
+    zoning = write_zoning(site)  # before the program pages, which link to their prototype's zoning page
     folders = sorted(f for f in release.folders if only is None or re.search(only, f))
     program_ids = [p for p in sorted(release.programs) if release.programs[p][0] in folders]
     set_ids = [s for s in sorted(release.sets) if release.sets[s][0] in folders]
@@ -256,10 +259,11 @@ def generate(target, number=None, jobs=None, only=None):
     write_guides(site)
     site.write('search-summaries.json', json.dumps(site.summaries, ensure_ascii=False, sort_keys=True, indent=0))
     counts = {**release.counts(), 'program_pages': len(manifest['programs']), 'construction_pages': len(manifest['construction_sets']),
-              'folder_pages': len(folders), 'store_files': len(site.store.files), 'store_bytes': sum(site.store.files.values())}
+              'folder_pages': len(folders), 'store_files': len(site.store.files), 'store_bytes': sum(site.store.files.values()),
+              'zoning_pages': len(zoning['pages'])}
     result = {'kind': 'atlas_site', 'release': release.number, 'generated_by': 'python -m scripts.suite_site',
               'release_manifest_sha256': hashlib.sha256((RELEASES/f'v{release.number}/manifest.json').read_bytes()).hexdigest(),
-              'inputs_sha256': inputs_digest(release.number), 'partial': only is not None, 'counts': counts, **manifest}
+              'inputs_sha256': inputs_digest(release.number), 'partial': only is not None, 'counts': counts, 'zoning': zoning, **manifest}
     site.write('site-manifest.json', json.dumps(result, ensure_ascii=False, sort_keys=True, indent=1)+'\n')
     return result
 
@@ -432,7 +436,11 @@ def landing(release, counts):
             '4.  <span class="ea-card-icon" data-icon="definitions"></span>[Library definitions](guides/definitions.md)\n\n'
             '    What programs, construction sets and folder records supply.\n\n'
             '</div>\n\n'
-            '## Sources { .ea-strip data-index="03" data-note="Notices" }\n\n'
+            '## Zoning recommendations { .ea-strip data-index="03" data-note="Geometric LOD study" }\n\n'
+            'Which thermal zoning of each DOE prototype keeps its ideal sensible heating and cooling within a stated error of '
+            'the full zoning, per climate zone, vintage and orientation, with the benchmark values and errors behind each pick.\n\n'
+            '[Zoning recommendations](zoning/index.md){ .md-button }\n\n'
+            '## Sources { .ea-strip data-index="04" data-note="Notices" }\n\n'
             'The library derives from checksum-locked OpenStudio Standards, DOE/PNNL, ComStock and ResStock evidence. '
             'Upstream notices continue to apply.\n\n'
             '[Sources and notices](sources.md){ .md-button }\n')
