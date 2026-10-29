@@ -2,8 +2,9 @@ name: Catalogue site
 
 # One pipeline per pull request or main push; working branches can be checked manually.
 # Do not path-filter required checks: even a docs-only PR must report its gates.
-# A push to main skips the jobs its pull request already passed (validate.yml); the weekly
-# run and manual runs run everything.
+# A push to main skips the unit shards its pull request already passed (validate.yml) and
+# runs the full catalogue smoke the pull request sampled; the weekly run and manual runs
+# run everything.
 on:
   push:
     branches: [main]
@@ -31,6 +32,7 @@ jobs:
     uses: ./.github/workflows/validate.yml
     with:
       full: ${{ github.event_name != 'push' }}
+      full_catalogue: ${{ github.event_name != 'pull_request' }}
 
   build:
     runs-on: ubuntu-latest
