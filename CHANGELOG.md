@@ -1,5 +1,11 @@
 # Changelog
 
+## Open licences for original work — 2026-10-29
+
+- Original code is now MIT-licensed and original data and documentation CC BY 4.0 (ADR 0048).
+  The grants cover earlier releases, including 2.0.0, whose packaged `LICENSE` keeps its old text.
+  Upstream material keeps its own terms and notices.
+
 ## Generator 3.0.0: ResStock apartment units and source-magnitude binding — 2026-10-28
 
 Breaking (ADR 0047; user decisions O15 to O21):

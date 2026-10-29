@@ -422,7 +422,7 @@ def write_guides(site):
                'Code/prototype and existing-stock contexts remain distinct. Every page names its record\'s evidence: '
                'source locators, original values and transformations.\n\n' + ' · '.join(links) + '\n\n'
                'Site fonts, SIL Open Font License 1.1: [Geist](assets/fonts/OFL-Geist.txt) · [Geist Mono](assets/fonts/OFL-GeistMono.txt) · '
-               '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal work is unlicensed by user choice; upstream notices continue to apply.\n')
+               '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal code is MIT-licensed and original data and documentation are CC BY 4.0; upstream notices continue to apply.\n')
 
 
 def build(target, number=None, jobs=None, only=None):

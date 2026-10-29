@@ -116,7 +116,8 @@ Layout:
 
 ## Licence
 
-Original code and documentation are unlicensed at the user's request; no general
-permission to reuse them is granted by this repository. Extracted upstream data
+Original code is licensed under the MIT License. Original data and documentation,
+including the release folders, are licensed under CC BY 4.0; attribute as "Archetype
+Atlas, Energy-Atlas" with the release number (ADR 0048). Extracted upstream data
 retains its original terms and notices. See `LICENSE`, `sources/licenses/` and each
 release's `notices/`.
