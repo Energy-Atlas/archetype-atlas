@@ -120,5 +120,5 @@ service can accept the same request DTO and return the same result DTO; only
 the transport adapter changes. No service endpoint is promised today.
 
 The manifest's `notices` contains original-work and upstream license notices.
-Original atlas code and documentation are unlicensed by owner choice; upstream
-data keeps its own terms. Refer to [sources and licensing](../sources.md).
+Original atlas code is MIT-licensed and original data and documentation are
+CC BY 4.0 (ADR 0048); upstream data keeps its own terms. Refer to [sources and licensing](../sources.md).

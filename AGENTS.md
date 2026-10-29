@@ -16,7 +16,7 @@ Use Python scripts to fetch, build, validate, compare, and freeze releases.
 Validate a Medium Office pilot before expanding. Run schema, physical,
 referential, schedule, provenance, and reproducibility checks before releasing.
 Keep raw downloads immutable; untracked large sources require locked retrieval.
-Retain upstream license notices; original work is unlicensed by user choice.
+Retain upstream license notices; original code is MIT and original data and docs CC BY 4.0 (ADR 0048).
 
 Schedule generator (`atlas_schedules`, ADR 0035): a faithful but readable port
 of the upstream ComStock/ResStock schedule code. Validate against native answer

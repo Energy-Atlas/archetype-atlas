@@ -1,5 +1,11 @@
 # Changelog
 
+## Open licences for original work — 2026-10-29
+
+- Original code is now MIT-licensed and original data and documentation CC BY 4.0 (ADR 0048).
+  The grants cover earlier releases, including 2.0.0, whose packaged `LICENSE` keeps its old text.
+  Upstream material keeps its own terms and notices.
+
 ## Construction exports no longer follow the hash seed — 2026-10-28
 
 - `ConstructionSuite.export` merged the shared and per-context fields through a set, so the order of
