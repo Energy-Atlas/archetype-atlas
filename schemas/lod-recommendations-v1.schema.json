@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://energy-atlas.github.io/BEMGen-docs/schemas/lod-recommendations-v1.schema.json",
+  "title": "BEMGen LOD recommendations, version 1",
+  "description": "The zoning recommendations of the geometric LOD study for publication on the atlas site (docs/plans/2026-10-29-lod-study-run-plan.md, 'Publication on the atlas site'), written by scripts/lod-study/report.py. One entry per test case: a DOE prototype in one climate zone, vintage, and orientation, with the atlas program IDs of its program keys, the reference site's benchmark values, every test zoning's paired evaluation metrics (experiment outputs §10, the batch runner's own values) and conditioned-area change, and the coarsest zonings that meet the threshold. by_program indexes the entries by atlas program ID.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "source", "metrics", "coarseness", "threshold", "entries", "by_program"],
+  "properties": {
+    "format": { "const": "bemgen-lod-recommendations" },
+    "version": { "const": "1.0.0" },
+    "source": { "type": "string", "description": "The run or merged folder the values come from, by name." },
+    "metrics": { "type": "array", "items": { "type": "string" } },
+    "coarseness": { "type": "string" },
+    "threshold": {
+      "type": "object",
+      "required": ["owner_choice", "basis", "loads", "annual_rel_err_pct", "cvrmse_pct", "nmbe_pct", "conditioned_area_change_pct", "min_reference_kwh_m2"],
+      "properties": {
+        "owner_choice": { "type": "boolean" },
+        "basis": { "type": "string" },
+        "loads": { "type": "array", "items": { "enum": ["sensible_heating", "sensible_cooling"] } },
+        "annual_rel_err_pct": { "type": "number", "minimum": 0 },
+        "cvrmse_pct": { "type": "number", "minimum": 0 },
+        "nmbe_pct": { "type": "number", "minimum": 0 },
+        "conditioned_area_change_pct": { "type": "number", "minimum": 0 },
+        "min_reference_kwh_m2": { "type": "number", "minimum": 0 }
+      }
+    },
+    "entries": { "type": "array", "items": { "$ref": "#/$defs/entry" } },
+    "by_program": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } }
+  },
+  "$defs": {
+    "number": { "type": ["number", "null"] },
+    "zoning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["simplifier", "join_pieces", "perimeter_depth", "stacker", "iwht", "fht"],
+      "properties": {
+        "simplifier": { "type": ["string", "null"] },
+        "join_pieces": { "type": ["boolean", "null"] },
+        "perimeter_depth": { "$ref": "#/$defs/number" },
+        "stacker": { "type": ["string", "null"] },
+        "iwht": { "type": ["boolean", "null"] },
+        "fht": { "type": ["boolean", "null"] }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "test_case_id", "prototype", "climate_zone", "vintage", "orientation_degrees", "programs", "reference", "zonings", "recommended"],
+      "properties": {
+        "id": { "type": "string", "description": "prototype|climate zone|vintage|orientation" },
+        "test_case_id": { "type": "string" },
+        "prototype": { "type": "string" },
+        "climate_zone": { "type": "string" },
+        "vintage": { "type": "string" },
+        "orientation_degrees": { "type": "number" },
+        "programs": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "reference": {
+          "type": "object",
+          "required": ["site_name", "zoning", "conditioned_area_m2", "sensible_heating_kwh_m2_conditioned", "sensible_cooling_kwh_m2_conditioned", "sensible_heating_max_kw", "sensible_cooling_max_kw"],
+          "properties": {
+            "site_name": { "type": "string" },
+            "zoning": { "$ref": "#/$defs/zoning" }
+          },
+          "additionalProperties": { "$ref": "#/$defs/number" }
+        },
+        "zonings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["site_name", "zoning", "succeeded", "duplicate_of", "zone_count", "conditioned_area_change_pct", "metrics", "flags", "meets_threshold", "misses"],
+            "properties": {
+              "site_name": { "type": "string" },
+              "zoning": { "$ref": "#/$defs/zoning" },
+              "succeeded": { "type": "boolean" },
+              "duplicate_of": { "type": ["string", "null"] },
+              "zone_count": { "type": ["integer", "null"] },
+              "conditioned_area_change_pct": { "$ref": "#/$defs/number" },
+              "metrics": { "type": "object", "additionalProperties": { "$ref": "#/$defs/number" } },
+              "flags": { "type": "object", "additionalProperties": { "type": "string" } },
+              "meets_threshold": { "type": "boolean" },
+              "misses": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "recommended": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["site_name", "zoning", "zone_count"],
+            "properties": { "site_name": { "type": "string" }, "zoning": { "$ref": "#/$defs/zoning" }, "zone_count": { "type": "integer" } }
+          }
+        }
+      }
+    }
+  }
+}
