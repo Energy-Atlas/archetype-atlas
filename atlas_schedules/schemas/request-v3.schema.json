@@ -147,13 +147,20 @@
         },
         "program_id": {
           "type": "string",
-          "pattern": "^(program-[0-9a-f]{24}|[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6})$",
-          "description": "A definition program ID (program-...) or an atlas release program ID (DOE Ref recipes, ADR 0046)."
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6}$",
+          "description": "An atlas release program ID (ADR 0049); definition IDs (program-...) translate through the release's definition-map.json."
+        },
+        "values": {
+          "enum": [
+            "source",
+            "filled"
+          ],
+          "description": "Programmes: the view of the program's values, as the two exports name them: source (actual values) or filled (actual values and fillings). Default: filled where the program's generation block has that view, else source."
         },
         "service_id": {
           "type": "string",
-          "pattern": "^(service-[0-9a-f]{24}|[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6})$",
-          "description": "A definition service ID (service-...) or an atlas release service ID."
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6}$",
+          "description": "An atlas release service ID; definition IDs (service-...) translate through definition-map.json."
         },
         "configuration_id": {
           "type": "string",
@@ -199,7 +206,7 @@
         "service_links": {
           "type": "object",
           "propertyNames": {
-            "pattern": "^(service-[0-9a-f]{24}|[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6})$"
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+\\.[0-9a-f]{6}$"
           },
           "additionalProperties": {
             "type": "string",

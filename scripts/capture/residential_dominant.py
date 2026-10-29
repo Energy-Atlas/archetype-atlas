@@ -24,6 +24,7 @@ import sys
 
 from atlas_schedules.commercial.sampler import load_tables, sample_operating_parameters
 from atlas_schedules.programmes import load_recipe, schedules
+from atlas_schedules.release import definition_map
 from atlas_schedules.seeds import commercial_group_seed
 from scripts.capture.commercial_families import GROUP, HARNESS, LOCKED, SEEDS
 
@@ -53,13 +54,11 @@ CRAFTED = {
     "default_only": [_rule("Default", NIGHT)],
     "weekday_weekend": [_rule("Default", NIGHT), _rule("Wknd", WEEKEND)],
 }
-# (carrier occupancy rule set id, programmes, sampling building type)
+# (programmes by the definition IDs captured, the first one's occupancy the carrier; sampling building type)
 REAL = {
-    "large_hotel_guest_room": ("schedule-7a18e153dfd8afdd8217",
-                               ["program-132a52fdf711e662eb073b7e", "program-760ff60a379b3a6900ab48c0"], "large_hotel"),
-    "small_hotel_guest_room": ("schedule-5f6cff53c3fd003a0123", ["program-7c390dcb50dd322603bf5b08"], "small_hotel"),
-    "hospital_patient_room": ("schedule-5eb5d81977991b16bd52",
-                              ["program-f865ed686e13690b038d8546", "program-9ed1fe7cff073eb8a66bd545"], "hospital"),
+    "large_hotel_guest_room": (["program-132a52fdf711e662eb073b7e", "program-760ff60a379b3a6900ab48c0"], "large_hotel"),
+    "small_hotel_guest_room": (["program-7c390dcb50dd322603bf5b08"], "small_hotel"),
+    "hospital_patient_room": (["program-f865ed686e13690b038d8546", "program-9ed1fe7cff073eb8a66bd545"], "hospital"),
 }
 GUEST_LIGHTING = "program-132a52fdf711e662eb073b7e"
 
@@ -81,8 +80,13 @@ def _case(case_id: str, carrier_rules: list, carrier_name: str, slots: dict, bui
             "operating": {"effective_values": operating}}
 
 
+def _recipe(program_id: str) -> dict:
+    entry = definition_map()["programs"][program_id]
+    return load_recipe(entry["program_id"], entry["values"])
+
+
 def _programme_slots(program_id: str) -> dict:
-    recipe = load_recipe(program_id)
+    recipe = _recipe(program_id)
     modes = recipe["commercial"]["modes"]
     table = schedules()
     return {s["slot"]: (table[s["schedule"]]["rules"], modes[s["slot"]]) for s in recipe["slots"] if s["slot"] in modes}
@@ -93,7 +97,8 @@ def cases() -> list:
     table = schedules()
     items = []
     for seed in SEEDS:
-        for name, (carrier, programmes, building_type) in REAL.items():
+        for name, (programmes, building_type) in REAL.items():
+            carrier = next(s["schedule"] for s in _recipe(programmes[0])["slots"] if s["slot"] == "occupancy")
             for program_id in programmes:
                 items.append(_case(f"{name}@{seed}/{program_id}", table[carrier]["rules"], carrier,
                                    _programme_slots(program_id), building_type, seed))

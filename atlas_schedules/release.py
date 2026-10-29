@@ -152,6 +152,31 @@ class Release:
         return out
 
 
+def definition_map(release: Release | None = None) -> dict:
+    """Release 2.1.0's `definition-map.json`: definition program IDs to release program and view,
+    definition service IDs to release services."""
+    return (release or current()).json("definition-map.json")
+
+
+def translate(document: dict, release: Release | None = None) -> dict:
+    """A request with definition IDs (`program-…`, `service-…`) written as release IDs and views."""
+    mapped = definition_map(release)
+    programs, services = mapped["programs"], mapped["services"]
+    instances = []
+    for raw in document.get("instances", []):
+        raw = dict(raw)
+        if raw.get("program_id") in programs:
+            entry = programs[raw["program_id"]]
+            raw["program_id"] = entry["program_id"]
+            raw.setdefault("values", entry["values"])
+        if raw.get("service_id") in services:
+            raw["service_id"] = services[raw["service_id"]]
+        if raw.get("service_links"):
+            raw["service_links"] = {services.get(k, k): v for k, v in raw["service_links"].items()}
+        instances.append(raw)
+    return {**document, "instances": instances}
+
+
 def releases() -> list:
     """Release versions in the releases folder, oldest first."""
     root = releases_folder()

@@ -23,12 +23,11 @@ import sys
 import time
 
 from atlas_schedules.commercial.sampler import load_tables, sample_operating_parameters
-from atlas_schedules.generator import load_service
-from atlas_schedules.programmes import load_configuration, schedules
+from atlas_schedules.programmes import (catalogue, load_configuration, load_recipe, load_service, schedules,
+                                        service_catalogue)
 from atlas_schedules.seeds import commercial_group_seed
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "atlas_schedules/data"
 HARNESS = Path(__file__).resolve().parent / "commercial.rb"
 LOCKED = ROOT / "build/task-10/native-warehouse-20261014-01"
 SEEDS = (42, 51)
@@ -64,8 +63,10 @@ def _context(configuration: dict, modes: dict) -> dict:
 
 def _recipes_by_configuration() -> dict:
     found = {}
-    for path in sorted((DATA / "recipes").glob("*.json")):
-        recipe = json.loads(path.read_text(encoding="utf-8"))
+    for program_id, values, method in catalogue():   # release 2.1.0 (ADR 0049)
+        if method != "comstock_hours":
+            continue
+        recipe = load_recipe(program_id, values)
         spec = recipe.get("commercial")
         if recipe["kind"] == "commercial" and spec and spec["modes"]:
             found.setdefault(spec["configuration_id"], []).append(recipe)
@@ -74,10 +75,8 @@ def _recipes_by_configuration() -> dict:
 
 def _services_by_configuration() -> dict:
     found = {}
-    for path in sorted((DATA / "services").glob("*.json")):
-        service = json.loads(path.read_text(encoding="utf-8"))
-        for configuration_id in service["configurations"]:
-            found.setdefault(configuration_id, []).append(service["service_id"])
+    for service_id, configuration_id in service_catalogue():
+        found.setdefault(configuration_id, []).append(service_id)
     return found
 
 

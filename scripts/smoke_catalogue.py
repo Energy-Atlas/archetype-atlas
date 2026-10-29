@@ -1,4 +1,4 @@
-"""Generate every packaged programme, composition parent and shared-service variant once.
+"""Generate every programme view, composition parent and shared-service variant of the release once.
 
 Reports failures by error code; programmes with no slots (unconditioned attics,
 plenums) are counted as inactive. Exits 1 on any failure.
@@ -14,10 +14,9 @@ import time
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
-from atlas_schedules.programmes import load_recipe, required_services
+from atlas_schedules.programmes import catalogue, load_recipe, load_service, required_services, service_catalogue
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "atlas_schedules/data"
 OUTPUT = ROOT / "docs/validation/generator-catalogue-smoke.json"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5}
 
@@ -25,12 +24,13 @@ LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset
 def _configuration(recipe: dict) -> str:
     """The building configuration a programme's shared services follow."""
     if recipe["kind"] == "composition":
-        recipe = load_recipe(recipe["composition"]["members"][0][0])
+        composition = recipe["composition"]
+        recipe = load_recipe(composition["members"][0][0], composition["member_values"][0])
     return recipe["commercial"]["configuration_id"]
 
 
 def _instance(recipe: dict) -> dict:
-    instance = {"key": "unit", "program_id": recipe["program_id"]}
+    instance = {"key": "unit", "program_id": recipe["program_id"], "values": recipe["values"]}
     if recipe["kind"] in ("commercial", "composition"):
         instance["operating_group"] = "building"
     if recipe["kind"] == "apartment_unit":
@@ -42,8 +42,8 @@ def main() -> None:
     started = time.time()
     counts = collections.Counter()
     failures = collections.defaultdict(list)
-    for path in sorted((DATA / "recipes").glob("*.json")):
-        recipe = json.loads(path.read_text(encoding="utf-8"))
+    for program_id, values, _ in catalogue():
+        recipe = load_recipe(program_id, values)
         if not recipe.get("slots") and recipe["kind"] not in ("composition", "apartment_unit"):
             counts["inactive"] += 1
             continue
@@ -53,7 +53,7 @@ def main() -> None:
             configuration = _configuration(recipe)
             links = {}
             for index, service_id in enumerate(linked):
-                service = json.loads((DATA / "services" / f"{service_id}.json").read_text(encoding="utf-8"))
+                service = load_service(service_id)
                 key = f"service-{index}"
                 links[service_id] = key
                 instances.append({"key": key, "service_id": service_id, "configuration_id": configuration,
@@ -64,18 +64,16 @@ def main() -> None:
             generate({"schema_version": "3.0.0", "seed": 1, "instances": instances})
             counts[recipe["kind"]] += 1
         except GeneratorError as error:
-            failures[error.code].append(recipe["program_id"])
-    for path in sorted((DATA / "services").glob("*.json")):
-        service = json.loads(path.read_text(encoding="utf-8"))
-        basis = service["demand"]["basis"]
-        for configuration_id in service["configurations"]:
-            instance = {"key": "water", "service_id": service["service_id"], "configuration_id": configuration_id,
-                        "physical_id": "fixture", "extent": {basis: 1.0}, "operating_group": "building"}
-            try:
-                generate({"schema_version": "3.0.0", "seed": 1, "instances": [instance]})
-                counts["service_variant"] += 1
-            except GeneratorError as error:
-                failures[error.code].append(f"{service['service_id']}@{configuration_id}")
+            failures[error.code].append(f"{program_id}@{values}")
+    for service_id, configuration_id in service_catalogue():
+        service = load_service(service_id)
+        instance = {"key": "water", "service_id": service_id, "configuration_id": configuration_id,
+                    "physical_id": "fixture", "extent": {service["demand"]["basis"]: 1.0}, "operating_group": "building"}
+        try:
+            generate({"schema_version": "3.0.0", "seed": 1, "instances": [instance]})
+            counts["service_variant"] += 1
+        except GeneratorError as error:
+            failures[error.code].append(f"{service_id}@{configuration_id}")
     report = {"generated": dict(counts), "failures": {k: v for k, v in failures.items()},
               "failure_count": sum(len(v) for v in failures.values())}
     OUTPUT.write_text(json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")

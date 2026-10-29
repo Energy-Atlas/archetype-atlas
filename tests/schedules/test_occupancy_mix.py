@@ -11,7 +11,7 @@ from atlas_schedules.residential.tables import load_tables
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = [ROOT / "data/raw/atus/atusact-0324.zip", ROOT / "data/raw/acs/csv_pus-2024-1yr.zip"]
-DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling in Alaska
+DWELLING = "resstock-sdr.multifamily-5-plus-low-rise.7ak-1980s-500-749ft2-b143851.d8e286"    # ResStock dwelling in Alaska
 
 
 def request(**extra) -> dict:

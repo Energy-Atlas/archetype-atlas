@@ -1,12 +1,12 @@
-"""Write the apartment-unit recipes as ResStock multifamily units (rulings 185-187; plan section 8, B7).
+"""Write the apartment units' generation blocks as ResStock multifamily units (rulings 185-187; plan section 8, B7).
 
 python -m scripts.build_apartment_units           # write
 python -m scripts.build_apartment_units --check   # compare
 
-Every apartment-unit recipe of release 2.0.0 (`generator.json` of the 90.1 and DOE Ref apartment
-folders, source and reviewed views) becomes a ResStock unit recipe: the prototype's slots, loads,
-controls and lighting timing give way to the `resstock_unit` block that
-atlas_schedules/residential/apartment.py reads, from the release and its inputs:
+Every apartment program of the 90.1 and DOE Ref apartment folders gets a `resstock_unit` block per view
+in release 2.1.0's `generation.json` (ADR 0049): the prototype's slots, loads, controls and lighting
+timing give way to the block that atlas_schedules/residential/apartment.py reads, from the release and
+its inputs:
 - building type and height class: the prototype geometry (data/construction-inputs/geometry-v1.json),
   stories and apartments counted from its spaces and multipliers, binned as ResStock's
   `Geometry Building Type Height` bins them (the same classes scripts/residential.py maps back to
@@ -17,12 +17,10 @@ atlas_schedules/residential/apartment.py reads, from the release and its inputs:
   pair per folder; the DOE Ref electric unit heaters, one per corridor level, heat no apartment)
   mapped to ResStock's five HVAC characteristics (`HVAC`). ResStock has no water-loop heat pump,
   so the high-rise water-to-air heat pumps become a unit's ducted heat pump;
-- hot water per person (ruling 185, P2): the prototype's per-area volume on its schedule over the
-  prototype's design occupants per area.
-The caller-water block stays: its service and controls describe the building's water service.
-Schedules only the replaced recipes used leave `atlas_schedules/data/schedules.json`.
-scripts/build_reference_recipes.py writes the DOE Ref apartment recipes through `unit_recipe` too.
-Release 2.0.0 keeps the 2.x recipes; the next release carries these.
+- hot water per person (ruling 185, P2): the program's per-area volume on its schedule over its
+  design occupants per area.
+The unit's caller water (the building's water service) is assembled from the program itself.
+scripts/build_reference_recipes.py writes the DOE Ref apartment blocks through `unit_block` too.
 """
 import argparse
 import json
@@ -30,19 +28,17 @@ from pathlib import Path
 
 from atlas_schedules import programmes
 from atlas_schedules.calendar import evaluate_rules
+from atlas_schedules.release import Release
 from atlas_schedules.residential.apartment import hot_water_m3_per_person
-from scripts.common import ROOT, load_json
+from scripts import release_2_1_0
+from scripts.common import ROOT
 
-RELEASE = ROOT/'data/atlas-releases/v2.0.0/commercial'
 GEOMETRY = ROOT/'data/construction-inputs/geometry-v1.json'
-DATA = ROOT/'atlas_schedules/data'
-RECIPES = DATA/'recipes'
 ERAS = {'90.1-2007': ('2007-2009', ['2000s']), '90.1-2013': ('2013-2015', ['2010s']), '90.1-2019': ('2019-', ['2010s']),
         'DOE Ref Pre-1980': ('before 1980', ['<1940', '1940s', '1950s', '1960s', '1970s']),
         'DOE Ref 1980-2004': ('1980-2004', ['1980s', '1990s', '2000s'])}
 HVAC = {('Gas', 'Single Speed DX AC'): ['Natural Gas', 'Ducted Heating', 'Central AC', 'None', 'No'],
         ('Water To Air Heat Pump', 'Water To Air Heat Pump'): ['Electricity', 'Ducted Heat Pump', 'Ducted Heat Pump', 'None', 'No']}
-KEPT = ('schema_version', 'program_id', 'name', 'kind', 'source', 'required_services', 'caller_water')
 
 
 def relative(path):
@@ -77,83 +73,71 @@ def system_pair(systems):
     return next(iter(pairs))
 
 
-def unit_recipe(recipe, folder, key, view, geometry):
-    """The ResStock unit recipe of one release apartment recipe."""
-    template = recipe['source']['template']
+def unit_block(release, program_id, view, geometry):
+    """The `resstock_unit` block of one apartment program in one view."""
+    folder, record = release.program(program_id)
+    data = programmes.view_record(record, view)
+    template = data['template']
     stories, apartments = size(geometry)
     building_type, height = building_classes(stories, apartments)
     era, vintages = ERAS[template]
-    pair = system_pair(json.loads((folder/'systems.json').read_text(encoding='utf-8')))
-    water = recipe['caller_water']
-    shape = evaluate_rules(programmes.schedules()[water['schedule']])[0]
-    people = next(c for c in recipe['controls'] if c['slot'] == 'occupants')['people']['density']
-    block = {
+    pair = system_pair(release.json(f'{folder}/systems.json'))
+    water = programmes.caller_water(data, release.services(folder))
+    shape = evaluate_rules(release.schedules(folder)[water['schedule']])[0]
+    people = programmes.load_of(data, 'occupancy')['value']
+    base = f'data/atlas-releases/v{release.base.version}'
+    return {
         'building_type': building_type, 'height': height, 'vintages': vintages, 'hvac': HVAC[pair],
         'hot_water_m3_per_person': hot_water_m3_per_person(water, shape, people),
         'source': {'geometry': f"{relative(GEOMETRY)}#{geometry['id']}", 'stories': stories, 'apartments': apartments,
-                   'era': f'{template}: {era}', 'systems': relative(folder/'systems.json'), 'system_pair': list(pair),
+                   'era': f'{template}: {era}', 'systems': f'{base}/{folder}/systems.json', 'system_pair': list(pair),
                    'hot_water': {'density': water['density'], 'density_unit': water['density_unit'],
                                  'schedule': water['schedule'], 'full_load_hours': float(shape.sum()),
                                  'design_people_per_m2': people},
-                   'release_recipe': f"{relative(folder/'generator.json')}#{key}/{view}"}}
-    return {**{k: recipe[k] for k in KEPT}, 'resstock_unit': block}
+                   'program': f'{base}/{release.program_paths[program_id]}'}}
 
 
-def build():
-    geometry = {(e['template'], e['building_type']): e
-                for e in json.loads(GEOMETRY.read_text(encoding='utf-8'))['commercial']}
-    recipes = {}
-    for path in sorted(RELEASE.glob('*/*-apartment/generator.json')):
-        for key, views in json.loads(path.read_text(encoding='utf-8')).items():
-            for view, recipe in views.items():
-                if recipe['kind'] != 'apartment_unit':
-                    continue
-                source = recipe['source']
-                recipes[recipe['program_id']] = unit_recipe(recipe, path.parent, key, view,
-                                                            geometry[(source['template'], source['building_type'])])
-    return recipes
+def geometries():
+    return {(e['template'], e['building_type']): e for e in json.loads(GEOMETRY.read_text(encoding='utf-8'))['commercial']}
 
 
-def text(recipe):
-    return json.dumps(recipe, indent=1, sort_keys=True) + '\n'
-
-
-def unused_schedules(recipes):
-    """(schedule table, IDs no packaged recipe, configuration or service uses once `recipes` replace theirs)."""
-    from scripts.build_reference_recipes import references
-    table = load_json(DATA/'schedules.json')
-    used = set().union(*(references(r, table) for r in recipes.values()))
-    replaced = set()
-    for folder in ('recipes', 'configurations', 'services'):
-        for path in (DATA/folder).glob('*.json'):
-            record = load_json(path)
-            if folder == 'recipes' and record['program_id'] in recipes:
-                replaced |= references(record, table)
-            else:
-                used |= references(record, table)
-    return table, sorted(replaced - used)
+def build(release):
+    """{folder: {program ID: block}} of every apartment program with a resstock_unit block."""
+    shapes = geometries()
+    out = {}
+    for folder in release.generation_folders():
+        if not folder.endswith('-apartment'):
+            continue
+        for rid, block in release.generation(folder).get('programs', {}).items():
+            if block['method'] != 'resstock_unit':
+                continue
+            record = release.program(rid)[1]
+            geometry = shapes[(record['template'], record['building_type'])]
+            views = {view: {'resstock_unit': unit_block(release, rid, view, geometry)} for view in block['views']}
+            out.setdefault(folder, {})[rid] = {**block, 'views': views}
+    return out
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
-    recipes = build()
-    stale = [pid for pid, recipe in recipes.items()
-             if not (RECIPES/f'{pid}.json').exists() or (RECIPES/f'{pid}.json').read_text(encoding='utf-8') != text(recipe)]
-    table, unused = unused_schedules(recipes)
+    release = Release(release_2_1_0.TARGET)
+    blocks = build(release)
+    stale = {folder: programs for folder, programs in blocks.items()
+             if any(release.generation(folder)['programs'][rid] != block for rid, block in programs.items())}
+    count = sum(len(p) for p in blocks.values())
     if args.check:
-        if stale or unused:
-            raise SystemExit(f'{len(stale)} of {len(recipes)} apartment recipes differ, e.g. {stale[:3]}; '
-                             f'{len(unused)} schedules unused')
-        print(f'{len(recipes)} apartment recipes match')
+        if stale:
+            raise SystemExit(f'{sum(len(p) for p in stale.values())} of {count} apartment blocks differ, in {sorted(stale)[:3]}')
+        print(f'{count} apartment blocks match')
         return
-    for pid in stale:
-        (RECIPES/f'{pid}.json').write_bytes(text(recipes[pid]).encode('utf-8'))
-    for schedule_id in unused:
-        del table[schedule_id]
-    (DATA/'schedules.json').write_bytes((json.dumps(table, separators=(',', ':'), sort_keys=True)+'\n').encode('utf-8'))
-    print(f'wrote {len(stale)} of {len(recipes)} apartment recipes; removed {len(unused)} unused schedules')
+    docs = {}
+    for folder, programs in stale.items():
+        doc = release.generation(folder)
+        docs[folder] = {**doc, 'programs': {**doc['programs'], **programs}}
+    release_2_1_0.write_generation(docs)
+    print(f'wrote {len(stale)} of {len(blocks)} apartment folders ({count} blocks)')
 
 
 if __name__ == '__main__':

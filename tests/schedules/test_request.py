@@ -10,14 +10,15 @@ import numpy as np
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
-from atlas_schedules.programmes import load_recipe
+from atlas_schedules.release import translate
+from tests.schedules.helpers import load_recipe
 
-COMMERCIAL = "program-b910ee0c34e9eeb3ecd573c4"  # Warehouse office area 90.1-2013 (no shared services)
-DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling (2 residents, Anchorage)
-APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # apartment dwelling unit
-DATA_CENTRE = "program-0d0d5461f1cee89d04d148eb"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
-RESTAURANT = "program-080dc08cd2d7af6c7d419d0a"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
-WATER = "service-1981fa97b9fd7d47efcf39dd"
+COMMERCIAL = "90-1-2013.warehouse.source.office.7fc5a6"  # Warehouse office area 90.1-2013 (no shared services)
+DWELLING = "resstock-sdr.multifamily-5-plus-low-rise.7ak-1980s-500-749ft2-b143851.d8e286"    # ResStock dwelling (2 residents, Anchorage)
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"   # apartment dwelling unit
+DATA_CENTRE = "90-1-2007.large-office.source.office-large-data-center.8883eb"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
+RESTAURANT = "90-1-2013.quick-service-restaurant.source.kitchen.9911f2"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
+WATER = "90-1-2013.quick-service-restaurant.main.1be363"
 RESTAURANT_CONFIGURATION = "quick_service_restaurant__90_1_2013__source"
 DEPARTMENT = "doe-ref-1980-2004.hospital.department.diagnostics-mixed.407fa7"  # composition of three spaces
 
@@ -43,7 +44,26 @@ class Validation(unittest.TestCase):
                                                        {"key": "a", "program_id": COMMERCIAL}))
 
     def test_unknown_programme(self):
-        self.assert_code("unsupported_binding", request({"key": "a", "program_id": "program-" + "0" * 24}))
+        self.assert_code("unsupported_binding", request({"key": "a", "program_id": "90-1-2013.warehouse.source.nowhere.000000"}))
+
+    def test_views(self):
+        self.assert_code("unsupported_input", request({"key": "a", "program_id": RESTAURANT, "values": "filled"}))
+        self.assert_code("invalid_request", request({"key": "a", "program_id": COMMERCIAL, "values": "reviewed"}))
+        water = {"key": "w", "service_id": WATER, "configuration_id": RESTAURANT_CONFIGURATION, "physical_id": "f",
+                 "extent": {"floor_area": 1}, "values": "source"}
+        self.assert_code("invalid_request", request(water))
+        self.assertEqual(load_recipe(COMMERCIAL)["values"], "filled")
+        self.assertEqual(load_recipe(COMMERCIAL, "source")["values"], "source")
+
+    def test_definition_ids_translate_through_the_definition_map(self):
+        self.assert_code("invalid_request", request({"key": "a", "program_id": "program-b910ee0c34e9eeb3ecd573c4"}))
+        document = translate(request({"key": "r", "program_id": "program-080dc08cd2d7af6c7d419d0a",
+                                      "service_links": {"service-1981fa97b9fd7d47efcf39dd": "w"}},
+                                     {"key": "w", "service_id": "service-1981fa97b9fd7d47efcf39dd",
+                                      "configuration_id": RESTAURANT_CONFIGURATION, "physical_id": "f"}))
+        self.assertEqual(document["instances"][0], {"key": "r", "program_id": RESTAURANT, "values": "source",
+                                                    "service_links": {WATER: "w"}})
+        self.assertEqual(document["instances"][1]["service_id"], WATER)
 
     def test_ids_must_be_well_formed(self):
         for field, value in (("program_id", "../schedules"), ("program_id", "program-unknown")):

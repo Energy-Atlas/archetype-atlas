@@ -1,11 +1,11 @@
-"""Programme recipes: load them and turn one programme instance into channels and bindings.
+"""Programme recipes: assemble them from the release and turn one programme instance into
+channels and bindings.
 
-A recipe (data/recipes/<program_id>.json) lists the programme's slots (loads,
-controls, resident counts), its demands (annual magnitude per basis unit), its
-companions and, per kind, the kernel inputs:
-- "commercial": ComStock transform (slot modes and a configuration id; the
-  configuration in data/configurations/ holds the sampling building type,
-  People per space and rule-day inversion);
+A recipe is assembled from a release program, its generation block and its folder's tables
+(`assemble`, ADR 0049). It lists the programme's slots (loads, controls, resident counts),
+its demands (annual magnitude per basis unit), its companions and, per kind, the kernel inputs:
+- "commercial": ComStock transform (slot modes and a configuration id; the folder's
+  configuration holds the sampling building type, People per space and rule-day inversion);
 - "residential": ResStock dwelling (residents, location, weather, installed
   appliances, thermostat arguments);
 - "fixed": source rule sets used as they are.
@@ -13,6 +13,7 @@ companions and, per kind, the kernel inputs:
 Annual targets come from the original source shape before any transform, so a
 transform moves energy in time without changing the annual total.
 """
+from collections.abc import Mapping
 from functools import lru_cache
 import json
 from pathlib import Path
@@ -25,6 +26,7 @@ from .commercial.profiles import round_half_up, stored_value
 from .commercial.transform import Slot, transform
 from .companions import companion_channels
 from .errors import GeneratorError
+from .release import current
 from .residential.generate import Dwelling, generate_dwelling
 from .residential.occupancy import type_probabilities
 from .residential.tables import load_tables
@@ -32,19 +34,39 @@ from .residential.tables import load_tables
 DATA = Path(__file__).resolve().parent / "data"
 
 
-@lru_cache(maxsize=1)
-def schedules() -> dict:
-    return json.loads((DATA / "schedules.json").read_text(encoding="utf-8"))
+class Schedules(Mapping):
+    """The release's schedules by ID, read per folder as they are asked for."""
+
+    def __init__(self, release):
+        self.release = release
+
+    def __getitem__(self, schedule_id):
+        try:
+            return self.release.schedules(self.release.folder_of(schedule_id))[schedule_id]
+        except (GeneratorError, ValueError, KeyError):
+            raise KeyError(schedule_id) from None
+
+    def __iter__(self):
+        for folder in self.release.generation_folders():
+            yield from self.release.schedules(folder)
+
+    def __len__(self):
+        return sum(1 for _ in self)
+
+
+def schedules() -> Schedules:
+    return Schedules(current())
+
+
+def load_configuration(configuration_id: str) -> dict:
+    """A commercial building configuration: sampling building type, People per space
+    (occupancy schedule id, design people) and rule-day inversion."""
+    return _configuration(current(), configuration_id)
 
 
 @lru_cache(maxsize=None)
-def load_configuration(configuration_id: str) -> dict:
-    """A commercial building configuration: sampling building type, People per space
-    (occupancy Ruleset id, design people) and rule-day inversion."""
-    path = DATA / "configurations" / f"{configuration_id}.json"
-    if not path.exists():
-        raise GeneratorError("unsupported_binding", "/configuration_id", f"No configuration {configuration_id!r}")
-    return json.loads(path.read_text(encoding="utf-8"))
+def _configuration(release, configuration_id: str) -> dict:
+    return assemble_configuration(release, configuration_id)
 
 
 def configuration_people(configuration: dict) -> list:
@@ -52,12 +74,37 @@ def configuration_people(configuration: dict) -> list:
     return [(schedule_id, table[schedule_id], count) for schedule_id, count in configuration["people"]]
 
 
+def load_recipe(program_id: str, values: str | None = None) -> dict:
+    """The recipe of a release program in one view (source or filled; default per its block)."""
+    return _recipe(current(), program_id, values)
+
+
 @lru_cache(maxsize=None)
-def load_recipe(program_id: str) -> dict:
-    path = DATA / "recipes" / f"{program_id}.json"
-    if not path.exists():
-        raise GeneratorError("unsupported_binding", "/program_id", f"No recipe for {program_id!r}")
-    return json.loads(path.read_text(encoding="utf-8"))
+def _recipe(release, program_id: str, values: str | None) -> dict:
+    return assemble(release, program_id, values)
+
+
+def catalogue() -> list:
+    """(program ID, view, method) of every program view the release can generate, in folder order."""
+    release = current()
+    return [(rid, view, block["method"]) for folder in release.generation_folders()
+            for rid, block in release.generation(folder).get("programs", {}).items() for view in block["views"]]
+
+
+def service_catalogue() -> list:
+    """(service ID, configuration ID) of every shared service and configuration it runs under."""
+    release = current()
+    return [(sid, cid) for folder in release.generation_folders()
+            for sid, block in release.generation(folder).get("services", {}).items() for cid in block["configurations"]]
+
+
+def load_service(service_id: str) -> dict:
+    return _service(current(), service_id)
+
+
+@lru_cache(maxsize=None)
+def _service(release, service_id: str) -> dict:
+    return assemble_service(release, service_id)
 
 
 # ------------------------------------------------------------------- assembly
@@ -245,7 +292,9 @@ def assemble(release, program_id: str, values: str | None = None) -> dict:
     data = view_record(record, view)
     recipe = {"schema_version": "2.0.0", "program_id": program_id, "values": view, "name": record["name"],
               "source": {"release": release.version, "program": release.program_paths[program_id],
-                         "generation": f"{folder}/generation.json#/programs/{program_id}"}}
+                         "generation": f"{folder}/generation.json#/programs/{program_id}",
+                         "family": record.get("source_family"), "template": record.get("template"),
+                         "building_type": record.get("building_type")}}
     if method == "comstock_hours":
         body = commercial_body(data)
         modes = body.pop("modes")
@@ -306,8 +355,9 @@ def required_services(recipe: dict) -> list:
     if recipe["kind"] != "composition":
         return list(recipe["required_services"])
     services = []
-    for program_id, _ in recipe["composition"]["members"]:
-        services.extend(s for s in load_recipe(program_id)["required_services"] if s not in services)
+    composition = recipe["composition"]
+    for (program_id, _), values in zip(composition["members"], composition["member_values"]):
+        services.extend(s for s in load_recipe(program_id, values)["required_services"] if s not in services)
     return services
 
 

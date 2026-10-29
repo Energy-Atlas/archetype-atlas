@@ -13,7 +13,7 @@ from atlas_schedules.residential.arguments import unit_arguments
 from atlas_schedules.residential.shapes import fan_months
 from atlas_schedules.residential.tables import load_drybulb
 
-APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # 90.1-2007 high-rise apartment unit
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"   # 90.1-2007 high-rise apartment unit
 MIDRISE = "doe-ref-pre-1980.midrise-apartment.source.apartment.413afb"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5, "climate_zone": "4A"}
 
@@ -86,8 +86,8 @@ class Units(unittest.TestCase):
 
 class Recipes(unittest.TestCase):
     def test_every_apartment_recipe_is_a_resstock_unit(self):
-        recipes = [r for r in map(programmes.load_recipe, (p.stem for p in (programmes.DATA / "recipes").glob("*.json")))
-                   if r["kind"] == "apartment_unit"]
+        recipes = [programmes.load_recipe(pid, view) for pid, view, method in programmes.catalogue()
+                   if method == "resstock_unit"]
         self.assertEqual(len(recipes), 38)
         for recipe in recipes:
             spec = recipe["resstock_unit"]

@@ -2,7 +2,8 @@
 
 All validation happens here, once. Kernels and mixtures trust what this returns.
 3.0.0 adds, for ResStock apartment units, `residents: "resstock"` and the location's
-`climate_zone` and `weather_id`; 2.0.0 requests are no longer accepted (ADR 0047).
+`climate_zone` and `weather_id`; 2.0.0 requests are no longer accepted (ADR 0047). Programs and
+services are named by atlas release ID, a program with its view (`values`, ADR 0049).
 """
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -35,6 +36,7 @@ class Location:
 class Instance:
     key: str
     program_id: str | None = None
+    values: str | None = None             # programme view: "source" or "filled" (ADR 0049); default per program
     service_id: str | None = None
     configuration_id: str | None = None
     physical_id: str | None = None
@@ -118,12 +120,15 @@ def parse_request(document: dict, residential_rng: str = "pcg64", flat_days: str
     for raw in document["instances"]:
         location = Location(**raw["location"]) if "location" in raw else None
         instances.append(Instance(
-            key=raw["key"], program_id=raw.get("program_id"), service_id=raw.get("service_id"),
+            key=raw["key"], program_id=raw.get("program_id"), values=raw.get("values"), service_id=raw.get("service_id"),
             configuration_id=raw.get("configuration_id"), physical_id=raw.get("physical_id"),
             extent=dict(raw.get("extent", {})), multiplicity=float(raw.get("multiplicity", 1)),
             operating_group=raw.get("operating_group"), residents=raw.get("residents"), location=location,
             service_links=dict(raw.get("service_links", {})), composition_basis=raw.get("composition_basis"),
             reference_location=raw.get("reference_location")))
+    for instance in instances:
+        if instance.values and not instance.program_id:
+            raise GeneratorError("invalid_request", f"/instances/{instance.key}/values", "Only programmes take values")
     keys = [i.key for i in instances]
     if len(set(keys)) != len(keys):
         raise GeneratorError("duplicate_instance", "/instances", "Instance keys must be unique")

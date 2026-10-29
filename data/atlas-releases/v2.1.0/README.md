@@ -14,6 +14,7 @@ no ID moves (the program ID rule leaves `generation` out).
   release service.
 
 The generator (`atlas_schedules`, generator 3.0.0) reads this release beside its base.
-Program JSON exports stay those of 2.0.0. Write and check with
-`python -m scripts.release_2_1_0 [--check]`. Upstream notices are in `../v2.0.0/notices/`;
-original Atlas data is CC BY 4.0 (see `LICENSE`).
+Program JSON exports stay those of 2.0.0. Check with `python -m scripts.release_2_1_0 --check`;
+`scripts.build_reference_recipes` and `scripts.build_apartment_units` rewrite the DOE Ref and
+apartment-unit blocks they derive. Upstream notices are in `../v2.0.0/notices/`; original Atlas
+data is CC BY 4.0 (see `LICENSE`).
