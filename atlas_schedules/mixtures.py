@@ -45,6 +45,7 @@ class Owner:
     kind: str
     program_id: str | None = None
     service_id: str | None = None
+    values: str | None = None                        # programme view: source or filled (ADR 0051)
     schedules: dict = field(default_factory=dict)   # slot -> (unit, 8760 values)
     loads: list = field(default_factory=list)
     controls: list = field(default_factory=list)    # dicts with slot, quantity, unit (and people)

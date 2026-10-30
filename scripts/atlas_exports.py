@@ -45,21 +45,24 @@ from scripts.common import ROOT, load_json
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
-LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+# Program JSON 5.4.0 names its release by pattern from release 2.2.0 (ADR 0051 section 5): a 5.4.x widening, so a
+# later data release needs no schema edit; every label the enum admitted still matches.
+RELEASE_LABEL = {'type': 'string', 'pattern': r'^atlas-release-\d+\.\d+\.\d+$'}
 # Release 2.0.0, milestone B (ADR 0046 section 9): detailed constructions 4.3.0, 4.2.0 with the PNNL prototype alternates.
-ALTERNATES = {'releases': ('2.0.0', '2.1.0'),
+ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0'),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
 # The releases in the tree, oldest first: the 2.0.0 snapshot and its deltas (scripts.atlas_delta); the last is the newest.
-IN_TREE = ('2.0.0', '2.1.0')
+IN_TREE = ('2.0.0', '2.1.0', '2.2.0')
 # The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.
 MASS = ('construction-mass-accounting-v1.1.schema.json', '1.1.0', 'urn:archetype-atlas:construction-mass-accounting:1.1.0')
 ROLES = ('ExteriorWall','ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
@@ -206,7 +209,7 @@ def program_minor_lighting(minor):
     for version in VERSIONS:
         variant = schema['$defs'][version]
         variant['properties']['schema_version'] = {'const': LIGHTING['program'][1]}
-        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in LIGHTING['releases']]}
+        variant['properties']['source']['properties']['release'] = dict(RELEASE_LABEL)
         variant['properties']['lighting_controls'] = copy.deepcopy(LIGHTING_CONTROLS)
     return schema
 

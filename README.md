@@ -13,20 +13,29 @@ Buildings, DOE/PNNL Prototype Building Models (ASHRAE 90.1 and IECC, commercial
 and residential) and the PNNL manufactured-housing models. Source interpretations
 and coverage are recorded under `docs/` and `sources/`.
 
-## Release 2.1.0
+## Release 2.2.0
 
-**Atlas release 2.1.0** (`data/atlas-releases/v2.1.0`, status `released`) is a delta on
-the 2.0.0 snapshot ([ADR 0046 section 12](docs/adr/0046-release-2-0-0.md),
-[release notes](docs/release-notes-atlas-v2.1.0.md)): ten files that differ from 2.0.0
-(the open-licence `LICENSE` and the generator 3.0.0 apartment-unit recipes in the eight
-apartment folders' `generator.json`) and a manifest naming 2.0.0 as its base and the
-`atlas-schedules` 3.0.0 wheel that ships the same recipes. Every ID is 2.0.0's.
+**Atlas release 2.2.0** (`data/atlas-releases/v2.2.0`, status `released`) is a delta on
+2.1.0, itself a delta on the 2.0.0 snapshot
+([ADR 0051](docs/adr/0051-generation-parameters-in-the-release.md),
+[release notes](docs/release-notes-atlas-v2.2.0.md)): it publishes the schedule
+generator's parameters with the programs (each generated folder's `generation.json` and
+`definition-map.json`) and removes the folders' `generator.json`. No program, schedule,
+service or construction value changes and every ID is 2.0.0's; Program JSON 5.4.0 exports
+name `atlas-release-2.2.0`. The `v2.2.0` GitHub release carries `atlas-release-2.2.0.zip`
+(the `v2.0.0/`, `v2.1.0/` and `v2.2.0/` folders) and `SHA256SUMS.txt`.
 
 ```console
 python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
-python -m scripts.atlas_delta --check                     # rebuild the delta from its pinned inputs
-python -m scripts.atlas_exports --program ID --version filled    # exports 2.1.0 by default
+python -m scripts.atlas_delta --check                     # rebuild the delta around its files; every block assembles
+python -m scripts.atlas_exports --program ID --version filled    # exports 2.2.0 by default
+sha256sum -c SHA256SUMS.txt                               # a downloaded release asset
 ```
+
+**Atlas release 2.1.0** (`data/atlas-releases/v2.1.0`) is the first delta
+([ADR 0046 section 12](docs/adr/0046-release-2-0-0.md),
+[release notes](docs/release-notes-atlas-v2.1.0.md)): the open-licence `LICENSE` and the
+generator 3.0.0 apartment-unit recipes in the eight apartment folders' `generator.json`.
 
 **Atlas release 2.0.0** (`data/atlas-releases/v2.0.0`, status `released`) is the base
 ([ADR 0046](docs/adr/0046-release-2-0-0.md),
@@ -38,7 +47,7 @@ the folder alone, with no base release to resolve. It holds:
   prototypes);
 - detailed and unified construction sets;
 - the generator recipes of the 90.1 and DOE Ref programs in each folder's
-  `generator.json`;
+  `generator.json` (replaced by 2.2.0's `generation.json` blocks);
 - the PNNL prototype constructions of the 90.1 templates where they differ from
   openstudio-standards, as `alternates` (detailed constructions 4.3.0);
 - the evidence tree and upstream notices.
@@ -89,25 +98,36 @@ load target bound to its generated shape. It is a readable port of ComStock /
 openstudio-standards 0.8.6 hours-of-operation sampling and of OpenStudio-HPXML's
 ResStock occupant model ([ADR 0035](docs/adr/0035-readable-generator-restructure.md)).
 
-Install it as the `atlas-schedules` package from the wheel attached to its GitHub
-release ([ADR 0049](docs/adr/0049-atlas-schedules-packaging.md); Python 3.11+, numpy
-and jsonschema; not on PyPI):
+Generator 4.0.0 assembles its recipes from an atlas data release
+([ADR 0051](docs/adr/0051-generation-parameters-in-the-release.md)): requests name
+programs by release ID with a `values` view. Install it as the `atlas-schedules` package
+from the wheel attached to its GitHub release
+([ADR 0049](docs/adr/0049-atlas-schedules-packaging.md); Python 3.11+, numpy and
+jsonschema; not on PyPI), and verify the download:
 
 ```console
-pip install https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v3.0.0/atlas_schedules-3.0.0-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.0.0/atlas_schedules-4.0.0-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.0.0/SHA256SUMS.txt
+sha256sum -c SHA256SUMS.txt --ignore-missing
+pip install atlas_schedules-4.0.0-py3-none-any.whl
+atlas-schedules --version                          # the generator and the release it reads
 atlas-schedules request.json -o bundle.json
+atlas-schedules translate old-request.json         # a 3.0.0 request's definition IDs as release IDs
 ```
 
-From a checkout, `python -m pip install -r requirements.txt` and `python -m
-atlas_schedules request.json` run the same code; `python -m build` (pinned in
-`requirements-dev.txt`) builds the wheel.
-- **90.1 recipes:** built from the frozen definitions.
-- **DOE Ref recipes:** written from release 2.0.0 under release IDs
-  (`python -m scripts.build_reference_recipes`).
+The wheel bundles the generator view of release 2.2.0; `ATLAS_RELEASES` or
+`--release-dir` reads a release on disk instead. From a checkout, `python -m pip
+install -r requirements.txt` and `python -m atlas_schedules request.json` run the
+same code against `data/atlas-releases`; `python -m scripts.build_generator_view`
+then `python -m build` (pinned in `requirements-dev.txt`) build the wheel.
+- **Generation blocks:** release 2.2.0's `generation.json` per folder; the DOE Ref and
+  apartment blocks are written from the release
+  (`python -m scripts.build_reference_recipes`, `scripts.build_apartment_units`).
 - **Validation:** native OpenStudio / Ruby answer keys in `tests/answer_keys/` check
-  it to 1e-6.
-- **Catalogue smoke:** `python -m scripts.smoke_catalogue` generates every packaged
-  recipe and service.
+  it to 1e-6; a generator 3.0.0 answer key checks the assembled recipes reproduce its
+  bundles.
+- **Catalogue smoke:** `python -m scripts.smoke_catalogue` generates every programme
+  view and service of the release.
 
 ## Source pipeline
 

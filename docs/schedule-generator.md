@@ -24,15 +24,50 @@ network access is needed at run time.
 
 Install the `atlas-schedules` wheel attached to its GitHub release
 ([ADR 0049](adr/0049-atlas-schedules-packaging.md); the package is not on PyPI;
-the generator version is the package version, 3.0.0):
+the generator version is the package version, 4.0.0), verify it against the
+release's `SHA256SUMS.txt`, and generate the example request:
 
 ```bash
-pip install https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v3.0.0/atlas_schedules-3.0.0-py3-none-any.whl
-atlas-schedules office-and-retail.json -o bundle.json
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.0.0/atlas_schedules-4.0.0-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.0.0/SHA256SUMS.txt
+sha256sum -c SHA256SUMS.txt --ignore-missing
+pip install atlas_schedules-4.0.0-py3-none-any.whl
+atlas-schedules --version          # atlas-schedules 4.0.0 (request schema 4.0.0); reads atlas release 2.2.0 from ...
+atlas-schedules office-and-retail.json -o bundle.json    # docs/examples/schedule-generator/office-and-retail.json
 ```
 
+A request names its programmes by atlas release ID, a programme with its
+`values` view ([ADR 0051](adr/0051-generation-parameters-in-the-release.md)):
+
+```json
+{
+  "schema_version": "4.0.0",
+  "seed": 42,
+  "instances": [
+    {"key": "office", "program_id": "90-1-2013.medium-office.source.whole-building-md-office.672bf4",
+     "values": "filled", "extent": {"floor_area": 400}, "operating_group": "building",
+     "service_links": {"90-1-2013.medium-office.main.87f1fd": "office-water"}},
+    {"key": "office-water", "service_id": "90-1-2013.medium-office.main.87f1fd",
+     "configuration_id": "medium_office__90_1_2013__reviewed", "physical_id": "office-water-heater",
+     "extent": {"floor_area": 400}, "operating_group": "building"}
+  ]
+}
+```
+
+The generator assembles each recipe from an atlas data release. The wheel
+bundles the generator view of release 2.2.0, so `pip install` alone is enough;
+`ATLAS_RELEASES` or `--release-dir` points it at a release on disk instead (the
+`atlas-release-2.2.0.zip` archive of the `v2.2.0` GitHub release, extracted, or a
+checkout's `data/atlas-releases`), and deltas resolve over their bases. Each
+bundle records the release it read (`release.version`, `release.manifest_sha256`),
+and the same request on the same release gives the same bundle from either.
+
+A generator 3.0.0 request (schema 3.0.0, definition IDs `program-…` and
+`service-…`) is refused; `atlas-schedules translate old.json -o new.json` rewrites
+it through the release's definition map, `values` included.
+
 From a checkout, with `requirements.txt` installed, `python -m atlas_schedules`
-runs the same command:
+runs the same commands against `data/atlas-releases`:
 
 ```bash
 python -m atlas_schedules docs/examples/schedule-generator/office-and-retail.json -o bundle.json
@@ -40,18 +75,17 @@ python -m atlas_schedules docs/examples/schedule-generator/office-and-retail.jso
 
 ```python
 from atlas_schedules import generate
-bundle = generate(request)   # request: dict following schema 3.0.0
+bundle = generate(request)   # request: dict following schema 4.0.0
 ```
 
-Example requests live in `docs/examples/schedule-generator/`. Each bundle
-records its `generator_version`; the packaged recipes of generator 3.0.0 were
-built from atlas release 2.0.0 and are carried by release 2.1.0 (ADR 0049).
-To build the wheel from a checkout: `pip install -r requirements-dev.txt` and
-`python -m build`.
+Example requests live in `docs/examples/schedule-generator/`. To build the wheel
+from a checkout: `pip install -r requirements-dev.txt`, `python -m
+scripts.build_generator_view` (the release view the wheel bundles) and `python -m
+build`; `python -m scripts.build_release_assets --wheel --data` builds the
+release assets with `SHA256SUMS.txt`.
 
-Each generator release also attaches `SHA256SUMS.txt` (`sha256sum` format). To
-verify a download, put the file next to the downloaded archives and run
-`sha256sum -c SHA256SUMS.txt`. For 3.0.0 the wheel's digest is
+Every generator release attaches `SHA256SUMS.txt` (`sha256sum` format); the quick
+start above verifies 4.0.0 with it. For 3.0.0 the wheel's digest is
 `f082bb12f951fdebd78ddcf8ab20cc65a267a02a70213de4d7f13d56648229cb` and the sdist's
 `2f42d7c1fe970a4958d0fd2092f0e6b23c8d0515ada9f67af02377718f80eb27`; both were checked on
 2026-10-29 against an independent `python -m build` of tag `atlas-schedules-v3.0.0`
@@ -59,9 +93,9 @@ in a clean venv, whose package files are byte-identical to the published ones (o
 archive timestamps and the generated metadata's line endings differ; ADR 0049,
 amendments).
 
-## Request (schema 3.0.0)
+## Request (schema 4.0.0)
 
-The schema is `atlas_schedules/schemas/request-v3.schema.json`.
+The schema is `atlas_schedules/schemas/request-v4.schema.json`.
 
 | Field | Meaning |
 |---|---|
@@ -73,11 +107,16 @@ The schema is `atlas_schedules/schemas/request-v3.schema.json`.
 Every instance has a unique `key`. Keys cannot contain `/`, which is reserved
 for owners the generator derives.
 
-A **programme instance** has a `program_id` (a recipe in
-`atlas_schedules/data/recipes/`): a definition program ID (`program-…`) or, for
-the DOE Ref recipes, an atlas release program ID such as
-`doe-ref-pre-1980.retail-standalone.source.entry.955efc`. It can also have the
-following fields:
+A **programme instance** has a `program_id`: an atlas release program ID such as
+`90-1-2013.medium-office.source.whole-building-md-office.672bf4` or
+`doe-ref-pre-1980.retail-standalone.source.entry.955efc`, of a program whose
+record carries a `generation` block in the release (1,008 programs). It can
+also have the following fields:
+
+- `values`: the view of the program's values the recipe takes, as the two
+  consumer exports name them: `source` (actual values only) or `filled` (actual
+  values and fillings). Default: `filled` where the program's block has that
+  view (the 90.1 programs that had a reviewed recipe), else `source`.
 
 - `extent`: the amount of each basis it represents. The bases are
   `floor_area` (m²), `dwelling_unit`, `person` and `absolute`.
@@ -110,8 +149,9 @@ following fields:
 - `composition_basis`: for composition parents. `reference_area` keeps the
   members' source areas; `caller_area` shares the parent's `extent.floor_area`.
 
-A **shared service** instance has `service_id`, `configuration_id` (whose hours
-it follows), `physical_id` and an `extent`. It is counted once, whole, in a
+A **shared service** instance has `service_id` (an atlas release service ID such
+as `90-1-2013.medium-office.main.87f1fd`), `configuration_id` (whose hours it
+follows), `physical_id` and an `extent`. It is counted once, whole, in a
 mixture.
 
 A **mixture** has these fields:
@@ -142,10 +182,14 @@ setpoints are weight-averaged.
 
 ## Bundle
 
+- `schema_version` 4.0.0, `generator_version`, and `release`: the atlas release
+  the recipes were assembled from (`version`, `manifest_sha256`,
+  `generation_schema_version`).
 - `schedules`: `schedule:<key>:<slot>` → `{unit, values[8760]}`.
 - `owners[]`: one per instance, plus each apartment unit's caller-water owner
   (`<key>/water`) and each composition member (`source-member/...`). Each owner
-  lists its schedule ids and its controls. Its `loads` record the amplitude and
+  names its `program_id` and `values` view (or its `service_id`), and lists its
+  schedule ids and its controls. Its `loads` record the amplitude and
   the annual total per basis unit, with `amplitude × Σ values × s` equal to the
   annual total. `s` is 1 for power (W → Wh) and 3600 for volume flow
   (m³/s → m³). Apartment-unit owners also record their ResStock draw under
@@ -165,28 +209,40 @@ Two bindings, as upstream (ADR 0047):
 
 ## Programmes and families
 
-| Kind | Programmes | Kernel |
-|---|---|---|
-| `commercial` | 1,156 across 15 ComStock building types: Small, Medium and Large Office, Warehouse, Retail (standalone and strip mall), Full- and Quick-Service Restaurant, Supermarket, Primary and Secondary School, Small and Large Hotel, Hospital, Outpatient. Each has source and reviewed views of every template. | ComStock transform |
-| `residential` | 41 ResStock dwellings | ResStock activity and events |
-| `apartment_unit` | 38 apartment dwelling units (90.1 Midrise and Highrise, DOE Ref Midrise) | ResStock multifamily unit, plus its water |
-| `fixed` | 40 apartment common areas | source rules unchanged |
-| `composition` | 310 source parents (Retail, Strip Mall, Warehouse, Supermarket, schools, hotels, Hospital, Outpatient) | members mixed by area |
+A recipe is assembled when it is loaded, from the release program record, its
+`generation` block (the method and, per view, what the record cannot give), the
+folder's `schedules.json` and `services.json`, and the folder's building
+configurations in `generation.json`
+([ADR 0051](adr/0051-generation-parameters-in-the-release.md);
+`atlas_schedules.programmes.assemble`). The generator ships no copy of release
+values. 1,008 programs carry blocks, 1,585 program views:
 
-The 150 configurations in `atlas_schedules/data/configurations/` (15 families ×
-5 templates × source and reviewed views) carry each
-building's People inventory (prototype geometry floor area × definition density)
-and its sampling building type. A building where residential spaces (guest
-rooms, patient rooms, apartments) hold most of the people uses the inverted
-rule-day convention for hours of operation.
+| Method | Recipe kind | Program views | Kernel |
+|---|---|---|---|
+| `comstock_hours` | `commercial` | 1,156 across 15 ComStock building types: Small, Medium and Large Office, Warehouse, Retail (standalone and strip mall), Full- and Quick-Service Restaurant, Supermarket, Primary and Secondary School, Small and Large Hotel, Hospital, Outpatient; source and filled views of the 90.1 programs, source of the DOE Ref programs | ComStock transform |
+| `resstock_dwelling` | `residential` | 41 ResStock dwellings | ResStock activity and events |
+| `resstock_unit` | `apartment_unit` | 38 apartment dwelling units (90.1 Midrise and Highrise, DOE Ref Midrise) | ResStock multifamily unit, plus its water |
+| `fixed` | `fixed` | 40 apartment common areas | source rules unchanged |
+| `composition` | `composition` | 310 source parents (Retail, Strip Mall, Warehouse, Supermarket, schools, hotels, Hospital, Outpatient) | members mixed by area |
 
-The 186 shared hot-water services (one per family, template and fixture) are in
-`atlas_schedules/data/services/`.
+The 120 building configurations in the folders' `generation.json` (15 families
+× 3 90.1 templates × source and reviewed views, and one source configuration per
+DOE Ref family and vintage) carry each building's People inventory (prototype
+geometry floor area × program density, on the folder's release occupancy
+schedules) and its sampling building type. A building where residential spaces
+(guest rooms, patient rooms, apartments) hold most of the people uses the
+inverted rule-day convention for hours of operation.
 
-Each recipe's `source` block names its frozen definition record
-(`data/definition-releases/v0.1.1/...`). Rule sets are shared in
-`atlas_schedules/data/schedules.json`. Upstream licence notices are in
-`atlas_schedules/data/notices/`.
+The 186 shared hot-water services (one per family, template and fixture) are
+the release services whose blocks list the configurations they run under.
+
+Each recipe's `source` block names its release program and block
+(`commercial/90-1-2013/medium-office/programs/source/….json`,
+`…/generation.json#/programs/<id>`). Rule sets are the folder's release
+schedules. Upstream licence notices are in `atlas_schedules/data/notices/`.
+Programs without a block (IECC, manufactured housing, construction-only and
+plenum programs, the DOE Ref types without a sampling building type) are
+answered with `unsupported_input`.
 
 ## Apartment units
 
@@ -224,8 +280,8 @@ each unit, from its own seed:
 
 Not covered: shared laundry rooms (ResStock gives in-unit appliances or none);
 a unit's own pool; water-loop heat pumps, which ResStock has no option for.
-`scripts/build_apartment_units.py` writes the recipes from release 2.0.0's prototype
-recipes; release 2.1.0 carries them in its `generator.json` files.
+`scripts/build_apartment_units.py` writes the `resstock_unit` blocks of release
+2.2.0 from the release programs and the prototype geometry and systems.
 
 ## Residential occupant types
 
@@ -290,17 +346,24 @@ source, test and extractor.
 - **ComStock kernel**: every slot matches the native output for 11 controlled
   cases, 926 programme cases (Medium and Small Office, Warehouse, Retail and
   both restaurant families), 40 restaurant water cases and the Stripmall pilot.
-- **Packaged recipes**: the same 926 native cases, rebuilt from the packaged
-  recipe, its configuration and (for Medium Office water) its linked service,
-  match the native output (`tests/schedules/test_recipes_native.py`). The 90.1
-  recipes of the 15 commercial families were built by
-  `scripts/build_family_recipes.py` from the frozen definitions and prototype
-  geometry. The DOE Ref recipes are written from atlas release 2.0.0 under
-  release IDs by `scripts/build_reference_recipes.py` (ADR 0046 section 6),
-  with the People topology from the DOE file zones; the native and legacy cases
-  of the DOE Ref recipes they replaced are skipped
+- **Assembled recipes**: the same 926 native cases, rebuilt from the recipe
+  assembled from the release, its configuration and (for Medium Office water)
+  its linked service, match the native output
+  (`tests/schedules/test_recipes_native.py`; the keys' definition IDs translate
+  through the release's `definition-map.json`). The 90.1 blocks and
+  configurations descend from the recipes `scripts/build_family_recipes.py`
+  built from the frozen definitions and prototype geometry. The DOE Ref blocks
+  are written from atlas release 2.0.0 by `scripts/build_reference_recipes.py`
+  (ADR 0046 section 6), with the People topology from the DOE file zones; the
+  native and legacy cases of the DOE Ref recipes they replaced are skipped
   (`tests/answer_keys/retired-doe-ref.json`). Heat-gain fractions are carried
   wherever the source knows them all.
+- **Generator 3.0.0 equivalence**: 266 generator 3.0.0 bundles over every recipe
+  kind, shared services and the example requests
+  (`tests/answer_keys/orchestration/generator-3-0-0-bundles.json.gz`) are
+  reproduced by generator 4.0.0 from the release within 1e-9 per hour, apart from
+  the stated exceptions of ADR 0051 section 3
+  (`tests/schedules/test_generator_3_0_0_equivalence.py`).
 - **Newer families**: 534 native cases cover Large Office, Large and Small
   Hotel, Hospital, Outpatient, Primary and Secondary School, Supermarket and
   Strip Mall. Each family uses one template (varied across families), both
@@ -338,8 +401,9 @@ An upstream detail is kept only when dropping it breaks an answer key. Each such
 detail names its answer key in its docstring. There is one deliberate
 exception, described next.
 
-`python -m scripts.smoke_catalogue` generates every programme, composition parent
-and service variant once (`docs/validation/generator-catalogue-smoke.json`).
+`python -m scripts.smoke_catalogue` generates every programme view, composition
+parent and service variant of the release once
+(`docs/validation/generator-catalogue-smoke.json`).
 ### Deviation from native ComStock: flat days under base-to-peak
 
 ComStock's base-to-peak measures leave a one-value day unaltered. The hours
@@ -394,5 +458,6 @@ unchanged. Not covered:
 ## Adding a family
 
 1. Capture a native answer key with OpenStudio 3.10 (`scripts/capture/`).
-2. Build recipes from the frozen definitions and the family's source inventory.
+2. Write the family's generation blocks and building configurations into the release
+   (`generation.json`; ADR 0051).
 3. Add an answer-key test, then extend this page.

@@ -1,0 +1,37 @@
+{
+ "configurations":{
+  "warehouse__90_1_2007__reviewed":{
+   "building_type":"warehouse",
+   "invert_rule_days":false,
+   "people":[["90-1-2007.warehouse.warehouse-bldg-occ-sch.a66bc2",4.9975125388573876]]
+  },
+  "warehouse__90_1_2007__source":{
+   "building_type":"warehouse",
+   "invert_rule_days":false,
+   "people":[["90-1-2007.warehouse.warehouse-bldg-occ-sch.a66bc2",4.9975125388573876]]
+  }
+ },
+ "programs":{
+  "90-1-2007.warehouse.department.storage-mixed.82b806":{
+   "method":"composition",
+   "schema_version":"1.0.0",
+   "views":{"filled":{},"source":{}}
+  },
+  "90-1-2007.warehouse.source.bulk.c51312":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"filled":{"configuration_id":"warehouse__90_1_2007__reviewed"},"source":{"configuration_id":"warehouse__90_1_2007__source"}}
+  },
+  "90-1-2007.warehouse.source.fine.17aecd":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"filled":{"configuration_id":"warehouse__90_1_2007__reviewed"},"source":{"configuration_id":"warehouse__90_1_2007__source"}}
+  },
+  "90-1-2007.warehouse.source.office.777b4b":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"filled":{"configuration_id":"warehouse__90_1_2007__reviewed"},"source":{"configuration_id":"warehouse__90_1_2007__source"}}
+  }
+ },
+ "schema_version":"1.0.0"
+}

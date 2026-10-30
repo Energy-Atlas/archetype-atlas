@@ -131,7 +131,10 @@ section 6. Amends ADR 0021, ADR 0022, ADR 0023, ADR 0027 and ADR 0029 (section 7
   mixed annual total is still the scaled sum of member totals.
 - An apartment unit needs a floor area and a location; its loads are per dwelling unit.
 - Release 2.0.0's `generator.json` keeps the 2.x apartment recipes; the next release
-  carries the ResStock unit recipes.
+  carries the ResStock unit recipes. *Amended by
+  [ADR 0051](0051-generation-parameters-in-the-release.md):* release 2.1.0 carried them in
+  `generator.json`; release 2.2.0 carries them as `resstock_unit` generation blocks and removes
+  `generator.json`.
 
 ## 6. Agent decisions
 

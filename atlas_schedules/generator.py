@@ -1,4 +1,4 @@
-"""Generate a schedule bundle from a request (schema 3.0.0).
+"""Generate a schedule bundle from a request (schema 4.0.0).
 
 Steps:
 1. parse and validate the request;
@@ -13,15 +13,12 @@ Steps:
 6. assemble the bundle.
 """
 from dataclasses import dataclass
-from functools import lru_cache
-import json
 import math
-from pathlib import Path
 from urllib.parse import quote
 
 import numpy as np
 
-from . import __version__
+from . import REQUEST_SCHEMA_VERSION, __version__
 from .budgets import annual_target, fit_amplitude
 from .commercial.sampler import load_tables, sample_operating_parameters
 from .commercial.transform import Slot, transform
@@ -29,21 +26,12 @@ from .companions import companion_channels
 from .errors import GeneratorError
 from .mixtures import Load, Owner, mix
 from .programmes import (annual_targets, configuration_people, dwelling_for, instance_channels, load_configuration,
-                         load_recipe, occupant_type_probabilities, reference_locations, required_services, schedules)
+                         load_recipe, load_service, occupant_type_probabilities, reference_locations, required_services,
+                         schedules)
+from .release import current
 from .request import Instance, Location, Request, parse_request
 from .residential.apartment import resstock_unit
 from .seeds import commercial_group_seed
-
-DATA = Path(__file__).resolve().parent / "data"
-
-
-@lru_cache(maxsize=None)
-def load_service(service_id: str) -> dict:
-    path = DATA / "services" / f"{service_id}.json"
-    if not path.exists():
-        raise GeneratorError("unsupported_binding", "/service_id", f"No shared service {service_id!r}")
-    return json.loads(path.read_text(encoding="utf-8"))
-
 
 def schedule_id(key: str, slot: str) -> str:
     # Mixed load slots are already quoted part by part ("load/<quantity>/m3%2Fs/...").
@@ -67,12 +55,13 @@ def _expand(request: Request) -> tuple[list, dict]:
         if instance.service_id:
             planned.append(Planned(instance, service=load_service(instance.service_id)))
             continue
-        recipe = load_recipe(instance.program_id)
+        recipe = load_recipe(instance.program_id, instance.values)
         _check_links(instance, recipe)
         if recipe["kind"] == "composition":
             children = _composition_children(instance, recipe)
             parents[instance.key] = (instance, recipe, children)
-            planned.extend(Planned(child, recipe=load_recipe(child.program_id), parent=instance.key) for child, _ in children)
+            planned.extend(Planned(child, recipe=load_recipe(child.program_id, child.values), parent=instance.key)
+                           for child, _ in children)
             continue
         planned.append(Planned(instance, recipe=recipe))
         if recipe["kind"] == "apartment_unit" and "floor_area" in instance.extent:
@@ -109,10 +98,11 @@ def _composition_children(parent: Instance, recipe: dict) -> list:
                                  "reference_area parents take no caller extent")
         denominator = total
     children = []
-    for index, (program_id, area) in enumerate(members):
+    for index, ((program_id, area), values) in enumerate(zip(members, recipe["composition"]["member_values"])):
         extent = area if mode == "reference_area" else denominator * area / total
         key = f"source-member/{quote(parent.key, safe='')}/{index}/{program_id}"
-        child = Instance(key=key, program_id=program_id, extent={"floor_area": extent}, operating_group=parent.group)
+        child = Instance(key=key, program_id=program_id, values=values, extent={"floor_area": extent},
+                         operating_group=parent.group)
         children.append((child, extent / denominator))
     return children
 
@@ -199,9 +189,9 @@ def _resstock_unit_owner(item: Planned, request: Request, seeds: dict, units: di
     schedule_units = {"activity": "W/person", "heating_setpoint": "C", "cooling_setpoint": "C"}
     schedules_out = {slot: (schedule_units.get(slot, "fraction"), values) for slot, values in unit.channels.items()}
     generation = {"unit_seed": seeds[instance.key], "occupant_type_probabilities": shares, **unit.generation}
-    return Owner(key=instance.key, kind="program", program_id=instance.program_id, schedules=schedules_out,
-                 loads=unit.loads, controls=unit.controls, extent={**instance.extent, "dwelling_unit": 1.0},
-                 multiplicity=instance.multiplicity, generation=generation)
+    return Owner(key=instance.key, kind="program", program_id=instance.program_id, values=recipe["values"],
+                 schedules=schedules_out, loads=unit.loads, controls=unit.controls,
+                 extent={**instance.extent, "dwelling_unit": 1.0}, multiplicity=instance.multiplicity, generation=generation)
 
 
 def _resstock_water_owner(item: Planned, units: dict) -> Owner:
@@ -237,8 +227,8 @@ def _programme_owner(item: Planned, request: Request, seeds: dict, operating: di
         generation["occupant_type_probabilities"] = shares
     units = _slot_units(recipe)
     schedules_out = {slot: (units.get(slot, "C"), values) for slot, values in channels.items()}
-    return Owner(key=instance.key, kind="program", program_id=instance.program_id, schedules=schedules_out,
-                 loads=_loads(recipe, channels), controls=recipe["controls"],
+    return Owner(key=instance.key, kind="program", program_id=instance.program_id, values=recipe["values"],
+                 schedules=schedules_out, loads=_loads(recipe, channels), controls=recipe["controls"],
                  extent=instance.extent, multiplicity=instance.multiplicity, generation=generation)
 
 
@@ -287,7 +277,7 @@ def _request_mixture(request: Request, owners: dict, instances: dict, water_by_u
     for member in spec.members:
         instance = instances[member.instance]
         if (spec.denominator is not None and instance.program_id
-                and load_recipe(instance.program_id)["kind"] == "composition"
+                and load_recipe(instance.program_id, instance.values)["kind"] == "composition"
                 and (instance.composition_basis or "reference_area") == "reference_area"):
             raise GeneratorError("invalid_mixture", f"/instances/{instance.key}/composition_basis",
                                  "A reference_area parent has no caller extent; "
@@ -311,6 +301,7 @@ def _parent_owner(parent: Instance, recipe: dict, children: list, owners: dict) 
     members = [(owners[child.key], 1.0) for child, _ in children]
     owner = mix(parent.key, parent.program_id, members, [], "floor_area", denominator,
                 setpoint_weights=[weight for _, weight in children], kind="program")
+    owner.values = recipe["values"]
     owner.extent = parent.extent
     owner.multiplicity = parent.multiplicity
     return owner
@@ -319,8 +310,8 @@ def _parent_owner(parent: Instance, recipe: dict, children: list, owners: dict) 
 # --------------------------------------------------------------------- bundle
 def _owner_record(owner: Owner) -> dict:
     return {
-        "key": owner.key, "kind": owner.kind, "program_id": owner.program_id, "service_id": owner.service_id,
-        "extent": owner.extent, "multiplicity": owner.multiplicity,
+        "key": owner.key, "kind": owner.kind, "program_id": owner.program_id, "values": owner.values,
+        "service_id": owner.service_id, "extent": owner.extent, "multiplicity": owner.multiplicity,
         "schedules": {slot: schedule_id(owner.key, slot) for slot in owner.schedules},
         "loads": [{"slot": l.slot, "quantity": l.quantity, "unit": l.unit, "basis": l.basis, "fuel": l.fuel,
                    "host": l.host, "annual_total": l.annual_total, "amplitude": l.amplitude,
@@ -369,8 +360,9 @@ def generate(document: dict, *, residential_rng: str = "pcg64", flat_days: str =
         for slot, (unit, values) in owner.schedules.items():
             bundle_schedules[schedule_id(owner.key, slot)] = {"unit": unit, "values": np.asarray(values).tolist()}
     return {
-        "schema_version": "3.0.0",
+        "schema_version": REQUEST_SCHEMA_VERSION,
         "generator_version": __version__,
+        "release": current().provenance(),
         "seed": request.seed,
         "residential_rng": request.residential_rng,
         "flat_days": request.flat_days,

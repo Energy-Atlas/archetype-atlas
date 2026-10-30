@@ -1,8 +1,10 @@
 name: atlas-schedules wheel
 
-# A tag atlas-schedules-vX.Y.Z builds the atlas-schedules wheel and attaches it to the
-# GitHub release of that tag (ADR 0049). The package is not published to PyPI. The tag
-# must name the version the package carries (atlas_schedules.__version__).
+# A tag atlas-schedules-vX.Y.Z builds the atlas-schedules wheel and sdist with their SHA256SUMS.txt and
+# attaches them to the GitHub release of that tag (ADR 0049, ADR 0051). The package is not published to
+# PyPI. The tag must name the version the package carries (atlas_schedules.__version__). The wheel
+# bundles the generator view of the newest data release (scripts/build_generator_view.py); the build is
+# reproducible from the commit (SOURCE_DATE_EPOCH, scripts/build_release_assets.py).
 on:
   push:
     tags: ['atlas-schedules-v*']
@@ -13,7 +15,7 @@ permissions:
 jobs:
   wheel:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     permissions:
       contents: write
     steps:
@@ -30,24 +32,33 @@ jobs:
         run: |
           version="$(python -c 'import atlas_schedules; print(atlas_schedules.__version__)')"
           [ "$TAG" = "atlas-schedules-v$version" ] || { echo "tag $TAG does not name version $version"; exit 1; }
-      - run: python -m build
-      - name: Install the wheel in a clean environment and generate the quick-start example
+      - name: Verify the data release the wheel bundles
+        run: |
+          python -m scripts.atlas_delta --verify
+          python -m scripts.build_generator_view
+          python -m scripts.build_generator_view --check
+      - name: Build the wheel and sdist with SHA256SUMS.txt
+        run: python -m scripts.build_release_assets --wheel
+      - name: Install the wheel in a clean environment and generate the quick-start example outside the checkout
         run: |
           python -m venv /tmp/atlas-schedules-venv
-          /tmp/atlas-schedules-venv/bin/python -m pip install dist/*.whl
+          /tmp/atlas-schedules-venv/bin/python -m pip install build/release/atlas-schedules-v*/*.whl
           mkdir /tmp/quick-start
           cp docs/examples/schedule-generator/office-and-retail.json /tmp/quick-start/
           cd /tmp/quick-start
+          /tmp/atlas-schedules-venv/bin/atlas-schedules --version
           /tmp/atlas-schedules-venv/bin/atlas-schedules office-and-retail.json -o bundle.json
-          /tmp/atlas-schedules-venv/bin/python -c "import json; b = json.load(open('bundle.json')); print(b['generator_version'], len(b['schedules']), 'schedules')"
-      - name: Attach the wheel and sdist to the release of this tag
+          /tmp/atlas-schedules-venv/bin/python -c "import json; b = json.load(open('bundle.json')); print(b['generator_version'], b['release']['version'], len(b['schedules']), 'schedules')"
+          sha256sum -c "$GITHUB_WORKSPACE"/build/release/atlas-schedules-v*/SHA256SUMS.txt --ignore-missing || true
+      - name: Attach the wheel, sdist and SHA256SUMS.txt to the release of this tag
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
+          assets="$(ls build/release/atlas-schedules-v*/*.whl build/release/atlas-schedules-v*/*.tar.gz build/release/atlas-schedules-v*/SHA256SUMS.txt)"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$TAG" dist/*.whl dist/*.tar.gz --clobber --repo "$GITHUB_REPOSITORY"
+            gh release upload "$TAG" $assets --clobber --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "$TAG" dist/*.whl dist/*.tar.gz --verify-tag --repo "$GITHUB_REPOSITORY" \
-              --title "$TAG" --notes "atlas-schedules ${TAG#atlas-schedules-v}: install the wheel with pip (ADR 0049; docs/schedule-generator.md)."
+            gh release create "$TAG" $assets --verify-tag --repo "$GITHUB_REPOSITORY" \
+              --title "$TAG" --notes "atlas-schedules ${TAG#atlas-schedules-v}: install the wheel with pip and verify the assets with sha256sum -c SHA256SUMS.txt (ADR 0051; docs/schedule-generator.md)."
           fi

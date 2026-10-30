@@ -1,5 +1,57 @@
 # Changelog
 
+## Release 2.2.0 and generator 4.0.0: generation parameters in the release — 2026-10-30
+
+- **Data release 2.2.0** ([ADR 0051](docs/adr/0051-generation-parameters-in-the-release.md),
+  [release notes](docs/release-notes-atlas-v2.2.0.md)): a delta on 2.1.0 through
+  `scripts/atlas_delta.py`, which now writes, checks and resolves the chain 2.0.0 → 2.1.0 →
+  2.2.0 (`--release`). Each generated folder gains `generation.json` (the programs' `generation`
+  blocks: method and, per view, the parameters the record cannot give; the services' blocks;
+  the building configurations), the root gains `definition-map.json`, and the 83 `generator.json`
+  files are removed. 1,008 programs carry blocks, 1,585 program views. No value changes, no ID
+  moves: the program ID rule hashes the program without `generation`
+  (`scripts.atlas_programs.program_id`, `release_editor --check` reads 2.2.0). Exports stay
+  Program JSON 5.4.0 with `source.release` `atlas-release-2.2.0`; the 5.4.0 schema names its
+  release by pattern (`^atlas-release-\d+\.\d+\.\d+$`), the older contracts gain the label.
+  The site reads 2.2.0. Release 2.1.0's manifest is edited in place to pin the licence and the
+  base manifest only (its pinned packaged recipes left the tree).
+- **The blocks were derived from generator 3.0.0's packaged copies** by
+  `scripts/derive_generation_blocks.py` over resolved 2.1.0, with the gate of ADR 0051 section 3:
+  1,585 program views, 186 services and 120 configurations equal as JSON, schedules by
+  their rules; 36 90.1 apartment-building fixed recipes take the release values (known heat
+  fractions, no zero-density occupancy slot) and 12 hotel corridor compositions no release
+  program holds are retired. The script and the capture below left with the packaged copies
+  (readable at commit 85b3bb58). `build_apartment_units` and
+  `build_reference_recipes` write the apartment and DOE Ref blocks into 2.2.0 (`--check`).
+- **Generator 4.0.0** (`atlas-schedules` 4.0.0; breaking): recipes are assembled from the
+  release when loaded (`atlas_schedules.release`, `programmes.assemble`); the 1,892 packaged
+  recipe, service, configuration and schedule files are gone. Request schema 4.0.0 takes release
+  program and service IDs and `values: source | filled` (default filled where the block has that
+  view); `program-…` and `service-…` IDs are refused with a message naming `atlas-schedules
+  translate`, which rewrites a 3.0.0 request through `definition-map.json`. The bundle is schema
+  4.0.0: 3.0.0's content plus `release` (version, manifest hash, generation schema version) and
+  each owner's `values`. The release is read from `--release-dir` or `set_releases()`,
+  `ATLAS_RELEASES`, a checkout's `data/atlas-releases`, or the generator view the wheel bundles
+  (`atlas_schedules/data/atlas-release/`, built by `scripts/build_generator_view.py` before
+  `python -m build`, not committed; every view assembles identically from it). `atlas-schedules
+  --version` prints the generator and the release it reads.
+- **Equivalence with generator 3.0.0**: `tests/answer_keys/orchestration/generator-3-0-0-bundles.json.gz`
+  (266 bundles over every recipe kind, services and the examples, captured by
+  `scripts/capture/generator_3_0_0_bundles.py` from the packaged recipes) is reproduced by 4.0.0
+  within 1e-9 per hour (`tests/schedules/test_generator_3_0_0_equivalence.py`); the assembler
+  keeps 3.0.0's dict orders so bundles differ only in the versions, `release`, `values` and the
+  IDs.
+- **Release assets with checksums**: `scripts/build_release_assets.py` builds the wheel and
+  sdist (`SOURCE_DATE_EPOCH` at the commit time; reproducible) and `atlas-release-<version>.zip`
+  (the release folder with its bases, sorted entries, fixed times), each with `SHA256SUMS.txt`,
+  and `--check-install` installs the wheel in a fresh venv and generates from outside the tree
+  against the bundled view and the extracted archive. `atlas-schedules-release.yml` attaches the
+  wheel, sdist and sums to `atlas-schedules-v*`; the new `atlas-data-release.yml` attaches the
+  archive and sums to `v*`. The `package` job builds the view, installs the wheel and compares
+  the bundled view with the tree; the pull-request jobs are otherwise unchanged.
+- **Tests**: `test_release_2_2_0`; `test_release_2_1_0` verify-only; `test_package` covers the
+  view and both workflows; the schedules suite and its answer keys pass with their definition
+  IDs translated (`tests/schedules/helpers.py`); `test_reference_recipes` reads the blocks.
 ## Zoning recommendations: a robust headline across orientations — 2026-10-29
 
 - **The rule** (ADR 0050 section 6, open item 10 of the LOD study, approved by the owner):

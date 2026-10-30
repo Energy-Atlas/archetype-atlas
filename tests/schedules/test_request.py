@@ -10,20 +10,21 @@ import numpy as np
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
-from atlas_schedules.programmes import load_recipe
+from atlas_schedules.release import translate
+from tests.schedules.helpers import load_recipe
 
-COMMERCIAL = "program-b910ee0c34e9eeb3ecd573c4"  # Warehouse office area 90.1-2013 (no shared services)
-DWELLING = "program-03fe19ed8968e605f4be3b8d"    # ResStock dwelling (2 residents, Anchorage)
-APARTMENT = "program-60b1063b9fe00c5c29654bb9"   # apartment dwelling unit
-DATA_CENTRE = "program-0d0d5461f1cee89d04d148eb"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
-RESTAURANT = "program-080dc08cd2d7af6c7d419d0a"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
-WATER = "service-1981fa97b9fd7d47efcf39dd"
+COMMERCIAL = "90-1-2013.warehouse.source.office.7fc5a6"  # Warehouse office area 90.1-2013 (no shared services)
+DWELLING = "resstock-sdr.multifamily-5-plus-low-rise.7ak-1980s-500-749ft2-b143851.d8e286"    # ResStock dwelling (2 residents, Anchorage)
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"   # apartment dwelling unit
+DATA_CENTRE = "90-1-2007.large-office.source.office-large-data-center.8883eb"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
+RESTAURANT = "90-1-2013.quick-service-restaurant.source.kitchen.9911f2"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
+WATER = "90-1-2013.quick-service-restaurant.main.1be363"
 RESTAURANT_CONFIGURATION = "quick_service_restaurant__90_1_2013__source"
 DEPARTMENT = "doe-ref-1980-2004.hospital.department.diagnostics-mixed.407fa7"  # composition of three spaces
 
 
 def request(*instances, **extra) -> dict:
-    return {"schema_version": "3.0.0", "seed": 7, "instances": list(instances), **extra}
+    return {"schema_version": "4.0.0", "seed": 7, "instances": list(instances), **extra}
 
 
 class Validation(unittest.TestCase):
@@ -43,7 +44,26 @@ class Validation(unittest.TestCase):
                                                        {"key": "a", "program_id": COMMERCIAL}))
 
     def test_unknown_programme(self):
-        self.assert_code("unsupported_binding", request({"key": "a", "program_id": "program-" + "0" * 24}))
+        self.assert_code("unsupported_binding", request({"key": "a", "program_id": "90-1-2013.warehouse.source.nowhere.000000"}))
+
+    def test_views(self):
+        self.assert_code("unsupported_input", request({"key": "a", "program_id": RESTAURANT, "values": "filled"}))
+        self.assert_code("invalid_request", request({"key": "a", "program_id": COMMERCIAL, "values": "reviewed"}))
+        water = {"key": "w", "service_id": WATER, "configuration_id": RESTAURANT_CONFIGURATION, "physical_id": "f",
+                 "extent": {"floor_area": 1}, "values": "source"}
+        self.assert_code("invalid_request", request(water))
+        self.assertEqual(load_recipe(COMMERCIAL)["values"], "filled")
+        self.assertEqual(load_recipe(COMMERCIAL, "source")["values"], "source")
+
+    def test_definition_ids_translate_through_the_definition_map(self):
+        self.assert_code("invalid_request", request({"key": "a", "program_id": "program-b910ee0c34e9eeb3ecd573c4"}))
+        document = translate(request({"key": "r", "program_id": "program-080dc08cd2d7af6c7d419d0a",
+                                      "service_links": {"service-1981fa97b9fd7d47efcf39dd": "w"}},
+                                     {"key": "w", "service_id": "service-1981fa97b9fd7d47efcf39dd",
+                                      "configuration_id": RESTAURANT_CONFIGURATION, "physical_id": "f"}))
+        self.assertEqual(document["instances"][0], {"key": "r", "program_id": RESTAURANT, "values": "source",
+                                                    "service_links": {WATER: "w"}})
+        self.assertEqual(document["instances"][1]["service_id"], WATER)
 
     def test_ids_must_be_well_formed(self):
         for field, value in (("program_id", "../schedules"), ("program_id", "program-unknown")):
@@ -194,6 +214,41 @@ class CommandLine(unittest.TestCase):
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("schedule:office:lighting", json.loads(out.read_text(encoding="utf-8"))["schedules"])
+
+    def test_cli_version_names_the_generator_and_the_release(self):
+        result = subprocess.run([sys.executable, "-m", "atlas_schedules", "--version"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertRegex(result.stdout, r"^atlas-schedules 4\.0\.0 \(request schema 4\.0\.0\); reads atlas release 2\.2\.0 from ")
+
+    def test_cli_translates_a_3_0_0_request_and_refuses_it_untranslated(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "old.json"
+            new = Path(folder) / "new.json"
+            path.write_text(json.dumps({"schema_version": "3.0.0", "seed": 7, "instances": [
+                {"key": "office", "program_id": "program-b910ee0c34e9eeb3ecd573c4"}]}), encoding="utf-8")
+            refused = subprocess.run([sys.executable, "-m", "atlas_schedules", str(path)], capture_output=True, text=True)
+            self.assertEqual(refused.returncode, 2)
+            self.assertIn("atlas-schedules translate", refused.stderr)
+            result = subprocess.run([sys.executable, "-m", "atlas_schedules", "translate", str(path), "-o", str(new)],
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            document = json.loads(new.read_text(encoding="utf-8"))
+            self.assertEqual(document["schema_version"], "4.0.0")
+            self.assertEqual(document["instances"][0], {"key": "office", "program_id": COMMERCIAL, "values": "filled"})
+            generated = subprocess.run([sys.executable, "-m", "atlas_schedules", "--release-dir",
+                                        str(Path(__file__).resolve().parents[2] / "data/atlas-releases"), str(new)],
+                                       capture_output=True, text=True)
+            self.assertEqual(generated.returncode, 0, generated.stderr)
+            self.assertEqual(json.loads(generated.stdout)["release"]["version"], "2.2.0")
+
+    def test_definition_ids_in_a_4_0_0_request_name_the_translation(self):
+        with self.assertRaises(GeneratorError) as caught:
+            generate(request({"key": "a", "program_id": "program-b910ee0c34e9eeb3ecd573c4"}))
+        self.assertEqual((caught.exception.code, caught.exception.path), ("invalid_request", "/instances/0/program_id"))
+        self.assertIn("atlas-schedules translate", caught.exception.message)
+        with self.assertRaises(GeneratorError) as caught:
+            generate({**request({"key": "a", "program_id": COMMERCIAL}), "schema_version": "3.0.0"})
+        self.assertIn("atlas-schedules translate", caught.exception.message)
 
     def test_cli_reports_an_unreadable_request(self):
         with tempfile.TemporaryDirectory() as folder:

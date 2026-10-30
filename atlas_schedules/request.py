@@ -1,8 +1,11 @@
-"""Parse and validate a generator request (schema 3.0.0).
+"""Parse and validate a generator request (schema 4.0.0).
 
 All validation happens here, once. Kernels and mixtures trust what this returns.
-3.0.0 adds, for ResStock apartment units, `residents: "resstock"` and the location's
-`climate_zone` and `weather_id`; 2.0.0 requests are no longer accepted (ADR 0047).
+4.0.0 (ADR 0051) names programmes and shared services by atlas release ID, a programme with
+its view (`values`: source or filled). The definition IDs of 3.0.0 requests (`program-…`,
+`service-…`) are refused: `atlas-schedules translate` rewrites such a request through the
+release's definition map. 3.0.0 kept, for ResStock apartment units, `residents: "resstock"`
+and the location's `climate_zone` and `weather_id` (ADR 0047); those fields are unchanged.
 """
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -12,13 +15,18 @@ from pathlib import Path
 
 import jsonschema
 
+from . import REQUEST_SCHEMA_VERSION
 from .commercial.base_peak import FLAT_DAY_MODES
 from .errors import GeneratorError
 from .residential.rng import MODES
 from .seeds import check_master_seed
 
-SCHEMAS = {"3.0.0": Path(__file__).resolve().parent / "schemas" / "request-v3.schema.json"}
+SCHEMAS = {REQUEST_SCHEMA_VERSION: Path(__file__).resolve().parent / "schemas" / "request-v4.schema.json"}
 BASIS_UNITS = {"floor_area": "m2", "dwelling_unit": "dwelling", "person": "person", "absolute": "1"}
+DEFINITION_PREFIXES = ("program-", "service-", "schedule-")
+TRANSLATE = ("Definition IDs (program-..., service-...) are generator 3.0.0's; generator 4.0.0 takes atlas release IDs "
+             "(ADR 0051). Rewrite the request with `atlas-schedules translate request.json` "
+             "(atlas_schedules.release.translate).")
 
 
 @dataclass
@@ -35,6 +43,7 @@ class Location:
 class Instance:
     key: str
     program_id: str | None = None
+    values: str | None = None             # programme view: "source" or "filled" (ADR 0051); default per program
     service_id: str | None = None
     configuration_id: str | None = None
     physical_id: str | None = None
@@ -76,7 +85,7 @@ class Request:
     instances: list
     mixture: Mixture | None
     occupancy: tuple = ("state", "2003-2019")   # (mix, ATUS window), residential/occupancy.py
-    schema_version: str = "3.0.0"
+    schema_version: str = REQUEST_SCHEMA_VERSION
 
 
 @lru_cache(maxsize=None)
@@ -84,10 +93,27 @@ def _validator(version: str):
     return jsonschema.Draft202012Validator(json.loads(SCHEMAS[version].read_text(encoding="utf-8")))
 
 
+def _definition_ids(document: dict) -> None:
+    """A 3.0.0 request's definition IDs get the translation message, not a pattern error."""
+    for index, raw in enumerate(document.get("instances", []) if isinstance(document.get("instances"), list) else []):
+        if not isinstance(raw, dict):
+            continue
+        for key in ("program_id", "service_id"):
+            if isinstance(raw.get(key), str) and raw[key].startswith(DEFINITION_PREFIXES):
+                raise GeneratorError("invalid_request", f"/instances/{index}/{key}", f"{raw[key]!r}: {TRANSLATE}")
+        for linked in (raw.get("service_links") or {}) if isinstance(raw.get("service_links"), dict) else {}:
+            if isinstance(linked, str) and linked.startswith(DEFINITION_PREFIXES):
+                raise GeneratorError("invalid_request", f"/instances/{index}/service_links/{linked}", TRANSLATE)
+
+
 def _schema_errors(document: dict) -> None:
     version = document.get("schema_version") if isinstance(document, dict) else None
     if version not in SCHEMAS:
-        raise GeneratorError("invalid_request", "/schema_version", f"Supported versions are {sorted(SCHEMAS)}")
+        message = f"Supported versions are {sorted(SCHEMAS)}"
+        if version == "3.0.0":
+            message += ". " + TRANSLATE
+        raise GeneratorError("invalid_request", "/schema_version", message)
+    _definition_ids(document)
     errors = sorted(_validator(version).iter_errors(document), key=lambda e: list(e.path))
     if errors:
         first = errors[0]
@@ -118,12 +144,15 @@ def parse_request(document: dict, residential_rng: str = "pcg64", flat_days: str
     for raw in document["instances"]:
         location = Location(**raw["location"]) if "location" in raw else None
         instances.append(Instance(
-            key=raw["key"], program_id=raw.get("program_id"), service_id=raw.get("service_id"),
+            key=raw["key"], program_id=raw.get("program_id"), values=raw.get("values"), service_id=raw.get("service_id"),
             configuration_id=raw.get("configuration_id"), physical_id=raw.get("physical_id"),
             extent=dict(raw.get("extent", {})), multiplicity=float(raw.get("multiplicity", 1)),
             operating_group=raw.get("operating_group"), residents=raw.get("residents"), location=location,
             service_links=dict(raw.get("service_links", {})), composition_basis=raw.get("composition_basis"),
             reference_location=raw.get("reference_location")))
+    for instance in instances:
+        if instance.values and not instance.program_id:
+            raise GeneratorError("invalid_request", f"/instances/{instance.key}/values", "Only programmes take values")
     keys = [i.key for i in instances]
     if len(set(keys)) != len(keys):
         raise GeneratorError("duplicate_instance", "/instances", "Instance keys must be unique")

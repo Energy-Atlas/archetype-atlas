@@ -1,0 +1,34 @@
+{
+ "configurations":{
+  "small_office__90_1_2013__reviewed":{
+   "building_type":"small_office",
+   "invert_rule_days":false,
+   "people":[["90-1-2013.small-office.office-small-bldg-occ-sch.089152",9.021033542067087],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",6.838527565944021],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",4.056702557849561],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",6.83852756594402],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",4.056702557849561]]
+  },
+  "small_office__90_1_2013__source":{
+   "building_type":"small_office",
+   "invert_rule_days":false,
+   "people":[["90-1-2013.small-office.office-small-bldg-occ-sch.089152",9.021033542067087],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",6.838527565944021],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",4.056702557849561],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",6.83852756594402],["90-1-2013.small-office.office-small-bldg-occ-sch.089152",4.056702557849561]]
+  }
+ },
+ "programs":{
+  "90-1-2013.small-office.source.attic.ae5721":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"filled":{"configuration_id":"small_office__90_1_2013__reviewed"},"source":{"configuration_id":"small_office__90_1_2013__source"}}
+  },
+  "90-1-2013.small-office.source.whole-building-sm-office.f55398":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"filled":{"configuration_id":"small_office__90_1_2013__reviewed"},"source":{"configuration_id":"small_office__90_1_2013__source"}}
+  }
+ },
+ "schema_version":"1.0.0",
+ "services":{
+  "90-1-2013.small-office.main.e400c5":{
+   "configurations":["small_office__90_1_2013__reviewed","small_office__90_1_2013__source"],
+   "method":"comstock_hours",
+   "schema_version":"1.0.0"
+  }
+ }
+}

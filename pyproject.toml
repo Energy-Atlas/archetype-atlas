@@ -43,5 +43,6 @@ version = { attr = "atlas_schedules.__version__" }
 include = ["atlas_schedules*"]
 
 [tool.setuptools.package-data]
-# The recipes, pinned tables, weather, notices and the request schema ship with the code.
+# The generator view of the atlas release (data/atlas-release/, built by scripts/build_generator_view.py before
+# `python -m build`; ADR 0051), the pinned tables, weather, notices and the request schema ship with the code.
 atlas_schedules = ["data/**/*.json", "data/**/*.gz", "schemas/*.json"]

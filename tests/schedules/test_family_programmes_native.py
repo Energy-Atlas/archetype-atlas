@@ -15,10 +15,9 @@ import numpy as np
 
 from atlas_schedules.commercial.sampler import load_tables, sample_operating_parameters
 from atlas_schedules.commercial.transform import Slot, transform
-from atlas_schedules.generator import load_service
-from atlas_schedules.programmes import configuration_people, load_configuration, load_recipe, schedules
+from atlas_schedules.programmes import configuration_people, load_configuration, schedules
 from atlas_schedules.seeds import commercial_group_seed
-from tests.schedules.helpers import TOLERANCE, retired, unpack_days
+from tests.schedules.helpers import TOLERANCE, load_recipe, load_service, retired, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/family-programmes.json.gz"
 GROUP = "building"

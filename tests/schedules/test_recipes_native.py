@@ -16,9 +16,8 @@ import unittest
 import numpy as np
 
 from atlas_schedules.commercial.transform import Slot, transform
-from atlas_schedules.generator import load_service
-from atlas_schedules.programmes import configuration_people, load_configuration, load_recipe, schedules
-from tests.schedules.helpers import TOLERANCE, retired, unpack_days
+from atlas_schedules.programmes import configuration_people, load_configuration, schedules
+from tests.schedules.helpers import TOLERANCE, load_recipe, load_service, members, retired, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/families.json.gz"
 
@@ -28,7 +27,7 @@ def _recipe(case_id: str) -> dict:
     recipe = load_recipe(re.search(r"program-[0-9a-f]{24}", case_id).group(0))
     member = re.search(r"/member-(\d+)", case_id)
     if member:
-        recipe = load_recipe(recipe["composition"]["members"][int(member.group(1))][0])
+        recipe = members(recipe)[int(member.group(1))][0]
     return recipe
 
 

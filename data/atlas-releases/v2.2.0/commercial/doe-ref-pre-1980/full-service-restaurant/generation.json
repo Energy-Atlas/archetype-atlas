@@ -1,0 +1,29 @@
+{
+ "configurations":{
+  "full_service_restaurant__doe_ref_pre_1980__source":{
+   "building_type":"full_service_restaurant",
+   "invert_rule_days":false,
+   "people":[["doe-ref-pre-1980.full-service-restaurant.bldg-occ-sch.026dd1",268.0980169198984],["doe-ref-pre-1980.full-service-restaurant.bldg-occ-sch.026dd1",7.502727800941711]]
+  }
+ },
+ "programs":{
+  "doe-ref-pre-1980.full-service-restaurant.source.dining.933990":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"full_service_restaurant__doe_ref_pre_1980__source"}}
+  },
+  "doe-ref-pre-1980.full-service-restaurant.source.kitchen.1c227f":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"full_service_restaurant__doe_ref_pre_1980__source"}}
+  }
+ },
+ "schema_version":"1.0.0",
+ "services":{
+  "doe-ref-pre-1980.full-service-restaurant.main.c2b5ba":{
+   "configurations":["full_service_restaurant__doe_ref_pre_1980__source"],
+   "method":"comstock_hours",
+   "schema_version":"1.0.0"
+  }
+ }
+}
