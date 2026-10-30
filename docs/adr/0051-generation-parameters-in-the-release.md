@@ -255,7 +255,7 @@ Program JSON 5.1.0 and 5.2.0, building services 1.0.0 and source model construct
   2. pins: generator `4.0.0` (wheel `atlas_schedules-4.0.0-py3-none-any.whl` on
      `atlas-schedules-v4.0.0`), bundle `schema_version` `"4.0.0"`, data release `2.2.0`
      (`bundle.release.version`, `manifest_sha256`
-     `7b44c554fa1b265a22dd676d142b2dc53e2305c5b74760cca431528900ed3f8f`);
+     `67e73e55861a9b9c88d4a745ee883ec73ad859c5a8d14ac86be3b3409ce7ece4`);
   3. the embedded Program JSON 5.4.0 schema: refresh the copy (`source.release` is a pattern) or
      admit `atlas-release-2.2.0`; exports from 2.2.0 differ from 2.1.0's in that label only;
   4. bundle fields added: `release` and each owner's `values`; everything else as 3.0.0.
