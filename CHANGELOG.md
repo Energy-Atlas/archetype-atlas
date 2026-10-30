@@ -1,5 +1,15 @@
 # Changelog
 
+## Public housekeeping: citation file and agent working notes — 2026-10-30
+
+- **`CITATION.cff`**: cites the atlas as a dataset at release 2.2.0, MIT and CC BY 4.0, with the
+  ADR 0048 attribution; `tests/test_citation.py` fails when a newer release is added without
+  updating it.
+- **`.superpowers/`** is no longer tracked (it was already in `.gitignore`; 22 files had been
+  force-added during the schedule-generator work, and they stay in history). The two designs
+  ADR 0027 cites moved to `docs/adr/0027/` and the ADR links them; the `.gitattributes`
+  rules for the removed compatibility reports are dropped.
+
 ## Site index: space types and folder generation settings — 2026-10-30
 
 - **`site-manifest.json`** ([ADR 0052](docs/adr/0052-site-index-space-types-and-folders.md),

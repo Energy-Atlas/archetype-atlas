@@ -170,3 +170,6 @@ including the release folders, are licensed under CC BY 4.0; attribute as "Arche
 Atlas, Energy-Atlas" with the release number (ADR 0048). Extracted upstream data
 retains its original terms and notices. See `LICENSE`, `sources/licenses/` and each
 release's `notices/`.
+
+To cite the atlas, use `CITATION.cff` (GitHub's *Cite this repository*) and name the
+release you used.
