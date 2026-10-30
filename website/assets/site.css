@@ -2078,6 +2078,10 @@ html[data-ea-version="filled"] .ea-suite .ea-filling { outline: 1px solid var(--
 .ea-suite .ea-duplicates { font-size: 0.66rem; }
 .ea-suite .ea-zonings td:nth-child(n+2), .ea-suite .ea-recommendations td:nth-child(n+4) { text-align: right; white-space: nowrap; }
 .ea-suite .ea-zonings td:first-child, .ea-suite .ea-zonings td:last-child, .ea-suite .ea-recommendations td:nth-child(7) { text-align: left; white-space: normal; }
+/* ADR 0050 section 6: the robust-across-orientations table; the zoning and the per-orientation column wrap, the numbers align right. */
+.ea-suite .ea-robust td:nth-child(n+3) { text-align: right; white-space: nowrap; }
+.ea-suite .ea-robust td:nth-child(3), .ea-suite .ea-robust td:last-child, .ea-suite .ea-robust td[colspan] { text-align: left; white-space: normal; }
+.ea-suite .ea-ties { color: var(--ea-text-muted); font-size: 0.66rem; }
 /* Drop 2: the serial cost columns and the overview's cost tables; `not timed` spans the three ratio columns. */
 .ea-suite .ea-costs td:nth-child(n+2) { text-align: right; white-space: nowrap; }
 .ea-suite td.ea-untimed { text-align: center; }

@@ -1,4 +1,5 @@
 """The zoning-recommendation data drop and its pages (ADR 0050)."""
+import gzip
 import hashlib
 import json
 import re
@@ -11,7 +12,7 @@ import jsonschema
 
 from scripts import lod_site, site_check, site_store, suite_site
 from scripts.common import ROOT
-from scripts.site_render import Links
+from scripts.site_render import Links, Page
 
 SCHEMA = ROOT/'schemas/lod-recommendations-v1.schema.json'
 
@@ -238,7 +239,9 @@ class PageTests(unittest.TestCase):
         self.assertIn('Conditioned merge + Single zone building', text)
         self.assertIn(f'{entry["reference"]["sensible_heating_kwh_m2_conditioned"]:,.1f}', text)
         self.assertIn('href="../../catalogue/commercial/90-1-2007/retail-standalone/programs/source/entry/#90-1-2007.retail-standalone.source.entry.62d108"', text)
-        self.assertEqual(self.site.zoning_of['90-1-2007.retail-standalone.source.entry.62d108'], [('Stand-alone retail', 'zoning/stand-alone-retail/')])
+        self.assertEqual(self.site.zoning_of['90-1-2007.retail-standalone.source.entry.62d108'],
+                         [('Stand-alone retail: robust across orientations in 6 of 6 cell pairs: Conditioned merge + Single zone building (4), '
+                           'Semantic merge + Stack (2)', 'zoning/stand-alone-retail/#section-robust')])  # the catalogue page's fact (site_pages)
         overview = self.page(pages['overview'])
         self.assertIn(f'A zoning meets the threshold in {self.result["cells_with_recommendation"]} of 264 cells', overview)
         self.assertIn('href="stand-alone-retail/"', overview)
@@ -383,6 +386,301 @@ class PageTests(unittest.TestCase):
         self.assertEqual(site_check.check_zoning(self.temporary.name, {}), [])
         missing = {'zoning': {'pages': {'x': 'zoning/no-such/'}}}
         self.assertEqual(site_check.check_zoning(self.temporary.name, missing), ['Missing zoning page: zoning/no-such/'])
+
+
+def fields(simplifier, stacker, depth=None):
+    return {'simplifier': simplifier, 'join_pieces': False if simplifier in ('SemanticMerge', 'ConditionedMerge') else None,
+            'perimeter_depth': depth, 'stacker': stacker, 'iwht': True, 'fht': True}
+
+
+def row(site, zoning, zones, meets, heating=1.0, cooling=1.0, cvrmse=5.0, nmbe=1.0, area=0.0, duplicate_of=None, cost=None, succeeded=True):
+    metrics = {'sensible_heating_kwh_rel_err_pct': heating, 'sensible_cooling_kwh_rel_err_pct': cooling, 'sensible_heating_cvrmse_pct': cvrmse,
+               'sensible_cooling_cvrmse_pct': cvrmse, 'sensible_heating_nmbe_pct': nmbe, 'sensible_cooling_nmbe_pct': nmbe}
+    r = {'site_name': site, 'zoning': zoning, 'succeeded': succeeded, 'duplicate_of': duplicate_of, 'zone_count': zones, 'conditioned_area_change_pct': area,
+         'metrics': metrics, 'flags': {}, 'meets_threshold': bool(meets and succeeded and not duplicate_of), 'misses': []}
+    if cost:
+        r['cost'] = cost
+    return r
+
+
+def cell(orientation, rows, prototype='Proto', climate='4A', vintage='90.1-2019'):
+    """A synthetic cell: the writer's recommendation rule (fewest zones among the kept zonings meeting the threshold, ties all)."""
+    meeting = [r for r in rows if r['meets_threshold']]
+    counted = [r for r in meeting if r['zone_count'] is not None]
+    fewest = min((r['zone_count'] for r in counted), default=None)
+    recommended = [{'site_name': r['site_name'], 'zoning': r['zoning'], 'zone_count': r['zone_count']} for r in counted if r['zone_count'] == fewest]
+    return {'id': f'{prototype}|{climate}|{vintage}|{orientation}', 'prototype': prototype, 'climate_zone': climate, 'vintage': vintage,
+            'orientation_degrees': orientation, 'programs': {}, 'reference': {'zone_count': 10, 'sensible_heating_kwh_m2_conditioned': 20.0,
+                                                                                'sensible_cooling_kwh_m2_conditioned': 30.0}, 'zonings': rows, 'recommended': recommended}
+
+
+SZB, SM, CM, PC3 = fields('ConditionedMerge', 'SingleZoneBuilding'), fields('SemanticMerge', 'Stack'), fields('ConditionedMerge', 'Stack'), fields('PerimeterCore PerimeterDepth=3', 'Stack', 3.0)
+THRESHOLD = {'min_reference_kwh_m2': 1.0}
+
+
+class RobustRuleTests(unittest.TestCase):
+    def test_the_same_pick_at_both_orientations_is_the_robust_one(self):
+        a = cell(0.0, [row('a/1', SZB, 1, True, heating=-3.0), row('a/2', SM, 4, True, heating=0.5)])
+        b = cell(45.0, [row('b/1', SZB, 1, True, heating=2.0, cooling=-7.5), row('b/2', SM, 4, True)])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual((r['status'], r['zoning'], r['zone_count'], r['same_pick'], r['ties']), ('robust', SZB, 1, True, []))
+        self.assertEqual([z['site_name'] for _, z in r['picks']], ['a/1', 'b/1'])
+        self.assertEqual(lod_site.worst('sensible_heating_kwh_rel_err_pct', r['picks'])[1]['site_name'], 'a/1')  # -3.0 is worse than +2.0
+        self.assertEqual(lod_site.worst('sensible_cooling_kwh_rel_err_pct', r['picks'])[1]['site_name'], 'b/1')
+        self.assertEqual(r['cost'], {})
+        self.assertEqual(r['per_orientation'], {0.0: [SZB], 45.0: [SZB]})
+
+    def test_different_picks_take_the_coarsest_zoning_meeting_at_both(self):
+        a = cell(0.0, [row('a/1', SZB, 1, True), row('a/2', SM, 4, False), row('a/3', CM, 6, True), row('a/4', PC3, 5, True)])
+        b = cell(45.0, [row('b/1', SZB, 1, False), row('b/2', SM, 4, True), row('b/3', CM, 6, True), row('b/4', PC3, 5, False)])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual((r['status'], r['zoning'], r['zone_count'], r['same_pick']), ('robust', CM, 6, False))  # SZB fails at 45°, SM at 0°, PC3 at 45°
+        self.assertEqual(r['per_orientation'], {0.0: [SZB], 45.0: [SM]})
+        self.assertEqual(r['ties'], [])
+
+    def test_no_zoning_meeting_at_both_says_so_and_keeps_each_orientations_pick(self):
+        a = cell(0.0, [row('a/1', SZB, 1, True), row('a/2', SM, 4, False)])
+        b = cell(45.0, [row('b/1', SZB, 1, False), row('b/2', SM, 4, True)])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual(r['status'], 'none')
+        self.assertNotIn('zoning', r)
+        self.assertEqual(r['per_orientation'], {0.0: [SZB], 45.0: [SM]})
+        empty = lod_site.robust({0.0: cell(0.0, [row('a/1', SZB, 1, False)]), 45.0: cell(45.0, [row('b/1', SZB, 1, False)])})
+        self.assertEqual((empty['status'], empty['per_orientation']), ('none', {0.0: [], 45.0: []}))
+
+    def test_a_missing_orientation_is_no_pair(self):
+        r = lod_site.robust({0.0: cell(0.0, [row('a/1', SZB, 1, True)])})
+        self.assertEqual((r['status'], r['orientations'], r['per_orientation']), ('single', [0.0], {0.0: [SZB]}))
+        self.assertFalse(lod_site.paired([cell(0.0, [])]))
+        self.assertTrue(lod_site.paired([cell(0.0, []), cell(45.0, [])]))
+        results = lod_site.robust_results([cell(0.0, [row('a/1', SZB, 1, True)]), cell(45.0, [row('b/1', SZB, 1, True)]), cell(0.0, [row('c/1', SM, 4, True)], climate='5A')])
+        self.assertEqual([r['status'] for r in results.values()], ['robust', 'single'])
+        self.assertEqual(list(results), [('Proto', '4A', '90.1-2019'), ('Proto', '5A', '90.1-2019')])
+
+    def test_ties_prefer_the_zoning_recommended_at_both_then_the_zoning_order_and_are_named(self):
+        a = cell(0.0, [row('a/1', SM, 4, True), row('a/2', CM, 4, True)])
+        b = cell(45.0, [row('b/1', SM, 4, True), row('b/2', CM, 4, True)])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual((r['zoning'], r['ties'], r['same_pick']), (CM, [SM], True))  # both recommended at both: the writer's order, ConditionedMerge first
+        a = cell(0.0, [row('a/1', SM, 4, True), row('a/2', CM, 4, True), row('a/3', SZB, 1, True)])
+        b = cell(45.0, [row('b/1', SM, 4, True), row('b/2', CM, 4, False), row('b/3', SZB, 1, False)])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual((r['zoning'], r['ties'], r['same_pick']), (SM, [], False))  # SM is 45°'s pick; CM fails there
+        a = cell(0.0, [row('a/1', SM, 4, True), row('a/2', CM, 4, True), row('a/3', PC3, 4, True)])
+        b = cell(45.0, [row('b/1', SM, 4, True), row('b/2', CM, 4, True), row('b/3', PC3, 4, True, duplicate_of='b/2')])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual((r['zoning'], r['ties']), (CM, [SM]))  # a duplicate at one orientation never qualifies and is not named as a tie
+        self.assertEqual(lod_site.zoning_order(PC3), ('PerimeterCore PerimeterDepth=3', '', '3.0', 'Stack', 'True', 'True'))
+        self.assertLess(lod_site.zoning_order(CM), lod_site.zoning_order(SM))
+
+    def test_failed_duplicate_and_unknown_zone_counts_are_tolerated(self):
+        a = cell(0.0, [row('a/1', SZB, 1, True, succeeded=False), row('a/2', SM, None, True), row('a/3', CM, 6, True)])
+        b = cell(45.0, [row('b/1', SZB, 1, True), row('b/2', SM, None, True), row('b/3', CM, 6, True)])
+        r = lod_site.robust({0.0: a, 45.0: b})
+        self.assertEqual((r['zoning'], r['zone_count']), (CM, 6))  # a zoning without a zone count sorts last
+        a = cell(0.0, [row('a/2', SM, None, True)])
+        b = cell(45.0, [row('b/2', SM, None, True)])
+        self.assertEqual(lod_site.robust({0.0: a, 45.0: b})['zone_count'], None)
+        self.assertEqual(lod_site.robust({0.0: cell(0.0, [row('a/1', SZB, 1, True)]), 45.0: cell(45.0, [row('b/1', SM, 4, True)])})['status'], 'none')
+
+    def test_the_cost_is_the_median_over_the_timed_sites_of_the_robust_zoning(self):
+        timed = {'cpu_time_ratio': 0.4, 'wall_clock_ratio': 0.5, 'memory_peak_commit_ratio': 0.9}
+        a = cell(0.0, [row('a/1', SZB, 1, True, cost=timed)])
+        b = cell(45.0, [row('b/1', SZB, 1, True)])
+        self.assertEqual(lod_site.robust({0.0: a, 45.0: b})['cost'], timed)  # one timed orientation: its ratios
+        b = cell(45.0, [row('b/1', SZB, 1, True, cost={'cpu_time_ratio': 0.6, 'wall_clock_ratio': 0.7})])
+        self.assertEqual(lod_site.robust({0.0: a, 45.0: b})['cost'], {'cpu_time_ratio': 0.5, 'wall_clock_ratio': 0.6, 'memory_peak_commit_ratio': 0.9})
+        self.assertEqual((lod_site.median([3, 1, 2]), lod_site.median([4, 1, 3, 2]), lod_site.median([])), (2, 2.5, None))
+        self.assertEqual(lod_site.cost_cells({'cost': lod_site.robust({0.0: cell(0.0, [row('a/1', SZB, 1, True)]), 45.0: cell(45.0, [row('b/1', SZB, 1, True)])})['cost']}), lod_site.NOT_TIMED)
+
+    def test_the_rows_and_the_json_block_say_what_the_rule_found(self):
+        page = Page(Links(), 'zoning/proto/')
+        a = cell(0.0, [row('a/1', SZB, 1, True, heating=-3.0, cvrmse=12.0, area=0.2)])
+        b = cell(45.0, [row('b/1', SZB, 1, True, heating=2.0, cvrmse=4.0, area=-0.5)])
+        results = lod_site.robust_results([a, b, cell(0.0, [row('c/1', SZB, 1, True)], climate='5A'), cell(45.0, [row('d/1', SZB, 1, False)], climate='5A'),
+                                           cell(0.0, [row('e/1', SZB, 1, True)], climate='7A')])
+        rows = lod_site.robust_rows(page, results, THRESHOLD, costed=True)
+        self.assertEqual(len(rows), 3)
+        self.assertIn('<tr class="ea-robust ea-recommended" data-context="pair:Proto|4A|90.1-2019" data-climate="4A" data-vintage="90.1-2019" data-across="orientation">'
+                      '<td>4A</td><td>90.1-2019</td><td>Conditioned merge + Single zone building</td><td>1</td><td>-3.0</td><td>1.0</td><td>12.0</td><td>12.0</td>'
+                      '<td>1.0</td><td>1.0</td><td>-0.50</td>'+lod_site.NOT_TIMED+'<td>recommended at both orientations</td></tr>', rows[0])
+        self.assertIn('<td colspan="12"><em>none meets the threshold at both orientations</em></td><td><a href="#cell-Proto-5A-90.1-2019-0.0">0°</a>: '
+                      'Conditioned merge + Single zone building (1 zone) · <a href="#cell-Proto-5A-90.1-2019-45.0">45°</a>: <em>none</em></td>', rows[1])
+        self.assertIn('<td colspan="13"><em>one orientation only (0°): no pair to judge</em></td>', rows[2])
+        self.assertEqual(len(lod_site.robust_rows(page, results, THRESHOLD)[1].split('colspan="9"')), 2)
+        block = lod_site.robust_block(results)
+        self.assertEqual(block['rule'], lod_site.ROBUST_RULE)
+        self.assertIn('not a report-writer field', block['computed_by'])
+        self.assertEqual([p['status'] for p in block['pairs']], ['robust', 'none', 'single'])
+        first = block['pairs'][0]
+        self.assertEqual((first['label'], first['zone_count'], first['site_names'], first['recommended_at_every_orientation'], first['ties']),
+                         ('Conditioned merge + Single zone building', 1, {'0': 'a/1', '45': 'b/1'}, True, []))
+        self.assertEqual(first['worst']['sensible_heating_kwh_rel_err_pct'], {'value': -3.0, 'orientation': 0.0})
+        self.assertEqual(first['worst']['conditioned_area_change_pct'], {'value': -0.5, 'orientation': 45.0})
+        self.assertIsNone(first['cost'])
+        self.assertEqual(block['pairs'][1]['recommended_per_orientation'], {'0': ['Conditioned merge + Single zone building'], '45': []})
+        self.assertEqual(lod_site.tally_robust(results), [('Conditioned merge + Single zone building', 1)])
+        self.assertEqual(lod_site.program_fact('Proto', results), 'Proto: robust across orientations in 1 of 3 cell pairs: Conditioned merge + Single zone building (1)')
+        self.assertEqual(lod_site.program_fact('Proto', {}), 'Proto')
+        json.dumps(block)  # serialisable
+
+
+class RobustPageTests(unittest.TestCase):
+    """The robust headline on every page, from the drop in the repository."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.temporary = tempfile.TemporaryDirectory()
+        cls.site = site_stub(cls.temporary.name)
+        cls.result = lod_site.write_zoning(cls.site)
+        cls.drop = lod_site.Drop()
+        cls.results = lod_site.robust_results(cls.drop.main['entries'])
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.temporary.cleanup()
+
+    def page(self, url):
+        return (Path(self.temporary.name)/url/'index.md').read_text(encoding='utf-8')
+
+    def test_the_drop_has_a_robust_zoning_in_109_of_132_cell_pairs(self):
+        self.assertEqual((self.result['cell_pairs'], self.result['robust_pairs']), (132, 109))
+        statuses = [r['status'] for r in self.results.values()]
+        self.assertEqual((statuses.count('robust'), statuses.count('none'), statuses.count('single')), (109, 23, 0))
+        same = 0
+        for key, r in self.results.items():
+            picks = [{lod_site.zoning_key(p['zoning']) for p in e['recommended']} for e in r['entries']]
+            if r['status'] != 'robust':
+                self.assertFalse(picks[0] and picks[0] == picks[1], key)  # the same pick at both orientations always gives a robust zoning
+                continue
+            for entry, zoning in r['picks']:  # the pick is a kept zoning that meets the threshold at each orientation
+                self.assertTrue(zoning['succeeded'] and not zoning['duplicate_of'] and zoning['meets_threshold'], key)
+                self.assertIn(zoning, entry['zonings'])
+                if entry['recommended']:  # never coarser than the orientation's own recommendation
+                    self.assertGreaterEqual(r['zone_count'], entry['recommended'][0]['zone_count'], key)
+            if picks[0] and picks[0] == picks[1]:
+                same += 1
+                self.assertIn(r['key'], picks[0], key)
+        self.assertEqual(same, 97)
+        self.assertEqual(sum(1 for r in self.results.values() if r['status'] == 'robust' and r['same_pick']), 100)
+        self.assertEqual(sum(n for _, n in lod_site.tally_robust(self.results)), 109)
+        self.assertEqual(lod_site.tally_robust(self.results)[0], ('Conditioned merge + Single zone building', 41))
+
+    def test_every_prototype_page_opens_with_the_robust_table(self):
+        for prototype in self.drop.prototypes():
+            text = self.page(self.result['pages']['prototype:'+prototype])
+            self.assertLess(text.index('id="section-robust"'), text.index('id="section-recommended"'))
+            self.assertIn('<li><a href="#section-robust">Robust across orientations</a></li><li><a href="#section-recommended">Recommended zonings</a></li>', text)
+            section = text.split('id="section-robust"', 1)[1].split('</section>', 1)[0]
+            own = {k: r for k, r in self.results.items() if k[0] == prototype}
+            rows = re.findall(r'<tr class="ea-robust[^>]*>.*?</tr>', section)
+            self.assertEqual(len(rows), len(own), prototype)
+            self.assertEqual(len(own), 12)
+            for (_, climate, vintage), r in own.items():
+                row_ = next(x for x in rows if f'data-context="pair:{prototype}|{climate}|{vintage}"' in x)
+                self.assertIn(f'data-climate="{climate}" data-vintage="{vintage}" data-across="orientation"', row_)
+                if r['status'] == 'robust':
+                    self.assertIn(f'<td>{lod_site.zoning_label(r["zoning"])}', row_)
+                    self.assertIn('ea-recommended', row_)
+                else:
+                    self.assertIn('none meets the threshold at both orientations', row_)
+                    self.assertIn(f'href="#cell-{prototype}-{climate}-{vintage}-0.0"', row_)
+            robust_pairs = sum(1 for r in own.values() if r['status'] == 'robust')
+            self.assertIn(f'<dt>Robust across orientations</dt><dd>{robust_pairs} of 12 cell pairs', text)
+            self.assertIn(f'Robust across orientations in <strong>{robust_pairs} of 12</strong> cell pairs (0° and 45°)', section)
+            self.assertIn('<th>Climate zone</th><th>Vintage</th><th>Robust zoning</th><th>Zones</th><th>Heating error %</th><th>Cooling error %</th>'
+                          '<th>Heating CV(RMSE) %</th><th>Cooling CV(RMSE) %</th><th>Heating NMBE %</th><th>Cooling NMBE %</th><th>Area change %</th>'
+                          '<th>CPU ratio</th><th>Wall ratio</th><th>Memory ratio</th><th>Per orientation</th>', section)
+            self.assertIn('href="../method/#section-robust"', section)
+
+    def test_the_robust_rows_show_the_worse_orientation_and_the_timed_cost(self):
+        text = self.page(self.result['pages']['prototype:StandAloneRetail'])
+        section = text.split('id="section-robust"', 1)[1].split('</section>', 1)[0]
+        r = self.results[('StandAloneRetail', '3C', '90.1-2019')]
+        self.assertEqual((lod_site.zoning_label(r['zoning']), r['same_pick']), ('Semantic merge + Stack', True))
+        row_ = next(x for x in re.findall(r'<tr class="ea-robust[^>]*>.*?</tr>', section) if 'pair:StandAloneRetail|3C|90.1-2019"' in x)
+        timed = next(z for e, z in r['picks'] if e['orientation_degrees'] == 0.0)
+        self.assertIn(''.join(f'<td>{lod_site.num(timed["cost"][k], 3)}</td>' for k in lod_site.COST_KEYS), row_)  # the 0° site is the only timed one
+        for name in lod_site.ERROR_KEYS:
+            values = [z['metrics'][name] for _, z in r['picks']]
+            self.assertIn(f'>{lod_site.num(max(values, key=abs))}<', row_, name)
+        r = self.results[('StandAloneRetail', '3C', '90.1-2007')]  # the orientations disagree: the robust zoning is 0°'s pick, 45°'s 1-zone picks fail at 0°
+        self.assertEqual((lod_site.zoning_label(r['zoning']), r['zone_count'], r['same_pick']), ('Semantic merge + Stack', 4, False))
+        row_ = next(x for x in re.findall(r'<tr class="ea-robust[^>]*>.*?</tr>', section) if 'pair:StandAloneRetail|3C|90.1-2007"' in x)
+        self.assertIn('<a href="#cell-StandAloneRetail-3C-90.1-2007-0.0">0°</a>: Semantic merge + Stack (4 zones) · <a href="#cell-StandAloneRetail-3C-90.1-2007-45.0">45°</a>: '
+                      'Conditioned merge + Single zone building (1 zone)', row_)
+        self.assertIn(lod_site.NOT_TIMED, row_)
+        hospital = self.page(self.result['pages']['prototype:Hospital'])
+        self.assertIn('<td>Conditioned merge + Stack <span class="ea-ties">(tie: Conditioned merge + Stacked floor zone multiplier)</span></td>', hospital)
+        office = self.page(self.result['pages']['prototype:MediumOffice'])
+        self.assertEqual(office.split('id="section-robust"', 1)[1].split('</section>', 1)[0].count(lod_site.NOT_TIMED), 12 - sum(1 for r in self.results.values() if r['status'] == 'none' and r['entries'][0]['prototype'] == 'MediumOffice'))
+
+    def test_the_overview_tallies_the_robust_pairs(self):
+        overview = self.page(self.result['pages']['overview'])
+        self.assertIn('<h3>Robust across orientations: 109 of 132 cell pairs</h3>', overview)
+        self.assertIn('<tr><td>Conditioned merge + Single zone building</td><td>41</td></tr>', overview.split('<h3>Robust across orientations', 1)[1])
+        self.assertIn(', and at both orientations of a cell pair in 109 of 132 pairs (robust across orientations). Each prototype page', overview)
+        self.assertIn('<th>With a recommended zoning</th><th>Robust across orientations (cell pairs)</th><th>Most often recommended (cells)</th>', overview)
+        self.assertIn('<a href="stand-alone-retail/">Stand-alone retail</a></td><td>24</td><td>24</td><td>12 of 12</td>', overview)
+        self.assertIn('<a href="supermarket/">Supermarket</a></td><td>24</td><td>16</td><td>8 of 12</td>', overview)
+        self.assertIn('each prototype page opens with it', overview)
+
+    def test_the_method_page_states_the_rule_what_the_data_allows_and_the_limits(self):
+        method = self.page(self.result['pages']['method'])
+        self.assertIn('<li><a href="#section-dedup">Deduplication</a></li><li><a href="#section-robust">Robust across orientations</a></li><li><a href="#section-cost">Cost protocol</a></li>', method)
+        section = method.split('id="section-robust"', 1)[1].split('</section>', 1)[0]
+        self.assertIn(lod_site.esc(lod_site.ROBUST_RULE), section)
+        self.assertIn('<dt>Cell pairs</dt><dd>132: robust in 109, none meeting at both orientations in 23</dd>', section)
+        self.assertIn('<dt>Recommended at both orientations</dt><dd>100 of 109 robust pairs', section)
+        self.assertIn('<dt>Ties at the fewest zones</dt><dd>38 pairs, named in the row</dd>', section)
+        self.assertIn('so the rule compares the zonings themselves at both orientations, not only the two recommendations', section)
+        self.assertIn('<code>meets_threshold</code>', section)
+        self.assertIn('Robust means robust over the two orientations the study ran, 0° and 45°', section)
+        self.assertIn('<code>robust</code> block', section)
+        self.assertIn('the headline over the pair is the robust rule below', method)
+
+    def test_the_prototype_json_carries_the_robust_block_and_the_manifest_the_counts(self):
+        slice_json = None
+        for href in self.site.store.files:  # the store keys by digest; read the stand-alone retail slice back
+            document = json.loads(gzip.decompress((Path(self.temporary.name)/href).read_bytes()))
+            if isinstance(document, dict) and 'robust' in document and {e['prototype'] for e in document['entries']} == {'StandAloneRetail'}:
+                slice_json = document
+        self.assertIsNotNone(slice_json)
+        block = slice_json['robust']
+        self.assertEqual((block['rule'], len(block['pairs'])), (lod_site.ROBUST_RULE, 12))
+        self.assertEqual([p['status'] for p in block['pairs']].count('robust'), 12)
+        self.assertEqual(block['pairs'][0]['cells'], ['StandAloneRetail|2A|90.1-2007|0.0', 'StandAloneRetail|2A|90.1-2007|45.0'])
+        self.assertNotIn('robust', self.drop.main)  # the writer's file is unchanged
+        self.assertNotIn('robust', site_store.read(self.temporary.name, self.site.store.put(self.drop.main)))
+        self.assertEqual(self.result['cell_pairs'], 132)
+
+    def test_a_drop_with_one_orientation_has_no_robust_headline(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            shutil.copy(lod_site.DROP/lod_site.HT, folder/lod_site.MAIN)  # 0° only
+            shutil.copy(lod_site.DROP/lod_site.PROVENANCE, folder/lod_site.PROVENANCE)
+            with tempfile.TemporaryDirectory() as target:
+                site = site_stub(target)
+                result = lod_site.write_zoning(site, folder)
+                self.assertEqual((result['cell_pairs'], result['robust_pairs']), (0, 0))
+                page = (Path(target)/result['pages']['prototype:SmallHotel']/'index.md').read_text(encoding='utf-8')
+                self.assertNotIn('section-robust', page)
+                self.assertNotIn('Robust across orientations', page)
+                overview = (Path(target)/result['pages']['overview']/'index.md').read_text(encoding='utf-8')
+                self.assertNotIn('Robust across orientations', overview)
+                self.assertNotIn('robust', overview.split('id="section-prototypes"', 1)[1].split('</section>', 1)[0])
+                method = (Path(target)/result['pages']['method']/'index.md').read_text(encoding='utf-8')
+                self.assertIn('This drop has one orientation per prototype, climate zone and vintage, so there is no pair to judge', method)
+                self.assertTrue(all(url.endswith('/') for pairs_ in site.zoning_of.values() for _, url in pairs_))
+        heat = self.page(self.result['pages']['heat_transfer'])
+        self.assertNotIn('section-robust', heat)
+
+    def test_the_filter_script_and_the_stylesheet_know_the_robust_rows(self):
+        script = (ROOT/'website/assets/suite.js').read_text(encoding='utf-8')
+        self.assertIn("(element.dataset.across || '').split(' ').includes(axis) || matches(axis, element.dataset[axis], value)", script)
+        css = (ROOT/'website/assets/site.css').read_text(encoding='utf-8')
+        self.assertIn('.ea-suite .ea-robust td:nth-child(n+3)', css)
+        self.assertIn('.ea-suite .ea-ties', css)
 
 
 class DigestTests(unittest.TestCase):
