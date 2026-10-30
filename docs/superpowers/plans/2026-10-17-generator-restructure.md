@@ -170,13 +170,13 @@ User decisions on the gap review, 2026-10-17:
 | O1 | Native programme-slot keys for the nine newer families | Done: 534 native cases, 2,834 slots exact (`test_family_programmes_native.py`) |
 | O2 | Flat-day zeroing by ComStock's base-to-peak step (data centres, flat weekend days) | Done: documented rule (flat days unchanged), `flat_days="native"` for keys; scan finds 0 zeroed days (was 488 pairs) |
 | O3 | Offices and Warehouse still use recipes migrated from the legacy package | Done: all 15 families builder-made; `test_recipes_native.py`; heat fractions restored |
-| O4 | Release build and checksum manifest | Not yet (user) |
-| O5 | Run the updated CI on GitHub | Not now (user) |
+| O4 | Release build and checksum manifest | Done 2026-10-29: `SHA256SUMS.txt` (wheel and sdist digests, `sha256sum` format) attached to GitHub release `atlas-schedules-v3.0.0` and named in its notes; verified against an independent rebuild of the tag (ADR 0049 amendments) |
+| O5 | Run the updated CI on GitHub | Done: CI has run on GitHub since PR #30 (2026-10-29); CI workload passes 1–3 are PRs #32, #33 and #37/#38 |
 | O6 | Review hygiene: unused `holidays` argument, cross-module test helpers, legacy-key tests that skip silently | Done |
 | O7 | Answer-key extraction scripts cannot be rerun (inputs purged) | Accepted (user) |
 | O8 | Apartment `residents` capped at 20 per dwelling unit | Done: cap 11, documented |
 | O9 | Pre-rewrite objects may persist on GitHub until its garbage collection | Accepted (user) |
-| O10 | Local copies of the pre-purge history | Deferred (user), see below |
+| O10 | Local copies of the pre-purge history | Decided 2026-10-29: `refs/backup/stochastic-schedule-extraction-pre-purge` stays local until the weekly full CI run has passed twice, then it is deleted; see below |
 
 O1 needs, per family, a native capture with the OpenStudio 3.10 harness
 (`scripts/capture/commercial.rb`) running pinned openstudio-standards 0.8.6
@@ -725,3 +725,36 @@ from the state, every state in it pooled by its share of matching units; the
 relaxation ladder is removed and only Alaska drops the HVAC). Schedules suite 92
 tests pass on Python 3.14 and 3.11; catalogue smoke 0 failures; the before/after
 report's apartment rows were regenerated (commercial rows unchanged).
+
+## 9. Status of the open items, 2026-10-29
+
+Checked against `main` (6cf03262) after generator 3.0.0 merged (PR #30, 03cdc1bd) and the
+public-release stages (plan `2026-10-29-public-release-stages.md`):
+
+- O4 done (`SHA256SUMS.txt` on release `atlas-schedules-v3.0.0`), O5 done (CI on GitHub
+  since PR #30), O10 decided (backup ref kept locally until the weekly full CI run has
+  passed twice, then deleted): see the section 7 table.
+- O11 done: `tests/schedules/test_residential_dominance_native.py`.
+- O12 done: `tests/answer_keys/README.md`; the extractors that could no longer run are
+  retired.
+- O13 done: `atlas_schedules/residential/seasons.py`, `tests/schedules/test_seasons.py`.
+- O14 done: `scripts/derive_occupancy_mix.py`, `sources/occupancy-mix-lock.json`,
+  `atlas_schedules/data/residential/occupancy-mix.json`,
+  `tests/schedules/test_occupancy_mix.py`.
+- O15 done (PR #30): source-magnitude binding in `generator._loads` and
+  `_service_owner`, checked by `tests/schedules/helpers.assert_binding`; ADR 0047.
+- O16 done (PR #30): apartment-unit lighting and loads from the OpenStudio-HPXML
+  equations with the sampled lamp mix (`residential/annual.py`,
+  `residential/arguments.py`); ADR 0047.
+- O17 done: no residential fixed rating (ADR 0047 section 2, item 2).
+- O18 done: apartment thermostat options from the unit's own sampled draw
+  (`residential/apartment.py`).
+- O19 done as decided: volumes are not borrowed from ResStock; the P2 per-resident
+  prototype volume applies (ADR 0047 section 2, item 6).
+- O20 done: option D timing on the P2 basis (`hot_water_m3_per_person` in the
+  apartment recipes, `residential/apartment.py`).
+- O21 done: the characteristics sampler (`residential/characteristics.py`), option
+  arguments, annual equations and `scripts/build_apartment_units.py`; the 38
+  apartment-unit recipes ship in atlas release 2.1.0 and `atlas-schedules` 3.0.0.
+
+No item of this plan remains open.

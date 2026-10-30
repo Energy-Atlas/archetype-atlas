@@ -49,6 +49,16 @@ built from atlas release 2.0.0 and are carried by release 2.1.0 (ADR 0049).
 To build the wheel from a checkout: `pip install -r requirements-dev.txt` and
 `python -m build`.
 
+Each generator release also attaches `SHA256SUMS.txt` (`sha256sum` format). To
+verify a download, put the file next to the downloaded archives and run
+`sha256sum -c SHA256SUMS.txt`. For 3.0.0 the wheel's digest is
+`f082bb12f951fdebd78ddcf8ab20cc65a267a02a70213de4d7f13d56648229cb` and the sdist's
+`2f42d7c1fe970a4958d0fd2092f0e6b23c8d0515ada9f67af02377718f80eb27`; both were checked on
+2026-10-29 against an independent `python -m build` of tag `atlas-schedules-v3.0.0`
+in a clean venv, whose package files are byte-identical to the published ones (only
+archive timestamps and the generated metadata's line endings differ; ADR 0049,
+amendments).
+
 ## Request (schema 3.0.0)
 
 The schema is `atlas_schedules/schemas/request-v3.schema.json`.
