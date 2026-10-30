@@ -286,8 +286,9 @@ def encode_evidence(sources, evidence_ids):
 
 def program_id(prefix, program, building_type):
     """Programs and services cite each other (service_ids, and shared loads' service and demand IDs),
-    so every service citation hashes as SERVICE."""
-    content = json.loads(SERVICE_ID.sub(json.dumps(SERVICE), canonical({k: v for k, v in program.items() if k != 'name'})))
+    so every service citation hashes as SERVICE. A generation block is not part of the ID (ADR 0051)."""
+    content = json.loads(SERVICE_ID.sub(json.dumps(SERVICE),
+                                        canonical({k: v for k, v in program.items() if k not in ('name', 'generation')})))
     return f'{prefix}.{program["mode"]}.{slug(stem(program["name"], building_type))}.{h6(content)}'
 
 

@@ -11,8 +11,9 @@ hashes content agree with its content, once, under rules a consumer can recomput
 - **construction sets** (`commercial/<template>/<type>/constructions/`): `<template>.<type>.<stem>.<h6>`
   over the set without `id` and `name`, every set ID written as one placeholder (sets cite each other);
 - **programs** (`commercial/.../programs/`): `<template>.<type>.<mode>.<stem>.<h6>` over the program
-  without `id` and `name`, service citations written as one placeholder (scripts.atlas_programs.program_id),
-  source programs before the mixes that cite them.
+  without `id`, `name` and `generation`, service citations written as one placeholder
+  (scripts.atlas_programs.program_id), source programs before the mixes that cite them. A program's
+  `generation` block (release 2.2.0, ADR 0051) is not part of its identity.
 Library and set hashes round every float to nine significant digits first: the fitted unified assemblies
 (scripts.construction_equivalence) differ in the last bits between interpreters and math libraries, which
 is why their releases needed a pinned CPython (user decision U). Program values come from IEEE arithmetic
@@ -22,7 +23,9 @@ at most 1.04e-9 relative apart).
 
 Every reference in the release follows (program and set files are renamed), the manifest is rewritten, and
 `id-map.json` at the release root maps each changed ID to its new one. The residential tree keeps its own
-IDs. Running the editor on its output changes nothing (`--check`).
+IDs. Running the editor on its output changes nothing (`--check`). `--check` also reads release 2.2.0, a
+delta of generation blocks (scripts.atlas_delta): every block names a 2.0.0 program, and the programs
+read with their blocks keep their IDs.
 """
 import argparse
 import hashlib
@@ -44,6 +47,7 @@ ALTERNATES = ROOT/'data/program-inputs/construction-alternates-v1.json'
 SET = '@set'
 GROUND_MODELS = ('FFactorGroundFloorConstruction', 'CFactorUndergroundWallConstruction')
 DIGITS = 9
+UNHASHED = ('id', 'name', 'generation')   # program fields outside the ID (ADR 0051 section 4)
 
 
 def rounded(value):
@@ -122,7 +126,7 @@ def program_ids(files):
             record = records[path]
             if (record.get('derivation') == 'composed') != composed:
                 continue
-            content = json.loads(substitute(canonical({k: v for k, v in record.items() if k not in ('id', 'name')})))
+            content = json.loads(substitute(canonical({k: v for k, v in record.items() if k not in UNHASHED})))
             content = json.loads(SERVICE_ID.sub(json.dumps(SERVICE), canonical(content)))
             new = rehash(record['id'], content)
             if new != record['id']:
@@ -387,6 +391,28 @@ def manifest(files, listed):
     return suite_bytes(listed)
 
 
+def check_generation(files):
+    """Release 2.2.0's programs, read with their generation blocks, keep their 2.0.0 IDs (ADR 0051 section 4)."""
+    from atlas_schedules.release import Release
+    folder = ROOT/'data/atlas-releases/v2.2.0'
+    if not (folder/'manifest.json').is_file():
+        return
+    release = Release(folder)
+    resolved, blocks = dict(files), 0
+    for generation_folder in release.generation_folders():
+        for rid in release.generation(generation_folder).get('programs', {}):
+            path = release.program_paths.get(rid)
+            if path is None or path not in files:
+                raise SystemExit(f'Release 2.2.0 has a generation block for {rid}, which 2.0.0 does not hold')
+            if path.startswith('commercial/'):
+                resolved[path] = canonical(release.program(rid)[1]).encode('utf-8')
+            blocks += 1
+    moved = program_ids(resolved)
+    if moved:
+        raise SystemExit(f'{len(moved)} program IDs move with their generation blocks, e.g. {next(iter(moved))}')
+    print(f'Release 2.2.0: {blocks} programs with generation blocks keep their IDs')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--check', action='store_true')
@@ -401,6 +427,7 @@ def main():
         if stale:
             raise SystemExit(f'{len(stale)} release files differ from the edit, e.g. {stale[0]}; run python -m scripts.release_editor')
         print('Release 2.0.0 IDs agree with their rules')
+        check_generation(files)
         return
     edited['manifest.json'] = manifest(edited, listed)
     target = atlas_snapshot.TARGET
