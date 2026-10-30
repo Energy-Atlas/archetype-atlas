@@ -1,5 +1,27 @@
 # Changelog
 
+## CI workload pass 3: pull requests build a sampled catalogue site — 2026-10-29
+
+- **`suite_site --sample N`** builds the site-wide pages and at most N folders of every
+  family × template, chosen by a fixed rule (`sample_folders`: the folder whose programs
+  span the most modes, then the cheapest in programs and construction contexts, then the
+  first path); `site-manifest.json` records `partial` and the `sample`. For release 2.1.0,
+  `--sample 1` is 21 of 255 folders: `retail-standalone` of every non-residential
+  template, `multifamily` of every IECC residential template, the manufactured-housing
+  folders and ResStock's `highrise-apartment`.
+- **`site_check` on a sample** runs every check within the sampled folders and the
+  site-wide pages and excuses only a link into a folder the sample left out;
+  `--require-complete` refuses a sample as it refuses `--only`. `site_smoke` searches
+  the picked program by its full ID: a slug such as `sales-mixed` ties with the same
+  program of every other template and the result list shows ten.
+- **The catalogue workflow's `build` job** generates, builds strictly and verifies the
+  sample on a pull request, with no cache and no Pages artifact; a push to `main`, the
+  weekly run and a manual run build, cache, verify and publish the full site as before.
+  Required check names are unchanged. Measured on pull request #36 before this pass:
+  `build` 32.8 min on a cache miss (generation 16.8 min, MkDocs 11.9 min, checks 2.7
+  min); the sampled build of pull request #37: 5.1 min (generation 1.3 min, MkDocs 1.7
+  min, checks 0.8 min), so a pull request's checks finish with the research jobs.
+
 ## Zoning recommendations drop 2: the serial costs and the completed study — 2026-10-29
 
 - **Data drop 2** (ADR 0050 section 5): the consolidated files of BEMGen `38ff521`

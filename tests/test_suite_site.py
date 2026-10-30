@@ -226,6 +226,18 @@ class CheckTests(unittest.TestCase):
             (root/'definitions').mkdir()
             self.assertEqual(site_check.check_retired(root), ['Retired route present: definitions/'])
 
+    def test_a_sample_excuses_links_into_unbuilt_folders_only(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, _, manifest = self.site(temporary)
+            (root/'index.html').write_text('<a href="catalogue/commercial/90-1-2019/office/programs/source/x/">out</a>'
+                                           '<a href="catalogue/p/#missing">p</a><a href="catalogue/commercial/90-1-2019/template-library/">lib</a>',
+                                           encoding='utf-8')
+            pages = site_check.parse(root)
+            sample = {**manifest, 'partial': True, 'sample': {'folders_per_template': 1, 'folders': ['commercial/90-1-2019/retail-standalone/']}}
+            errors = site_check.check_links(root, pages, unbuilt=site_check.unbuilt_folder(sample))
+            self.assertEqual(len(errors), 2)  # the fragment and the library page; the office folder was not built
+            self.assertEqual(len(site_check.check_links(root, pages, unbuilt=site_check.unbuilt_folder(manifest))), 3)
+
     def test_the_ceiling_is_one_gigabyte(self):
         self.assertEqual(site_check.CEILING, 1_000_000_000)
 

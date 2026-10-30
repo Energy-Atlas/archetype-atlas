@@ -7,6 +7,11 @@ Every internal URL and fragment resolves under the project prefix; every store f
 is named by its SHA-256 and every JSON descriptor matches its file; every program and
 construction set of the release has a page and its exports; retired routes are absent
 from the output and from search; the site stays under the publication ceiling.
+
+A sampled build (`suite_site --sample`, pull requests) is checked the same way within
+the sampled folders and the site-wide pages: only a link into a catalogue folder the
+sample left out is excused, since its page was not built; a page or export missing
+from the sample, a broken fragment, store, search or viewer entry still fails.
 """
 import argparse
 import gzip
@@ -51,7 +56,23 @@ def parse(root):
     return pages
 
 
-def check_links(root, pages, prefix='/archetype-atlas/'):
+def unbuilt_folder(manifest):
+    """Whether a site path (`catalogue/<family>/<template>/<type>/...`) lies in a catalogue folder a sampled build left
+    out; never on a full or `--only` build. Template libraries (`template-library/`, suite_site.LIBRARY) are built always."""
+    sample = manifest.get('sample')
+    if not sample:
+        return lambda path: False
+    built = set(sample['folders'])
+
+    def unbuilt(path):
+        parts = path.split('/')
+        return (len(parts) > 4 and parts[0] == 'catalogue' and parts[3] != 'template-library'
+                and '/'.join(parts[1:4])+'/' not in built)
+    return unbuilt
+
+
+def check_links(root, pages, prefix='/archetype-atlas/', unbuilt=None):
+    """Broken links, fragments and escapes; `unbuilt(site path)` excuses a missing target a sample did not build."""
     root = Path(root).resolve()
     if not (root/'index.html').is_file():
         return ['Missing site index.html; the build is empty or incomplete']
@@ -80,7 +101,8 @@ def check_links(root, pages, prefix='/archetype-atlas/'):
             if target is None:
                 errors.append(f'{path.relative_to(root)}: URL escapes the site: {href}')
             elif not exists:
-                errors.append(f'{path.relative_to(root)}: missing {href}')
+                if unbuilt is None or not unbuilt(target_path[len(prefix):]):
+                    errors.append(f'{path.relative_to(root)}: missing {href}')
             elif url.fragment and target in pages and unquote(url.fragment) not in pages[target].ids:
                 errors.append(f'{path.relative_to(root)}: missing fragment in {href}')
     return errors
@@ -205,11 +227,11 @@ def check(site, prefix='/archetype-atlas/', complete=False):
     site = Path(site)
     manifest = json.loads((site/'site-manifest.json').read_text(encoding='utf-8'))
     pages = parse(site)
-    errors = check_links(site, pages, prefix)+check_store(site, pages)+check_retired(site)
+    errors = check_links(site, pages, prefix, unbuilt_folder(manifest))+check_store(site, pages)+check_retired(site)
     errors += check_coverage(site, manifest)+check_zoning(site, manifest)+check_search(site, manifest)+check_viewer(site)+check_size(site)
     if complete:
         if manifest.get('partial'):
-            errors.append('Partial build (--only) cannot be published')
+            errors.append('Partial build (--only or --sample) cannot be published')
         errors += check_inputs(manifest)
     return errors, manifest, len(pages)
 
@@ -224,7 +246,9 @@ def main():
     if errors:
         raise SystemExit('\n'.join(errors[:50])+f'\n{len(errors)} errors')
     size = sum(p.stat().st_size for p in args.site.rglob('*') if p.is_file())
-    print(f'Release {manifest["release"]}: {count:,} HTML pages, {len(manifest["programs"]):,} programs and '
+    sample = manifest.get('sample')
+    print(f'Release {manifest["release"]}'+(f' (sample: {len(sample["folders"])} folders, links into the others excused)' if sample else '')
+          + f': {count:,} HTML pages, {len(manifest["programs"]):,} programs and '
           f'{len(manifest["construction_sets"]):,} construction sets with pages and exports; links, fragments, store, '
           f'search, viewer and retirement checks passed; {size:,} bytes')
 

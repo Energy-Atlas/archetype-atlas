@@ -4,7 +4,7 @@ import unittest
 
 import yaml
 
-from scripts import ci_tests, suite_site
+from scripts import ci_tests, site_check, site_release, suite_site
 from scripts.common import ROOT
 
 REQUIRED = ('atlas (ubuntu-latest, 3.11)', 'atlas (windows-latest, 3.14)')
@@ -137,6 +137,83 @@ class WorkflowTests(unittest.TestCase):
             self.assertIn(command, commands)
         self.assertEqual(jobs['deploy']['needs'], ['research', 'build'])
         self.assertIn("github.ref == 'refs/heads/main'", jobs['deploy']['if'])
+
+    def test_a_pull_request_builds_a_sample_and_every_other_event_the_full_cached_published_site(self):
+        jobs = workflow('catalogue-site.yml')['jobs']
+        self.assertEqual(set(jobs), {'research', 'build', 'deploy'})  # the required check is named `build`
+        build = jobs['build']
+        self.assertEqual(build['env']['FULL_SITE'], "${{ github.event_name != 'pull_request' }}")
+        steps = {s.get('id') or s.get('name') or s['uses']: s for s in build['steps']}
+        for name in ('digest', 'cache', 'Upload verified Pages artifact'):  # no cache and no Pages artifact for a sample
+            self.assertEqual(steps[name]['if'], "env.FULL_SITE == 'true'", name)
+        generate = next(s for s in build['steps'] if 'scripts.suite_site' in s.get('run', '') and '--digest' not in s['run'])
+        self.assertEqual(generate['if'], "steps.cache.outputs.cache-hit != 'true'")  # empty when the cache step is skipped
+        self.assertIn('if [ "$FULL_SITE" = true ]; then python -m scripts.suite_site; else python -m scripts.suite_site --sample 1; fi', generate['run'])
+        self.assertEqual(steps['Build']['if'], "steps.cache.outputs.cache-hit != 'true'")
+        verify = next(s for s in build['steps'] if 'scripts.site_check' in s.get('run', ''))
+        self.assertNotIn('if', verify)
+        self.assertIn('if [ "$FULL_SITE" = true ]; then python -m scripts.site_check --require-complete; else python -m scripts.site_check; fi', verify['run'])
+        self.assertIn('python -m scripts.site_smoke', verify['run'])
+        self.assertEqual(jobs['deploy']['if'].split(), "github.ref == 'refs/heads/main' && (github.event_name == 'push' || "
+                         "(github.event_name == 'workflow_dispatch' && inputs.deploy))".split())
+
+    def test_sample_rule_prefers_every_mode_then_the_cheapest_folder_and_is_deterministic(self):
+        release = FakeRelease({'commercial/90-1-2019/office/': (['source']*40+['general']*12, 126),
+                               'commercial/90-1-2019/retail-standalone/': (['source']*5+['general', 'department'], 21),
+                               'commercial/90-1-2019/hospital/': (['source']*20+['general']*3+['department']*3, 21),
+                               'commercial/90-1-2019/small-office/': (['source']*2, 21),
+                               'residential/iecc-2021/single-family/': (['dwelling']*2, 76),
+                               'residential/iecc-2021/multifamily/': (['dwelling']*2, 72),
+                               'residential/resstock-sdr/highrise-apartment/': (['dwelling'], 1)})
+        self.assertEqual(suite_site.sample_folders(release, 1), ['commercial/90-1-2019/retail-standalone/', 'residential/iecc-2021/multifamily/',
+                                                                  'residential/resstock-sdr/highrise-apartment/'])
+        self.assertEqual(suite_site.sample_folders(release, 2)[:2], ['commercial/90-1-2019/hospital/', 'commercial/90-1-2019/retail-standalone/'])
+        self.assertEqual(len(suite_site.sample_folders(release, 9)), 7)
+        self.assertEqual(suite_site.sample_folders(release, 1), suite_site.sample_folders(release, 1))
+
+    def test_sampled_site_covers_every_template_and_page_kind_of_the_release(self):
+        """What the pull-request build (`--sample 1`) covers of the newest release, and what site_smoke picks from it."""
+        release = site_release.SiteRelease()
+        folders = suite_site.sample_folders(release, 1)
+        self.assertEqual(folders, sorted(folders))
+        templates = {(f.family, f.template) for f in release.folders.values()}
+        self.assertEqual({(release.folders[f].family, release.folders[f].template) for f in folders}, templates)
+        self.assertEqual(len(folders), len(templates))  # one each, so every template index and library trail resolves
+        modes = {release.programs[p][1] for f in folders for p in release.folders[f].programs}
+        self.assertEqual(modes, {release.programs[p][1] for p in release.programs})
+        sets = {s: release.sets[s][1] for f in folders for s in release.folders[f].sets}
+        self.assertTrue(any(s.startswith('90-1-2019.') and len(r.get('contexts', {})) > 3 for s, r in sets.items()))  # site_smoke's commercial set
+        self.assertTrue(any(s.startswith('iecc-') and all('.' in k for k in r['contexts']) for s, r in sets.items()))  # its foundation axes
+        programs = {p for f in folders for p in release.folders[f].programs}
+        self.assertTrue(any(p.startswith('resstock-sdr.') for p in programs))  # its dwelling with annual schedules
+        self.assertTrue(any(p.startswith('iecc-') for p in programs))  # its source-only program
+        cost = sum(suite_site.folder_cost(release, release.folders[f]) for f in folders)
+        self.assertLess(cost, sum(suite_site.folder_cost(release, f) for f in release.folders.values()) / 5)
+
+    def test_sampled_check_excuses_only_links_into_folders_the_sample_left_out(self):
+        unbuilt = site_check.unbuilt_folder({'sample': {'folders_per_template': 1, 'folders': ['commercial/90-1-2019/retail-standalone/']}})
+        self.assertTrue(unbuilt('catalogue/commercial/90-1-2019/office/'))
+        self.assertTrue(unbuilt('catalogue/commercial/90-1-2019/office/programs/source/x/'))
+        self.assertFalse(unbuilt('catalogue/commercial/90-1-2019/retail-standalone/programs/source/x/'))
+        self.assertFalse(unbuilt('catalogue/commercial/90-1-2019/'))
+        self.assertFalse(unbuilt(f'catalogue/commercial/90-1-2019/{suite_site.LIBRARY}/'))
+        self.assertFalse(unbuilt('zoning/office/'))
+        self.assertFalse(site_check.unbuilt_folder({'partial': True})('catalogue/commercial/90-1-2019/office/'))
+
+
+class FakeRelease:
+    """A release index of folders with the given program modes and construction contexts (site_release.SiteRelease's shape)."""
+
+    def __init__(self, folders):
+        self.folders, self.programs, self.sets = {}, {}, {}
+        for path, (modes, contexts) in folders.items():
+            folder = site_release.Folder(path)
+            for i, mode in enumerate(modes):
+                self.programs[f'{path}p{i}'] = (path, mode, {})
+                folder.programs.append(f'{path}p{i}')
+            self.sets[path+'s'] = (path, {'contexts': {str(c): {} for c in range(contexts)}})
+            folder.sets.append(path+'s')
+            self.folders[path] = folder
 
 
 if __name__ == '__main__':

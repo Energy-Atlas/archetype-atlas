@@ -24,8 +24,11 @@ node --test tests/*.test.js
 
 Preview: <http://127.0.0.1:8765/archetype-atlas/>. `--release 1.4.0` picks a release
 other than the newest; `--only REGEX` builds a partial preview of the matching
-folders (for example `--only 90-1-2019/medium-office`), which `site_check
---require-complete` refuses to publish. `--output PATH` selects a generated build
+folders (for example `--only 90-1-2019/medium-office`), and `--sample N` the sample
+pull requests build (at most N folders of every family × template, see
+[Release gate](#release-gate)); `site_check --require-complete` refuses to publish
+either, and `site_check` without it checks a sample within its folders (a link into
+a folder the sample left out is excused). `--output PATH` selects a generated build
 directory; an existing nonempty output must be marked by `site-manifest.json`.
 `site_smoke --channel chrome` (or `msedge`) uses an installed browser instead of
 Playwright's Chromium. Generation exports every program and construction context in
@@ -85,19 +88,44 @@ with ADR 0043; it remains in the repository history.
 
 ## Release gate
 
-Every run of the catalogue workflow's build job runs the site unit and Node tests,
-computes the input digest (`python -m scripts.suite_site --digest`: the release
-manifest, the scripts the generator and the MkDocs hooks import, `website/`, `schemas/`,
-`mkdocs.yml`, the site requirements, the policy files those scripts read and the
-`data/lod-recommendations` drop) and restores
-`build/site-docs` and the built `build/site` from the Actions cache under that digest, or
-generates and builds them with `mkdocs build --strict`. Either way it then passes `site_check --require-complete` (which
-also rejects a cached tree whose recorded digest differs from the checkout) and the
-Chromium smoke test before it uploads the Pages artifact. The same pipeline calls the
-reusable `validate.yml` research jobs. Deployment requires both the build and research
-validation to succeed for the same commit. It runs only on `main`, automatically for
-pushes or after a manual dispatch with `deploy` set. The production environment also
-permits `main` only. See [branch and publication policy](branch-policy.md).
+Every run of the catalogue workflow's build job runs the site unit and Node tests and
+then builds one of two trees, by event:
+
+- **A push to `main`, the weekly run and a manual run build the full site.** The job
+  computes the input digest (`python -m scripts.suite_site --digest`: the release
+  manifest, the scripts the generator and the MkDocs hooks import, `website/`, `schemas/`,
+  `mkdocs.yml`, the site requirements, the policy files those scripts read and the
+  `data/lod-recommendations` drop) and restores `build/site-docs` and the built
+  `build/site` from the Actions cache under that digest, or generates and builds them
+  with `mkdocs build --strict`. Either way it then passes `site_check --require-complete`
+  (which also rejects a cached tree whose recorded digest differs from the checkout) and
+  the Chromium smoke test before it uploads the Pages artifact.
+- **A pull request builds a sample** (`python -m scripts.suite_site --sample 1`): the
+  site-wide pages (landing, catalogue and family indexes, every template index and
+  template library, glossary, viewer, guides, sources, the zoning pages) and one folder
+  of every family × template, chosen by a fixed rule (`suite_site.sample_folders`): the
+  folder whose programs span the most modes, then the cheapest in programs and
+  construction contexts, then the first path. For release 2.1.0 that is
+  `retail-standalone` of the eleven non-residential templates (department, general and
+  source programs, 21 contexts each), `multifamily` of the seven IECC residential
+  templates (foundation-axis contexts), the one folder of the manufactured-housing
+  templates and `highrise-apartment` of ResStock: 21 of 255 folders, 91 of 3,051
+  programs and 21 of 291 construction sets. `site-manifest.json` records `partial` and
+  the `sample` (the rule's N and the folders). The sample is built strictly, neither
+  restored from nor saved to the cache, checked by `site_check` (every check of the full
+  build within the sampled folders and the site-wide pages; only a link into a folder
+  the sample left out is excused) and the same Chromium smoke test, and uploads no
+  Pages artifact. What a pull request does not check: the pages and exports of the
+  other 234 folders, links into them, the site size against the ceiling for the full
+  tree, and the input digest of a cached tree; the push to `main` after the merge does.
+  `tests/test_ci_workflows.py` holds the sample rule's coverage of the release to the
+  modes, sets and programs the smoke test picks.
+
+The same pipeline calls the reusable `validate.yml` research jobs. Deployment requires
+both the build and research validation to succeed for the same commit. It runs only on
+`main`, automatically for pushes or after a manual dispatch with `deploy` set. The
+production environment also permits `main` only. See
+[branch and publication policy](branch-policy.md).
 
 Automatic runs cover every pull request targeting `main`, every push to `main`, and a
 weekly run (Monday 06:17 UTC). There are no path filters on the required checks, so a
@@ -138,10 +166,19 @@ about as long as its slowest job rather than the sum of all checks.
 Measured on pull request #32 (2026-10-29, before this shape): `build` 19 to 34 min on a
 cache miss (catalogue generation 10 to 17 min, MkDocs 7 to 13 min; a hit skips both),
 `schedules` 11 min, unit shards 5.5 min (atlas) and 9 to 11.5 min (schedules, both
-platforms), `release` 2.4 min. The build job's dependency step (pip and the Playwright
-Chromium) takes 0.6 min and is kept on cache hits too: `site_smoke` needs Chromium on every
-tree. A separate workflow, `atlas-schedules-release.yml`, runs only for tags
-`atlas-schedules-v*` and attaches the wheel to that tag's GitHub release.
+platforms), `release` 2.4 min. Pull request #36 (2026-10-29, a data change, so a cache
+miss): `build` 32.8 min (generation 16.8 min, MkDocs 11.9 min, links and browser
+checks 2.7 min) against research jobs of about 7 min, and about 4 min on a cache hit.
+The sampled build of pull request #37 (the first with this shape, run 40985152698):
+`build` 5.1 min (generation 1.3 min, MkDocs 1.7 min, links and browser checks 0.8 min;
+the digest, cache and Pages steps skipped), against research jobs of 7 min, so the
+pull request's checks finish in about 7.5 min. The build job's dependency step (pip
+and the Playwright Chromium) takes 0.6 min and is kept on cache hits too: `site_smoke`
+needs Chromium on every tree. The full build's cache has no fallback key: the generator
+writes the whole tree afresh and MkDocs builds it whole, so an older cached tree would
+not shorten a main push after a data change. A separate workflow,
+`atlas-schedules-release.yml`, runs only for tags `atlas-schedules-v*` and attaches the
+wheel to that tag's GitHub release.
 
 The research workflow additionally reproduces frozen construction base v2.0.0,
 applicability v2.1.0, distribution v2.2.0 and additive unified release 1.1.0 with
