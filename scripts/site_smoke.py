@@ -179,11 +179,13 @@ def check(site, channel=None, screenshots=None):
             page.wait_for_function('/No object/.test(document.querySelector(".ea-viewer__status").textContent)', timeout=20000)
             expect(True, 'viewer reports an unknown ID')
 
-            # Search finds a suite page by its ID: the hash token makes it first, where a slug such as `sales-mixed`
-            # ties with the same program of every other template and the list shows ten.
+            # Search finds a suite page by its ID. The index splits on whitespace and hyphens only, so the ID's last
+            # hyphen-separated piece (`mixed.f21a21`) is one token that carries the hash and matches this page alone;
+            # the full ID matches every page sharing its template or mode, and a slug (`sales-mixed`) ties with the same
+            # program of every other template, more than the ten the list shows.
             page.goto(base)
             page.locator('label.md-search__icon, .md-search__input').first.click()
-            page.locator('.md-search__input').fill(filled)
+            page.locator('.md-search__input').fill(filled.rsplit('-', 1)[-1])
             page.wait_for_selector('.md-search-result__item', timeout=30000)
             hrefs = page.eval_on_selector_all('.md-search-result__item a', 'es => es.map(e => e.getAttribute("href"))')
             expect(any(manifest['programs'][filled]['page'] in (h or '') for h in hrefs), f'search finds {filled}')
