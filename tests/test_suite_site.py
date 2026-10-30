@@ -242,5 +242,98 @@ class CheckTests(unittest.TestCase):
         self.assertEqual(site_check.CEILING, 1_000_000_000)
 
 
+OFFICE = 'commercial/90-1-2019/office/'
+DWELLINGS = 'residential/resstock-sdr/highrise-apartment/'
+GENERATION = {'configurations': {'office__90_1_2019__source': {'building_type': 'office'}},
+              'programs': {'90-1-2019.office.source.open-office.aaaaaa': {'method': 'comstock_hours', 'schema_version': '1.0.0'}}}
+
+
+class IndexTests(unittest.TestCase):
+    """The program and folder index of site-manifest.json that BEMGen reads (ADR 0052)."""
+
+    def site(self, temporary):
+        from scripts.suite_site import folder_index, program_index
+        root = Path(temporary)
+        records = {'90-1-2019.office.source.open-office.aaaaaa': (OFFICE, 'source', {'name': 'Office_Open_Office', 'building_type': 'Office'}),
+                   'resstock-sdr.highrise-apartment.b1.bbbbbb': (DWELLINGS, 'dwelling',
+                                                                 {'name': 'Whole dwelling / source_building_1', 'building_type': 'HighriseApartment'})}
+        release = type('Release', (), {})()
+        release.programs, release.folders = records, {}
+        for path, generation in ((OFFICE, GENERATION), (DWELLINGS, None)):
+            folder = site_release.Folder(path)
+            folder.programs = [pid for pid, row in records.items() if row[0] == path]
+            folder.generation = generation
+            release.folders[path] = folder
+        site = type('Site', (), {'store': site_store.Store(root)})()
+        manifest = {'partial': False, 'programs': {pid: {'page': 'x/', **program_index(*row)} for pid, row in records.items()},
+                    'folders': {path: folder_index(site, folder) for path, folder in release.folders.items()}}
+        return root, manifest, site_check.release_index(release)
+
+    def test_space_type_is_the_name_before_the_building_type_or_null(self):
+        self.assertEqual(site_release.space_type({'name': 'Office_Open_Office', 'building_type': 'Office'}), 'Office_Open')
+        self.assertEqual(site_release.space_type({'name': 'Art Classroom_College', 'building_type': 'College'}), 'Art Classroom')
+        self.assertIsNone(site_release.space_type({'name': 'Whole dwelling / source_building_1', 'building_type': 'HighriseApartment'}))
+        self.assertIsNone(site_release.space_type({'name': 'IECC 2021 Multifamily dwelling', 'building_type': 'Multifamily'}))
+        self.assertIsNone(site_release.space_type({'name': '_Office', 'building_type': 'Office'}))
+        self.assertIsNone(site_release.space_type({'name': 'Lobby_Office', 'building_type': None}))
+
+    def test_programs_and_folders_carry_the_index_and_a_consistent_index_passes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, manifest, expected = self.site(temporary)
+            office = manifest['programs']['90-1-2019.office.source.open-office.aaaaaa']
+            self.assertEqual({k: office[k] for k in site_check.PROGRAM_INDEX},
+                             {'space_type': 'Office_Open', 'building_type': 'Office', 'folder': OFFICE, 'mode': 'source'})
+            dwelling = manifest['programs']['resstock-sdr.highrise-apartment.b1.bbbbbb']
+            self.assertIn('space_type', dwelling)
+            self.assertIsNone(dwelling['space_type'])  # an explicit null
+            folder = manifest['folders'][OFFICE]
+            self.assertEqual(sorted(folder), ['building_type', 'family', 'generation', 'programs', 'template'])
+            self.assertEqual((folder['family'], folder['template'], folder['building_type']), ('commercial', '90-1-2019', 'office'))
+            self.assertEqual(site_store.read(root, folder['generation']), GENERATION)  # the file's JSON, as stored
+            self.assertIsNone(manifest['folders'][DWELLINGS]['generation'])
+            self.assertEqual(site_check.check_index(root, manifest, expected), [])
+
+    def test_a_missing_space_type_a_wrong_name_or_folder_and_a_changed_generation_fail(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, manifest, expected = self.site(temporary)
+            office = manifest['programs']['90-1-2019.office.source.open-office.aaaaaa']
+            office['space_type'] = None
+            self.assertEqual(len(site_check.check_index(root, manifest, expected)), 1)
+            office['space_type'] = 'Office'
+            self.assertIn('do not rebuild the name', site_check.check_index(root, manifest, expected)[0])
+            office['space_type'] = 'Office_Open'
+            del office['mode']
+            self.assertIn('index fields missing: mode', site_check.check_index(root, manifest, expected)[0])
+            office['mode'] = 'source'
+            manifest['folders'][OFFICE]['programs'] = []
+            self.assertEqual(len(site_check.check_index(root, manifest, expected)), 2)  # not listed, and not the release's list
+            manifest['folders'][OFFICE]['programs'] = ['90-1-2019.office.source.open-office.aaaaaa']
+            (root/manifest['folders'][OFFICE]['generation']['href']).write_bytes(b'changed')
+            self.assertIn('generation descriptor', site_check.check_index(root, manifest, expected)[0])
+            manifest['folders'][OFFICE]['generation'] = None
+            self.assertIn('generation is null', site_check.check_index(root, manifest, expected)[0])
+
+    def test_a_full_build_indexes_every_folder_and_a_sample_its_own(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, manifest, expected = self.site(temporary)
+            del manifest['programs']['resstock-sdr.highrise-apartment.b1.bbbbbb'], manifest['folders'][DWELLINGS]
+            self.assertEqual(len(site_check.check_index(root, manifest, expected)), 1)
+            sample = {**manifest, 'partial': True, 'sample': {'folders_per_template': 1, 'folders': [OFFICE]}}
+            self.assertEqual(site_check.check_index(root, sample, expected), [])
+            self.assertEqual(site_check.check_index(root, {**manifest, 'partial': True}, expected), [])  # --only
+            self.assertEqual(site_check.check_index(root, {'programs': {}}, expected), ['No folder index (folders) in site-manifest.json'])
+
+
+class ReleaseIndexTests(unittest.TestCase):
+    def test_every_commercial_program_of_the_newest_release_has_a_space_type_that_rebuilds_its_name(self):
+        release = site_release.SiteRelease()
+        commercial = {pid: row[2] for pid, row in release.programs.items() if row[0].startswith('commercial/')}
+        self.assertGreater(len(commercial), 2900)
+        for pid, record in commercial.items():
+            self.assertEqual(f'{site_release.space_type(record)}_{record["building_type"]}', record['name'], pid)
+        self.assertEqual(sum(1 for f in release.folders.values() if f.generation is not None),
+                         sum(1 for path in release.files if path.endswith('/generation.json')))
+
+
 if __name__ == '__main__':
     unittest.main()

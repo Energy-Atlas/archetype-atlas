@@ -5,8 +5,10 @@ python -m scripts.site_check --require-complete  # publication: no partial build
 
 Every internal URL and fragment resolves under the project prefix; every store file
 is named by its SHA-256 and every JSON descriptor matches its file; every program and
-construction set of the release has a page and its exports; retired routes are absent
-from the output and from search; the site stays under the publication ceiling.
+construction set of the release has a page and its exports; the program and folder index
+(ADR 0052) matches the release, and every folder's generation.json descriptor verifies;
+retired routes are absent from the output and from search; the site stays under the
+publication ceiling.
 
 A sampled build (`suite_site --sample`, pull requests) is checked the same way within
 the sampled folders and the site-wide pages: only a link into a catalogue folder the
@@ -165,6 +167,88 @@ def check_coverage(root, manifest, release_ids=None):
     return errors
 
 
+PROGRAM_INDEX = ('space_type', 'building_type', 'folder', 'mode')
+
+
+def release_index(release):
+    """What check_index compares the manifest against, from a site_release.SiteRelease."""
+    programs = {pid: {'name': record.get('name'), 'building_type': record.get('building_type'), 'folder': folder, 'mode': mode}
+                for pid, (folder, mode, record) in release.programs.items()}
+    folders = {path: {'family': f.family, 'template': f.template, 'building_type': f.building_type,
+                      'programs': sorted(f.programs), 'generation': f.generation} for path, f in release.folders.items()}
+    return {'programs': programs, 'folders': folders}
+
+
+def check_descriptor(root, descriptor):
+    """A store descriptor's errors (its path, size, checksum and decoded size) and its document, or None on an error."""
+    try:
+        if descriptor['href'] != f'store/{descriptor["sha256"]}.json.gz':
+            raise ValueError('not named by its SHA-256: '+descriptor['href'])
+        if (Path(root)/descriptor['href']).stat().st_size != descriptor['size_bytes']:
+            raise ValueError('size mismatch: '+descriptor['href'])
+        return [], decoded(root, descriptor)
+    except (KeyError, TypeError, OSError, ValueError) as error:
+        return [str(error)], None
+
+
+def check_index(root, manifest, expected):
+    """The program and folder index BEMGen reads (ADR 0052) against the release (`release_index`): every program has
+    its space type, building type, folder and mode, a commercial program a space type that rebuilds its name with its
+    building type; every program's folder is indexed and lists it; every folder's generation.json descriptor verifies
+    and decodes to the release's document (null where the release has none). A full build indexes every folder of the
+    release, a sample its sampled folders."""
+    errors = []
+    folders = manifest.get('folders')
+    if not isinstance(folders, dict):
+        return ['No folder index (folders) in site-manifest.json']
+    for pid, entry in sorted(manifest['programs'].items()):
+        missing = [key for key in PROGRAM_INDEX if key not in entry]
+        if missing:
+            errors.append(f'{pid}: index fields missing: {", ".join(missing)}')
+            continue
+        release = expected['programs'].get(pid)
+        if release is None:
+            errors.append(f'{pid}: not a program of the release')
+            continue
+        for key in ('building_type', 'folder', 'mode'):
+            if entry[key] != release[key]:
+                errors.append(f'{pid}: {key} {entry[key]!r}, the release has {release[key]!r}')
+        if entry['space_type'] is None:
+            if str(entry['folder']).startswith('commercial/'):
+                errors.append(f'{pid}: commercial program without a space type ({release["name"]!r})')
+        elif entry['building_type'] is None or f'{entry["space_type"]}_{entry["building_type"]}' != release['name']:
+            errors.append(f'{pid}: space type {entry["space_type"]!r} and building type {entry["building_type"]!r} '
+                          f'do not rebuild the name {release["name"]!r}')
+        if pid not in (folders.get(entry['folder']) or {}).get('programs', []):
+            errors.append(f'{pid}: its folder {entry["folder"]!r} is not indexed or does not list it')
+    for path, entry in sorted(folders.items()):
+        release = expected['folders'].get(path)
+        if release is None:
+            errors.append(f'Folder {path}: not a folder of the release')
+            continue
+        for key in ('family', 'template', 'building_type', 'programs'):
+            if entry.get(key) != release[key]:
+                errors.append(f'Folder {path}: {key} differs from the release')
+        errors.extend(f'Folder {path}: {pid} has no program entry' for pid in entry.get('programs', []) if pid not in manifest['programs'])
+        if 'generation' not in entry:
+            errors.append(f'Folder {path}: no generation field')
+        elif release['generation'] is None or entry['generation'] is None:
+            if (release['generation'] is None) != (entry['generation'] is None):
+                errors.append(f'Folder {path}: generation is {"null" if entry["generation"] is None else "set"}, '
+                              f'the release has {"none" if release["generation"] is None else "one"}')
+        else:
+            problems, document = check_descriptor(root, entry['generation'])
+            errors.extend(f'Folder {path}: generation descriptor: {p}' for p in problems)
+            if document is not None and document != release['generation']:
+                errors.append(f'Folder {path}: generation document differs from the release')
+    sample = manifest.get('sample')
+    built = set(sample['folders']) if sample else None if manifest.get('partial') else set(expected['folders'])
+    if built is not None and set(folders) != built:
+        errors.append(f'Folder index differs from the {"sampled" if sample else "release"} folders: '
+                      f'{len(set(folders) - built)} extra, {len(built - set(folders))} missing')
+    return errors
+
+
 def check_zoning(root, manifest):
     """Every zoning page the manifest names is built (ADR 0050); an older manifest without the section passes."""
     root = Path(root)
@@ -228,7 +312,11 @@ def check(site, prefix='/archetype-atlas/', complete=False):
     manifest = json.loads((site/'site-manifest.json').read_text(encoding='utf-8'))
     pages = parse(site)
     errors = check_links(site, pages, prefix, unbuilt_folder(manifest))+check_store(site, pages)+check_retired(site)
-    errors += check_coverage(site, manifest)+check_zoning(site, manifest)+check_search(site, manifest)+check_viewer(site)+check_size(site)
+    from scripts.site_release import SiteRelease
+    release = SiteRelease(manifest['release'])
+    ids = (set(release.programs), {s: set(r.get('contexts', {})) for s, (_, r) in release.sets.items()})
+    errors += check_coverage(site, manifest, ids)+check_index(site, manifest, release_index(release))
+    errors += check_zoning(site, manifest)+check_search(site, manifest)+check_viewer(site)+check_size(site)
     if complete:
         if manifest.get('partial'):
             errors.append('Partial build (--only or --sample) cannot be published')
@@ -249,8 +337,8 @@ def main():
     sample = manifest.get('sample')
     print(f'Release {manifest["release"]}'+(f' (sample: {len(sample["folders"])} folders, links into the others excused)' if sample else '')
           + f': {count:,} HTML pages, {len(manifest["programs"]):,} programs and '
-          f'{len(manifest["construction_sets"]):,} construction sets with pages and exports; links, fragments, store, '
-          f'search, viewer and retirement checks passed; {size:,} bytes')
+          f'{len(manifest["construction_sets"]):,} construction sets with pages and exports, {len(manifest["folders"]):,} folders '
+          f'indexed; links, fragments, store, index, search, viewer and retirement checks passed; {size:,} bytes')
 
 
 if __name__ == '__main__':

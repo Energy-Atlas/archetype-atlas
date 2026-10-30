@@ -1,5 +1,16 @@
 # Changelog
 
+## Site index: space types and folder generation settings — 2026-10-30
+
+- **`site-manifest.json`** ([ADR 0052](docs/adr/0052-site-index-space-types-and-folders.md),
+  [site build](docs/site-build.md#the-site-index)): each program gains `space_type` (the name
+  before its last `_` for `<space type>_<building type>` names, every commercial program; an
+  explicit `null` otherwise), `building_type`, `folder` and `mode`; a new `folders` index holds
+  each folder's family, template, building type, sorted program IDs and its `generation.json`
+  of release 2.2.0 as a store descriptor (`null` where it has none). `site_check` verifies the
+  index against the release. Additive, no data release; BEMGen reads it for its DOE program
+  maps. The index grows from 2.6 MB to 3.3 MB.
+
 ## Release 2.2.0 and generator 4.0.0: generation parameters in the release — 2026-10-30
 
 - **Data release 2.2.0** ([ADR 0051](docs/adr/0051-generation-parameters-in-the-release.md),
