@@ -116,7 +116,8 @@ def data(release=atlas_delta.RELEASE):
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as out:
         for number in sorted(release_folders(release), key=lambda n: tuple(int(x) for x in n.split('.'))):
             root = atlas_delta.folder_of(number)
-            for path in sorted(p for p in root.rglob('*') if p.is_file()):
+            # Sorted by the POSIX entry name (byte order), the same on every platform.
+            for path in sorted((p for p in root.rglob('*') if p.is_file()), key=lambda p: p.relative_to(root).as_posix()):
                 info = zipfile.ZipInfo(f'v{number}/'+path.relative_to(root).as_posix(), EPOCH_ZIP)
                 info.compress_type = zipfile.ZIP_DEFLATED
                 info.external_attr = 0o644 << 16
