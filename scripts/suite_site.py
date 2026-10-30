@@ -9,7 +9,7 @@ One page per program and per construction set, one page per template × building
 type folder and per template library, the `view/?id=` viewer, and one
 content-addressed JSON store (`store/`) for every export. The output is a pure
 function of the release and the scripts; `site-manifest.json` records the release,
-the input digest and every page and export. A sample (`--sample N`, `sample_folders`)
+the input digest, every page and export, and the program and folder index BEMGen reads (ADR 0052). A sample (`--sample N`, `sample_folders`)
 builds the site-wide pages and at most N folders of every family × template, chosen by
 a fixed rule, and records them in the manifest; like `--only` it cannot be published.
 """
@@ -28,7 +28,7 @@ from scripts.common import ROOT
 from scripts.lod_site import write_zoning
 from scripts.site_pages import (construction_page, context_facets, folder_page, glossary_page, library_page, markdown,
                                 program_page)
-from scripts.site_release import FAMILIES, RELEASES, SiteRelease, page_slug
+from scripts.site_release import FAMILIES, RELEASES, SiteRelease, page_slug, space_type
 from scripts.site_render import Links, anchor, esc
 from scripts.site_store import Store, canonical
 
@@ -260,7 +260,7 @@ def generate(target, number=None, jobs=None, only=None, sample=None):
     for sid in sorted(release.schedules):
         if release.schedules[sid] in folders:
             site.schedule_json[sid] = site.store.put({'release': release.number, **release.schedule(sid)})
-    manifest = {'programs': {}, 'construction_sets': {}}
+    manifest = {'programs': {}, 'construction_sets': {}, 'folders': {}}
     jobs = jobs or min(os.cpu_count() or 1, 6)
     with concurrent.futures.ProcessPoolExecutor(jobs, initializer=_start, initargs=(release.number,)) as pool:
         chunks = [program_ids[i:i+24] for i in range(0, len(program_ids), 24)]
@@ -276,7 +276,7 @@ def generate(target, number=None, jobs=None, only=None, sample=None):
         for set_id, results in unordered(pool, _construction, set_ids, jobs*2):
             write_construction(site, set_id, results, manifest)
     for folder in folders:
-        write_folder(site, release.folders[folder])
+        write_folder(site, release.folders[folder], manifest)
     write_libraries(site)
     site.write('catalogue/glossary/index.md', glossary_page(site, 'catalogue/glossary/', release.glossary))
     write_indexes(site, folders)
@@ -311,7 +311,21 @@ def write_program(site, pid, exports, manifest):
                                   record.get('climate'), 'program')
     manifest['programs'][pid] = {'page': url, **{v: (exports[v]['descriptor'] or {}).get('href') for v in VERSIONS},
                                  **({'filled_reason': exports['filled']['reason']} if exports['filled']['reason'] else {}),
-                                 **({'source_reason': exports['source']['reason']} if exports['source']['reason'] else {})}
+                                 **({'source_reason': exports['source']['reason']} if exports['source']['reason'] else {}),
+                                 **program_index(folder_path, mode, record)}
+
+
+def program_index(folder, mode, record):
+    """What a consumer needs to place a program without its export (ADR 0052): its space type (explicit null where the
+    name is not `<space type>_<building type>`), building type, release folder and mode."""
+    return {'space_type': space_type(record), 'building_type': record.get('building_type'), 'folder': folder, 'mode': mode}
+
+
+def folder_index(site, folder):
+    """A folder's entry in the site index (ADR 0052): its programs and its generation.json in the store, or null."""
+    generation = site.store.put(folder.generation) if folder.generation is not None else None
+    return {'family': folder.family, 'template': folder.template, 'building_type': folder.building_type,
+            'programs': sorted(folder.programs), 'generation': generation}
 
 
 def write_construction(site, set_id, results, manifest):
@@ -350,7 +364,7 @@ def write_construction(site, set_id, results, manifest):
     manifest['construction_sets'][set_id] = {'page': url, 'contexts': entries}
 
 
-def write_folder(site, folder):
+def write_folder(site, folder, manifest):
     release = site.release
     url = site.folder_url(folder.path)
     programs = [(pid, release.programs[pid][1], release.programs[pid][2]) for pid in folder.programs]
@@ -359,6 +373,7 @@ def write_folder(site, folder):
     evidence_rows = referenced(folder.tables, release.evidence)
     site.write(url+'index.md', folder_page(site, folder, url, programs, sets, schedules, evidence_rows, trail_of(folder.path)[:-1]))
     site.summaries[url] = summary(folder.template, folder.building_type, FAMILIES[folder.family], 'folder')
+    manifest['folders'][folder.path] = folder_index(site, folder)
 
 
 def write_libraries(site):

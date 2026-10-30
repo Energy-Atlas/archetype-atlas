@@ -55,6 +55,14 @@ class Folder:
         self.programs, self.sets = [], []
         self.tables = {}
         self.schedule_table = None
+        self.generation = None  # the folder's generation.json (ADR 0051), or None where the release has none
+
+
+def space_type(record):
+    """The space type of a program named `<space type>_<building type>` (every commercial program), else None (ADR 0052)."""
+    name, building_type = record.get('name') or '', record.get('building_type') or ''
+    suffix = '_'+building_type
+    return name[:-len(suffix)] if building_type and len(name) > len(suffix) and name.endswith(suffix) else None
 
 
 class SiteRelease:
@@ -92,6 +100,8 @@ class SiteRelease:
                 entry.schedule_table = table
                 for sid in table['schedules']:
                     self.schedules[sid] = folder
+            elif rest == 'generation.json':
+                entry.generation = json.loads(self.files[path])
             elif rest.startswith('schedules/'):
                 for sid in json.loads(self.files[path])['schedules']:
                     self.schedules[sid] = folder
