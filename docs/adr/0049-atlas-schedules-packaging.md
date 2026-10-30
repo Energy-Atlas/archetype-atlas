@@ -76,3 +76,16 @@ wheel on the GitHub release only, no PyPI).
   `atlas-schedules-v<version>` on `main` after the pull request merges.
 - Release 2.1.0 is the first data release to name its generator version and wheel
   (ADR 0046's delta rules; CHANGELOG).
+
+## 5. Amendments
+
+- 2026-10-29: **Checksums are attached from 3.0.0 on.** Each generator release carries
+  `SHA256SUMS.txt` (`sha256sum` format) for its wheel and sdist, verified with
+  `sha256sum -c SHA256SUMS.txt`. For 3.0.0 the file was computed from the attached assets
+  and checked against an independent `python -m build` of the tag in a clean venv: the
+  wheel's 2,111 package files and the sdist's 2,164 are byte-identical to the published
+  ones; only the archive timestamps and the line endings of the generated metadata files
+  (`METADATA`, `PKG-INFO`, `setup.cfg`, written with the build host's newline) differ, so
+  a rebuild reproduces the contents, not the archive hash. The workflow change that emits
+  the file automatically is tracked under the generator 4.0.0 work (ADR 0051, in
+  progress).
