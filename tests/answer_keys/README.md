@@ -28,6 +28,7 @@ commit `779f9fb` under `scripts/answer_keys/`, with the migration scripts under
 
 | Key | Checks | Source | Test | Extractor |
 |---|---|---|---|---|
+| `orchestration/generator-3-0-0-bundles.json.gz` | 266 generator 3.0.0 bundles (every recipe kind, 32 service variants, the 4 examples; seed 42): loads, controls, generation records, each schedule's sum, maximum and every 37th hour | generator 3.0.0 from its packaged recipes (ADR 0051 section 7) | `test_generator_3_0_0_equivalence` | `scripts/capture/generator_3_0_0_bundles.py` (85b3bb58; it read the packaged recipes and left with them) |
 | `commercial/kernel-cases.json.gz` | ComStock transform, 11 controlled cases, every slot | native capture `commercial-vectors.json` (`scripts/capture/commercial.rb`) | `test_commercial_kernel` | `commercial_kernel.py` (779f9fb) |
 | `commercial/families.json.gz` | 926 programme cases and 40 restaurant water cases of Medium/Small Office, Warehouse, Retail and both restaurants | native family captures, OpenStudio 3.10 | `test_commercial_families`, `test_recipes_native` | `commercial_families.py` (779f9fb) |
 | `commercial/family-programmes.json.gz` | 534 cases, 2,834 slots of the nine newer families (one template each, both views, seeds 42/51) | `build/task-10/native-family-programmes-20261017` | `test_family_programmes_native` | `family_programmes.py` (live) |

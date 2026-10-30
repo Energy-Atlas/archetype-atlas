@@ -19,7 +19,9 @@ wheel on the GitHub release only, no PyPI).
 1. **One package, `atlas-schedules`**, built from `pyproject.toml` with setuptools: the
    `atlas_schedules` package and its data (`data/`: recipes, configurations, services,
    schedules, sampling and characteristics tables, weather, upstream notices; `schemas/`:
-   the request schema). Runtime dependencies are numpy and jsonschema with lower bounds;
+   the request schema). *Amended by [ADR 0051](0051-generation-parameters-in-the-release.md)
+   (generator 4.0.0):* the recipes, configurations, services and schedule table are replaced by
+   the generator view of one data release (`data/atlas-release/`, built before the wheel). Runtime dependencies are numpy and jsonschema with lower bounds;
    `requires-python >= 3.11`. The console script `atlas-schedules` runs the same `main` as
    `python -m atlas_schedules`, which keeps working.
 2. **The package version is the generator version.** `pyproject.toml` reads
@@ -43,6 +45,7 @@ wheel on the GitHub release only, no PyPI).
    | Generator (`atlas-schedules`) | Packaged recipes built from | Data release carrying the same recipes |
    | --- | --- | --- |
    | 3.0.0 | atlas release 2.0.0 programs (ADR 0046 section 6, ADR 0047 section 3) | 2.1.0 |
+   | 4.0.0 | none packaged: recipes assembled from the release read; the wheel bundles the generator view of 2.2.0 (ADR 0051) | 2.2.0 |
 
    A generator minor or patch that leaves the recipes unchanged pairs with the same data
    release; a data release that rewrites recipes names the generator version that wrote
@@ -70,9 +73,11 @@ wheel on the GitHub release only, no PyPI).
 - `pip install <wheel URL>` gives `atlas-schedules`, `python -m atlas_schedules` and
   `from atlas_schedules import generate` outside a checkout; no OpenStudio, Ruby or
   network access at run time.
-- The wheel is about 10 MB (2,113 files), most of it recipes and the gzip
-  characteristics shards.
+- The 3.0.0 wheel was about 10 MB (2,113 files), most of it recipes and the gzip
+  characteristics shards; the 4.0.0 wheel bundles the generator view instead (ADR 0051
+  section 6).
 - Changing `__version__` is a release act: bump it, update the CHANGELOG, tag
   `atlas-schedules-v<version>` on `main` after the pull request merges.
 - Release 2.1.0 is the first data release to name its generator version and wheel
-  (ADR 0046's delta rules; CHANGELOG).
+  (ADR 0046's delta rules; CHANGELOG); release 2.2.0 names generator 4.0.0 as the first that
+  reads it (ADR 0051).
