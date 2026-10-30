@@ -12,8 +12,10 @@
 - **`site_check` on a sample** runs every check within the sampled folders and the
   site-wide pages and excuses only a link into a folder the sample left out;
   `--require-complete` refuses a sample as it refuses `--only`. `site_smoke` searches
-  the picked program by its full ID: a slug such as `sales-mixed` ties with the same
-  program of every other template and the result list shows ten.
+  the picked program by the last hyphen-separated piece of its ID (`mixed.f21a21`), one
+  index token carrying the hash, which matches that page alone: a slug such as
+  `sales-mixed` ties with the same program of every other template and the result list
+  shows ten, and the full ID matches every page sharing a template or mode token.
 - **The catalogue workflow's `build` job** generates, builds strictly and verifies the
   sample on a pull request, with no cache and no Pages artifact; a push to `main`, the
   weekly run and a manual run build, cache, verify and publish the full site as before.
