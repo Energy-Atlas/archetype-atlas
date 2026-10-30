@@ -54,7 +54,11 @@ were added.
    definition-catalogue checks. CI caches `build/site-docs` under a digest of the
    release manifests and every input the generator and MkDocs read
    (`python -m scripts.suite_site --digest`); `site_check --require-complete` rejects a
-   cached tree whose recorded digest differs, and a partial build.
+   cached tree whose recorded digest differs, and a partial build. *Amended 2026-10-29
+   (CI workload pass 3): a pull request generates, builds and checks a sample of the
+   catalogue (`suite_site --sample 1`, one folder per family × template by a fixed rule,
+   uncached, not published); the full build, its cache and the publication gate run on a
+   push to `main`, weekly and manually. See `docs/site-build.md`.*
 7. **Retirement.** `active_site`, `definition_site`, `object_site`, `construction_site`
    (and its refresh, smoke and foundation and equivalent presentation modules),
    `query_v2`, `query_history`, `query_site`, the old `site` generator and its water

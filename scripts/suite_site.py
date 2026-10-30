@@ -2,13 +2,16 @@
 
 python -m scripts.suite_site                      # the newest release into build/site-docs
 python -m scripts.suite_site --release 1.4.0      # a named release
+python -m scripts.suite_site --sample 1           # one folder per family × template (pull requests)
 python -m scripts.suite_site --digest             # the input digest CI caches the output under
 
 One page per program and per construction set, one page per template × building
 type folder and per template library, the `view/?id=` viewer, and one
 content-addressed JSON store (`store/`) for every export. The output is a pure
 function of the release and the scripts; `site-manifest.json` records the release,
-the input digest and every page and export.
+the input digest and every page and export. A sample (`--sample N`, `sample_folders`)
+builds the site-wide pages and at most N folders of every family × template, chosen by
+a fixed rule, and records them in the manifest; like `--only` it cannot be published.
 """
 import argparse
 import ast
@@ -223,13 +226,35 @@ def trail_of(folder):
             (folder.split('/')[2], 'catalogue/'+folder)]
 
 
-def generate(target, number=None, jobs=None, only=None):
+def folder_cost(release, folder):
+    """Programs and construction contexts: what a folder's export costs."""
+    return len(folder.programs)+sum(len(release.sets[s][1].get('contexts', {})) for s in folder.sets)
+
+
+def sample_folders(release, per_template=1):
+    """At most `per_template` folders of every family × template, by a fixed rule: the folders whose programs span
+    the most modes (source, general, department, dwelling) first, then the cheapest, then the first path. One per
+    template builds every page kind (and every template index the library pages link to) at a fraction of the cost."""
+    groups = {}
+    for folder in release.folders.values():
+        groups.setdefault((folder.family, folder.template), []).append(folder)
+    chosen = []
+    for key in sorted(groups):
+        ranked = sorted(groups[key], key=lambda f: (-len({release.programs[p][1] for p in f.programs}), folder_cost(release, f), f.path))
+        chosen.extend(f.path for f in ranked[:per_template])
+    return sorted(chosen)
+
+
+def generate(target, number=None, jobs=None, only=None, sample=None):
     """Write the MkDocs input tree of one release into `target` (a fresh directory)."""
     release = SiteRelease(number)
     site = Site(release, target)
     site.place()
     zoning = write_zoning(site)  # before the program pages, which link to their prototype's zoning page
-    folders = sorted(f for f in release.folders if only is None or re.search(only, f))
+    if sample is not None:
+        folders = sample_folders(release, sample)
+    else:
+        folders = sorted(f for f in release.folders if only is None or re.search(only, f))
     program_ids = [p for p in sorted(release.programs) if release.programs[p][0] in folders]
     set_ids = [s for s in sorted(release.sets) if release.sets[s][0] in folders]
     for sid in sorted(release.schedules):
@@ -263,7 +288,9 @@ def generate(target, number=None, jobs=None, only=None):
               'zoning_pages': len(zoning['pages'])}
     result = {'kind': 'atlas_site', 'release': release.number, 'generated_by': 'python -m scripts.suite_site',
               'release_manifest_sha256': hashlib.sha256((RELEASES/f'v{release.number}/manifest.json').read_bytes()).hexdigest(),
-              'inputs_sha256': inputs_digest(release.number), 'partial': only is not None, 'counts': counts, 'zoning': zoning, **manifest}
+              'inputs_sha256': inputs_digest(release.number), 'partial': only is not None or sample is not None,
+              **({'sample': {'folders_per_template': sample, 'folders': folders}} if sample is not None else {}),
+              'counts': counts, 'zoning': zoning, **manifest}
     site.write('site-manifest.json', json.dumps(result, ensure_ascii=False, sort_keys=True, indent=1)+'\n')
     return result
 
@@ -465,7 +492,7 @@ def write_guides(site):
                '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal code is MIT-licensed and original data and documentation are CC BY 4.0; upstream notices continue to apply.\n')
 
 
-def build(target, number=None, jobs=None, only=None):
+def build(target, number=None, jobs=None, only=None, sample=None):
     """Generate into a fresh staging directory beside `target`, then replace it."""
     target = Path(target).resolve()
     build_root = (ROOT/'build').resolve()
@@ -477,7 +504,7 @@ def build(target, number=None, jobs=None, only=None):
     with tempfile.TemporaryDirectory(dir=target.parent) as temporary:
         stage = Path(temporary)/'docs'
         shutil.copytree(ROOT/'website/assets', stage/'assets')
-        result = generate(stage, number, jobs, only)
+        result = generate(stage, number, jobs, only, sample)
         if target.exists():
             shutil.rmtree(target)
         stage.rename(target)
@@ -489,15 +516,17 @@ def main():
     parser.add_argument('--release', help='release number, e.g. 1.4.0 (default: the newest under data/atlas-releases)')
     parser.add_argument('--output', type=Path, default=ROOT/'build/site-docs')
     parser.add_argument('--jobs', type=int, help="export worker processes (default: CPU count, at most 6; each holds the resolved release)")
-    parser.add_argument('--only', help='regular expression over folders, for a partial preview build')
+    partial = parser.add_mutually_exclusive_group()
+    partial.add_argument('--only', help='regular expression over folders, for a partial preview build')
+    partial.add_argument('--sample', type=int, metavar='N', help='at most N folders of every family × template, by a fixed rule (pull requests)')
     parser.add_argument('--digest', action='store_true', help='print the input digest and exit')
     args = parser.parse_args()
     from scripts.site_release import newest
     if args.digest:
         print(inputs_digest(args.release or newest()))
         return
-    result = build(args.output, args.release, args.jobs, args.only)
-    print(json.dumps({k: result[k] for k in ('release', 'inputs_sha256', 'counts')}, indent=1))
+    result = build(args.output, args.release, args.jobs, args.only, args.sample)
+    print(json.dumps({k: result[k] for k in ('release', 'inputs_sha256', 'counts', *(['sample'] if 'sample' in result else []))}, indent=1))
 
 
 if __name__ == '__main__':
