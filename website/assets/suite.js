@@ -155,7 +155,9 @@
     });
     function apply() {
       const wanted = Object.fromEntries(selects.map(s => [s.dataset.filter, s.value]));
-      const visible = element => Object.entries(wanted).every(([axis, value]) => matches(axis, element.dataset[axis], value));
+      // A row that spans an axis (`data-across="orientation"`: the robust rows of the zoning pages) matches every value of it.
+      const visible = element => Object.entries(wanted).every(([axis, value]) =>
+        (element.dataset.across || '').split(' ').includes(axis) || matches(axis, element.dataset[axis], value));
       let shown = 0;
       sections.forEach(section => {
         section.hidden = !visible(section);

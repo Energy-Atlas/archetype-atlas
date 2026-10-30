@@ -5,12 +5,16 @@ files (schema `schemas/lod-recommendations-v1.schema.json`) and the provenance s
 writes into the MkDocs input tree, like the suite pages (`scripts.suite_site`):
 
 - `zoning/`: the overview, what the study measured, the threshold, every prototype;
-- `zoning/<prototype>/`: one page per prototype, one row per climate zone × vintage ×
-  orientation with the recommended zoning and its errors, then every zoning of every cell;
+- `zoning/<prototype>/`: one page per prototype: the robust zoning of each climate zone ×
+  vintage over both orientations (ADR 0050 section 6), then one row per climate zone ×
+  vintage × orientation with the recommended zoning and its errors, then every zoning of
+  every cell;
 - `zoning/heat-transfer/`: the interior-wall and floor heat-transfer sub-study;
 - `zoning/method/`: method, the cost protocol, limits, reading cautions and provenance.
 
-Every table is generated from the files; no value is computed here beyond counts. The loader
+Every table is generated from the files; no value is computed here beyond counts, the robust
+rule's choice among the writer's verdicts, the worse of two stored errors and a median of the
+stored cost ratios (`ROBUST_RULE`, written into each prototype's JSON as a labelled block). The loader
 admits fields a later drop adds: drop 2 (schema 1.1.0) added the serial costs of the R5 timing
 pass as a `cost` object on timed references and zonings and a top-level `timing` block, which
 the pages show as cost columns and a cost section; a file without them (1.0.0) renders as before.
@@ -238,6 +242,201 @@ def cell_anchor(entry):
     return 'cell-'+entry['id']
 
 
+# Robust across orientations (ADR 0050 section 6): an atlas rule over the writer's per-zoning verdicts.
+
+ZONING_KEYS = ('simplifier', 'join_pieces', 'perimeter_depth', 'stacker', 'iwht', 'fht')  # the study's zoning order
+ERROR_KEYS = tuple(f'sensible_{load}_{m}' for m in ('kwh_rel_err_pct', 'cvrmse_pct', 'nmbe_pct') for load in ('heating', 'cooling'))
+AREA_KEY = 'conditioned_area_change_pct'
+ROBUST_RULE = ('For each prototype, climate zone and vintage, the robust zoning is the coarsest (fewest modelled zones) that meets the threshold '
+               'at every orientation of the cell pair, by the writer\'s own verdict on each zoning at each orientation; a duplicate never meets, '
+               'as the writer lists it. Ties at the fewest zones go to a zoning both orientations recommend, else to the first in the study\'s '
+               'zoning order (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT); the tied zonings are named. The errors reported are '
+               'the worse of the orientations\' values for each metric, so the row is a bound, not a mean; the cost ratios are the medians '
+               'over the timed sites of that zoning in the pair.')
+
+
+def zoning_key(zoning):
+    return tuple(zoning.get(k) for k in ZONING_KEYS)
+
+
+def zoning_order(zoning):
+    """The writer's canonical order of a zoning: the text of each field, simplifier first (its deduplication keeps the first)."""
+    return tuple('' if zoning.get(k) is None else str(zoning[k]) for k in ZONING_KEYS)
+
+
+def pair_key(entry):
+    return (entry['prototype'], entry['climate_zone'], entry['vintage'])
+
+
+def pair_id(key):
+    return 'pair:'+'|'.join(str(k) for k in key)
+
+
+def pairs(entries):
+    """The cell pairs of a set of entries: (prototype, climate zone, vintage) → {orientation: entry}, in cell order."""
+    groups = {}
+    for entry in sorted(entries, key=cell_order):
+        groups.setdefault(pair_key(entry), {})[entry['orientation_degrees']] = entry
+    return groups
+
+
+def worst(name, picks):
+    """The orientation whose value of `name` has the larger magnitude, as (entry, zoning row), or the first with none stored."""
+    valued = [(e, z) for e, z in picks if (z.get('metrics', {}).get(name) if name != AREA_KEY else z.get(AREA_KEY)) is not None]
+    if not valued:
+        return picks[0]
+    return max(valued, key=lambda p: abs(p[1]['metrics'][name] if name != AREA_KEY else p[1][AREA_KEY]))
+
+
+def median(values):
+    values = sorted(values)
+    if not values:
+        return None
+    middle = len(values)//2
+    return values[middle] if len(values) % 2 else (values[middle-1]+values[middle])/2
+
+
+def robust_cost(picks):
+    """The robust zoning's cost ratios: the median over the pair's timed sites of that zoning, by key; empty when none is timed."""
+    cost = {}
+    for key in COST_KEYS:
+        values = [z['cost'][key] for _, z in picks if z.get('cost') and z['cost'].get(key) is not None]
+        if values:
+            cost[key] = median(values)
+    return cost
+
+
+def robust(pair):
+    """The robust recommendation of a cell pair ({orientation: entry}), by `ROBUST_RULE`.
+
+    Returns a dict: `status` is `robust` (a zoning meets the threshold at every orientation), `none` (none does) or `single` (one
+    orientation only, so no pair); with a pick, `zoning`, `zone_count`, `picks` ([(entry, zoning row)] by orientation), `ties`
+    (the other zonings with the fewest zones that are kept at every orientation), `same_pick` (every orientation recommends it)
+    and `cost`; always `entries` and `per_orientation` ({orientation: the cell's recommended zonings}).
+    """
+    orientations = sorted(pair)
+    entries = [pair[o] for o in orientations]
+    result = {'orientations': orientations, 'entries': entries,
+              'per_orientation': {o: [p['zoning'] for p in pair[o]['recommended']] for o in orientations}}
+    if len(orientations) < 2:
+        return {**result, 'status': 'single'}
+    rows = [{zoning_key(z['zoning']): z for z in e['zonings']} for e in entries]
+    recommended = [{zoning_key(p['zoning']) for p in e['recommended']} for e in entries]
+    candidates = [k for k in rows[0] if all(k in r and r[k].get('succeeded') and r[k].get('meets_threshold') for r in rows)]
+    if not candidates:
+        return {**result, 'status': 'none'}
+
+    def zones(key):
+        return max((r[key]['zone_count'] if r[key].get('zone_count') is not None else 10**6) for r in rows)
+
+    def order(key):
+        return (zones(key), 0 if all(key in r for r in recommended) else 1, zoning_order(rows[0][key]['zoning']))
+
+    pick = min(candidates, key=order)
+    picks = [(e, r[pick]) for e, r in zip(entries, rows)]
+    ties = sorted((k for k in candidates if k != pick and zones(k) == zones(pick) and not any(r[k].get('duplicate_of') for r in rows)),
+                  key=order)
+    return {**result, 'status': 'robust', 'key': pick, 'zoning': rows[0][pick]['zoning'], 'zone_count': zones(pick) if zones(pick) < 10**6 else None,
+            'picks': picks, 'ties': [rows[0][k]['zoning'] for k in ties], 'same_pick': all(pick in r for r in recommended),
+            'cost': robust_cost(picks)}
+
+
+def robust_results(entries):
+    """The robust result of every cell pair of `entries`, keyed by pair, in cell order."""
+    return {key: robust(pair) for key, pair in pairs(entries).items()}
+
+
+def robust_block(results):
+    """The robust results as JSON for the prototype slice: labelled as computed by the site, not by the report writer."""
+    pairs_json = []
+    for key, r in results.items():
+        item = {'prototype': key[0], 'climate_zone': key[1], 'vintage': key[2], 'orientations': r['orientations'], 'status': r['status'],
+                'cells': [e['id'] for e in r['entries']],
+                'recommended_per_orientation': {f'{o:g}': [zoning_label(z) for z in zs] for o, zs in r['per_orientation'].items()}}
+        if r['status'] == 'robust':
+            item.update({'zoning': r['zoning'], 'label': zoning_label(r['zoning']), 'zone_count': r['zone_count'],
+                         'site_names': {f'{e["orientation_degrees"]:g}': z['site_name'] for e, z in r['picks']},
+                         'recommended_at_every_orientation': r['same_pick'], 'ties': [zoning_label(z) for z in r['ties']],
+                         'worst': {name: {'value': (z.get('metrics', {}).get(name) if name != AREA_KEY else z.get(AREA_KEY)),
+                                          'orientation': e['orientation_degrees']} for name in ERROR_KEYS+(AREA_KEY,) for e, z in [worst(name, r['picks'])]},
+                         'cost': r['cost'] or None})
+        pairs_json.append(item)
+    return {'rule': ROBUST_RULE, 'computed_by': 'scripts/lod_site.py at site build, from the verdicts in this file (ADR 0050 section 6); '
+                                                'not a report-writer field', 'pairs': pairs_json}
+
+
+def tally_robust(results):
+    counts = {}
+    for r in results.values():
+        if r['status'] == 'robust':
+            label = zoning_label(r['zoning'])
+            counts[label] = counts.get(label, 0)+1
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+ROBUST_COLUMNS = ('Robust zoning', 'Zones', 'Heating error %', 'Cooling error %', 'Heating CV(RMSE) %', 'Cooling CV(RMSE) %',
+                  'Heating NMBE %', 'Cooling NMBE %', 'Area change %')
+
+
+def orientation_picks(page, r):
+    """`0°: X (2 zones) · 45°: none`, each orientation linked to its cell."""
+    parts = []
+    for entry in r['entries']:
+        link = f'<a href="#{esc(anchor(cell_anchor(entry)))}">{esc(orientation(entry["orientation_degrees"]))}</a>'
+        picks = entry['recommended']
+        text = ', '.join(f'{esc(zoning_label(p["zoning"]))} ({num(p.get("zone_count"), 0)} zone{"" if p.get("zone_count") == 1 else "s"})'
+                         for p in picks) if picks else '<em>none</em>'
+        parts.append(f'{link}: {text}')
+    return ' · '.join(parts)
+
+
+def robust_rows(page, results, threshold, costed=False):
+    """One row per cell pair: the robust zoning with the worse of the orientations' errors, or why there is none."""
+    rows = []
+    span = len(ROBUST_COLUMNS)+(len(COST_COLUMNS) if costed else 0)
+    for key, r in results.items():
+        _, climate, vintage = key
+        attrs = f' data-context="{esc(pair_id(key))}" data-climate="{esc(climate)}" data-vintage="{esc(vintage)}" data-across="orientation"'
+        lead = f'<td>{esc(climate)}</td><td>{esc(vintage)}</td>'
+        if r['status'] == 'single':
+            rows.append(f'<tr class="ea-robust"{attrs}>{lead}<td colspan="{span+1}"><em>one orientation only '
+                        f'({", ".join(orientation(o) for o in r["orientations"])}): no pair to judge</em></td></tr>')
+            continue
+        if r['status'] == 'none':
+            rows.append(f'<tr class="ea-robust"{attrs}>{lead}<td colspan="{span}"><em>none meets the threshold at both orientations</em></td>'
+                        f'<td>{orientation_picks(page, r)}</td></tr>')
+            continue
+        label = esc(zoning_label(r['zoning']))
+        if r['ties']:
+            label += f' <span class="ea-ties">(tie: {esc(", ".join(zoning_label(z) for z in r["ties"]))})</span>'
+        cells = [label, num(r['zone_count'], 0)]
+        for name in ERROR_KEYS:
+            entry, zoning = worst(name, r['picks'])
+            cells.append(metric(zoning, name, entry, threshold))
+        cells.append(num(worst(AREA_KEY, r['picks'])[1].get(AREA_KEY), 2))
+        basis = ('recommended at both orientations' if r['same_pick'] else orientation_picks(page, r))
+        rows.append(f'<tr class="ea-robust ea-recommended"{attrs}>{lead}'+''.join(f'<td>{c}</td>' for c in cells)
+                    + (cost_cells({'cost': r['cost']}) if costed else '')+f'<td>{basis}</td></tr>')
+    return rows
+
+
+def robust_body(page, results, threshold, costed=False):
+    """The robust summary table of a prototype page with its note."""
+    columns = ('Climate zone', 'Vintage')+ROBUST_COLUMNS+(COST_COLUMNS if costed else ())+('Per orientation',)
+    robust_pairs = sum(1 for r in results.values() if r['status'] == 'robust')
+    judged_pairs = sum(1 for r in results.values() if r['status'] != 'single')
+    orientations = sorted({o for r in results.values() for o in r['orientations']})
+    cost_note = (' The cost ratios are the median over the timed sites of the robust zoning in the pair (in this drop one orientation at most '
+                 'is timed, so the ratio is that site\'s); <em>not timed</em> where none is.' if costed else '')
+    return (f'<p>Robust across orientations in <strong>{robust_pairs} of {judged_pairs}</strong> cell pairs '
+            f'({" and ".join(orientation(o) for o in orientations)}).</p>'
+            + table(robust_rows(page, results, threshold, costed), columns, 'ea-listing ea-robust')
+            + f'<p class="ea-note">{esc(ROBUST_RULE)} Where both orientations recommend the same zoning it is the robust one. A pair where no '
+            'zoning meets the threshold at both orientations says so and names each orientation\'s own recommendation; the per-orientation '
+            f'rows below stay the reading for one orientation.{cost_note} <a href="{esc(page.rel(URL+"method/#section-robust"))}">The rule and '
+            'its limits</a>.</p>')
+
+
 def summary_rows(page, entries, axes, threshold, costed=False):
     """One row per recommended zoning of each cell (ties repeat the cell), or one row saying none meets the threshold.
 
@@ -319,15 +518,21 @@ def cell_section(page, entry, axes, threshold, costed=False):
     return f'<section class="ea-context"{page.claim(cell_anchor(entry))}{attrs}><h3>{esc(title)}</h3>{body}</section>'
 
 
-def cells_body(page, entries, axes, threshold, more_toc=(), costed=False):
-    """The summary table and the per-cell sections of a set of cells, with the filter form."""
+def paired(entries):
+    """Whether the cells span two or more orientations, so the robust rule has pairs to judge."""
+    return len({e['orientation_degrees'] for e in entries}) > 1
+
+
+def cells_body(page, entries, axes, threshold, more_toc=(), costed=False, results=None):
+    """The summary table and the per-cell sections of a set of cells, with the filter form; the robust table first where there are pairs."""
     columns = tuple(AXES[a] for a in axes)+SUMMARY_COLUMNS+(COST_COLUMNS if costed else ())
-    toc = [('recommended', 'Recommended zonings'), ('cells', 'Every zoning by cell'), *more_toc]
+    toc = [*([('robust', 'Robust across orientations')] if results else []), ('recommended', 'Recommended zonings'), ('cells', 'Every zoning by cell'), *more_toc]
     cost_note = (' The cost ratios are the serial timing pass (R5): the zoning\'s processor time, wall clock and peak committed memory over '
                  'its reference\'s, each the median of three repeats; <em>not timed</em> marks a cell outside the 12 timed ones (the medium '
                  f'office and the primary school were not timed). <a href="{esc(page.rel(URL+"method/#section-cost"))}">Cost protocol</a>.'
                  if costed else '')
     body = [filter_form(entries, axes), contents(toc),
+            *([section(page, 'robust', 'Robust across orientations', robust_body(page, results, threshold, costed))] if results else []),
             section(page, 'recommended', 'Recommended zonings',
                     table(summary_rows(page, entries, axes, threshold, costed), columns, 'ea-listing ea-recommendations')
                     + '<p class="ea-note">The coarsest zonings (fewest modelled zones) meeting the threshold; ties are all listed. '
@@ -384,14 +589,21 @@ def prototype_page(site, drop, prototype, url):
     name = prototype_name(prototype)
     threshold = drop.threshold
     axes = ('climate', 'vintage', 'orientation')
-    descriptor = site.store.put(slice_of(drop.main, entries))
+    results = robust_results(entries) if paired(entries) else None
+    slice_json = slice_of(drop.main, entries)
+    if results:
+        slice_json['robust'] = robust_block(results)
+    descriptor = site.store.put(slice_json)
     buttons = json_buttons([(f'LOD recommendations {drop.main["version"]}, this prototype', f'lod-recommendations-{prototype_slug(prototype)}', descriptor)], page)
     with_pick = sum(1 for e in entries if e['recommended'])
     reference_zones = sorted({e['reference'].get('zone_count') for e in entries if e['reference'].get('zone_count') is not None})
     most = tally(entries)
+    robust_most = tally_robust(results) if results else []
     timed_cells = sum(1 for e in entries if timed(e))
     facts = [('Prototype', esc(prototype)), ('Cells', f'{len(entries)}: '+' × '.join(f'{len({axis_values(e)[a] for e in entries})} {AXES[a].lower()}s' for a in axes)),
              ('Cells with a recommended zoning', f'{with_pick} of {len(entries)}'),
+             ('Robust across orientations', f'{sum(1 for r in results.values() if r["status"] == "robust")} of {len(results)} cell pairs'
+                                            + (f': {esc(robust_most[0][0])} ({robust_most[0][1]})' if robust_most else '') if results else ''),
              ('Reference zoning', esc(zoning_label(entries[0]['reference'].get('zoning', {}))) if entries else ''),
              ('Reference zones', ' to '.join(str(z) for z in (reference_zones[0], reference_zones[-1])) if len(reference_zones) > 1 else (str(reference_zones[0]) if reference_zones else '')),
              ('Most often recommended', f'{esc(most[0][0])} ({most[0][1]} of {len(entries)} cells)' if most else 'none')]
@@ -401,7 +613,7 @@ def prototype_page(site, drop, prototype, url):
             'not timed: the prototype is not among the 12 timed cells of the serial pass'))
     trail = [(TITLE, URL), (name, url)]
     body = [crumbs(page, trail), kicker(page, drop, prototype), facts_html(facts), buttons,
-            cells_body(page, entries, axes, threshold, [('programs', 'Atlas programs')], drop.costed),
+            cells_body(page, entries, axes, threshold, [('programs', 'Atlas programs')], drop.costed, results),
             section(page, 'programs', 'Atlas programs', programs_table(page, entries)
                     + '<p class="ea-note">The atlas programs each program key of the prototype takes, as the suite\'s saved inputs name them; '
                     f'the prototype\'s geometry and glazing are BEMGen\'s DOE record. <a href="{esc(page.rel(URL+"method/"))}">Method and caveats</a>.</p>')]
@@ -538,16 +750,29 @@ def overview_page(site, drop, urls):
         descriptors.insert(1, (f'LOD recommendations {drop.ht["version"]}, heat-transfer sub-study', 'lod-recommendations-ht', site.store.put(drop.ht)))
     buttons = json_buttons(descriptors, page)
     with_pick = sum(1 for e in entries if e['recommended'])
+    results = robust_results(entries) if paired(entries) else {}
+    robust_pairs = sum(1 for r in results.values() if r['status'] == 'robust')
     rows = []
     for prototype in drop.prototypes():
         own = drop.entries(prototype)
         picks = tally(own)
+        own_results = {k: r for k, r in results.items() if k[0] == prototype}
         fewest = [p['zone_count'] for e in own for p in e['recommended']]
         reference = [e['reference'].get('zone_count') for e in own if e['reference'].get('zone_count') is not None]
         rows.append((f'<a href="{esc(page.rel(urls[prototype]))}">{esc(prototype_name(prototype))}</a>', str(len(own)),
-                     str(sum(1 for e in own if e['recommended'])), esc(f'{picks[0][0]} ({picks[0][1]})') if picks else '<em>none</em>',
+                     str(sum(1 for e in own if e['recommended'])),
+                     *([f'{sum(1 for r in own_results.values() if r["status"] == "robust")} of {len(own_results)}'] if results else []),
+                     esc(f'{picks[0][0]} ({picks[0][1]})') if picks else '<em>none</em>',
                      f'{min(fewest)} to {max(fewest)}' if fewest else NULL, f'{min(reference)} to {max(reference)}' if len(set(reference)) > 1 else (str(reference[0]) if reference else NULL)))
     overall = tally(entries)
+    robust_overall = tally_robust(results)
+    prototype_columns = ('Prototype', 'Cells', 'With a recommended zoning', *(['Robust across orientations (cell pairs)'] if results else []),
+                         'Most often recommended (cells)', 'Recommended zones', 'Reference zones')
+    robust_tally = (f'<h3>Robust across orientations: {robust_pairs} of {len(results)} cell pairs</h3>'
+                    + table([(esc(label), str(count)) for label, count in robust_overall], ('Robust zoning', 'Cell pairs'))
+                    + '<p class="ea-note">Counts over the cell pairs (prototype × climate zone × vintage) where one zoning meets the threshold at '
+                    f'both orientations; the robust zoning of a pair is the coarsest that does. <a href="{esc(page.rel(URL+"method/#section-robust"))}">'
+                    'The rule and its limits</a>.</p>' if results else '')
     body = [
         f'<p class="ea-kicker">Geometric LOD study · drop {esc(provenance.get("drop", ""))} · {len(entries)} cells · '
         f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))}</p>',
@@ -558,23 +783,64 @@ def overview_page(site, drop, urls):
         'envelope and weather fixed. Every test site is scored against its reference with the batch runner\'s paired metrics: the annual '
         'sensible heating and cooling error, the hourly CV(RMSE) and NMBE, the peak errors and the change of conditioned floor area. The '
         '<strong>recommended</strong> zoning of a cell is the coarsest one, by modelled zone count, that meets the threshold below; a cell '
-        'where no zoning meets it says so.</p>',
+        'where no zoning meets it says so.'
+        + (' The <strong>robust</strong> zoning of a prototype, climate zone and vintage is the coarsest that meets the threshold at both '
+           'orientations; each prototype page opens with it.' if results else '')+'</p>',
         buttons, contents([('threshold', 'Threshold'), ('prototypes', 'Prototypes'), ('tally', 'Recommended zonings'),
                            *([('cost', 'Cost')] if drop.timing else []), ('status', 'Status')]),
         section(page, 'threshold', 'Threshold', threshold_html(drop.threshold)),
         section(page, 'prototypes', 'Prototypes',
-                table(rows, ('Prototype', 'Cells', 'With a recommended zoning', 'Most often recommended (cells)', 'Recommended zones', 'Reference zones'))
-                + f'<p>A zoning meets the threshold in {with_pick} of {len(entries)} cells. Each prototype page lists every cell, the recommended '
+                table(rows, prototype_columns)
+                + f'<p>A zoning meets the threshold in {with_pick} of {len(entries)} cells'
+                + (f', and at both orientations of a cell pair in {robust_pairs} of {len(results)} pairs (robust across orientations)' if results else '')
+                + '. Each prototype page lists every cell, the recommended '
                 'zoning with its errors, every zoning\'s metrics and the atlas programs the prototype takes. '
                 + (f'The <a href="{esc(page.rel(urls["ht"]))}">heat-transfer sub-study</a> varies the interior-wall and floor heat-transfer switches. ' if 'ht' in urls else '')
                 + f'<a href="{esc(page.rel(URL+"method/"))}">Method and caveats</a>.</p>'),
         section(page, 'tally', 'Recommended zonings', table([(esc(label), str(count)) for label, count in overall], ('Zoning', 'Cells'))
-                + '<p class="ea-note">Counts over every cell and tie of the main matrix.</p>'),
+                + '<p class="ea-note">Counts over every cell and tie of the main matrix.</p>'+robust_tally),
         *([section(page, 'cost', 'Cost', cost_section(page, drop))] if drop.timing else []),
         section(page, 'status', 'Status', status_section(page, drop)),
     ]
     site.summaries[URL] = 'Zoning recommendations · geometric LOD study · thermal zoning · '+' '.join(prototype_name(p) for p in drop.prototypes())
     site.write(URL+'index.md', markdown(TITLE, ''.join(body)))
+
+
+def robust_method(page, results):
+    """The method page's section on the robust rule: what it is, what the data allows, and its limits."""
+    if not results:
+        return ('<p>This drop has one orientation per prototype, climate zone and vintage, so there is no pair to judge and no robust headline; '
+                'the rule below applies to a drop with two or more orientations.</p><p>'+esc(ROBUST_RULE)+'</p>')
+    robust_pairs = sum(1 for r in results.values() if r['status'] == 'robust')
+    none_pairs = sum(1 for r in results.values() if r['status'] == 'none')
+    single_pairs = sum(1 for r in results.values() if r['status'] == 'single')
+    same = sum(1 for r in results.values() if r['status'] == 'robust' and r['same_pick'])
+    tied = sum(1 for r in results.values() if r['status'] == 'robust' and r['ties'])
+    orientations = sorted({o for r in results.values() for o in r['orientations']})
+    return ('<p><strong>The rule</strong> (ADR 0050 section 6, an atlas rule over the writer\'s file). '+esc(ROBUST_RULE)+' Where both orientations '
+            'recommend the same zoning it is the robust one, since any coarser zoning meeting the threshold at both would have been recommended at '
+            'each. Where no zoning meets the threshold at both orientations the pair says so and names each orientation\'s own recommendation, '
+            'which stays the closest reading for that orientation; a prototype, climate zone and vintage with one orientation in the file has no '
+            'pair and no robust pick.</p>'
+            + facts_html([('Orientations', ' and '.join(orientation(o) for o in orientations)),
+                          ('Cell pairs', f'{len(results)}: robust in {robust_pairs}, none meeting at both orientations in {none_pairs}'
+                                         + (f', one orientation only in {single_pairs}' if single_pairs else '')),
+                          ('Recommended at both orientations', f'{same} of {robust_pairs} robust pairs; in the other {robust_pairs-same} the robust '
+                                                                'zoning is one orientation\'s recommendation or finer than both'),
+                          ('Ties at the fewest zones', f'{tied} pairs, named in the row')])
+            + '<p><strong>What the data allows.</strong> The file lists every kept zoning of every cell with its metrics and the writer\'s verdict, '
+            'so the rule compares the zonings themselves at both orientations, not only the two recommendations. It takes the writer\'s '
+            '<code>meets_threshold</code> as the verdict and recomputes nothing: a zoning that is a duplicate at one orientation carries the writer\'s '
+            '<em>never recommended</em> verdict there and does not qualify, which keeps the robust pick a kept test site at both orientations. The '
+            'errors in a robust row are the worse of the two orientations\' stored values for each metric (the larger magnitude, with its sign), '
+            'so a row bounds both orientations and is not an average; the orientation each value came from is in the prototype\'s JSON '
+            '(<code>robust.pairs[].worst</code>).</p>'
+            '<p><strong>Limits.</strong> Robust means robust over the two orientations the study ran, 0° and 45°, not over every orientation; '
+            'a later drop with more orientations is judged over all of them by the same rule. The robust zoning is at least as fine as each '
+            'orientation\'s own recommendation, never coarser. The cost ratios of a robust row are the median over the timed sites of that '
+            'zoning in the pair, which in this drop is one site at most since only 0° cells were timed. The rule is computed at site build by '
+            '<code>scripts/lod_site.py</code> and written into each prototype\'s JSON as a <code>robust</code> block labelled as such; the report '
+            'writer\'s files are unchanged.</p>')
 
 
 def method_page(site, drop, urls):
@@ -605,6 +871,7 @@ def method_page(site, drop, urls):
     gate = timing.get('gate', {})
     recheck = timing.get('recheck') or {}
     timed_cells = sorted((e for e in entries if timed(e)), key=lambda e: (drop.prototypes().index(e['prototype']), cell_order(e)))
+    results = robust_results(entries) if paired(entries) else {}
     coarser = {}  # (prototype, climate zone, zoning label, zones, reference zones): cells where the recommendation has more zones than the reference
     for entry in entries:
         for pick in entry['recommended']:
@@ -652,8 +919,8 @@ def method_page(site, drop, urls):
         'pass (R5) has not been applied to this drop.</p>')
     body = [
         crumbs(page, [(TITLE, URL), ('Method and caveats', URL+'method/')]),
-        contents([('design', 'What was compared'), ('metrics', 'Metrics and threshold'), ('dedup', 'Deduplication'), ('cost', 'Cost protocol'),
-                  ('cautions', 'Reading the recommendations'), ('limits', 'Limits and caveats'), ('provenance', 'Provenance')]),
+        contents([('design', 'What was compared'), ('metrics', 'Metrics and threshold'), ('dedup', 'Deduplication'), ('robust', 'Robust across orientations'),
+                  ('cost', 'Cost protocol'), ('cautions', 'Reading the recommendations'), ('limits', 'Limits and caveats'), ('provenance', 'Provenance')]),
         section(page, 'design', 'What was compared',
                 f'<p>{esc(study.get("design", ""))}</p>'
                 '<p>The <strong>reference</strong> of a cell is the prototype\'s full zoning as BEMGen writes it: '
@@ -664,8 +931,8 @@ def method_page(site, drop, urls):
                 + table(stacker_rows, ('Stacker', 'What it does'))
                 + f'<p>The main matrix has {min(per_cell)} to {max(per_cell)} zonings per cell'
                 + (f'; the cells of the {", ".join(fewer)} list fewer because a stacker or a perimeter depth does not apply to that prototype '
-                   '(multiplied rooms, or a wing narrower than twice the perimeter depth)' if fewer else '') + '. Orientation is a cell axis and is not '
-                'aggregated: the two orientations of one prototype, climate zone and vintage are two rows.</p>'),
+                   '(multiplied rooms, or a wing narrower than twice the perimeter depth)' if fewer else '') + '. Orientation is a cell axis: the '
+                'two orientations of one prototype, climate zone and vintage are two rows, and the headline over the pair is the robust rule below.</p>'),
         section(page, 'metrics', 'Metrics and threshold',
                 '<p>Every value shown is the batch runner\'s own paired metric of a test site against its reference, as the report writer stored it; '
                 'nothing is recomputed on this site. The annual error is the relative difference of annual ideal sensible heating or cooling; '
@@ -683,6 +950,7 @@ def method_page(site, drop, urls):
                 'tolerance of 10<sup>−9</sup>. The site kept is the first in zoning order (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT); '
                 f'a reference is never dropped. In the main matrix {duplicates:,} of {tests:,} test sites are duplicates of a listed zoning; each cell '
                 'names them under its table.</p>'),
+        section(page, 'robust', 'Robust across orientations', robust_method(page, results)),
         section(page, 'cost', 'Cost protocol', cost_body),
         section(page, 'cautions', 'Reading the recommendations', '<ul>'
                 '<li><strong>A recommendation with IWHT or FHT off is often not a heat-transfer effect.</strong> In the heat-transfer sub-study, '
@@ -756,6 +1024,16 @@ def method_page(site, drop, urls):
     site.write(URL+'method/index.md', markdown('Method and caveats', ''.join(body)))
 
 
+def program_fact(name, results):
+    """The catalogue page's fact text for a program: its prototype and the robust picks of the cell pairs the program is used in."""
+    if not results:
+        return name
+    picks = tally_robust(results)
+    robust_pairs = sum(picks_count for _, picks_count in picks)
+    text = f'{name}: robust across orientations in {robust_pairs} of {len(results)} cell pairs'
+    return text+(': '+', '.join(f'{label} ({count})' for label, count in picks) if picks else '')
+
+
 def write_zoning(site, folder=DROP):
     """Every zoning page into the site; returns the manifest entry (pages and counts) and fills `site.zoning_of`."""
     drop = Drop(folder)
@@ -764,9 +1042,13 @@ def write_zoning(site, folder=DROP):
         raise ValueError('Two prototypes share one page path')
     if drop.ht:
         urls['ht'] = URL+'heat-transfer/'
+    results = robust_results(drop.main['entries']) if paired(drop.main['entries']) else {}
+    by_id = {e['id']: e for e in drop.main['entries']}
     for program, ids in drop.main['by_program'].items():
         prototypes = sorted({i.split('|')[0] for i in ids})
-        site.zoning_of[program] = [(prototype_name(p), urls[p]) for p in prototypes if p in urls]
+        own = {pair_key(by_id[i]) for i in ids if i in by_id}
+        site.zoning_of[program] = [(program_fact(prototype_name(p), {k: r for k, r in results.items() if k in own and k[0] == p}),
+                                    urls[p]+('#section-robust' if results else '')) for p in prototypes if p in urls]
     for prototype in drop.prototypes():
         prototype_page(site, drop, prototype, urls[prototype])
     if drop.ht:
@@ -778,4 +1060,5 @@ def write_zoning(site, folder=DROP):
     return {'drop': drop.provenance.get('drop'), 'pages': pages, 'cells': len(drop.main['entries']),
             'cells_with_recommendation': sum(1 for e in drop.main['entries'] if e['recommended']),
             'timed_cells': sum(1 for e in drop.main['entries'] if timed(e)),
+            'cell_pairs': len(results), 'robust_pairs': sum(1 for r in results.values() if r['status'] == 'robust'),
             'ht_cells': len(drop.ht['entries']) if drop.ht else 0}
