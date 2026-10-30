@@ -9,7 +9,7 @@ from atlas_schedules.residential.lighting import sunset_hours
 from atlas_schedules.residential.seasons import for_hemisphere, season_month, seasonal
 from atlas_schedules.residential.tables import load_tables
 
-APARTMENT = "program-60b1063b9fe00c5c29654bb9"
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"
 
 
 class SeasonShift(unittest.TestCase):
@@ -46,7 +46,7 @@ class SeasonShift(unittest.TestCase):
     def test_southern_apartment_lights_later_in_january(self):
         unit = {"key": "u", "program_id": APARTMENT, "residents": 2, "extent": {"floor_area": 80.0},
                 "location": {"state": "CA", "latitude": -33.87, "longitude": 151.21, "utc_offset": 10}}
-        bundle = generate({"schema_version": "3.0.0", "seed": 7, "instances": [unit]})
+        bundle = generate({"schema_version": "4.0.0", "seed": 7, "instances": [unit]})
         days = np.asarray(bundle["schedules"]["schedule:u:lighting_interior"]["values"]).reshape(365, 24)
         evening = lambda d: float(days[d, 16:19].sum() / days[d].sum())
         # Late afternoon is a larger share of the day's lighting in southern winter (June) than in summer (January).

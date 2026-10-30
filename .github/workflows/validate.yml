@@ -16,8 +16,8 @@ permissions:
 # (ubuntu-latest, 3.11)" passes only when every Linux job passes, and "atlas
 # (windows-latest, 3.14)" only when every Windows job passes. The 2.0.0 snapshot and
 # its delta 2.1.0 are the releases in the tree (ADR 0046 sections 7 and 12): they are
-# verified by their file checksums and the delta is rebuilt from its pinned inputs; the
-# frozen releases and their reproductions live at the tag frozen-data-2026-10-27.
+# verified by their file checksums and the deltas (2.1.0, 2.2.0) are rebuilt from their pinned
+# inputs; the frozen releases and their reproductions live at the tag frozen-data-2026-10-27.
 # The unit suite runs as three shards per platform (scripts/ci_tests.py). A push to main
 # runs the release and package jobs and the full catalogue smoke: main takes only pull
 # requests tested up to date with it (strict branch protection), so the unit shards are
@@ -63,10 +63,11 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/daylighting-rules-lock.json
-      - name: Verify releases 2.0.0 and 2.1.0, their export schemas and the source pipeline
+      - name: Verify releases 2.0.0, 2.1.0 and 2.2.0, their export schemas and the source pipeline
         run: |
           python -m scripts.atlas_snapshot --verify
           python -m scripts.release_editor --check
+          python -m scripts.atlas_delta --check --release 2.1.0
           python -m scripts.atlas_delta --check
           python -m scripts.atlas_exports --check-schemas
           python -m scripts.reconciliation_page --check
@@ -89,14 +90,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements.txt
-      - name: Generate the packaged catalogue (every recipe, or two per family on a pull request)
+      - name: Generate the release catalogue (every programme view, or two per family on a pull request)
         env:
           FULL_CATALOGUE: ${{ inputs.full_catalogue }}
         run: |
           if [ "$FULL_CATALOGUE" = true ]; then python -m scripts.smoke_catalogue; else python -m scripts.smoke_catalogue --sample 2; fi
 
   package:
-    # The atlas-schedules wheel (ADR 0049): built, installed in a clean environment and run from outside the checkout.
+    # The atlas-schedules wheel (ADR 0049, ADR 0051): the generator view of the newest release is built, then the
+    # wheel, which is installed in a clean environment and run from outside the checkout against its bundled view.
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -107,6 +109,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements-dev.txt
+      - run: python -m scripts.build_generator_view
       - run: python -m build --wheel
       - name: Install the wheel in a clean environment and generate the quick-start example
         run: |
@@ -115,10 +118,12 @@ jobs:
           mkdir /tmp/quick-start
           cp docs/examples/schedule-generator/office-and-retail.json /tmp/quick-start/
           cd /tmp/quick-start
+          /tmp/atlas-schedules-venv/bin/atlas-schedules --version
           /tmp/atlas-schedules-venv/bin/atlas-schedules office-and-retail.json -o bundle.json
           /tmp/atlas-schedules-venv/bin/python -m atlas_schedules office-and-retail.json -o bundle-m.json
           cmp bundle.json bundle-m.json
-          /tmp/atlas-schedules-venv/bin/python -c "import json, atlas_schedules, importlib.metadata as m; b = json.load(open('bundle.json')); assert b['generator_version'] == atlas_schedules.__version__ == m.version('atlas-schedules'); print(b['generator_version'], len(b['schedules']), 'schedules')"
+          /tmp/atlas-schedules-venv/bin/python -c "import json, atlas_schedules, importlib.metadata as m; b = json.load(open('bundle.json')); assert b['generator_version'] == atlas_schedules.__version__ == m.version('atlas-schedules'); print(b['generator_version'], b['release']['version'], len(b['schedules']), 'schedules')"
+          cd "$GITHUB_WORKSPACE" && /tmp/atlas-schedules-venv/bin/atlas-schedules --release-dir data/atlas-releases /tmp/quick-start/office-and-retail.json -o /tmp/quick-start/bundle-tree.json && cmp /tmp/quick-start/bundle.json /tmp/quick-start/bundle-tree.json
 
   atlas-linux:
     name: atlas (ubuntu-latest, 3.11)
@@ -156,10 +161,11 @@ jobs:
         run: |
           python -m scripts.fetch
           python -m scripts.fetch --lock sources/schedule-evidence-lock.json
-      - name: Verify releases 2.0.0 and 2.1.0 on this platform
+      - name: Verify releases 2.0.0, 2.1.0 and 2.2.0 on this platform
         if: matrix.shard == 'atlas'
         run: |
           python -m scripts.atlas_snapshot --verify
+          python -m scripts.atlas_delta --verify --release 2.1.0
           python -m scripts.atlas_delta --verify
       - run: python -m scripts.ci_tests --shard ${{ matrix.shard }}
 

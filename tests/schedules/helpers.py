@@ -4,7 +4,8 @@ from pathlib import Path
 
 import numpy as np
 
-from atlas_schedules.programmes import load_recipe
+from atlas_schedules import programmes
+from atlas_schedules.release import definition_map, translate as release_ids
 
 TOLERANCE = 1e-6                      # fraction tolerance (ADR 0035)
 SAMPLE_HOURS = np.arange(0, 8760, 37)
@@ -16,6 +17,41 @@ REBUILT_BUILDING_TYPES = frozenset({"MediumOffice", "SmallOffice", "Warehouse"})
 RETIRED = json.loads((Path(__file__).resolve().parents[1] / "answer_keys/retired-doe-ref.json").read_text(encoding="utf-8"))
 RETIRED_IDS = frozenset(RETIRED["program_ids"] + RETIRED["configuration_ids"] + RETIRED["service_ids"])
 COMPOSITION_BASIS = {"source_reference_area_normalized": "reference_area", "caller_parent_floor_area": "caller_area"}
+
+
+def release_key(program_id: str) -> tuple:
+    """(release program ID, view) of a definition program ID the keys were captured with (ADR 0051)."""
+    entry = definition_map()["programs"].get(program_id)
+    return (entry["program_id"], entry["values"]) if entry else (program_id, None)
+
+
+def release_service(service_id: str) -> str:
+    return definition_map()["services"].get(service_id, service_id)
+
+
+def load_recipe(program_id: str, values: str | None = None) -> dict:
+    """A recipe by definition or release program ID."""
+    release_id, view = release_key(program_id)
+    return programmes.load_recipe(release_id, values or view)
+
+
+def load_service(service_id: str) -> dict:
+    return programmes.load_service(release_service(service_id))
+
+
+def legacy_fixed_slot(owner: dict, slot: str) -> bool:
+    """A legacy key's zero-density occupancy slot of a 90.1 apartment-building fixed programme, which the release
+    values leave out (ADR 0051 section 3); any other missing slot still fails."""
+    if slot in owner["schedules"] or slot != "occupants" or not owner.get("program_id"):
+        return False
+    return programmes.load_recipe(owner["program_id"], owner["values"])["kind"] == "fixed"
+
+
+def members(recipe: dict) -> list:
+    """[(member recipe, reference area)] of a composition recipe."""
+    composition = recipe["composition"]
+    return [(programmes.load_recipe(pid, values), area)
+            for (pid, area), values in zip(composition["members"], composition["member_values"])]
 
 
 def unpack_days(packed: dict) -> np.ndarray:
@@ -89,8 +125,10 @@ def translate(legacy: dict, seed: int) -> tuple[dict, dict]:
         if "composition_basis_mode" in inputs:
             v2["composition_basis"] = COMPOSITION_BASIS[inputs["composition_basis_mode"]]
         instances.append(v2)
-    # Native and legacy keys used ResStock's national occupant-type shares.
-    return {"schema_version": "3.0.0", "seed": seed, "occupancy": {"mix": "national"}, "instances": instances}, keys
+    # Native and legacy keys used ResStock's national occupant-type shares; their definition IDs are written as
+    # release IDs and views.
+    return release_ids({"schema_version": "4.0.0", "seed": seed, "occupancy": {"mix": "national"},
+                        "instances": instances}), keys
 
 
 def retired(*texts) -> bool:

@@ -12,6 +12,10 @@ and fitted the amplitude to the generated shape, so both follow from the same re
   1 to 4 residents, 25 units each; per-unit electricity, gas and hot water against the 2.x
   prototype densities (release 2.0.0 `generator.json`) on the 2.x schedule table, read from
   `BASE` with git because B7 removed the schedules only the prototype recipes used.
+Since ADR 0051 the recipes are assembled from release 2.2.0. The packaged recipe and service IDs
+the report sampled are recovered in their old order: the DOE Ref release IDs, then the definition
+IDs of `definition-map.json`; `BASE` is generator 3.0.0 as merged, the last tree with the packaged
+schedule table.
 """
 import json
 import math
@@ -23,16 +27,16 @@ import numpy as np
 from atlas_schedules import generate, programmes
 from atlas_schedules.budgets import ANNUAL_UNITS, annual_target
 from atlas_schedules.calendar import evaluate_rules
+from atlas_schedules.release import definition_map
 from scripts.common import ROOT
 
-DATA = ROOT/'atlas_schedules/data'
 OUTPUT = ROOT/'docs/validation/generator-3-0-0-before-after'
 RELEASE = ROOT/'data/atlas-releases/v2.0.0/commercial'
 LOCATION = {'state': 'NC', 'latitude': 35.741, 'longitude': -81.389, 'utc_offset': -5, 'climate_zone': '4A'}
 APARTMENTS = {'90.1-2007 Midrise': ('program-1bff8c83069c349972223cbf', '90-1-2007/midrise-apartment'),
               '90.1-2007 Highrise': ('program-60b1063b9fe00c5c29654bb9', '90-1-2007/highrise-apartment')}
 UNITS_PER_CASE = 25
-BASE = 'origin/main'
+BASE = '03cdc1bd'   # generator 3.0.0 merged (PR #30)
 AREA = 80.0
 
 
@@ -55,18 +59,33 @@ def binding_rows(owner, bundle, before_totals):
     return rows
 
 
+def packaged_programs(method):
+    """{packaged recipe ID: (release ID, view)} of one generation method, in packaged file order."""
+    out = {pid: (pid, view) for pid, view, m in programmes.catalogue() if m == method and pid.startswith('doe-ref-')}
+    blocks = {pid: m for pid, _, m in programmes.catalogue()}
+    out.update({d: (e['program_id'], e['values']) for d, e in definition_map()['programs'].items()
+                if blocks.get(e['program_id']) == method})
+    return dict(sorted(out.items()))
+
+
+def packaged_services():
+    """[release service ID] of the packaged services, in packaged file order."""
+    blocks = {sid for sid, _ in programmes.service_catalogue()}
+    ids = {sid: sid for sid in blocks if sid.startswith('doe-ref-')}
+    ids.update({d: r for d, r in definition_map()['services'].items() if r in blocks})
+    return [ids[k] for k in sorted(ids)]
+
+
 def commercial():
     rows = {}
-    paths = [p for p in sorted((DATA/'recipes').glob('*.json'))
-             if json.loads(p.read_text(encoding='utf-8'))['kind'] == 'commercial'][::10]
-    for path in paths:
-        recipe = programmes.load_recipe(path.stem)
+    for program_id, values in list(packaged_programs('comstock_hours').values())[::10]:
+        recipe = programmes.load_recipe(program_id, values)
         if recipe['required_services'] or not recipe['demands']:
             continue
         before = programmes.annual_targets(recipe)
         for seed in (42, 51):
-            bundle = generate({'schema_version': '3.0.0', 'seed': seed, 'instances': [
-                {'key': 'p', 'program_id': path.stem, 'operating_group': 'g'}]})
+            bundle = generate({'schema_version': '4.0.0', 'seed': seed, 'instances': [
+                {'key': 'p', 'program_id': program_id, 'values': values, 'operating_group': 'g'}]})
             for row in binding_rows(bundle['owners'][0], bundle, before):
                 rows.setdefault(row['slot'], []).append(row)
     return rows
@@ -75,12 +94,12 @@ def commercial():
 def services():
     rows = []
     table = programmes.schedules()
-    for path in sorted((DATA/'services').glob('*.json')):
-        service = json.loads(path.read_text(encoding='utf-8'))
+    for service_id in packaged_services():
+        service = programmes.load_service(service_id)
         demand = service['demand']
         for configuration_id, configuration in service['configurations'].items():
             before = annual_target(demand['value'], demand['unit'], evaluate_rules(table[configuration['schedule']])[0])
-            bundle = generate({'schema_version': '3.0.0', 'seed': 42, 'instances': [
+            bundle = generate({'schema_version': '4.0.0', 'seed': 42, 'instances': [
                 {'key': 'w', 'service_id': service['service_id'], 'configuration_id': configuration_id,
                  'physical_id': 'w', 'extent': {demand['basis']: 1.0}, 'operating_group': 'g'}]})
             rows += binding_rows(bundle['owners'][0], bundle, [before])
@@ -105,9 +124,10 @@ def apartments():
     out = {}
     for name, (program_id, folder) in APARTMENTS.items():
         before_kwh, before_m3 = prototype_unit(folder, program_id)
-        units = [{'key': f'u{r}-{i}', 'program_id': program_id, 'extent': {'floor_area': AREA}, 'residents': r,
+        entry = definition_map()['programs'][program_id]
+        units = [{'key': f'u{r}-{i}', 'program_id': entry['program_id'], 'values': entry['values'], 'extent': {'floor_area': AREA}, 'residents': r,
                   'location': LOCATION} for r in (1, 2, 3, 4) for i in range(UNITS_PER_CASE)]
-        bundle = generate({'schema_version': '3.0.0', 'seed': 42, 'instances': units})
+        bundle = generate({'schema_version': '4.0.0', 'seed': 42, 'instances': units})
         owners = {o['key']: o for o in bundle['owners']}
         by_residents = {}
         for unit in units:

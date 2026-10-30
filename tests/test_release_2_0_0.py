@@ -1,4 +1,4 @@
-"""Release 2.0.0: the full snapshot of release 1.6.0 (ADR 0046), the only release in the tree."""
+"""Release 2.0.0: the full snapshot of release 1.6.0 (ADR 0046), the base of the deltas in the tree."""
 import io
 import json
 import unittest
@@ -26,10 +26,11 @@ class Release200Tests(unittest.TestCase):
         # unittest keeps every test class until the run ends; free the release state.
         del cls.listed, cls.files
 
-    def test_full_snapshot_of_1_6_0_and_the_only_release(self):
+    def test_full_snapshot_of_1_6_0_and_the_only_full_release(self):
         self.assertIsNone(self.listed['base_release'])
         self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'released'))
-        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0'])
+        # 2.1.0 and 2.2.0 are deltas on this release (ADR 0046 section 12, ADR 0051)
+        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0', 'v2.2.0'])
         self.assertIn(EXPORTER_INPUTS, self.files)
 
     def test_generator_recipes_for_the_90_1_and_doe_ref_programs(self):
