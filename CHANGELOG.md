@@ -19,7 +19,8 @@
   weekly run and a manual run build, cache, verify and publish the full site as before.
   Required check names are unchanged. Measured on pull request #36 before this pass:
   `build` 32.8 min on a cache miss (generation 16.8 min, MkDocs 11.9 min, checks 2.7
-  min); the sampled build's time is recorded in `docs/site-build.md`.
+  min); the sampled build of pull request #37: 5.1 min (generation 1.3 min, MkDocs 1.7
+  min, checks 0.8 min), so a pull request's checks finish with the research jobs.
 
 ## Zoning recommendations drop 2: the serial costs and the completed study — 2026-10-29
 

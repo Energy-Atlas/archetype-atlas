@@ -169,8 +169,10 @@ cache miss (catalogue generation 10 to 17 min, MkDocs 7 to 13 min; a hit skips b
 platforms), `release` 2.4 min. Pull request #36 (2026-10-29, a data change, so a cache
 miss): `build` 32.8 min (generation 16.8 min, MkDocs 11.9 min, links and browser
 checks 2.7 min) against research jobs of about 7 min, and about 4 min on a cache hit.
-The sampled build of pull request #37 (the first with this shape): see the changelog
-entry "CI workload pass 3" for the measured time. The build job's dependency step (pip
+The sampled build of pull request #37 (the first with this shape, run 40985152698):
+`build` 5.1 min (generation 1.3 min, MkDocs 1.7 min, links and browser checks 0.8 min;
+the digest, cache and Pages steps skipped), against research jobs of 7 min, so the
+pull request's checks finish in about 7.5 min. The build job's dependency step (pip
 and the Playwright Chromium) takes 0.6 min and is kept on cache hits too: `site_smoke`
 needs Chromium on every tree. The full build's cache has no fallback key: the generator
 writes the whole tree afresh and MkDocs builds it whole, so an older cached tree would
