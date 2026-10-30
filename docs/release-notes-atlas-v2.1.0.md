@@ -29,7 +29,10 @@ program, construction set, service and system ID is 2.0.0's.
 - **The manifest names its generator**: `generator.version` 3.0.0, `generator.wheel`
   `atlas_schedules-3.0.0-py3-none-any.whl`, `generator.release_tag`
   `atlas-schedules-v3.0.0` and the packaged recipes' digest. Install the wheel from
-  <https://github.com/Energy-Atlas/archetype-atlas/releases/tag/atlas-schedules-v3.0.0>.
+  <https://github.com/Energy-Atlas/archetype-atlas/releases/tag/atlas-schedules-v3.0.0>;
+  its `SHA256SUMS.txt` (attached 2026-10-29) gives the wheel's digest
+  `f082bb12f951fdebd78ddcf8ab20cc65a267a02a70213de4d7f13d56648229cb`, verified with
+  `sha256sum -c SHA256SUMS.txt` ([generator guide](schedule-generator.md#quick-start)).
 
 ## Not in this release
 

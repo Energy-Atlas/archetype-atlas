@@ -163,3 +163,58 @@ folder, since BEMGen now commits its published results.
   to three decimals, as the report prints them. The overview's cost tables are the
   writer's own medians, not recomputed. The writer's zoning labels in the timing block are
   re-cased to the pages' labels for a consistent read.
+
+## 6. Amendment (2026-10-29): a robust recommendation across orientations
+
+Open item 10 of the LOD study; the owner approved the rule on the agent's recommendation.
+Decision 4 stands (the two orientations stay two rows); this section adds a headline over
+each pair, computed at site build.
+
+- **The rule.** For each prototype × climate zone × vintage (a *cell pair*, 132 in drop 2),
+  the robust zoning is the coarsest, by the study's coarseness (fewest modelled zones),
+  that meets the threshold at both orientations, judged by the writer's own verdict on
+  each zoning at each orientation (`meets_threshold`); a duplicate carries the writer's
+  "never recommended" verdict and does not qualify. Ties at the fewest zones go to a
+  zoning both orientations recommend, else to the first in the study's zoning order
+  (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT, the writer's
+  deduplication order); tied zonings are named in the row. Where both orientations
+  recommend the same zoning it is the robust one by construction. Where no zoning meets
+  the threshold at both, the pair says so and names each orientation's own
+  recommendation, which stays the closest reading for that orientation. A prototype ×
+  climate zone × vintage with one orientation in the file has no pair and no pick; a
+  drop with one orientation throughout shows no robust table and says so on the method
+  page. Reported beside the pick: the worse (larger magnitude, signed) of the two
+  orientations' stored values of each error (annual heating and cooling, CV(RMSE), NMBE,
+  conditioned-area change), so the row bounds both orientations; and the cost ratios of
+  the robust zoning as the median over the pair's timed sites of that zoning (one site at
+  most in drop 2, since only 0° cells were timed), or "not timed".
+- **What the data allowed.** The file lists every kept zoning of every cell with its
+  metrics and verdict, so the rule compares the zonings themselves at both orientations,
+  not only the two recommendations: the full rule applies. Nothing is recomputed from
+  hourly data; the generator chooses among the writer's verdicts, takes the worse of two
+  stored errors and a median of stored ratios. Resolving a duplicate to the verdict of the
+  zoning it duplicates (the same model) was checked at the time and changes no pick in
+  drop 2; the simpler reading of the writer's verdict is the one implemented. A later drop
+  with more orientations is judged over all of them by the same rule; the robust zoning is
+  at least as fine as each orientation's own recommendation, never coarser.
+- **Pages.** The overview's prototype table gains a "Robust across orientations (cell
+  pairs)" column, its paragraph the pair count, and the tally section a second table
+  "Robust across orientations: N of 132 cell pairs" (drop 2: 109 of 132; in 100 of the
+  109 the robust zoning is recommended at both orientations, in 38 a tie at the fewest
+  zones is named). Each prototype page opens with a "Robust across orientations" section
+  (one row per climate zone × vintage, the rule's note, a fact in the header) above the
+  per-orientation table; its rows carry `data-across="orientation"` so the orientation
+  filter leaves them visible (`suite.js`). The catalogue program fact "Zoning
+  recommendations" now reads "<prototype>: robust across orientations in k of m cell
+  pairs: <zoning> (n), …" and links the section. The method page gains a "Robust across
+  orientations" section (the rule, what the data allows, the limits) and its design
+  section no longer calls orientation unaggregated. Each prototype's stored JSON slice
+  carries a `robust` block (the rule, a `computed_by` label naming the generator, one
+  record per pair with the pick's site names, the orientation each worst value came from
+  and the cost); the writer's own files in the store are unchanged. The manifest records
+  `cell_pairs` and `robust_pairs`.
+- **Tests.** `tests/test_lod_site.py` checks the rule on synthetic cells (the same pick at
+  both orientations, different picks with a common coarser one, none in common, a missing
+  orientation, ties and duplicates, failed sites and unknown zone counts, the cost median),
+  every page element and the JSON block on the drop, the 109 of 132 tally with the
+  invariants above, and a one-orientation drop.

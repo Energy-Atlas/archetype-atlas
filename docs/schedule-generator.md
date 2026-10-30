@@ -84,6 +84,15 @@ scripts.build_generator_view` (the release view the wheel bundles) and `python -
 build`; `python -m scripts.build_release_assets --wheel --data` builds the
 release assets with `SHA256SUMS.txt`.
 
+Every generator release attaches `SHA256SUMS.txt` (`sha256sum` format); the quick
+start above verifies 4.0.0 with it. For 3.0.0 the wheel's digest is
+`f082bb12f951fdebd78ddcf8ab20cc65a267a02a70213de4d7f13d56648229cb` and the sdist's
+`2f42d7c1fe970a4958d0fd2092f0e6b23c8d0515ada9f67af02377718f80eb27`; both were checked on
+2026-10-29 against an independent `python -m build` of tag `atlas-schedules-v3.0.0`
+in a clean venv, whose package files are byte-identical to the published ones (only
+archive timestamps and the generated metadata's line endings differ; ADR 0049,
+amendments).
+
 ## Request (schema 4.0.0)
 
 The schema is `atlas_schedules/schemas/request-v4.schema.json`.

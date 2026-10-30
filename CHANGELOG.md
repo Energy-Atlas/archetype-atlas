@@ -52,6 +52,25 @@
 - **Tests**: `test_release_2_2_0`; `test_release_2_1_0` verify-only; `test_package` covers the
   view and both workflows; the schedules suite and its answer keys pass with their definition
   IDs translated (`tests/schedules/helpers.py`); `test_reference_recipes` reads the blocks.
+## Zoning recommendations: a robust headline across orientations — 2026-10-29
+
+- **The rule** (ADR 0050 section 6, open item 10 of the LOD study, approved by the owner):
+  for each prototype × climate zone × vintage the robust zoning is the coarsest (fewest
+  modelled zones) that meets the threshold at both orientations by the writer's own
+  per-zoning verdicts; ties go to a zoning both orientations recommend, else to the first
+  in the study's zoning order, and are named. Beside it: the worse of the two
+  orientations' errors and the cost ratios of that zoning over the pair's timed sites.
+  Where none meets at both, the pair says so and names each orientation's own pick. The
+  data file lists every kept zoning per cell, so the full rule applies, nothing is
+  recomputed, and the writer's files are unchanged. Drop 2: 109 of 132 cell pairs.
+- **Pages** (`scripts/lod_site.py`): a "Robust across orientations" section opens every
+  prototype page (one row per climate zone × vintage, a header fact); the overview's
+  prototype table, paragraph and tally carry the pair counts; the method page explains
+  the rule, what the data allows and the limits; the catalogue program fact names the
+  robust picks of the program's cell pairs; each prototype's JSON slice carries a labelled
+  `robust` block; the manifest records `cell_pairs` and `robust_pairs`. The orientation
+  filter leaves rows marked `data-across="orientation"` visible (`suite.js`); `site.css`
+  aligns the new table. `tests/test_lod_site.py`: 16 new tests (35 in all).
 
 ## CI workload pass 3: pull requests build a sampled catalogue site — 2026-10-29
 

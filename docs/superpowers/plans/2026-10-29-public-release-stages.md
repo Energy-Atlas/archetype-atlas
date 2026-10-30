@@ -19,3 +19,21 @@ unless noted.
 
 Dependencies: A1 → A2 → A3; A1 → B2 (the wheel); B1 → B2 → B3; A2 and B3 → C1 → C2 →
 C3 → C4; A3 reads C4's `lod-recommendations.json`.
+
+## Status, 2026-10-29: all stages done
+
+| Stage | Merged |
+| --- | --- |
+| A1 | f858b038 (PR #33) |
+| A2 | 3f62e19a (PR #34); tags `v2.1.0` and `atlas-schedules-v3.0.0` |
+| A3 | 79c67694 (PR #35), drop 2 2aebb2e3 (PR #36) |
+| B1 | BEMGen 2ed856c |
+| B2 | BEMGen 5883da6 |
+| B3 | BEMGen e0ccc48 (release 1.6.0) |
+| C1, C2 | b29931c |
+| C3 | d32fa2a |
+| C4 | 38ff521 |
+
+CI workload pass 3 (sampled catalogue site on pull requests): PR #37 c11efc96 and
+PR #38 6cf03262. Release checksums (`SHA256SUMS.txt` on `atlas-schedules-v3.0.0`) were
+added on 2026-10-29 (ADR 0049 amendments).
