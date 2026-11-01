@@ -92,7 +92,8 @@ An independent source comparison checks numeric conversions, exact schedule
 rules, source attributes and HVAC-map name membership. Offline rebuilding must
 match all canonical table bytes.
 
-Breaking changes require a new major schema version and migration notes. Added
+Breaking changes require a new major schema version and migration notes (the full
+rule, with revisions, is [schema-versioning.md](schema-versioning.md)). Added
 compatible fields/source coverage require release notes; corrections identify
 affected source fields and records. Frozen releases carry their own contract
 and source selection; `release --verify` uses that frozen contract.

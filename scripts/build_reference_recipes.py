@@ -120,7 +120,7 @@ def block(method, parameters=None):
 
 def commercial_folder(template, building_type, programs, folder_services, people, invert):
     """The generation.json document of one sampled DOE Ref folder."""
-    configuration = f'{SAMPLING[building_type]}__{TEMPLATES[template][0]}__{VIEW}'
+    configuration = f'{SAMPLING[building_type]}__{TEMPLATES[template]}__{VIEW}'
     blocks = {pid: block('composition') if record['derivation'] == 'composed'
               else block('comstock_hours', {'configuration_id': configuration})
               for pid, (_, record) in sorted(programs.items())}

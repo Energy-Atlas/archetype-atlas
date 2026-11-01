@@ -240,9 +240,31 @@ Each recipe's `source` block names its release program and block
 (`commercial/90-1-2013/medium-office/programs/source/….json`,
 `…/generation.json#/programs/<id>`). Rule sets are the folder's release
 schedules. Upstream licence notices are in `atlas_schedules/data/notices/`.
-Programs without a block (IECC, manufactured housing, construction-only and
-plenum programs, the DOE Ref types without a sampling building type) are
-answered with `unsupported_input`.
+Blocks are given by folder: every program of a generated folder has one,
+plenums and attics included (an unconditioned program without loads generates
+as inactive). Programs of the other folders are answered with
+`unsupported_input`; the folder classes and their reasons are in
+[ADR 0055](adr/0055-generation-for-iecc-and-detailed-offices.md) section 3 and,
+from release 2.3.0, in the manifest's `deferred` entries: commercial types
+without a ComStock sampling building type, the IECC commercial apartment
+buildings and the residential code-prototype dwellings.
+
+Release 2.3.0 adds the blocks of the IECC commercial prototypes (14 sampled
+types × 6 editions) and the detailed small, medium and large offices of the
+90.1 and DOE Ref templates (ADR 0055, `scripts/build_zone_recipes.py`): 1,262
+programs, `source` views only, one configuration per folder
+(`medium_office__iecc_2021__source`, `large_office_detailed__90_1_2019__source`)
+whose People come from the IECC programs' source zones or the prototype
+geometry's spaces. An IECC 2021 load whose magnitude differs by climate
+(`value_by_climate`) is generated with its most common `value`; its hourly
+fractions do not depend on the climate, and the consumer takes the climate's
+magnitude from the program.
+
+`generation.json` and the bundle have JSON Schemas
+(`atlas_schedules/schemas/generation-v1.schema.json`, `bundle-v4.schema.json`;
+[ADR 0056](adr/0056-release-record-schemas-and-versioning.md)). From 4.1.0 the
+generator validates each `generation.json` when it reads it and refuses an
+invalid one (code `release`, with the path of the first error).
 
 ## Apartment units
 

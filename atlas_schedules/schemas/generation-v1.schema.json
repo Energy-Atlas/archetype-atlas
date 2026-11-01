@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:generation:1.0.0",
+  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "title": "Atlas release generation.json 1.0.0",
+  "description": "One building folder's generation parameters (ADR 0051 section 3): the generation block of each program the stochastic schedule generator can generate, the blocks of the folder's shared hot-water services, and the folder's building configurations. A block holds only what the program record does not state, per view (source, and filled where the filled program generates differently). Programs without a block are not generated (the generator answers unsupported_input); the folder classes without blocks are listed in the release manifest's deferred entries (ADR 0055).",
+  "type": "object",
+  "required": ["schema_version", "programs"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "programs": {
+      "description": "Release program ID: its generation block.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/release_id"},
+      "additionalProperties": {"$ref": "#/$defs/program_block"}
+    },
+    "services": {
+      "description": "Release service ID (services.json of the same folder): the configurations it runs under.",
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/release_id"},
+      "additionalProperties": {"$ref": "#/$defs/service_block"}
+    },
+    "configurations": {
+      "description": "Building configuration ID (unique in the release): the ComStock sampling building type, the People the hours of operation are inferred from, and the rule-day inversion.",
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/configuration_id"},
+      "additionalProperties": {"$ref": "#/$defs/configuration"}
+    }
+  },
+  "$defs": {
+    "release_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*\\.[0-9a-f]{6}$"},
+    "configuration_id": {"type": "string", "pattern": "^[a-z0-9_]+__[a-z0-9_]+__(source|filled|reviewed)$",
+      "description": "<sampling type>[_detailed]__<template slug>__<view>; `reviewed` names the filled view's configurations that generator 3.0.0 carried."},
+    "block_version": {"const": "1.0.0"},
+    "view_name": {"enum": ["source", "filled"]},
+    "program_block": {
+      "type": "object",
+      "required": ["schema_version", "method", "views"],
+      "properties": {
+        "schema_version": {"$ref": "#/$defs/block_version"},
+        "method": {"enum": ["comstock_hours", "composition", "fixed", "resstock_unit", "resstock_dwelling"]},
+        "views": {"type": "object", "minProperties": 1, "propertyNames": {"$ref": "#/$defs/view_name"}}
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {"if": {"properties": {"method": {"const": "comstock_hours"}}},
+         "then": {"properties": {"views": {"additionalProperties": {"$ref": "#/$defs/comstock_hours_view"}}}}},
+        {"if": {"properties": {"method": {"enum": ["composition", "fixed"]}}},
+         "then": {"properties": {"views": {"additionalProperties": {"type": "object", "maxProperties": 0}}}}},
+        {"if": {"properties": {"method": {"const": "resstock_unit"}}},
+         "then": {"properties": {"views": {"additionalProperties": {"$ref": "#/$defs/resstock_unit_view"}}}}},
+        {"if": {"properties": {"method": {"const": "resstock_dwelling"}}},
+         "then": {"properties": {"views": {"additionalProperties": {"$ref": "#/$defs/resstock_dwelling_view"}}}}}
+      ]
+    },
+    "comstock_hours_view": {
+      "description": "ComStock hours-of-operation transform of the program's loads and parameters, under one building configuration of the same folder.",
+      "type": "object",
+      "required": ["configuration_id"],
+      "additionalProperties": false,
+      "properties": {"configuration_id": {"$ref": "#/$defs/configuration_id"}}
+    },
+    "resstock_unit_view": {
+      "description": "A ResStock multifamily unit (ADR 0047): the characteristics the unit is drawn under; the request gives zone, floor area and residents.",
+      "type": "object",
+      "required": ["resstock_unit"],
+      "additionalProperties": false,
+      "properties": {
+        "resstock_unit": {
+          "type": "object",
+          "required": ["building_type", "height", "hot_water_m3_per_person", "hvac", "source", "vintages"],
+          "additionalProperties": false,
+          "properties": {
+            "building_type": {"type": "string"},
+            "height": {"type": ["string", "null"]},
+            "hot_water_m3_per_person": {"type": "number", "minimum": 0},
+            "hvac": {"type": "array", "items": {"type": "string"}, "minItems": 5, "maxItems": 5},
+            "vintages": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "source": {
+              "type": "object",
+              "required": ["apartments", "era", "geometry", "hot_water", "program", "stories", "system_pair", "systems"],
+              "additionalProperties": false,
+              "properties": {
+                "apartments": {"type": "integer", "minimum": 1},
+                "era": {"type": "string"},
+                "geometry": {"type": "string"},
+                "program": {"type": "string"},
+                "stories": {"type": "integer", "minimum": 1},
+                "system_pair": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 2},
+                "systems": {"type": "string"},
+                "hot_water": {
+                  "type": "object",
+                  "required": ["density", "density_unit", "design_people_per_m2", "full_load_hours", "schedule"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "density": {"type": "number", "minimum": 0},
+                    "density_unit": {"type": "string"},
+                    "design_people_per_m2": {"type": "number", "exclusiveMinimum": 0},
+                    "full_load_hours": {"type": "number", "minimum": 0},
+                    "schedule": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "required": ["slot", "kind", "unit", "schedule"],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {"type": "string"},
+        "kind": {"enum": ["load", "control", "resident_count"]},
+        "unit": {"type": "string"},
+        "schedule": {"type": ["string", "null"]}
+      }
+    },
+    "demand": {
+      "type": "object",
+      "required": ["slot", "quantity", "unit", "value", "basis", "fuel", "host", "heat_fractions"],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {"type": "string"},
+        "quantity": {"type": "string"},
+        "unit": {"type": "string"},
+        "value": {"type": "number"},
+        "basis": {"enum": ["floor_area", "dwelling_unit", "person", "absolute"]},
+        "fuel": {"type": "string"},
+        "host": {"type": "string"},
+        "annual_total": {"type": "number", "minimum": 0},
+        "annual_unit": {"type": "string"},
+        "heat_fractions": {"type": ["object", "null"], "additionalProperties": {"type": "number"}}
+      }
+    },
+    "control": {
+      "type": "object",
+      "required": ["slot", "quantity", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {"type": "string"},
+        "quantity": {"type": "string"},
+        "unit": {"type": "string"},
+        "people": {"type": "object"}
+      }
+    },
+    "resstock_dwelling_view": {
+      "description": "A ResStock dwelling's executed OpenStudio-HPXML inputs (ADR 0051 section 3): slots, demands with annual totals, controls, companions, installed appliances, thermostat arguments.",
+      "type": "object",
+      "required": ["slots", "demands", "controls", "companions", "required_services", "dwelling", "thermostat"],
+      "additionalProperties": false,
+      "properties": {
+        "slots": {"type": "array", "items": {"$ref": "#/$defs/slot"}},
+        "demands": {"type": "array", "items": {"$ref": "#/$defs/demand"}},
+        "controls": {"type": "array", "items": {"$ref": "#/$defs/control"}},
+        "companions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["method"],
+            "properties": {"method": {"type": "string"}}
+          }
+        },
+        "required_services": {"type": "array", "items": {"type": "string"}},
+        "dwelling": {
+          "type": "object",
+          "required": ["installed", "latitude", "longitude", "residents", "state", "utc_offset", "weather_id"],
+          "additionalProperties": false,
+          "properties": {
+            "installed": {"type": "object", "additionalProperties": {"type": "boolean"}},
+            "latitude": {"type": "number", "minimum": -90, "maximum": 90},
+            "longitude": {"type": "number", "minimum": -180, "maximum": 180},
+            "residents": {"type": "number", "minimum": 0},
+            "state": {"type": "string"},
+            "utc_offset": {"type": "number"},
+            "weather_id": {"type": "string"}
+          }
+        },
+        "thermostat": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "service_block": {
+      "type": "object",
+      "required": ["schema_version", "method", "configurations"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {"$ref": "#/$defs/block_version"},
+        "method": {"const": "comstock_hours"},
+        "configurations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/configuration_id"}}
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "required": ["building_type", "people", "invert_rule_days"],
+      "additionalProperties": false,
+      "properties": {
+        "building_type": {"enum": ["small_office", "medium_office", "large_office", "warehouse", "retail", "strip_mall",
+                                   "full_service_restaurant", "quick_service_restaurant", "small_hotel", "large_hotel",
+                                   "hospital", "outpatient", "primary_school", "secondary_school", "supermarket"],
+                          "description": "ComStock sampling building type (atlas_schedules.programmes.SAMPLING)."},
+        "people": {
+          "description": "[occupancy schedule ID of the folder, design people] per zone, in zone-name order: the dominant (residential or non-residential) group's People.",
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "array", "prefixItems": [{"type": "string"}, {"type": "number", "exclusiveMinimum": 0}], "items": false, "minItems": 2}
+        },
+        "invert_rule_days": {"type": "boolean", "description": "True when residential spaces hold most design people (openstudio-standards inverts the rule days)."}
+      }
+    }
+  }
+}

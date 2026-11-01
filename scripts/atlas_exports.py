@@ -129,7 +129,23 @@ def derived_schemas():
     out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
     out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
     out[LIGHTING['program'][0]] = program_minor_lighting(out[residential_exports.PROGRAM_MINOR[0]])
-    return out
+    return {name: with_marker(name, schema) for name, schema in out.items()}
+
+
+def with_marker(name, schema):
+    """The derivation with the committed file's revision marker, which belongs to the file, not to the schema it
+    was derived from (docs/schema-versioning.md; scripts.schema_revisions)."""
+    def unmarked(value):
+        if isinstance(value, dict):
+            return {k: unmarked(v) for k, v in value.items()
+                    if not (k == '$comment' and isinstance(v, str) and v.startswith('revision '))}
+        if isinstance(value, list):
+            return [unmarked(v) for v in value]
+        return value
+    schema = unmarked(schema)
+    path = SCHEMAS/name
+    marker = load_json(path).get('$comment') if path.exists() else None
+    return {'$comment': marker, **schema} if marker else schema
 
 
 def source_model_schema(frozen=None):

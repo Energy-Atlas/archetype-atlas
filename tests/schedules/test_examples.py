@@ -1,11 +1,12 @@
-"""Every documented example request generates a bundle, and a physical mixture
-conserves the building's annual energy."""
+"""Every documented example request generates a bundle valid against the bundle 4.0.0 schema
+(ADR 0056), and a physical mixture conserves the building's annual energy."""
 import json
 import math
 from pathlib import Path
 import unittest
 
 from atlas_schedules.generator import generate
+from tests.schedules.helpers import bundle_errors
 
 EXAMPLES = Path(__file__).resolve().parents[2] / "docs/examples/schedule-generator"
 
@@ -18,10 +19,14 @@ class Examples(unittest.TestCase):
     def test_examples_generate(self):
         paths = sorted(EXAMPLES.glob("*.json"))
         self.assertTrue(paths)
+        kinds = set()
         for path in paths:
             with self.subTest(example=path.name):
                 bundle = generate(json.loads(path.read_text(encoding="utf-8")))
                 self.assertTrue(bundle["schedules"])
+                self.assertEqual(bundle_errors(bundle), [])
+                kinds |= {o["kind"] for o in bundle["owners"]}
+        self.assertEqual(kinds, {"program", "physical_service", "caller_water"})
 
     def test_physical_mixture_conserves_energy(self):
         # 400 m2 office (with its water service) + 100 m2 shop, weight 1 each, per 500 m2.

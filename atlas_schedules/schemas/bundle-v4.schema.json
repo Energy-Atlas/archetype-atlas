@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:schedule-bundle:4.0.0",
+  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "title": "atlas-schedules bundle 4.0.0",
+  "description": "The generator's answer to one request (docs/schedule-generator.md#bundle, ADR 0051 section 4): 8,760-hour schedules by ID, one owner per instance (and per apartment caller water and composition member), the optional mixture, the sampled ComStock operating parameters per group and the residential seed chain, with the atlas release the recipes were assembled from.",
+  "type": "object",
+  "required": ["schema_version", "generator_version", "release", "seed", "residential_rng", "flat_days", "occupancy",
+               "calendar", "schedules", "owners", "mixture", "operating_groups", "unit_seeds"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "4.0.0"},
+    "generator_version": {"type": "string", "pattern": "^4\\.\\d+\\.\\d+$"},
+    "release": {
+      "type": "object",
+      "required": ["version", "manifest_sha256", "generation_schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {"type": "string", "pattern": "^2\\.\\d+\\.\\d+$"},
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "generation_schema_version": {"type": "string", "pattern": "^1\\.\\d+\\.\\d+$"}
+      }
+    },
+    "seed": {"type": "integer", "minimum": 0},
+    "residential_rng": {"enum": ["pcg64", "ruby_mt"]},
+    "flat_days": {"enum": ["documented", "native"]},
+    "occupancy": {
+      "type": "object",
+      "required": ["mix", "window"],
+      "additionalProperties": false,
+      "properties": {"mix": {"type": "string"}, "window": {"type": ["string", "null"]}}
+    },
+    "calendar": {
+      "type": "object",
+      "required": ["year", "clock", "timestep_minutes"],
+      "additionalProperties": false,
+      "properties": {"year": {"const": 2007}, "clock": {"const": "local_standard_time"}, "timestep_minutes": {"const": 60}}
+    },
+    "schedules": {
+      "description": "schedule:<owner key>:<slot>: the hourly values of one owner slot.",
+      "type": "object",
+      "propertyNames": {"pattern": "^schedule:.+:.+$"},
+      "additionalProperties": {"$ref": "#/$defs/schedule"}
+    },
+    "owners": {"type": "array", "items": {"$ref": "#/$defs/owner"}},
+    "mixture": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/owner"}]},
+    "operating_groups": {
+      "description": "Operating group: the sampled ComStock operating parameters (option, effective value, unit, whether it modifies the schedules).",
+      "type": "object",
+      "additionalProperties": {"type": "object", "additionalProperties": {"type": "object"}}
+    },
+    "unit_seeds": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+  },
+  "$defs": {
+    "schedule": {
+      "type": "object",
+      "required": ["unit", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "unit": {"type": "string"},
+        "values": {"type": "array", "minItems": 8760, "maxItems": 8760, "items": {"type": "number"}}
+      }
+    },
+    "load": {
+      "type": "object",
+      "required": ["slot", "quantity", "unit", "basis", "fuel", "host", "annual_total", "amplitude", "heat_fractions"],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {"type": "string"},
+        "quantity": {"type": "string"},
+        "unit": {"type": "string"},
+        "basis": {"enum": ["floor_area", "dwelling_unit", "person", "absolute"]},
+        "fuel": {"type": "string"},
+        "host": {"type": "string"},
+        "annual_total": {"type": "number", "minimum": 0,
+                         "description": "Per basis unit; amplitude x sum of the hourly values x s, s 1 for power (W to Wh) and 3600 for volume flow (m3/s to m3)."},
+        "amplitude": {"type": "number", "minimum": 0},
+        "heat_fractions": {"type": ["object", "null"], "additionalProperties": {"type": "number"},
+                           "description": "The load's thermal effects when every one is known; null keeps an unknown explicit."}
+      }
+    },
+    "control": {
+      "type": "object",
+      "required": ["slot", "quantity", "unit"],
+      "additionalProperties": false,
+      "properties": {"slot": {"type": "string"}, "quantity": {"type": "string"}, "unit": {"type": "string"}}
+    },
+    "owner": {
+      "type": "object",
+      "required": ["key", "kind", "program_id", "values", "service_id", "extent", "multiplicity", "schedules", "loads",
+                   "controls", "generation"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {"type": "string"},
+        "kind": {"enum": ["program", "physical_service", "caller_water", "mixture"]},
+        "program_id": {"type": ["string", "null"], "description": "Release program ID (a mixture's own name)."},
+        "values": {"enum": ["source", "filled", null], "description": "The programme view; null for services, caller water and mixtures."},
+        "service_id": {"type": ["string", "null"]},
+        "extent": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0}},
+        "multiplicity": {"type": "number", "exclusiveMinimum": 0},
+        "schedules": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^schedule:"}},
+        "loads": {"type": "array", "items": {"$ref": "#/$defs/load"}},
+        "controls": {"type": "array", "items": {"$ref": "#/$defs/control"}},
+        "generation": {"type": "object", "description": "What drew the owner: operating group and configuration, ResStock draw, mix members."}
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "program"}}}, "then": {"properties": {"program_id": {"type": "string"}, "values": {"enum": ["source", "filled"]}}}},
+        {"if": {"properties": {"kind": {"enum": ["physical_service", "caller_water"]}}}, "then": {"properties": {"service_id": {"type": "string"}, "values": {"const": null}}}},
+        {"if": {"properties": {"kind": {"const": "mixture"}}}, "then": {"properties": {"values": {"const": null}}}}
+      ]
+    }
+  }
+}
