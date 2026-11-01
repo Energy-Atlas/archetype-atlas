@@ -2,15 +2,74 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://energy-atlas.github.io/BEMGen-docs/schemas/lod-recommendations-v1.schema.json",
   "title": "BEMGen LOD recommendations, version 1",
-  "$comment": "Versions: 1.0.0 (D-188), the R3 and R4 drops; 1.1.0 (D-203), a minor bump that adds only optional members: the top-level timing block (the serial timing pass R5, its gate verdict, and its medians by zoning and prototype), and a cost object on a reference and on a zoning that pass timed. A 1.0.0 document still validates.",
+  "$comment": "Versions: 1.0.0 (D-188), the R3 and R4 drops; 1.1.0 (D-203), a minor bump that adds only optional members: the top-level timing block (the serial timing pass R5, its gate verdict, and its medians by zoning and prototype), and a cost object on a reference and on a zoning that pass timed. 1.2.0 (D-220, D-223), a minor bump that adds only members: suites, runs, and deduplication at the top level (source now names the suites and runs), judged_loads and sensitivity in the consolidated main file; judged and finer_than_reference on an entry; status and reason on a zoning. Two readings change: zonings lists every planned zoning, those the generator refused (status Invalid) with succeeded false and a reason, so succeeded false no longer means only a failed run; and the recommendation is bounded by the reference's zone count, so an empty recommended can carry finer_than_reference. A 1.0.0 or 1.1.0 document still validates.",
   "description": "The zoning recommendations of the geometric LOD study for publication on the atlas site (docs/plans/2026-10-29-lod-study-run-plan.md, 'Publication on the atlas site'), written by scripts/lod-study/report.py. One entry per test case: a DOE prototype in one climate zone, vintage, and orientation, with the atlas program IDs of its program keys, the reference site's benchmark values, every test zoning's paired evaluation metrics (experiment outputs §10, the batch runner's own values) and conditioned-area change, and the coarsest zonings that meet the threshold. by_program indexes the entries by atlas program ID.",
   "type": "object",
   "additionalProperties": false,
   "required": ["format", "version", "source", "metrics", "coarseness", "threshold", "entries", "by_program"],
+  "allOf": [
+    {
+      "$comment": "A 1.2.0 document carries the members 1.2.0 adds, so a reader can rely on them (status tells a refused zoning from a failed run).",
+      "if": { "properties": { "version": { "const": "1.2.0" } }, "required": ["version"] },
+      "then": {
+        "required": ["suites", "runs", "deduplication"],
+        "properties": {
+          "entries": {
+            "items": {
+              "required": ["judged", "finer_than_reference"],
+              "properties": { "zonings": { "items": { "required": ["status", "reason"] } } }
+            }
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "format": { "const": "bemgen-lod-recommendations" },
-    "version": { "enum": ["1.0.0", "1.1.0"] },
-    "source": { "type": "string", "description": "The run or merged folder the values come from, by name." },
+    "version": { "enum": ["1.0.0", "1.1.0", "1.2.0"] },
+    "source": { "type": "string", "description": "Where the values come from: since 1.2.0 the suites and runs (\"suites <names>; runs <names>\"); before, the run or merged folder by name." },
+    "suites": { "type": "array", "items": { "type": "string" }, "description": "Since 1.2.0: the suites the run ran, by name." },
+    "runs": { "type": "array", "items": { "type": "string" }, "description": "Since 1.2.0: the runs of the central database, by name." },
+    "deduplication": {
+      "type": "object",
+      "description": "Since 1.2.0: the deduplication rule as applied, its energy tolerance, and the kept-site order within a group (D-221).",
+      "required": ["rule", "energy_tolerance", "kept"],
+      "properties": { "rule": { "type": "string" }, "energy_tolerance": { "type": "number" }, "kept": { "type": "string" } }
+    },
+    "judged_loads": {
+      "type": "object",
+      "description": "Since 1.2.0, in the consolidated main file: per load, the cells whose reference load is below the judging floor (not judged), in all and by climate zone.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["cells", "unjudged_cells", "by_climate_zone"],
+        "properties": {
+          "cells": { "type": "integer" },
+          "unjudged_cells": { "type": "integer" },
+          "by_climate_zone": { "type": "object", "additionalProperties": { "type": "object" } }
+        }
+      }
+    },
+    "sensitivity": {
+      "type": "object",
+      "description": "Since 1.2.0, in the consolidated main file: the recommendations recomputed from the stored metrics with the three error limits scaled (the conditioned-area limit and the judging floor unchanged).",
+      "required": ["scaled", "rows"],
+      "properties": {
+        "scaled": { "type": "array", "items": { "type": "string" } },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["factor", "cells_with_recommendation", "same_as_published"],
+            "properties": {
+              "factor": { "type": "number" },
+              "cells_with_recommendation": { "type": "integer" },
+              "same_as_published": { "type": "integer" },
+              "finer_than_reference": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
     "metrics": { "type": "array", "items": { "type": "string" } },
     "coarseness": { "type": "string" },
     "threshold": {
@@ -102,6 +161,15 @@
           },
           "additionalProperties": { "$ref": "#/$defs/number" }
         },
+        "judged": {
+          "type": "object",
+          "description": "Since 1.2.0: per load of the threshold, whether the reference's load is at least the judging floor.",
+          "additionalProperties": { "type": "boolean" }
+        },
+        "finer_than_reference": {
+          "type": "boolean",
+          "description": "Since 1.2.0: true when no zoning with at most the reference's zone count meets the threshold but a finer one does; recommended is then empty."
+        },
         "zonings": {
           "type": "array",
           "items": {
@@ -112,6 +180,8 @@
               "site_name": { "type": "string" },
               "zoning": { "$ref": "#/$defs/zoning" },
               "succeeded": { "type": "boolean" },
+              "status": { "type": ["string", "null"], "description": "Since 1.2.0: the site's status: Completed, RunFailed, or Invalid (refused by the generator, never simulated), as the suite or the run recorded it." },
+              "reason": { "type": ["string", "null"], "description": "Since 1.2.0: why it did not succeed (Invalid: MultipliedRooms, Invalid: PlanTooNarrow, RunFailed, ...); null when it succeeded." },
               "duplicate_of": { "type": ["string", "null"] },
               "zone_count": { "type": ["integer", "null"] },
               "conditioned_area_change_pct": { "$ref": "#/$defs/number" },

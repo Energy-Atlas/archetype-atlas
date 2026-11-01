@@ -13,8 +13,8 @@ from atlas_schedules.residential.arguments import unit_arguments
 from atlas_schedules.residential.shapes import fan_months
 from atlas_schedules.residential.tables import load_drybulb
 
-APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"   # 90.1-2007 high-rise apartment unit
-MIDRISE = "doe-ref-pre-1980.midrise-apartment.source.apartment.413afb"
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.6b5425"   # 90.1-2007 high-rise apartment unit
+MIDRISE = "doe-ref-pre-1980.midrise-apartment.source.apartment.2a5fc2"
 LOCATION = {"state": "NC", "latitude": 35.741, "longitude": -81.389, "utc_offset": -5, "climate_zone": "4A"}
 
 

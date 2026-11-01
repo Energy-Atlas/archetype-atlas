@@ -41,35 +41,46 @@ class DataDropTests(unittest.TestCase):
         for name, entry in files.items():
             data = (lod_site.DROP/name).read_bytes()
             self.assertEqual(hashlib.sha256(data).hexdigest(), entry['sha256'], name)
+            self.assertEqual(entry['sha256'], entry['source_sha256'], name)  # drop 3: byte for byte, no normalisation
             self.assertNotIn(b'\r\n', data)
             self.assertEqual(len(json.loads(data)['entries']), entry['entries'], name)
             for key in ('stage', 'suite', 'run', 'source_sha256', 'source'):
                 self.assertTrue(entry.get(key), f'{name}: {key}')
-        self.assertEqual(self.provenance['drop'], 2)
-        self.assertEqual(files[lod_site.MAIN]['source_sha256'], '7fb9e2124a4be567701366a3a1dd42e770930312a85a18777349dc798071f778')  # BEMGen's provenance
-        self.assertEqual(files[lod_site.HT]['source_sha256'], 'c76c78286f2d4b0e9e9e1dacfc5232a3cec774d6ffef72c4a15ef18a4ddf6c2c')
+        self.assertEqual(self.provenance['drop'], 3)
+        # BEMGen 8d2e3bd's research/lod-study/results/ (ADR 0059 section 6): R3 schema 1.2.0, R4 after the D-224 rerun.
+        self.assertEqual(files[lod_site.MAIN]['source_sha256'], '439fc0a4b430c111e4fa85f7cd436000e937c2cec2b71fb15f27a3a23d557c80')
+        self.assertEqual(files[lod_site.HT]['source_sha256'], 'ca89a7d7e28b6ba12ce451be2718c898b73c43244764ca974178376c44a2f897')
         self.assertEqual(files[lod_site.MAIN]['timing_suite'], 'lod-timing-20261029-080232')
         bemgen = self.provenance['bemgen']
-        self.assertEqual(bemgen['report_commit'], '38ff521fbfd85b53ca4611336117a159e5e118a4')
-        self.assertEqual((bemgen['run_commit'], bemgen['timing_commit'], bemgen['recheck_commit']), ('2ed856c', 'b29931c', 'd32fa2a'))
-        self.assertEqual(bemgen['schema_version'], '1.1.0')
+        self.assertEqual(bemgen['report_commit'], '8d2e3bda3fb952b1eeda8f0281e8a6e41a5381de')
+        self.assertEqual((bemgen['run_commit'], bemgen['timing_commit'], bemgen['recheck_commit'], bemgen['rerun_commit']),
+                         ('2ed856c', 'b29931c', 'd32fa2a', 'd4eb868'))
+        self.assertEqual(bemgen['schema_version'], '1.2.0')
         self.assertEqual(bemgen['schema_sha256'], hashlib.sha256(SCHEMA.read_bytes()).hexdigest())
+        self.assertEqual(bemgen['schema_sha256'], 'adbce622d21d2f1b3e438b044f21406015e045f3bb9dc2b20ed12dd4c30b24f6')
+        # BEMGen's own provenance file, copied byte for byte beside the sidecar, names the same two files.
+        copy = lod_site.DROP/'bemgen-provenance.json'
+        self.assertEqual(hashlib.sha256(copy.read_bytes()).hexdigest(), bemgen['provenance_sha256'])
+        self.assertEqual(bemgen['provenance_sha256'], '88f5cb29239d5788bd737f2feb7ca434d839d4a90d1b7462f589a172000b93ab')
+        self.assertEqual(json.loads(copy.read_bytes())['files'], {name: entry['sha256'] for name, entry in files.items()})
         self.assertEqual(self.provenance['atlas_inputs'], {**self.provenance['atlas_inputs'], 'release': '2.0.0',
                                                            'commit': '96a2e928ba60be6b54aa68d149e8de4222595035'})
         self.assertEqual(self.provenance['pending'], [])
         stages = self.provenance['stages']
-        self.assertEqual(list(stages), ['R3', 'R4', 'R5', 'R5 repeat check', 'R6'])
+        self.assertEqual(list(stages), ['R3', 'R4', 'R5', 'R5 repeat check', 'R4 first run, rerun cells', 'R4 rerun', 'R6', 'LOD1'])
         self.assertIn('not met', stages['R5']['gate'])
         self.assertEqual(stages['R5']['untimed_prototypes'], ['MediumOffice', 'PrimarySchool'])
+        self.assertEqual((stages['R3']['test_cases_with_recommendation'], stages['R3']['test_cases_finer_than_reference']), (214, 4))
+        self.assertEqual(stages['R4 rerun']['status'], {'Completed': 192})
         for key in ('report', 'methodology', 'plan', 'results'):
             self.assertTrue(self.provenance['study'][key].startswith(('research/', 'docs/')), key)
-        self.assertIn('drop 2', self.provenance['licence'])
+        self.assertIn('drop 3', self.provenance['licence'])
         self.assertIn('CC BY 4.0', self.provenance['licence'])
 
-    def test_the_loader_accepts_schema_1_0_0_and_1_1_0(self):
-        self.assertEqual(self.schema['properties']['version']['enum'], ['1.0.0', '1.1.0'])
+    def test_the_loader_accepts_schema_1_0_0_to_1_2_0(self):
+        self.assertEqual(self.schema['properties']['version']['enum'], ['1.0.0', '1.1.0', '1.2.0'])
         drop = lod_site.Drop()
-        self.assertEqual((drop.main['version'], drop.ht['version']), ('1.1.0', '1.0.0'))  # the sub-study file is still a 1.0.0 document
+        self.assertEqual((drop.main['version'], drop.ht['version']), ('1.2.0', '1.2.0'))
         validator = jsonschema.Draft202012Validator(self.schema)
         with tempfile.TemporaryDirectory() as temporary:
             folder = Path(temporary)
@@ -79,7 +90,25 @@ class DataDropTests(unittest.TestCase):
                 self.assertEqual(sorted(validator.iter_errors(document), key=str), [], version)
                 (folder/lod_site.MAIN).write_text(json.dumps(document), encoding='utf-8')
                 self.assertEqual(lod_site.Drop(folder).main['version'], version)
-        self.assertEqual([list(e.path) for e in validator.iter_errors({**drop.ht, 'version': '1.2.0'})], [['version']])  # the schema admits no other version
+        self.assertEqual([list(e.path) for e in validator.iter_errors({**drop.ht, 'version': '1.3.0'})], [['version']])  # the schema admits no other version
+        # A 1.2.0 document must carry what 1.2.0 adds (the schema's allOf).
+        bare = {**drop.ht, 'entries': [{k: v for k, v in e.items() if k != 'finer_than_reference'} for e in drop.ht['entries']]}
+        self.assertTrue(list(validator.iter_errors(bare)))
+
+    def test_refused_zonings_are_not_generated_and_never_failed_runs(self):
+        drop = lod_site.Drop()
+        main = [z for e in drop.main['entries'] for z in e['zonings']]
+        ht = [z for e in drop.ht['entries'] for z in e['zonings']]
+        self.assertEqual(sum(lod_site.refused(z) for z in main), 1056)
+        self.assertEqual(sum(lod_site.refused(z) for z in ht), 352)
+        self.assertEqual(sum(lod_site.failed(z) for z in main + ht), 0)  # D-224: the small hotel's R4 cells now all run
+        self.assertEqual({z['reason'] for z in main + ht if lod_site.refused(z)}, set(lod_site.REFUSALS))
+        self.assertTrue(all(not z['succeeded'] for z in main if lod_site.refused(z)))
+        self.assertEqual({len(e['zonings']) for e in drop.main['entries']}, {23})  # every planned zoning is listed (D-220)
+        flagged = [e['id'] for e in drop.main['entries'] if lod_site.finer(e)]
+        self.assertEqual(sorted(flagged), ['FullServiceRestaurant|4A|90.1-2007|0.0', 'FullServiceRestaurant|4A|90.1-2007|45.0',
+                                           'FullServiceRestaurant|4A|90.1-2019|0.0', 'FullServiceRestaurant|4A|90.1-2019|45.0'])
+        self.assertTrue(all(not e['recommended'] for e in drop.main['entries'] if lod_site.finer(e)))
 
     def test_the_main_matrix_carries_the_serial_costs_of_the_timed_cells(self):
         drop = lod_site.Drop()
@@ -107,7 +136,9 @@ class DataDropTests(unittest.TestCase):
         self.assertAlmostEqual(timing['gate']['max_pct'], 12.9, places=1)
         self.assertEqual((timing['recheck']['sites'], timing['recheck']['miss']), (34, 0))
         self.assertEqual(len(timing['by_prototype']), 9)
-        self.assertEqual(len(timing['by_zoning']), 23)
+        self.assertEqual(len(timing['by_zoning']), 18)  # twins dropped (D-222)
+        self.assertEqual((timing['duplicates_dropped'], timing['overall']['prototypes'], timing['overall']['sites']), (137, 9, 69))
+        self.assertAlmostEqual(timing['overall']['cpu_ratio'], 0.659, places=3)
         self.assertTrue(drop.costed)
         for e in drop.ht['entries']:  # the sub-study is not timed, and its failed sites now carry their zoning
             self.assertFalse(lod_site.timed(e))
@@ -130,11 +161,13 @@ class DataDropTests(unittest.TestCase):
         self.assertEqual({e['climate_zone'] for e in entries}, {'2A', '2B', '3C', '4A', '5A', '7A'})
         self.assertEqual({e['vintage'] for e in entries}, {'90.1-2007', '90.1-2019'})
         self.assertEqual({e['orientation_degrees'] for e in entries}, {0.0, 45.0})
-        for entry in entries:  # a recommended zoning is a kept zoning that meets the threshold, with the fewest zones
+        for entry in entries:  # a recommended zoning is a kept zoning that meets the threshold, with the fewest zones up to the reference's (D-220)
             meeting = [z for z in entry['zonings'] if z['meets_threshold']]
             self.assertTrue(all(z['succeeded'] and not z['duplicate_of'] for z in meeting), entry['id'])
-            fewest = min((z['zone_count'] for z in meeting), default=None)
-            self.assertEqual({p['site_name'] for p in entry['recommended']}, {z['site_name'] for z in meeting if z['zone_count'] == fewest}, entry['id'])
+            bounded = [z for z in meeting if z['zone_count'] <= entry['reference']['zone_count']]
+            fewest = min((z['zone_count'] for z in bounded), default=None)
+            self.assertEqual({p['site_name'] for p in entry['recommended']}, {z['site_name'] for z in bounded if z['zone_count'] == fewest}, entry['id'])
+            self.assertEqual(entry['finer_than_reference'], bool(meeting) and not bounded, entry['id'])
 
     def test_the_loader_admits_added_fields_and_refuses_another_format(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -247,16 +280,39 @@ class PageTests(unittest.TestCase):
         self.assertIn('href="stand-alone-retail/"', overview)
         self.assertEqual(self.result['cells_with_recommendation'], sum(1 for e in self.drop.main['entries'] if e['recommended']))
         method = self.page(pages['method'])
-        self.assertIn('24 zonings of the Small hotel', method)
-        self.assertIn('not applicable in their cells (D-201)', method)
-        self.assertIn('Conditioned merge + Stack (IWHT off), Conditioned merge + Stack (IWHT off, FHT off)', method)  # the failed sites' zonings, from the file
-        self.assertNotIn('no zoning fields for a site that did not run', method)
+        # D-224: the sub-study has no failed run left, so D-201's "not applicable" caution for the small hotel goes.
+        self.assertNotIn('not applicable in their cells (D-201)', method)
+        self.assertNotIn('32 kW in 15 m²', method)
+        self.assertIn('<strong>Zonings that are not generated.</strong>', method)
+        self.assertIn('1,056 in the main matrix', method)
+        self.assertIn('0 of 5,016 generated test sites did not succeed', method)
         heat = self.page(pages['heat_transfer'])
-        self.assertEqual(heat.count('not applicable: the EnergyPlus run did not succeed'), 24)
-        self.assertIn('<tr class="ea-failed"><td>No simplification + Stack (IWHT off) <code>', heat)
+        self.assertNotIn('ea-failed', heat)
+        self.assertNotIn('not applicable: the EnergyPlus run did not succeed', heat)
+        self.assertIn('<dt>Zonings whose run did not succeed</dt><dd>0</dd>', heat)
+        self.assertIn('<dt>Zonings not generated</dt><dd>352, refused by the generator', heat)
+        self.assertIn('Every zoning the generator wrote ran', heat)
+        self.assertIn('zonings not generated: the generator refuses them by a documented limit', heat)
         self.assertNotIn('zoning not recorded', heat)
         self.assertIn('data-filter="prototype"', heat)
         self.assertIn('IWHT off', heat)
+        hospital = self.page(pages['prototype:Hospital'])  # refused zonings: listed under the cell as not generated, never as failed runs
+        self.assertIn('<ul class="ea-refused"><li>', hospital)
+        self.assertIn('the zoning does not support the prototype&#x27;s multiplied rooms', hospital)
+        self.assertNotIn('ea-failed', hospital)
+
+    def test_cells_finer_than_the_reference_are_flagged(self):
+        pages = self.result['pages']
+        self.assertEqual(self.result['cells_finer_than_reference'], 4)
+        self.assertEqual(self.result['cells_with_recommendation'], 214)
+        text = self.page(pages['prototype:FullServiceRestaurant'])
+        self.assertEqual(text.count(lod_site.FINER), 4)
+        self.assertIn('<dt>Finer than the reference</dt><dd>4 cells', text)
+        self.assertIn('so the cell has no recommendation (finer than the reference, D-220)', text)
+        self.assertIn('yes, finer than the reference', text)
+        method = self.page(pages['method'])
+        self.assertIn('flagged <em>finer than the reference</em>: Full-service restaurant 4A 90.1-2007 0°', method)
+        self.assertNotIn('5 zones against the reference', method)
 
     def test_the_summary_and_cell_tables_carry_the_serial_costs_where_timed(self):
         pages = self.result['pages']
@@ -299,29 +355,36 @@ class PageTests(unittest.TestCase):
         self.assertIn('192 of 218 sites pass (median 2.2 %, largest 12.9 %); <strong>not met</strong>', cost)
         self.assertIn('34 long sites timed again: 0 at or above the gate (largest CV 4.8 %); absolute times +15 % against the pass, the test sites\' ratios -17 % to +5 % (median -4.5 %)', cost)
         by_prototype = cost.split('<h3>By prototype</h3>', 1)[1].split('<h3>By zoning</h3>', 1)[0]
-        self.assertIn('<tr><td>Outpatient</td><td>30</td><td>0.064</td><td>0.066</td><td>0.694</td><td>3.2</td><td>2.1</td></tr>', by_prototype)
+        self.assertIn('<tr><td>Outpatient</td><td>16</td><td>0.065</td><td>0.066</td><td>0.753</td><td>3.2</td><td>2.6</td></tr>', by_prototype)
         self.assertIn('<tr><td>Medium office</td><td colspan="6" class="ea-unjudged ea-untimed"><em>not timed</em></td></tr>', by_prototype)
         self.assertEqual(by_prototype.count('<tr>'), 1+11)
         by_zoning = cost.split('<h3>By zoning</h3>', 1)[1]
-        self.assertIn('<tr><td>Conditioned merge + Stacked floor zone multiplier</td><td>12</td><td>0.331</td>', by_zoning)
-        self.assertEqual(by_zoning.count('<tr>'), 1+23)
+        self.assertIn('<th>Zoning</th><th>Test sites</th><th>Prototypes</th><th>CPU ratio</th>', by_zoning)
+        self.assertIn('<tr><td>Semantic merge + Single zone per floor type</td><td>2</td><td>1</td><td>0.064</td>', by_zoning)
+        self.assertEqual(by_zoning.count('<tr>'), 1+18)
+        # D-222: medians of prototype medians, twins dropped; the overall processor-time ratio is 0.659.
+        self.assertIn('a zoning\'s and the overall cost are the medians of the prototype medians, each timed prototype one vote (D-222)', cost)
+        self.assertIn('<dt>Overall</dt><dd>processor time 0.659, wall clock 0.646 and peak committed memory 0.992 of the reference\'s: the median '
+                      'of the 9 prototype medians (69 distinct test sites)</dd>', cost)
         status = overview.split('id="section-status"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('Every stage of the run plan is complete; nothing is pending.', status)
+        self.assertIn('Nothing is pending.', status)
         self.assertIn('<p>Nothing is pending.</p>', status)
-        self.assertIn('<li>Study report (R6): <a href="https://github.com/EnvironmentalSystemsLab/BEMGen/blob/38ff521fbfd85b53ca4611336117a159e5e118a4/'
+        self.assertIn('<li>Study report (R6): <a href="https://github.com/EnvironmentalSystemsLab/BEMGen/blob/8d2e3bda3fb952b1eeda8f0281e8a6e41a5381de/'
                       'research/lod-study/report/2026-10-29-lod-study-report.md"><code>research/lod-study/report/2026-10-29-lod-study-report.md</code></a> in BEMGen</li>', status)
         self.assertIn('<code>research/lod-study/report/2026-10-29-lod-study-methodology.md</code>', status)
-        self.assertIn('<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/38ff521fbfd85b53ca4611336117a159e5e118a4/research/lod-study/results/">', status)
+        self.assertIn('<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/8d2e3bda3fb952b1eeda8f0281e8a6e41a5381de/research/lod-study/results/">', status)
         self.assertIn('<td>R5 serial timing pass</td><td>lod-timing-20261029-080232</td><td>run_20261029-083427</td>', status)
         self.assertIn('<td>R3 main matrix</td><td>lod-main-20261029-051941</td>', status)
-        self.assertIn('drop 2', status)
-        self.assertIn('Geometric LOD study · drop 2 · 264 cells', overview)
+        self.assertIn('drop 3', status)
+        self.assertIn('<td>R4 small-hotel rerun (D-211&#x27;s heat-transfer rule)</td><td>lod-ht-smallhotel-20261101-042906</td>', status)
+        self.assertIn('Geometric LOD study · drop 3 · 264 cells', overview)
 
     def test_the_method_page_states_the_cost_protocol_and_the_reading_cautions(self):
         method = self.page(self.result['pages']['method'])
         self.assertIn('<li><a href="#section-cost">Cost protocol</a></li><li><a href="#section-cautions">Reading the recommendations</a></li>', method)
         cost = method.split('id="section-cost"', 1)[1].split('</section>', 1)[0]
         self.assertIn('BEMGen <code>b29931c</code>', cost)
+        self.assertIn('the medians of the prototype medians, each timed prototype one vote (D-202, D-222)', cost)
         self.assertIn('--parallel 1 --timing-repeats 3 --timing-test-cases 12', cost)
         self.assertIn('i7-14700F', cost)
         self.assertIn('<dt>Timed</dt><dd>218 sites of 12 cells: Full-service restaurant 3C 90.1-2019 0°, Strip mall 3C 90.1-2019 0°', cost)  # page order
@@ -336,20 +399,23 @@ class PageTests(unittest.TestCase):
         self.assertIn('reproducible to about ±15 %', cost)
         self.assertIn('The costs shown are therefore medians', cost)
         cautions = method.split('id="section-cautions"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('lists off before on, so the kept and recommended site carries <em>off</em>', cautions)
-        self.assertIn('the Full-service restaurant in 4A: Perimeter core 4.57 m + Stack, 5 zones against the reference\'s 2 (4 cells)', cautions)
+        self.assertIn("deduplication keeps the twin whose setting is closest to the reference's (both on first, D-221)", cautions)
+        self.assertIn('(8 of 18 sub-study cells with a recommendation)', cautions)
+        self.assertIn("<strong>A recommendation has at most the reference's zone count.</strong>", cautions)
+        self.assertIn('Full-service restaurant 4A 90.1-2019 45° (4 cells). The robust rule takes the same bound.', cautions)
         limits = method.split('id="section-limits"', 1)[1].split('</section>', 1)[0]
         self.assertIn('<strong>Cost precision and scope.</strong> The timing gate was not met, so costs are medians (the cost protocol above); the Medium office, Primary school were not timed; '
                       'costs are measured in 90.1-2019, climate zones 3C, 5A, at 0° only, and on one machine.', limits)
-        self.assertIn('32 kW in 15 m²', limits)
+        self.assertIn('sensible heating in 108 of 264 cells; sensible cooling in 4 of 264 cells', limits)
+        self.assertIn('194 at ×0.5, 206 at ×0.8, 214 at ×1, 216 at ×1.2, 223 at ×2 (D-223)', limits)
         self.assertNotIn('pending', method)
         provenance = method.split('id="section-provenance"', 1)[1]
         self.assertIn('the R5 timing pass at <code>b29931c</code> and its repeat check at <code>d32fa2a</code>', provenance)
-        self.assertIn('<dt>Report</dt><dd><a href="https://github.com/EnvironmentalSystemsLab/BEMGen/blob/38ff521fbfd85b53ca4611336117a159e5e118a4/research/lod-study/report/2026-10-29-lod-study-report.md">', provenance)
-        self.assertIn('the main matrix is version 1.1.0, the sub-study 1.0.0', provenance)
+        self.assertIn('<dt>Report</dt><dd><a href="https://github.com/EnvironmentalSystemsLab/BEMGen/blob/8d2e3bda3fb952b1eeda8f0281e8a6e41a5381de/research/lod-study/report/2026-10-29-lod-study-report.md">', provenance)
+        self.assertIn('the main matrix is version 1.2.0, the sub-study 1.2.0', provenance)
         self.assertIn('<td>R5 repeat check of the 34 long sites</td>', provenance)
-        self.assertIn('<code>7fb9e2124a4b</code>', provenance)
-        self.assertIn('<code>be4a859d6318</code>', provenance)
+        self.assertIn('<code>439fc0a4b430</code>', provenance)
+        self.assertIn('<code>ca89a7d7e28b</code>', provenance)
 
     def test_a_drop_without_costs_renders_without_cost_columns(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -376,7 +442,7 @@ class PageTests(unittest.TestCase):
             self.assertIn(url, self.site.summaries)
             self.assertNotIn('\n\n', self.page(url).split('---\n\n', 1)[1].strip())
         self.assertGreaterEqual(len(self.site.store.files), 11+3)
-        self.assertIn('LOD recommendations 1.1.0, main matrix', self.page(self.result['pages']['overview']))
+        self.assertIn('LOD recommendations 1.2.0, main matrix', self.page(self.result['pages']['overview']))
         descriptor = self.site.store.put(self.drop.main)
         self.assertEqual(site_store.read(self.temporary.name, descriptor)['entries'][0]['id'], self.drop.main['entries'][0]['id'])
 
@@ -414,6 +480,7 @@ def cell(orientation, rows, prototype='Proto', climate='4A', vintage='90.1-2019'
                                                                                 'sensible_cooling_kwh_m2_conditioned': 30.0}, 'zonings': rows, 'recommended': recommended}
 
 
+SAME_PICKS = 95  # cell pairs whose orientations recommend the same zonings (drop 3)
 SZB, SM, CM, PC3 = fields('ConditionedMerge', 'SingleZoneBuilding'), fields('SemanticMerge', 'Stack'), fields('ConditionedMerge', 'Stack'), fields('PerimeterCore PerimeterDepth=3', 'Stack', 3.0)
 THRESHOLD = {'min_reference_kwh_m2': 1.0}
 
@@ -543,10 +610,12 @@ class RobustPageTests(unittest.TestCase):
     def page(self, url):
         return (Path(self.temporary.name)/url/'index.md').read_text(encoding='utf-8')
 
-    def test_the_drop_has_a_robust_zoning_in_109_of_132_cell_pairs(self):
-        self.assertEqual((self.result['cell_pairs'], self.result['robust_pairs']), (132, 109))
+    def test_the_drop_has_a_robust_zoning_in_107_of_132_cell_pairs(self):
+        self.assertEqual((self.result['cell_pairs'], self.result['robust_pairs']), (132, 107))
         statuses = [r['status'] for r in self.results.values()]
-        self.assertEqual((statuses.count('robust'), statuses.count('none'), statuses.count('single')), (109, 23, 0))
+        self.assertEqual((statuses.count('robust'), statuses.count('none'), statuses.count('single')), (107, 25, 0))
+        for vintage in ('90.1-2007', '90.1-2019'):  # the reference's bound (D-220): only a finer zoning meets at both orientations
+            self.assertEqual(self.results[('FullServiceRestaurant', '4A', vintage)]['status'], 'none')
         same = 0
         for key, r in self.results.items():
             picks = [{lod_site.zoning_key(p['zoning']) for p in e['recommended']} for e in r['entries']]
@@ -561,9 +630,9 @@ class RobustPageTests(unittest.TestCase):
             if picks[0] and picks[0] == picks[1]:
                 same += 1
                 self.assertIn(r['key'], picks[0], key)
-        self.assertEqual(same, 97)
-        self.assertEqual(sum(1 for r in self.results.values() if r['status'] == 'robust' and r['same_pick']), 100)
-        self.assertEqual(sum(n for _, n in lod_site.tally_robust(self.results)), 109)
+        self.assertEqual(same, SAME_PICKS)
+        self.assertEqual(sum(1 for r in self.results.values() if r['status'] == 'robust' and r['same_pick']), 98)
+        self.assertEqual(sum(n for _, n in lod_site.tally_robust(self.results)), 107)
         self.assertEqual(lod_site.tally_robust(self.results)[0], ('Conditioned merge + Single zone building', 41))
 
     def test_every_prototype_page_opens_with_the_robust_table(self):
@@ -617,9 +686,9 @@ class RobustPageTests(unittest.TestCase):
 
     def test_the_overview_tallies_the_robust_pairs(self):
         overview = self.page(self.result['pages']['overview'])
-        self.assertIn('<h3>Robust across orientations: 109 of 132 cell pairs</h3>', overview)
+        self.assertIn('<h3>Robust across orientations: 107 of 132 cell pairs</h3>', overview)
         self.assertIn('<tr><td>Conditioned merge + Single zone building</td><td>41</td></tr>', overview.split('<h3>Robust across orientations', 1)[1])
-        self.assertIn(', and at both orientations of a cell pair in 109 of 132 pairs (robust across orientations). Each prototype page', overview)
+        self.assertIn(', and at both orientations of a cell pair in 107 of 132 pairs (robust across orientations). Each prototype page', overview)
         self.assertIn('<th>With a recommended zoning</th><th>Robust across orientations (cell pairs)</th><th>Most often recommended (cells)</th>', overview)
         self.assertIn('<a href="stand-alone-retail/">Stand-alone retail</a></td><td>24</td><td>24</td><td>12 of 12</td>', overview)
         self.assertIn('<a href="supermarket/">Supermarket</a></td><td>24</td><td>16</td><td>8 of 12</td>', overview)
@@ -630,8 +699,8 @@ class RobustPageTests(unittest.TestCase):
         self.assertIn('<li><a href="#section-dedup">Deduplication</a></li><li><a href="#section-robust">Robust across orientations</a></li><li><a href="#section-cost">Cost protocol</a></li>', method)
         section = method.split('id="section-robust"', 1)[1].split('</section>', 1)[0]
         self.assertIn(lod_site.esc(lod_site.ROBUST_RULE), section)
-        self.assertIn('<dt>Cell pairs</dt><dd>132: robust in 109, none meeting at both orientations in 23</dd>', section)
-        self.assertIn('<dt>Recommended at both orientations</dt><dd>100 of 109 robust pairs', section)
+        self.assertIn('<dt>Cell pairs</dt><dd>132: robust in 107, none meeting at both orientations in 25</dd>', section)
+        self.assertIn('<dt>Recommended at both orientations</dt><dd>98 of 107 robust pairs', section)
         self.assertIn('<dt>Ties at the fewest zones</dt><dd>38 pairs, named in the row</dd>', section)
         self.assertIn('so the rule compares the zonings themselves at both orientations, not only the two recommendations', section)
         self.assertIn('<code>meets_threshold</code>', section)

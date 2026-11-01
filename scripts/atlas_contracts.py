@@ -19,6 +19,9 @@ release in `RELEASES` into its new form after the previous form validated. What 
    the retired `export_mode` and `source.evidence_view` leave the detailed form.
 4. **Window ratios that vary with a dwelling's context** (section 5) are `fenestration.variants` with their
    `applies_with`, in place of `metadata.fenestration`.
+5. **The origin of the daylighting fractions** (ADR 0059 section 4, review F5c): `lighting_controls.daylighting_origin`
+   says whether the fractions are geometry-derived from a PNNL prototype zone set or a DOE reference scan, which
+   prototype climates give them, and which climate's model the evidence row cites (a copy where all agree).
 """
 import copy
 import fnmatch
@@ -26,6 +29,7 @@ import json
 import re
 
 from scripts.definition_contract import stable_id
+from scripts.iecc_commercial_zones import CITIES
 
 RELEASES = ('2.3.0',)
 PROGRAM = ('program-json-v6.schema.json', '6.0.0', 'urn:archetype-atlas:program-json:6.0.0')
@@ -65,6 +69,62 @@ LOAD_STATUS = {
     'evidence_id': {'type': 'string', 'minLength': 1}}
 LOAD_RULES = [{'if': {'properties': {'status': {'const': 'unknown'}}, 'required': ['status']}, 'then': {'required': ['reason']}},
               {'if': {'properties': {'status': {'const': 'filled'}}, 'required': ['status']}, 'then': {'required': ['filling']}}]
+
+ORIGIN_KINDS = {
+    'prototype_zone_set': 'geometry-derived from the Daylighting:Controls of the PNNL prototype zones the program was '
+                          'extracted from: the floor fraction of those zones with controls and the reference-point fractions '
+                          'weighted by zone lighting power, for the prototype geometry',
+    'reference_model_scan': 'no DOE Commercial Reference Building model has Daylighting:Controls (every IDF scanned): '
+                            'a source zero, independent of geometry and climate'}
+DAYLIGHTING_ORIGIN = {
+    'type': 'object', 'additionalProperties': False, 'required': ['kind', 'note'],
+    'description': 'Where the daylighting fractions come from (6.0.0, ADR 0059 section 4). They are the source model values, '
+                   'applied as given (ADR 0046 section 6); this says which source model and climates they are.',
+    'properties': {
+        'kind': {'enum': sorted(ORIGIN_KINDS),
+                 'description': '; '.join(f'{k}: {v}' for k, v in sorted(ORIGIN_KINDS.items()))+'.'},
+        'climates': {'type': 'array', 'minItems': 1, 'uniqueItems': True, 'items': {'type': 'string', 'minLength': 1},
+                     'description': 'The prototype climate zones (of the 19 PNNL prototype locations) whose model gives '
+                                    '`daylighting`; the others are in `daylighting_by_climate`.'},
+        'cited_climate': {'type': 'string', 'minLength': 1,
+                          'description': 'The climate zone of the prototype model the evidence row cites. Where several '
+                                         'climates give the same controls it is a copy of them, the first in climate order, '
+                                         'not a choice of climate.'},
+        'note': {'type': 'string', 'minLength': 1}},
+    'allOf': [{'if': {'properties': {'kind': {'const': 'prototype_zone_set'}}},
+               'then': {'required': ['climates', 'cited_climate']}}]}
+CITED_CLIMATE = re.compile(r'climate zone \S+ \((\w+)\)')
+
+
+def daylighting_origin(controls, rows):
+    """The origin label of a known `lighting_controls` block; `rows` holds its evidence rows (shared shape)."""
+    row = rows.get(controls.get('evidence_id')) or {}
+    if controls['source'] == 'doe_reference':
+        scan = row.get('original_value') or {}
+        return {'kind': 'reference_model_scan',
+                'note': f'No DOE Commercial Reference Building model of this vintage has Daylighting:Controls '
+                        f'({scan.get("models_scanned")} IDFs scanned, {scan.get("with_controls")} with controls): '
+                        'daylighting is a source zero for any geometry and climate.'}
+    found = CITED_CLIMATE.search(row.get('interpretation_note') or '')
+    if found is None or found[1] not in CITIES:
+        raise ValueError(f'No prototype climate in the daylighting evidence {controls.get("evidence_id")}')
+    cited, city = CITIES[found[1]][1], found[1]
+    others = set(controls.get('daylighting_by_climate') or {})
+    climates = [climate for _, climate in CITIES.values() if climate not in others]
+    if cited not in climates:
+        raise ValueError(f'Daylighting evidence {controls["evidence_id"]} cites {cited}, a climate with other controls')
+    if len(climates) == len(CITIES):
+        where = (f'All {len(CITIES)} prototype climates give the same controls for these zones; the evidence cites the '
+                 f'climate {cited} ({city}) model as one copy of them, not as a choice of climate.')
+    else:
+        where = (f'{len(climates)} of the {len(CITIES)} prototype climates give these controls, the evidence citing the '
+                 f'climate {cited} ({city}) model as one copy of them; {", ".join(sorted(others))} differ and are in '
+                 'daylighting_by_climate, each citing its own model.')
+    what = (f'The fractions are {ORIGIN_KINDS["prototype_zone_set"]}.' if controls.get('daylighting') is not None else
+            'None of the PNNL prototype zones the program was extracted from has Daylighting:Controls (a source zero for '
+            'that zone set).')
+    return {'kind': 'prototype_zone_set', 'climates': climates, 'cited_climate': cited, 'note': f'{what} {where}'}
+
 
 # The meaning of a null, by JSON pointer pattern (`*` one path segment), in order; the first match wins. A null
 # with no row stops the export, so the table covers every null a document can hold. Loads and controls take the
@@ -192,7 +252,8 @@ def program_schema(previous):
         'fillings and the exporter defaults with draw-only water heating. 6.0.0 changes from 5.4.0: evidence rows take the '
         'shape constructions use, with an id, and the document holds every row it cites; loads carry status, reason, filling '
         'and evidence_id; nulls gives the meaning of every null; dwelling window ratios that depend on context are '
-        'fenestration.variants. Every other 5.4.0 field keeps its meaning.')
+        'fenestration.variants; lighting_controls.daylighting_origin labels where the daylighting fractions come from. '
+        'Every other 5.4.0 field keeps its meaning.')
     for variant_name in ('source', 'filled'):
         variant = schema['$defs'][variant_name]
         props = variant['properties']
@@ -220,6 +281,10 @@ def program_schema(previous):
                                                       'roof': plain_properties['roof'], 'evidence_id': plain_properties['evidence_id'],
                                                       'model_count': {'type': 'integer', 'minimum': 1}}}}}}
         props['fenestration'] = {'oneOf': [plain, variants]}
+        controls = props['lighting_controls']
+        controls['properties']['daylighting_origin'] = copy.deepcopy(DAYLIGHTING_ORIGIN)
+        controls['description'] += (' 6.0.0: `daylighting_origin` says where the fractions come from (the prototype zone set '
+                                    'and climates, or the reference model scan); the exporter gives it on every known block.')
         if 'water_stage' in variant['$defs']:
             stage = variant['$defs']['water_stage']['properties']
             for key in ('conversion_evidence', 'temperature_evidence', 'fuel_evidence'):
@@ -383,6 +448,9 @@ def program_document(document, version, context):
             if f['evidence_id'] not in shared and f['evidence_id'] in context.evidence:
                 shared[f['evidence_id']] = shared_row(f['evidence_id'], context.evidence[f['evidence_id']], context.source_files, context.release_label)
         out['source']['evidence'] = [shared[eid] for eid in sorted(shared)]
+    controls = out.get('lighting_controls')
+    if isinstance(controls, dict) and controls.get('status') == 'known':
+        controls['daylighting_origin'] = daylighting_origin(controls, shared)
     out['nulls'] = nulls(out, context)
     return out
 

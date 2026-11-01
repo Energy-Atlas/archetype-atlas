@@ -9,6 +9,9 @@ schedule's unit, sum, maximum and sampled hours, within 1e-9. The bundle differs
 adds (`release`, each owner's `values`) and in the versions, and in the IDs: a 3.0.0 owner named its
 definition program or service, which the 4.0.0 owner names by its release ID (also inside the keys of
 composition members and apartment water owners).
+
+The equivalence holds over release 2.2.0, the release generator 3.0.0's recipes became (ADR 0051); the test reads
+it by name, since release 2.3.0 moves IDs and changes the small-hotel elevator (ADR 0053, ADR 0059).
 """
 import gzip
 import json
@@ -20,9 +23,10 @@ import numpy as np
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
-from atlas_schedules.release import definition_map, translate
+from atlas_schedules.release import definition_map, set_releases, translate
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/generator-3-0-0-bundles.json.gz"
+RELEASE = Path(__file__).resolve().parents[2] / "data/atlas-releases/v2.2.0"
 ADDED = ("values",)   # owner fields 4.0.0 adds
 TOLERANCE = 1e-9
 DEFINITION_ID = re.compile(r"(program|service)-[0-9a-f]{24}")
@@ -88,9 +92,11 @@ class Generator300Equivalence(unittest.TestCase):
     def setUpClass(cls):
         with gzip.open(ANSWER_KEY, "rb") as handle:
             cls.key = json.loads(handle.read().decode("utf-8"))
+        set_releases(RELEASE)
 
     @classmethod
     def tearDownClass(cls):
+        set_releases(None)
         del cls.key
 
     def test_key_covers_every_kind(self):

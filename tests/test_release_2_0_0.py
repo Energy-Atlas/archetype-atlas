@@ -30,7 +30,7 @@ class Release200Tests(unittest.TestCase):
         self.assertIsNone(self.listed['base_release'])
         self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'released'))
         # 2.1.0 and 2.2.0 are deltas on this release (ADR 0046 section 12, ADR 0051)
-        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0', 'v2.2.0'])
+        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0', 'v2.2.0', 'v2.3.0'])
         self.assertIn(EXPORTER_INPUTS, self.files)
 
     def test_generator_recipes_for_the_90_1_and_doe_ref_programs(self):
@@ -99,7 +99,7 @@ class AlternateTests(unittest.TestCase):
     def test_alternates_export_with_their_assemblies_and_evidence(self):
         from scripts.atlas_exports import Release
         from scripts.construction_alternates import differs
-        release = Release()
+        release = Release(release='2.0.0')
         sid = next(s for s in sorted(release.constructions.sets) if s.startswith('90-1-2019.medium-office.'))
         document = release.construction(sid, '5-b', 'detailed')
         self.assertEqual(document['schema_version'], '4.3.0')

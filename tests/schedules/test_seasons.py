@@ -9,7 +9,7 @@ from atlas_schedules.residential.lighting import sunset_hours
 from atlas_schedules.residential.seasons import for_hemisphere, season_month, seasonal
 from atlas_schedules.residential.tables import load_tables
 
-APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.6b5425"
 
 
 class SeasonShift(unittest.TestCase):

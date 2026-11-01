@@ -382,13 +382,6 @@ _build_before_2_3_0 = build
 _manifest_before_2_3_0 = manifest
 
 
-def build(release):
-    """The delta's files, each valid against its release-record schema."""
-    files = _build_before_2_3_0(release)
-    release_schemas.check(files, f'release {release}')
-    return files
-
-
 def generation_counts(release, delta):
     """Counts of the generation blocks of the resolved release (base and delta; release 2.2.0's base has none)."""
     reader = generation_reader(release, delta)
@@ -413,11 +406,147 @@ def manifest(release, delta, base_manifest):
     out = _manifest_before_2_3_0(release, delta, base_manifest)
     if WRITER in out['input_sha256']:
         out['input_sha256'][WRITER] = sha(pinned_writer(release))
+    if _version(release) < SPLIT_LICENCE_FROM:
+        out['input_sha256']['LICENSE'] = sha(delta['LICENSE'])
+    else:
+        edited = edits_2_3_0()
+        out['input_sha256'].update({path: sha((ROOT/path).read_bytes()) for path in EDIT_INPUTS})
+        out['input_sha256']['LICENSE-DATA'] = sha(delta['LICENSE-DATA'])
+        out['removed'] = list(edited.removed)
+        kinds = {'programs': sum('.construction-' not in i for i in edited.ids),
+                 'construction_sets': sum('.construction-' in i for i in edited.ids)}
+        out['counts']['moved_ids'] = {**kinds, 'id_map': ID_MAP}
     if _version(release) >= GENERATION_BY_CLASS_FROM:
         kept = [d for d in out['deferred'] if not d.startswith('generation blocks')]
         out['deferred'] = generation_coverage.deferred(generation_reader(release, delta)) + kept
     release_schemas.check({'manifest.json': out}, f'release {release}')
     return out
+
+
+# Release 2.3.0 (ADR 0059), a delta on 2.2.0:
+# - `LICENSE` is the MIT text alone and `LICENSE-DATA` the CC BY 4.0 legal code (issue #44); releases 2.1.0 and
+#   2.2.0 keep the one two-part `LICENSE` they packaged, verified by checksum as their licence input;
+# - the record edits of ADR 0053 (`scripts.atlas_edits.edit` over the resolved 2.2.0): the files they change or
+#   add, the paths they remove (`removed`, the old names of moved IDs) and `id-map-2.3.0.json`, the map from 2.2.0
+#   to 2.3.0 IDs (1,550 programs, 12 construction sets);
+# - `generation.json` of the 84 IECC commercial and 15 detailed office folders (ADR 0055), derived by
+#   `scripts.build_zone_recipes` over the edited release, as their IDs are 2.3.0's.
+import functools  # noqa: E402
+
+CHAIN = ('2.1.0', '2.2.0', '2.3.0')
+RELEASE = CHAIN[-1]
+SPLIT_LICENCE_FROM = (2, 3, 0)
+ID_MAP = 'id-map-2.3.0.json'
+EDIT_INPUTS = ('scripts/atlas_edits.py', 'data/program-inputs/pnnl-point-load-exceptions-v1.json',
+               'data/program-inputs/distinguishing-names-v1.json')
+DECISIONS['2.3.0'] = ('docs/adr/0059-release-2-3-0.md', 'docs/adr/0053-release-2-3-0-data-corrections.md',
+                      'docs/adr/0054-release-2-3-0-export-contracts.md',
+                      'docs/adr/0055-generation-for-iecc-and-detailed-offices.md',
+                      'docs/adr/0056-release-record-schemas-and-versioning.md', 'docs/adr/0048-open-licences.md')
+GENERATOR['2.3.0'] = {'version': '4.1.0', 'package': PACKAGE, 'wheel': 'atlas_schedules-4.1.0-py3-none-any.whl',
+                      'release_tag': 'atlas-schedules-v4.1.0', 'request_schema_version': '4.0.0',
+                      'reads': 'release 2.x, generation 1.x'}
+README['2.3.0'] = """# Energy Archetype Atlas release 2.3.0 (data corrections and generation coverage, delta on 2.2.0)
+
+A delta release (ADR 0036 section 2, ADR 0059): this folder holds only its own files, and a
+reader resolves every other path in `../v2.2.0/`, `../v2.1.0/` and then `../v2.0.0/`, whose
+manifest hashes the chain of `manifest.json` files records. `removed` lists the 2.2.0 paths
+this release drops: the old names of the records whose IDs move.
+
+- Record corrections (ADR 0053): the unified `InternalMass` of eight DOE Ref building-scope
+  construction sets counts their whole additional-mass inventory; the 90.1 small-hotel
+  elevator takes the PNNL prototype value, and its support mixes follow; every unknown
+  commercial load carries its reason, and the ADR 0016 accepted absence is a stored filling;
+  same-named records take the name of their source distinction. Program and set IDs follow
+  their rules: 1,550 programs and 12 construction sets have new IDs, and every citing file
+  follows, `generation.json` and `definition-map.json` included.
+- `id-map-2.3.0.json`: every 2.2.0 ID that moves, mapped to its 2.3.0 ID (`ids`). The
+  2.0.0 `id-map.json` keeps the map into 2.0.0.
+- `<family>/<template>/<building type>/generation.json` of the IECC commercial and detailed
+  office folders (ADR 0055), new, and of the 2.2.0 folders whose programs moved.
+- `LICENSE` is the MIT License for code and `LICENSE-DATA` the CC BY 4.0 legal code for data
+  and documentation; attribute as "Archetype Atlas, Energy-Atlas" with the release number.
+
+Exports of this release follow new contracts (ADR 0054): Program JSON 6.0.0, detailed
+constructions 5.0.0, unified constructions 4.0.0, source-model constructions 2.0.0 and
+building services 1.0.1, naming `atlas-release-2.3.0`. The generator (`atlas-schedules`
+4.1.0) reads it. Resolve the chain with `python -m scripts.atlas_delta`
+(`scripts.atlas_delta.files('2.3.0')`); verify with `--verify`, rebuild and compare with
+`--check`. Upstream notices are in 2.0.0's `notices/`.
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def edits_2_3_0():
+    """The ADR 0053 edits over the resolved release 2.2.0 (scripts.atlas_edits)."""
+    from scripts import atlas_edits
+    return atlas_edits.edit(files('2.2.0'))
+
+
+def zone_generation(resolved):
+    """{path: bytes} of the IECC commercial and detailed office generation.json over a resolved release (ADR 0055)."""
+    from atlas_schedules.release import TreeStore
+    from scripts import build_zone_recipes
+
+    class Store(TreeStore):
+        def __init__(self):
+            self.folder, self.base, self.removed = None, None, set()
+            self.manifest = {'release': RELEASE, 'generation': {'schema_version': GENERATION_SCHEMA}}
+            self.manifest_sha256, self.version = None, RELEASE
+
+        @property
+        def paths(self):
+            return {p: p for p in resolved}
+
+        def json(self, path):
+            return json.loads(resolved[path])
+
+        def describe(self):
+            return f'release {RELEASE} as built'
+
+    reader = Release(Store())
+    docs = build_zone_recipes.build(reader)
+    build_zone_recipes.gate(reader, docs)
+    return {f'{folder}/generation.json': build_zone_recipes.encode(doc) for folder, doc in docs.items()}
+
+
+def _build_2_3_0():
+    from scripts import atlas_edits
+    edited = edits_2_3_0()
+    out = {'LICENSE': (ROOT/'LICENSE').read_bytes(), 'LICENSE-DATA': (ROOT/'LICENSE-DATA').read_bytes(),
+           'README.md': README['2.3.0'].encode('utf-8')}
+    out.update(edited.files)
+    out[ID_MAP] = atlas_edits.id_map_bytes(edited.ids)
+    generation = zone_generation(edited.resolved(files('2.2.0')))
+    clash = sorted(set(generation) & set(out))
+    if clash:
+        raise ValueError(f'Zone generation.json over files the edits write: {clash[:3]}')
+    out.update(generation)
+    return out
+
+
+def build(release):
+    """The delta's files, each valid against its release-record schema; before 2.3.0 the licence each release
+    packaged is kept as written (ADR 0059), since the root LICENSE split."""
+    if _version(release) >= SPLIT_LICENCE_FROM:
+        out = _build_2_3_0()
+    else:
+        out = _build_before_2_3_0(release)
+        out['LICENSE'] = (folder_of(release)/'LICENSE').read_bytes()
+    release_schemas.check(out, f'release {release}')
+    return out
+
+
+_verify_before_2_3_0 = verify
+_files_before_2_3_0 = files
+
+
+def verify(release=None):
+    return _verify_before_2_3_0(release or RELEASE)
+
+
+def files(release=None):
+    return _files_before_2_3_0(release or RELEASE)
 # <<< release 2.3.0
 
 

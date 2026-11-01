@@ -5,13 +5,12 @@ import hashlib
 import json
 from pathlib import Path
 import unittest
-from unittest import mock
 
 import jsonschema
 
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.release import Release
-from scripts import atlas_delta, build_zone_recipes, release_schemas, schema_revisions
+from scripts import atlas_delta, release_schemas, schema_revisions
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -28,7 +27,7 @@ class Schemas(unittest.TestCase):
         self.assertEqual(schema_revisions.problems(), [])
 
     def test_published_manifests_and_deltas_validate(self):
-        for release in ('2.0.0', '2.1.0', '2.2.0'):
+        for release in ('2.0.0', '2.1.0', '2.2.0', '2.3.0'):
             folder = atlas_delta.folder_of(release)
             files = {'manifest.json': (folder/'manifest.json').read_bytes()}
             if release != '2.0.0':
@@ -74,16 +73,8 @@ class NextManifest(unittest.TestCase):
                          listed['input_sha256']['scripts/atlas_delta.py'])
 
     def test_deferred_by_folder_class(self):
-        release = Release(atlas_delta.folder_of('2.2.0'))
-        docs = build_zone_recipes.build(release)
-        delta = {'LICENSE': (ROOT/'LICENSE').read_bytes(), 'README.md': b'release 2.3.0\n',
-                 **{f'{f}/generation.json': build_zone_recipes.encode(d) for f, d in docs.items()}}
-        generator = {**atlas_delta.GENERATOR['2.2.0'], 'version': '4.1.0', 'wheel': 'atlas_schedules-4.1.0-py3-none-any.whl',
-                     'release_tag': 'atlas-schedules-v4.1.0'}
-        with mock.patch.object(atlas_delta, 'CHAIN', ('2.1.0', '2.2.0', '2.3.0')), \
-                mock.patch.dict(atlas_delta.DECISIONS, {'2.3.0': ('docs/adr/0055-generation-for-iecc-and-detailed-offices.md',)}), \
-                mock.patch.dict(atlas_delta.GENERATOR, {'2.3.0': generator}):
-            out = atlas_delta.manifest('2.3.0', delta, atlas_delta.verify('2.2.0'))
+        # Release 2.3.0 as written (ADR 0059): `atlas_delta --check --release 2.3.0` rebuilds it from its inputs.
+        out = atlas_delta.verify('2.3.0')
         generation = [d for d in out['deferred'] if d.startswith('generation blocks')]
         self.assertEqual(len(generation), 4)
         self.assertIn('189 of 255 folders', generation[0])
@@ -92,7 +83,7 @@ class NextManifest(unittest.TestCase):
         self.assertFalse(any('plenum and residential programs' in d for d in out['deferred']))
         self.assertEqual(out['counts']['generation']['generation_folders'], 189)
         self.assertEqual(out['input_sha256']['scripts/atlas_delta.py'],
-                         hashlib.sha256((ROOT/'scripts/atlas_delta.py').read_bytes()).hexdigest())
+                         hashlib.sha256(atlas_delta.pinned_writer('2.3.0')).hexdigest())
         self.assertEqual(release_schemas.errors({'manifest.json': out}), [])
 
 

@@ -201,6 +201,15 @@ def main():
     args = parser.parse_args()
     release = Release(atlas_delta.folder_of(args.release))
     docs = build(release)
+    shipped = sorted(set(docs) & set(release.generation_folders()))
+    if shipped:
+        # A release that ships the blocks (2.3.0 on, ADR 0059): each must be the derived document.
+        stale = [f for f in shipped if release.json(f'{f}/generation.json') != docs[f]]
+        if stale or len(shipped) != len(docs):
+            raise SystemExit(f'Release {release.version} ships {len(shipped)} of {len(docs)} derived generation.json, '
+                             f'{len(stale)} differ, e.g. {(stale or sorted(set(docs) - set(shipped)))[:3]}')
+        release = Release(release.store, generation={f: release.generation(f) for f in release.generation_folders()
+                                                      if f not in docs})
     views = gate(release, docs)
     configurations = sum(len(d['configurations']) for d in docs.values())
     services = sum(len(d.get('services', {})) for d in docs.values())

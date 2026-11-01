@@ -7,7 +7,7 @@ from jsonschema import Draft202012Validator
 
 import atlas_schedules
 from atlas_schedules import programmes
-from atlas_schedules.release import Release, current
+from atlas_schedules.release import Release
 from scripts import atlas_delta
 from scripts.common import ROOT, load_json
 
@@ -35,7 +35,6 @@ class DeltaTests(unittest.TestCase):
         self.assertEqual(self.release.base.manifest_sha256, listed['base_release']['manifest_sha256'])
         self.assertEqual(listed['generation'], {'schema_version': '1.0.0'})
         self.assertIn('docs/adr/0051-generation-parameters-in-the-release.md', listed['decision'])
-        self.assertEqual(atlas_delta.RELEASE, '2.2.0')
 
     def test_generator_json_removed_and_only_generation_files_added(self):
         base = self.release.base
@@ -57,7 +56,9 @@ class DeltaTests(unittest.TestCase):
         for path, digest in self.listed['input_sha256'].items():
             with self.subTest(input=path):
                 # The writer is pinned without the tagged blocks of later releases (ADR 0056 decision 7).
-                data = atlas_delta.pinned_writer('2.2.0') if path == 'scripts/atlas_delta.py' else (ROOT/path).read_bytes()
+                # The licence input is the copy the release packaged, since the root LICENSE split (ADR 0059).
+                data = (atlas_delta.pinned_writer('2.2.0') if path == 'scripts/atlas_delta.py' else
+                        (FOLDER/path).read_bytes() if path == 'LICENSE' else (ROOT/path).read_bytes())
                 self.assertEqual(atlas_delta.sha(data), digest)
         self.assertIn('scripts/atlas_delta.py', self.listed['input_sha256'])
 
@@ -90,12 +91,6 @@ class DeltaTests(unittest.TestCase):
 
     def test_every_view_assembles(self):
         self.assertEqual(atlas_delta.assembles('2.2.0'), 1585)
-
-    def test_the_generator_reads_it_from_the_tree(self):
-        reader = current()
-        self.assertEqual((reader.version, reader.manifest_sha256), ('2.2.0', self.release.manifest_sha256))
-        self.assertEqual(reader.provenance(), {'version': '2.2.0', 'manifest_sha256': self.release.manifest_sha256,
-                                               'generation_schema_version': '1.0.0'})
 
     def test_schemas_admit_the_release(self):
         for name in ('program-json-v5.1.schema.json', 'program-json-v5.2.schema.json', 'construction-source-model-v1.schema.json'):
@@ -131,7 +126,7 @@ class ResolvedTests(unittest.TestCase):
         self.assertEqual(set(self.files) - set(self.base), set(listed['files']) - {'README.md', 'LICENSE'})
         changed = {p for p in self.files if p in self.base and self.files[p] != self.base[p]}
         self.assertEqual(changed, {'README.md'})
-        self.assertEqual(self.files['LICENSE'], (ROOT/'LICENSE').read_bytes())
+        self.assertEqual(self.files['LICENSE'], (atlas_delta.folder_of('2.1.0')/'LICENSE').read_bytes())
 
     def test_exports_name_the_release_and_validate(self):
         from scripts.atlas_exports import LIGHTING, Release as Exports, ALTERNATES
@@ -147,12 +142,9 @@ class ResolvedTests(unittest.TestCase):
         self.assertEqual(construction['schema_version'], ALTERNATES['detailed'][1])
         Draft202012Validator(load_json(ROOT/'schemas'/ALTERNATES['detailed'][0])).validate(construction)
 
-    def test_default_release_is_the_newest_in_the_tree(self):
-        from scripts import site_release
-        from scripts.atlas_exports import IN_TREE, Release as Exports
-        self.assertEqual(site_release.newest(), '2.2.0')
-        self.assertEqual(IN_TREE[-1], '2.2.0')
-        self.assertEqual(Exports.__init__.__defaults__[-1], '2.2.0')
+    def test_readme_and_definition_map(self):
+        from scripts.atlas_exports import IN_TREE
+        self.assertIn('2.2.0', IN_TREE)
         self.assertRegex(self.files['README.md'].decode('utf-8'), re.compile(r'release 2\.2\.0'))
         self.assertEqual(json.loads(self.files['definition-map.json'])['schema_version'], '1.0.0')
 

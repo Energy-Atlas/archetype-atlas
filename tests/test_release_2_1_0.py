@@ -43,14 +43,17 @@ class DeltaTests(unittest.TestCase):
         self.assertEqual(sorted(self.listed['input_sha256']), ['LICENSE', 'data/atlas-releases/v2.0.0/manifest.json'])
         for path, digest in self.listed['input_sha256'].items():
             with self.subTest(input=path):
-                self.assertEqual(atlas_delta.sha((ROOT/path).read_bytes()), digest)
+                # The root LICENSE split at 2.3.0 (ADR 0059); the licence input is the copy the release packaged.
+                data = (FOLDER/'LICENSE').read_bytes() if path == 'LICENSE' else (ROOT/path).read_bytes()
+                self.assertEqual(atlas_delta.sha(data), digest)
 
-    def test_license_is_the_open_licence_text(self):
+    def test_license_is_the_two_part_open_licence_text(self):
         text = (FOLDER/'LICENSE').read_bytes()
-        self.assertEqual(text, (ROOT/'LICENSE').read_bytes())
+        self.assertEqual(text, (atlas_delta.folder_of('2.2.0')/'LICENSE').read_bytes())
         self.assertIn(b'MIT', text)
         self.assertIn(b'CC BY 4.0', text)
         self.assertNotEqual(text, (atlas_snapshot.TARGET/'LICENSE').read_bytes())
+        self.assertNotEqual(text, (ROOT/'LICENSE').read_bytes())
 
     def test_apartment_units_are_the_resstock_units_release_2_2_0_carries(self):
         later = Release(atlas_delta.folder_of('2.2.0'))

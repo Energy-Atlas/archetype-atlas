@@ -413,6 +413,26 @@ def check_generation(files):
     print(f'Release 2.2.0: {blocks} programs with generation blocks keep their IDs')
 
 
+def check_release(number):
+    """A delta release that moves IDs (2.3.0 on, ADR 0053 section 5): every program, read with its generation block,
+    and every construction set keeps the ID its rule gives."""
+    from atlas_schedules.release import Release
+    from scripts import atlas_delta
+    folder = atlas_delta.folder_of(number)
+    if not (folder/'manifest.json').is_file():
+        return
+    files = atlas_delta.files(number)
+    release = Release(folder)
+    resolved = dict(files)
+    for pid, path in release.program_paths.items():
+        if path.startswith('commercial/'):
+            resolved[path] = canonical(release.program(pid)[1]).encode('utf-8')
+    moved = {**set_ids(files, {}), **program_ids(resolved)}
+    if moved:
+        raise SystemExit(f'Release {number}: {len(moved)} IDs differ from their rules, e.g. {next(iter(moved))}')
+    print(f'Release {number}: every program, with its generation block, and every construction set keeps its ID')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--check', action='store_true')
@@ -428,6 +448,7 @@ def main():
             raise SystemExit(f'{len(stale)} release files differ from the edit, e.g. {stale[0]}; run python -m scripts.release_editor')
         print('Release 2.0.0 IDs agree with their rules')
         check_generation(files)
+        check_release('2.3.0')
         return
     edited['manifest.json'] = manifest(edited, listed)
     target = atlas_snapshot.TARGET

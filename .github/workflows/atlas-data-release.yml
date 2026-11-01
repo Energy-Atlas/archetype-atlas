@@ -35,6 +35,7 @@ jobs:
         run: |
           python -m scripts.atlas_snapshot --verify
           python -m scripts.atlas_delta --verify --release 2.1.0
+          python -m scripts.atlas_delta --verify --release 2.2.0
           python -m scripts.atlas_delta --verify
           python -m scripts.build_release_assets --data
           (cd build/release/v* && sha256sum -c SHA256SUMS.txt)

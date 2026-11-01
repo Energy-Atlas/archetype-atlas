@@ -1,0 +1,34 @@
+{
+ "configurations":{
+  "small_office__iecc_2018__source":{
+   "building_type":"small_office",
+   "invert_rule_days":false,
+   "people":[["iecc-2018.small-office.bldg-occ-sch-wo-sb.45057d",8.0544864312185],["iecc-2018.small-office.bldg-occ-sch-wo-sb.45057d",6.1058222688737],["iecc-2018.small-office.bldg-occ-sch-wo-sb.45057d",3.6220523463658],["iecc-2018.small-office.bldg-occ-sch-wo-sb.45057d",6.1058222688737],["iecc-2018.small-office.bldg-occ-sch-wo-sb.45057d",3.6220523463658]]
+  }
+ },
+ "programs":{
+  "iecc-2018.small-office.source.attic.bb34b7":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"small_office__iecc_2018__source"}}
+  },
+  "iecc-2018.small-office.source.whole-building-sm-office.ae580f":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"small_office__iecc_2018__source"}}
+  }
+ },
+ "schema_version":"1.0.0",
+ "services":{
+  "iecc-2018.small-office.booster.96f185":{
+   "configurations":["small_office__iecc_2018__source"],
+   "method":"comstock_hours",
+   "schema_version":"1.0.0"
+  },
+  "iecc-2018.small-office.main.4db9d0":{
+   "configurations":["small_office__iecc_2018__source"],
+   "method":"comstock_hours",
+   "schema_version":"1.0.0"
+  }
+ }
+}
