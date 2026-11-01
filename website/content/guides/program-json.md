@@ -54,6 +54,11 @@ a null never stands alone. Every load has a `status`: `known` (the source value,
 accepted absence of an unknown load in the filled version (rule `accepted_absence`, ADR 0016, stored on the record).
 The filled version lists its zero loads in `metadata.absent_demands`.
 
+From release 2.4.0, Program JSON 6.1.0 ([ADR 0061](https://github.com/Energy-Atlas/archetype-atlas/blob/main/docs/adr/0061-program-json-6-1-0-unoccupied-lighting-cap.md))
+adds one optional field and nothing else: `lighting_controls.unoccupied_lighting_cap`, the source model's unoccupied
+lighting cap or, where the source has none, `rule: null` with its reason in `nulls`
+([lighting controls guide](lighting-controls.md#the-unoccupied-lighting-cap)).
+
 Hot water differs by family: DOE Ref and IECC programs carry it as a load, 0 where the source zone has no draw;
 a 90.1 program carries it only where openstudio-standards assigns a draw to its space type, and otherwise its
 folder's `water.json` says whether the space has no local draw, an unknown assignment or a share of a building
@@ -88,6 +93,7 @@ The meanings, which the exporter applies (the first matching row wins):
 | `/lighting_controls/daylighting` | `none` | A source zero: the complete source model has no daylighting controls in these zones. |
 | `/lighting_controls/daylighting_by_climate/*` | `none` | A source zero: the complete source model has no daylighting controls in these zones in that climate. |
 | `/lighting_controls/standards_rule/target_illuminance_setpoint_lux` | `none` | openstudio-standards gives no target; its default of 375 lux applies (space_add_daylighting_controls). |
+| `/lighting_controls/unoccupied_lighting_cap/rule` | `none` (or the record's) | A source zero: the complete source model has no unoccupied lighting cap in these zones. |
 | `/water_use_gains/*/sensible_fraction` | `unknown` | The source gives no sensible fraction for the water use. |
 | `/water_use_gains/*/latent_fraction` | `unknown` | The source gives no latent fraction for the water use. |
 | `/water_heating/*/service_id` | `none` | A draw of the program itself, served by no shared building service. |

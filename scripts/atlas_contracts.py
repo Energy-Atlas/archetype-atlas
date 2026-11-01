@@ -22,6 +22,11 @@ release in `RELEASES` into its new form after the previous form validated. What 
 5. **The origin of the daylighting fractions** (ADR 0059 section 4, review F5c): `lighting_controls.daylighting_origin`
    says whether the fractions are geometry-derived from a PNNL prototype zone set or a DOE reference scan, which
    prototype climates give them, and which climate's model the evidence row cites (a copy where all agree).
+
+Release 2.4.0 on exports Program JSON **6.1.0** (ADR 0061): 6.0.0 with the optional
+`lighting_controls.unoccupied_lighting_cap` (`{rule, evidence_id}`; the rule null where the source model has none, its
+reason in `nulls`). `PROGRAM_BY_RELEASE` names each release's Program JSON contract; the construction and building
+services contracts of 2.3.0 hold for 2.4.0.
 """
 import copy
 import fnmatch
@@ -31,8 +36,11 @@ import re
 from scripts.definition_contract import stable_id
 from scripts.iecc_commercial_zones import CITIES
 
-RELEASES = ('2.3.0',)
+RELEASES = ('2.3.0', '2.4.0')
 PROGRAM = ('program-json-v6.schema.json', '6.0.0', 'urn:archetype-atlas:program-json:6.0.0')
+PROGRAM_6_1 = ('program-json-v6.1.schema.json', '6.1.0', 'urn:archetype-atlas:program-json:6.1.0')
+PROGRAM_BY_RELEASE = {'2.3.0': PROGRAM, '2.4.0': PROGRAM_6_1}
+CAP_FIELD = 'unoccupied_lighting_cap'
 DETAILED = ('construction-json-v5.schema.json', '5.0.0', 'urn:archetype-atlas:construction-set:5.0.0')
 UNIFIED = ('construction-equivalent-v4.schema.json', '4.0.0', 'urn:archetype-atlas:construction-equivalent:4.0.0')
 SOURCE_MODEL = ('construction-source-model-v2.schema.json', '2.0.0', 'urn:archetype-atlas:source-model-construction:2.0.0')
@@ -94,6 +102,53 @@ DAYLIGHTING_ORIGIN = {
     'allOf': [{'if': {'properties': {'kind': {'const': 'prototype_zone_set'}}},
                'then': {'required': ['climates', 'cited_climate']}}]}
 CITED_CLIMATE = re.compile(r'climate zone \S+ \((\w+)\)')
+POSITIVE = {'type': 'number', 'exclusiveMinimum': 0}
+CAP_RULE = {
+    'type': 'object', 'additionalProperties': False,
+    'required': ['cap_W_m2', 'lighting_threshold_W_m2', 'source_values', 'condition', 'comparison', 'action', 'calling_point',
+                 'zones', 'controlled_zones'],
+    'description': 'The PNNL prototype rule (an EMS program per zone, ADR 0060 section 1): at every timestep, in each controlled '
+                   'zone, while the condition holds and the zone lighting power per floor area is at least the threshold, the '
+                   "zone's lighting power is set to the cap; otherwise the scheduled lighting applies.",
+    'properties': {
+        'cap_W_m2': {**POSITIVE, 'description': 'The lighting power per zone floor area the zone is set to: 0.02 W/ft2 (0.2153 W/m2).'},
+        'lighting_threshold_W_m2': {**POSITIVE, 'description': 'The rule acts only while the zone lighting power (every Lights '
+                                    'object of the zone) per floor area is at least this: 0.02 W/ft2 as the program converts it '
+                                    '(x 0.093), 0.2151 W/m2.'},
+        'source_values': {'type': 'object', 'additionalProperties': False,
+                          'required': ['cap', 'threshold', 'unit', 'cap_conversion_m2_per_ft2', 'threshold_conversion_m2_per_ft2'],
+                          'description': 'The values as the EMS program writes them.',
+                          'properties': {'cap': POSITIVE, 'threshold': POSITIVE, 'unit': {'const': 'W/ft2'},
+                                         'cap_conversion_m2_per_ft2': POSITIVE, 'threshold_conversion_m2_per_ft2': POSITIVE}},
+        'condition': {'enum': ['zone_occupant_count_zero', 'other_zone_occupant_count_zero'],
+                      'description': "zone_occupant_count_zero: the People Occupant Count of the zone's People object is 0. "
+                                     'other_zone_occupant_count_zero: the count of the People object of `condition_zone` is 0 '
+                                     "(the warehouse storage zones read the office's)."},
+        'condition_zone': {'type': 'string', 'minLength': 1, 'description': 'The source zone whose occupant count the rule reads.'},
+        'comparison': {'const': 'zone_lighting_power_density_at_least_threshold'},
+        'action': {'const': 'set_lights_to_cap', 'description': "The zone's general Lights object is set to the cap."},
+        'additional_lighting_when_capped_W_m2': {'type': 'number', 'minimum': 0,
+                                                 'description': 'Where present, the additional (display) lighting object is set '
+                                                                'to this while the cap acts (the strip mall stores: 0).'},
+        'calling_point': {'enum': ['BeginTimestepBeforePredictor', 'AfterPredictorAfterHVACManagers'],
+                          'description': 'The EnergyPlus EMS calling point of the programs.'},
+        'zones': {'type': 'integer', 'minimum': 1, 'description': 'Source zones the program represents.'},
+        'controlled_zones': {'type': 'integer', 'minimum': 1, 'description': 'Of them, the zones with the rule.'},
+        'zone_conditions': {'type': 'array', 'minItems': 1, 'items': {
+            'type': 'object', 'additionalProperties': False, 'required': ['zone', 'condition'],
+            'properties': {'zone': {'type': 'string', 'minLength': 1},
+                           'condition': {'type': 'string', 'minLength': 1, 'description': "A further condition of that zone's "
+                                         'program, as the EMS writes it (Hour, DaylightSavings and named sensors).'},
+                           'sensors': {'type': 'object', 'additionalProperties': {'type': 'string'}}}},
+            'description': "Source zones whose program adds a condition (PNNL's own variants, kept as written)."}},
+    'allOf': [{'if': {'properties': {'condition': {'const': 'other_zone_occupant_count_zero'}}},
+               'then': {'required': ['condition_zone']}}]}
+UNOCCUPIED_LIGHTING_CAP = {
+    'type': 'object', 'additionalProperties': False, 'required': ['rule', 'evidence_id'],
+    'description': 'The unoccupied lighting cap of the source model zones (6.1.0, ADR 0061): `rule` is the rule, or null where '
+                   'the complete source model has none in these zones (a source zero; the reason is in `nulls`). '
+                   '`evidence_id` cites the EMS programs or the scan that found none.',
+    'properties': {'rule': {'anyOf': [CAP_RULE, {'type': 'null'}]}, 'evidence_id': {'type': 'string', 'minLength': 1}}}
 
 
 def daylighting_origin(controls, rows):
@@ -153,6 +208,7 @@ NULLS = [
     ('/lighting_controls/daylighting', 'none', None, 'A source zero: the complete source model has no daylighting controls in these zones.'),
     ('/lighting_controls/daylighting_by_climate/*', 'none', None, 'A source zero: the complete source model has no daylighting controls in these zones in that climate.'),
     ('/lighting_controls/standards_rule/target_illuminance_setpoint_lux', 'none', None, 'openstudio-standards gives no target; its default of 375 lux applies (space_add_daylighting_controls).'),
+    ('/lighting_controls/unoccupied_lighting_cap/rule', 'none', 'record', 'A source zero: the complete source model has no unoccupied lighting cap in these zones.'),
     ('/water_use_gains/*/sensible_fraction', 'unknown', None, 'The source gives no sensible fraction for the water use.'),
     ('/water_use_gains/*/latent_fraction', 'unknown', None, 'The source gives no latent fraction for the water use.'),
     ('/water_heating/*/service_id', 'none', None, 'A draw of the program itself, served by no shared building service.'),
@@ -292,6 +348,25 @@ def program_schema(previous):
     return schema
 
 
+def program_schema_6_1(previous):
+    """Program JSON 6.1.0 from 6.0.0: the optional unoccupied lighting cap (ADR 0061)."""
+    name, version, identity = PROGRAM_6_1
+    schema = json.loads(json.dumps(previous).replace(PROGRAM[2], identity))
+    schema['title'] = f'Self-contained program JSON {version}'
+    schema['description'] = (
+        'Release 2.4.0 export (ADR 0061). 6.1.0 adds lighting_controls.unoccupied_lighting_cap: the unoccupied lighting cap '
+        'rule of the source model zones, or null where they have none, with its evidence. Every 6.0.0 field keeps its meaning. '
+        + previous['description'])
+    for variant_name in ('source', 'filled'):
+        props = schema['$defs'][variant_name]['properties']
+        props['schema_version'] = {'const': version}
+        controls = props['lighting_controls']
+        controls['properties'][CAP_FIELD] = copy.deepcopy(UNOCCUPIED_LIGHTING_CAP)
+        controls['description'] += (" 6.1.0: `unoccupied_lighting_cap` gives the source model's unoccupied lighting cap "
+                                    '(the rule or null); the exporter gives it on every known block.')
+    return schema
+
+
 def construction_schema(previous, representation):
     """Detailed constructions 5.0.0 from 4.3.0, unified 4.0.0 from 3.1.0."""
     name, version, identity = DETAILED if representation == 'detailed' else UNIFIED
@@ -405,10 +480,20 @@ def load_status(load, entry, filled, aggregation, context):
     return out
 
 
+def contract(release_label):
+    """The Program JSON contract (file, version, $id) of a release label such as atlas-release-2.4.0."""
+    return PROGRAM_BY_RELEASE[release_label.rsplit('-', 1)[1]]
+
+
 def program_document(document, version, context):
-    """Program JSON 6.0.0 from a validated 5.4.0 document."""
+    """Program JSON 6.0.0 or 6.1.0 (by the release) from a validated 5.4.0 document."""
     out = copy.deepcopy(document)
-    out['schema_version'] = PROGRAM[1]
+    out['schema_version'] = contract(context.release_label)[1]
+    stored_controls = (context.record or {}).get('lighting_controls') or {}
+    if CAP_FIELD in stored_controls:
+        if contract(context.release_label) is PROGRAM:
+            raise ValueError(f'{out["id"]}: Program JSON 6.0.0 has no {CAP_FIELD}')
+        out['lighting_controls'][CAP_FIELD] = copy.deepcopy(stored_controls[CAP_FIELD])
     filled = version == 'filled'
     aggregation = ((out.get('metadata') or {}).get('aggregation') or {}).get('groups', [])
     draws = [w['draw'] for w in out.get('water_heating') or [] if isinstance(w.get('draw'), dict)]
@@ -476,6 +561,10 @@ def nulls(document, context):
                 entry['reason'] = load.get('reason', text)
                 if load.get('reason_id'):
                     entry['reason_id'] = load['reason_id']
+            elif source == 'record' and parts[1] == 'lighting_controls':
+                eid = document['lighting_controls'][CAP_FIELD]['evidence_id']
+                row = next(r for r in document['source']['evidence'] if r['id'] == eid)
+                entry['reason'] = row['interpretation_note'] or text
             elif source == 'record' and parts[1] == 'controls':
                 parameter = parameters.get(parts[2]) or {}
                 if parameter.get('status') == 'known':

@@ -49,7 +49,7 @@ from scripts.construction_equivalent_export import mass_agrees
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
@@ -57,20 +57,22 @@ MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0
 SERVICES_PATCH = '1.0.1'
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
-LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
 # Program JSON 5.4.0 names its release by pattern from release 2.2.0 (ADR 0051 section 5): a 5.4.x widening, so a
 # later data release needs no schema edit; every label the enum admitted still matches.
 RELEASE_LABEL = {'type': 'string', 'pattern': r'^atlas-release-\d+\.\d+\.\d+$'}
 # Release 2.0.0, milestone B (ADR 0046 section 9): detailed constructions 4.3.0, 4.2.0 with the PNNL prototype alternates.
-ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0'),
+ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0'),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
 # The releases in the tree, oldest first: the 2.0.0 snapshot and its deltas (scripts.atlas_delta); the last is the newest.
 IN_TREE = ('2.0.0', '2.1.0', '2.2.0', '2.3.0')
 # Release 2.3.0 on (ADR 0054): Program JSON 6.0.0 and constructions 5.0.0 / 4.0.0 / source model 2.0.0
 # (scripts.atlas_contracts); each export is formed as before, validated, then turned into its new form.
+# Release 2.4.0 (ADR 0061) exports Program JSON 6.1.0, 6.0.0 with the unoccupied lighting cap; its folder is written in
+# stage REL-A2, so until then it is exported from the edited 2.3.0 files (scripts.atlas_edits_2_4_0) held in memory.
 # The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.
 MASS = ('construction-mass-accounting-v1.1.schema.json', '1.1.0', 'urn:archetype-atlas:construction-mass-accounting:1.1.0')
 ROLES = ('ExteriorWall','ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
@@ -138,6 +140,7 @@ def derived_schemas():
     out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
     out[LIGHTING['program'][0]] = program_minor_lighting(out[residential_exports.PROGRAM_MINOR[0]])
     out[atlas_contracts.PROGRAM[0]] = atlas_contracts.program_schema(out[LIGHTING['program'][0]])
+    out[atlas_contracts.PROGRAM_6_1[0]] = atlas_contracts.program_schema_6_1(out[atlas_contracts.PROGRAM[0]])
     out[atlas_contracts.DETAILED[0]] = atlas_contracts.construction_schema(out[ALTERNATES['detailed'][0]], 'detailed')
     out[atlas_contracts.UNIFIED[0]] = atlas_contracts.construction_schema(out[MINOR['unified'][0]], 'unified')
     out[atlas_contracts.SOURCE_MODEL[0]] = atlas_contracts.source_model_schema(out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]])
@@ -689,7 +692,7 @@ class Release:
         return self.program_contract(document, program_id, version) if self.release in atlas_contracts.RELEASES else document
 
     def program_contract(self, document, program_id, version):
-        """Program JSON 6.0.0 (release 2.3.0 on, ADR 0054) from the validated 5.4.0 document."""
+        """Program JSON 6.0.0 (release 2.3.0, ADR 0054) or 6.1.0 (2.4.0, ADR 0061) from the validated 5.4.0 document."""
         glossary = json.loads(self.files['evidence/glossary.json'])
         reasons = {k: v['reason'] for k, v in glossary['unresolved'].items()}
         evidence = self.evidence_rows()
@@ -705,7 +708,7 @@ class Release:
         context = atlas_contracts.ProgramContext(f'atlas-release-{self.release}', glossary['source_files'], reasons, evidence,
                                                  entries, ordered, record)
         document = atlas_contracts.program_document(document, version, context)
-        errors = schema_errors(atlas_contracts.PROGRAM[0], document)
+        errors = schema_errors(atlas_contracts.PROGRAM_BY_RELEASE[self.release][0], document)
         if errors:
             raise ValueError(program_id+': '+'; '.join(errors[:5]))
         return document
@@ -757,7 +760,9 @@ class Release:
         document = {**document, 'schema_version': LIGHTING['program'][1]}
         stored = self.programs[program_id][1]
         if 'lighting_controls' in stored:
-            document['lighting_controls'] = copy.deepcopy(stored['lighting_controls'])
+            # The 6.1.0 unoccupied lighting cap is added by the contract step (atlas_contracts.program_document).
+            document['lighting_controls'] = {k: copy.deepcopy(v) for k, v in stored['lighting_controls'].items()
+                                             if k != atlas_contracts.CAP_FIELD}
         return document
 
     def program_iecc(self, document, program_id, version):
@@ -945,7 +950,7 @@ def main():
                 path.write_bytes(suite_bytes(schema))
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
-        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0 / 6.0.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 4.3.0 / 5.0.0 / '
+        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0 / 6.0.0 / 6.1.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 4.3.0 / 5.0.0 / '
               '3.0.0 / 3.1.0 / 4.0.0, source model constructions 1.0.0 / 2.0.0, mass accounting 1.1.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return

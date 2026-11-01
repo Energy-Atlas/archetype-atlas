@@ -1,5 +1,30 @@
 # Changelog
 
+## Release 2.4.0 inputs: PNNL prototype corrections and Program JSON 6.1.0 (stage AT4) — 2026-11-01
+
+Source changes for data release 2.4.0, whose delta folder stage REL-A2 writes; release 2.3.0 and its exports are
+unchanged ([ADR 0060](docs/adr/0060-release-2-4-0-pnnl-prototype-corrections.md),
+[ADR 0061](docs/adr/0061-program-json-6-1-0-unoccupied-lighting-cap.md); review round 2, G4, G5, G7).
+
+- **Unoccupied lighting cap** (G4): every known `lighting_controls` block records PNNL's per-zone EMS rule (occupant
+  count 0 and lighting at least 0.02 W/ft² → 0.02 W/ft², 0.2153 W/m²) for the 19 90.1-2019 programs whose prototype
+  zones carry it (offices, restaurants, retail, warehouse), and an explicit null with its reason elsewhere (90.1-2007
+  and 2013, IECC, DOE Ref, the other 90.1-2019 types). Input `data/program-inputs/unoccupied-lighting-cap-v1.json`
+  from `python -m scripts.lighting_cap`.
+- **Office lighting power follows PNNL** (G5): the 11 90.1 whole-building office programs take the PNNL prototype
+  density (90.1-2019 medium office 6.889 → 6.664 W/m²), a second recorded exception to ADR 0037's prototype rule.
+  The detailed and generic office folders and the DOE Ref offices are unchanged. `python -m scripts.pnnl_lighting_power
+  --review` writes the owner list of every other 90.1 lighting difference (`docs/reviews/lighting-power-pnnl-vs-90-1.md`).
+- **Elevators and kitchen reach-ins** (G7): 84 PNNL 90.1 objects become building services of 36 folders, as the IECC
+  family stores them (zone services into the beneficiary program's zones; the hospital, large hotel and large office
+  exterior elevators building-level with no zone heat). Input `pnnl-building-services-v1.json` from
+  `python -m scripts.pnnl_services`.
+- **`scripts/atlas_edits_2_4_0.py`** applies the three edits to resolved release 2.3.0 and follows the IDs: 2,301
+  program IDs move (no construction set), with the 2.3.0 → 2.4.0 ID map.
+- **Program JSON 6.1.0** for release 2.4.0: 6.0.0 with the optional `lighting_controls.unoccupied_lighting_cap`
+  (`{rule, evidence_id}`) and its null meaning; `schemas/program-json-v6.1.schema.json`, revision 1. Release 2.3.0 keeps
+  6.0.0. The Program JSON and lighting-controls guides describe the field.
+
 ## Atlas release 2.3.0 and atlas-schedules 4.1.0 — 2026-11-01
 
 Stage REL-A of the 2026-10-31 review ([ADR 0059](docs/adr/0059-release-2-3-0.md),
