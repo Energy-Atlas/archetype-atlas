@@ -98,9 +98,11 @@ class DeltaTests(unittest.TestCase):
                                                'generation_schema_version': '1.0.0'})
 
     def test_schemas_admit_the_release(self):
-        for name in ('program-json-v5.1.schema.json', 'program-json-v5.2.schema.json', 'building-services-v1.schema.json',
-                     'construction-source-model-v1.schema.json'):
+        for name in ('program-json-v5.1.schema.json', 'program-json-v5.2.schema.json', 'construction-source-model-v1.schema.json'):
             self.assertIn('atlas-release-2.2.0', (ROOT/'schemas'/name).read_text(encoding='utf-8'), name)
+        # Building services 1.0.1 names the release by pattern (ADR 0054 section 1).
+        services = load_json(ROOT/'schemas/building-services-v1.schema.json')['properties']['release']
+        self.assertRegex('atlas-release-2.2.0', services['pattern'])
         schema = load_json(ROOT/'schemas/program-json-v5.4.schema.json')
         for version in ('source', 'filled'):
             label = schema['$defs'][version]['properties']['source']['properties']['release']
