@@ -5,7 +5,9 @@ Status: accepted (2026-10-25, user decisions recorded in the
 rounds 1 to 11). Amends ADR 0018 (water-use zone gains) and ADR 0020 (a second
 infiltration method). Applies to release v1.1.0, a delta on v1.0.0 under ADR 0036.
 Amended by [ADR 0053](0053-release-2-3-0-data-corrections.md) section 2 (2026-11-01): one recorded exception to
-the rule that prototype against openstudio-standards load differences do not matter (see the end).
+the rule that prototype against openstudio-standards load differences do not matter (see the end). Amended by
+[ADR 0060](0060-release-2-4-0-pnnl-prototype-corrections.md) section 2 (2026-11-01): a second exception, the 90.1
+whole-building office lighting power.
 
 ## Context
 
@@ -204,3 +206,13 @@ motor over its 15.05 m² zone (198.2 W/ft²), takes the PNNL 90.1 prototypes' 16
 (`data/program-inputs/pnnl-point-load-exceptions-v1.json`). Every other 90.1 point load expressed per floor area
 was checked against the PNNL prototypes and keeps its openstudio-standards value; the differences found are listed in
 ADR 0053 section 2. The second 32 110 W motor that openstudio-standards `Prototype.SmallHotel.rb` adds is not taken.
+
+## Amendment: the 90.1 office lighting power (2026-11-01, ADR 0060 section 2)
+
+A second recorded exception to the same rule, by owner decision of the 2026-10-31 review, round 2 (G5): the 90.1
+whole-building office programs (small, medium and large office; 90.1-2007, 2013 and 2019; 11 programs) take the
+lighting power density of the PNNL 90.1 office prototypes' `Lights` objects in place of the openstudio-standards
+whole-building office density from release 2.4.0 (90.1-2019 medium office 6.889 -> 6.664 W/m²). The evidence cites the
+IDF objects (`data/program-inputs/pnnl-lighting-power-exceptions-v1.json`). The detailed office folders keep their
+openstudio-standards room densities, the DOE Ref offices already equal their DOE files, and every other 90.1
+lighting difference is listed for the owner in `docs/reviews/lighting-power-pnnl-vs-90-1.md`, not changed.

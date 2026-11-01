@@ -46,6 +46,9 @@ were.
    only to prototype vs openstudio-standards. *Exception (owner, 2026-11-01, ADR 0053
    section 2):* the 90.1 small-hotel elevator takes the PNNL prototype value (16 024.3 W
    in `ElevatorCoreFlr1`) in place of openstudio-standards' 32 110 W from release 2.3.0.
+   *Exception (owner, 2026-11-01, review round 2, G5; ADR 0060 section 2):* the 90.1
+   whole-building office programs take the PNNL prototype lighting power density from
+   release 2.4.0 (90.1-2019 medium office 6.889 -> 6.664 W/m2).
 2. **Equivalence proof scope:** accepted.
    - Geometry (zones, areas, heights, footprint, windows, skylights), constructions
      (layers, U-value, SHGC per surface type), infiltration, internal mass and WWR.

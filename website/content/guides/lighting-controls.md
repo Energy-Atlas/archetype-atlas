@@ -72,6 +72,48 @@ From release 2.3.0, Program JSON 6.0.0 labels the origin of every known block in
   19 climates agree, as for the climate-independent 90.1-2019 medium office whole
   building, it is a copy (the first in climate order, 0A), not a choice of climate.
 
+## The unoccupied lighting cap
+
+From release 2.4.0, Program JSON 6.1.0 adds `lighting_controls.unoccupied_lighting_cap` to every known
+block (ADR 0060, ADR 0061). PNNL's ASHRAE 90.1-2019 prototypes (header comment `LPD_Ctrl = 0.02`) give each
+zone of the office, restaurant, retail and warehouse types one EMS program: while the zone's occupant count
+is 0 and its lighting power is at least 0.02 W/ft², its lights are set to 0.02 W/ft² (0.215 W/m²).
+
+```json
+"unoccupied_lighting_cap": {
+  "rule": {
+    "cap_W_m2": 0.2153, "lighting_threshold_W_m2": 0.2151,
+    "source_values": {"cap": 0.02, "threshold": 0.02, "unit": "W/ft2",
+                      "cap_conversion_m2_per_ft2": 0.09290304, "threshold_conversion_m2_per_ft2": 0.093},
+    "condition": "zone_occupant_count_zero",
+    "comparison": "zone_lighting_power_density_at_least_threshold",
+    "action": "set_lights_to_cap", "calling_point": "BeginTimestepBeforePredictor",
+    "zones": 15, "controlled_zones": 15,
+    "zone_conditions": [{"zone": "Perimeter_mid_ZN_2", "condition": "((DaylightSavings==0) && …"}]},
+  "evidence_id": "evidence-…"
+}
+```
+
+(90.1-2019 medium office, whole building, rounded.)
+
+- `rule: null` is a source zero: the complete source model has no such program in these zones, and
+  `nulls` gives the reason. That holds for 90.1-2007, 90.1-2013 and every IECC edition (no program in any of
+  their 304 models; the office headers say `LPD_Ctrl = 0`), the DOE Ref templates (no EMS program at all), the
+  90.1-2019 types whose prototypes carry no program (apartments, hospital, hotels, outpatient and the schools,
+  whose headers say `LPD_Ctrl = 0.02` without a program) and the large office data centers.
+- The threshold compares all of the zone's lighting; the cap sets its general Lights object. The PNNL program
+  converts W/m² to W/ft² with 0.093 for the threshold and 0.09290304 for the cap, so the two differ in the
+  fourth digit; both are kept as written (`source_values`).
+- `condition`: `zone_occupant_count_zero` reads the zone's own People object. The warehouse storage zones read
+  the office's (`other_zone_occupant_count_zero`, `condition_zone: "Zone1 Office"`).
+- The strip mall stores also set their display lighting to 0 while capped
+  (`additional_lighting_when_capped_W_m2`).
+- `zone_conditions` keeps PNNL's own variants as written: one perimeter zone of the medium and large office
+  is capped only outside 07:00 to 16:00 standard time, one small office zone only while the building's binary
+  occupancy schedule is 0.
+- The rule acts per zone and per timestep, on that zone's occupant count. A consumer applies it to each zone
+  the program is assigned to; a zone whose people are never 0 is never capped.
+
 ## Limits
 
 - The fractions come from the prototype geometry (`daylighting_origin`). A model with
