@@ -57,10 +57,12 @@ misleading or hard to use with release 2.2.0:
    block of all, by method; configurations; services), the programs' methods and per-view parameters, each building
    configuration with its own anchor (so the viewer opens it) and its People as occupancy schedule and design
    people, and the services; or the reason the folder has none. Program pages state their method and the
-   configuration of each view in one line, or why they are not generated. The reasons are stated by folder class in
-   `website/content/templates.json` (`generation_absent`: IECC commercial, IECC residential, manufactured housing,
-   the 13 construction-only building types of ADR 0039), and a folder without generation settings that no class
-   matches fails the site check. A short guide (`guides/generation-settings.md`) explains the file.
+   configuration of each view in one line, or why they are not generated. The reason is the folder's class in
+   `scripts.generation_coverage` (stage AT3, ADR 0055): commercial types without a ComStock sampling type, IECC
+   commercial apartment buildings, residential code-prototype dwellings, each with its stated reason; a folder whose
+   class the generator covers but whose release predates its blocks (the IECC commercial and detailed office folders
+   in release 2.2.0, which ADR 0055 derives for release 2.3.0) says so with the release number, and loses the
+   sentence once a release carries its blocks. A short guide (`guides/generation-settings.md`) explains the file.
 4. **Guides take versions and commands from the release.** Guide sources hold placeholders (`{{ release }}`,
    `{{ releases }}`, `{{ schema:<export kind> }}`, `{{ generator }}`, `{{ generation_schema }}`) that
    `suite_site.write_guides` fills from the build: the release, the releases the exporter reads (`IN_TREE`), the

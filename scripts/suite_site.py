@@ -25,6 +25,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from scripts import generation_coverage
 from scripts.common import ROOT
 from scripts.lod_site import write_zoning
 from scripts.site_pages import (construction_page, context_facets, coverage_page, folder_page, glossary_page, library_page,
@@ -39,7 +40,7 @@ GUIDES = ('selection.md', 'schedules.md', 'program-json.md', 'construction-json.
           'site-index.md', 'definitions.md', 'geometry.md', 'lighting-controls.md', 'doe-reference-reconciliation.md',
           'construction-only-programs.md', 'iecc-commercial.md', 'residential-dwellings.md', 'iecc-residential.md',
           'manufactured-housing.md')
-# Template display lines and the reasons a folder has no generation settings, by folder class (ADR 0057).
+# Template display lines (ADR 0057).
 CATALOGUE = ROOT/'website/content/templates.json'
 # `{{ release }}`, `{{ schema:program }}` ...: values a guide takes from the release it is built with (ADR 0057).
 PLACEHOLDER = re.compile(r'\{\{ ([a-z_]+)(?::([a-z_]+))? \}\}')
@@ -268,16 +269,18 @@ def dwelling_label(record):
     return ' · '.join(p for p in parts if p)
 
 
-def generation_reason(catalogue, folder):
-    """Why a folder has no generation settings, by its class (`templates.json`), or None where it has them or no class
-    matches (which the site check refuses)."""
+def generation_reason(release, folder):
+    """Why a folder has no generation settings, or None where it has them: the reason of its folder class
+    (scripts.generation_coverage, ADR 0055), or, for a class the generator covers since, that the release
+    predates its blocks."""
     if folder.generation is not None:
         return None
-    for rule in catalogue['generation_absent']:
-        if (rule['family'] == folder.family and folder.template.startswith(rule['template_prefix'])
-                and folder.building_type in rule.get('building_types', [folder.building_type])):
-            return rule['reason']
-    return None
+    kind = generation_coverage.folder_class(folder.family, folder.template, building_type_name(release, folder))
+    if kind is None:
+        return (f'Release {release.number} carries no generation blocks for this folder; the generator covers its '
+                'class from ADR 0055 on, and a later data release carries them.')
+    reason = {key: text for key, _, text in generation_coverage.CLASSES}[kind]
+    return reason[0].upper()+reason[1:]+'.'
 
 
 def compositions(release, folder):
@@ -381,7 +384,7 @@ def link_to(site, page_url, identifier, text):
 def generation_fact(site, page_url, folder, pid):
     """A program's generation settings in one line (ADR 0057): its method and the configuration of each view."""
     if folder.generation is None:
-        return 'not generated: '+prose(generation_reason(site.catalogue, folder) or 'the folder has no generation settings')
+        return 'not generated: '+prose(generation_reason(site.release, folder))
     block = folder.generation.get('programs', {}).get(pid)
     if block is None:
         return 'not generated: the folder\'s generation settings hold no block for this program (ADR 0051 section 3)'
@@ -456,7 +459,7 @@ def folder_index(site, folder):
     """A folder's entry in the site index (ADR 0052, ADR 0058): its programs, its generation.json in the store or null
     with the reason, and the composition of its mixes."""
     generation = site.store.put(folder.generation) if folder.generation is not None else None
-    reason = generation_reason(site.catalogue, folder)
+    reason = generation_reason(site.release, folder)
     return {'family': folder.family, 'template': folder.template, 'building_type': folder.building_type,
             'programs': sorted(folder.programs), 'generation': generation, **({'generation_reason': reason} if reason else {}),
             'compositions': compositions(site.release, folder)}

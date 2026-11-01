@@ -258,7 +258,7 @@ class IndexTests(unittest.TestCase):
                    'resstock-sdr.highrise-apartment.b1.bbbbbb': (DWELLINGS, 'dwelling',
                                                                  {'name': 'Whole dwelling / source_building_1', 'building_type': 'HighriseApartment'})}
         release = type('Release', (), {})()
-        release.programs, release.folders = records, {}
+        release.programs, release.folders, release.number = records, {}, '9.9.9'
         for path, generation in ((OFFICE, GENERATION), (DWELLINGS, None)):
             folder = site_release.Folder(path)
             folder.programs = [pid for pid, row in records.items() if row[0] == path]
@@ -522,13 +522,18 @@ class SchemaTests(unittest.TestCase):
         self.assertEqual(len(site_check.check_schema(manifest)), 3)
 
     def test_every_template_has_a_line_and_every_folder_without_generation_a_reason(self):
-        from scripts.suite_site import CATALOGUE, generation_reason
+        from scripts.suite_site import generation_reason
         release = site_release.SiteRelease()
-        catalogue = json.loads(CATALOGUE.read_text(encoding='utf-8'))
         manifest = {'folders': {path: {'family': f.family, 'template': f.template} for path, f in release.folders.items()}}
         self.assertEqual(site_check.check_catalogue(manifest), [])
+        reasons = {}
         for folder in release.folders.values():
-            self.assertEqual(generation_reason(catalogue, folder) is None, folder.generation is not None, folder.path)
+            reason = generation_reason(release, folder)
+            self.assertEqual(reason is None, folder.generation is not None, folder.path)
+            if reason:
+                reasons[reason[:30]] = reasons.get(reason[:30], 0)+1
+        self.assertEqual(sum(reasons.values()), sum(1 for f in release.folders.values() if f.generation is None))
+        self.assertGreater(len(reasons), 2)  # by folder class (scripts.generation_coverage)
 
 if __name__ == '__main__':
     unittest.main()

@@ -28,8 +28,9 @@ by a later site build; no data release, export schema or generator changes. It e
    index gains `schema_version: "1.0.0"`. `site_check` validates every build against it before its other index
    checks. Readers ignore keys they do not know; a key's meaning changes only with a major version.
 2. **Every null beside its reason** (C7), each enforced by the schema:
-   - `folders[*].generation: null` carries `generation_reason`, stated by folder class in
-     `website/content/templates.json` (ADR 0057 decision 3). A null with no matching class fails the site check.
+   - `folders[*].generation: null` carries `generation_reason`: the reason of the folder's class in
+     `scripts.generation_coverage` (ADR 0055), or that the release predates the blocks of a class the generator now
+     covers (ADR 0057 decision 3).
    - `contexts[*].unified` names the same store file as `detailed` where one document serves both representations
      (*agent decision*: the store path itself says "same document", with no flag to keep in step); it is null only
      where there is no unified representation, and then `unified_reason` gives the exporter's reason.
@@ -56,7 +57,8 @@ by a later site build; no data release, export schema or generator changes. It e
 - BEMGen 1.8.0 reads `generation` descriptors by their `href`, `sha256`, `encoding` and sizes and ignores other keys;
   it does not read `contexts[*].unified`. The new keys change nothing it reads.
 - The index grows from 3,319,679 to 3,980,487 bytes for release 2.2.0: 446 compositions with 2,794 members, 165
-  generation reasons (IECC commercial 96, construction-only 51, IECC residential 14, manufactured housing 4), the
+  generation reasons (99 IECC commercial and detailed office folders awaiting release 2.3.0, 36 commercial types
+  without a sampling type, 18 residential prototypes, 12 IECC apartment buildings), the
   1,112 same-document `unified` paths and the `json_sha256` of the 90 generation descriptors.
 
 ## 4. Alternatives considered

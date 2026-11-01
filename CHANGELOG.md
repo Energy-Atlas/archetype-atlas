@@ -11,7 +11,8 @@ release; the site still shows release 2.2.0.
   the release record's fillings and the record values no export carries, a mix's members. `?version=source` and
   `?version=filled` hide the other export's blocks; a program without a filled export says why without JavaScript.
 - **Generation settings** on every folder page (download, methods, per-view parameters, configurations,
-  services) and as a fact on every program page; the reasons a folder has none, by folder class.
+  services) and as a fact on every program page; the reason a folder has none, by its class in
+  `scripts/generation_coverage.py`.
 - **Coverage page** (`coverage/`) generated from the build; `docs/coverage.md` and
   `docs/validation/coverage.json` (v0.2.0) are deleted.
 - **Guides** take the release, the schema versions and the generator from the build (`{{ release }}`

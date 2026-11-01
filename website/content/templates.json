@@ -1,5 +1,5 @@
 {
-  "description": "One line per template folder for the catalogue indexes and folder pages, and the reason a folder has no generation settings, by folder class (ADR 0057). The display name is the release records' own template label. A template missing here, or a folder without generation settings that no class matches, fails the site check.",
+  "description": "One line per template folder for the catalogue indexes and folder pages (ADR 0057). The display name is the release records' own template label; a template missing here fails the site check.",
   "templates": {
     "commercial/doe-ref-pre-1980": {"description": "DOE commercial reference buildings, construction before 1980: existing-stock benchmark models, read through openstudio-standards.", "guide": "doe-reference-reconciliation"},
     "commercial/doe-ref-1980-2004": {"description": "DOE commercial reference buildings, construction 1980 to 2004: existing-stock benchmark models, read through openstudio-standards.", "guide": "doe-reference-reconciliation"},
@@ -22,12 +22,5 @@
     "residential/iecc-2024": {"description": "PNNL residential prototypes to the IECC 2024: single-family and multifamily code dwellings.", "guide": "iecc-residential"},
     "residential/hud-code": {"description": "PNNL manufactured-housing prototypes to the HUD Code baseline: single-section and multi-section homes.", "guide": "manufactured-housing"},
     "residential/doe-final-rule": {"description": "PNNL manufactured-housing prototypes to the DOE 2022 final rule: tier 1 single-section and tier 2 multi-section homes.", "guide": "manufactured-housing"}
-  },
-  "generation_absent": [
-    {"family": "commercial", "template_prefix": "iecc-", "reason": "IECC commercial programs carry no generation blocks: the schedule generator has no IECC templates (ADR 0051 section 3)."},
-    {"family": "residential", "template_prefix": "iecc-", "reason": "IECC residential dwellings carry no generation blocks: the generator's residential methods cover the ResStock dwellings only (ADR 0051 section 3)."},
-    {"family": "residential", "template_prefix": "hud-code", "reason": "Manufactured-housing dwellings carry no generation blocks: the generator's residential methods cover the ResStock dwellings only (ADR 0051 section 3)."},
-    {"family": "residential", "template_prefix": "doe-final-rule", "reason": "Manufactured-housing dwellings carry no generation blocks: the generator's residential methods cover the ResStock dwellings only (ADR 0051 section 3)."},
-    {"family": "commercial", "template_prefix": "", "building_types": ["college", "courthouse", "laboratory", "large-data-center-high-ite", "large-data-center-low-ite", "small-data-center-high-ite", "small-data-center-low-ite", "small-office-detailed", "medium-office-detailed", "large-office-detailed", "office", "tall-building", "super-tall-building"], "reason": "The programs of this construction-only building type (ADR 0039) were added after the generator's recipes and carry no generation blocks (ADR 0051 section 3)."}
-  ]
+  }
 }

@@ -63,8 +63,9 @@ Plots are inline SVG drawn at build time. Search indexes each suite page, templa
 and the glossary once, by its name, ID, template, building type and kind, and for programs
 their end uses, units and generation method (`website/hooks/search_index.py`). Guides are
 copied from `website/content/guides/` with their placeholders (`{{ release }}`,
-`{{ schema:program }}` ...) filled from the build; template descriptions and the reasons a
-folder has no generation settings are in `website/content/templates.json`.
+`{{ schema:program }}` ...) filled from the build; template descriptions are in
+`website/content/templates.json`, and the reason a folder has no generation settings is its class in
+`scripts/generation_coverage.py`.
 
 ## The site index
 
