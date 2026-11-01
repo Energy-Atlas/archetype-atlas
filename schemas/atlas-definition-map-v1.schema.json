@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:definition-map:1.0.0",
+  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "title": "Atlas release definition-map.json 1.0.0",
+  "description": "The definition program and service IDs generator 3.0.0 took, each with the release program and view it became, or the release service (ADR 0051 section 3); `atlas-schedules translate` rewrites a 3.0.0 request through it.",
+  "type": "object",
+  "required": ["schema_version", "decision", "description", "programs", "services"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "decision": {"type": "string", "pattern": "^docs/adr/\\d{4}-[a-z0-9-]+\\.md$"},
+    "description": {"type": "string"},
+    "programs": {
+      "type": "object",
+      "propertyNames": {"pattern": "^program-[0-9a-f]{24}$"},
+      "additionalProperties": {
+        "type": "object", "required": ["program_id", "values"], "additionalProperties": false,
+        "properties": {"program_id": {"$ref": "#/$defs/release_id"}, "values": {"enum": ["source", "filled"]}}
+      }
+    },
+    "services": {
+      "type": "object",
+      "propertyNames": {"pattern": "^service-[0-9a-f]{24}$"},
+      "additionalProperties": {"$ref": "#/$defs/release_id"}
+    },
+    "retired": {
+      "description": "Definition IDs with no release counterpart, each with the reason.",
+      "type": "object",
+      "propertyNames": {"pattern": "^(program|service)-[0-9a-f]{24}$"},
+      "additionalProperties": {"type": "string"}
+    }
+  },
+  "$defs": {"release_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*\\.[0-9a-f]{6}$"}}
+}

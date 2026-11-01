@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:atlas-release-services:1.0.0",
+  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "title": "Atlas release folder services.json 1.0.0",
+  "description": "A building folder's shared physical services by release ID (ADR 0027, ADR 0029, ADR 0040 items 5 to 7): hot-water draws, elevators, exhaust fans, refrigeration and exterior equipment, each instantiated once and naming the programs it serves. The load follows the program-record null rule: unknown means a null value.",
+  "type": "object",
+  "propertyNames": {"pattern": "^[a-z0-9][a-z0-9.-]*\\.[0-9a-f]{6}$"},
+  "additionalProperties": {"$ref": "#/$defs/service"},
+  "$defs": {
+    "service": {
+      "type": "object",
+      "required": ["id", "building_type", "template", "end_use", "assignment", "ownership", "beneficiary_program_ids",
+                   "evidence_ids", "source_evidence_ids", "path_id", "load"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "building_type": {"type": "string"},
+        "template": {"type": "string"},
+        "end_use": {"type": "string"},
+        "assignment": {"type": "string"},
+        "ownership": {"type": "string"},
+        "beneficiary_program_ids": {"type": "array", "items": {"type": "string"}},
+        "evidence_ids": {"type": "array", "items": {"type": "string"}},
+        "source_evidence_ids": {"type": "array", "items": {"type": "string"}},
+        "path_id": {"type": "string"},
+        "load": {
+          "type": "object",
+          "required": ["quantity", "status", "value", "unit", "basis", "schedule_id", "scope", "service_id", "demand_id", "evidence_id", "required_inputs"],
+          "properties": {
+            "quantity": {"type": "string"},
+            "status": {"enum": ["known", "unknown"]},
+            "value": {"type": ["number", "null"]},
+            "unit": {"type": "string"},
+            "basis": {"type": "string"},
+            "schedule_id": {"type": ["string", "object", "null"]},
+            "scope": {"type": "string"},
+            "service_id": {"type": "string"},
+            "demand_id": {"type": "string"},
+            "evidence_id": {"type": ["string", "null"]},
+            "required_inputs": {"type": "array", "items": {"type": "string"}},
+            "value_by_climate": {"type": "object", "additionalProperties": {"type": ["number", "null"]}}
+          },
+          "allOf": [
+            {"if": {"properties": {"status": {"const": "unknown"}}}, "then": {"properties": {"value": {"type": "null"}}}},
+            {"if": {"properties": {"status": {"const": "known"}}}, "then": {"properties": {"value": {"type": "number"}}}}
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1376 @@
+{
+ "schemas": {
+  "atlas_schedules/schemas/bundle-v4.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "4069a3ff790fba99292480ecccec5480a3bc648bc82aded89aba4326e38ce1ac"
+    }
+   ],
+   "id": "urn:archetype-atlas:schedule-bundle:4.0.0"
+  },
+  "atlas_schedules/schemas/generation-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "66c7a7811287c5063f563a8c7a6b1ff163ebf56ad1609968e19048c79bf8bb01"
+    }
+   ],
+   "id": "urn:archetype-atlas:generation:1.0.0"
+  },
+  "atlas_schedules/schemas/request-v4.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-30",
+     "commit": "06db34b9",
+     "class": "created",
+     "change": "feat(schedules)!: generator 4.0.0 assembles its recipes from the release",
+     "sha256": "6a5c1afff2dbb8390e730114c16ef59293ab32e975d94734942c2de024bbc9d0"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "2c694767af7f23cfcd5dcceaa42e2108c2c89f8554b836945514df02e0055ae6"
+    }
+   ],
+   "id": "atlas-schedules/request-v4"
+  },
+  "schemas/atlas-definition-map-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "00df61d27fde6aee735e02930e84c3e9603b64a271286dfe37be1a85cfbaf758"
+    }
+   ],
+   "id": "urn:archetype-atlas:definition-map:1.0.0"
+  },
+  "schemas/atlas-release-manifest-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "cb1afec90c5defbc80da237c520279015b39568f1a903946282c8f3b44997f56"
+    }
+   ],
+   "id": "urn:archetype-atlas:atlas-release-manifest:1.0.0"
+  },
+  "schemas/atlas-release-program-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "efefa9bf356e57e884cf4ab35c2443c3897a64f2fbd27ea4454fc40f54e8c050"
+    }
+   ],
+   "id": "urn:archetype-atlas:atlas-release-program:1.0.0"
+  },
+  "schemas/atlas-release-schedules-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "beba0da5d44bba9008d3f5e66b74570f628f7deda386e67d65af3bd28a2a111b"
+    }
+   ],
+   "id": "urn:archetype-atlas:atlas-release-schedules:1.0.0"
+  },
+  "schemas/atlas-release-services-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "created",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "8221bfa05b7092aaa7dfe8ef7442bf02020abda69f52942f97dbc93c1ad56e6b"
+    }
+   ],
+   "id": "urn:archetype-atlas:atlas-release-services:1.0.0"
+  },
+  "schemas/atlas.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-02",
+     "commit": "df06c8d9",
+     "class": "created",
+     "change": "feat(atlas): implement normalized extraction and validation pipeline",
+     "sha256": "a1d4f158e4619e1a86320cc6f513bf2d8955cf2ce79657d01654c20664ead6ac"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-02",
+     "commit": "f86df348",
+     "class": null,
+     "change": "feat(coverage): extend source inputs to complete named typology suites",
+     "sha256": "ad120da2526994c9e35033c42aa00d0d53244b9beffa5b0b77d127391e808204"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-02",
+     "commit": "d5194a51",
+     "class": null,
+     "change": "fix(validation): enforce exhaustive bindings and retain specialized source evidence",
+     "sha256": "92e7d627f76c77aba104fc02f2f5e4b764bc3728e53ed8643c8a90080301b801"
+    },
+    {
+     "revision": 4,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "8aa8f89aeee8ef2452b032ddbf0de377186b21bca92fca2e3fbbdaeb5569e798"
+    }
+   ],
+   "id": "urn:archetype-atlas:schema:0.2.0"
+  },
+  "schemas/building-services-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-25",
+     "commit": "065289b2",
+     "class": "created",
+     "change": "feat(exports): add Program JSON 5.1.0, constructions 4.1.0/3.1.0 and building services",
+     "sha256": "e28002ece9d2ac1002b896f599e99de79fc8d0dfc6956252ab2e3be43f2953fc"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-26",
+     "commit": "fc9973b0",
+     "class": null,
+     "change": "feat(release): add programs for the 51 construction-only folders (release 1.2.0)",
+     "sha256": "bd8fd98d526a150f8d510f91487d1936712f92cb288e5f0570a5cc6fe8e5ea1f"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-26",
+     "commit": "012ecd02",
+     "class": null,
+     "change": "feat(exports): add Program JSON 5.2.0 and detailed constructions 4.2.0",
+     "sha256": "9211a174c5d687d374d6177b312916677bacb75844a3ef27782babc38e3d57a6"
+    },
+    {
+     "revision": 4,
+     "date": "2026-10-26",
+     "commit": "0f34e4c6",
+     "class": null,
+     "change": "feat(residential): store dwellings under ADR 0038 and export them as Program JSON 5.3.0",
+     "sha256": "95975aa0c198219a4dcc540e565c4b5cd0ae44aa4039f2e5f34ec19a80b7ffa6"
+    },
+    {
+     "revision": 5,
+     "date": "2026-10-27",
+     "commit": "58adf746",
+     "class": null,
+     "change": "feat(lighting): record lighting controls and map the unmapped plenums for release 1.5.0",
+     "sha256": "66c127919f13fe1a82ae6087cbd8d239a387d292d78f170fe9875c90ddfb32e6"
+    },
+    {
+     "revision": 6,
+     "date": "2026-10-27",
+     "commit": "c984cb34",
+     "class": null,
+     "change": "feat(constructions): unified constructions of the IECC commercial sets for release 1.6.0",
+     "sha256": "4776ee2e68522d4a4145e44679501948d39382f98792dadab1e861aa972f3b6f"
+    },
+    {
+     "revision": 7,
+     "date": "2026-10-27",
+     "commit": "b8194449",
+     "class": null,
+     "change": "feat(release): build release 2.0.0 as a full snapshot of release 1.6.0",
+     "sha256": "db9d95be55452b887fe99b7fb7aa26e5a87019c7ebb22e915cac93d4efa504f7"
+    },
+    {
+     "revision": 8,
+     "date": "2026-10-29",
+     "commit": "77ebad7e",
+     "class": null,
+     "change": "feat(release): write release 2.1.0 as a delta on 2.0.0 with the open licence and the generator 3.0.0 recipes",
+     "sha256": "c9aa85268755ef0e8df7fa16a717927fafb952168b3fa10477ec55755cada80c"
+    },
+    {
+     "revision": 9,
+     "date": "2026-10-30",
+     "commit": "06db34b9",
+     "class": null,
+     "change": "feat(schedules)!: generator 4.0.0 assembles its recipes from the release",
+     "sha256": "e53360dba839a43fac3a7804ac3f871607cf1f34308118cf3af668d74d11ac07"
+    },
+    {
+     "revision": 10,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "020de0107f4a10cdc6da47b14f65abb1a47ce9be59ed7c835423423ef3349fb7"
+    }
+   ],
+   "id": "urn:archetype-atlas:building-services:1.0.0"
+  },
+  "schemas/commercial-completion.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-04",
+     "commit": "28c45b38",
+     "class": "created",
+     "change": "feat(schedules): extract commercial water paths and inactive controls",
+     "sha256": "d32c04959f7a5fb56d94821eb66e44882a47508100e99038d923835beaaaf4eb"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "b9ff86d2978b88bb265c7a67323002349994798d26a938fcfb30e721b1d0276d"
+    }
+   ],
+   "id": "https://energy-atlas.github.io/archetype-atlas/schemas/commercial-completion-0.1.0.json"
+  },
+  "schemas/construction-applicability-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-14",
+     "commit": "fea469fa",
+     "class": "created",
+     "change": "feat(construction): attach generic hotel GuestRoom applicability",
+     "sha256": "4f1860c9e4c24d9231511ad4712b9abd4339a34917db8681487082c51468e1b5"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "a4075eedf2f806424f59064245d720a55aecf8ab74704bd033718b2722f34bb6"
+    }
+   ],
+   "id": "https://energy-atlas.github.io/archetype-atlas/contracts/construction-applicability-v1.schema.json"
+  },
+  "schemas/construction-catalogue-v2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-14",
+     "commit": "23c5f1d8",
+     "class": "created",
+     "change": "data(construction): freeze complete unified v2 catalogue",
+     "sha256": "6201c393afb924472e82f83da1cafd9554c4a6567ec5b296e556dd59a0dbde2c"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "0f94648eb958b7102f96966346821d237c8222dedde3f319f30532f09936b8e8"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-catalogue:2.0.0"
+  },
+  "schemas/construction-equivalent-v1.1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-15",
+     "commit": "74d87d69",
+     "class": "created",
+     "change": "feat(construction): resolve accepted source geometry policies",
+     "sha256": "959935f9fdeb821df74bde92baf61f8247b34cbf751ba6b02e1a33ccbb3ebe02"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "7c6a996299a68023a49a5c6527b954bc1b2d717920622b5d40a88e5a92caf6cc"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-equivalent:1.1.0"
+  },
+  "schemas/construction-equivalent-v1.2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-16",
+     "commit": "ae14b4d5",
+     "class": "created",
+     "change": "feat(construction): share source mass accounting across exports",
+     "sha256": "951f0fb6b71e87a56bcd34a12192a1e2178851a085603266d3aa238f264511ee"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "e52f50e75916a3ae71521a75dcaef86105a3d1025ce400e664ba417f59d1d180"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-equivalent:1.2.0"
+  },
+  "schemas/construction-equivalent-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-15",
+     "commit": "f3518b84",
+     "class": "created",
+     "change": "feat(construction): add building-level equivalent export",
+     "sha256": "f05eb00076062bb6e7c9e8ea5d4b8112cd697bedc3805184a6df091130f147f5"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "f20e359677fe0a7a2d09390f6b68531f1076ef367896e27c65e6f4d091c1cae8"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-equivalent:1.0.0"
+  },
+  "schemas/construction-equivalent-v2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-16",
+     "commit": "0be84b51",
+     "class": "created",
+     "change": "feat(construction): compose complete foundation-aware export pairs",
+     "sha256": "e958db32c0810d3d9b874925b4b42d03eb26c60877c30363f86a0eecb8c3038b"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-16",
+     "commit": "d770ac7c",
+     "class": null,
+     "change": "fix(construction): Reject incomplete native ground method inputs",
+     "sha256": "5aab560d25a6f48c038e8320149852cb137a3e1d185d589ff3e5c330f681e94c"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "f224a5a9ae10738cb073e18cdba4c07e260984c1f4ac96e9ea2e31a547e1a994"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-equivalent:1.2.0"
+  },
+  "schemas/construction-equivalent-v3.1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-25",
+     "commit": "065289b2",
+     "class": "created",
+     "change": "feat(exports): add Program JSON 5.1.0, constructions 4.1.0/3.1.0 and building services",
+     "sha256": "a7308917e82937d51bbe461dc3f0906a2b2bca331f5f3811348d1f19a2bc3f09"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "cca097e2b07d2612f782c5c29294ac4f8e9c7270fd5606285c523b2dc674c8d3"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-equivalent:3.1.0"
+  },
+  "schemas/construction-equivalent-v3.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-22",
+     "commit": "0e27e772",
+     "class": "created",
+     "change": "feat(exports): export Program 5.0.0 and construction 4.0.0 / 3.0.0 from the release",
+     "sha256": "b59985c614cdb0efb217e852e7370be45ad71c0dd4d543911c98417b640bb63a"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "a7e855bdac57f68eabd423cefcb9f16418ce9a5e0cc89756cd32eb24696ef69a"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-equivalent:3.0.0"
+  },
+  "schemas/construction-foundation-ground-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-16",
+     "commit": "4e5fbdf9",
+     "class": "created",
+     "change": "feat(construction): define embedded native ground contract",
+     "sha256": "2ae79fbcf3b7d421658028c96e9c71eb2fcb9d0011a20cb4ba7449296a7578bc"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-16",
+     "commit": "0be84b51",
+     "class": null,
+     "change": "feat(construction): compose complete foundation-aware export pairs",
+     "sha256": "2fcfbc90c899241cde97e3f9bd3e2b5d19953c39edc3097822bf4b98159c751c"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-16",
+     "commit": "d770ac7c",
+     "class": null,
+     "change": "fix(construction): Reject incomplete native ground method inputs",
+     "sha256": "68927035db114b117905b9780516ec6e67e1fe73181b9e6ac3dda0e9c54c3bd5"
+    },
+    {
+     "revision": 4,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "a56e8ddbef465770cb7e5c2507c6166f220f7c7f32562975cdd0d9e5957fd3f3"
+    }
+   ],
+   "id": null
+  },
+  "schemas/construction-json-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-14",
+     "commit": "18e58c58",
+     "class": "created",
+     "change": "feat(construction): complete independent above-ground JSON coverage",
+     "sha256": "6d8e94910cb47a034fde3ec26be9bca69bde11b859e4565594339257b646d6d3"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "2f24991cfe1c65347432ace0356a3ea928a47731bcfec9b4eaecb939490a9315"
+    }
+   ],
+   "id": "urn:archetype-atlas:above-ground-construction:1.0.0"
+  },
+  "schemas/construction-json-v2.1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-16",
+     "commit": "ae14b4d5",
+     "class": "created",
+     "change": "feat(construction): share source mass accounting across exports",
+     "sha256": "eb0a1607acc7a9ccebd46affa766a0b82b93feed7f2a7f8f1d6ff33c97ae024e"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "0171911d484cef0637c60b6aa961657b84608f4eb6e11e9dc14cf2dae649837c"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-set:2.1.0"
+  },
+  "schemas/construction-json-v2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-14",
+     "commit": "1e38c0e8",
+     "class": "created",
+     "change": "feat(construction): unify selected construction-set exports",
+     "sha256": "32f415e2f604ada0de41e13d0c5a90fd1e0dc68974cbaf892f1cf7ed95e49817"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-14",
+     "commit": "23c5f1d8",
+     "class": null,
+     "change": "data(construction): freeze complete unified v2 catalogue",
+     "sha256": "81eb75e3d0dd4306078fe906cf23ddfb1dd1df23256c2af8e30cc0e9ae4b48f3"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "bc8f3f645026ef5943eace50e6fa9b05b9a1166d05a558a72a508859ea5c4a9d"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-json:2.0.0"
+  },
+  "schemas/construction-json-v3.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-16",
+     "commit": "0be84b51",
+     "class": "created",
+     "change": "feat(construction): compose complete foundation-aware export pairs",
+     "sha256": "6de81484be0653803f88d4fb9eec89c026bd9d46c63966c561fa23f2934b42ef"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-16",
+     "commit": "d770ac7c",
+     "class": null,
+     "change": "fix(construction): Reject incomplete native ground method inputs",
+     "sha256": "916ff88ed997ad462d92d90881f52f9bfd0d8b5743fc9ded461fe3ea196c12d4"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "851951151146ac9f05d17176ffe7f0899fe354cd35c96806f0b00679a5a65999"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-set:2.1.0"
+  },
+  "schemas/construction-json-v4.1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-25",
+     "commit": "065289b2",
+     "class": "created",
+     "change": "feat(exports): add Program JSON 5.1.0, constructions 4.1.0/3.1.0 and building services",
+     "sha256": "0e0bc15d39ec207dd86b87a03850493522b9487a101d369f015944c2bc3ce93a"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "fac3479bdf52e2a77a556991c3d360f1d7aa25293a83167f3aefbcaebad404bc"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-set:4.1.0"
+  },
+  "schemas/construction-json-v4.2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-26",
+     "commit": "012ecd02",
+     "class": "created",
+     "change": "feat(exports): add Program JSON 5.2.0 and detailed constructions 4.2.0",
+     "sha256": "c4b1979447b57dd724fd3cd9fd1b6f839a05e6759df59caeca8110b414fe3bc8"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "6663dcb422741601833abf55c30fbd3b0c842d88a8dde707883e880998371499"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-set:4.2.0"
+  },
+  "schemas/construction-json-v4.3.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-28",
+     "commit": "106ae83d",
+     "class": "created",
+     "change": "feat(release)!: settle release 2.0.0 IDs, add the prototype alternates and declare it",
+     "sha256": "a54eb428105160dd7474d5449122cbc8fdf47d525f8116532e2f5da6aec6a1aa"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "8208224e2fd8975c92a7ba598597b9423723a1205bc72e88546319f9bd62e848"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-set:4.3.0"
+  },
+  "schemas/construction-json-v4.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-22",
+     "commit": "0e27e772",
+     "class": "created",
+     "change": "feat(exports): export Program 5.0.0 and construction 4.0.0 / 3.0.0 from the release",
+     "sha256": "f4dc0a5fefd0475d89039afec527eaa1944fd40dfa065447360c0390aac1b3dd"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "89fccf4c63d46e46492be6bf270dd7b8b4d72eee15c7813eb10fdf3de630ee98"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-set:4.0.0"
+  },
+  "schemas/construction-mass-accounting-v1.1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-28",
+     "commit": "72e117e0",
+     "class": "created",
+     "change": "fix(schemas): derive the shared mass-accounting contract 1.1.0 from the constructions",
+     "sha256": "39bf5af0e07053251fd7643a28b72ff6d556077c12cad9e52cb670cdce633c03"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "b8d0ebb055dcfb2474f42024e81a3987c19e49ff7a0db4e612508b37de17a09a"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-mass-accounting:1.1.0"
+  },
+  "schemas/construction-mass-accounting-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-16",
+     "commit": "ae14b4d5",
+     "class": "created",
+     "change": "feat(construction): share source mass accounting across exports",
+     "sha256": "adafd153aa098946ab1e9e39387d9f4752c1325c6a59a574f8a197a2f56966fc"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "f6db399954bc25ec7efc67e6cdcaf01bbaf919d317a19478f19107d0021da4f2"
+    }
+   ],
+   "id": "urn:archetype-atlas:construction-mass-accounting:1.0.0"
+  },
+  "schemas/construction-source-model-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-26",
+     "commit": "0f34e4c6",
+     "class": "created",
+     "change": "feat(residential): store dwellings under ADR 0038 and export them as Program JSON 5.3.0",
+     "sha256": "e7ef3ce60452fc9cedcf8306b2420dde6ab59117f4593ec40874cd4fef3f3e7c"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-27",
+     "commit": "8ceda2fb",
+     "class": null,
+     "change": "fix(schemas): regenerate source model constructions 1.0.0 with the climate attributes",
+     "sha256": "43e4c24fd8053a6611bd304a307659b81522a30b8e8ccf29ce5c14336c689691"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-27",
+     "commit": "58adf746",
+     "class": null,
+     "change": "feat(lighting): record lighting controls and map the unmapped plenums for release 1.5.0",
+     "sha256": "de20685b5bd4055d676cfa91df2621a7305bd93b39d2c10f47a81dad06fea33c"
+    },
+    {
+     "revision": 4,
+     "date": "2026-10-27",
+     "commit": "c984cb34",
+     "class": null,
+     "change": "feat(constructions): unified constructions of the IECC commercial sets for release 1.6.0",
+     "sha256": "7ed224fe1146ba98166f522e336586bd1ba1888038848064bf4b1d6ebe35ac92"
+    },
+    {
+     "revision": 5,
+     "date": "2026-10-27",
+     "commit": "b8194449",
+     "class": null,
+     "change": "feat(release): build release 2.0.0 as a full snapshot of release 1.6.0",
+     "sha256": "fad8d1624ae6a234278747e3b19da94535b3e28f9361a9285bfa6acbe9432e93"
+    },
+    {
+     "revision": 6,
+     "date": "2026-10-29",
+     "commit": "77ebad7e",
+     "class": null,
+     "change": "feat(release): write release 2.1.0 as a delta on 2.0.0 with the open licence and the generator 3.0.0 recipes",
+     "sha256": "699f8735efc002be020e5829eda5df1f96716f1304e2bfe3e4745ced66f95fa4"
+    },
+    {
+     "revision": 7,
+     "date": "2026-10-30",
+     "commit": "06db34b9",
+     "class": null,
+     "change": "feat(schedules)!: generator 4.0.0 assembles its recipes from the release",
+     "sha256": "4a8bf07f16dfd64807393b549781a80d4a1c7f8436ae972a9e9aea0b653577c0"
+    },
+    {
+     "revision": 8,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "c7cfaadddd32e76f63914627157757a09e41d1e76c085ff742a04b336c376a69"
+    }
+   ],
+   "id": "urn:archetype-atlas:source-model-construction:1.0.0"
+  },
+  "schemas/definitions.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-07",
+     "commit": "873be048",
+     "class": "created",
+     "change": "feat(definitions): establish versioned contract",
+     "sha256": "e86af97a755b94869eb99721fa9d9e59a60483fb839f436eb2380a8c79050a14"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-07",
+     "commit": "047469df",
+     "class": null,
+     "change": "data(definitions): freeze element definition library",
+     "sha256": "38fe1e6e129b435b8f1c3071417cce1f01b41fe6b675a21dac62940f9a7e3bc5"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "29679a0dd59916a361143e782bfb74e1967f8935a011987948800366cc9e39a4"
+    }
+   ],
+   "id": null
+  },
+  "schemas/energy-source-recovery-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-12",
+     "commit": "8ba14ea1",
+     "class": "created",
+     "change": "feat(recovery): audit construction and system source inputs",
+     "sha256": "c4a62bdeb9aa1ad83914d2bd7a71d1fe9f50296450d3d613488fa81ed4e5b584"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "c1f28331efc159c090015e8c9cb8ba8ac99680fd3347e8534113f073aec9c3ee"
+    }
+   ],
+   "id": null
+  },
+  "schemas/lod-recommendations-v1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-29",
+     "commit": "8b532769",
+     "class": "created",
+     "change": "feat(data): add the geometric LOD study's first recommendations drop",
+     "sha256": "fd9c8b1f98718c26756a9dc0024145c7c5a157084561bd900bff0956cb9f7bb8"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-29",
+     "commit": "8b53bdfe",
+     "class": null,
+     "change": "feat(site): apply LOD recommendations drop 2 with the serial costs",
+     "sha256": "82816387e053adb97b36b175572a4521a4a9339a6a00839cdab7c747b8607361"
+    }
+   ],
+   "external": "BEMGen-docs (ADR 0050); its owner versions it"
+  },
+  "schemas/program-json-v2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-07",
+     "commit": "b45f15a1",
+     "class": "created",
+     "change": "feat(contract): define self-contained program JSON for connector import",
+     "sha256": "6319981a2a193e09adec4e0f507b09a3d16dd8369a9a228626006286e1fac863"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "8b0ba8f06b954a04397dd0fba18cba96fbd714ffb549939678f599ad50a2397c"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:2.0.0"
+  },
+  "schemas/program-json-v3.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-11",
+     "commit": "15be6bb6",
+     "class": "created",
+     "change": "feat(programs): deliver complete version 3 program exports",
+     "sha256": "9647eb7bd5ee0f121e780ddb78e08b52ee562dae94a7e8ddee9248a57aeefd48"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "627bd80a6e79a94c25ed9253d5b04d4bb8587907230a8269f3aa45e1485d4e30"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:3.0.0"
+  },
+  "schemas/program-json-v4.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-12",
+     "commit": "34cc084c",
+     "class": "created",
+     "change": "feat(program): add source-backed draw-only water heating",
+     "sha256": "a2deb28823904f82ed705dac244dc6e27d431554c75c44d9036d8a096818868d"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-12",
+     "commit": "2661ffe8",
+     "class": null,
+     "change": "feat(program): Cap approved SmallHotel water delivery and report unmet demand",
+     "sha256": "ec6b9f8017d6a1c5c42f01e57c08097d6b8631b4e28274ba07c920c0c0c9d7cc"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "1f7676051e420c8eb0949ac621ff78c9f242c9fc403da215a674b4894a6bad9b"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:4.0.0"
+  },
+  "schemas/program-json-v5.1.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-25",
+     "commit": "065289b2",
+     "class": "created",
+     "change": "feat(exports): add Program JSON 5.1.0, constructions 4.1.0/3.1.0 and building services",
+     "sha256": "ecb3dc87c4fbf62cdd6d288986d6af55a78c932d566d85b4e9a940657c55a41e"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-26",
+     "commit": "fc9973b0",
+     "class": null,
+     "change": "feat(release): add programs for the 51 construction-only folders (release 1.2.0)",
+     "sha256": "cc7ba4ee59a8f0b53a704cab8684606a901717dfb658e017ca4e663c51d892c5"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-26",
+     "commit": "012ecd02",
+     "class": null,
+     "change": "feat(exports): add Program JSON 5.2.0 and detailed constructions 4.2.0",
+     "sha256": "8227b58e73fca9859f7c94925f9dd4083c5c26ef02eb2c92bb6420edd658d206"
+    },
+    {
+     "revision": 4,
+     "date": "2026-10-26",
+     "commit": "0f34e4c6",
+     "class": null,
+     "change": "feat(residential): store dwellings under ADR 0038 and export them as Program JSON 5.3.0",
+     "sha256": "a33f3adf3e4d485bdb87503c3373445fbde211736a19e40d5274af18eeb3f123"
+    },
+    {
+     "revision": 5,
+     "date": "2026-10-27",
+     "commit": "58adf746",
+     "class": null,
+     "change": "feat(lighting): record lighting controls and map the unmapped plenums for release 1.5.0",
+     "sha256": "885164476ffabdc9add3c0f8e6f63c0e95c68b1f8b8869a3c05d8a17422ed848"
+    },
+    {
+     "revision": 6,
+     "date": "2026-10-27",
+     "commit": "c984cb34",
+     "class": null,
+     "change": "feat(constructions): unified constructions of the IECC commercial sets for release 1.6.0",
+     "sha256": "f9726cbca7b75256c2c963206d3aff97198af30987be9eff5c9e5000e4117a24"
+    },
+    {
+     "revision": 7,
+     "date": "2026-10-27",
+     "commit": "b8194449",
+     "class": null,
+     "change": "feat(release): build release 2.0.0 as a full snapshot of release 1.6.0",
+     "sha256": "8daa002248bf9556b84896b2508bea6d8688f3df24694da584c8cdb0eba65366"
+    },
+    {
+     "revision": 8,
+     "date": "2026-10-29",
+     "commit": "77ebad7e",
+     "class": null,
+     "change": "feat(release): write release 2.1.0 as a delta on 2.0.0 with the open licence and the generator 3.0.0 recipes",
+     "sha256": "efea81718dc2d99178dc0806e9c443b155e85db18fecab6c7cd0dde5880363ab"
+    },
+    {
+     "revision": 9,
+     "date": "2026-10-30",
+     "commit": "06db34b9",
+     "class": null,
+     "change": "feat(schedules)!: generator 4.0.0 assembles its recipes from the release",
+     "sha256": "edadbab098074768bba4d141850405e0b1896c677716d37ca6cb86fb65371399"
+    },
+    {
+     "revision": 10,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "537954a18d380023f170b5f3e43152fdaeefca20b8501bd38eea27d3c2f2cea3"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:5.1.0"
+  },
+  "schemas/program-json-v5.2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-26",
+     "commit": "012ecd02",
+     "class": "created",
+     "change": "feat(exports): add Program JSON 5.2.0 and detailed constructions 4.2.0",
+     "sha256": "0d981e0748653881c8caaf6b6a132a65aa1c7f5dc4f7ef166a31d04371ecfb19"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-26",
+     "commit": "0f34e4c6",
+     "class": null,
+     "change": "feat(residential): store dwellings under ADR 0038 and export them as Program JSON 5.3.0",
+     "sha256": "948b7ec841d8ad150f342903c6ad46fee6e3d173f45cb0f9aa8d33928f913879"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-27",
+     "commit": "58adf746",
+     "class": null,
+     "change": "feat(lighting): record lighting controls and map the unmapped plenums for release 1.5.0",
+     "sha256": "6b9661ffdcd8cd4301f8e3d64a2a93fab8377c37b6b8c133b48fb030137f4bbd"
+    },
+    {
+     "revision": 4,
+     "date": "2026-10-27",
+     "commit": "c984cb34",
+     "class": null,
+     "change": "feat(constructions): unified constructions of the IECC commercial sets for release 1.6.0",
+     "sha256": "b4f5ba7a89023f156e0338a0622c9e4413ce045303642a8ef9312f65a8267f88"
+    },
+    {
+     "revision": 5,
+     "date": "2026-10-27",
+     "commit": "b8194449",
+     "class": null,
+     "change": "feat(release): build release 2.0.0 as a full snapshot of release 1.6.0",
+     "sha256": "90344ddac777bddf67fcc1995bd2acb9627abae90108bac1515f01be240b095a"
+    },
+    {
+     "revision": 6,
+     "date": "2026-10-29",
+     "commit": "77ebad7e",
+     "class": null,
+     "change": "feat(release): write release 2.1.0 as a delta on 2.0.0 with the open licence and the generator 3.0.0 recipes",
+     "sha256": "ee7fe7f67524ee921a97997c497aafbe82ada28b7059a9fc162438ebb94f518b"
+    },
+    {
+     "revision": 7,
+     "date": "2026-10-30",
+     "commit": "06db34b9",
+     "class": null,
+     "change": "feat(schedules)!: generator 4.0.0 assembles its recipes from the release",
+     "sha256": "ff95fb46c6427d4bea45a07fbed5923b5260eab3960624c412db50a6f1eaa18f"
+    },
+    {
+     "revision": 8,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "486383c3e8a32530c6a7af2b627839f3daa6b838ddca2e64b36b7c76aa0ff69a"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:5.2.0"
+  },
+  "schemas/program-json-v5.3.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-26",
+     "commit": "0f34e4c6",
+     "class": "created",
+     "change": "feat(residential): store dwellings under ADR 0038 and export them as Program JSON 5.3.0",
+     "sha256": "f6fb1596693a561edabb6ccb6c6d04e75fe6f9550f6692713db07bd63b88a33b"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "70effb5be785af70a1995377940f33b2acd7f472405c3cc91d43f594017cf6a4"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:5.3.0"
+  },
+  "schemas/program-json-v5.4.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-27",
+     "commit": "58adf746",
+     "class": "created",
+     "change": "feat(lighting): record lighting controls and map the unmapped plenums for release 1.5.0",
+     "sha256": "76e5c04d1a5ef957748eb5b3668274b4bb5899966e2d79ddfb168a9d7e3e30c7"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-27",
+     "commit": "c984cb34",
+     "class": "patch",
+     "change": "feat(constructions): unified constructions of the IECC commercial sets for release 1.6.0; source.release enum gains atlas-release-1.6.0 (widened label set; every earlier document still validates, no meaning changes)",
+     "sha256": "31e127d9f5edc04526676b2db8d092a1b90c775c8940e49023111c3b5a281ef3"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-27",
+     "commit": "b8194449",
+     "class": "patch",
+     "change": "feat(release): build release 2.0.0 as a full snapshot of release 1.6.0; source.release enum gains atlas-release-2.0.0 (widened label set)",
+     "sha256": "656255b1c1b63339d3a48e4c6f885ac6ac08e7cdb5a0ad50788ade095604ed2d"
+    },
+    {
+     "revision": 4,
+     "date": "2026-10-28",
+     "commit": "72e117e0",
+     "class": "major",
+     "change": "fix(schemas): derive the shared mass-accounting contract 1.1.0 from the constructions; lighting_controls.daylighting description changes what the fractions mean: from \"hold for the source model geometry\" to \"the source model values, applied as given\" (release 2.0.0, ADR 0046 section 6). Under docs/schema-versioning.md a change in stated meaning needs a new version; it was made in place and is recorded here instead of renumbered",
+     "sha256": "821ee6e680dfa57d02483f01d4a6f7a9b904f8a1402d8f6da20d6f32d548e733"
+    },
+    {
+     "revision": 5,
+     "date": "2026-10-29",
+     "commit": "77ebad7e",
+     "class": "patch",
+     "change": "feat(release): write release 2.1.0 as a delta on 2.0.0 with the open licence and the generator 3.0.0 recipes; source.release enum gains atlas-release-2.1.0 (widened label set)",
+     "sha256": "b014e99cde0b986e86361e234a7e9da36b4b85b7b17df73f0085ca92c1c50cb4"
+    },
+    {
+     "revision": 6,
+     "date": "2026-10-30",
+     "commit": "06db34b9",
+     "class": "patch",
+     "change": "feat(schedules)!: generator 4.0.0 assembles its recipes from the release; source.release enum replaced by the pattern ^atlas-release-\\d+\\.\\d+\\.\\d+$ (ADR 0051 section 5): a widening that admits later labels without an edit",
+     "sha256": "08844cbbf34c2a1e03efc3e0d5b7b961c9871b4f79fc2b6dfd054d4a2104503e"
+    },
+    {
+     "revision": 7,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "7b64d0e322f53c376c9c8eb1f5aabb2a19c92ec4aaa957858b491ae2684ef1b1"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:5.4.0"
+  },
+  "schemas/program-json-v5.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-22",
+     "commit": "0e27e772",
+     "class": "created",
+     "change": "feat(exports): export Program 5.0.0 and construction 4.0.0 / 3.0.0 from the release",
+     "sha256": "309216659b1a4f819c30df15ae099dfe4075af992372248a0c18d533fa23f77d"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "4ac03e3b30613bc82535ae3e830b3b1048044483cf6e95a53e9db5526457364f"
+    }
+   ],
+   "id": "urn:archetype-atlas:program-json:5.0.0"
+  },
+  "schemas/query-artifact.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-05",
+     "commit": "5dbd5a27",
+     "class": "created",
+     "change": "feat(query): publish bounded immutable data lookup",
+     "sha256": "7ad0179b7ebd1632c0a0df8d10e31c3e7c687a3cf86b79093e780fa0ca980f46"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "f9a50e03c99149906ab0c519cc6c4bcd8fe963a7efb56e246429e97c0592d7e3"
+    }
+   ],
+   "id": null
+  },
+  "schemas/query-request.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-05",
+     "commit": "5dbd5a27",
+     "class": "created",
+     "change": "feat(query): publish bounded immutable data lookup",
+     "sha256": "461cd05fc5361451ee6e651adeb74e2b49802807cd90a7685d2036ee7c7d72cb"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "8f23b795d940879d998cf660d51841971e4c15d961ae9444c1fc39ce0820fa19"
+    }
+   ],
+   "id": null
+  },
+  "schemas/query-response.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-05",
+     "commit": "5dbd5a27",
+     "class": "created",
+     "change": "feat(query): publish bounded immutable data lookup",
+     "sha256": "c822f9c6e1e44030878cbd29a8f5efcb31a54074a517081ef39f6f44c5a2af94"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "1145b5fde28d4a99128011019cb382c7f0e7b2f10c4802327cfd9f5371dbdcd3"
+    }
+   ],
+   "id": null
+  },
+  "schemas/query-v2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-07",
+     "commit": "0b968a69",
+     "class": "created",
+     "change": "feat(delivery): validate Medium Office definition pilot",
+     "sha256": "8e133a581c274515f3764dabd6782dd73eec6dc4c681bac5cdbdbf75e0386e4e"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-07",
+     "commit": "047469df",
+     "class": null,
+     "change": "data(definitions): freeze element definition library",
+     "sha256": "9caf47f9b18f67b51db78c4d8cc6f35a37887a0053cc5937cb415b8b112adff7"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-07",
+     "commit": "16d9ea3c",
+     "class": null,
+     "change": "fix(definitions): preserve reviewed membership and source applicability",
+     "sha256": "40957bbd3683c444514ac92bfb2002f146baf46a471c67b5f6ad92105cd46a72"
+    },
+    {
+     "revision": 4,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "6878472834c67b4c2a9703af95596c40d687fd2bed53b482cd03031091fb2c9a"
+    }
+   ],
+   "id": null
+  },
+  "schemas/resolution.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-03",
+     "commit": "a8470a3a",
+     "class": "created",
+     "change": "data(resolutions): freeze evidence-gated schedules and profiles",
+     "sha256": "6c0a80e70ccae19cd051f5e2eae1f2ff56d21b4f24297d26ad51126050e6b791"
+    },
+    {
+     "revision": 2,
+     "date": "2026-10-04",
+     "commit": "ae539bb5",
+     "class": null,
+     "change": "feat(schedules): apply reviewed zeros and record generator direction",
+     "sha256": "846567c68376e333102185cdf858fb16f3280dc670f584efdaf2c8e28eca7fea"
+    },
+    {
+     "revision": 3,
+     "date": "2026-10-04",
+     "commit": "6a7be096",
+     "class": null,
+     "change": "feat(schedules): publish approved gas zeros and fixed backgrounds",
+     "sha256": "7ca86d73b006b53360ee7f80bb24df1bebbfc3e8499094fe941536d327768869"
+    },
+    {
+     "revision": 4,
+     "date": "2026-10-04",
+     "commit": "6d73d069",
+     "class": null,
+     "change": "feat(schedules): complete finite residential profile variants",
+     "sha256": "477dbb4cd7972938ab4cfbe98867d18c167707f21017b6b68d59894b8e260c19"
+    },
+    {
+     "revision": 5,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "211fa3e24be30c34b2fda80e78cea6547caf62d78f5735b16f912d06ee567066"
+    }
+   ],
+   "id": "https://energy-atlas.github.io/archetype-atlas/schemas/resolution-0.4.0.json"
+  },
+  "schemas/schedule-json-v2.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-07",
+     "commit": "b45f15a1",
+     "class": "created",
+     "change": "feat(contract): define self-contained program JSON for connector import",
+     "sha256": "ea61c7bdf58e19ca4a037ad628650ec373f2b3198c06ff0375500b641122c311"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "7f105d012bf2ac0df72f0c369fcea0a0479844588e864b4e01d6a4e9124d7d43"
+    }
+   ],
+   "id": "urn:archetype-atlas:schedule-json:2.0.0"
+  },
+  "schemas/water-equivalent.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-04",
+     "commit": "63885ecb",
+     "class": "created",
+     "change": "feat(schedules): attach conserved water pilot and inventory gaps",
+     "sha256": "ce137d4bbae6469231b0790097a98868ff18117c5586f4d0e9089ae356fcefa6"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "bbfc5497ec395c338d2b01e337bbe30df27b37d2b8006359bbf68c56f46801b7"
+    }
+   ],
+   "id": "https://energy-atlas.github.io/archetype-atlas/schemas/water-equivalent-0.1.0.json"
+  },
+  "schemas/water-reporting.schema.json": {
+   "revisions": [
+    {
+     "revision": 1,
+     "date": "2026-10-05",
+     "commit": "2bd31136",
+     "class": "created",
+     "change": "feat(water): add complete deterministic reporting variant",
+     "sha256": "b2de4f9ecc5f6a7dd9638860869f1e990aea15e09e179b4970cd7805e55ffe3a"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "revision marker added; history recorded (ADR 0056)",
+     "sha256": "08f14be07e747ca0c01ad44f6fd3d4c5d66dba26b5c903537c58cd9f6458de13"
+    }
+   ],
+   "id": null
+  }
+ },
+ "policy": "docs/schema-versioning.md",
+ "description": "Every revision of every published JSON Schema: revision number, date, commit (null for the commit that recorded it), change class (created, editorial, patch, minor, major; null where the history predates the policy), change and SHA-256 of the file."
+}

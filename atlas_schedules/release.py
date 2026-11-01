@@ -15,12 +15,16 @@ delta's manifest names its base by release and manifest hash, lists its own file
 the base files it removes. A path resolves to the delta's file, else the base's unless
 removed. Each folder's `generation.json` holds its programs' generation blocks, its services'
 blocks and its building configurations; a program record reads with its block as `generation`.
+Each `generation.json` is validated against `schemas/generation-v1.schema.json` when it is first
+read (ADR 0056), so a hand-edited or third-party file fails with the path of its first error.
 """
 from functools import cached_property, lru_cache
 import hashlib
 import json
 import os
 from pathlib import Path
+
+import jsonschema
 
 from .errors import GeneratorError
 
@@ -29,6 +33,7 @@ PACKAGE = Path(__file__).resolve().parent
 SOURCE_TREE = PACKAGE.parents[0] / "data" / "atlas-releases"
 VIEW = PACKAGE / "data" / "atlas-release"
 VIEW_INDEX = "index.json"
+GENERATION_SCHEMA = PACKAGE / "schemas" / "generation-v1.schema.json"
 _ROOT: Path | None = None
 
 
@@ -60,6 +65,21 @@ def read_bytes(path) -> bytes:
             path = "\\\\?\\" + absolute
     with open(path, "rb") as handle:
         return handle.read()
+
+
+@lru_cache(maxsize=1)
+def _generation_validator():
+    return jsonschema.Draft202012Validator(json.loads(read_bytes(GENERATION_SCHEMA)))
+
+
+def check_generation(folder: str, document: dict) -> dict:
+    """The folder's generation.json document, after validating it against the generation 1.x schema."""
+    validator = _generation_validator()
+    if not validator.is_valid(document):
+        error = jsonschema.exceptions.best_match(validator.iter_errors(document))
+        where = "".join(f"/{part}" for part in error.absolute_path)
+        raise GeneratorError("release", f"/{folder}/generation.json{where}", f"Not a generation 1.x document: {error.message}")
+    return document
 
 
 def _version(name: str) -> tuple:
@@ -209,9 +229,11 @@ class Release:
     @lru_cache(maxsize=None)
     def generation(self, folder: str) -> dict:
         if self._generation is not None:
-            return self._generation.get(folder, {})
-        path = f"{folder}/generation.json"
-        return self.json(path) if path in self.paths else {}
+            document = self._generation.get(folder)
+        else:
+            path = f"{folder}/generation.json"
+            document = self.json(path) if path in self.paths else None
+        return check_generation(folder, document) if document else {}
 
     def generation_folders(self) -> list:
         if self._generation is not None:

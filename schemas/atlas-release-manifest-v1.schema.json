@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:atlas-release-manifest:1.0.0",
+  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "title": "Atlas data release manifest 1.0.0",
+  "description": "The manifest.json of a data release folder under data/atlas-releases (ADR 0036 section 2, ADR 0046, ADR 0051 section 6): a whole snapshot (base_release null, snapshot_of its source) or a delta that holds only its own files over a base, pinned by the base manifest's SHA-256. Every file the folder holds is listed with its size and SHA-256; a delta lists the base files it removes. Manifests of published releases are pinned and never edited for this schema; it applies from the next release, and the published ones validate as they are.",
+  "type": "object",
+  "required": ["kind", "schema_version", "release", "scope", "status", "base_release", "generated_by", "decision",
+               "input_sha256", "counts", "deferred", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {"const": "atlas_release"},
+    "schema_version": {"const": "1.0.0"},
+    "release": {"$ref": "#/$defs/version"},
+    "scope": {"type": "string"},
+    "status": {"enum": ["released", "draft"]},
+    "base_release": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "required": ["release", "path", "manifest_sha256"], "additionalProperties": false,
+         "properties": {"release": {"$ref": "#/$defs/version"}, "path": {"type": "string", "pattern": "^data/atlas-releases/v\\d+\\.\\d+\\.\\d+$"},
+                        "manifest_sha256": {"$ref": "#/$defs/sha256"}}}
+      ]
+    },
+    "snapshot_of": {"type": "object", "required": ["release", "manifest_sha256"], "additionalProperties": false,
+                    "properties": {"release": {"$ref": "#/$defs/version"}, "manifest_sha256": {"$ref": "#/$defs/sha256"}}},
+    "generated_by": {"type": "string", "pattern": "^python -m scripts\\."},
+    "decision": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^docs/adr/\\d{4}-[a-z0-9-]+\\.md$"}},
+    "edited_by": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "object"}]},
+                  "description": "Edits made after the release was first written, each with its decision (ADR 0046 section 7)."},
+    "input_sha256": {"type": "object", "minProperties": 1, "additionalProperties": {"$ref": "#/$defs/sha256"},
+                     "description": "Repository path: SHA-256 of an input the release was written from (a folder hashes its sorted paths and contents)."},
+    "generator": {
+      "type": "object",
+      "required": ["version", "package", "wheel", "release_tag", "request_schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {"$ref": "#/$defs/version"},
+        "package": {"const": "atlas-schedules"},
+        "wheel": {"type": "string", "pattern": "^atlas_schedules-\\d+\\.\\d+\\.\\d+-py3-none-any\\.whl$"},
+        "release_tag": {"type": "string", "pattern": "^atlas-schedules-v\\d+\\.\\d+\\.\\d+$"},
+        "request_schema_version": {"$ref": "#/$defs/version"},
+        "reads": {"type": "string"},
+        "recipes_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "generation": {"type": "object", "required": ["schema_version"], "additionalProperties": false,
+                   "properties": {"schema_version": {"$ref": "#/$defs/version"}}},
+    "counts": {"type": "object", "additionalProperties": {"oneOf": [{"type": "integer", "minimum": 0}, {"type": "object"}]}},
+    "deferred": {"type": "array", "items": {"type": "string", "minLength": 1},
+                 "description": "What the release knowingly leaves out, each with its reason or decision. From release 2.3.0 the generation coverage is stated by folder class (ADR 0055)."},
+    "files": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"type": "string", "pattern": "^[^/\\\\].*[^/]$"},
+      "additionalProperties": {"type": "object", "required": ["sha256", "bytes"], "additionalProperties": false,
+                               "properties": {"sha256": {"$ref": "#/$defs/sha256"}, "bytes": {"type": "integer", "minimum": 0}}}
+    },
+    "removed": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+  },
+  "allOf": [
+    {"if": {"properties": {"base_release": {"type": "null"}}}, "then": {"required": ["snapshot_of"]},
+     "else": {"required": ["removed"]}}
+  ],
+  "$defs": {
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

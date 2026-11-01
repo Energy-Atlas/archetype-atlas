@@ -155,3 +155,21 @@ def without_rebuilt(legacy_request: dict) -> dict:
         i for i in legacy_request["instances"] if not rebuilt(i.get("program_id")) and not retired(i.get("source_service_id"))
         and not (i.get("physical_binding_kind") == "caller_unit_prototype_density_fixed_dhw"
                  and (i.get("building_realization_id"), i.get("unit_id")) in removed)]}
+
+
+BUNDLE_SCHEMA = Path(__file__).resolve().parents[2] / "atlas_schedules/schemas/bundle-v4.schema.json"
+
+
+def bundle_errors(bundle: dict) -> list:
+    """Messages of every way the bundle breaks the bundle 4.0.0 schema (ADR 0056). The hourly values are checked
+    as finite numbers with numpy, and the schema's per-item type rule is left out of the jsonschema pass, which
+    would otherwise spend seconds per bundle on 8,760 numbers per schedule."""
+    import jsonschema
+    schema = json.loads(BUNDLE_SCHEMA.read_text(encoding="utf-8"))
+    del schema["$defs"]["schedule"]["properties"]["values"]["items"]
+    messages = [e.message for e in jsonschema.Draft202012Validator(schema).iter_errors(bundle)]
+    for key, entry in bundle["schedules"].items():
+        values = np.asarray(entry["values"])
+        if values.dtype.kind not in "fiu" or not np.isfinite(values).all():
+            messages.append(f"{key}: values are not finite numbers")
+    return messages
