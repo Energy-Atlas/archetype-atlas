@@ -113,6 +113,8 @@ def _service(release, service_id: str) -> dict:
 # the record does not state: per view, the commercial configuration, the ResStock unit
 # characteristics, or a ResStock dwelling's executed annual inputs.
 VIEWS = ("source", "filled")
+# Atlas building type: the ComStock building type whose operating parameters it samples. The detailed offices
+# are the office prototypes with their space types (ADR 0039), so they sample their plain type (ADR 0055).
 SAMPLING = {
     "MediumOffice": "medium_office", "SmallOffice": "small_office", "Warehouse": "warehouse",
     "RetailStandalone": "retail", "FullServiceRestaurant": "full_service_restaurant",
@@ -120,10 +122,14 @@ SAMPLING = {
     "LargeOffice": "large_office", "LargeHotel": "large_hotel", "SmallHotel": "small_hotel",
     "Hospital": "hospital", "Outpatient": "outpatient", "PrimarySchool": "primary_school",
     "SecondarySchool": "secondary_school", "SuperMarket": "supermarket",
+    "SmallOfficeDetailed": "small_office", "MediumOfficeDetailed": "medium_office", "LargeOfficeDetailed": "large_office",
 }
-TEMPLATES = {"90.1-2007": ("90_1_2007", "ashrae_90_1_2007"), "90.1-2013": ("90_1_2013", "ashrae_90_1_2013"),
-             "90.1-2019": ("90_1_2019", "ashrae_90_1_2019"), "DOE Ref Pre-1980": ("doe_ref_pre_1980", "doe_ref_pre_1980"),
-             "DOE Ref 1980-2004": ("doe_ref_1980_2004", "doe_ref_1980_2004")}
+# Template label: the slug building configuration IDs carry (`<building>__<slug>__<view>`). The IECC editions
+# are PNNL's IECC prototypes of the same building types (ADR 0040, ADR 0055).
+TEMPLATES = {"90.1-2007": "90_1_2007", "90.1-2013": "90_1_2013", "90.1-2019": "90_1_2019",
+             "DOE Ref Pre-1980": "doe_ref_pre_1980", "DOE Ref 1980-2004": "doe_ref_1980_2004",
+             "IECC 2006": "iecc_2006", "IECC 2009": "iecc_2009", "IECC 2012": "iecc_2012",
+             "IECC 2015": "iecc_2015", "IECC 2018": "iecc_2018", "IECC 2021": "iecc_2021"}
 LOAD_SLOTS = {"lighting": "electricity", "electric_equipment": "electricity", "gas_equipment": "natural gas",
               "hot_water_volume": "water"}
 SETPOINTS = (("heating_setpoint", "heating_setpoint_schedule_id"), ("cooling_setpoint", "cooling_setpoint_schedule_id"))
@@ -162,6 +168,12 @@ def load_of(record: dict, quantity: str):
 
 def known_positive(load) -> bool:
     return load is not None and load["status"] == "known" and load["value"] is not None and load["value"] > 0
+
+
+def known_schedule(parameter) -> bool:
+    """A schedule parameter that names a schedule. A known null is a known absence (an IECC plenum or attic
+    has no thermostat, ADR 0040 item 9), so it adds no slot."""
+    return bool(parameter) and parameter.get("status") == "known" and isinstance(parameter.get("value"), str)
 
 
 def heat_fractions(load: dict) -> dict | None:
@@ -211,12 +223,12 @@ def commercial_body(record: dict) -> dict:
     parameters = record.get("parameters", {})
     for slot, key in SETPOINTS:
         parameter = parameters.get(key)
-        if parameter and parameter["status"] == "known":
+        if known_schedule(parameter):
             slots.append({"slot": slot, "kind": "control", "unit": "C", "schedule": parameter["value"]})
             controls.append({"slot": slot, "quantity": "temperature", "unit": "C"})
             modes[slot] = "tstat"
     activity = parameters.get("activity_schedule_id")
-    if known_positive(occupancy) and activity and activity["status"] == "known":
+    if known_positive(occupancy) and known_schedule(activity):
         slots.append({"slot": "activity", "kind": "control", "unit": "W/person", "schedule": activity["value"]})
         controls.append({"slot": "activity", "quantity": "activity", "unit": "W/person"})
         modes["activity"] = "hours"
@@ -243,10 +255,10 @@ def fixed_body(record: dict) -> dict:
                             "heat_fractions": heat_fractions(load)})
     parameters = record["parameters"]
     activity = parameters.get("activity_schedule_id") or {}
-    named = [("activity", activity)] if known_positive(occupancy) and activity.get("status") == "known" else []
+    named = [("activity", activity)] if known_positive(occupancy) and known_schedule(activity) else []
     named += [(slot, parameters.get(key) or {}) for slot, key in SETPOINTS]
     for slot, parameter in named:
-        if parameter.get("status") != "known":
+        if not known_schedule(parameter):
             continue
         unit = "W/person" if slot == "activity" else "C"
         slots.append({"slot": slot, "kind": "control", "unit": unit, "schedule": parameter["value"]})

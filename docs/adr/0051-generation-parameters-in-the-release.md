@@ -1,5 +1,11 @@
 # ADR 0051: Generation parameters in the release; generator 4.0.0 reads a release
 
+> Amended by [ADR 0055](0055-generation-for-iecc-and-detailed-offices.md) (2026-11-01): section 3's list of
+> programs without blocks is restated by folder class (every program of a generated folder has a block,
+> plenums included); the IECC commercial non-apartment types and the detailed offices get blocks from
+> release 2.3.0. [ADR 0056](0056-release-record-schemas-and-versioning.md) publishes the schemas of
+> `generation.json` (section 3) and the bundle (section 4).
+
 Status: accepted (2026-10-29, user decisions 1 to 7 in section 2; shipped 2026-10-30 as data
 release 2.2.0 and generator 4.0.0). It supersedes the unmerged publishing design of the branch
 `codex/publishing-design` (its ADR text carried the number 0049, which
@@ -292,3 +298,16 @@ Program JSON 5.1.0 and 5.2.0, building services 1.0.0 and source model construct
   `resstock_unit` blocks.
 - **ADR 0049 section 2 (decision 1) and section 4:** the package ships the generator view of a
   release instead of recipes; the pairing table gains generator 4.0.0 on data release 2.2.0.
+
+## Amendment (2026-11-01, ADR 0055)
+
+Section 3's sentence "Programs it cannot generate (IECC, manufactured housing, plenums without loads, the
+construction-only programs, the DOE Ref types without a sampling building type) carry none" did not match
+the data: 10 plenums of the 90.1 and DOE Ref large and medium offices carry blocks, because a generated
+folder gives every program one, and every DOE Ref type with programs and a sampling type was generated.
+Blocks are given by folder. From release 2.3.0 the folders without them are, by class (ADR 0055
+section 3): the commercial types without a ComStock sampling building type (college, courthouse,
+laboratory, data centres, generic office, tall and super-tall), the IECC commercial apartment buildings
+(their systems are deferred), and the residential code-prototype dwellings. The IECC commercial
+non-apartment types and the detailed offices are generated. Release 2.2.0's manifest keeps its wording
+(it is pinned); release 2.3.0's states the classes.

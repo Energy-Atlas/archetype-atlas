@@ -15,7 +15,11 @@ class ReleaseValueTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.release = Release(atlas_delta.folder_of('2.2.0'))
-        cls.folders = [f for f in cls.release.generation_folders() if f.split('/')[1].startswith('doe-ref-')]
+        # The folders scripts.build_reference_recipes writes: the DOE Ref types with a DOE v1.4_7.2 file (ADR 0055 adds the
+        # detailed offices through scripts.build_zone_recipes).
+        written = {folder for _, folder in m.TYPES.values()} | {'midrise-apartment'}
+        cls.folders = [f for f in cls.release.generation_folders()
+                       if f.split('/')[1].startswith('doe-ref-') and f.split('/')[2] in written]
         cls.recipes = [programmes.assemble(cls.release, pid, view) for f in cls.folders
                        for pid, block in cls.release.generation(f)['programs'].items() for view in block['views']]
         cls.programs = {}
@@ -29,7 +33,7 @@ class ReleaseValueTests(unittest.TestCase):
         del cls.release, cls.recipes, cls.programs
 
     def test_every_generated_program_has_a_source_block(self):
-        generated = {bt for bt in programmes.SAMPLING} | {m.APARTMENT}
+        generated = {bt for bt, _ in m.TYPES.values()} | {m.APARTMENT}
         expected = {pid for pid, (_, r) in self.programs.items() if r['building_type'] in generated}
         self.assertEqual({r['program_id'] for r in self.recipes}, expected)
         self.assertEqual(len(self.recipes), 357)

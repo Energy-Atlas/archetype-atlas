@@ -1,5 +1,36 @@
 # Changelog
 
+## Generation for IECC and detailed offices, release-record schemas, schema versioning — 2026-11-01
+
+- **IECC commercial and detailed office generation blocks** ([ADR 0055](docs/adr/0055-generation-for-iecc-and-detailed-offices.md);
+  review F1, B2): `scripts/build_zone_recipes.py` derives the `generation.json` of the 84 IECC commercial folders
+  of a sampled type (14 types × 6 editions) and the 15 detailed small, medium and large office folders of the 90.1
+  and DOE Ref templates: 1,262 programs (1,031 `comstock_hours`, 231 `composition`), 321 services, 99
+  configurations, `source` views only. People per zone are floor area × program density, from the IECC programs'
+  source zones (the PNNL IDF zones) or the prototype geometry's spaces. Checks: the geometry rule reproduces all
+  45 90.1 source configurations from the same file; the IECC People agree with the IDF People objects
+  (`tests/answer_keys/commercial/iecc-people.json`, `scripts/capture/iecc_people.py`, 84 cases, within 2.5e-11);
+  every block assembles and validates. Release 2.3.0 (stage REL-A) carries the files; the IECC apartment
+  buildings stay without blocks (their systems are deferred).
+- **Generator 4.1.0** (`atlas-schedules`, minor): `programmes.TEMPLATES` names the IECC editions (slug only) and
+  `SAMPLING` the detailed offices; a known null setpoint or activity schedule (an IECC plenum's absent
+  thermostat) adds no slot instead of a slot without a schedule; each `generation.json` is validated against its
+  schema when it is read. Requests and bundles are unchanged (4.0.0). Not yet published: REL-A builds and tags it.
+- **Generation coverage by folder class** (review C8): `scripts/generation_coverage.py` classifies every folder;
+  from release 2.3.0 the manifest's `deferred` states the classes (commercial types without a sampling type,
+  IECC apartment buildings, residential code prototypes) in place of 2.2.0's entry, which named plenums as a
+  class. ADR 0051 section 3 carries the amendment.
+- **JSON Schemas for generation.json, the bundle and the release records**
+  ([ADR 0056](docs/adr/0056-release-record-schemas-and-versioning.md); review C1): `generation-v1` and
+  `bundle-v4` in `atlas_schedules/schemas/`, and the release manifest, definition map, program records,
+  `schedules.json` and `services.json` in `schemas/atlas-*`. Every published release validates as written.
+  `scripts/release_schemas.py`; `atlas_delta --check` and `--write` validate the delta's files and manifest
+  (through a tagged `release 2.3.0` block, since 2.2.0 pins the writer).
+- **Schema versioning** ([docs/schema-versioning.md](docs/schema-versioning.md); review C5): patch, minor and major
+  rules, no edits in place to a published meaning; every schema carries a `revision <n>` marker and
+  `schemas/revisions.json` records each revision with its class and hash (`scripts/schema_revisions.py`), with
+  Program JSON 5.4.0's five in-place edits classified.
+
 ## Public housekeeping: citation file and agent working notes — 2026-10-30
 
 - **`CITATION.cff`**: cites the atlas as a dataset at release 2.2.0, MIT and CC BY 4.0, with the

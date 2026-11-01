@@ -339,5 +339,87 @@ def main():
     print(f'Release {release} written: {len(delta) - 1} files and the manifest')
 
 
+# >>> release 2.3.0
+# Release 2.2.0 pins this file by SHA-256 (`input_sha256`). Later releases are therefore added as tagged
+# blocks like this one, before the main guard, as ADR 0040 (agent decision 17) did for the minor-release
+# builder: a manifest pins the file without the blocks of later releases (`pinned_writer`), which restores
+# the exact bytes that wrote it. Nothing above this block changes. This block (ADR 0055, ADR 0056):
+# - validates every delta file and the manifest against the release-record schemas (scripts.release_schemas)
+#   whenever a delta is built, so `--check` and `--write` fail on a file that breaks its schema;
+# - counts generation blocks over the resolved release (base and delta), as a delta from 2.3.0 carries only
+#   its new and changed generation.json files;
+# - states the generation coverage of releases after 2.2.0 by folder class (scripts.generation_coverage), in
+#   place of 2.2.0's entry, which named "plenum" programs as a class and an empty DOE Ref class.
+import re  # noqa: E402
+
+from scripts import generation_coverage, release_schemas  # noqa: E402
+
+WRITER = 'scripts/atlas_delta.py'
+BLOCK = re.compile(r'# >>> release (\d+\.\d+\.\d+)\n.*?# <<< release \1\n\n\n', re.S)
+GENERATION_BY_CLASS_FROM = (2, 3, 0)
+
+
+def _version(release):
+    return tuple(int(part) for part in release.split('.'))
+
+
+def pinned_writer(release):
+    """This file as `release` pinned it: without the blocks of later releases."""
+    text = (ROOT/WRITER).read_text(encoding='utf-8')
+    return BLOCK.sub(lambda m: '' if _version(m[1]) > _version(release) else m[0], text).encode('utf-8')
+
+
+def generation_reader(release, delta):
+    """The release with its generation.json files resolved over the base: the base's, then the delta's."""
+    from atlas_schedules.release import TreeStore
+    base = Release(TreeStore(folder_of(base_of(release))))
+    docs = {f: base.generation(f) for f in base.generation_folders()}
+    docs.update({p.rsplit('/', 1)[0]: json.loads(d) for p, d in delta.items() if p.endswith('/generation.json')})
+    return Release(base.store, generation=docs)
+
+
+_build_before_2_3_0 = build
+_manifest_before_2_3_0 = manifest
+
+
+def build(release):
+    """The delta's files, each valid against its release-record schema."""
+    files = _build_before_2_3_0(release)
+    release_schemas.check(files, f'release {release}')
+    return files
+
+
+def generation_counts(release, delta):
+    """Counts of the generation blocks of the resolved release (base and delta; release 2.2.0's base has none)."""
+    reader = generation_reader(release, delta)
+    methods, services, configurations, views = {}, 0, 0, 0
+    for folder in reader.generation_folders():
+        doc = reader.generation(folder)
+        for block in doc.get('programs', {}).values():
+            methods[block['method']] = methods.get(block['method'], 0) + 1
+            views += len(block['views'])
+        services += len(doc.get('services', {}))
+        configurations += len(doc.get('configurations', {}))
+    mapped = json.loads(delta['definition-map.json']) if 'definition-map.json' in delta else reader.json('definition-map.json')
+    return {'generation_folders': len(reader.generation_folders()), 'programs_with_generation': sum(methods.values()),
+            'program_views': views, 'methods': dict(sorted(methods.items())), 'services_with_generation': services,
+            'configurations': configurations, 'definition_programs': len(mapped['programs']),
+            'definition_services': len(mapped['services']), 'retired_definition_programs': len(mapped.get('retired', {}))}
+
+
+def manifest(release, delta, base_manifest):
+    """The manifest as before, with the writer pinned as this release wrote it and, after 2.2.0, the generation
+    coverage by folder class; valid against the manifest schema."""
+    out = _manifest_before_2_3_0(release, delta, base_manifest)
+    if WRITER in out['input_sha256']:
+        out['input_sha256'][WRITER] = sha(pinned_writer(release))
+    if _version(release) >= GENERATION_BY_CLASS_FROM:
+        kept = [d for d in out['deferred'] if not d.startswith('generation blocks')]
+        out['deferred'] = generation_coverage.deferred(generation_reader(release, delta)) + kept
+    release_schemas.check({'manifest.json': out}, f'release {release}')
+    return out
+# <<< release 2.3.0
+
+
 if __name__ == '__main__':
     main()

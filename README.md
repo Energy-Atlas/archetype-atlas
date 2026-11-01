@@ -122,7 +122,13 @@ same code against `data/atlas-releases`; `python -m scripts.build_generator_view
 then `python -m build` (pinned in `requirements-dev.txt`) build the wheel.
 - **Generation blocks:** release 2.2.0's `generation.json` per folder; the DOE Ref and
   apartment blocks are written from the release
-  (`python -m scripts.build_reference_recipes`, `scripts.build_apartment_units`).
+  (`python -m scripts.build_reference_recipes`, `scripts.build_apartment_units`), and the
+  IECC commercial and detailed office blocks for release 2.3.0 by
+  `python -m scripts.build_zone_recipes` ([ADR 0055](docs/adr/0055-generation-for-iecc-and-detailed-offices.md)).
+- **Schemas:** `generation.json`, the bundle and the release records have JSON Schemas,
+  versioned by [docs/schema-versioning.md](docs/schema-versioning.md)
+  ([ADR 0056](docs/adr/0056-release-record-schemas-and-versioning.md);
+  `python -m scripts.release_schemas`, `scripts.schema_revisions --check`).
 - **Validation:** native OpenStudio / Ruby answer keys in `tests/answer_keys/` check
   it to 1e-6; a generator 3.0.0 answer key checks the assembled recipes reproduce its
   bundles.

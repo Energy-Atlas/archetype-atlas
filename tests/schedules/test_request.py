@@ -1,5 +1,6 @@
 """Request validation and generator behaviour that does not need an answer key."""
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -8,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
+import atlas_schedules
 from atlas_schedules.errors import GeneratorError
 from atlas_schedules.generator import generate
 from atlas_schedules.release import translate
@@ -218,7 +220,8 @@ class CommandLine(unittest.TestCase):
     def test_cli_version_names_the_generator_and_the_release(self):
         result = subprocess.run([sys.executable, "-m", "atlas_schedules", "--version"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertRegex(result.stdout, r"^atlas-schedules 4\.0\.0 \(request schema 4\.0\.0\); reads atlas release 2\.2\.0 from ")
+        version = re.escape(atlas_schedules.__version__)
+        self.assertRegex(result.stdout, rf"^atlas-schedules {version} \(request schema 4\.0\.0\); reads atlas release 2\.2\.0 from ")
 
     def test_cli_translates_a_3_0_0_request_and_refuses_it_untranslated(self):
         with tempfile.TemporaryDirectory() as folder:

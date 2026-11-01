@@ -49,12 +49,16 @@ class DeltaTests(unittest.TestCase):
 
     def test_generator_named_and_pinned_inputs_verify(self):
         generator = self.listed['generator']
-        self.assertEqual(generator['version'], atlas_schedules.__version__)
+        # Release 2.2.0 was written for generator 4.0.0; later generators of major 4 read it too (ADR 0055).
+        self.assertEqual(generator['version'], '4.0.0')
+        self.assertEqual(generator['version'].split('.')[0], atlas_schedules.__version__.split('.')[0])
         self.assertEqual((generator['package'], generator['request_schema_version']), ('atlas-schedules', atlas_schedules.REQUEST_SCHEMA_VERSION))
-        self.assertEqual(generator['release_tag'], f'atlas-schedules-v{atlas_schedules.__version__}')
+        self.assertEqual(generator['release_tag'], 'atlas-schedules-v4.0.0')
         for path, digest in self.listed['input_sha256'].items():
             with self.subTest(input=path):
-                self.assertEqual(atlas_delta.sha((ROOT/path).read_bytes()), digest)
+                # The writer is pinned without the tagged blocks of later releases (ADR 0056 decision 7).
+                data = atlas_delta.pinned_writer('2.2.0') if path == 'scripts/atlas_delta.py' else (ROOT/path).read_bytes()
+                self.assertEqual(atlas_delta.sha(data), digest)
         self.assertIn('scripts/atlas_delta.py', self.listed['input_sha256'])
 
     def test_counts(self):

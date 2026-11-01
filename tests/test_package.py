@@ -36,7 +36,12 @@ class PackageTests(unittest.TestCase):
         self.assertIn('version', project['project']['dynamic'])
         self.assertEqual(project['tool']['setuptools']['dynamic']['version'], {'attr': 'atlas_schedules.__version__'})
         self.assertRegex(atlas_schedules.__version__, RELEASE_VERSION)  # a tagged release, not a dev build
-        self.assertEqual(atlas_schedules.__version__, atlas_delta.GENERATOR[atlas_delta.RELEASE]['version'])
+        # The package is the generator the newest release names, or a later minor of it that the next release will
+        # name (4.1.0 reads release 2.2.0 and the blocks release 2.3.0 adds, ADR 0055).
+        version = tuple(map(int, atlas_schedules.__version__.split('.')))
+        named = tuple(map(int, atlas_delta.GENERATOR[atlas_delta.RELEASE]['version'].split('.')))
+        self.assertEqual(version[0], named[0])
+        self.assertGreaterEqual(version, named)
 
     def test_bundles_name_the_package_version_and_the_release(self):
         from atlas_schedules.generator import generate
