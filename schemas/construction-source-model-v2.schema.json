@@ -1,0 +1,388 @@
+{
+  "$id": "urn:archetype-atlas:source-model-construction:2.0.0",
+  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Release 2.3.0 export (ADR 0054): 1.0.0 with evidence rows in the shape every family uses and the release by pattern.",
+  "properties": {
+    "assemblies": {
+      "additionalProperties": {
+        "properties": {
+          "layer_orientation": {
+            "const": "outside_to_inside"
+          },
+          "layer_u_factor_W_m2_K": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "layers": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "solar_heat_gain_coefficient": {
+            "type": "number"
+          },
+          "u_factor_W_m2_K": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "layers",
+          "layer_orientation"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "climate": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "climate_zone": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "components": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "boundary": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "surface_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "boundary",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "construction_set_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "context": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "design": {
+      "enum": [
+        "standard",
+        "tropical_semi_conditioned"
+      ]
+    },
+    "doors": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "boundary": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "surface_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "boundary",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "evidence": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "description": "One evidence row (ADR 0054 section 2), the same in every family: the source project and pinned revision, the locator in the file (`<path>#<locator>`) and the file's SHA-256 (null for an atlas record or decision with no file), the original value and unit, the transformation, the extraction date and the interpretation.",
+        "properties": {
+          "extraction_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "interpretation_note": {
+            "type": "string"
+          },
+          "original_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "original_value": {},
+          "source_file_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_locator": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "source_project": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "source_revision": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "source_url": {
+            "type": "string"
+          },
+          "transformation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source_project",
+          "source_revision",
+          "source_locator",
+          "source_file_sha256",
+          "original_value",
+          "original_unit",
+          "transformation",
+          "extraction_date",
+          "interpretation_note"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "foundation": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "infiltration": {
+      "minProperties": 1,
+      "properties": {
+        "airflow_network": {
+          "type": "object"
+        },
+        "design_flow_rate": {
+          "type": "array"
+        },
+        "effective_leakage_area": {
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "internal_mass": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "kind": {
+      "const": "source_model_construction"
+    },
+    "location": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "materials": {
+      "additionalProperties": {
+        "required": [
+          "model",
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "release": {
+      "pattern": "^atlas-release-\\d+\\.\\d+\\.\\d+$",
+      "type": "string"
+    },
+    "schedules": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "source": {
+      "type": "object"
+    },
+    "source_climate_code": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_location": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "tropical": {
+      "type": "boolean"
+    },
+    "warm_humid": {
+      "type": "boolean"
+    },
+    "window_shading": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "windows": {
+      "items": {
+        "properties": {
+          "area_m2": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "assembly_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "boundary": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "surface_type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "zone": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone",
+          "boundary",
+          "assembly_id",
+          "area_m2"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "construction_set_id",
+    "context",
+    "name",
+    "release",
+    "source",
+    "climate",
+    "components",
+    "windows",
+    "doors",
+    "internal_mass",
+    "window_shading",
+    "infiltration",
+    "assemblies",
+    "materials",
+    "schedules",
+    "evidence"
+  ],
+  "title": "Source model constructions 2.0.0",
+  "type": "object"
+}

@@ -57,6 +57,8 @@ INACTIVE_CONTROLS = None
 
 
 class ProgramExporter(HistoricalExporter):
+    absence_by_name = True   # the ADR 0016 accepted absence by program name; off for releases that store it (2.3.0 on)
+
     def __init__(self, bundle, recovery=None, inactive_controls=None):
         super().__init__(bundle)
         self.historical = HistoricalExporter(bundle)
@@ -206,7 +208,8 @@ class ProgramExporter(HistoricalExporter):
                 if item['value'] is None:
                     allowed = item['end_use'] == 'additional_lighting' or item['type'] == 'gas_equipment' or support
                     allowed |= item['type'] == 'occupancy' and 'data' in name and 'center' in name
-                    if not allowed:
+                    # Release 2.3.0 stores this rule as fillings (ADR 0053 section 3); its exports turn the name rule off.
+                    if not allowed or not self.absence_by_name:
                         raise ValueError('unresolved ' + item['end_use'] + ' magnitude: ' + source['id'])
                     item['value'] = 0
                     out['metadata']['resolutions'].append({'demand_id': item['demand_id'], 'field': 'value', 'original_value': None,
