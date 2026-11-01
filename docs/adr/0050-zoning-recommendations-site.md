@@ -218,3 +218,15 @@ each pair, computed at site build.
   orientation, ties and duplicates, failed sites and unknown zone counts, the cost median),
   every page element and the JSON block on the drop, the 109 of 132 tally with the
   invariants above, and a one-orientation drop.
+
+## 7. Drop 3 (2026-11-01): schema 1.2.0, refused zonings, the reference's bound and the R4 rerun
+
+Applied per section 4 from BEMGen `8d2e3bd` (stage LOD1, D-219 to D-224). The files are copied byte for byte,
+since BEMGen writes LF, and BEMGen's own `provenance.json` is kept beside the sidecar as
+`bemgen-provenance.json`. What the pages change is in [ADR 0059](0059-release-2-3-0.md) section 6:
+- refused zonings (`status` Invalid) are shown as not generated;
+- the four cells that are finer than the reference are flagged;
+- the robust rule of section 6 takes the reference's zone count as a bound;
+- D-201's caution goes, since no R4 run fails (D-224);
+- the cost medians are medians of prototype medians (D-222);
+- program links follow the site release's IDs.

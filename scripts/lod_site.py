@@ -18,6 +18,12 @@ stored cost ratios (`ROBUST_RULE`, written into each prototype's JSON as a label
 admits fields a later drop adds: drop 2 (schema 1.1.0) added the serial costs of the R5 timing
 pass as a `cost` object on timed references and zonings and a top-level `timing` block, which
 the pages show as cost columns and a cost section; a file without them (1.0.0) renders as before.
+Drop 3 (schema 1.2.0, BEMGen D-220 to D-224, ADR 0059 section 6) lists every planned zoning, those
+the generator refused with `status` Invalid, shown as not generated (not as failed runs); bounds a
+recommendation by the reference's zone count, flagging a cell where only finer zonings meet the
+threshold (`finer_than_reference`), which the robust rule follows; and gives the cost medians as
+medians of prototype medians (`timing.overall`). The study's program IDs are atlas release 2.0.0's;
+the links follow them to the site release's records through the releases' ID maps.
 """
 import json
 import re
@@ -58,6 +64,7 @@ class Drop:
         self.provenance = json.loads((self.folder/PROVENANCE).read_text(encoding='utf-8'))
         self.main = document(self.folder/MAIN)
         self.ht = document(self.folder/HT) if (self.folder/HT).is_file() else None
+        self.translate = {}  # study program ID: the site release's ID (set by write_zoning)
 
     @property
     def threshold(self):
@@ -94,6 +101,28 @@ def document(path):
         if missing:
             raise ValueError(f'{path.name}: entry {entry.get("id")} lacks {", ".join(missing)}')
     return data
+
+
+ID_MAP = re.compile(r'^id-map-(\d+\.\d+\.\d+)\.json$')
+
+
+def version(text):
+    return tuple(int(part) for part in str(text).split('.'))
+
+
+def id_translation(release, inputs_release):
+    """{study program ID: the site release's ID} through the ID maps of the releases after the study's inputs
+    (`id-map-<release>.json` at a delta's root, ADR 0059); empty when no ID moved or the site has no release."""
+    files = getattr(release, 'files', None) or {}
+    maps = sorted((version(m[1]), path) for path in files if (m := ID_MAP.match(path)))
+    out = {}
+    for number, path in maps:
+        if inputs_release and number <= version(inputs_release):
+            continue
+        ids = json.loads(files[path])['ids']
+        out = {old: ids.get(new, new) for old, new in out.items()}
+        out.update({old: new for old, new in ids.items() if old not in out})
+    return out
 
 
 def cell_order(entry):
@@ -230,6 +259,46 @@ def cost_sentence(entry):
             f'CV {pct(cost.get("cpu_time_cv_pct"))}); a zoning\'s ratios are its own medians over the reference\'s.')
 
 
+# Zoning states (schema 1.2.0): simulated, refused by the generator (never simulated) or a failed run.
+
+REFUSALS = {'Invalid: MultipliedRooms': 'the zoning does not support the prototype\'s multiplied rooms',
+            'Invalid: PlanTooNarrow': 'a wing is narrower than twice the perimeter depth'}
+
+
+def refused(zoning):
+    """A zoning the generator refused by a documented limit (`status` Invalid): not generated, so never simulated."""
+    return zoning.get('status') == 'Invalid'
+
+
+def failed(zoning):
+    """A generated zoning whose EnergyPlus run did not succeed."""
+    return not zoning['succeeded'] and not refused(zoning)
+
+
+def refusal(zoning):
+    reason = zoning.get('reason') or ''
+    return REFUSALS.get(reason) or (reason.split(': ', 1)[-1] if reason else 'refused by the generator')
+
+
+def generated(entry):
+    """The zonings of a cell the generator wrote (simulated or failed), without those it refused."""
+    return [z for z in entry['zonings'] if not refused(z)]
+
+
+def finer(entry):
+    """Whether only zonings finer than the reference meet the threshold, so the cell has no recommendation (D-220)."""
+    return bool(entry.get('finer_than_reference'))
+
+
+def finer_than_reference(zoning, entry):
+    zones, reference = zoning.get('zone_count'), entry['reference'].get('zone_count')
+    return zones is not None and reference is not None and zones > reference
+
+
+NO_PICK = '<em>none meets the threshold</em>'
+FINER = '<em>no recommendation: only zonings finer than the reference meet the threshold</em>'
+
+
 # Cells.
 
 def kept(entry):
@@ -248,8 +317,8 @@ ZONING_KEYS = ('simplifier', 'join_pieces', 'perimeter_depth', 'stacker', 'iwht'
 ERROR_KEYS = tuple(f'sensible_{load}_{m}' for m in ('kwh_rel_err_pct', 'cvrmse_pct', 'nmbe_pct') for load in ('heating', 'cooling'))
 AREA_KEY = 'conditioned_area_change_pct'
 ROBUST_RULE = ('For each prototype, climate zone and vintage, the robust zoning is the coarsest (fewest modelled zones) that meets the threshold '
-               'at every orientation of the cell pair, by the writer\'s own verdict on each zoning at each orientation; a duplicate never meets, '
-               'as the writer lists it. Ties at the fewest zones go to a zoning both orientations recommend, else to the first in the study\'s '
+               'at every orientation of the cell pair, by the writer\'s own verdict on each zoning at each orientation, with at most the '
+               'reference\'s zone count, as the writer bounds a recommendation (D-220); a duplicate never meets, as the writer lists it. Ties at the fewest zones go to a zoning both orientations recommend, else to the first in the study\'s '
                'zoning order (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT); the tied zonings are named. The errors reported are '
                'the worse of the orientations\' values for each metric, so the row is a bound, not a mean; the cost ratios are the medians '
                'over the timed sites of that zoning in the pair.')
@@ -322,7 +391,8 @@ def robust(pair):
         return {**result, 'status': 'single'}
     rows = [{zoning_key(z['zoning']): z for z in e['zonings']} for e in entries]
     recommended = [{zoning_key(p['zoning']) for p in e['recommended']} for e in entries]
-    candidates = [k for k in rows[0] if all(k in r and r[k].get('succeeded') and r[k].get('meets_threshold') for r in rows)]
+    candidates = [k for k in rows[0] if all(k in r and r[k].get('succeeded') and r[k].get('meets_threshold')
+                                            and not finer_than_reference(r[k], e) for r, e in zip(rows, entries))]
     if not candidates:
         return {**result, 'status': 'none'}
 
@@ -456,7 +526,7 @@ def summary_rows(page, entries, axes, threshold, costed=False):
         recommended = entry['recommended']
         if not recommended:
             rows.append(f'<tr data-context="{esc(entry["id"])}"{attrs}>'+''.join(f'<td>{c}</td>' for c in lead)
-                        + f'<td colspan="{span}"><em>none meets the threshold</em></td></tr>')
+                        + f'<td colspan="{span}">{FINER if finer(entry) else NO_PICK}</td></tr>')
             continue
         for pick in recommended:
             zoning = by_site.get(pick['site_name'], {'metrics': {}, 'flags': {}, 'conditioned_area_change_pct': None})
@@ -487,6 +557,9 @@ def cell_section(page, entry, axes, threshold, costed=False):
     for load in ('heating', 'cooling'):
         if not judged(entry, 'sensible_'+load, threshold):
             benchmark += f' Sensible {load} is below {threshold.get("min_reference_kwh_m2", 0):g} kWh/m² and is not judged.'
+    if finer(entry):
+        benchmark += (' Only zonings with more zones than the reference meet the threshold, so the cell has no recommendation '
+                      '(finer than the reference, D-220).')
     with_cost = costed and timed(entry)  # the cost columns appear in the timed cells only; an untimed cell says so in the sentence
     if costed:
         benchmark += cost_sentence(entry)
@@ -496,18 +569,24 @@ def cell_section(page, entry, axes, threshold, costed=False):
     for zoning in kept(entry):
         meets = zoning['meets_threshold']
         misses = '; '.join(zoning.get('misses', []))
-        verdict = ('<strong>yes, recommended</strong>' if zoning['site_name'] in recommended else 'yes') if meets else \
+        verdict = ('<strong>yes, recommended</strong>' if zoning['site_name'] in recommended else
+                   'yes, finer than the reference' if finer_than_reference(zoning, entry) else 'yes') if meets else \
             f'<abbr title="{esc(misses)}">no</abbr>' if misses else 'no'
         cells = [esc(zoning_label(zoning['zoning'])), num(zoning.get('zone_count'), 0), num(zoning.get('conditioned_area_change_pct'), 2)]
         cells += [metric(zoning, f'sensible_{load}_{m}', entry, threshold) for m in ('kwh_rel_err_pct', 'cvrmse_pct', 'nmbe_pct') for load in ('heating', 'cooling')]
         cells += [metric(zoning, f'sensible_{load}_max_kw_rel_err_pct', entry, threshold) for load in ('heating', 'cooling')]
         klass = ' class="ea-recommended"' if zoning['site_name'] in recommended else ''
         rows.append(f'<tr{klass}>'+''.join(f'<td>{c}</td>' for c in cells)+(cost_cells(zoning) if with_cost else '')+f'<td>{verdict}</td></tr>')
-    failed = [z for z in entry['zonings'] if not z['succeeded']]
-    for zoning in failed:
+    for zoning in (z for z in entry['zonings'] if failed(z)):
         rows.append(f'<tr class="ea-failed"><td>{esc(zoning_label(zoning["zoning"]))} <code>{esc(zoning["site_name"])}</code></td>'
                     f'<td colspan="{len(columns)-1}"><em>not applicable: the EnergyPlus run did not succeed</em></td></tr>')
     body = f'<p>{benchmark}</p>'+table(rows, columns, 'ea-listing ea-zonings')
+    refusals = [z for z in entry['zonings'] if refused(z)]
+    if refusals:
+        items = ''.join(f'<li>{esc(zoning_label(z["zoning"]))}: {esc(refusal(z))}</li>' for z in refusals)
+        body += (f'<details><summary>{len(refusals)} zoning{"s" if len(refusals) > 1 else ""} not generated: the generator refuses '
+                 f'{"them" if len(refusals) > 1 else "it"} by a documented limit, so {"they were" if len(refusals) > 1 else "it was"} '
+                 f'never simulated</summary><ul class="ea-refused">{items}</ul></details>')
     duplicates = [z for z in entry['zonings'] if z['succeeded'] and z.get('duplicate_of')]
     if duplicates:
         by_site = {z['site_name']: z for z in entry['zonings']}
@@ -543,8 +622,9 @@ def cells_body(page, entries, axes, threshold, more_toc=(), costed=False, result
     return ''.join(body)
 
 
-def programs_table(page, entries):
-    """The atlas programs of each program key, by vintage, linked to their catalogue pages."""
+def programs_table(page, entries, translate=None):
+    """The atlas programs of each program key, by vintage, linked to their catalogue pages (by the site release's IDs)."""
+    translate = translate or {}
     vintages = sorted({e['vintage'] for e in entries})
     keys = {}
     for entry in entries:
@@ -555,7 +635,7 @@ def programs_table(page, entries):
         cells = [esc(key)]
         for vintage in vintages:
             ids = sorted(keys[key].get(vintage, ()))
-            cells.append('<br>'.join(page.link(i) for i in ids) if ids else NULL)
+            cells.append('<br>'.join(page.link(translate.get(i, i)) for i in ids) if ids else NULL)
         rows.append(cells)
     return table(rows, ('Program key',)+tuple(vintages))
 
@@ -596,12 +676,15 @@ def prototype_page(site, drop, prototype, url):
     descriptor = site.store.put(slice_json)
     buttons = json_buttons([(f'LOD recommendations {drop.main["version"]}, this prototype', f'lod-recommendations-{prototype_slug(prototype)}', descriptor)], page)
     with_pick = sum(1 for e in entries if e['recommended'])
+    flagged = sum(1 for e in entries if finer(e))
     reference_zones = sorted({e['reference'].get('zone_count') for e in entries if e['reference'].get('zone_count') is not None})
     most = tally(entries)
     robust_most = tally_robust(results) if results else []
     timed_cells = sum(1 for e in entries if timed(e))
     facts = [('Prototype', esc(prototype)), ('Cells', f'{len(entries)}: '+' × '.join(f'{len({axis_values(e)[a] for e in entries})} {AXES[a].lower()}s' for a in axes)),
              ('Cells with a recommended zoning', f'{with_pick} of {len(entries)}'),
+             ('Finer than the reference', f'{flagged} cells: only zonings with more zones than the reference meet the threshold, so they have '
+                                          'no recommendation (D-220)' if flagged else ''),
              ('Robust across orientations', f'{sum(1 for r in results.values() if r["status"] == "robust")} of {len(results)} cell pairs'
                                             + (f': {esc(robust_most[0][0])} ({robust_most[0][1]})' if robust_most else '') if results else ''),
              ('Reference zoning', esc(zoning_label(entries[0]['reference'].get('zoning', {}))) if entries else ''),
@@ -614,9 +697,11 @@ def prototype_page(site, drop, prototype, url):
     trail = [(TITLE, URL), (name, url)]
     body = [crumbs(page, trail), kicker(page, drop, prototype), facts_html(facts), buttons,
             cells_body(page, entries, axes, threshold, [('programs', 'Atlas programs')], drop.costed, results),
-            section(page, 'programs', 'Atlas programs', programs_table(page, entries)
-                    + '<p class="ea-note">The atlas programs each program key of the prototype takes, as the suite\'s saved inputs name them; '
-                    f'the prototype\'s geometry and glazing are BEMGen\'s DOE record. <a href="{esc(page.rel(URL+"method/"))}">Method and caveats</a>.</p>')]
+            section(page, 'programs', 'Atlas programs', programs_table(page, entries, drop.translate)
+                    + '<p class="ea-note">The atlas programs each program key of the prototype takes, as the suite\'s saved inputs name them '
+                    f'(release {esc(drop.provenance.get("atlas_inputs", {}).get("release", ""))} IDs'
+                    + (f', shown and linked by their release {esc(site.release.number)} IDs through the releases\' ID maps' if drop.translate else '')
+                    + f'); the prototype\'s geometry and glazing are BEMGen\'s DOE record. <a href="{esc(page.rel(URL+"method/"))}">Method and caveats</a>.</p>')]
     site.summaries[url] = ' · '.join([name, prototype, 'zoning recommendations', ' '.join(sorted({e['climate_zone'] for e in entries})),
                                       ' '.join(sorted({e['vintage'] for e in entries}))])
     site.write(url+'index.md', markdown(f'{name} zoning', ''.join(body)))
@@ -629,7 +714,8 @@ def heat_transfer_page(site, drop, url):
     axes = ('prototype', 'climate')
     descriptor = site.store.put(data)
     buttons = json_buttons([(f'LOD recommendations {data["version"]}, heat-transfer sub-study', 'lod-recommendations-ht', descriptor)], page)
-    failed = [(e, z) for e in entries for z in e['zonings'] if not z['succeeded']]
+    failed_ = [(e, z) for e in entries for z in e['zonings'] if failed(z)]
+    refusals = [(e, z) for e in entries for z in e['zonings'] if refused(z)]
     with_pick = sum(1 for e in entries if e['recommended'])
     off = sum(1 for e in entries if any(p['zoning'].get('iwht') is False or p['zoning'].get('fht') is False for p in e['recommended']))
     facts = [('Cells', f'{len(entries)}: '+' × '.join(f'{len({axis_values(e)[a] for e in entries})} {AXES[a].lower()}s' for a in axes)
@@ -637,18 +723,24 @@ def heat_transfer_page(site, drop, url):
              ('Zonings per cell', 'the main zonings × interior-wall heat transfer (IWHT) on or off × floor heat transfer (FHT) on or off'),
              ('Cells with a recommended zoning', f'{with_pick} of {len(entries)}'),
              ('Cells where a recommended zoning has IWHT or FHT off', f'{off} of {len(entries)}'),
-             ('Zonings whose run did not succeed', f'{len(failed)} ({", ".join(sorted({prototype_name(e["prototype"]) for e, _ in failed}))})' if failed else '0')]
+             ('Zonings whose run did not succeed', f'{len(failed_)} ({", ".join(sorted({prototype_name(e["prototype"]) for e, _ in failed_}))})' if failed_ else '0'),
+             ('Zonings not generated', f'{len(refusals)}, refused by the generator by a documented limit and never simulated '
+                                       f'({", ".join(sorted({prototype_name(e["prototype"]) for e, _ in refusals}))})' if refusals else '')]
     trail = [(TITLE, URL), ('Heat-transfer sub-study', url)]
     body = [crumbs(page, trail), kicker(page, drop, 'R4 heat-transfer sub-study'), facts_html(facts), buttons,
             '<p>The same prototypes and threshold as the main matrix, in two climate zones, with the interior-wall and floor heat-transfer '
-            'switches of the zoning varied. The reference keeps both on. A zoning whose EnergyPlus run did not succeed is not applicable in '
-            'its cell: it is listed as such, never recommended, and the cell\'s recommendation comes from the zonings that ran (D-201); the '
-            f'cause is on the <a href="{esc(page.rel(URL+"method/"))}">method page</a>.</p>'
-            '<p class="ea-note">Read a recommendation with a switch off with care: where a zoning has no surface between zones of the kind '
-            'the switch pairs (one zone, or one storey for FHT), its on and off settings write the same model, and deduplication keeps the '
-            'first in zoning order, which lists off before on, so the kept and recommended site carries <em>off</em> although the setting '
-            'changed nothing. Elsewhere an off setting is a tie with the same zoning with both on. The cell\'s duplicate list names the '
-            f'twins. <a href="{esc(page.rel(URL+"method/#section-cautions"))}">Reading cautions</a>.</p>']
+            'switches of the zoning varied. The reference keeps both on. '
+            + ('A zoning whose EnergyPlus run did not succeed is not applicable in its cell: it is listed as such, never recommended, and the '
+               'cell\'s recommendation comes from the zonings that ran (D-201); the cause is on the '
+               f'<a href="{esc(page.rel(URL+"method/"))}">method page</a>.' if failed_ else
+               'Every zoning the generator wrote ran; the small hotel\'s cells were run again under BEMGen\'s heat-transfer rule, which keeps '
+               'the link of a surface of a zone without HVAC (D-211, D-224).')
+            + ' Zonings the generator refuses are listed under each cell as not generated.</p>'
+            '<p class="ea-note">A recommendation with a switch off is a tie, not a twin: deduplication keeps the twin whose heat-transfer '
+            'setting is closest to the reference\'s (both on first, D-221), so an off setting that writes the same model as the zoning with '
+            'both on is listed as its duplicate, and an off zoning left in a recommendation is a model of its own that meets the threshold '
+            'with as few zones as a zoning with both on. The cell\'s duplicate list names the twins. '
+            f'<a href="{esc(page.rel(URL+"method/#section-cautions"))}">Reading cautions</a>.</p>']
     body.append(cells_body(page, entries, axes, data['threshold'], costed=bool(data.get('timing')) or any(timed(e) for e in entries)))
     site.summaries[url] = 'Heat-transfer sub-study · IWHT FHT · zoning recommendations · '+' '.join(sorted({e['climate_zone'] for e in entries}))
     site.write(url+'index.md', markdown('Heat-transfer sub-study', ''.join(body)))
@@ -688,6 +780,7 @@ def cost_section(page, drop):
     recheck = timing.get('recheck') or {}
     cells = {e['id'] for e in drop.main['entries'] if timed(e)}
     columns = ('Test sites', 'CPU ratio', 'Wall ratio', 'Memory ratio', 'CPU median s', 'CPU CV median %')
+    overall = timing.get('overall') or {}
     by_prototype = {str(r.get('label')): r for r in timing.get('by_prototype', [])}
     rows = []
     for prototype in drop.prototypes():
@@ -697,14 +790,23 @@ def cost_section(page, drop):
                          num(r.get('commit_ratio'), 3), num(r.get('cpu_s')), num(r.get('cv_median_pct'))))
         else:
             rows.append(f'<tr><td>{esc(prototype_name(prototype))}</td><td colspan="{len(columns)}" class="ea-unjudged ea-untimed"><em>not timed</em></td></tr>')
-    zoning_rows = [(esc(writer_label(r.get('label'))), str(r.get('sites', '')), num(r.get('cpu_ratio'), 3), num(r.get('wall_ratio'), 3),
-                    num(r.get('commit_ratio'), 3), num(r.get('cpu_s')), num(r.get('cv_median_pct'))) for r in timing.get('by_zoning', [])]
+    by_prototypes = any('prototypes' in r for r in timing.get('by_zoning', []))
+    zoning_rows = [(esc(writer_label(r.get('label'))), str(r.get('sites', '')), *([str(r.get('prototypes', ''))] if by_prototypes else []),
+                    num(r.get('cpu_ratio'), 3), num(r.get('wall_ratio'), 3), num(r.get('commit_ratio'), 3), num(r.get('cpu_s')),
+                    num(r.get('cv_median_pct'))) for r in timing.get('by_zoning', [])]
+    zoning_columns = ('Zoning', 'Test sites', *(['Prototypes'] if by_prototypes else []))+columns[1:]
     facts = [('Timed', f'{timing.get("timed_sites", "")} sites of {len(cells)} cells ({len(timing.get("test_cases", []))} test cases of the serial pass), '
                        f'{len(timing.get("timed_prototypes", []))} prototypes; not timed: '
                        + ', '.join(prototype_name(p) for p in timing.get('untimed_prototypes', []))),
              ('Protocol', esc(timing.get('protocol', ''))),
-             ('Statistic', 'a site\'s cost is the median of its repeats; its ratio is that median over its reference\'s; a zoning\'s or a prototype\'s cost '
-                           'is the median of its test sites\' ratios'),
+             ('Statistic', 'a site\'s cost is the median of its repeats; its ratio is that median over its reference\'s; '
+                           + ('a prototype\'s cost is the median of its timed test sites\' ratios without the duplicate twins '
+                              f'({timing.get("duplicates_dropped")} dropped), and a zoning\'s and the overall cost are the medians of the prototype '
+                              'medians, each timed prototype one vote (D-222)' if overall else
+                              'a zoning\'s or a prototype\'s cost is the median of its test sites\' ratios')),
+             ('Overall', f'processor time {num(overall.get("cpu_ratio"), 3)}, wall clock {num(overall.get("wall_ratio"), 3)} and peak committed memory '
+                         f'{num(overall.get("commit_ratio"), 3)} of the reference\'s: the median of the {overall.get("prototypes", "")} prototype medians '
+                         f'({overall.get("sites", "")} distinct test sites)' if overall else ''),
              ('Gate', f'processor-time CV per site below {gate.get("limit_pct", "")} %: {gate.get("pass", "")} of {gate.get("sites", "")} sites pass '
                       f'(median {pct(gate.get("median_pct"))}, largest {pct(gate.get("max_pct"))}); <strong>{esc(gate.get("verdict", ""))}</strong>'),
              ('Repeat check', f'{recheck.get("sites", "")} long sites timed again: {recheck.get("miss", "")} at or above the gate (largest CV '
@@ -717,9 +819,11 @@ def cost_section(page, drop):
             'medians by prototype and by zoning below are the figures to quote, and the per-cell ratios on the prototype pages show the '
             f'spread. <a href="{esc(page.rel(URL+"method/#section-cost"))}">Cost protocol</a>.</p>'
             + '<h3>By prototype</h3>'+table(rows, ('Prototype',)+columns, 'ea-listing ea-costs')
-            + '<h3>By zoning</h3>'+table(zoning_rows, ('Zoning',)+columns, 'ea-listing ea-costs')
-            + '<p class="ea-note">The report writer\'s medians over the timed test sites of each prototype and zoning: the ratios of processor '
-            'time, wall clock and peak committed memory to the reference, the median processor time in seconds and the median per-site CV. '
+            + '<h3>By zoning</h3>'+table(zoning_rows, zoning_columns, 'ea-listing ea-costs')
+            + '<p class="ea-note">The report writer\'s medians: by prototype over its timed test sites, by zoning '
+            + ('over the prototype medians (the prototypes column counts them)' if by_prototypes else 'over its timed test sites')
+            + ': the ratios of processor time, wall clock and peak committed memory to the reference, the median processor time in seconds and '
+            'the median per-site CV. '
             'Peak committed memory hardly changes because EnergyPlus\'s own floor dominates; the saving in time follows the zone count only '
             'for large models, since a fixed start-up dominates the small single-storey prototypes.</p>')
 
@@ -851,12 +955,19 @@ def method_page(site, drop, urls):
     simplifiers = sorted({(z['zoning'].get('simplifier') or '').split(' ')[0] for e in entries for z in e['zonings']} - {''})
     stackers = sorted({z['zoning'].get('stacker') for e in entries for z in e['zonings'] if z['zoning'].get('stacker')})
     depths = sorted({z['zoning']['perimeter_depth'] for e in entries for z in e['zonings'] if z['zoning'].get('perimeter_depth') is not None})
-    per_cell = sorted({len(e['zonings']) for e in entries})
-    fewer = sorted({prototype_name(e['prototype']) for e in entries if len(e['zonings']) < max(per_cell)})
+    per_cell = sorted({len(generated(e)) for e in entries})
+    fewer = sorted({prototype_name(e['prototype']) for e in entries if len(generated(e)) < max(per_cell)})
     duplicates = sum(1 for e in entries for z in e['zonings'] if z['succeeded'] and z.get('duplicate_of'))
-    tests = sum(len(e['zonings']) for e in entries)
-    failed_main = sum(1 for e in entries for z in e['zonings'] if not z['succeeded'])
-    ht_failed = [(e, z) for e in (drop.ht['entries'] if drop.ht else []) for z in e['zonings'] if not z['succeeded']]
+    tests = sum(len(generated(e)) for e in entries)
+    failed_main = sum(1 for e in entries for z in e['zonings'] if failed(z))
+    refused_main = {}
+    for e in entries:
+        for z in e['zonings']:
+            if refused(z):
+                refused_main.setdefault(refusal(z), set()).add(prototype_name(e['prototype']))
+    refused_count = sum(1 for e in entries for z in e['zonings'] if refused(z))
+    flagged = sorted((e for e in entries if finer(e)), key=cell_order)
+    ht_failed = [(e, z) for e in (drop.ht['entries'] if drop.ht else []) for z in e['zonings'] if failed(z)]
     ht_failed_names = sorted({prototype_name(e['prototype']) for e, _ in ht_failed})
     ht_failed_labels = sorted({zoning_label(z['zoning']) for _, z in ht_failed} - {'zoning not recorded'})
     ht_failed_note = (f' ({", ".join(ht_failed_labels)})' if ht_failed_labels else
@@ -870,6 +981,10 @@ def method_page(site, drop, urls):
     timing = drop.timing or {}
     gate = timing.get('gate', {})
     recheck = timing.get('recheck') or {}
+    judged_loads, sensitivity = main.get('judged_loads') or {}, main.get('sensitivity') or {}
+    ht_entries = drop.ht['entries'] if drop.ht else []
+    ht_with_pick = sum(1 for e in ht_entries if e['recommended'])
+    ht_off = sum(1 for e in ht_entries if any(p['zoning'].get('iwht') is False or p['zoning'].get('fht') is False for p in e['recommended']))
     timed_cells = sorted((e for e in entries if timed(e)), key=lambda e: (drop.prototypes().index(e['prototype']), cell_order(e)))
     results = robust_results(entries) if paired(entries) else {}
     coarser = {}  # (prototype, climate zone, zoning label, zones, reference zones): cells where the recommendation has more zones than the reference
@@ -890,7 +1005,9 @@ def method_page(site, drop, urls):
         f'in a separate serial timing pass (R5, BEMGen <code>{esc(str(bemgen.get("timing_commit", "")))}</code>): {esc(timing.get("protocol", ""))}; '
         f'{esc(bemgen.get("machine", "an otherwise idle machine"))}. Per site the runner records the processor time (user plus kernel), the wall '
         'clock and the peak committed private memory; a site\'s cost is the median over its repeats, its <strong>cost ratio</strong> that median '
-        'over its reference\'s median, and a zoning\'s or a prototype\'s cost the median of its test sites\' ratios (D-202).</p>'
+        + ('over its reference\'s median; a prototype\'s cost is the median of its timed test sites\' ratios without the duplicate twins, '
+           'and a zoning\'s and the overall cost are the medians of the prototype medians, each timed prototype one vote (D-202, D-222).</p>'
+           if timing.get('overall') else 'over its reference\'s median, and a zoning\'s or a prototype\'s cost the median of its test sites\' ratios (D-202).</p>')
         + facts_html([
             ('Timed', f'{timing.get("timed_sites", "")} sites of {len(timed_cells)} cells: '
                       + ', '.join(f'{prototype_name(e["prototype"])} {e["climate_zone"]} {e["vintage"]} {orientation(e["orientation_degrees"])}' for e in timed_cells)),
@@ -929,9 +1046,10 @@ def method_page(site, drop, urls):
                 + table(zoning_rows, ('Simplifier', 'What it does'))
                 + (f'<p>Perimeter core is run at {" and ".join(f"{d:g} m" for d in depths)} depth.</p>' if depths else '')
                 + table(stacker_rows, ('Stacker', 'What it does'))
-                + f'<p>The main matrix has {min(per_cell)} to {max(per_cell)} zonings per cell'
-                + (f'; the cells of the {", ".join(fewer)} list fewer because a stacker or a perimeter depth does not apply to that prototype '
-                   '(multiplied rooms, or a wing narrower than twice the perimeter depth)' if fewer else '') + '. Orientation is a cell axis: the '
+                + f'<p>The main matrix has {min(per_cell)} to {max(per_cell)} generated zonings per cell'
+                + (f'; the cells of the {", ".join(fewer)} have fewer because a stacker or a perimeter depth does not apply to that prototype '
+                   '(multiplied rooms, or a wing narrower than twice the perimeter depth): the generator refuses those zonings, and each cell '
+                   'lists them as not generated' if fewer else '') + '. Orientation is a cell axis: the '
                 'two orientations of one prototype, climate zone and vintage are two rows, and the headline over the pair is the robust rule below.</p>'),
         section(page, 'metrics', 'Metrics and threshold',
                 '<p>Every value shown is the batch runner\'s own paired metric of a test site against its reference, as the report writer stored it; '
@@ -947,24 +1065,34 @@ def method_page(site, drop, urls):
         section(page, 'dedup', 'Deduplication',
                 '<p>Two test sites of one cell are duplicates when they have the same zone-geometry signature (each zone\'s multiplier and its floor '
                 'polygons, vertices rounded to a millimetre, names left out) and the same annual ideal sensible heating and cooling within a relative '
-                'tolerance of 10<sup>−9</sup>. The site kept is the first in zoning order (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT); '
-                f'a reference is never dropped. In the main matrix {duplicates:,} of {tests:,} test sites are duplicates of a listed zoning; each cell '
-                'names them under its table.</p>'),
+                'tolerance of 10<sup>−9</sup>. '
+                + (f'The site kept is the first by the writer\'s order, {esc(drop.main["deduplication"]["kept"])} (D-221). '
+                   if (drop.main.get('deduplication') or {}).get('kept') else
+                   'The site kept is the first in zoning order (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT); a reference is never dropped. ')
+                + f'In the main matrix {duplicates:,} of {tests:,} generated test sites are duplicates of a listed zoning; '
+                'each cell names them under its table.</p>'),
         section(page, 'robust', 'Robust across orientations', robust_method(page, results)),
         section(page, 'cost', 'Cost protocol', cost_body),
         section(page, 'cautions', 'Reading the recommendations', '<ul>'
-                '<li><strong>A recommendation with IWHT or FHT off is often not a heat-transfer effect.</strong> In the heat-transfer sub-study, '
+                '<li><strong>A recommendation with IWHT or FHT off is a tie with a zoning with both on.</strong> In the heat-transfer sub-study, '
                 'where a zoning has no surface between zones of the kind a switch pairs (one zone, or one storey for FHT), its on and off settings '
-                'write the same model; deduplication keeps the first in zoning order, which lists off before on, so the kept and recommended site '
-                'carries <em>off</em> (for example Conditioned merge + Single zone building in the full-service restaurant 5A, the outpatient 3C and '
-                'the supermarket 3C). Elsewhere the off settings are ties with the same zoning with both on (the medium office, the small hotel 3C). '
-                'The count of cells where a recommended zoning has a switch off includes both kinds; the duplicate list under each cell names the '
-                'twins, and the report\'s table by setting shows the effect itself: floors and ceilings between zones matter little, interior walls '
-                'more.</li>'
-                '<li><strong>Coarsest means fewest modelled zones, which can exceed the reference\'s count.</strong> Coarseness is the number of '
-                'EnergyPlus zones before multipliers, so a Perimeter core split of a prototype with few rooms has more zones than the reference '
-                + (f'and can still be the recommendation: {coarser_text}. ' if coarser else '. ')
-                + 'This follows the rule as defined and is reported, not changed; the reference itself is never a test site.</li></ul>'),
+                'write the same model; deduplication keeps the twin whose setting is closest to the reference\'s (both on first, D-221), so the '
+                'off twin is listed as a duplicate. An off zoning left in a recommendation is a model of its own that meets the threshold with as '
+                f'few zones as a zoning with both on ({ht_off} of {ht_with_pick} sub-study cells with a recommendation). The duplicate list under '
+                'each cell names the twins, and the report\'s table by setting shows the effect itself: floors and ceilings between zones matter '
+                'little, interior walls more.</li>'
+                + ('<li><strong>Coarsest means fewest modelled zones, which can exceed the reference\'s count.</strong> Coarseness is the number of '
+                   'EnergyPlus zones before multipliers, so a Perimeter core split of a prototype with few rooms has more zones than the reference '
+                   f'and can still be the recommendation: {coarser_text}. This follows the rule as defined and is reported, not changed; the '
+                   'reference itself is never a test site.</li>' if coarser else
+                   '<li><strong>A recommendation has at most the reference\'s zone count.</strong> Coarseness is the number of EnergyPlus zones '
+                   'before multipliers, so a Perimeter core split of a prototype with few rooms can have more zones than the reference; such a '
+                   'zoning is not recommended, since the study asks how coarse a zoning can be (D-220). A cell where only finer zonings meet the '
+                   'threshold has no recommendation and is flagged <em>finer than the reference</em>'
+                   + (': '+', '.join(f'{prototype_name(e["prototype"])} {e["climate_zone"]} {e["vintage"]} {orientation(e["orientation_degrees"])}'
+                                     for e in flagged)+f' ({len(flagged)} cells)' if flagged else '')
+                   + '. The robust rule takes the same bound.</li>')
+                + '</ul>'),
         section(page, 'limits', 'Limits and caveats', '<ul>'
                 '<li><strong>Ideal loads.</strong> Heating and cooling are ideal-loads sensible demands; HVAC systems, service hot water and latent '
                 'loads are outside the comparison. The errors say how a zoning changes the building\'s thermal demand, not its energy use.</li>'
@@ -972,8 +1100,11 @@ def method_page(site, drop, urls):
                 '90.1 unified construction set and one TMY3 weather file per climate zone; no stochastic schedules, no holidays, no infiltration axis.</li>'
                 '<li><strong>Coverage.</strong> The vintages are 90.1-2007 and 90.1-2019 (atlas release 2.0.0 has no 90.1-2004 folders); climate zone 7 '
                 'is registered as 7A, the atlas label of International Falls. IECC sets are out of scope.</li>'
-                + (f'<li><strong>Zonings that do not apply.</strong> Perimeter core and the single-zone stackers do not support multiplied rooms, and a '
-                   f'perimeter depth needs a wing at least twice as deep, so the {", ".join(fewer)} cells list fewer zonings.</li>' if fewer else '')
+                + (f'<li><strong>Zonings that are not generated.</strong> Perimeter core and the single-zone stackers do not support multiplied rooms, '
+                   'and a perimeter depth needs a wing at least twice as deep, so the generator refuses those zonings: '
+                   + (f'{refused_count:,} in the main matrix ('+'; '.join(f'{esc(reason)}: {", ".join(sorted(names))}' for reason, names in sorted(refused_main.items()))
+                      + '), each listed under its cell as not generated, not as a failed run.' if refused_count else
+                      f'the {", ".join(fewer)} cells list fewer zonings.')+'</li>' if fewer or refused_count else '')
                 + (f'<li><strong>Runs that did not succeed: not applicable in their cells (D-201).</strong> In the heat-transfer sub-study {len(ht_failed)} '
                    f'zonings of the {", ".join(ht_failed_names)}{ht_failed_note} did not complete: EnergyPlus stops in warm-up with an inside surface '
                    'temperature far out of bounds in the unconditioned elevator core (the source\'s elevator load, 32 kW in 15 m², all of it a gain to '
@@ -982,7 +1113,13 @@ def method_page(site, drop, urls):
                    'around an isolated high-gain unconditioned zone, not of the zonings; the program\'s load and the switch are written as given, '
                    'and no BEMGen change was made. Such zonings are not applicable in those cells: each is listed with its zoning as not applicable '
                    'and never recommended, and the cell\'s recommendation comes from the zonings that ran.</li>' if ht_failed else '')
-                + f'<li><strong>Main matrix runs.</strong> {failed_main} of {tests:,} test sites did not succeed.</li>'
+                + f'<li><strong>Main matrix runs.</strong> {failed_main} of {tests:,} generated test sites did not succeed.</li>'
+                + (f'<li><strong>Loads not judged and the threshold\'s sensitivity.</strong> A load whose reference is below '
+                   f'{threshold.get("min_reference_kwh_m2", "")} kWh/m² is not judged: '
+                   + '; '.join(f'{words(load).lower()} in {row.get("unjudged_cells")} of {row.get("cells")} cells' for load, row in judged_loads.items())
+                   + '. With the three error limits scaled (area limit and judging floor unchanged), the cells with a recommendation are '
+                   + ', '.join(f'{r.get("cells_with_recommendation")} at ×{r.get("factor"):g}' for r in sensitivity.get('rows', []))
+                   + ' (D-223).</li>' if judged_loads and sensitivity else '')
                 + ('<li><strong>Cost precision and scope.</strong> The timing gate was not met, so costs are medians (the cost protocol above); the '
                    + ', '.join(prototype_name(p) for p in timing.get('untimed_prototypes', []))
                    + ' were not timed; costs are measured in '
@@ -1043,11 +1180,12 @@ def write_zoning(site, folder=DROP):
     if drop.ht:
         urls['ht'] = URL+'heat-transfer/'
     results = robust_results(drop.main['entries']) if paired(drop.main['entries']) else {}
+    drop.translate = id_translation(getattr(site, 'release', None), drop.provenance.get('atlas_inputs', {}).get('release'))
     by_id = {e['id']: e for e in drop.main['entries']}
     for program, ids in drop.main['by_program'].items():
         prototypes = sorted({i.split('|')[0] for i in ids})
         own = {pair_key(by_id[i]) for i in ids if i in by_id}
-        site.zoning_of[program] = [(program_fact(prototype_name(p), {k: r for k, r in results.items() if k in own and k[0] == p}),
+        site.zoning_of[drop.translate.get(program, program)] = [(program_fact(prototype_name(p), {k: r for k, r in results.items() if k in own and k[0] == p}),
                                     urls[p]+('#section-robust' if results else '')) for p in prototypes if p in urls]
     for prototype in drop.prototypes():
         prototype_page(site, drop, prototype, urls[prototype])
@@ -1059,6 +1197,7 @@ def write_zoning(site, folder=DROP):
              **({'heat_transfer': urls['ht']} if 'ht' in urls else {})}
     return {'drop': drop.provenance.get('drop'), 'pages': pages, 'cells': len(drop.main['entries']),
             'cells_with_recommendation': sum(1 for e in drop.main['entries'] if e['recommended']),
+            'cells_finer_than_reference': sum(1 for e in drop.main['entries'] if finer(e)),
             'timed_cells': sum(1 for e in drop.main['entries'] if timed(e)),
             'cell_pairs': len(results), 'robust_pairs': sum(1 for r in results.values() if r['status'] == 'robust'),
             'ht_cells': len(drop.ht['entries']) if drop.ht else 0}
