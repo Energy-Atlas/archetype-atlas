@@ -7,9 +7,10 @@ wheel bundles, or a release on disk named by `ATLAS_RELEASES` or `--release-dir`
 Generator 4.1.0 (ADR 0055, ADR 0056) validates each generation.json against its
 schema when it reads it, names the IECC editions and the detailed offices in its
 sampling tables (`programmes.SAMPLING`, `TEMPLATES`) and reads a known null schedule
-parameter as no slot; requests and bundles are 4.0.0's."""
+parameter as no slot; requests and bundles are 4.0.0's. 4.1.1 is 4.1.0's code with the
+generator view of atlas release 2.4.0 in its wheel (ADR 0062)."""
 
-__version__ = "4.1.0"
+__version__ = "4.1.1"
 REQUEST_SCHEMA_VERSION = "4.0.0"   # the request and bundle contract (ADR 0051 section 4)
 
 from .generator import generate  # noqa: E402  (generator reads __version__)

@@ -1,7 +1,8 @@
 """Build the release assets with their checksums: the generator wheel and sdist, and the data archive (ADR 0051 section 6).
 
 python -m scripts.build_release_assets --wheel [--check-install]   # build/release/atlas-schedules-v<version>/: wheel, sdist, SHA256SUMS.txt
-python -m scripts.build_release_assets --data                      # build/release/v<release>/: atlas-release-<release>.zip, SHA256SUMS.txt
+python -m scripts.build_release_assets --data                      # build/release/v<release>/: atlas-release-<release>.zip, the manifest
+                                                                   # and ID map, SHA256SUMS.txt
 
 - The wheel and sdist come from `python -m build` (setuptools, pinned in requirements-dev.txt), each
   built from the tree, after `scripts.build_generator_view` wrote the generator view the wheel bundles,
@@ -9,6 +10,8 @@ python -m scripts.build_release_assets --data                      # build/relea
   no owner), so a rebuild of a commit gives the same bytes.
 - The data archive holds the release folder and its base folders as they sit in data/atlas-releases
   (`v2.0.0/`, `v2.1.0/`, `v2.2.0/`), entries sorted with fixed times, after `scripts.atlas_delta --verify`.
+  Beside it, from release 2.4.0 (ADR 0062), the release's `manifest.json` as `atlas-release-<release>.manifest.json`
+  and its own `id-map-<release>.json` where IDs move, byte for byte, so a consumer reads both without the archive.
 - `SHA256SUMS.txt` lists the assets of its folder in `sha256sum -c` form.
 `--check-install` makes a venv, installs the wheel alone (its dependencies from the index), and runs the
 quick-start request and the sampled catalogue smoke from outside the source tree, first against the
@@ -123,7 +126,19 @@ def data(release=atlas_delta.RELEASE):
                 info.external_attr = 0o644 << 16
                 with open(long(path), 'rb') as handle:
                     out.writestr(info, handle.read(), compresslevel=9)
+    for name, published in published_files(release).items():
+        (folder/published).write_bytes((atlas_delta.folder_of(release)/name).read_bytes())
     return folder, sums(folder)
+
+
+def published_files(release):
+    """{release file: asset name} published beside the archive (ADR 0062): the manifest and the release's ID map."""
+    if tuple(int(x) for x in release.split('.')) < (2, 4, 0):
+        return {}
+    out = {'manifest.json': f'atlas-release-{release}.manifest.json'}
+    if (atlas_delta.folder_of(release)/f'id-map-{release}.json').is_file():
+        out[f'id-map-{release}.json'] = f'id-map-{release}.json'
+    return out
 
 
 def check_install(built, archive=None):

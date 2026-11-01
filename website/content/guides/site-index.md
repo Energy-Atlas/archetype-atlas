@@ -34,11 +34,11 @@ store files you need. Release {{ release }} is shown.
 
   ```json
   "compositions": {
-    "90-1-2013.primary-school.department.food-service-mixed.482be9": {
+    "90-1-2013.primary-school.department.food-service-mixed.9e838f": {
       "mode": "department",
       "members": [
-        {"program_id": "90-1-2013.primary-school.source.cafeteria.4da2f7", "represented_area_m2": 315.0, "weight": 0.6521739130434783},
-        {"program_id": "90-1-2013.primary-school.source.kitchen.c1d1dd", "represented_area_m2": 168.0, "weight": 0.34782608695652173}
+        {"program_id": "90-1-2013.primary-school.source.cafeteria.38a3c1", "represented_area_m2": 315.0, "weight": 0.6521739130434783},
+        {"program_id": "90-1-2013.primary-school.source.kitchen.7323bb", "represented_area_m2": 168.0, "weight": 0.34782608695652173}
       ]
     }
   }

@@ -15,7 +15,32 @@ are recorded under `docs/` and `sources/`; the catalogue site's
 [coverage page](https://energy-atlas.github.io/archetype-atlas/coverage/) counts what the
 current release covers, generated from it.
 
-## Release 2.3.0
+## Release 2.4.0
+
+**Atlas release 2.4.0** (`data/atlas-releases/v2.4.0`, status `released`) is a delta on 2.3.0
+([ADR 0062](docs/adr/0062-release-2-4-0.md),
+[release notes](docs/release-notes-atlas-v2.4.0.md)). It carries the PNNL prototype corrections of
+[ADR 0060](docs/adr/0060-release-2-4-0-pnnl-prototype-corrections.md):
+- `lighting_controls.unoccupied_lighting_cap` on every known lighting-controls block: PNNL's
+  90.1-2019 per-zone EMS rule (occupant count 0 and lighting at least 0.02 W/ft², lights set to
+  0.02 W/ft²) on 19 programs, and an explicit null with its reason on the 1,875 others;
+- the PNNL lighting power of the 11 90.1 whole-building office programs (90.1-2007, 2013, 2019);
+  the other PNNL against openstudio-standards differences are listed for the owner in
+  [`docs/reviews/lighting-power-pnnl-vs-90-1.md`](docs/reviews/lighting-power-pnnl-vs-90-1.md);
+- the PNNL 90.1 elevators and kitchen reach-ins as 84 building services of 36 folders;
+- the ID moves that follow (2,301 programs, no construction set), mapped in `id-map-2.4.0.json`.
+
+Its exports follow Program JSON 6.1.0 ([ADR 0061](docs/adr/0061-program-json-6-1-0-unoccupied-lighting-cap.md));
+the construction and building-services contracts are 2.3.0's, naming `atlas-release-2.4.0`.
+`atlas-schedules` 4.1.1 bundles it. The `v2.4.0` GitHub release carries `atlas-release-2.4.0.zip`
+(the `v2.0.0/` to `v2.4.0/` folders), `atlas-release-2.4.0.manifest.json`, `id-map-2.4.0.json` and
+`SHA256SUMS.txt`.
+
+```console
+python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
+python -m scripts.atlas_delta --check                     # rebuild 2.4.0 from its inputs; every block assembles
+python -m scripts.atlas_exports --program ID --version filled    # exports 2.4.0 by default
+```
 
 **Atlas release 2.3.0** (`data/atlas-releases/v2.3.0`, status `released`) is a delta on 2.2.0
 ([ADR 0059](docs/adr/0059-release-2-3-0.md),
@@ -36,9 +61,7 @@ source-model constructions 2.0.0 and building services 1.0.1
 (the `v2.0.0/` to `v2.3.0/` folders) and `SHA256SUMS.txt`.
 
 ```console
-python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
-python -m scripts.atlas_delta --check                     # rebuild 2.3.0 from its inputs; every block assembles
-python -m scripts.atlas_exports --program ID --version filled    # exports 2.3.0 by default
+python -m scripts.atlas_delta --check --release 2.3.0     # rebuild 2.3.0 from its inputs; every block assembles
 ```
 
 **Atlas release 2.2.0** (`data/atlas-releases/v2.2.0`, status `released`) is a delta on
@@ -122,7 +145,7 @@ load target bound to its generated shape. It is a readable port of ComStock /
 openstudio-standards 0.8.6 hours-of-operation sampling and of OpenStudio-HPXML's
 ResStock occupant model ([ADR 0035](docs/adr/0035-readable-generator-restructure.md)).
 
-Generator 4.1.0 assembles its recipes from an atlas data release
+Generator 4.1.1 assembles its recipes from an atlas data release
 ([ADR 0051](docs/adr/0051-generation-parameters-in-the-release.md)): requests name
 programs by release ID with a `values` view. Install it as the `atlas-schedules` package
 from the wheel attached to its GitHub release
@@ -130,16 +153,17 @@ from the wheel attached to its GitHub release
 jsonschema; not on PyPI), and verify the download:
 
 ```console
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.0/atlas_schedules-4.1.0-py3-none-any.whl
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.0/SHA256SUMS.txt
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.1/atlas_schedules-4.1.1-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.1/SHA256SUMS.txt
 sha256sum -c SHA256SUMS.txt --ignore-missing
-pip install atlas_schedules-4.1.0-py3-none-any.whl
+pip install atlas_schedules-4.1.1-py3-none-any.whl
 atlas-schedules --version                          # the generator and the release it reads
 atlas-schedules request.json -o bundle.json
 atlas-schedules translate old-request.json         # a 3.0.0 request's definition IDs as release IDs
 ```
 
-The wheel bundles the generator view of release 2.3.0; `ATLAS_RELEASES` or
+The wheel bundles the generator view of release 2.4.0 (4.1.1 is 4.1.0's code with that view,
+[ADR 0062](docs/adr/0062-release-2-4-0.md)); `ATLAS_RELEASES` or
 `--release-dir` reads a release on disk instead. From a checkout, `python -m pip
 install -r requirements.txt` and `python -m atlas_schedules request.json` run the
 same code against `data/atlas-releases`; `python -m scripts.build_generator_view`

@@ -1,0 +1,34 @@
+{
+ "configurations":{
+  "quick_service_restaurant__iecc_2015__source":{
+   "building_type":"quick_service_restaurant",
+   "invert_rule_days":false,
+   "people":[["iecc-2015.quick-service-restaurant.bldg-occ-sch.9c1a35",87.544443044516],["iecc-2015.quick-service-restaurant.bldg-occ-sch.9c1a35",6.273300000029683]]
+  }
+ },
+ "programs":{
+  "iecc-2015.quick-service-restaurant.source.attic.f86963":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"quick_service_restaurant__iecc_2015__source"}}
+  },
+  "iecc-2015.quick-service-restaurant.source.dining.11cd6f":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"quick_service_restaurant__iecc_2015__source"}}
+  },
+  "iecc-2015.quick-service-restaurant.source.kitchen.a8f44a":{
+   "method":"comstock_hours",
+   "schema_version":"1.0.0",
+   "views":{"source":{"configuration_id":"quick_service_restaurant__iecc_2015__source"}}
+  }
+ },
+ "schema_version":"1.0.0",
+ "services":{
+  "iecc-2015.quick-service-restaurant.main.d2b716":{
+   "configurations":["quick_service_restaurant__iecc_2015__source"],
+   "method":"comstock_hours",
+   "schema_version":"1.0.0"
+  }
+ }
+}
