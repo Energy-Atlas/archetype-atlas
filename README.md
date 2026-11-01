@@ -11,7 +11,9 @@ weather files, stock prevalence, and simulation results belong to other workflow
 Sources: ComStock, ResStock, OpenStudio Standards, DOE Commercial Reference
 Buildings, DOE/PNNL Prototype Building Models (ASHRAE 90.1 and IECC, commercial
 and residential) and the PNNL manufactured-housing models. Source interpretations
-and coverage are recorded under `docs/` and `sources/`.
+are recorded under `docs/` and `sources/`; the catalogue site's
+[coverage page](https://energy-atlas.github.io/archetype-atlas/coverage/) counts what the
+current release covers, generated from it.
 
 ## Release 2.2.0
 

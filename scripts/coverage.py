@@ -1,4 +1,6 @@
-"""Audit named typology suites; type coverage does not imply simulation readiness."""
+"""Audit the named typology suites of the legacy definition pipeline (data/processed); type coverage does not imply
+simulation readiness. The coverage of a data release is the site's generated coverage page (ADR 0057).
+"""
 import argparse
 import collections
 from pathlib import Path
@@ -45,7 +47,7 @@ def coverage_report(data, selection=None):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('path', nargs='?', type=Path, default=ROOT/'data/processed')
-    p.add_argument('--report', type=Path, default=ROOT/'docs/validation/coverage.json')
+    p.add_argument('--report', type=Path, default=ROOT/'build/coverage.json')
     args = p.parse_args()
     report = coverage_report(load_atlas(args.path))
     dump_json(args.report, report)

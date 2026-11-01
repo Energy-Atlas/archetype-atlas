@@ -8,17 +8,22 @@ without code changes. Fillings keep their place on the field they fill and are
 marked so the version switch can hide or highlight them. Schedules render their
 rules and day profiles, or an annual series as monthly and typical-day plots.
 """
+import functools
 import html
 import json
 import posixpath
 import re
 from urllib.parse import quote
 
+from scripts.common import ROOT
+
 ZONE = re.compile(r'^([0-8])(?:-?([A-Ca-c]))?(?![0-9])')
 CLIMATE_KEY = re.compile(r'^[0-8][A-C]?$')
 MONTHS = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
 MONTH_DAYS = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 WIDE = 12
+REPOSITORY = 'https://github.com/Energy-Atlas/archetype-atlas/blob/main/'
+ADR = re.compile(r'\bADRs? \d{4}(?:(?:, | and )\d{4})*')
 
 
 def esc(value):
@@ -31,6 +36,29 @@ def zone(label):
     return match[1]+(match[2] or '').upper() if match else None
 
 
+@functools.cache
+def adr_files():
+    """{ADR number: its path in the repository}; the site digest covers these names (suite_site.inputs_digest)."""
+    return {path.name[:4]: 'docs/adr/'+path.name for path in sorted((ROOT/'docs/adr').glob('[0-9][0-9][0-9][0-9]-*.md'))}
+
+
+def prose(text):
+    """Escaped text in which every `ADR NNNN` links to the decision record in the repository."""
+    def link(number):
+        path = adr_files().get(number)
+        return f'<a href="{esc(REPOSITORY+path)}">{number}</a>' if path else number
+
+    def replace(match):
+        numbers = re.split(r'(, | and )', match[0].split(' ', 1)[1])
+        return match[0].split(' ', 1)[0]+' '+''.join(part if part in (', ', ' and ') else link(part) for part in numbers)
+    return ADR.sub(replace, esc(text))
+
+
+def reason_text(reason):
+    """An exporter's reason without the record ID (and context key) it starts with."""
+    return re.sub(r'^[A-Za-z0-9][A-Za-z0-9._:-]{5,}(?: [A-Za-z0-9._-]+)?: ', '', reason or '')
+
+
 def anchor(identifier):
     return re.sub(r'[^A-Za-z0-9._:-]', '-', identifier)
 
@@ -38,9 +66,10 @@ def anchor(identifier):
 class Links:
     """Where every published object lives: a page (with an anchor) or the viewer only."""
 
-    def __init__(self):
+    def __init__(self, release=None):
         self.pages = {}
         self.viewer = set()
+        self.release = release
 
     def place(self, identifier, url):
         self.pages.setdefault(identifier, url)
@@ -182,16 +211,25 @@ def render_dict(value, page, omit=()):
 
 # Plots: inline SVG, readable without JavaScript and coloured by the page theme.
 
-def plot(values, labels, step=True, width=480, height=120):
-    """A step or bar plot of a short series; nulls leave gaps."""
+def short(value):
+    """A short axis label; the exact values are in the list beside the plot."""
+    return f'{value:.4g}'
+
+
+def plot(values, labels, step=True, width=480, height=130, unit=None, x_title='hour'):
+    """A step or bar plot of a short series; nulls leave gaps. `labels` are spread over the series (24 hour labels
+    over 96 quarter-hour values). The axes carry their titles (the hour and the unit) and the minimum and maximum. A
+    series of one value is a constant and is said so instead of plotted."""
     known = [v for v in values if isinstance(v, (int, float))]
     if not known:
         return '<p class="ea-note">No known values.</p>'
+    if len(values) == 1:
+        return f'<p class="ea-constant">Constant {esc(json.dumps(values[0]))}{" "+esc(unit) if unit else ""} all day.</p>'
     low, high = min(0, min(known)), max(known)
     span = (high-low) or 1
-    pad, n = 4, len(values)
-    x = lambda i: pad+(width-2*pad)*i/n
-    y = lambda v: pad+(height-2*pad)*(1-(v-low)/span)
+    pad, top, left, n = 4, 14, 40, len(values)
+    x = lambda i: left+(width-left-pad)*i/n
+    y = lambda v: top+(height-top-pad)*(1-(v-low)/span)
     paths, current = [], []
     for i, v in enumerate(values):
         if isinstance(v, (int, float)):
@@ -202,11 +240,16 @@ def plot(values, labels, step=True, width=480, height=120):
     if current:
         paths.append(current)
     lines = ''.join(f'<polyline points="{" ".join(p)}"/>' for p in paths)
-    ticks = ''.join(f'<text x="{x(i+0.5):.1f}" y="{height+12}">{esc(label)}</text>' for i, label in enumerate(labels) if label)
-    title = f'{len(values)} values from {json.dumps(min(known))} to {json.dumps(high)}'
-    return (f'<svg class="ea-plot" viewBox="0 -2 {width} {height+16}" role="img" aria-label="{esc(title)}">'
-            f'<title>{esc(title)}</title><line x1="{pad}" x2="{width-pad}" y1="{y(low):.1f}" y2="{y(low):.1f}" class="ea-axis"/>'
-            f'<text x="0" y="{pad+8}" class="ea-scale">{esc(json.dumps(high))}</text>{lines}{ticks}</svg>')
+    per = n/len(labels) if labels else 1
+    ticks = ''.join(f'<text x="{x((i+0.5)*per):.1f}" y="{height+12}">{esc(text)}</text>' for i, text in enumerate(labels) if text)
+    title = f'{n} values from {json.dumps(min(known))} to {json.dumps(max(known))}'+(f' {unit}' if unit else '')
+    axes = (f'<text x="0" y="{top+4}" class="ea-scale">{esc(short(high))}</text>'
+            f'<text x="0" y="{y(low):.1f}" class="ea-scale">{esc(short(low))}</text>'
+            + (f'<text x="0" y="9" class="ea-scale ea-axis-title">{esc(unit)}</text>' if unit else '')
+            + f'<text x="{(left+width)/2:.0f}" y="{height+25}" class="ea-axis-title">{esc(x_title)}</text>')
+    return (f'<svg class="ea-plot" viewBox="0 0 {width} {height+28}" role="img" aria-label="{esc(title)}">'
+            f'<title>{esc(title)}</title><line x1="{left}" x2="{width-pad}" y1="{y(low):.1f}" y2="{y(low):.1f}" class="ea-axis"/>'
+            f'{axes}{lines}{ticks}</svg>')
 
 
 HOURS = [str(h) if h % 3 == 0 else '' for h in range(24)]
@@ -236,21 +279,40 @@ def rounded(values):
     return [None if v is None else float(f'{v:.6g}') for v in values]
 
 
+def inline_days(record):
+    """An export's schedule (Program JSON: rules with their `values` inline) as a stored schedule: rules naming day
+    profiles (`#1`, `#2`, ... in first-use order; the `#` marks a profile without a release ID) and the profiles."""
+    rules, days, ids = [], {}, {}
+    for rule in record.get('rules', []):
+        if 'values' not in rule:
+            rules.append(rule)
+            continue
+        key = json.dumps(rule['values'])
+        if key not in ids:
+            ids[key] = f'#{len(ids)+1}'
+            days[ids[key]] = rule['values']
+        rules.append({**{k: v for k, v in rule.items() if k != 'values'}, 'day': ids[key]})
+    return {**{k: v for k, v in record.items() if k != 'rules'}, 'rules': rules, 'days': days}
+
+
 def schedule(record, page, descriptor=None):
-    """A schedule: rule table and day profiles, or an annual series summary."""
+    """A schedule: rule table and day profiles, or an annual series summary. A schedule in export form (rules with
+    inline values) renders the same way."""
+    if any('values' in rule for rule in record.get('rules', [])):
+        record = inline_days(record)
     sid = record['id']
     unit = record.get('units') or record.get('unit') or ''
     meta = {k: v for k, v in record.items() if k not in ('id', 'rules', 'days') and not (isinstance(v, list) and len(v) > 48)}
-    parts = [f'<section class="ea-schedule"{page.claim(sid)}><h3>{esc(record.get("source_name") or sid)}</h3>',
+    parts = [f'<section class="ea-schedule"{page.claim(sid)}><h3>{esc(record.get("source_name") or record.get("name") or sid)}</h3>',
              f'<p><code>{esc(sid)}</code></p>', json_buttons([('Schedule JSON', sid, descriptor)], page) if descriptor else '',
              render_dict(meta, page)]
     series = next((v for v in record.values() if isinstance(v, list) and len(v) >= 8760), None)
     if series is not None:
         months, hours = annual_summary(series)
-        parts.append(f'<h4>Monthly mean ({esc(unit)})</h4>'+plot(months, MONTHS, step=False)+
+        parts.append(f'<h4>Monthly mean ({esc(unit)})</h4>'+plot(months, MONTHS, step=False, unit=unit, x_title='month')+
                      '<div class="ea-table"><table><thead><tr>'+''.join(f'<th>{m}</th>' for m in MONTHS)+
                      '</tr></thead><tbody><tr>'+''.join(f'<td>{scalar(v, page)}</td>' for v in rounded(months))+'</tr></tbody></table></div>')
-        parts.append(f'<h4>Typical day: mean of each hour ({esc(unit)})</h4>'+plot(hours, HOURS)+day_values(rounded(hours)))
+        parts.append(f'<h4>Typical day: mean of each hour ({esc(unit)})</h4>'+plot(hours, HOURS, unit=unit)+day_values(rounded(hours)))
         parts.append(f'<p class="ea-note">{len(series):,} hourly values; the complete series is in the JSON.</p>')
     else:
         days, order = record.get('days', {}), []
@@ -263,8 +325,9 @@ def schedule(record, page, descriptor=None):
         if rules:
             parts.append('<h4>Rules, in source order</h4>'+render_list(rules, page))
         for day in order:
-            parts.append(f'<div class="ea-day"><h4>{label[day]} <code>{esc(day)}</code> ({esc(unit)})</h4>'
-                         f'{plot(days[day], HOURS)}{day_values(days[day])}</div>')
+            code = '' if day.startswith('#') else f' <code>{esc(day)}</code>'
+            parts.append(f'<div class="ea-day"><h4>{label[day]}{code} ({esc(unit)})</h4>'
+                         f'{plot(days[day], HOURS, unit=unit)}{day_values(days[day])}</div>')
     parts.append('</section>')
     return ''.join(parts)
 
@@ -274,16 +337,19 @@ def evidence(row, page):
 
 
 def json_buttons(entries, page, notices=()):
-    """Copy and download controls for stored documents: (label, file stem, descriptor or None, reason)."""
+    """Copy and download controls for stored documents: (label, file stem, descriptor or None, reason). Each control
+    names the release and the SHA-256 of the JSON file Download saves (the canonical bytes, `json_sha256`)."""
     out = []
     for entry in entries:
         label, stem, descriptor = entry[:3]
         if descriptor is None:
-            out.append(f'<span class="ea-json ea-json--absent">{esc(label)}: <em>{esc(entry[3] if len(entry) > 3 else "not exported")}</em></span>')
+            out.append(f'<span class="ea-json ea-json--absent">{esc(label)}: <em>{prose(reason_text(entry[3]) if len(entry) > 3 and entry[3] else "not exported")}</em></span>')
             continue
         data = esc(json.dumps({**descriptor, 'href': page.rel(descriptor['href'])}, sort_keys=True, separators=(',', ':')))
+        release = f'release {esc(page.links.release)} · ' if page.links.release else ''
         out.append(f'<span class="ea-json" data-json="{data}" data-file="{esc(stem)}.json">'
                    f'<span class="ea-json__label">{esc(label)}</span> '
                    f'<button type="button" class="md-button ea-copy" hidden>Copy</button> '
-                   f'<a class="md-button" href="{esc(page.rel(descriptor["href"]))}" download="{esc(stem)}.json.gz">Download</a></span>')
+                   f'<a class="md-button" href="{esc(page.rel(descriptor["href"]))}" download="{esc(stem)}.json.gz">Download</a>'
+                   f'<span class="ea-json__meta">{release}SHA-256 <code>{esc(descriptor["json_sha256"])}</code></span></span>')
     return '<div class="ea-exports">'+''.join(out)+''.join(notices)+'</div>'

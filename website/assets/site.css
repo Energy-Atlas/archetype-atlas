@@ -2052,8 +2052,11 @@ body:has(> .definition-document) {
 .ea-suite .ea-contents li { margin: 0; }
 .ea-suite .ea-filling { background: var(--ea-accent-tint); border-left: 3px solid var(--ea-accent); }
 .ea-suite div.ea-filling { padding: 0.3rem 0.5rem; }
-html[data-ea-version="source"] .ea-suite .ea-filling { display: none; }
+/* ADR 0057: a program page shows both exports; ?version=source hides what the filled export changes, ?version=filled the source blocks it replaces. */
+html[data-ea-version="source"] .ea-suite [data-view="filled"] { display: none; }
+html[data-ea-version="filled"] .ea-suite [data-view="source"] { display: none; }
 html[data-ea-version="filled"] .ea-suite .ea-filling { outline: 1px solid var(--ea-accent); }
+.ea-suite .ea-section > h2 code { font-size: 0.7em; font-weight: 400; }
 .ea-suite .ea-switch a[aria-current="true"] { font-weight: 700; text-decoration: underline; }
 .ea-suite .ea-notice { border-left: 3px solid var(--ea-warning); padding: 0.4rem 0.6rem; background: var(--ea-bg-surface-1); }
 .ea-suite .ea-exports { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: 0.6rem 0; }
@@ -2061,6 +2064,8 @@ html[data-ea-version="filled"] .ea-suite .ea-filling { outline: 1px solid var(--
 .ea-suite .ea-json .md-button { font-size: 0.64rem; padding: 0.15rem 0.6rem; margin: 0; }
 .ea-suite .ea-json textarea { width: 100%; min-height: 8rem; font-family: var(--md-code-font-family); }
 .ea-suite .ea-json--absent { color: var(--ea-text-muted); }
+.ea-suite .ea-json__meta { flex-basis: 100%; font-size: 0.6rem; color: var(--ea-text-muted); }
+.ea-suite .ea-json__meta code { font-size: inherit; overflow-wrap: anywhere; word-break: break-all; }
 .ea-suite .ea-dim { opacity: 0.35; }
 .ea-suite .ea-filters { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; margin: 0.6rem 0; }
 .ea-suite .ea-plot { width: 100%; max-width: 32rem; height: auto; display: block; color: var(--ea-accent); }
@@ -2068,6 +2073,8 @@ html[data-ea-version="filled"] .ea-suite .ea-filling { outline: 1px solid var(--
 .ea-suite .ea-plot .ea-axis { stroke: var(--ea-plot-zeroline); }
 .ea-suite .ea-plot text { font-size: 9px; fill: var(--ea-text-muted); text-anchor: middle; }
 .ea-suite .ea-plot .ea-scale { text-anchor: start; }
+.ea-suite .ea-plot .ea-axis-title { font-style: italic; }
+.ea-suite .ea-constant { font-family: var(--md-code-font-family); }
 .ea-suite .ea-schedule, .ea-suite .ea-evidence, .ea-suite .ea-row, .ea-suite .ea-library-row, .ea-suite .ea-context { border-top: 1px dashed var(--ea-border-subtle); padding-top: 0.4rem; margin-top: 0.8rem; }
 .ea-suite .ea-note { color: var(--ea-text-muted); }
 /* Zoning recommendation pages (ADR 0050): the recommended rows, unjudged loads and the runner's flags. */

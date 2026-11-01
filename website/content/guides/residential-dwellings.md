@@ -22,7 +22,7 @@ mixes: rooms, zones and systems are the consumer's.
 
 | Folder | Family | What it holds |
 | --- | --- | --- |
-| `residential/resstock-sdr/<building-type>/` | ResStock SDR source fixture | 41 sampled dwellings, one program each |
+| `residential/resstock-sdr/<building-type>/` | ResStock SDR source fixture | 41 sampled dwellings, one program each, labelled on the site by climate, vintage, floor-area bin and source building |
 | `residential/iecc-<edition>/{single-family,multifamily}/` | IECC residential prototypes | see the IECC residential guide |
 | `residential/{hud-code,doe-final-rule}/{single-section,multi-section}/` | Manufactured-housing prototypes | see the manufactured-housing guide |
 
@@ -44,10 +44,10 @@ ruleset schedules in `schedules.json`; the ResStock folders keep each dwelling's
 
 ## Exports
 
-Dwellings export as Program JSON 5.3.0:
+Dwellings export as Program JSON {{ schema:program }} (the dwelling blocks are the 5.3.0 minor):
 
 ```
-python -m scripts.atlas_exports --release 1.4.0 --program <dwelling id> --version filled
+python -m scripts.atlas_exports --release {{ release }} --program <dwelling id> --version filled
 ```
 
 The ResStock `source` and `filled` documents equal what the frozen exporters give for

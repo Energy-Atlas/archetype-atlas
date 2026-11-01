@@ -1,5 +1,38 @@
 # Changelog
 
+## Site: pages from the exports, generation settings, coverage, site index schema — 2026-11-01
+
+Stage AT2 of the 2026-10-31 review (issues D1 to D8, C7, the site index part of C1, B1 part 3). No data
+release; the site still shows release 2.2.0.
+
+- **Program pages render the exports** ([ADR 0057](docs/adr/0057-site-pages-from-exports.md)): the source
+  export under the download's keys, a *Filled export* section with every block the filled export changes
+  (resolutions, absences as 0, resolved holiday schedules, per-member loads, water heating, controls, bindings),
+  the release record's fillings and the record values no export carries, a mix's members. `?version=source` and
+  `?version=filled` hide the other export's blocks; a program without a filled export says why without JavaScript.
+- **Generation settings** on every folder page (download, methods, per-view parameters, configurations,
+  services) and as a fact on every program page; the reason a folder has none, by its class in
+  `scripts/generation_coverage.py`.
+- **Coverage page** (`coverage/`) generated from the build; `docs/coverage.md` and
+  `docs/validation/coverage.json` (v0.2.0) are deleted.
+- **Guides** take the release, the schema versions and the generator from the build (`{{ release }}`
+  placeholders); `site_check` fails a guide naming a release the exporter does not read. `geometry.md` and
+  `lighting-controls.md` are published, nine stale sources deleted, and two guides added: generation settings
+  and the site index for software.
+- **Canonical downloads**: Download saves the store's canonical JSON bytes; each control prints the release and
+  their SHA-256 (`json_sha256`, new in every store descriptor); `python -m scripts.site_store FILE` prints the
+  canonical SHA-256 of any JSON file.
+- **Findability and weight**: template descriptions and guide links on the indexes; one spelling of template and
+  building type on every page; ResStock dwelling labels from their context; program and construction pages link
+  each other; search adds end uses, units, generation methods and every climate zone, and indexes the template
+  libraries and the glossary by summary; the largest construction sets load their context fields on demand.
+- **Plots**: constant profiles read as text; axis titles, minimum and maximum; hour labels on any series length.
+- **Site index** ([ADR 0058](docs/adr/0058-site-index-schema-reasons-and-compositions.md)): a Draft 2020-12
+  schema (`schemas/site-manifest.schema.json`, `schema_version` 1.0.0) that `site_check` applies;
+  `generation_reason` beside every null generation; `unified` names the detailed file where one document serves
+  both, and `unified_reason` stands beside a null; `folders[*].compositions` lists every general and department
+  mix's members (`program_id`, `represented_area_m2`, `weight`) for BEMGen's *Mix Programs* picker.
+
 ## Generation for IECC and detailed offices, release-record schemas, schema versioning — 2026-11-01
 
 - **IECC commercial and detailed office generation blocks** ([ADR 0055](docs/adr/0055-generation-for-iecc-and-detailed-offices.md);

@@ -38,7 +38,7 @@ heated basement's lighting. Keep the entries whose conditions hold for your case
 ```python
 from scripts.atlas_exports import Release
 from scripts.prototype_dwellings import document
-release = Release(release='1.4.0')
+release = Release(release='{{ release }}')
 program_id = next(p for p in release.dwellings.program_ids() if p.startswith('iecc-2021.single-family.gas-appliances.'))
 dwelling = document(release.dwellings, program_id, 'source',
                     {'climate': '4A', 'foundation': 'slab', 'heating': 'gasfurnace'})
@@ -60,10 +60,10 @@ One per edition and type, with one context per climate and foundation
 U-factors, windows (U-factor, SHGC), doors, internal mass, window shading control and
 the source infiltration method (AirflowNetwork leakage for single-family, effective
 leakage area per unit for multifamily). Export one context as source model
-constructions 1.0.0:
+constructions {{ schema:source_model_construction }}:
 
 ```
-python -m scripts.atlas_exports --release 1.4.0 --construction <set id> --context 4-a.slab
+python -m scripts.atlas_exports --release {{ release }} --construction <set id> --context 4-a.slab
 ```
 
 ## Not included

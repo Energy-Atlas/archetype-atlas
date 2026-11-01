@@ -9,7 +9,8 @@ One page per program and per construction set, one page per template × building
 type folder and per template library, the `view/?id=` viewer, and one
 content-addressed JSON store (`store/`) for every export. The output is a pure
 function of the release and the scripts; `site-manifest.json` records the release,
-the input digest, every page and export, and the program and folder index BEMGen reads (ADR 0052). A sample (`--sample N`, `sample_folders`)
+the input digest, every page and export, and the program and folder index BEMGen reads (ADR 0052, ADR 0058;
+its schema is `schemas/site-manifest.schema.json`). A sample (`--sample N`, `sample_folders`)
 builds the site-wide pages and at most N folders of every family × template, chosen by
 a fixed rule, and records them in the manifest; like `--only` it cannot be published.
 """
@@ -24,19 +25,25 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from scripts import generation_coverage
 from scripts.common import ROOT
 from scripts.lod_site import write_zoning
-from scripts.site_pages import (construction_page, context_facets, folder_page, glossary_page, library_page, markdown,
-                                program_page)
+from scripts.site_pages import (construction_page, context_facets, coverage_page, folder_page, glossary_page, library_page,
+                                markdown, program_page)
 from scripts.site_release import FAMILIES, RELEASES, SiteRelease, page_slug, space_type
-from scripts.site_render import Links, anchor, esc
+from scripts.site_render import Links, adr_files, anchor, esc, prose, zone
 from scripts.site_store import Store, canonical
 
 VERSIONS = ('source', 'filled')
 REPRESENTATIONS = ('detailed', 'unified')
-GUIDES = ('selection.md', 'schedules.md', 'program-json.md', 'construction-json.md', 'definitions.md',
-          'doe-reference-reconciliation.md', 'construction-only-programs.md', 'iecc-commercial.md',
-          'residential-dwellings.md', 'iecc-residential.md', 'manufactured-housing.md')
+GUIDES = ('selection.md', 'schedules.md', 'program-json.md', 'construction-json.md', 'generation-settings.md',
+          'site-index.md', 'definitions.md', 'geometry.md', 'lighting-controls.md', 'doe-reference-reconciliation.md',
+          'construction-only-programs.md', 'iecc-commercial.md', 'residential-dwellings.md', 'iecc-residential.md',
+          'manufactured-housing.md')
+# Template display lines (ADR 0057).
+CATALOGUE = ROOT/'website/content/templates.json'
+# `{{ release }}`, `{{ schema:program }}` ...: values a guide takes from the release it is built with (ADR 0057).
+PLACEHOLDER = re.compile(r'\{\{ ([a-z_]+)(?::([a-z_]+))? \}\}')
 # Besides the modules the generator imports (`generator_modules`), and the policy and input files they read.
 DIGEST_INPUTS = ('scripts/__init__.py', 'website', 'schemas', 'mkdocs.yml', 'requirements-site.txt',
                  'sources/program-composition-policy.json',
@@ -44,6 +51,8 @@ DIGEST_INPUTS = ('scripts/__init__.py', 'website', 'schemas', 'mkdocs.yml', 'req
                  'data/program-inputs/er-triage-v1.json', 'data/program-inputs/dhw-conversion-v1.json',
                  'data/system-inputs/source-v1.json', 'data/lod-recommendations')
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._:-]{5,}$')
+# The shape of site-manifest.json (schemas/site-manifest.schema.json, ADR 0058).
+SITE_SCHEMA = '1.0.0'
 # Not `library/`: a template library page must never share a path with a building-type folder page.
 LIBRARY = 'template-library'
 
@@ -140,6 +149,7 @@ def inputs_digest(number):
     digest = hashlib.sha256()
     for path in paths:
         digest.update(path.relative_to(ROOT).as_posix().encode()+b'\0'+hashlib.sha256(path.read_bytes()).digest())
+    digest.update(('\0'.join(sorted(adr_files().values()))).encode())  # the ADR links on the pages
     return digest.hexdigest()
 
 
@@ -167,11 +177,14 @@ def referenced(value, pool):
 class Site:
     def __init__(self, release, target):
         self.release, self.target = release, Path(target)
-        self.links = Links()
+        self.links = Links(release.number)
         self.store = Store(target)
         self.schedule_json = {}
         self.urls, self.summaries, self.written = {}, {}, set()
         self.zoning_of = {}  # program ID: [(prototype name, zoning page URL)] (ADR 0050)
+        self.catalogue = json.loads(CATALOGUE.read_text(encoding='utf-8'))
+        self.resolutions = {}  # resolution ID: the evidence rows located at it, for the viewer
+        self.versions = {}  # export kind: the schema versions this build exported, for the guides
 
     def folder_url(self, folder):
         return 'catalogue/'+folder
@@ -205,7 +218,15 @@ class Site:
             for key in rows:
                 if ID.match(key):
                     links.place(key, 'catalogue/glossary/')
+        for folder in release.folders.values():
+            for cid in (folder.generation or {}).get('configurations', {}):
+                links.place(cid, self.folder_url(folder.path))
         links.viewer.update(release.evidence)
+        for eid, row in sorted(release.evidence.items()):
+            locator = row.get('locator') or ''
+            if locator.startswith('resolution/'):
+                self.resolutions.setdefault(locator.split('/', 1)[1], []).append(eid)
+        links.viewer.update(self.resolutions)
 
     def write(self, relative, text):
         if relative in self.written:
@@ -224,6 +245,55 @@ def trail_of(folder):
     family, template = folder.split('/')[:2]
     return [('Catalogue', 'catalogue/'), (FAMILIES[family], f'catalogue/{family}/'), (template, f'catalogue/{family}/{template}/'),
             (folder.split('/')[2], 'catalogue/'+folder)]
+
+
+def template_name(release, folder):
+    """A folder's template as its records name it (`90.1-2013`, `DOE Ref 1980-2004`), one spelling on every page."""
+    names = sorted({release.programs[p][2].get('template') for p in folder.programs} - {None})
+    return names[0] if len(names) == 1 else folder.template
+
+
+def building_type_name(release, folder):
+    """A folder's building type as its records name it (`PrimarySchool`), else its slug."""
+    names = sorted({release.programs[p][2].get('building_type') for p in folder.programs} - {None})
+    return names[0] if len(names) == 1 else folder.building_type
+
+
+def dwelling_label(record):
+    """A ResStock dwelling told apart by its context (ADR 0057): `5A · 1980s · 1500-1999 ft² · building 290025`."""
+    if not record.get('floor_area_bin') and not record.get('vintage'):
+        return None
+    building = (record.get('name') or '').rsplit('_', 1)[-1]
+    parts = [record.get('climate'), record.get('vintage'), f'{record["floor_area_bin"]} ft²' if record.get('floor_area_bin') else None,
+             f'building {building}' if building.isdigit() else None]
+    return ' · '.join(p for p in parts if p)
+
+
+def generation_reason(release, folder):
+    """Why a folder has no generation settings, or None where it has them: the reason of its folder class
+    (scripts.generation_coverage, ADR 0055), or, for a class the generator covers since, that the release
+    predates its blocks."""
+    if folder.generation is not None:
+        return None
+    kind = generation_coverage.folder_class(folder.family, folder.template, building_type_name(release, folder))
+    if kind is None:
+        return (f'Release {release.number} carries no generation blocks for this folder; the generator covers its '
+                'class from ADR 0055 on, and a later data release carries them.')
+    reason = {key: text for key, _, text in generation_coverage.CLASSES}[kind]
+    return reason[0].upper()+reason[1:]+'.'
+
+
+def compositions(release, folder):
+    """Each general and department mix of a folder (ADR 0058): its members' release program IDs, represented areas
+    and weights, in the record's order."""
+    out = {}
+    for pid in sorted(folder.programs):
+        _, mode, record = release.programs[pid]
+        members = (record.get('composition') or {}).get('members')
+        if mode in ('general', 'department') and members:
+            out[pid] = {'mode': mode, 'members': [{'program_id': m['program_id'], 'represented_area_m2': m['represented_area_m2'],
+                                                   'weight': m['weight']} for m in members]}
+    return out
 
 
 def folder_cost(release, folder):
@@ -268,8 +338,11 @@ def generate(target, number=None, jobs=None, only=None, sample=None):
         for results in unordered(pool, _programs, chunks, jobs*2):
             for pid, version, data, reason in results:
                 entry = exports.setdefault(pid, {})
-                descriptor = site.store.put(json.loads(data)) if data else None
-                schema = json.loads(data)['schema_version'] if data else None
+                document = json.loads(data) if data else None
+                descriptor = site.store.put(document) if data else None
+                schema = document['schema_version'] if data else None
+                if document is not None:
+                    site.versions.setdefault(document.get('kind'), set()).add(schema)
                 entry[version] = {'descriptor': descriptor, 'reason': reason, 'schema': schema}
         for pid in program_ids:
             write_program(site, pid, exports[pid], manifest)
@@ -279,14 +352,16 @@ def generate(target, number=None, jobs=None, only=None, sample=None):
         write_folder(site, release.folders[folder], manifest)
     write_libraries(site)
     site.write('catalogue/glossary/index.md', glossary_page(site, 'catalogue/glossary/', release.glossary))
+    site.summaries['catalogue/glossary/'] = summary('Evidence glossary', 'filling rules unresolved reasons interpretations transformations source files')
     write_indexes(site, folders)
     write_viewer(site)
     write_guides(site)
+    site.write('coverage/index.md', coverage_page(site, folders, manifest))
     site.write('search-summaries.json', json.dumps(site.summaries, ensure_ascii=False, sort_keys=True, indent=0))
     counts = {**release.counts(), 'program_pages': len(manifest['programs']), 'construction_pages': len(manifest['construction_sets']),
               'folder_pages': len(folders), 'store_files': len(site.store.files), 'store_bytes': sum(site.store.files.values()),
               'zoning_pages': len(zoning['pages'])}
-    result = {'kind': 'atlas_site', 'release': release.number, 'generated_by': 'python -m scripts.suite_site',
+    result = {'kind': 'atlas_site', 'schema_version': SITE_SCHEMA, 'release': release.number, 'generated_by': 'python -m scripts.suite_site',
               'release_manifest_sha256': hashlib.sha256((RELEASES/f'v{release.number}/manifest.json').read_bytes()).hexdigest(),
               'inputs_sha256': inputs_digest(release.number), 'partial': only is not None or sample is not None,
               **({'sample': {'folders_per_template': sample, 'folders': folders}} if sample is not None else {}),
@@ -299,20 +374,79 @@ def summary(*parts):
     return ' · '.join(str(p) for p in parts if p)
 
 
+def link_to(site, page_url, identifier, text):
+    """A link from a page to the anchor of a published object, or the text where it has no page."""
+    from scripts.site_render import Page
+    target = Page(site.links, page_url).href(identifier)
+    return f'<a href="{esc(target)}">{esc(text)}</a>' if target else esc(text)
+
+
+def generation_fact(site, page_url, folder, pid):
+    """A program's generation settings in one line (ADR 0057): its method and the configuration of each view."""
+    if folder.generation is None:
+        return 'not generated: '+prose(generation_reason(site.release, folder))
+    block = folder.generation.get('programs', {}).get(pid)
+    if block is None:
+        return 'not generated: the folder\'s generation settings hold no block for this program (ADR 0051 section 3)'
+    views = '; '.join(f'{esc(view)}: '+(', '.join(f'{esc(k)} '+(link_to(site, page_url, v, v) if isinstance(v, str) else esc(json.dumps(v)))
+                                                  for k, v in sorted(parameters.items())) or 'no parameters')
+                      for view, parameters in sorted(block.get('views', {}).items()))
+    return f'<code>{esc(block.get("method"))}</code> · {views} · <a href="{esc(link_rel(page_url, "catalogue/"+folder.path))}#section-generation">settings</a>'
+
+
+def link_rel(page_url, target):
+    from scripts.site_render import Page
+    return Page(Links(), page_url).rel(target)
+
+
+def keywords(document):
+    """Search words for a program page beyond its name and ID (ADR 0057): end uses, load types and units."""
+    words = []
+    for load in (document or {}).get('loads') or []:
+        for key in ('end_use', 'type', 'unit'):
+            value = load.get(key)
+            if isinstance(value, str) and value not in words:
+                words.append(value)
+    return ' '.join(w.replace('_', ' ') for w in words)
+
+
 def write_program(site, pid, exports, manifest):
     release = site.release
     folder_path, mode, record = release.programs[pid]
     folder = release.folders[folder_path]
     url = site.urls[pid]
+    for version in VERSIONS:
+        descriptor = exports[version]['descriptor']
+        exports[version]['document'] = site.store.get(descriptor) if descriptor else None
+        for sid in ((exports[version]['document'] or {}).get('schedules') or {}):
+            if sid not in release.schedules:
+                site.links.place(sid, url)  # resolved and water-target schedules exist in the exports only
     schedules = referenced(record, release.schedules)
     evidence_rows = referenced(record, release.evidence)
-    site.write(url+'index.md', program_page(site, pid, url, folder, mode, record, exports, schedules, evidence_rows, trail_of(folder_path)))
-    site.summaries[url] = summary(record.get('name'), pid, record.get('template'), record.get('building_type'), mode,
-                                  record.get('climate'), 'program')
+    facts = [('Template', f'<a href="{esc(link_rel(url, f"catalogue/{folder.family}/{folder.template}/"))}">{esc(record.get("template") or template_name(release, folder))}</a>'),
+             ('Building type', esc(record.get('building_type') or building_type_name(release, folder)))]
+    label = dwelling_label(record)
+    if label:
+        facts.append(('Dwelling', esc(label)))
+    sets = [record['construction_set_id']] if record.get('construction_set_id') in release.sets else folder.sets
+    if sets:
+        facts.append(('Construction sets', ', '.join(link_to(site, url, s, release.sets[s][1].get('name') or s) for s in sets)))
+    facts.append(('Generation', generation_fact(site, url, folder, pid)))
+    members = (record.get('composition') or {}).get('members') or []
+    member_rows = [(link_to(site, url, m['program_id'], release.programs[m['program_id']][2].get('name', m['program_id'])) if m['program_id'] in release.programs else esc(m['program_id']),
+                    esc(json.dumps(m.get('represented_area_m2'))), esc(json.dumps(m.get('weight')))) for m in members]
+    site.write(url+'index.md', program_page(site, pid, url, folder, mode, record, exports, schedules, evidence_rows, trail_of(folder_path),
+                                            facts, member_rows))
+    method = ((folder.generation or {}).get('programs', {}).get(pid) or {}).get('method')
+    site.summaries[url] = summary(record.get('name'), label, pid, record.get('template'), record.get('building_type'), mode,
+                                  record.get('climate'), 'program', keywords(exports['source']['document']),
+                                  f'generation {method}' if method else '')
     manifest['programs'][pid] = {'page': url, **{v: (exports[v]['descriptor'] or {}).get('href') for v in VERSIONS},
                                  **({'filled_reason': exports['filled']['reason']} if exports['filled']['reason'] else {}),
                                  **({'source_reason': exports['source']['reason']} if exports['source']['reason'] else {}),
                                  **program_index(folder_path, mode, record)}
+    for version in VERSIONS:
+        exports[version].pop('document')
 
 
 def program_index(folder, mode, record):
@@ -322,10 +456,13 @@ def program_index(folder, mode, record):
 
 
 def folder_index(site, folder):
-    """A folder's entry in the site index (ADR 0052): its programs and its generation.json in the store, or null."""
+    """A folder's entry in the site index (ADR 0052, ADR 0058): its programs, its generation.json in the store or null
+    with the reason, and the composition of its mixes."""
     generation = site.store.put(folder.generation) if folder.generation is not None else None
+    reason = generation_reason(site.release, folder)
     return {'family': folder.family, 'template': folder.template, 'building_type': folder.building_type,
-            'programs': sorted(folder.programs), 'generation': generation}
+            'programs': sorted(folder.programs), 'generation': generation, **({'generation_reason': reason} if reason else {}),
+            'compositions': compositions(site.release, folder)}
 
 
 def write_construction(site, set_id, results, manifest):
@@ -340,6 +477,8 @@ def write_construction(site, set_id, results, manifest):
         documents.setdefault(key, {})[representation] = (json.loads(data), site.store.put(json.loads(data)))
     contexts, used, entries = [], set(), {}
     for key in record['contexts']:
+        for representation, (document, _) in documents.get(key, {}).items():
+            site.versions.setdefault(document.get('kind'), set()).add(document.get('schema_version'))
         detailed = documents.get(key, {}).get('detailed')
         if detailed is None:
             entries[key] = {'detailed': None, 'reason': failures.get((key, 'detailed'))}
@@ -355,12 +494,21 @@ def write_construction(site, set_id, results, manifest):
         for table in ('assemblies', 'materials'):
             used.update(document.get(table) or {})
         contexts.append((key, context_facets(key, document), {'document': document, 'descriptors': buttons}))
-        entries[key] = {'detailed': descriptor['href'], 'unified': None if same or not unified else unified[1]['href'],
-                        **({'unified_reason': failures[(key, 'unified')]} if (key, 'unified') in failures else {})}
+        # One document serves both representations: `unified` names it too (ADR 0058); no unified one: null and the reason.
+        entries[key] = {'detailed': descriptor['href'], 'unified': unified[1]['href'] if unified else None,
+                        **({'unified_reason': failures.get((key, 'unified'), 'no unified representation')} if not unified else {})}
+    folder = release.folders[folder_path]
     if contexts:
-        site.write(url+'index.md', construction_page(site, set_id, url, release.folders[folder_path], record, contexts, used, trail_of(folder_path)))
-    climates = sorted({c[1].get('climate') for c in contexts if c[1].get('climate')})
-    site.summaries[url] = summary(record.get('name'), set_id, folder_path, 'construction set', ' '.join(climates[:40]))
+        programs = [p for p in folder.programs if release.programs[p][2].get('construction_set_id') == set_id] or folder.programs
+        facts = [('Template', f'<a href="{esc(link_rel(url, f"catalogue/{folder.family}/{folder.template}/"))}">{esc(template_name(release, folder))}</a>'),
+                 ('Building type', esc(building_type_name(release, folder))),
+                 ('Programs', ', '.join(link_to(site, url, p, release.programs[p][2].get('name') or p) for p in programs[:3])
+                  + (f' and {len(programs) - 3} more in the <a href="{esc(link_rel(url, site.folder_url(folder.path)))}#section-programs">folder</a>'
+                     if len(programs) > 3 else ''))]
+        site.write(url+'index.md', construction_page(site, set_id, url, folder, record, contexts, used, trail_of(folder_path), facts))
+    zones = sorted({zone(c[1].get('climate')) or c[1].get('climate') for c in contexts if c[1].get('climate')})
+    site.summaries[url] = summary(record.get('name'), set_id, folder_path, template_name(release, folder), building_type_name(release, folder),
+                                  'construction set', 'zones '+' '.join(zones) if zones else '')
     manifest['construction_sets'][set_id] = {'page': url, 'contexts': entries}
 
 
@@ -371,9 +519,15 @@ def write_folder(site, folder, manifest):
     sets = [(sid, release.sets[sid][1]) for sid in folder.sets]
     schedules = referenced(folder.tables, release.schedules)
     evidence_rows = referenced(folder.tables, release.evidence)
-    site.write(url+'index.md', folder_page(site, folder, url, programs, sets, schedules, evidence_rows, trail_of(folder.path)[:-1]))
-    site.summaries[url] = summary(folder.template, folder.building_type, FAMILIES[folder.family], 'folder')
     manifest['folders'][folder.path] = folder_index(site, folder)
+    names = {'template': template_name(release, folder), 'building_type': building_type_name(release, folder),
+             'description': site.catalogue['templates'].get(f'{folder.family}/{folder.template}', {}).get('description'),
+             'generation_reason': manifest['folders'][folder.path].get('generation_reason'),
+             'generation_descriptor': manifest['folders'][folder.path]['generation'],
+             'labels': {pid: dwelling_label(record) for pid, _, record in programs}}
+    site.write(url+'index.md', folder_page(site, folder, url, programs, sets, schedules, evidence_rows, trail_of(folder.path)[:-1], names))
+    site.summaries[url] = summary(names['template'], names['building_type'], folder.template, folder.building_type, FAMILIES[folder.family], 'folder',
+                                  'generation settings' if folder.generation else '')
 
 
 def write_libraries(site):
@@ -385,6 +539,8 @@ def write_libraries(site):
         family, template = prefix.strip('/').split('/')
         trail = [('Catalogue', 'catalogue/'), (FAMILIES[family], f'catalogue/{family}/'), (template, f'catalogue/{prefix}')]
         site.write(url+'index.md', library_page(site, prefix, url, sorted(rows), trail))
+        tables = sorted({row[0] for _, row in rows})
+        site.summaries[url] = summary(f'{template} template library', ' '.join(tables), f'{len(rows):,} rows', family)
 
 
 def table_html(rows, columns):
@@ -404,18 +560,23 @@ def write_indexes(site, folders):
     for family, templates in sorted(tree.items()):
         rows = []
         for template, items in sorted(templates.items()):
-            rows.append((f'<a href="{template}/">{esc(template)}</a>', str(len(items)), str(sum(len(f.programs) for f in items)),
-                         str(sum(len(f.sets) for f in items))))
-            type_rows = [(f'<a href="{f.building_type}/">{esc(f.building_type)}</a>', str(len(f.programs)), str(len(f.sets)),
-                          str(sum(len(f.tables.get(t, {})) for t in ('services', 'systems'))))
+            entry = site.catalogue['templates'].get(f'{family}/{template}', {})
+            name = template_name(release, items[0])
+            guide = f' <a href="../../guides/{entry["guide"]}/">Guide</a>' if entry.get('guide') else ''
+            rows.append((f'<a href="{template}/">{esc(name)}</a><br><code>{esc(template)}</code>', esc(entry.get('description') or '')+guide,
+                         str(len(items)), str(sum(len(f.programs) for f in items)), str(sum(len(f.sets) for f in items))))
+            type_rows = [(f'<a href="{f.building_type}/">{esc(building_type_name(release, f))}</a><br><code>{esc(f.building_type)}</code>',
+                          str(len(f.programs)), str(len(f.sets)), str(sum(len(f.tables.get(t, {})) for t in ('services', 'systems'))),
+                          'yes' if f.generation is not None else 'no')
                          for f in items]
             library = (f'<p><a href="{LIBRARY}/">Template library</a>: assemblies, materials and performance rules.</p>'
                        if f'{family}/{template}/' in libraries else '')
+            about = (f'<p>{esc(entry.get("description") or "")}'+(f' <a href="../../../guides/{entry["guide"]}/">Guide</a>.' if entry.get('guide') else '')+'</p>')
             site.write(f'catalogue/{family}/{template}/index.md', markdown(
-                f'{FAMILIES[family]} · {template}', f'<nav class="ea-crumbs"><a href="../../">Catalogue</a> / <a href="../">{esc(FAMILIES[family])}</a></nav>'
-                + library + table_html(type_rows, ('Building type', 'Programs', 'Construction sets', 'Services and systems'))))
+                f'{FAMILIES[family]} · {name}', f'<nav class="ea-crumbs"><a href="../../">Catalogue</a> / <a href="../">{esc(FAMILIES[family])}</a></nav>'
+                + about + library + table_html(type_rows, ('Building type', 'Programs', 'Construction sets', 'Services and systems', 'Generation settings'))))
         site.write(f'catalogue/{family}/index.md', markdown(FAMILIES[family], '<nav class="ea-crumbs"><a href="../">Catalogue</a></nav>'
-                                                            + table_html(rows, ('Template', 'Building types', 'Programs', 'Construction sets'))))
+                                                            + table_html(rows, ('Template', 'Source', 'Building types', 'Programs', 'Construction sets'))))
         family_rows.append((f'<a href="{family}/">{esc(FAMILIES[family])}</a>', str(len(templates)),
                             str(sum(len(f.programs) for items in templates.values() for f in items)),
                             str(sum(len(f.sets) for items in templates.values() for f in items))))
@@ -425,7 +586,7 @@ def write_indexes(site, folders):
         f'with {counts["contexts"]:,} contexts, in {counts["folders"]:,} template × building type folders. Older releases stay as Git tags and '
         'release folders; this catalogue shows the latest release only.</p>'
         + table_html(family_rows, ('Family', 'Templates', 'Programs', 'Construction sets'))
-        + '<p><a href="glossary/">Evidence glossary</a> · <a href="../view/">Look up an ID</a></p>')))
+        + '<p><a href="../coverage/">Coverage</a> · <a href="glossary/">Evidence glossary</a> · <a href="../view/">Look up an ID</a></p>')))
     site.write('index.md', landing(release, counts))
 
 
@@ -435,7 +596,11 @@ def write_viewer(site):
     for identifier, url in site.links.pages.items():
         rows[identifier] = {'page': url, 'anchor': anchor(identifier)}
     for identifier in site.links.viewer:
-        if identifier not in rows:
+        if identifier in rows:
+            continue
+        if identifier in site.resolutions:  # a resolution: the evidence rows that record it
+            rows[identifier] = {'object': {'resolution': identifier, 'evidence': [site.release.evidence_row(e) for e in site.resolutions[identifier]]}}
+        else:
             rows[identifier] = {'object': site.release.evidence_row(identifier)}
     for identifier, descriptor in site.schedule_json.items():
         rows.setdefault(identifier, {})['json'] = descriptor
@@ -467,7 +632,7 @@ def landing(release, counts):
             '-   <span class="ea-card-icon" data-icon="office"></span>[Non residential](catalogue/commercial/index.md)\n\n'
             '    Programs, mixes, construction sets, services and systems by template and building type.\n\n'
             '</div>\n\n'
-            '## How to use { .ea-strip data-index="02" data-note="Four guides" }\n\n'
+            f'## How to use {{ .ea-strip data-index="02" data-note="{len(GUIDES)} guides" }}\n\n'
             '<div class="grid cards compact icon-cards" markdown>\n\n'
             '1.  <span class="ea-card-icon" data-icon="select-copy"></span>[Selection and copying](guides/selection.md)\n\n'
             '    Find a suite page, switch version and context, and copy or download its JSON.\n\n'
@@ -488,9 +653,32 @@ def landing(release, counts):
             '[Sources and notices](sources.md){ .md-button }\n')
 
 
+def guide_values(site):
+    """What the guides' placeholders stand for in this build: the release, the releases the exporter reads, the schema
+    versions of every export kind it wrote, and the generator the release names."""
+    from scripts.atlas_exports import IN_TREE
+    generator = site.release.manifest.get('generator') or {}
+    values = {'release': site.release.number, 'releases': ', '.join(IN_TREE),
+              'generator': generator.get('version'), 'generation_schema': (site.release.manifest.get('generation') or {}).get('schema_version')}
+    schemas = {kind: ', '.join(sorted(versions, key=lambda v: tuple(int(x) for x in v.split('.')))) for kind, versions in site.versions.items() if kind}
+    return values, schemas
+
+
+def fill_guide(text, values, schemas, name='guide'):
+    """A guide with its placeholders replaced; an unknown placeholder or one without a value in this build fails."""
+    def replace(match):
+        key, kind = match[1], match[2]
+        value = schemas.get(kind) if key == 'schema' else values.get(key)
+        if not value:
+            raise ValueError(f'{name}: no value for {match[0]}')
+        return value
+    return PLACEHOLDER.sub(replace, text)
+
+
 def write_guides(site):
+    values, schemas = guide_values(site)
     for guide in GUIDES:
-        site.write('guides/'+guide, (ROOT/'website/content/guides'/guide).read_text(encoding='utf-8'))
+        site.write('guides/'+guide, fill_guide((ROOT/'website/content/guides'/guide).read_text(encoding='utf-8'), values, schemas, guide))
     notices = site.target/'notices'
     notices.mkdir(exist_ok=True)
     shutil.copyfile(ROOT/'LICENSE', notices/'original-work.txt')
