@@ -8,6 +8,10 @@ from scripts.definition_contract import stable_id
 
 
 MASS_ROLES = ('InternalMass', 'FloorDistributedMass')
+# The construction delivery this writer formed (docs/release-notes-construction-v2.2.0.md, 2026-10-15), not an atlas
+# release. Stored as `provenance.detailed_release`; unified constructions 4.0.0 export it as
+# `provenance.construction_delivery_release` beside the atlas `release` (ADR 0054 section 4).
+CONSTRUCTION_DELIVERY = 'v2.2.0'
 SHADING = ('SpaceShading', 'BuildingShading', 'SiteShading')
 
 
@@ -185,9 +189,18 @@ def _mass_from_profile(profile, packet):
     if total == 0:
         return absent('source_has_no_added_internal_mass'), None
     rows = [{'assembly_id': aid, 'weight': a/total, 'reference_area_m2': a} for aid,a in sorted(amounts.items())]
+    result = _mass_recipe(rows, packet['mass_recipes'])
+    return {'status': result['status'], 'assembly_id': None,
+            'quantity': {'area_per_counted_floor_area': total/profile['counted_floor_area_m2'],
+                         'unit': 'm2/m2', 'application': 'additional_source_mass_only'},
+            'derivation': {'contributors': rows, 'weight_basis': 'source_exposed_added_mass_area'}}, result
+
+
+def _mass_recipe(rows, mass_recipes):
+    """The fitted one-sided mass assembly of area-weighted source mass recipes ({recipe ID: [layer properties]})."""
     raw = []
     for row in rows:
-        layers = packet['mass_recipes'][row['assembly_id']]
+        layers = mass_recipes[row['assembly_id']]
         fake = {'materials': {str(i):{'model':'StandardOpaqueMaterial','properties':p} for i,p in enumerate(layers)}}
         raw.append({'weight': row['weight'], 'layers': source_layers(fake, {'layers':[{'material_id':str(i)} for i in range(len(layers))]})})
     result = reduce_opaque(raw, films=(.13,.13), one_sided=True)
@@ -197,15 +210,48 @@ def _mass_from_profile(profile, packet):
     for side,index in (('exterior',0),('interior',-1)):
         face = {}
         for key in ('thermal_absorptance','solar_absorptance','visible_absorptance'):
-            face[key] = sum(row['weight']*packet['mass_recipes'][row['assembly_id']][index][key] for row in rows)
+            face[key] = sum(row['weight']*mass_recipes[row['assembly_id']][index][key] for row in rows)
         dominant = min(rows, key=lambda r: (-r['weight'],r['assembly_id']))
-        face['roughness'] = packet['mass_recipes'][dominant['assembly_id']][index]['roughness']
+        face['roughness'] = mass_recipes[dominant['assembly_id']][index]['roughness']
         faces[side] = face
     result['surface_properties'] = faces
+    return result
+
+
+def internal_mass_from_inventory(accounting):
+    """The unified InternalMass of a building-scope set from its whole additional-mass inventory (release 2.3.0, ADR 0053 section 1).
+
+    `accounting` is the document's `mass_accounting`. The quantity is the sum of every entry's area per counted
+    floor area, the source-scope entries and the DOE-only furnishings that release 1.1.0 added alike, so the
+    component and the inventory cannot disagree; the contributors are the entries' reference areas by recipe, and
+    the layers are the fit of the recipes weighted by those areas. Returns (component, fitted assembly), or the
+    not-applicable component and None when the inventory is empty.
+    """
+    entries = accounting['additional_mass']['entries']
+    amounts = defaultdict(float)
+    for entry in entries:
+        amounts[entry['recipe_id']] += _operand(entry['reference_area_m2'])
+    total = math.fsum(amounts.values())
+    if not entries or total == 0:
+        return absent('source_has_no_added_internal_mass'), None
+    rows = [{'assembly_id': rid, 'weight': a/total, 'reference_area_m2': a} for rid, a in sorted(amounts.items())]
+    layers = {rid: [layer['properties'] for layer in accounting['recipes'][rid]['layers']] for rid in amounts}
+    result = _mass_recipe(rows, layers)
+    quantity = math.fsum(_operand(e['area_per_counted_floor_area']) for e in entries)
     return {'status': result['status'], 'assembly_id': None,
-            'quantity': {'area_per_counted_floor_area': total/profile['counted_floor_area_m2'],
-                         'unit': 'm2/m2', 'application': 'additional_source_mass_only'},
+            'quantity': {'area_per_counted_floor_area': quantity, 'unit': 'm2/m2', 'application': 'additional_source_mass_only'},
             'derivation': {'contributors': rows, 'weight_basis': 'source_exposed_added_mass_area'}}, result
+
+
+def mass_agrees(document, rel_tol=1e-9):
+    """Whether a unified document's ready InternalMass quantity equals its inventory's sum (the mass contract)."""
+    component = document.get('components', {}).get('InternalMass') or {}
+    quantity = (component.get('quantity') or {}).get('area_per_counted_floor_area')
+    if component.get('status') != 'ready' or quantity is None:
+        return True
+    entries = ((document.get('mass_accounting') or {}).get('additional_mass') or {}).get('entries', [])
+    total = math.fsum(e['area_per_counted_floor_area'] for e in entries)
+    return math.isclose(quantity, total, rel_tol=rel_tol, abs_tol=1e-12)
 
 
 def _mass_budgets(release, configuration, profile):
@@ -388,7 +434,7 @@ def export_equivalent(release, context_id, packet):
                                     'evidence_profile_id': profile_id,
                                     'interpretation': 'Mean of multiplied face areas where multipliers differ; reference-model approximation, not physical copy reconstruction'},
                                 'physical_capacity_budgets': mass_budgets},
-            'provenance': {'detailed_release': 'v2.2.0', 'profile_release': 'construction-weighting-v1.1.0',
+            'provenance': {'detailed_release': CONSTRUCTION_DELIVERY, 'profile_release': 'construction-weighting-v1.1.0',
                            'original_unit': 'source SI layers and archetype reference areas',
                            'transformation': 'Source precedence, precomputed area weights, fixed two-parameter thermal approximation; fixed ACH unchanged',
                            'interpretation_note': 'Additive approximation, not replacement detailed rules. Reported fit errors are not building energy error bounds.'}}

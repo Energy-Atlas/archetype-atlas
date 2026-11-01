@@ -43,7 +43,9 @@ were.
 1. **DOE Ref load and schedule fixes:** (b). Keep them as decided (holidays, conversion
    errors, edits, heat fractions, fills). They are the deterministic baseline that the
    stochastic schedules will be checked against. The "loads don't matter" rule applies
-   only to prototype vs openstudio-standards.
+   only to prototype vs openstudio-standards. *Exception (owner, 2026-11-01, ADR 0053
+   section 2):* the 90.1 small-hotel elevator takes the PNNL prototype value (16 024.3 W
+   in `ElevatorCoreFlr1`) in place of openstudio-standards' 32 110 W from release 2.3.0.
 2. **Equivalence proof scope:** accepted.
    - Geometry (zones, areas, heights, footprint, windows, skylights), constructions
      (layers, U-value, SHGC per surface type), infiltration, internal mass and WWR.

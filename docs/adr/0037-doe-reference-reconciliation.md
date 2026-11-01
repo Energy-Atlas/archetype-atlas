@@ -4,6 +4,8 @@ Status: accepted (2026-10-25, user decisions recorded in the
 [reconciliation plan](../superpowers/plans/2026-10-24-doe-reference-reconciliation.md),
 rounds 1 to 11). Amends ADR 0018 (water-use zone gains) and ADR 0020 (a second
 infiltration method). Applies to release v1.1.0, a delta on v1.0.0 under ADR 0036.
+Amended by [ADR 0053](0053-release-2-3-0-data-corrections.md) section 2 (2026-11-01): one recorded exception to
+the rule that prototype against openstudio-standards load differences do not matter (see the end).
 
 ## Context
 
@@ -191,3 +193,14 @@ its rules.
 - **Writers unchanged.** Release 1.0.0 pins its writers by SHA-256, so the overlay
   reaches them through their source loaders for the length of one build
   (`scripts.atlas_delta_release`), and release 1.0.0 still verifies.
+
+## Amendment: the 90.1 small-hotel elevator (2026-11-01, ADR 0053 section 2)
+
+The rule of the plan's round 6, decision 1 ("loads don't matter" between the PNNL prototypes and
+openstudio-standards) has one recorded exception, by owner decision of the 2026-10-31 review (issue F3a): the 90.1
+small-hotel `Elec/MechRoom` electric equipment, which openstudio-standards gives as DOE Ref's 32 110 W elevator
+motor over its 15.05 m² zone (198.2 W/ft²), takes the PNNL 90.1 prototypes' 16 024.3 W
+(`ElevatorCoreFlr1_Elevators_Equip`, 1064.717 W/m²) from release 2.3.0. The evidence cites the PNNL IDF objects
+(`data/program-inputs/pnnl-point-load-exceptions-v1.json`). Every other 90.1 point load expressed per floor area
+was checked against the PNNL prototypes and keeps its openstudio-standards value; the differences found are listed in
+ADR 0053 section 2. The second 32 110 W motor that openstudio-standards `Prototype.SmallHotel.rb` adds is not taken.
