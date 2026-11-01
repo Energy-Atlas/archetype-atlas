@@ -24,15 +24,15 @@ network access is needed at run time.
 
 Install the `atlas-schedules` wheel attached to its GitHub release
 ([ADR 0049](adr/0049-atlas-schedules-packaging.md); the package is not on PyPI;
-the generator version is the package version, 4.0.0), verify it against the
+the generator version is the package version, 4.1.0), verify it against the
 release's `SHA256SUMS.txt`, and generate the example request:
 
 ```bash
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.0.0/atlas_schedules-4.0.0-py3-none-any.whl
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.0.0/SHA256SUMS.txt
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.0/atlas_schedules-4.1.0-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.0/SHA256SUMS.txt
 sha256sum -c SHA256SUMS.txt --ignore-missing
-pip install atlas_schedules-4.0.0-py3-none-any.whl
-atlas-schedules --version          # atlas-schedules 4.0.0 (request schema 4.0.0); reads atlas release 2.2.0 from ...
+pip install atlas_schedules-4.1.0-py3-none-any.whl
+atlas-schedules --version          # atlas-schedules 4.1.0 (request schema 4.0.0); reads atlas release 2.3.0 from ...
 atlas-schedules office-and-retail.json -o bundle.json    # docs/examples/schedule-generator/office-and-retail.json
 ```
 
@@ -44,7 +44,7 @@ A request names its programmes by atlas release ID, a programme with its
   "schema_version": "4.0.0",
   "seed": 42,
   "instances": [
-    {"key": "office", "program_id": "90-1-2013.medium-office.source.whole-building-md-office.672bf4",
+    {"key": "office", "program_id": "90-1-2013.medium-office.source.whole-building-md-office.9d43fd",
      "values": "filled", "extent": {"floor_area": 400}, "operating_group": "building",
      "service_links": {"90-1-2013.medium-office.main.87f1fd": "office-water"}},
     {"key": "office-water", "service_id": "90-1-2013.medium-office.main.87f1fd",
@@ -55,9 +55,9 @@ A request names its programmes by atlas release ID, a programme with its
 ```
 
 The generator assembles each recipe from an atlas data release. The wheel
-bundles the generator view of release 2.2.0, so `pip install` alone is enough;
+bundles the generator view of release 2.3.0, so `pip install` alone is enough;
 `ATLAS_RELEASES` or `--release-dir` points it at a release on disk instead (the
-`atlas-release-2.2.0.zip` archive of the `v2.2.0` GitHub release, extracted, or a
+`atlas-release-2.3.0.zip` archive of the `v2.3.0` GitHub release, extracted, or a
 checkout's `data/atlas-releases`), and deltas resolve over their bases. Each
 bundle records the release it read (`release.version`, `release.manifest_sha256`),
 and the same request on the same release gives the same bundle from either.
@@ -85,7 +85,7 @@ build`; `python -m scripts.build_release_assets --wheel --data` builds the
 release assets with `SHA256SUMS.txt`.
 
 Every generator release attaches `SHA256SUMS.txt` (`sha256sum` format); the quick
-start above verifies 4.0.0 with it. For 3.0.0 the wheel's digest is
+start above verifies 4.1.0 with it. For 3.0.0 the wheel's digest is
 `f082bb12f951fdebd78ddcf8ab20cc65a267a02a70213de4d7f13d56648229cb` and the sdist's
 `2f42d7c1fe970a4958d0fd2092f0e6b23c8d0515ada9f67af02377718f80eb27`; both were checked on
 2026-10-29 against an independent `python -m build` of tag `atlas-schedules-v3.0.0`
@@ -108,9 +108,9 @@ Every instance has a unique `key`. Keys cannot contain `/`, which is reserved
 for owners the generator derives.
 
 A **programme instance** has a `program_id`: an atlas release program ID such as
-`90-1-2013.medium-office.source.whole-building-md-office.672bf4` or
+`90-1-2013.medium-office.source.whole-building-md-office.9d43fd` or
 `doe-ref-pre-1980.retail-standalone.source.entry.955efc`, of a program whose
-record carries a `generation` block in the release (1,008 programs). It can
+record carries a `generation` block in the release (2,270 programs in release 2.3.0). It can
 also have the following fields:
 
 - `values`: the view of the program's values the recipe takes, as the two
@@ -215,25 +215,26 @@ folder's `schedules.json` and `services.json`, and the folder's building
 configurations in `generation.json`
 ([ADR 0051](adr/0051-generation-parameters-in-the-release.md);
 `atlas_schedules.programmes.assemble`). The generator ships no copy of release
-values. 1,008 programs carry blocks, 1,585 program views:
+values. In release 2.3.0, 2,270 programs carry blocks, 2,847 program views:
 
 | Method | Recipe kind | Program views | Kernel |
 |---|---|---|---|
-| `comstock_hours` | `commercial` | 1,156 across 15 ComStock building types: Small, Medium and Large Office, Warehouse, Retail (standalone and strip mall), Full- and Quick-Service Restaurant, Supermarket, Primary and Secondary School, Small and Large Hotel, Hospital, Outpatient; source and filled views of the 90.1 programs, source of the DOE Ref programs | ComStock transform |
+| `comstock_hours` | `commercial` | 2,187 across 15 ComStock building types: Small, Medium and Large Office, Warehouse, Retail (standalone and strip mall), Full- and Quick-Service Restaurant, Supermarket, Primary and Secondary School, Small and Large Hotel, Hospital, Outpatient; source and filled views of the 90.1 programs, source of the DOE Ref programs, and from release 2.3.0 source of the IECC commercial programs and the detailed offices (ADR 0055) | ComStock transform |
 | `resstock_dwelling` | `residential` | 41 ResStock dwellings | ResStock activity and events |
 | `resstock_unit` | `apartment_unit` | 38 apartment dwelling units (90.1 Midrise and Highrise, DOE Ref Midrise) | ResStock multifamily unit, plus its water |
 | `fixed` | `fixed` | 40 apartment common areas | source rules unchanged |
-| `composition` | `composition` | 310 source parents (Retail, Strip Mall, Warehouse, Supermarket, schools, hotels, Hospital, Outpatient) | members mixed by area |
+| `composition` | `composition` | 541 mix views (310 of the 90.1 and DOE Ref parents: Retail, Strip Mall, Warehouse, Supermarket, schools, hotels, Hospital, Outpatient; 231 of the IECC and detailed office mixes) | members mixed by area |
 
-The 120 building configurations in the folders' `generation.json` (15 families
-× 3 90.1 templates × source and reviewed views, and one source configuration per
-DOE Ref family and vintage) carry each building's People inventory (prototype
+The 219 building configurations in the folders' `generation.json` (15 families
+× 3 90.1 templates × source and reviewed views, one source configuration per
+DOE Ref family and vintage, and from release 2.3.0 one per IECC commercial folder
+and detailed office) carry each building's People inventory (prototype
 geometry floor area × program density, on the folder's release occupancy
 schedules) and its sampling building type. A building where residential spaces
 (guest rooms, patient rooms, apartments) hold most of the people uses the
 inverted rule-day convention for hours of operation.
 
-The 186 shared hot-water services (one per family, template and fixture) are
+The 507 shared hot-water services (one per family, template and fixture) are
 the release services whose blocks list the configurations they run under.
 
 Each recipe's `source` block names its release program and block

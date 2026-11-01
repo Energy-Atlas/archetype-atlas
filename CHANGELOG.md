@@ -1,5 +1,40 @@
 # Changelog
 
+## Atlas release 2.3.0 and atlas-schedules 4.1.0 — 2026-11-01
+
+Stage REL-A of the 2026-10-31 review ([ADR 0059](docs/adr/0059-release-2-3-0.md),
+[release notes](docs/release-notes-atlas-v2.3.0.md)).
+
+- **Release 2.3.0**, a delta on 2.2.0 (`data/atlas-releases/v2.3.0`, 1,986 files):
+  - the ADR 0053 record edits: 1,883 changed or added files and 1,562 removed paths;
+  - `id-map-2.3.0.json`, which maps the 1,550 programs and 12 construction sets that move;
+  - the `generation.json` of the 84 IECC commercial and 15 detailed office folders, derived over the edited
+    release (ADR 0055);
+  - the split licence files.
+
+  The writer is the tagged 2.3.0 block of `scripts/atlas_delta.py`. `--check` reproduces 2.1.0, 2.2.0 and
+  2.3.0, and `release_editor --check` re-derives every 2.3.0 ID.
+- **Licences** (issue #44): `LICENSE` is the MIT text alone and `LICENSE-DATA` the CC BY 4.0 legal code. The scope
+  of each moved into the README. Releases 2.1.0 and 2.2.0 keep their packaged two-part licence as input. The
+  wheel's licence is `MIT AND CC-BY-4.0`. `CITATION.cff` names 2.3.0.
+- **Exports** read 2.3.0 (`IN_TREE`) and take Program JSON 6.0.0, detailed constructions 5.0.0, unified 4.0.0,
+  source model 2.0.0 and building services 1.0.1. Program JSON 6.0.0 gains `lighting_controls.daylighting_origin`
+  before its first release (review F5c), and the lighting-controls guide shows it.
+- **Generator 4.1.0**: the quick start, README and example requests move to 4.1.0 and 2.3.0 IDs; the request
+  schema's example ID is re-keyed (an editorial revision).
+- **LOD study drop 3** (BEMGen `8d2e3bd`, D-219 to D-224; ADR 0050 section 7):
+  - the files and schema 1.2.0 are copied byte for byte, with BEMGen's provenance beside the sidecar;
+  - refused zonings are shown as not generated;
+  - the restaurant 4A cells are flagged finer than the reference, and the robust rule takes the reference's
+    bound (107 of 132 pairs);
+  - the D-201 caution goes, since R4 has no failure left;
+  - cost medians are medians of prototype medians (overall processor-time ratio 0.659);
+  - program links follow the 2.3.0 IDs.
+- **Site**: builds 2.3.0. The generation reason "release 2.2.0 predates their blocks" is gone, and the notices
+  page links both licences.
+- **CI**: validate checks `atlas_delta --check` for 2.2.0 and `build_zone_recipes --check`; the data-release
+  workflow verifies 2.2.0.
+
 ## Release 2.3.0 inputs: data corrections and export contracts (stage AT1) — 2026-11-01
 
 Source changes for data release 2.3.0, whose delta folder stage REL-A writes; release 2.2.0 and its exports are

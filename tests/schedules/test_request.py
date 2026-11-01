@@ -15,11 +15,11 @@ from atlas_schedules.generator import generate
 from atlas_schedules.release import translate
 from tests.schedules.helpers import load_recipe
 
-COMMERCIAL = "90-1-2013.warehouse.source.office.7fc5a6"  # Warehouse office area 90.1-2013 (no shared services)
+COMMERCIAL = "90-1-2013.warehouse.source.office.51c5a8"  # Warehouse office area 90.1-2013 (no shared services)
 DWELLING = "resstock-sdr.multifamily-5-plus-low-rise.7ak-1980s-500-749ft2-b143851.d8e286"    # ResStock dwelling (2 residents, Anchorage)
-APARTMENT = "90-1-2007.highrise-apartment.source.apartment.d88967"   # apartment dwelling unit
-DATA_CENTRE = "90-1-2007.large-office.source.office-large-data-center.8883eb"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
-RESTAURANT = "90-1-2013.quick-service-restaurant.source.kitchen.9911f2"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
+APARTMENT = "90-1-2007.highrise-apartment.source.apartment.6b5425"   # apartment dwelling unit
+DATA_CENTRE = "90-1-2007.large-office.source.office-large-data-center.d9a07f"  # OfficeLarge Data Center 90.1-2007 (flat plug load)
+RESTAURANT = "90-1-2013.quick-service-restaurant.source.kitchen.3525c8"  # Quick Service Restaurant 90.1-2013 (needs kitchen water)
 WATER = "90-1-2013.quick-service-restaurant.main.1be363"
 RESTAURANT_CONFIGURATION = "quick_service_restaurant__90_1_2013__source"
 DEPARTMENT = "doe-ref-1980-2004.hospital.department.diagnostics-mixed.407fa7"  # composition of three spaces
@@ -221,7 +221,7 @@ class CommandLine(unittest.TestCase):
         result = subprocess.run([sys.executable, "-m", "atlas_schedules", "--version"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         version = re.escape(atlas_schedules.__version__)
-        self.assertRegex(result.stdout, rf"^atlas-schedules {version} \(request schema 4\.0\.0\); reads atlas release 2\.2\.0 from ")
+        self.assertRegex(result.stdout, rf"^atlas-schedules {version} \(request schema 4\.0\.0\); reads atlas release 2\.3\.0 from ")
 
     def test_cli_translates_a_3_0_0_request_and_refuses_it_untranslated(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -242,7 +242,7 @@ class CommandLine(unittest.TestCase):
                                         str(Path(__file__).resolve().parents[2] / "data/atlas-releases"), str(new)],
                                        capture_output=True, text=True)
             self.assertEqual(generated.returncode, 0, generated.stderr)
-            self.assertEqual(json.loads(generated.stdout)["release"]["version"], "2.2.0")
+            self.assertEqual(json.loads(generated.stdout)["release"]["version"], "2.3.0")
 
     def test_definition_ids_in_a_4_0_0_request_name_the_translation(self):
         with self.assertRaises(GeneratorError) as caught:

@@ -271,14 +271,14 @@ def dwelling_label(record):
 
 def generation_reason(release, folder):
     """Why a folder has no generation settings, or None where it has them: the reason of its folder class
-    (scripts.generation_coverage, ADR 0055), or, for a class the generator covers since, that the release
-    predates its blocks."""
+    (scripts.generation_coverage, ADR 0055). Since release 2.3.0 every folder of a generated class carries its
+    blocks (ADR 0059; the release manifest's coverage refuses an unexplained folder), so the last branch
+    serves only a release that lacks them."""
     if folder.generation is not None:
         return None
     kind = generation_coverage.folder_class(folder.family, folder.template, building_type_name(release, folder))
     if kind is None:
-        return (f'Release {release.number} carries no generation blocks for this folder; the generator covers its '
-                'class from ADR 0055 on, and a later data release carries them.')
+        return f'Release {release.number} carries no generation blocks for this folder.'
     reason = {key: text for key, _, text in generation_coverage.CLASSES}[kind]
     return reason[0].upper()+reason[1:]+'.'
 
@@ -682,7 +682,9 @@ def write_guides(site):
     notices = site.target/'notices'
     notices.mkdir(exist_ok=True)
     shutil.copyfile(ROOT/'LICENSE', notices/'original-work.txt')
-    links = ['[Original-work notice](notices/original-work.txt)']
+    shutil.copyfile(ROOT/'LICENSE-DATA', notices/'original-data.txt')
+    links = ['[Original code: MIT License](notices/original-work.txt)',
+             '[Original data and documentation: CC BY 4.0](notices/original-data.txt)']
     for path in sorted(p for p in site.release.files if p.startswith('notices/')):
         name = path.split('/', 1)[1]
         (notices/name).write_bytes(site.release.files[path])
@@ -692,7 +694,8 @@ def write_guides(site):
                'Code/prototype and existing-stock contexts remain distinct. Every page names its record\'s evidence: '
                'source locators, original values and transformations.\n\n' + ' · '.join(links) + '\n\n'
                'Site fonts, SIL Open Font License 1.1: [Geist](assets/fonts/OFL-Geist.txt) · [Geist Mono](assets/fonts/OFL-GeistMono.txt) · '
-               '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal code is MIT-licensed and original data and documentation are CC BY 4.0; upstream notices continue to apply.\n')
+               '[Cormorant Garamond](assets/fonts/OFL-CormorantGaramond.txt)\n\nOriginal code is MIT-licensed and original data and documentation are CC BY 4.0 (attribute as '
+               '"Archetype Atlas, Energy-Atlas" with the release number); third-party material keeps its upstream licence and notices.\n')
 
 
 def build(target, number=None, jobs=None, only=None, sample=None):

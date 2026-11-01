@@ -43,6 +43,14 @@
      "class": "editorial",
      "change": "revision marker added; history recorded (ADR 0056)",
      "sha256": "2c694767af7f23cfcd5dcceaa42e2108c2c89f8554b836945514df02e0055ae6"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "editorial",
+     "change": "example program ID re-keyed to its release 2.3.0 ID (ADR 0053 section 5, ADR 0059)",
+     "sha256": "1d64e9fbf50aebcf3bf7919e7b8a91fd4255b5d42d7642d124244c9783153e62"
     }
    ],
    "id": "atlas-schedules/request-v4"
@@ -877,9 +885,18 @@
      "class": null,
      "change": "feat(site): apply LOD recommendations drop 2 with the serial costs",
      "sha256": "82816387e053adb97b36b175572a4521a4a9339a6a00839cdab7c747b8607361"
+    },
+    {
+     "revision": 3,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "minor",
+     "change": "BEMGen schema 1.2.0 (D-220, D-223), copied byte for byte at BEMGen 8d2e3bd for LOD drop 3 (ADR 0050 section 4, ADR 0059)",
+     "sha256": "adbce622d21d2f1b3e438b044f21406015e045f3bb9dc2b20ed12dd4c30b24f6"
     }
    ],
-   "external": "BEMGen-docs (ADR 0050); its owner versions it"
+   "external": "BEMGen-docs (ADR 0050); its owner versions it",
+   "id": "https://energy-atlas.github.io/BEMGen-docs/schemas/lod-recommendations-v1.schema.json"
   },
   "schemas/program-json-v2.schema.json": {
    "revisions": [
@@ -1218,6 +1235,14 @@
      "class": "created",
      "change": "Release 2.3.0 contracts (ADR 0054): building services 1.0.1 names the release by pattern (patch); Program JSON 6.0.0, detailed constructions 5.0.0, unified 4.0.0 and source model constructions 2.0.0 created",
      "sha256": "525235ea1bb6e6cf1a17e63aa4571094adc37a9d8e2466af354edc509f8f0277"
+    },
+    {
+     "revision": 2,
+     "date": "2026-11-01",
+     "commit": null,
+     "class": "minor",
+     "change": "Program JSON 6.0.0 before its first release (2.3.0): the optional lighting_controls.daylighting_origin, the origin of the daylighting fractions (the prototype zone set and its climates, or the reference model scan), which the exporter gives on every known block (review F5c, ADR 0059 section 4)",
+     "sha256": "694d53de1f8616339a6ae3409e7ae9cc8ccafc5442ebf7823418a8f259d20a58"
     }
    ],
    "id": "urn:archetype-atlas:program-json:6.0.0"

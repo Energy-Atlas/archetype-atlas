@@ -46,7 +46,7 @@ class PackageTests(unittest.TestCase):
     def test_bundles_name_the_package_version_and_the_release(self):
         from atlas_schedules.generator import generate
         request = {'schema_version': '4.0.0', 'seed': 1, 'instances': [
-            {'key': 'office', 'program_id': '90-1-2013.medium-office.source.whole-building-md-office.672bf4', 'extent': {'floor_area': 100},
+            {'key': 'office', 'program_id': '90-1-2013.medium-office.source.whole-building-md-office.9d43fd', 'extent': {'floor_area': 100},
              'operating_group': 'building', 'service_links': {'90-1-2013.medium-office.main.87f1fd': 'water'}},
             {'key': 'water', 'service_id': '90-1-2013.medium-office.main.87f1fd', 'physical_id': 'heater',
              'configuration_id': 'medium_office__90_1_2013__reviewed', 'extent': {'floor_area': 100}, 'operating_group': 'building'}]}
@@ -64,7 +64,9 @@ class PackageTests(unittest.TestCase):
         pinned = {line.split('==')[0] for line in (ROOT/'requirements.txt').read_text(encoding='utf-8').split()}
         self.assertTrue({'numpy', 'jsonschema'} <= pinned)
         self.assertEqual(project['scripts'], {'atlas-schedules': 'atlas_schedules.__main__:main'})
-        self.assertEqual(project['license'], 'MIT')
+        # The wheel bundles release data (CC BY 4.0) with the code (MIT); the licence files split at 2.3.0 (ADR 0059).
+        self.assertEqual(project['license'], 'MIT AND CC-BY-4.0')
+        self.assertEqual(project['license-files'], ['LICENSE', 'LICENSE-DATA'])
         dev = (ROOT/'requirements-dev.txt').read_text(encoding='utf-8')
         self.assertRegex(dev, r'(?m)^build==')
         self.assertNotIn('build', (ROOT/'requirements.txt').read_text(encoding='utf-8'))
@@ -95,8 +97,8 @@ class PackageTests(unittest.TestCase):
         index = json.loads(files[VIEW_INDEX])
         self.assertEqual((index['kind'], index['release'], index['manifest_sha256']),
                          ('atlas_release_generator_view', tree.version, tree.manifest_sha256))
-        self.assertEqual(index['base_releases'], ['2.1.0', '2.0.0'])
-        self.assertEqual(len(index['folders']), 90)
+        self.assertEqual(index['base_releases'], ['2.2.0', '2.1.0', '2.0.0'])
+        self.assertEqual(len(index['folders']), 189)
         with tempfile.TemporaryDirectory() as temporary:
             build_generator_view.write(files, Path(temporary))
             view = Release(ViewStore(Path(temporary)))

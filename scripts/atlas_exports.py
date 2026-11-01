@@ -68,7 +68,7 @@ RELEASE_LABEL = {'type': 'string', 'pattern': r'^atlas-release-\d+\.\d+\.\d+$'}
 ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0'),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
 # The releases in the tree, oldest first: the 2.0.0 snapshot and its deltas (scripts.atlas_delta); the last is the newest.
-IN_TREE = ('2.0.0', '2.1.0', '2.2.0')
+IN_TREE = ('2.0.0', '2.1.0', '2.2.0', '2.3.0')
 # Release 2.3.0 on (ADR 0054): Program JSON 6.0.0 and constructions 5.0.0 / 4.0.0 / source model 2.0.0
 # (scripts.atlas_contracts); each export is formed as before, validated, then turned into its new form.
 # The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.

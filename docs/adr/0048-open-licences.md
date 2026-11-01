@@ -39,3 +39,10 @@ Status: accepted (2026-10-29, user decision: "use your preferred licenses").
   this ADR supersedes those statements.
 - The copyright holder is written as "The Archetype Atlas authors". If an
   institution owns the work, the owner changes that line.
+
+## 4. Amendment (2026-11-01): the licence files split at release 2.3.0
+
+Issue #44, decided by the owner on 2026-10-30 and done in [ADR 0059](0059-release-2-3-0.md) section 2. The
+grants above are unchanged. The root `LICENSE` is now the MIT text alone and `LICENSE-DATA` the CC BY 4.0
+legal code, so GitHub detects both licences. The scope text of this ADR moved into the README's *Licence*
+section. Releases 2.1.0 and 2.2.0 keep the two-part `LICENSE` they packaged, verified by checksum.
