@@ -96,7 +96,7 @@ the filled export said absent, and the reason the guide promised was in no file.
   the members it completes.
 - The exporter's name rule is off for release 2.3.0 on (`program_json_v3.ProgramExporter.absence_by_name`): an
   unknown that reaches the filled view without a filling stops the export. Filled values do not change.
-- **IDs move.** A filling and a reason are program content, so 1,510 program IDs move (with the mixes that cite
+- **IDs move.** A filling and a reason are program content, so 1,550 program IDs move (with the mixes that cite
   them), as ADR 0036 section 8 has it. The rejected alternative, a per-folder fillings file outside the ID like
   `generation.json` (ADR 0051), would have kept the IDs but split one filling model in two; the owner asked for the
   fillings on the record.
@@ -118,7 +118,7 @@ outside the program ID; a set's name is also in its stored documents, so the fou
 `atlas_edits.edit(files('2.2.0'))` applies the four edits, re-derives every program and set ID by its rule
 (`scripts.release_editor.program_ids`, `set_ids`), renames the files of the IDs that move and substitutes every
 citation, including the 2.2.0 `generation.json` blocks, `definition-map.json` and `exporter-inputs.json`. Over
-release 2.2.0 it changes or adds 1,832 files, removes 1,526 and moves 1,526 IDs (1,514 programs, 12 sets);
+release 2.2.0 it changes or adds 1,883 files, removes 1,562 and moves 1,562 IDs (1,550 programs, 12 sets);
 `id_map_bytes` writes the map from 2.2.0 to 2.3.0 IDs for the delta. Re-deriving the IDs of the result moves none, no
 file cites a moved ID, and every program and construction exports. Stage REL-A writes the delta from these files.
 

@@ -1,0 +1,55 @@
+{
+ "schema_version": "1.0.0",
+ "kind": "atlas_vocabulary",
+ "decision": "docs/adr/0054-release-2-3-0-export-contracts.md",
+ "description": "The normative mapping between the spellings of one concept in the atlas layers (ADR 0054 section 6): release records (data/atlas-releases), the consumer exports (Program JSON, constructions), generation.json and the generator's bundle. A reader joining two layers translates through this table; a test requires every spelling the layers use to be listed.",
+ "layers": ["records", "exports", "generation", "bundle"],
+ "units": [
+  {"quantity": "fraction", "records": ["dimensionless", "1"], "exports": ["1"], "generation": ["fraction"], "bundle": ["fraction"], "note": "records use dimensionless for schedules and 1 for heat fractions"},
+  {"quantity": "temperature", "records": ["C"], "exports": ["degC"], "generation": ["C"], "bundle": ["C"], "note": "degrees Celsius"},
+  {"quantity": "activity level", "records": ["W/person"], "exports": ["W/person"], "generation": ["W/person"], "bundle": ["W/person"]},
+  {"quantity": "relative humidity", "records": ["%"], "exports": ["%"], "generation": [], "bundle": []},
+  {"quantity": "power per floor area", "records": ["W/m2"], "exports": ["W/m2"], "generation": ["W/m2"], "bundle": ["W/m2"]},
+  {"quantity": "people per floor area", "records": ["person/m2"], "exports": ["person/m2"], "generation": ["person/m2"], "bundle": ["person/m2"]},
+  {"quantity": "water flow per floor area", "records": ["m3/s/m2"], "exports": ["m3/s/m2"], "generation": ["m3/s/m2"], "bundle": ["m3/s/m2"]},
+  {"quantity": "power per dwelling", "records": ["W/dwelling"], "exports": ["W/dwelling"], "generation": ["W/dwelling"], "bundle": ["W/dwelling"]},
+  {"quantity": "water flow per dwelling", "records": ["m3/s/dwelling"], "exports": ["m3/s/dwelling"], "generation": ["m3/s/dwelling"], "bundle": ["m3/s/dwelling"]},
+  {"quantity": "people per dwelling", "records": ["person/dwelling"], "exports": ["person/dwelling"], "generation": ["person/dwelling"], "bundle": ["person/dwelling"]},
+  {"quantity": "annual energy per dwelling", "records": [], "exports": [], "generation": ["Wh/dwelling"], "bundle": ["Wh/dwelling"], "note": "generation annual_unit"},
+  {"quantity": "annual water per dwelling", "records": [], "exports": [], "generation": ["m3/dwelling"], "bundle": ["m3/dwelling"], "note": "generation annual_unit"},
+  {"quantity": "annual water per person", "records": [], "exports": [], "generation": ["m3/person/year"], "bundle": [], "note": "generation resstock_unit.hot_water_m3_per_person is a volume per person per year; its name carries no period"},
+  {"quantity": "power", "records": ["W"], "exports": ["W"], "generation": [], "bundle": ["W"], "note": "an absolute load (a building service or a whole-object source value)"},
+  {"quantity": "water flow", "records": ["m3/s"], "exports": ["m3/s"], "generation": [], "bundle": ["m3/s"]},
+  {"quantity": "water flow per person", "records": ["m3/s/person"], "exports": ["m3/s/person"], "generation": [], "bundle": ["m3/s/person"]},
+  {"quantity": "people", "records": ["person"], "exports": ["person"], "generation": [], "bundle": ["person"]},
+  {"quantity": "area", "records": ["m2"], "exports": ["m2"], "generation": [], "bundle": []},
+  {"quantity": "area per counted floor area", "records": ["m2/m2"], "exports": ["m2/m2"], "generation": [], "bundle": []},
+  {"quantity": "air change rate", "records": ["1/s"], "exports": ["1/s"], "generation": [], "bundle": [], "note": "construction infiltration.natural_ach holds air changes per second despite its name; multiply by 3600 for ACH"},
+  {"quantity": "schedule reference", "records": ["schedule reference"], "exports": [], "generation": [], "bundle": [], "note": "a record parameter whose value is a schedule ID"},
+  {"quantity": "state", "records": ["state"], "exports": [], "generation": [], "bundle": [], "note": "a record parameter whose value is a conditioning state"}
+ ],
+ "fields": [
+  {"concept": "return-air heat fraction", "records": "thermal_effects.to_return_air", "exports": "heat_fractions.return_air", "generation": "heat_fractions.return_air", "bundle": "heat_fractions.to_return_air"},
+  {"concept": "schedule unit", "records": "units", "exports": "unit", "generation": "unit", "bundle": "unit"},
+  {"concept": "time step", "records": "time_resolution_minutes", "exports": "timestep_minutes", "generation": null, "bundle": "timestep_minutes"},
+  {"concept": "load kind", "records": "quantity", "exports": "type + end_use (alternates[].quantity)", "generation": "quantity", "bundle": "quantity, slot"},
+  {"concept": "rule dates", "records": "start_date/end_date ISO datetime; day_types joined by |", "exports": "start_date/end_date MM-DD; day_types array", "generation": null, "bundle": "MM-DD; array"},
+  {"concept": "filled view", "records": "filling (on the field it fills)", "exports": "version filled", "generation": "views.filled; configuration IDs end __reviewed (a frozen generator 3.0.0 suffix)", "bundle": "values filled"},
+  {"concept": "mixture label", "records": null, "exports": null, "generation": null, "bundle": "mixture owner program_id (a label, not a release program ID)", "note": "request mixture.program_id is a free label, unlike instances[].program_id"}
+ ],
+ "climate_zones": {
+  "forms": [
+   {"layer": "exports", "where": "Program JSON value_by_climate, fenestration.value_by_climate, lighting_controls.daylighting_by_climate keys", "pattern": "^[0-8][A-C]$", "example": "4A"},
+   {"layer": "exports", "where": "construction source.climate.value", "pattern": "^[0-8][A-C]$", "example": "4A", "note": "enum 0A to 8B, ASHRAE 169-2013"},
+   {"layer": "exports", "where": "construction context keys and export IDs", "pattern": "^[0-8]-[a-c]$", "example": "4-a"},
+   {"layer": "generation", "where": "request location.climate_zone (atlas-schedules request 4.0.0)", "pattern": "^[1-8](A|B|C|AK)$", "example": "7AK", "note": "IECC 2004 zones with the Alaska subzones; no 0A, 0B, 8A, 8B"},
+   {"layer": "exports", "where": "residential applies_with.climate", "pattern": "^[0-8][A-C]?(-[a-z-]+)?$", "example": "1A-tropical-semi-conditioned", "note": "the PNNL residential model axis: zone, optionally its moisture regime, then a qualifier"}
+  ],
+  "conversions": [
+   {"from": "4A", "to": "4-a", "rule": "lower-case the letter and join with a hyphen"},
+   {"from": "4-a", "to": "4A", "rule": "drop the hyphen and upper-case the letter"},
+   {"from": "7AK", "to": "7", "rule": "IECC Alaska subzones are climate zone 7 or 8 without a moisture regime in ASHRAE 169-2013"},
+   {"from": "1A-tropical-semi-conditioned", "to": "1A", "rule": "the zone before the first hyphen"}
+  ]
+ }
+}

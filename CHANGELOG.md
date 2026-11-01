@@ -1,5 +1,31 @@
 # Changelog
 
+## Release 2.3.0 inputs: data corrections and export contracts (stage AT1) — 2026-11-01
+
+Source changes for data release 2.3.0, whose delta folder stage REL-A writes; release 2.2.0 and its exports are
+unchanged.
+
+- **Record edits** ([ADR 0053](docs/adr/0053-release-2-3-0-data-corrections.md), `scripts/atlas_edits.py`, a pure
+  function of resolved 2.2.0):
+  - the unified `InternalMass` of 8 DOE Ref building-scope sets counts the whole additional-mass inventory (152
+    contexts; warehouse 0.674 → 2.0 m²/m²), and 2.3.0 exports refuse a unified document that disagrees;
+  - the 90.1 small-hotel `Elec/MechRoom` elevator takes the PNNL prototype value (16 024.3 W, 1064.717 W/m², in place
+    of DOE Ref's 32 110 W) as a recorded exception to ADR 0037, with its support mixes recomposed
+    (`scripts/pnnl_point_loads.py`, `data/program-inputs/pnnl-point-load-exceptions-v1.json`); every other 90.1 point
+    load was checked against PNNL and is listed, not changed;
+  - the ADR 0016 accepted absence is stored as fillings and every unknown load carries its reason (1,596 loads that
+    the exporter filled by a name rule; the rule is off for 2.3.0);
+  - same-named records take the name of their source distinction (42 programs, 4 sets;
+    `scripts/distinguishing_names.py`);
+  - 1,562 IDs move with their content (1,550 programs, 12 sets); the edit returns the ID map.
+- **Export contracts of release 2.3.0** ([ADR 0054](docs/adr/0054-release-2-3-0-export-contracts.md),
+  `scripts/atlas_contracts.py`): Program JSON **6.0.0** (one evidence shape with IDs, every cited row in the
+  document; load `status`/`reason`/`filling`/`evidence_id`; `nulls`; dwelling `fenestration.variants`), detailed
+  constructions **5.0.0** and unified **4.0.0** (`release`; delivery labels renamed; `export_mode` removed), source
+  model constructions **2.0.0**, building services **1.0.1** (release by pattern, a patch); each recorded in
+  `schemas/revisions.json`; a normative vocabulary table `schemas/vocabulary-v1.json`; the null meanings in the
+  [Program JSON guide](website/content/guides/program-json.md#nulls-and-zeros).
+
 ## Site: pages from the exports, generation settings, coverage, site index schema — 2026-11-01
 
 Stage AT2 of the 2026-10-31 review (issues D1 to D8, C7, the site index part of C1, B1 part 3). No data

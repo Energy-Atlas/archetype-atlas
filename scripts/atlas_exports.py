@@ -23,6 +23,9 @@ commercial sets (ADR 0045), exported as construction-equivalent 3.1.0. Release 2
 
 Only release 2.0.0 is in the tree (ADR 0046 section 7); releases 1.0.0 to 1.6.0 are read from the tag
 `frozen-data-2026-10-27`. The release enums of the schemas keep every release.
+Release 2.3.0 on (ADR 0054, scripts.atlas_contracts) exports Program JSON 6.0.0, detailed constructions 5.0.0,
+unified 4.0.0 and source model constructions 2.0.0: each document is formed and validated as before, then turned
+into its new form and validated again; a unified document whose InternalMass disagrees with its inventory is refused.
 
 python -m scripts.atlas_exports --schemas                 # write the derived schemas
 python -m scripts.atlas_exports --program ID --version filled
@@ -38,31 +41,36 @@ import sys
 
 from jsonschema import Draft202012Validator
 
-from scripts import atlas_constructions, atlas_programs
+from scripts import atlas_constructions, atlas_contracts, atlas_programs
 from scripts.atlas_format import h6, slug, suite_bytes
 from scripts.common import ROOT, load_json
+from scripts.construction_equivalent_export import mass_agrees
 
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
+# Building services 1.0.1 (a patch: the release by pattern) from release 2.3.0 on (ADR 0054 section 1).
+SERVICES_PATCH = '1.0.1'
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
-LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
 # Program JSON 5.4.0 names its release by pattern from release 2.2.0 (ADR 0051 section 5): a 5.4.x widening, so a
 # later data release needs no schema edit; every label the enum admitted still matches.
 RELEASE_LABEL = {'type': 'string', 'pattern': r'^atlas-release-\d+\.\d+\.\d+$'}
 # Release 2.0.0, milestone B (ADR 0046 section 9): detailed constructions 4.3.0, 4.2.0 with the PNNL prototype alternates.
-ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0'),
+ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0'),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
 # The releases in the tree, oldest first: the 2.0.0 snapshot and its deltas (scripts.atlas_delta); the last is the newest.
 IN_TREE = ('2.0.0', '2.1.0', '2.2.0')
+# Release 2.3.0 on (ADR 0054): Program JSON 6.0.0 and constructions 5.0.0 / 4.0.0 / source model 2.0.0
+# (scripts.atlas_contracts); each export is formed as before, validated, then turned into its new form.
 # The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.
 MASS = ('construction-mass-accounting-v1.1.schema.json', '1.1.0', 'urn:archetype-atlas:construction-mass-accounting:1.1.0')
 ROLES = ('ExteriorWall','ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
@@ -129,6 +137,10 @@ def derived_schemas():
     out[residential_exports.PROGRAM_MINOR[0]] = residential_exports.program_schema(out[IECC['program'][0]])
     out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]] = source_model_schema()
     out[LIGHTING['program'][0]] = program_minor_lighting(out[residential_exports.PROGRAM_MINOR[0]])
+    out[atlas_contracts.PROGRAM[0]] = atlas_contracts.program_schema(out[LIGHTING['program'][0]])
+    out[atlas_contracts.DETAILED[0]] = atlas_contracts.construction_schema(out[ALTERNATES['detailed'][0]], 'detailed')
+    out[atlas_contracts.UNIFIED[0]] = atlas_contracts.construction_schema(out[MINOR['unified'][0]], 'unified')
+    out[atlas_contracts.SOURCE_MODEL[0]] = atlas_contracts.source_model_schema(out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]])
     return {name: with_marker(name, schema) for name, schema in out.items()}
 
 
@@ -148,11 +160,19 @@ def with_marker(name, schema):
     return {'$comment': marker, **schema} if marker else schema
 
 
-def source_model_schema(frozen=None):
-    """Source model constructions 1.0.0, its release enum extended to the later releases (additive)."""
+def labels(releases):
+    """The release labels a 5.x-era schema enumerates: its releases up to 2.2.0. Release 2.3.0 on exports the
+    contracts of ADR 0054, so those published schemas stay as they are (docs/schema-versioning.md)."""
+    return [f'atlas-release-{r}' for r in releases if r not in atlas_contracts.RELEASES]
+
+
+def source_model_schema(frozen=None, later=()):
+    """Source model constructions 1.0.0, its release enum extended to the later releases (additive); `later` adds
+    labels for the length of one export of a release whose published form is 2.0.0 (the 1.0.0 form is an
+    intermediate step there, validated before it becomes 2.0.0)."""
     from scripts import prototype_dwellings
     schema = (frozen or prototype_dwellings.construction_schema)()
-    schema['properties']['release']['enum'] += [f'atlas-release-{r}' for r in LIGHTING['releases']]
+    schema['properties']['release']['enum'] += labels(LIGHTING['releases']) + [f'atlas-release-{r}' for r in later]
     return schema
 
 
@@ -209,7 +229,8 @@ def later_residential(release):
     from scripts import prototype_dwellings, residential_exports
     saved = residential_exports.PROGRAM_MINOR, prototype_dwellings.construction_schema
     residential_exports.PROGRAM_MINOR = LIGHTING['program']
-    prototype_dwellings.construction_schema = lambda: source_model_schema(saved[1])
+    later = (release,) if release in atlas_contracts.RELEASES else ()
+    prototype_dwellings.construction_schema = lambda: source_model_schema(saved[1], later)
     try:
         yield
     finally:
@@ -284,7 +305,7 @@ def program_minor(major):
     for version in VERSIONS:
         variant = schema['$defs'][version]
         variant['properties']['schema_version'] = {'const': '5.1.0'}
-        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in MINOR['releases']]}
+        variant['properties']['source']['properties']['release'] = {'enum': labels(MINOR['releases'])}
         variant['properties'].update(copy.deepcopy(added))
         controls = variant['$defs']['controls']['properties']
         for field in HUMIDITY:
@@ -350,7 +371,7 @@ def program_minor_iecc(minor):
     for version in VERSIONS:
         variant = schema['$defs'][version]
         variant['properties']['schema_version'] = {'const': IECC['program'][1]}
-        variant['properties']['source']['properties']['release'] = {'enum': [f'atlas-release-{r}' for r in IECC['releases']]}
+        variant['properties']['source']['properties']['release'] = {'enum': labels(IECC['releases'])}
         variant['properties']['source_zones'] = zones
         variant['properties']['pnnl_building_type'] = {'type': 'string', 'description': 'The PNNL prototype type name (plan C3).'}
         variant['properties']['standards_building_type'] = {'type': 'string'}
@@ -428,17 +449,26 @@ def construction_minor_alternates(minor):
 
 
 def services_schema():
-    return {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$id': 'urn:archetype-atlas:building-services:1.0.0',
-            'title': 'Building services 1.0.0',
+    """Building services 1.0.1: 1.0.0 with the release named by pattern (a patch, docs/schema-versioning.md), so
+    release 2.3.0 and later need no edit; a 1.0.0 document still validates."""
+    return {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$id': 'urn:archetype-atlas:building-services:1.0.1',
+            'title': 'Building services 1.0.1',
             'description': 'The building-level services of one template x building-type folder (ADR 0037): elevators, exhaust '
                            'fans, exterior lights and equipment, refrigeration cases and racks, each instantiated once, with '
                            'its schedules inlined.',
             'type': 'object', 'additionalProperties': False,
             'required': ['schema_version', 'kind', 'release', 'template', 'building_type', 'services', 'schedules'],
-            'properties': {'schema_version': {'const': '1.0.0'}, 'kind': {'const': 'building_services'},
-                           'release': {'enum': [f'atlas-release-{r}' for r in MINOR['releases']]}, 'template': {'type': 'string'}, 'building_type': {'type': 'string'},
+            'properties': {'schema_version': {'enum': ['1.0.0', '1.0.1']}, 'kind': {'const': 'building_services'},
+                           'release': dict(RELEASE_LABEL), 'template': {'type': 'string'}, 'building_type': {'type': 'string'},
                            'services': {'type': 'array', 'items': {'type': 'object', 'required': ['id', 'end_use', 'load', 'beneficiary_program_ids']}},
                            'schedules': {'type': 'object'}, 'evidence': {'type': 'object'}}}
+
+
+def evidence_key(row):
+    """An evidence row's content without its ID, as the exporters copy it."""
+    return json.dumps([row.get('source_file_id', row.get('source_file')), row.get('locator', ''), row.get('original_value'),
+                       row.get('original_unit'), row.get('transformation', ''), row.get('extraction_date'), row.get('interpretation', '')],
+                      sort_keys=True, ensure_ascii=False, separators=(',', ':'))
 
 
 def decode(eid, row, glossary):
@@ -526,6 +556,7 @@ class Release:
                 self.programs[program['id']] = (path.split('/programs/')[0]+'/', program)
         self.constructions = atlas_constructions.read_files(files)
         self._suites, self._bundles, self._exporters, self._dwellings = {}, {}, {}, None
+        self._entries, self._evidence_rows, self._evidence_keys = {}, None, None
 
     @property
     def dwellings(self):
@@ -589,6 +620,10 @@ class Release:
                 services, programs = self.capped()
                 self._exporters[version] = ProgramExporter(self.bundle(version), capped_services=services, capped_programs=programs,
                                                            inactive_controls=inactive)
+            if self.release in atlas_contracts.RELEASES:
+                # Release 2.3.0 stores the ADR 0016 accepted absence as fillings (ADR 0053 section 3): the name rule is off.
+                exporter = self._exporters[version]
+                getattr(exporter, 'base', exporter).absence_by_name = False
         return self._exporters[version]
 
     @contextlib.contextmanager
@@ -626,7 +661,8 @@ class Release:
             raise ValueError('Unknown program version: '+version)
         if program_id not in self.programs and program_id in self.dwellings.programs:
             with later_residential(self.release), self.carried_inputs():
-                return self.dwellings.program(program_id, version)
+                document = self.dwellings.program(program_id, version)
+            return self.program_contract(document, program_id, version) if self.release in atlas_contracts.RELEASES else document
         if version == 'filled' and str(self.programs[program_id][1].get('template', '')).startswith('IECC '):
             raise ValueError(program_id+': IECC programs export as source only. They hold source values with no fillings, and the '
                              'filled version folds water heating into its source heaters, which are deferred with the systems '
@@ -650,7 +686,71 @@ class Release:
         errors = [e.message for e in validator(schema).iter_errors(document)]
         if errors:
             raise ValueError(program_id+': '+'; '.join(errors[:5]))
+        return self.program_contract(document, program_id, version) if self.release in atlas_contracts.RELEASES else document
+
+    def program_contract(self, document, program_id, version):
+        """Program JSON 6.0.0 (release 2.3.0 on, ADR 0054) from the validated 5.4.0 document."""
+        glossary = json.loads(self.files['evidence/glossary.json'])
+        reasons = {k: v['reason'] for k, v in glossary['unresolved'].items()}
+        evidence = self.evidence_rows()
+        if program_id in self.programs:
+            folder, record = self.programs[program_id]
+            entries, stored = self.folder_entries(folder), record
+        else:
+            stored = self.dwellings.programs[program_id][1]
+            record = None
+            entries = {l['demand_id']: l for l in stored.get('loads', []) if isinstance(l, dict) and l.get('demand_id')}
+        own = {*stored.get('evidence_ids', []), *stored.get('filling_evidence_ids', [])}
+        ordered = self.evidence_order(document['source']['evidence'], program_id, own)
+        context = atlas_contracts.ProgramContext(f'atlas-release-{self.release}', glossary['source_files'], reasons, evidence,
+                                                 entries, ordered, record)
+        document = atlas_contracts.program_document(document, version, context)
+        errors = schema_errors(atlas_contracts.PROGRAM[0], document)
+        if errors:
+            raise ValueError(program_id+': '+'; '.join(errors[:5]))
         return document
+
+    def evidence_rows(self):
+        """{evidence ID: program-shaped row} of the whole release (programs, services, systems and dwellings)."""
+        if self._evidence_rows is None:
+            glossary = json.loads(self.files['evidence/glossary.json'])
+            rows, keys = {}, {}
+            for path, data in sorted(self.files.items()):
+                if path.startswith('evidence/') and not path.endswith('glossary.json'):
+                    for eid, row in json.loads(data).items():
+                        decoded = decode(eid, row, glossary)
+                        if 'source_file' in decoded and 'source_file_id' not in decoded:
+                            decoded['source_file_id'] = decoded.pop('source_file')
+                        rows[eid] = decoded
+                        keys.setdefault(evidence_key(decoded), []).append(eid)
+            self._evidence_rows, self._evidence_keys = rows, keys
+        return self._evidence_rows
+
+    def evidence_order(self, exported, program_id, own=()):
+        """The evidence ID of each exported row, matched by content (the exporters copy rows without their ID); a row
+        whose content several IDs share takes the program's own ID."""
+        self.evidence_rows()
+        out = []
+        for row in exported:
+            found = self._evidence_keys.get(evidence_key(row))
+            if not found:
+                raise ValueError(f'{program_id}: an exported evidence row matches no release row: {row.get("locator")}')
+            out.append(next((eid for eid in found if eid in own), found[0]))
+        return out
+
+    def folder_entries(self, folder):
+        """{demand ID: stored load} over a folder's programs and services."""
+        if folder not in self._entries:
+            entries = {}
+            for _, (f, record) in self.programs.items():
+                if f == folder:
+                    for load in record['loads']:
+                        entries.setdefault(load['demand_id'], load)
+            for service in self.folder_services(folder).values():
+                if service['load'].get('demand_id'):
+                    entries.setdefault(service['load']['demand_id'], service['load'])
+            self._entries[folder] = entries
+        return self._entries[folder]
 
     def program_lighting(self, document, program_id):
         """Program JSON 5.4.0 from a 5.2.0 document: the stored lighting controls (ADR 0044)."""
@@ -752,7 +852,8 @@ class Release:
                     schedules[sid] = normalize_schedule({**suite.schedule(sid), 'id': sid})
         evidence = json.loads(self.files[f'evidence/commercial/{folder}.json'])
         first = next(iter(added.values()))
-        document = {'schema_version': MINOR['services'][1], 'kind': 'building_services', 'release': f'atlas-release-{self.release}',
+        version = SERVICES_PATCH if self.release in atlas_contracts.RELEASES else MINOR['services'][1]
+        document = {'schema_version': version, 'kind': 'building_services', 'release': f'atlas-release-{self.release}',
                     'template': first['template'], 'building_type': first['building_type'],
                     'services': [{**copy.deepcopy(s), 'id': sid} for sid, s in sorted(added.items())], 'schedules': schedules,
                     'evidence': {e: evidence[e] for s in added.values() for e in s['evidence_ids'] if e in evidence}}
@@ -769,7 +870,15 @@ class Release:
                 p.startswith('residential/') and p.endswith(f'/constructions/{set_id}.json') for p in self.files):
             from scripts import prototype_dwellings
             with later_residential(self.release):
-                return prototype_dwellings.construction(self, set_id, key)
+                document = prototype_dwellings.construction(self, set_id, key)
+            if self.release not in atlas_contracts.RELEASES:
+                return document
+            glossary = json.loads(self.files['evidence/glossary.json'])
+            document = atlas_contracts.source_model_document(document, glossary['source_files'])
+            errors = schema_errors(atlas_contracts.SOURCE_MODEL[0], document)
+            if errors:
+                raise ValueError(f'{set_id} {key}: '+'; '.join(errors[:5]))
+            return document
         if self.release != '1.0.0':
             name, version, _ = MINOR[representation]
         if self.release in IECC['releases'] and representation == 'detailed':
@@ -783,10 +892,32 @@ class Release:
         errors = [e.message for e in validator(name).iter_errors(document)]
         if errors:
             raise ValueError(f'{set_id} {key}: '+'; '.join(errors[:5]))
+        if self.release not in atlas_contracts.RELEASES:
+            return document
+        if representation == 'unified' and not mass_agrees(document):
+            raise ValueError(f'{set_id} {key}: the InternalMass quantity differs from the additional-mass inventory it must equal '
+                             '(construction mass accounting contract; ADR 0053 section 1)')
+        document = atlas_contracts.construction_document(document, representation, f'atlas-release-{self.release}')
+        name = (atlas_contracts.DETAILED if representation == 'detailed' else atlas_contracts.UNIFIED)[0]
+        errors = schema_errors(name, document)
+        if errors:
+            raise ValueError(f'{set_id} {key}: '+'; '.join(errors[:5]))
         return document
 
 
 _VALIDATORS = {}
+
+
+def schema_errors(name, document):
+    """Readable schema errors: the path and message, and for a failed oneOf the branch errors."""
+    out = []
+    for error in validator(name).iter_errors(document):
+        path = '/'+'/'.join(str(p) for p in error.absolute_path)
+        if error.context:
+            out.extend(f'{path} {"/".join(str(p) for p in c.absolute_path)}: {c.message[:160]}' for c in error.context)
+        else:
+            out.append(f'{path}: {error.message[:160]}')
+    return out
 
 
 def validator(name):
@@ -814,8 +945,8 @@ def main():
                 path.write_bytes(suite_bytes(schema))
             elif not path.exists() or load_json(path) != schema:
                 raise SystemExit(f'{name} differs from its derivation; run python -m scripts.atlas_exports --schemas')
-        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 4.3.0 / 3.0.0 / 3.1.0, '
-              'source model constructions 1.0.0, mass accounting 1.1.0 and building services 1.0.0 schemas '
+        print('Program 5.0.0 / 5.1.0 / 5.2.0 / 5.3.0 / 5.4.0 / 6.0.0, construction 4.0.0 / 4.1.0 / 4.2.0 / 4.3.0 / 5.0.0 / '
+              '3.0.0 / 3.1.0 / 4.0.0, source model constructions 1.0.0 / 2.0.0, mass accounting 1.1.0 and building services 1.0.0 schemas '
               +('written' if args.schemas else 'match their derivation'))
         return
     release = Release(release=args.release)

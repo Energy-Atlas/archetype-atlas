@@ -43,3 +43,62 @@ python -m scripts.site_store program.json
 
 Without JavaScript, **Download** saves the gzip file itself, named by the SHA-256 of its gzip bytes; decompressed,
 it is the canonical file. The [site index guide](site-index.md) describes the store.
+
+## Nulls and zeros
+
+From release 2.3.0 (Program JSON 6.0.0, [ADR 0054](https://github.com/Energy-Atlas/archetype-atlas/blob/main/docs/adr/0054-release-2-3-0-export-contracts.md))
+a null never stands alone. Every load has a `status`: `known` (the source value, a source zero included),
+`unknown` (null, with its `reason`) or `filled` (a stored filling, with its rules and basis; filled version only).
+`nulls` gives every other null its meaning by JSON pointer: `unknown` (the source does not give it), `none`
+(known: there is none) or `not_applicable` (the field does not apply). A known 0 is a value: a source zero, or the
+accepted absence of an unknown load in the filled version (rule `accepted_absence`, ADR 0016, stored on the record).
+The filled version lists its zero loads in `metadata.absent_demands`.
+
+Hot water differs by family: DOE Ref and IECC programs carry it as a load, 0 where the source zone has no draw;
+a 90.1 program carries it only where openstudio-standards assigns a draw to its space type, and otherwise its
+folder's `water.json` says whether the space has no local draw, an unknown assignment or a share of a building
+draw. Conditioning differs too: IECC programs state it; 90.1 and DOE Ref programs state it where a filling sets
+it, and otherwise their setpoint schedules imply it.
+
+The meanings, which the exporter applies (the first matching row wins):
+
+<!-- nulls-table:start -->
+| JSON pointer (`*` one segment) | Meaning of null | Reason |
+| --- | --- | --- |
+| `/loads/*/value` | `unknown` (or the record's) | The source does not give the magnitude. |
+| `/shared_services/*/loads/*/value` | `unknown` (or the record's) | The source does not give the magnitude. |
+| `/loads/*/schedule_id` | `unknown` | No schedule: the load's magnitude is unknown, or the source gives no schedule for it. |
+| `/shared_services/*/loads/*/schedule_id` | `unknown` | No schedule: the load's magnitude is unknown, or the source gives no schedule for it. |
+| `/loads/*/heat_fractions/*` | `unknown` | The source gives no heat fraction; the filled version applies the EnergyPlus default. |
+| `/shared_services/*/loads/*/heat_fractions/*` | `unknown` | The source gives no heat fraction; the filled version applies the EnergyPlus default. |
+| `/loads/*/*` | `none` | The source object leaves this field blank (no such input). |
+| `/shared_services/*/loads/*/*` | `none` | The source object leaves this field blank (no such input). |
+| `/controls/people_radiant_fraction` | `unknown` | The source gives no people radiant fraction; the filled version applies the EnergyPlus default (0.3). |
+| `/controls/people_sensible_fraction` | `unknown` | The source gives no people sensible fraction; the filled version autocalculates it (EnergyPlus). |
+| `/controls/heating_enabled` | `unknown` | The source states no conditioning; setpoint schedules, where given, imply it (the filled version resolves it). |
+| `/controls/cooling_enabled` | `unknown` | The source states no conditioning; setpoint schedules, where given, imply it (the filled version resolves it). |
+| `/controls/*` | `unknown` (or the record's) | The source gives no value for this control. |
+| `/default_policy_id` | `none` | No default policy: the source version applies none. |
+| `/fenestration/wwr/*` | `not_applicable` | No exterior wall faces this direction in the program's source zones. |
+| `/fenestration/roof` | `not_applicable` | No exterior roof over the program's source zones. |
+| `/fenestration/value_by_climate/*/wwr/*` | `not_applicable` | No exterior wall faces this direction in the program's source zones. |
+| `/fenestration/value_by_climate/*/roof` | `not_applicable` | No exterior roof over the program's source zones. |
+| `/fenestration/variants/*/wwr/*` | `not_applicable` | No exterior wall faces this direction in the dwelling's source zones. |
+| `/fenestration/variants/*/roof` | `not_applicable` | No exterior roof over the dwelling's source zones. |
+| `/lighting_controls/daylighting` | `none` | A source zero: the complete source model has no daylighting controls in these zones. |
+| `/lighting_controls/daylighting_by_climate/*` | `none` | A source zero: the complete source model has no daylighting controls in these zones in that climate. |
+| `/lighting_controls/standards_rule/target_illuminance_setpoint_lux` | `none` | openstudio-standards gives no target; its default of 375 lux applies (space_add_daylighting_controls). |
+| `/water_use_gains/*/sensible_fraction` | `unknown` | The source gives no sensible fraction for the water use. |
+| `/water_use_gains/*/latent_fraction` | `unknown` | The source gives no latent fraction for the water use. |
+| `/water_heating/*/service_id` | `none` | A draw of the program itself, served by no shared building service. |
+| `/water_heating/*/draw/value` | `unknown` (or the record's) | The source does not give the magnitude. |
+| `/water_heating/*/draw/heat_fractions/*` | `unknown` | The source gives no heat fraction; the filled version applies the EnergyPlus default. |
+| `/water_heating/*/draw/*` | `none` | The source object leaves this field blank (no such input). |
+| `/water_heating/*/*` | `none` | The water heating has no such part. |
+| `/water_heating/*/stages/*/*` | `none` | The water-heating stage has no such part. |
+| `/dwelling/climate` | `not_applicable` | A code-prototype dwelling spans climates; entries that depend on climate carry applies_with. |
+| `/dwelling/vintage` | `not_applicable` | A code-prototype dwelling has a code template, not a stock vintage. |
+| `/dwelling/*` | `unknown` | The source dwelling records no value for this field. |
+| `/dwelling/*/*` | `unknown` | The source dwelling records no value for this field. |
+| `/source_calendar/daylight_saving` | `none` | The source model has no daylight saving period. |
+<!-- nulls-table:end -->
