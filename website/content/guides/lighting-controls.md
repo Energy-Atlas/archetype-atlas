@@ -17,7 +17,7 @@ Program JSON {{ schema:program }}). The decision record is ADR 0044; the release
 
 ```json
 "lighting_controls": {
-  "status": "known", "source": "pnnl_prototype", "geometry_dependent": true,
+  "status": "known", "source": "pnnl_prototype",
   "daylighting": {
     "controlled_floor_fraction": 0.408, "controlled_lighting_fraction": 0.213,
     "illuminance_setpoint_lux": 377.0, "control_type": "continuous_off", "method": "split_flux",
@@ -45,9 +45,36 @@ Program JSON {{ schema:program }}). The decision record is ADR 0044; the release
   illuminance for the space type and, for office whole-building types, the share of
   the primary and secondary sidelit areas assumed daylightable.
 
+## Where the fractions come from
+
+From release 2.3.0, Program JSON 6.0.0 labels the origin of every known block in
+`lighting_controls.daylighting_origin` (ADR 0059):
+
+```json
+"daylighting_origin": {
+  "kind": "prototype_zone_set",
+  "climates": ["0A", "0B", "1A", "…", "8A"],
+  "cited_climate": "0A",
+  "note": "The fractions are geometry-derived from the Daylighting:Controls of the PNNL prototype zones …"
+}
+```
+
+(90.1-2019 medium office, whole building.)
+
+- `kind: prototype_zone_set`: the fractions are derived from the PNNL prototype's
+  geometry: the floor fraction of the program's prototype zones with
+  `Daylighting:Controls`, and the reference-point fractions weighted by zone lighting
+  power. `kind: reference_model_scan`: no DOE reference model has controls, a source
+  zero whatever the geometry.
+- `climates` lists the prototype climates whose model gives `daylighting`; the
+  others are in `daylighting_by_climate`. All 19 for most programs.
+- `cited_climate` is the climate of the one model the evidence row cites. When all
+  19 climates agree, as for the climate-independent 90.1-2019 medium office whole
+  building, it is a copy (the first in climate order, 0A), not a choice of climate.
+
 ## Limits
 
-- The fractions come from the prototype geometry (`geometry_dependent`). A model with
+- The fractions come from the prototype geometry (`daylighting_origin`). A model with
   other windows or zoning should recompute them.
 - Dwellings carry no block: none of the residential or manufactured-housing models
   has daylighting controls.

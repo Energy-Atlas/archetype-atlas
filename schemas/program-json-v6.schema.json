@@ -2466,7 +2466,7 @@
               }
             }
           ],
-          "description": "Lighting controls of the program (ADR 0044). `daylighting` null is a source zero: the complete source model has no daylighting controls in these zones. Occupancy-sensor credits are inside the lighting schedule.",
+          "description": "Lighting controls of the program (ADR 0044). `daylighting` null is a source zero: the complete source model has no daylighting controls in these zones. Occupancy-sensor credits are inside the lighting schedule. 6.0.0: `daylighting_origin` says where the fractions come from (the prototype zone set and climates, or the reference model scan); the exporter gives it on every known block.",
           "properties": {
             "climate_evidence_ids": {
               "additionalProperties": {
@@ -2654,6 +2654,60 @@
               "propertyNames": {
                 "pattern": "^[0-8][A-C]$"
               },
+              "type": "object"
+            },
+            "daylighting_origin": {
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "kind": {
+                        "const": "prototype_zone_set"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "climates",
+                      "cited_climate"
+                    ]
+                  }
+                }
+              ],
+              "description": "Where the daylighting fractions come from (6.0.0, ADR 0059 section 4). They are the source model values, applied as given (ADR 0046 section 6); this says which source model and climates they are.",
+              "properties": {
+                "cited_climate": {
+                  "description": "The climate zone of the prototype model the evidence row cites. Where several climates give the same controls it is a copy of them, the first in climate order, not a choice of climate.",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "climates": {
+                  "description": "The prototype climate zones (of the 19 PNNL prototype locations) whose model gives `daylighting`; the others are in `daylighting_by_climate`.",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "kind": {
+                  "description": "prototype_zone_set: geometry-derived from the Daylighting:Controls of the PNNL prototype zones the program was extracted from: the floor fraction of those zones with controls and the reference-point fractions weighted by zone lighting power, for the prototype geometry; reference_model_scan: no DOE Commercial Reference Building model has Daylighting:Controls (every IDF scanned): a source zero, independent of geometry and climate.",
+                  "enum": [
+                    "prototype_zone_set",
+                    "reference_model_scan"
+                  ]
+                },
+                "note": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "note"
+              ],
               "type": "object"
             },
             "evidence_id": {
@@ -5210,7 +5264,7 @@
               }
             }
           ],
-          "description": "Lighting controls of the program (ADR 0044). `daylighting` null is a source zero: the complete source model has no daylighting controls in these zones. Occupancy-sensor credits are inside the lighting schedule.",
+          "description": "Lighting controls of the program (ADR 0044). `daylighting` null is a source zero: the complete source model has no daylighting controls in these zones. Occupancy-sensor credits are inside the lighting schedule. 6.0.0: `daylighting_origin` says where the fractions come from (the prototype zone set and climates, or the reference model scan); the exporter gives it on every known block.",
           "properties": {
             "climate_evidence_ids": {
               "additionalProperties": {
@@ -5398,6 +5452,60 @@
               "propertyNames": {
                 "pattern": "^[0-8][A-C]$"
               },
+              "type": "object"
+            },
+            "daylighting_origin": {
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "kind": {
+                        "const": "prototype_zone_set"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "climates",
+                      "cited_climate"
+                    ]
+                  }
+                }
+              ],
+              "description": "Where the daylighting fractions come from (6.0.0, ADR 0059 section 4). They are the source model values, applied as given (ADR 0046 section 6); this says which source model and climates they are.",
+              "properties": {
+                "cited_climate": {
+                  "description": "The climate zone of the prototype model the evidence row cites. Where several climates give the same controls it is a copy of them, the first in climate order, not a choice of climate.",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "climates": {
+                  "description": "The prototype climate zones (of the 19 PNNL prototype locations) whose model gives `daylighting`; the others are in `daylighting_by_climate`.",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "kind": {
+                  "description": "prototype_zone_set: geometry-derived from the Daylighting:Controls of the PNNL prototype zones the program was extracted from: the floor fraction of those zones with controls and the reference-point fractions weighted by zone lighting power, for the prototype geometry; reference_model_scan: no DOE Commercial Reference Building model has Daylighting:Controls (every IDF scanned): a source zero, independent of geometry and climate.",
+                  "enum": [
+                    "prototype_zone_set",
+                    "reference_model_scan"
+                  ]
+                },
+                "note": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "note"
+              ],
               "type": "object"
             },
             "evidence_id": {
@@ -5817,9 +5925,9 @@
     }
   },
   "$id": "urn:archetype-atlas:program-json:6.0.0",
-  "$comment": "revision 1 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+  "$comment": "revision 2 (2026-11-01). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Release 2.3.0 export (ADR 0054). version \"source\" holds actual values only; version \"filled\" applies the stored fillings and the exporter defaults with draw-only water heating. 6.0.0 changes from 5.4.0: evidence rows take the shape constructions use, with an id, and the document holds every row it cites; loads carry status, reason, filling and evidence_id; nulls gives the meaning of every null; dwelling window ratios that depend on context are fenestration.variants. Every other 5.4.0 field keeps its meaning.",
+  "description": "Release 2.3.0 export (ADR 0054). version \"source\" holds actual values only; version \"filled\" applies the stored fillings and the exporter defaults with draw-only water heating. 6.0.0 changes from 5.4.0: evidence rows take the shape constructions use, with an id, and the document holds every row it cites; loads carry status, reason, filling and evidence_id; nulls gives the meaning of every null; dwelling window ratios that depend on context are fenestration.variants; lighting_controls.daylighting_origin labels where the daylighting fractions come from. Every other 5.4.0 field keeps its meaning.",
   "oneOf": [
     {
       "$ref": "urn:archetype-atlas:program-json:6.0.0:source"
