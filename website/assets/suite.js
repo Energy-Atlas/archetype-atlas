@@ -1,5 +1,7 @@
-/* Suite pages (ADR 0043): version and context switches in the query string, and verified JSON copy and download.
-   Pages read completely without this script; it only narrows what is shown and handles the store's gzip documents. */
+/* Suite pages (ADR 0043, ADR 0057): version and context switches in the query string, and verified JSON copy and
+   download. Pages read completely without this script; it only narrows what is shown and handles the store's gzip
+   documents. Download saves the store's canonical JSON bytes unchanged, so the file hashes to the SHA-256 the page
+   prints (`json_sha256`); Copy puts an indented rendering of the same JSON on the clipboard. */
 (function () {
   'use strict';
   const LIMIT = 16000000;
@@ -36,10 +38,16 @@
 
   const cache = new Map();
 
-  /* A store document: fetched, checked against its SHA-256 and sizes, then decompressed. */
-  function load(descriptor, base) {
+  async function sha256(bytes) {
+    return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), n => n.toString(16).padStart(2, '0')).join('');
+  }
+
+  /* A store document's canonical JSON bytes: fetched, checked against the SHA-256 and size of the gzip file, then
+     decompressed and checked against the SHA-256 and size of the JSON. */
+  function loadBytes(descriptor, base) {
     const d = descriptor;
     if (!d || !/(^|\/)store\/[a-f0-9]{64}\.json\.gz$/.test(d.href) || !d.href.includes(d.sha256) || d.encoding !== 'gzip' ||
+        !/^[a-f0-9]{64}$/.test(d.json_sha256 || '') ||
         ![d.size_bytes, d.decoded_size_bytes].every(n => Number.isSafeInteger(n) && n > 0 && n <= LIMIT)) {
       return Promise.reject(new Error('Invalid JSON descriptor.'));
     }
@@ -47,16 +55,23 @@
     if (!cache.has(url)) {
       cache.set(url, (async () => {
         const response = await fetch(url, {credentials: 'same-origin'});
-        if (!response.ok) throw new Error('JSON unavailable (' + response.status + ').');
+        if (!response.ok) {
+          throw new Error(response.status === 429 ? 'The site is limiting downloads; wait a few minutes and try again.'
+            : 'JSON unavailable (' + response.status + ').');
+        }
         const encoded = await bounded(response.body, d.size_bytes);
-        const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoded)),
-          n => n.toString(16).padStart(2, '0')).join('');
-        if (digest !== d.sha256) throw new Error('JSON checksum verification failed.');
+        if (await sha256(encoded) !== d.sha256) throw new Error('JSON checksum verification failed.');
         const decoded = await bounded(new Blob([encoded]).stream().pipeThrough(new DecompressionStream('gzip')), d.decoded_size_bytes);
-        return JSON.parse(new TextDecoder('utf-8', {fatal: true}).decode(decoded));
+        if (await sha256(decoded) !== d.json_sha256) throw new Error('JSON checksum verification failed.');
+        return decoded;
       })().catch(error => { cache.delete(url); throw error; }));
     }
     return cache.get(url);
+  }
+
+  /* A store document, verified, as a JSON value. */
+  async function load(descriptor, base) {
+    return JSON.parse(new TextDecoder('utf-8', {fatal: true}).decode(await loadBytes(descriptor, base)));
   }
 
   function status(holder, text) {
@@ -105,9 +120,9 @@
       event.preventDefault();
       status(holder, 'Loading verified JSON…');
       try {
-        const text = JSON.stringify(await load(descriptor), null, 2) + '\n';
+        const bytes = await loadBytes(descriptor);
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(new Blob([text], {type: 'application/json'}));
+        link.href = URL.createObjectURL(new Blob([bytes], {type: 'application/json'}));
         link.download = holder.dataset.file;
         document.body.append(link);
         link.click();
@@ -115,6 +130,80 @@
         setTimeout(() => URL.revokeObjectURL(link.href), 1000);
         status(holder, 'Downloaded ' + holder.dataset.file + '.');
       } catch (error) { status(holder, error.message); }
+    });
+  }
+
+  /* A JSON value as the site renders records (site_render.render): objects as definition lists, lists of objects as
+     tables, null as an explicit null. Used for the context fields that the largest construction pages load on demand. */
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function scalarText(value) {
+    return typeof value === 'string' ? value : JSON.stringify(value);
+  }
+
+  function renderValue(value) {
+    if (value === null) return element('span', 'ea-null', 'null');
+    if (typeof value !== 'object') return document.createTextNode(scalarText(value));
+    if (Array.isArray(value)) {
+      if (!value.length) return element('span', 'ea-empty', '[]');
+      if (value.every(v => v === null || typeof v !== 'object')) {
+        return document.createTextNode(value.map(v => v === null ? 'null' : scalarText(v)).join(', '));
+      }
+      const columns = [];
+      if (value.every(v => v && typeof v === 'object' && !Array.isArray(v))) {
+        value.forEach(v => Object.keys(v).forEach(k => { if (!columns.includes(k)) columns.push(k); }));
+      }
+      if (columns.length && columns.length <= 12) {
+        const wrap = element('div', 'ea-table'), table = element('table'), head = element('tr'), body = element('tbody');
+        columns.forEach(c => head.append(element('th', null, c)));
+        value.forEach(v => {
+          const row = element('tr');
+          columns.forEach(c => {
+            const cell = element('td', c in v ? null : 'ea-absent');
+            if (c in v) cell.append(renderValue(v[c]));
+            row.append(cell);
+          });
+          body.append(row);
+        });
+        const thead = element('thead');
+        thead.append(head);
+        table.append(thead, body);
+        wrap.append(table);
+        return wrap;
+      }
+      const list = element('ol', 'ea-list');
+      value.forEach(v => { const item = element('li'); item.append(renderValue(v)); list.append(item); });
+      return list;
+    }
+    const keys = Object.keys(value);
+    if (!keys.length) return element('span', 'ea-empty', '{}');
+    const fields = element('dl', 'ea-fields');
+    keys.forEach(k => {
+      const dd = element('dd');
+      dd.append(renderValue(value[k]));
+      fields.append(element('dt', null, k), dd);
+    });
+    return fields;
+  }
+
+  function initLazy(holder) {
+    const button = holder.querySelector('.ea-show');
+    if (!button) return;
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      try {
+        const document_ = await load(JSON.parse(holder.dataset.json));
+        holder.replaceChildren(renderValue(document_.fields));
+      } catch (error) {
+        button.disabled = false;
+        status(holder, error.message);
+      }
     });
   }
 
@@ -180,13 +269,14 @@
     initClimates();
     document.querySelectorAll('[data-filters]').forEach(initFilters);
     document.querySelectorAll('.ea-json[data-json]').forEach(initJson);
+    document.querySelectorAll('.ea-lazy[data-json]').forEach(initLazy);
   }
 
   if (typeof module === 'object' && module.exports) {
     module.exports = {zone, matches};
     return;
   }
-  window.AtlasStore = {load, zone, matches};
+  window.AtlasStore = {load, loadBytes, zone, matches};
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

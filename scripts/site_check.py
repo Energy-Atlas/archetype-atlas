@@ -5,10 +5,13 @@ python -m scripts.site_check --require-complete  # publication: no partial build
 
 Every internal URL and fragment resolves under the project prefix; every store file
 is named by its SHA-256 and every JSON descriptor matches its file; every program and
-construction set of the release has a page and its exports; the program and folder index
-(ADR 0052) matches the release, and every folder's generation.json descriptor verifies;
-retired routes are absent from the output and from search; the site stays under the
-publication ceiling.
+construction set of the release has a page and its exports; site-manifest.json validates
+against its schema (schemas/site-manifest.schema.json, ADR 0058); the program and folder
+index (ADR 0052) matches the release, every folder's generation.json descriptor verifies,
+every null carries its reason and every mix's composition is the release record's; every
+template has its catalogue line; the guides name only releases the exporter reads and keep
+no placeholder (ADR 0057); retired routes are absent from the output and from search; the
+site stays under the publication ceiling.
 
 A sampled build (`suite_site --sample`, pull requests) is checked the same way within
 the sampled folders and the site-wide pages: only a link into a catalogue folder the
@@ -18,7 +21,9 @@ from the sample, a broken fragment, store, search or viewer entry still fails.
 import argparse
 import gzip
 import hashlib
+import html
 import json
+import re
 from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
@@ -29,6 +34,10 @@ from scripts.common import ROOT
 RETIRED = ('definitions', 'objects', 'json', 'delivery', 'releases', 'downloads', 'resolution-supplements',
            'commercial-completion', 'water-reporting', 'contracts', 'examples')
 CEILING = 1_000_000_000
+SCHEMA = ROOT/'schemas/site-manifest.schema.json'
+SHA256 = re.compile(r'^[0-9a-f]{64}$')
+# A release named in a guide's command or code: `--release 2.2.0`, `Release(release='2.2.0')`.
+GUIDE_RELEASE = re.compile(r'(?:--release\s+|release=.)(\d+\.\d+\.\d+)')
 
 
 class Page(HTMLParser):
@@ -126,6 +135,8 @@ def check_store(root, pages):
                 errors.append(f'{path.relative_to(root)}: descriptor does not match its store file: {name}')
             elif not 0 < descriptor['decoded_size_bytes'] <= 16_000_000:
                 errors.append(f'{path.relative_to(root)}: decoded size out of bounds: {name}')
+            elif not SHA256.match(str(descriptor.get('json_sha256'))):
+                errors.append(f'{path.relative_to(root)}: descriptor without the JSON SHA-256: {name}')
     return errors
 
 
@@ -136,6 +147,8 @@ def decoded(root, descriptor):
     value = gzip.decompress(data)
     if len(value) != descriptor['decoded_size_bytes']:
         raise ValueError('decoded size mismatch: '+descriptor['href'])
+    if 'json_sha256' in descriptor and hashlib.sha256(value).hexdigest() != descriptor['json_sha256']:
+        raise ValueError('JSON checksum mismatch: '+descriptor['href'])
     return json.loads(value)
 
 
@@ -171,12 +184,47 @@ PROGRAM_INDEX = ('space_type', 'building_type', 'folder', 'mode')
 
 
 def release_index(release):
-    """What check_index compares the manifest against, from a site_release.SiteRelease."""
-    programs = {pid: {'name': record.get('name'), 'building_type': record.get('building_type'), 'folder': folder, 'mode': mode}
+    """What check_index compares the manifest against, from a site_release.SiteRelease: each program's name, building
+    type, folder, mode and mix members; each folder's family, template, building type, programs and generation."""
+    programs = {pid: {'name': record.get('name'), 'building_type': record.get('building_type'), 'folder': folder, 'mode': mode,
+                      'members': (record.get('composition') or {}).get('members')}
                 for pid, (folder, mode, record) in release.programs.items()}
     folders = {path: {'family': f.family, 'template': f.template, 'building_type': f.building_type,
                       'programs': sorted(f.programs), 'generation': f.generation} for path, f in release.folders.items()}
     return {'programs': programs, 'folders': folders}
+
+
+def check_schema(manifest):
+    """site-manifest.json against its Draft 2020-12 schema (ADR 0058)."""
+    from jsonschema import Draft202012Validator
+    validator = Draft202012Validator(json.loads(SCHEMA.read_text(encoding='utf-8')))
+    errors = sorted(validator.iter_errors(manifest), key=lambda e: list(e.absolute_path))
+    return [f'site-manifest.json /{"/".join(map(str, e.absolute_path))}: {e.message}' for e in errors[:20]] + (
+        [f'... {len(errors) - 20} more schema errors'] if len(errors) > 20 else [])
+
+
+def check_compositions(path, entry, expected):
+    """A folder's `compositions` (ADR 0058) are exactly its general and department mixes, each with the members of its
+    release record: release program IDs of the same folder, their represented areas and weights, the weights the
+    area shares and summing to one."""
+    errors = []
+    mixes = {pid for pid in entry.get('programs', []) if expected['programs'].get(pid, {}).get('mode') in ('general', 'department')
+             and expected['programs'][pid].get('members')}
+    compositions = entry.get('compositions') or {}
+    if set(compositions) != mixes:
+        errors.append(f'Folder {path}: compositions list {len(compositions)} mixes, the release has {len(mixes)}')
+    for pid, composition in sorted(compositions.items()):
+        members = expected['programs'].get(pid, {}).get('members') or []
+        want = [{k: m[k] for k in ('program_id', 'represented_area_m2', 'weight')} for m in members]
+        if composition.get('members') != want or composition.get('mode') != expected['programs'].get(pid, {}).get('mode'):
+            errors.append(f'Folder {path}: composition of {pid} differs from its release record')
+            continue
+        total = sum(m['represented_area_m2'] for m in want)
+        if any(m['program_id'] not in entry.get('programs', []) for m in want):
+            errors.append(f'Folder {path}: a member of {pid} is not a program of the folder')
+        if abs(sum(m['weight'] for m in want) - 1) > 1e-9 or (total > 0 and any(abs(m['weight'] - m['represented_area_m2']/total) > 1e-9 for m in want)):
+            errors.append(f'Folder {path}: the weights of {pid} are not its members\' area shares')
+    return errors
 
 
 def check_descriptor(root, descriptor):
@@ -230,6 +278,7 @@ def check_index(root, manifest, expected):
             if entry.get(key) != release[key]:
                 errors.append(f'Folder {path}: {key} differs from the release')
         errors.extend(f'Folder {path}: {pid} has no program entry' for pid in entry.get('programs', []) if pid not in manifest['programs'])
+        errors.extend(check_compositions(path, entry, expected))
         if 'generation' not in entry:
             errors.append(f'Folder {path}: no generation field')
         elif release['generation'] is None or entry['generation'] is None:
@@ -255,6 +304,27 @@ def check_zoning(root, manifest):
     pages = manifest.get('zoning', {}).get('pages', {})
     return [f'Missing zoning page: {url}' for url in pages.values()
             if not (root/url/'index.md').is_file() and not (root/url/'index.html').is_file()]
+
+
+def check_catalogue(manifest):
+    """Every template of the index has its display line (website/content/templates.json, ADR 0057)."""
+    catalogue = json.loads((ROOT/'website/content/templates.json').read_text(encoding='utf-8'))['templates']
+    templates = sorted({f'{f["family"]}/{f["template"]}' for f in manifest.get('folders', {}).values()})
+    return [f'Template {t} has no line in website/content/templates.json' for t in templates if t not in catalogue]
+
+
+def check_guides(root):
+    """The built guides name only releases the exporter reads, and keep no unreplaced placeholder (ADR 0057)."""
+    from scripts.atlas_exports import IN_TREE
+    errors = []
+    for path in sorted((Path(root)/'guides').rglob('index.html')):
+        text = html.unescape(re.sub(r'<[^>]+>', '', path.read_text(encoding='utf-8')))  # code is highlighted token by token
+        named = sorted(set(GUIDE_RELEASE.findall(text)) - set(IN_TREE))
+        if named:
+            errors.append(f'{path.relative_to(root).as_posix()}: names release {", ".join(named)}, which the exporter does not read')
+        if '{{ ' in text:
+            errors.append(f'{path.relative_to(root).as_posix()}: an unreplaced placeholder')
+    return errors
 
 
 def check_retired(root):
@@ -315,6 +385,7 @@ def check(site, prefix='/archetype-atlas/', complete=False):
     from scripts.site_release import SiteRelease
     release = SiteRelease(manifest['release'])
     ids = (set(release.programs), {s: set(r.get('contexts', {})) for s, (_, r) in release.sets.items()})
+    errors += check_schema(manifest)+check_catalogue(manifest)+check_guides(site)
     errors += check_coverage(site, manifest, ids)+check_index(site, manifest, release_index(release))
     errors += check_zoning(site, manifest)+check_search(site, manifest)+check_viewer(site)+check_size(site)
     if complete:
@@ -338,7 +409,7 @@ def main():
     print(f'Release {manifest["release"]}'+(f' (sample: {len(sample["folders"])} folders, links into the others excused)' if sample else '')
           + f': {count:,} HTML pages, {len(manifest["programs"]):,} programs and '
           f'{len(manifest["construction_sets"]):,} construction sets with pages and exports, {len(manifest["folders"]):,} folders '
-          f'indexed; links, fragments, store, index, search, viewer and retirement checks passed; {size:,} bytes')
+          f'indexed; links, fragments, store, schema, index, guides, search, viewer and retirement checks passed; {size:,} bytes')
 
 
 if __name__ == '__main__':

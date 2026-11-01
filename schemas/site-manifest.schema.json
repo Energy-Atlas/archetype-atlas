@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archetype-atlas:site-manifest:1.0.0",
+  "title": "Atlas site index (site-manifest.json) 1.0.0",
+  "description": "The index of one built catalogue site (ADR 0043, ADR 0052, ADR 0058): the release it shows, the input digest, every program and construction set with its page and its exports in the content-addressed store, and the folder index with each folder's generation settings and the composition of its mixes. Store paths resolve against the site root. Explicit nulls carry their reason beside them. Readers ignore keys they do not know; a key's meaning changes only with a major version.",
+  "type": "object",
+  "required": ["kind", "schema_version", "release", "generated_by", "release_manifest_sha256", "inputs_sha256", "partial", "counts", "programs", "construction_sets", "folders", "zoning"],
+  "properties": {
+    "kind": {"const": "atlas_site"},
+    "schema_version": {"const": "1.0.0", "description": "The version of this index's shape."},
+    "release": {"$ref": "#/$defs/release_number"},
+    "generated_by": {"type": "string"},
+    "release_manifest_sha256": {"$ref": "#/$defs/sha256", "description": "SHA-256 of the release folder's manifest.json bytes."},
+    "inputs_sha256": {"$ref": "#/$defs/sha256", "description": "The digest of everything the generator and MkDocs read (suite_site --digest)."},
+    "partial": {"type": "boolean", "description": "True for a sampled (--sample) or partial (--only) build, which is never published."},
+    "sample": {
+      "type": "object",
+      "required": ["folders_per_template", "folders"],
+      "properties": {
+        "folders_per_template": {"type": "integer", "minimum": 1},
+        "folders": {"type": "array", "items": {"$ref": "#/$defs/folder_path"}}
+      }
+    },
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "zoning": {
+      "type": "object",
+      "description": "The zoning recommendation pages (ADR 0050) and the drop's counts.",
+      "properties": {"pages": {"type": "object", "additionalProperties": {"$ref": "#/$defs/page"}}}
+    },
+    "programs": {"type": "object", "propertyNames": {"$ref": "#/$defs/record_id"}, "additionalProperties": {"$ref": "#/$defs/program"}},
+    "construction_sets": {"type": "object", "propertyNames": {"$ref": "#/$defs/record_id"}, "additionalProperties": {"$ref": "#/$defs/construction_set"}},
+    "folders": {"type": "object", "propertyNames": {"$ref": "#/$defs/folder_path"}, "additionalProperties": {"$ref": "#/$defs/folder"}}
+  },
+  "$defs": {
+    "release_number": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "record_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{5,}$"},
+    "page": {"type": "string", "pattern": "^[a-z0-9][A-Za-z0-9._/-]*/$", "description": "A page path on the site, relative to its root, ending in '/'."},
+    "folder_path": {"type": "string", "pattern": "^(commercial|residential)/[a-z0-9-]+/[a-z0-9-]+/$", "description": "<family>/<template>/<building type>/, the release folder."},
+    "store_path": {"type": "string", "pattern": "^store/[0-9a-f]{64}\\.json\\.gz$", "description": "A store file, named by the SHA-256 of its gzip bytes."},
+    "reason": {"type": "string", "minLength": 1},
+    "descriptor": {
+      "type": "object",
+      "description": "A store document: gzip-compressed canonical JSON (keys sorted, no insignificant whitespace, UTF-8 without escapes, no trailing newline; scripts.site_store.canonical).",
+      "required": ["href", "sha256", "encoding", "size_bytes", "decoded_size_bytes", "json_sha256"],
+      "properties": {
+        "href": {"$ref": "#/$defs/store_path"},
+        "sha256": {"$ref": "#/$defs/sha256", "description": "SHA-256 of the gzip bytes; the store path names it."},
+        "encoding": {"const": "gzip"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "decoded_size_bytes": {"type": "integer", "minimum": 1, "maximum": 16000000},
+        "json_sha256": {"$ref": "#/$defs/sha256", "description": "SHA-256 of the canonical JSON bytes: of the decompressed file, and of the file a page's Download button saves."}
+      }
+    },
+    "program": {
+      "type": "object",
+      "required": ["page", "source", "filled", "space_type", "building_type", "folder", "mode"],
+      "properties": {
+        "page": {"$ref": "#/$defs/page"},
+        "source": {"$ref": "#/$defs/store_path", "description": "The source Program JSON export."},
+        "filled": {"oneOf": [{"$ref": "#/$defs/store_path"}, {"type": "null"}], "description": "The filled Program JSON export, or null with filled_reason."},
+        "filled_reason": {"$ref": "#/$defs/reason"},
+        "source_reason": {"$ref": "#/$defs/reason"},
+        "space_type": {"type": ["string", "null"], "description": "The name before '_<building type>' (every commercial program), else null (ADR 0052)."},
+        "building_type": {"type": ["string", "null"]},
+        "folder": {"$ref": "#/$defs/folder_path"},
+        "mode": {"enum": ["source", "department", "general", "dwelling"]}
+      },
+      "if": {"properties": {"filled": {"type": "null"}}},
+      "then": {"required": ["filled_reason"]}
+    },
+    "construction_set": {
+      "type": "object",
+      "required": ["page", "contexts"],
+      "properties": {
+        "page": {"$ref": "#/$defs/page"},
+        "contexts": {"type": "object", "minProperties": 1, "additionalProperties": {"$ref": "#/$defs/context"}}
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "One construction context's exports. Where one document serves both representations (the source model constructions of the code-prototype dwellings), unified names the same store file as detailed.",
+      "required": ["detailed"],
+      "properties": {
+        "detailed": {"oneOf": [{"$ref": "#/$defs/store_path"}, {"type": "null"}]},
+        "reason": {"$ref": "#/$defs/reason", "description": "Why there is no detailed export."},
+        "unified": {"oneOf": [{"$ref": "#/$defs/store_path"}, {"type": "null"}]},
+        "unified_reason": {"$ref": "#/$defs/reason", "description": "Why there is no unified representation."}
+      },
+      "allOf": [
+        {"if": {"properties": {"detailed": {"type": "null"}}}, "then": {"required": ["reason"]}, "else": {"required": ["unified"]}},
+        {"if": {"required": ["unified"], "properties": {"unified": {"type": "null"}}}, "then": {"required": ["unified_reason"]}}
+      ]
+    },
+    "member": {
+      "type": "object",
+      "required": ["program_id", "represented_area_m2", "weight"],
+      "properties": {
+        "program_id": {"$ref": "#/$defs/record_id", "description": "The member's release program ID, a program of the same folder."},
+        "represented_area_m2": {"type": "number", "minimum": 0, "description": "The member's floor area in the source prototype, m²."},
+        "weight": {"type": "number", "minimum": 0, "maximum": 1, "description": "represented_area_m2 over the mix's total: the default share of each member."}
+      }
+    },
+    "composition": {
+      "type": "object",
+      "required": ["mode", "members"],
+      "properties": {
+        "mode": {"enum": ["general", "department"]},
+        "members": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/member"}}
+      }
+    },
+    "folder": {
+      "type": "object",
+      "required": ["family", "template", "building_type", "programs", "generation", "compositions"],
+      "properties": {
+        "family": {"enum": ["commercial", "residential"]},
+        "template": {"type": "string"},
+        "building_type": {"type": "string", "description": "The folder's slug."},
+        "programs": {"type": "array", "items": {"$ref": "#/$defs/record_id"}},
+        "generation": {"oneOf": [{"$ref": "#/$defs/descriptor"}, {"type": "null"}], "description": "The folder's generation.json (ADR 0051), or null with generation_reason."},
+        "generation_reason": {"$ref": "#/$defs/reason"},
+        "compositions": {
+          "type": "object",
+          "description": "Each general and department mix of the folder by its program ID: its members' release program IDs, represented areas and weights, in the record's order (ADR 0058). Folders without mixes have {}.",
+          "propertyNames": {"$ref": "#/$defs/record_id"},
+          "additionalProperties": {"$ref": "#/$defs/composition"}
+        }
+      },
+      "if": {"properties": {"generation": {"type": "null"}}},
+      "then": {"required": ["generation_reason"]}
+    }
+  }
+}

@@ -41,7 +41,7 @@ which are deferred with the systems.
 ## Constructions
 
 - **Sets:** one per folder, with 19 contexts, from the IDF constructions and materials
-  (detailed construction JSON 4.2.0).
+  (detailed construction JSON 4.2.0 when added; {{ schema:construction_set }} in release {{ release }}).
 - **Assignments:** where a component varies, by story position (ground, middle, top) and
   space type. Surfaces no rule explains keep surface-level assignments.
 - **Infiltration:** the IDF design-flow rules per zone, with their schedules inline, as

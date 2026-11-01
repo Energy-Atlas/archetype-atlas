@@ -7,11 +7,13 @@ python -m scripts.site_smoke --serve                 # serve build/site at http:
 
 The site is served under its project prefix, with 404.html for missing paths as
 GitHub Pages does. Pages are chosen from site-manifest.json: a program with fillings,
-a source-only program, a dwelling with annual schedules and a construction set with
-several context axes.
+a source-only program, a dwelling with annual schedules, a construction set with
+several context axes and, where the build has one, a construction set that loads its
+context fields on demand (ADR 0057).
 """
 import argparse
 import functools
+import hashlib
 import http.server
 import json
 import re
@@ -69,13 +71,14 @@ def pick(site):
     axes = next((s for s, e in sorted(sets.items()) if s.startswith('iecc-') and '.' in next(iter(e['contexts'])) and
                  'data-foundation' in (site/e['page']/'index.html').read_text(encoding='utf-8')), None)
     commercial = next(s for s, e in sorted(sets.items()) if len(e['contexts']) > 3 and s.startswith('90-1-2019.'))
-    return manifest, filled, source_only, dwelling, axes or commercial, commercial
+    lazy = next((s for s, e in sorted(sets.items()) if 'class="ea-lazy"' in (site/e['page']/'index.html').read_text(encoding='utf-8')), None)
+    return manifest, filled, source_only, dwelling, axes or commercial, commercial, lazy
 
 
 def check(site, channel=None, screenshots=None):
     from playwright.sync_api import sync_playwright
     site = Path(site)
-    manifest, filled, source_only, dwelling, axes, commercial = pick(site)
+    manifest, filled, source_only, dwelling, axes, commercial, lazy = pick(site)
     server, base = serve(site)
     failures, notes = [], []
 
@@ -107,11 +110,12 @@ def check(site, channel=None, screenshots=None):
             exports = page.locator('.ea-suite > .ea-exports').first
             expect(exports.locator('.ea-copy:visible').count() == 2, f'{filled}: copy buttons for source and filled')
             page.goto(page_url(filled)+'?version=source')
-            hidden = page.eval_on_selector('.ea-filling', 'e => getComputedStyle(e).display')
-            expect(hidden == 'none', f'{filled}: ?version=source hides fillings')
+            hidden = page.eval_on_selector_all('[data-view="filled"]', 'es => es.map(e => getComputedStyle(e).display)')
+            expect(hidden and set(hidden) == {'none'}, f'{filled}: ?version=source hides the filled export and the fillings')
             page.goto(page_url(filled)+'?version=filled')
-            shown = page.eval_on_selector('.ea-filling', 'e => getComputedStyle(e).display')
-            expect(shown != 'none', f'{filled}: ?version=filled shows fillings')
+            shown = page.eval_on_selector('#section-filled', 'e => getComputedStyle(e).display')
+            replaced = page.eval_on_selector_all('[data-view="source"]', 'es => es.map(e => getComputedStyle(e).display)')
+            expect(shown != 'none' and set(replaced) <= {'none'}, f'{filled}: ?version=filled shows the filled export, hides the source blocks it replaces')
             expect(page.locator('[data-switch="version"] a[aria-current="true"]').inner_text() == 'Filled', f'{filled}: active version marked')
             shot(page, 'program-filled')
             holder = page.locator('.ea-suite > .ea-exports').first.locator('.ea-json').nth(1)
@@ -121,15 +125,19 @@ def check(site, channel=None, screenshots=None):
             text = page.evaluate('navigator.clipboard.readText()')
             copied = json.loads(text) if text.startswith('{') else {}
             expect(copied.get('id') == filled and copied.get('version') == 'filled', f'{filled}: copied filled JSON verified')
+            source_holder = page.locator('.ea-suite > .ea-exports').first.locator('.ea-json').nth(0)
             with page.expect_download() as download:
-                page.locator('.ea-suite > .ea-exports').first.locator('.ea-json').nth(0).locator('a[download]').click()
-            saved = json.loads(Path(download.value.path()).read_text(encoding='utf-8'))
+                source_holder.locator('a[download]').click()
+            data = Path(download.value.path()).read_bytes()
+            saved = json.loads(data)
             expect(saved.get('id') == filled and saved.get('version') == 'source' and download.value.suggested_filename.endswith('.source.json'),
                    f'{filled}: downloaded source JSON verified and decompressed')
+            printed = source_holder.locator('.ea-json__meta code').inner_text()
+            expect(hashlib.sha256(data).hexdigest() == printed, f'{filled}: the downloaded file has the SHA-256 the page prints')
 
             # A source-only program asked for its filled version.
             page.goto(page_url(source_only)+'?version=filled')
-            expect(page.locator('.ea-notice[data-when-version="filled"]').is_visible(), f'{source_only}: notice for the missing filled version')
+            expect(page.locator('#section-filled .ea-notice').is_visible(), f'{source_only}: notice for the missing filled version')
             expect(page.locator('.ea-suite > .ea-exports').first.locator('.ea-json--absent').count() == 1,
                    f'{source_only}: filled export marked absent with its reason')
             shot(page, 'program-source-only')
@@ -160,6 +168,13 @@ def check(site, channel=None, screenshots=None):
             page.goto(page_url(commercial))
             expect(page.locator('.ea-context').count() == len(manifest['construction_sets'][commercial]['contexts']),
                    f'{commercial}: every context is listed')
+            if lazy:  # a large set: a context's own fields load from the store when shown
+                page.goto(page_url(lazy))
+                first = page.locator('.ea-lazy').first
+                first.locator('.ea-show').click()
+                page.wait_for_function('!document.querySelector(".ea-lazy") || document.querySelector(".ea-lazy dl, .ea-lazy .ea-table")',
+                                       timeout=20000)
+                expect(page.locator('.ea-context').first.locator('dl.ea-fields, .ea-table').count() > 0, f'{lazy}: context fields load on demand')
 
             # The viewer: a schedule opens its page and anchor; an evidence row shows its JSON.
             page.goto(page_url(filled))
@@ -202,6 +217,8 @@ def check(site, channel=None, screenshots=None):
             nojs.goto(page_url(filled))
             expect(nojs.locator('.ea-section').count() > 2 and nojs.locator('.ea-suite > .ea-exports').first.locator('a[download]').count() == 2,
                    f'{filled}: reads without JavaScript')
+            nojs.goto(page_url(source_only)+'?version=filled')
+            expect(nojs.locator('#section-filled .ea-notice').is_visible(), f'{source_only}: says why there is no filled export without JavaScript')
             plain.close()
 
             # Phone width: no horizontal page scroll.

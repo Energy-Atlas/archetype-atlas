@@ -1,11 +1,17 @@
 """The site's one content-addressed JSON store (ADR 0043, after ADR 0011 and ADR 0036 section 10).
 
-Every document is canonical JSON, gzip-compressed with a fixed header and stored at
-`store/<sha256 of the gzip bytes>.json.gz`. A descriptor names the path, the SHA-256,
-the encoded and decoded sizes; browsers verify the checksum before bounded
-decompression. Identical documents share one file. Index packets (the viewer's ID
-index and the JSON of objects no page renders) hold at most PACKET decoded bytes.
+Every document is canonical JSON (`canonical`: keys sorted, no insignificant whitespace,
+UTF-8 without escapes, no trailing newline), gzip-compressed with a fixed header and stored
+at `store/<sha256 of the gzip bytes>.json.gz`. A descriptor names the path, the SHA-256 of
+the gzip bytes, the SHA-256 of the canonical JSON bytes (`json_sha256`, ADR 0057), and the
+encoded and decoded sizes; browsers verify the checksum before bounded decompression and
+save the decompressed bytes unchanged, so a downloaded file hashes to `json_sha256`.
+Identical documents share one file. Index packets (the viewer's ID index and the JSON of
+objects no page renders) hold at most PACKET decoded bytes.
+
+python -m scripts.site_store FILE...    # the canonical SHA-256 of JSON files, as the site prints it
 """
+import argparse
 import gzip
 import hashlib
 import json
@@ -42,7 +48,11 @@ class Store:
             (self.root/f'{digest}.json.gz').write_bytes(encoded)
             self.files[href] = len(encoded)
         return {'href': href, 'sha256': digest, 'encoding': 'gzip', 'size_bytes': len(encoded),
-                'decoded_size_bytes': len(data)}
+                'decoded_size_bytes': len(data), 'json_sha256': hashlib.sha256(data).hexdigest()}
+
+    def get(self, descriptor):
+        """A document this store wrote, read back and verified."""
+        return read(self.root.parent, descriptor)
 
     def packets(self, rows):
         """{key: value} rows split into packets of at most PACKET decoded bytes, in key order.
@@ -73,4 +83,25 @@ def read(site, descriptor):
     data = gzip.decompress(encoded)
     if len(data) != descriptor['decoded_size_bytes']:
         raise ValueError('Store decoded size mismatch: '+descriptor['href'])
+    if hashlib.sha256(data).hexdigest() != descriptor['json_sha256']:
+        raise ValueError('Store JSON checksum mismatch: '+descriptor['href'])
     return json.loads(data)
+
+
+def canonical_sha256(value):
+    """The SHA-256 of a JSON value's canonical bytes: what the site prints beside a download (`json_sha256`)."""
+    return hashlib.sha256(canonical(value)).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('files', nargs='+', type=Path, help='JSON files, in any layout (a .json.gz is decompressed first)')
+    for path in parser.parse_args().files:
+        data = path.read_bytes()
+        if path.suffix == '.gz':
+            data = gzip.decompress(data)
+        print(canonical_sha256(json.loads(data)), path)
+
+
+if __name__ == '__main__':
+    main()

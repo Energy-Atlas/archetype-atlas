@@ -264,7 +264,9 @@ class IndexTests(unittest.TestCase):
             folder.programs = [pid for pid, row in records.items() if row[0] == path]
             folder.generation = generation
             release.folders[path] = folder
-        site = type('Site', (), {'store': site_store.Store(root)})()
+        from scripts.suite_site import CATALOGUE
+        site = type('Site', (), {'store': site_store.Store(root), 'release': release,
+                                 'catalogue': json.loads(CATALOGUE.read_text(encoding='utf-8'))})()
         manifest = {'partial': False, 'programs': {pid: {'page': 'x/', **program_index(*row)} for pid, row in records.items()},
                     'folders': {path: folder_index(site, folder) for path, folder in release.folders.items()}}
         return root, manifest, site_check.release_index(release)
@@ -287,7 +289,8 @@ class IndexTests(unittest.TestCase):
             self.assertIn('space_type', dwelling)
             self.assertIsNone(dwelling['space_type'])  # an explicit null
             folder = manifest['folders'][OFFICE]
-            self.assertEqual(sorted(folder), ['building_type', 'family', 'generation', 'programs', 'template'])
+            self.assertEqual(sorted(folder), ['building_type', 'compositions', 'family', 'generation', 'programs', 'template'])
+            self.assertEqual(folder['compositions'], {})
             self.assertEqual((folder['family'], folder['template'], folder['building_type']), ('commercial', '90-1-2019', 'office'))
             self.assertEqual(site_store.read(root, folder['generation']), GENERATION)  # the file's JSON, as stored
             self.assertIsNone(manifest['folders'][DWELLINGS]['generation'])
@@ -334,6 +337,198 @@ class ReleaseIndexTests(unittest.TestCase):
         self.assertEqual(sum(1 for f in release.folders.values() if f.generation is not None),
                          sum(1 for path in release.files if path.endswith('/generation.json')))
 
+
+
+class CanonicalDownloadTests(unittest.TestCase):
+    """ADR 0057 decision 6: a download's file is the store's canonical JSON, and the page prints its SHA-256."""
+
+    def test_descriptors_name_the_sha256_of_the_canonical_json(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            descriptor = site_store.Store(temporary).put({'b': 1, 'a': 'é'})
+            data = gzip.decompress((Path(temporary)/descriptor['href']).read_bytes())
+            self.assertEqual(data, '{"a":"é","b":1}'.encode())
+            self.assertEqual(descriptor['json_sha256'], hashlib.sha256(data).hexdigest())
+            self.assertEqual(site_store.canonical_sha256(json.loads('{\n  "b": 1,\n  "a": "\\u00e9"\n}')), descriptor['json_sha256'])
+            descriptor['json_sha256'] = '0'*64
+            with self.assertRaises(ValueError):
+                site_store.read(temporary, descriptor)
+
+    def test_buttons_print_the_release_and_the_checksum(self):
+        from scripts.site_render import json_buttons
+        with tempfile.TemporaryDirectory() as temporary:
+            descriptor = site_store.Store(temporary).put({'a': 1})
+            html = json_buttons([('Program JSON', 'p.source', descriptor)], Page(Links('9.9.9'), 'catalogue/p/'))
+            self.assertIn('release 9.9.9', html)
+            self.assertIn(descriptor['json_sha256'], html)
+
+
+class PlotTests(unittest.TestCase):
+    def test_a_constant_profile_is_said_not_plotted(self):
+        self.assertEqual(plot([1.0], ['0'], unit='1'), '<p class="ea-constant">Constant 1.0 1 all day.</p>')
+
+    def test_ticks_stay_on_the_canvas_and_the_axes_carry_titles(self):
+        import re
+        from scripts.site_render import HOURS
+        for values in ([0.5]*24, [0.5]*96):
+            svg = plot(values, HOURS, unit='W/m2')
+            width = float(re.search(r'viewBox="0 0 (\d+)', svg)[1])
+            xs = [float(x) for x in re.findall(r'<text x="([\d.]+)" y="142">', svg)]
+            self.assertEqual(len(xs), 8)
+            self.assertTrue(all(0 <= x <= width for x in xs), xs)
+            self.assertIn('>hour</text>', svg)
+            self.assertIn('>W/m2</text>', svg)
+            self.assertIn('>0</text>', svg)  # the minimum
+
+    def test_export_schedules_render_their_inline_profiles(self):
+        record = {'id': 'resolved-schedule-1', 'name': 'Lights / holiday', 'unit': '1',
+                  'rules': [{'day_types': ['Wkdy'], 'values': [0.5]*24}, {'day_types': ['Hol'], 'values': [0.1]*24},
+                            {'day_types': ['Sun'], 'values': [0.1]*24}, {'day_types': ['SmrDsn'], 'values': [1.0]}]}
+        html = schedule(record, Page(Links(), 'catalogue/a/'))
+        self.assertEqual(html.count('<svg'), 2)  # two distinct hourly profiles; the design day is a constant
+        self.assertIn('Constant 1.0 1 all day', html)
+        self.assertIn('P3', html)
+
+
+class ProseTests(unittest.TestCase):
+    def test_reasons_drop_the_record_id_and_link_their_decisions(self):
+        from scripts.site_render import prose, reason_text
+        reason = 'iecc-2006.full-service-restaurant.source.attic.3e1804: IECC programs export as source only (ADR 0040 item 10).'
+        text = prose(reason_text(reason))
+        self.assertTrue(text.startswith('IECC programs export'))
+        self.assertIn('docs/adr/0040-iecc-commercial-family.md">0040</a>', text)
+        self.assertEqual(reason_text('90-1-2019.office.construction-package.abc123 4-a: no unified one'), 'no unified one')
+
+
+class ProgramPageTests(unittest.TestCase):
+    """ADR 0057 decisions 1 and 2: program pages render the two exports and the record's own values."""
+
+    def test_the_filled_changes_are_listed_one_level_down(self):
+        from scripts.site_pages import changes
+        source = {'loads': [1], 'controls': {'a': None, 'b': 1}, 'id': 'x', 'water_heating': None}
+        filled = {'loads': [2], 'controls': {'a': True, 'b': 1}, 'id': 'x', 'water_heating': [{'method': 'draw_only'}], 'extra': 1}
+        self.assertEqual(changes(source, filled), {'loads': [2], 'controls': {'a': True}, 'water_heating': [{'method': 'draw_only'}], 'extra': 1})
+
+    def test_the_record_section_keeps_fillings_and_values_no_export_carries(self):
+        from scripts.site_pages import record_body
+        record = {'gate': ['nonresidential'], 'loads': [{'value': None, 'filling': {'rules': ['no_gas'], 'resolutions': ['resolution-1']}}],
+                  'name': 'Office_Office', 'composition': {'members': [{'program_id': 'p.member'}]}}
+        html = record_body(Page(Links(), 'catalogue/a/'), record, [{'name': 'Office_Office', 'loads': [{'value': 0}]}, None])
+        self.assertIn('Filling at <code>/loads/0</code>', html)
+        self.assertIn('resolution-1', html)
+        self.assertIn('/gate/0', html)
+        self.assertNotIn('/name', html)
+        self.assertNotIn('p.member', html)  # a mix's members render as their own table
+
+
+class GuideTests(unittest.TestCase):
+    """ADR 0057 decision 4: guides take versions and commands from the release they are built with."""
+
+    def test_placeholders_are_filled_and_an_unknown_one_fails(self):
+        from scripts.suite_site import fill_guide
+        values, schemas = {'release': '2.2.0'}, {'program': '5.4.0'}
+        self.assertEqual(fill_guide('--release {{ release }} ({{ schema:program }})', values, schemas), '--release 2.2.0 (5.4.0)')
+        with self.assertRaises(ValueError):
+            fill_guide('{{ schema:unknown_kind }}', values, schemas)
+
+    def test_every_guide_source_is_published_and_in_the_navigation(self):
+        from scripts.common import ROOT
+        from scripts.suite_site import GUIDES
+        self.assertEqual(sorted(GUIDES), sorted(p.name for p in (ROOT/'website/content/guides').glob('*.md')))
+        nav = (ROOT/'mkdocs.yml').read_text(encoding='utf-8')
+        self.assertTrue(all(f'guides/{g}' in nav for g in GUIDES))
+
+    def test_guide_sources_name_no_release_by_hand(self):
+        import re
+        from scripts.common import ROOT
+        for path in (ROOT/'website/content/guides').glob('*.md'):
+            self.assertIsNone(re.search(r"--release\s+\d|release='\d", path.read_text(encoding='utf-8')), path.name)
+
+    def test_the_guide_check_finds_a_release_the_exporter_does_not_read(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            page = Path(temporary)/'guides/a/index.html'
+            page.parent.mkdir(parents=True)
+            page.write_text('<code>python -m scripts.atlas_exports --release 2.2.0</code> '
+                            '<span class="n">release</span><span class="o">=</span><span class="s1">&#39;1.4.0&#39;</span>', encoding='utf-8')
+            self.assertEqual(site_check.check_guides(temporary), ['guides/a/index.html: names release 1.4.0, which the exporter does not read'])
+
+
+class CompositionTests(unittest.TestCase):
+    """ADR 0058: every mix's members, areas and weights in the folder index."""
+
+    def expected(self):
+        members = [{'program_id': 'p.a.source.one.aaaaaa', 'represented_area_m2': 30.0, 'weight': 0.75, 'source_program_id': 'program-1'},
+                   {'program_id': 'p.a.source.two.bbbbbb', 'represented_area_m2': 10.0, 'weight': 0.25, 'source_program_id': 'program-2'}]
+        programs = {'p.a.general.mix.cccccc': {'mode': 'general', 'members': members},
+                    'p.a.source.one.aaaaaa': {'mode': 'source', 'members': None}, 'p.a.source.two.bbbbbb': {'mode': 'source', 'members': None}}
+        entry = {'programs': sorted(programs), 'compositions': {'p.a.general.mix.cccccc': {
+            'mode': 'general', 'members': [{k: m[k] for k in ('program_id', 'represented_area_m2', 'weight')} for m in members]}}}
+        return {'programs': programs}, entry
+
+    def test_a_folder_index_matching_its_records_passes_and_a_changed_weight_fails(self):
+        expected, entry = self.expected()
+        self.assertEqual(site_check.check_compositions('f/', entry, expected), [])
+        entry['compositions']['p.a.general.mix.cccccc']['members'][0]['weight'] = 0.7
+        self.assertIn('differs from its release record', site_check.check_compositions('f/', entry, expected)[0])
+        entry['compositions'] = {}
+        self.assertIn('compositions list 0 mixes', site_check.check_compositions('f/', entry, expected)[0])
+
+    def test_every_mix_of_the_release_has_its_members_in_its_folder_and_the_definition_map_agrees(self):
+        from scripts.suite_site import compositions
+        release = site_release.SiteRelease()
+        definitions = json.loads(release.files['definition-map.json'])['programs']
+        mixes = translated = 0
+        for folder in release.folders.values():
+            for pid, composition in compositions(release, folder).items():
+                mixes += 1
+                self.assertTrue(all(m['program_id'] in folder.programs for m in composition['members']), pid)
+                self.assertAlmostEqual(sum(m['weight'] for m in composition['members']), 1.0, places=9)
+                record = release.programs[pid][2]
+                rows = [release.evidence[e] for e in record.get('evidence_ids', [])
+                        if str(release.evidence.get(e, {}).get('locator')).startswith('composition/')]
+                old = [m['program_id'] for m in rows[0]['original_value']] if rows else []
+                if old and all(o in definitions for o in old):  # the members as generator 3.0.0 keyed them
+                    translated += 1
+                    self.assertEqual([definitions[o]['program_id'] for o in old], [m['program_id'] for m in composition['members']], pid)
+        self.assertEqual(mixes, sum(1 for _, mode, _ in release.programs.values() if mode in ('general', 'department')))
+        self.assertGreater(translated, 100)
+
+
+class SchemaTests(unittest.TestCase):
+    """ADR 0058: site-manifest.json has a Draft 2020-12 schema; nulls carry their reasons."""
+
+    def manifest(self):
+        descriptor = {'href': 'store/'+'a'*64+'.json.gz', 'sha256': 'a'*64, 'encoding': 'gzip', 'size_bytes': 10,
+                      'decoded_size_bytes': 20, 'json_sha256': 'b'*64}
+        program = {'page': 'catalogue/x/', 'source': descriptor['href'], 'filled': None, 'filled_reason': 'source only',
+                   'space_type': 'One', 'building_type': 'A', 'folder': 'commercial/t/a/', 'mode': 'source'}
+        folder = {'family': 'commercial', 'template': 't', 'building_type': 'a', 'programs': ['p.a.source.one.aaaaaa'],
+                  'generation': descriptor, 'compositions': {}}
+        return {'kind': 'atlas_site', 'schema_version': '1.0.0', 'release': '2.2.0', 'generated_by': 'x', 'release_manifest_sha256': 'c'*64,
+                'inputs_sha256': 'd'*64, 'partial': False, 'counts': {'programs': 1}, 'zoning': {'pages': {'overview': 'zoning/'}},
+                'programs': {'p.a.source.one.aaaaaa': program},
+                'construction_sets': {'s.a.set.dddddd': {'page': 'catalogue/y/', 'contexts': {'4-a': {'detailed': descriptor['href'], 'unified': descriptor['href']}}}},
+                'folders': {'commercial/t/a/': folder}}
+
+    def test_the_schema_is_draft_2020_12_and_a_complete_index_passes(self):
+        from jsonschema import Draft202012Validator
+        Draft202012Validator.check_schema(json.loads(site_check.SCHEMA.read_text(encoding='utf-8')))
+        self.assertEqual(site_check.check_schema(self.manifest()), [])
+
+    def test_nulls_without_their_reason_fail(self):
+        manifest = self.manifest()
+        del manifest['programs']['p.a.source.one.aaaaaa']['filled_reason']
+        manifest['folders']['commercial/t/a/']['generation'] = None
+        manifest['construction_sets']['s.a.set.dddddd']['contexts']['4-a']['unified'] = None
+        self.assertEqual(len(site_check.check_schema(manifest)), 3)
+
+    def test_every_template_has_a_line_and_every_folder_without_generation_a_reason(self):
+        from scripts.suite_site import CATALOGUE, generation_reason
+        release = site_release.SiteRelease()
+        catalogue = json.loads(CATALOGUE.read_text(encoding='utf-8'))
+        manifest = {'folders': {path: {'family': f.family, 'template': f.template} for path, f in release.folders.items()}}
+        self.assertEqual(site_check.check_catalogue(manifest), [])
+        for folder in release.folders.values():
+            self.assertEqual(generation_reason(catalogue, folder) is None, folder.generation is not None, folder.path)
 
 if __name__ == '__main__':
     unittest.main()

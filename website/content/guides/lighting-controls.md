@@ -1,8 +1,9 @@
 # Lighting controls
 
 Release 1.5.0 records the lighting controls of the source models on every commercial
-program. The decision record is ADR 0044; the release notes are
-`docs/release-notes-atlas-v1.5.0.md`.
+program, as the `lighting_controls` block of Program JSON 5.4.0 (release {{ release }} exports
+Program JSON {{ schema:program }}). The decision record is ADR 0044; the release notes are
+[`docs/release-notes-atlas-v1.5.0.md`](https://github.com/Energy-Atlas/archetype-atlas/blob/main/docs/release-notes-atlas-v1.5.0.md).
 
 ## The three parts of lighting
 
