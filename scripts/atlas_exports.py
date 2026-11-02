@@ -68,11 +68,10 @@ RELEASE_LABEL = {'type': 'string', 'pattern': r'^atlas-release-\d+\.\d+\.\d+$'}
 ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0'),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
 # The releases in the tree, oldest first: the 2.0.0 snapshot and its deltas (scripts.atlas_delta); the last is the newest.
-IN_TREE = ('2.0.0', '2.1.0', '2.2.0', '2.3.0')
+IN_TREE = ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0')
 # Release 2.3.0 on (ADR 0054): Program JSON 6.0.0 and constructions 5.0.0 / 4.0.0 / source model 2.0.0
 # (scripts.atlas_contracts); each export is formed as before, validated, then turned into its new form.
-# Release 2.4.0 (ADR 0061) exports Program JSON 6.1.0, 6.0.0 with the unoccupied lighting cap; its folder is written in
-# stage REL-A2, so until then it is exported from the edited 2.3.0 files (scripts.atlas_edits_2_4_0) held in memory.
+# Release 2.4.0 (ADR 0061, ADR 0062) exports Program JSON 6.1.0, 6.0.0 with the unoccupied lighting cap.
 # The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.
 MASS = ('construction-mass-accounting-v1.1.schema.json', '1.1.0', 'urn:archetype-atlas:construction-mass-accounting:1.1.0')
 ROLES = ('ExteriorWall','ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')

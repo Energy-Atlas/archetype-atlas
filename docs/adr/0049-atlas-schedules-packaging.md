@@ -46,6 +46,8 @@ wheel on the GitHub release only, no PyPI).
    | --- | --- | --- |
    | 3.0.0 | atlas release 2.0.0 programs (ADR 0046 section 6, ADR 0047 section 3) | 2.1.0 |
    | 4.0.0 | none packaged: recipes assembled from the release read; the wheel bundles the generator view of 2.2.0 (ADR 0051) | 2.2.0 |
+   | 4.1.0 | as 4.0.0; the wheel bundles the generator view of 2.3.0 (ADR 0055, ADR 0059) | 2.3.0 |
+   | 4.1.1 | 4.1.0's code; the wheel bundles the generator view of 2.4.0 (ADR 0062 section 4) | 2.4.0 |
 
    A generator minor or patch that leaves the recipes unchanged pairs with the same data
    release; a data release that rewrites recipes names the generator version that wrote

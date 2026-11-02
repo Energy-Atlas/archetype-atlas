@@ -550,5 +550,165 @@ def files(release=None):
 # <<< release 2.3.0
 
 
+# >>> release 2.4.0
+# Release 2.4.0 (ADR 0062), a delta on 2.3.0. Nothing above this block changes: release 2.3.0 pins the file
+# without it. The block keeps the 2.3.0 names (`ID_MAP`, `EDIT_INPUTS`, `edits_2_3_0`) as they are, so that
+# `--check --release 2.3.0` still rebuilds 2.3.0 from its own inputs, and adds its own:
+# - the record edits of ADR 0060 (`scripts.atlas_edits_2_4_0.edit` over the resolved 2.3.0): the unoccupied
+#   lighting cap on every known lighting-controls block (the rule or an explicit null), the PNNL office lighting
+#   power of the 11 90.1 whole-building office programs, and the PNNL 90.1 elevators and kitchen reach-ins as 84
+#   building services. The files they change or add, the paths they remove (`removed`, the old names of the
+#   2,301 moved program IDs) and `id-map-2.4.0.json`, the map from 2.3.0 to 2.4.0 IDs;
+# - no generation.json of its own beyond the edits': the IECC commercial and detailed office documents the edits
+#   follow must still equal `scripts.build_zone_recipes` over the edited release, and the build refuses otherwise;
+# - `counts.services` of the resolved release (84 more) and `counts.unoccupied_lighting_cap`.
+ID_MAP_2_4_0 = 'id-map-2.4.0.json'
+EDIT_INPUTS_2_4_0 = ('scripts/atlas_edits_2_4_0.py', 'scripts/atlas_edits.py',
+                     'data/program-inputs/unoccupied-lighting-cap-v1.json',
+                     'data/program-inputs/pnnl-lighting-power-exceptions-v1.json',
+                     'data/program-inputs/pnnl-building-services-v1.json')
+CHAIN = ('2.1.0', '2.2.0', '2.3.0', '2.4.0')
+RELEASE = CHAIN[-1]
+DECISIONS['2.4.0'] = ('docs/adr/0062-release-2-4-0.md', 'docs/adr/0060-release-2-4-0-pnnl-prototype-corrections.md',
+                      'docs/adr/0061-program-json-6-1-0-unoccupied-lighting-cap.md',
+                      'docs/adr/0056-release-record-schemas-and-versioning.md', 'docs/adr/0048-open-licences.md')
+GENERATOR['2.4.0'] = {'version': '4.1.1', 'package': PACKAGE, 'wheel': 'atlas_schedules-4.1.1-py3-none-any.whl',
+                      'release_tag': 'atlas-schedules-v4.1.1', 'request_schema_version': '4.0.0',
+                      'reads': 'release 2.x, generation 1.x'}
+README['2.4.0'] = """# Energy Archetype Atlas release 2.4.0 (PNNL prototype corrections, delta on 2.3.0)
+
+A delta release (ADR 0036 section 2, ADR 0062): this folder holds only its own files, and a
+reader resolves every other path in `../v2.3.0/`, `../v2.2.0/`, `../v2.1.0/` and then
+`../v2.0.0/`, whose manifest hashes the chain of `manifest.json` files records. `removed`
+lists the 2.3.0 paths this release drops: the old names of the programs whose IDs move.
+
+- Unoccupied lighting cap (ADR 0060 section 1): every known `lighting_controls` block gains
+  `unoccupied_lighting_cap` with `rule` and `evidence_id`. The rule is PNNL's per-zone EMS
+  program of the 90.1-2019 prototypes (zone occupant count 0 and lighting at least 0.02 W/ft2:
+  lights set to 0.02 W/ft2) on 19 programs of the offices, restaurants, retail types and the
+  warehouse; `rule` is null, a source zero with its reason, on the 1,875 others, whose source
+  models were read and carry no such program (90.1-2007, 90.1-2013, the other 90.1-2019
+  types, IECC 2006 to 2021, the DOE reference models).
+- Office lighting power follows PNNL (section 2): the 11 whole-building office programs of
+  the 90.1-2007, 2013 and 2019 folders take the prototype `Lights` density, with evidence
+  citing the IDF and the replaced value (90.1-2013 rises 16 to 24 percent, 90.1-2007 and 2019
+  move between -4 and +8 percent).
+- Elevators and kitchen reach-ins (section 3): 84 PNNL 90.1 objects become building services
+  of 36 folders, as the IECC and DOE Ref families store them.
+- `id-map-2.4.0.json`: every 2.3.0 ID that moves (2,301 programs), mapped to its 2.4.0 ID
+  (`ids`). The 2.3.0 and 2.0.0 maps keep the earlier moves.
+- Citing files follow the new IDs: `generation.json`, `services.json`,
+  `definition-map.json` and `exporter-inputs.json`.
+- `LICENSE` is the MIT License for code and `LICENSE-DATA` the CC BY 4.0 legal code for data
+  and documentation; attribute as "Archetype Atlas, Energy-Atlas" with the release number.
+
+Exports of this release take Program JSON 6.1.0 (ADR 0061: the cap field); constructions
+5.0.0, 4.0.0 and 2.0.0 and building services 1.0.1 are unchanged, naming
+`atlas-release-2.4.0`. The generator (`atlas-schedules` 4.1.1, whose wheel bundles this
+release) reads it. Resolve the chain with `python -m scripts.atlas_delta`
+(`scripts.atlas_delta.files('2.4.0')`); verify with `--verify`, rebuild and compare with
+`--check`. Upstream notices are in 2.0.0's `notices/`.
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def edits_2_4_0():
+    """The ADR 0060 edits over the resolved release 2.3.0 (scripts.atlas_edits_2_4_0)."""
+    from scripts import atlas_edits_2_4_0
+    return atlas_edits_2_4_0.edit(files('2.3.0'))
+
+
+def _build_2_4_0():
+    from scripts import atlas_edits_2_4_0
+    edited = edits_2_4_0()
+    out = {'LICENSE': (ROOT/'LICENSE').read_bytes(), 'LICENSE-DATA': (ROOT/'LICENSE-DATA').read_bytes(),
+           'README.md': README['2.4.0'].encode('utf-8')}
+    clash = sorted(set(edited.files) & set(out))
+    if clash:
+        raise ValueError(f'The edits write release files the writer owns: {clash}')
+    out.update(edited.files)
+    out[ID_MAP_2_4_0] = atlas_edits_2_4_0.id_map_bytes(edited.ids)
+    zone_documents_hold(edited.resolved(files('2.3.0')))
+    return out
+
+
+def zone_documents_hold(resolved):
+    """The IECC commercial and detailed office generation.json of a resolved release equal `build_zone_recipes.build`
+    over it, and gate (as `build_zone_recipes --check` does for a release that ships them); the view count."""
+    from atlas_schedules.release import TreeStore
+    from scripts import build_zone_recipes
+
+    class Store(TreeStore):
+        def __init__(self):
+            self.folder, self.base, self.removed = None, None, set()
+            self.manifest = {'release': RELEASE, 'generation': {'schema_version': GENERATION_SCHEMA}}
+            self.manifest_sha256, self.version = None, RELEASE
+
+        @property
+        def paths(self):
+            return {p: p for p in resolved}
+
+        def json(self, path):
+            return json.loads(resolved[path])
+
+        def describe(self):
+            return f'release {RELEASE} as built'
+
+    reader = Release(Store())
+    docs = build_zone_recipes.build(reader)
+    stale = sorted(f for f, doc in docs.items() if json.loads(resolved.get(f'{f}/generation.json', b'null')) != doc)
+    if stale:
+        raise ValueError(f'{len(stale)} IECC commercial or detailed office generation.json differ from build_zone_recipes '
+                         f'over the edited release, e.g. {stale[:3]}')
+    others = Release(reader.store, generation={f: reader.generation(f) for f in reader.generation_folders() if f not in docs})
+    return build_zone_recipes.gate(others, docs)
+
+
+def services_count(resolved):
+    return sum(len(json.loads(d)) for p, d in resolved.items() if p.endswith('/services.json'))
+
+
+_build_before_2_4_0 = build
+_manifest_before_2_4_0 = manifest
+
+
+def build(release):
+    """The delta's files, each valid against its release-record schema; earlier releases as their blocks build them."""
+    if _version(release) < (2, 4, 0):
+        return _build_before_2_4_0(release)
+    out = _build_2_4_0()
+    release_schemas.check(out, f'release {release}')
+    return out
+
+
+def manifest(release, delta, base_manifest):
+    """2.3.0's manifest rule with the 2.4.0 edits, inputs and ID map in place of 2.3.0's."""
+    if _version(release) < (2, 4, 0):
+        return _manifest_before_2_4_0(release, delta, base_manifest)
+    out = _manifest_before_2_3_0(release, delta, base_manifest)
+    out['input_sha256'][WRITER] = sha(pinned_writer(release))
+    edited = edits_2_4_0()
+    out['input_sha256'].update({path: sha((ROOT/path).read_bytes()) for path in EDIT_INPUTS_2_4_0})
+    out['input_sha256']['LICENSE-DATA'] = sha(delta['LICENSE-DATA'])
+    out['removed'] = list(edited.removed)
+    if any('.construction-' in i for i in edited.ids):
+        raise ValueError('A construction set moved; release 2.4.0 moves programs only')
+    out['counts']['moved_ids'] = {'programs': len(edited.ids), 'construction_sets': 0, 'id_map': ID_MAP_2_4_0}
+    resolved = edited.resolved(files('2.3.0'))
+    services = services_count(resolved)
+    if services != base_manifest['counts']['services'] + len(edited.summary['services']):
+        raise ValueError(f'{services} services resolved; 2.3.0 has {base_manifest["counts"]["services"]} and the edits add '
+                         f'{len(edited.summary["services"])}')
+    out['counts']['services'] = services
+    caps = edited.summary['lighting_cap'].values()
+    out['counts']['unoccupied_lighting_cap'] = {'programs_with_rule': sum(v == 'rule' for v in caps),
+                                                'programs_with_null_rule': sum(v == 'none' for v in caps)}
+    kept = [d for d in out['deferred'] if not d.startswith('generation blocks')]
+    out['deferred'] = generation_coverage.deferred(generation_reader(release, delta)) + kept
+    release_schemas.check({'manifest.json': out}, f'release {release}')
+    return out
+# <<< release 2.4.0
+
+
 if __name__ == '__main__':
     main()

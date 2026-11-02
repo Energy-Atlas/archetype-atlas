@@ -37,7 +37,7 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(project['tool']['setuptools']['dynamic']['version'], {'attr': 'atlas_schedules.__version__'})
         self.assertRegex(atlas_schedules.__version__, RELEASE_VERSION)  # a tagged release, not a dev build
         # The package is the generator the newest release names, or a later minor of it that the next release will
-        # name (4.1.0 reads release 2.2.0 and the blocks release 2.3.0 adds, ADR 0055).
+        # name (4.1.0 reads release 2.2.0 and the blocks release 2.3.0 adds, ADR 0055; 4.1.1 bundles release 2.4.0, ADR 0062).
         version = tuple(map(int, atlas_schedules.__version__.split('.')))
         named = tuple(map(int, atlas_delta.GENERATOR[atlas_delta.RELEASE]['version'].split('.')))
         self.assertEqual(version[0], named[0])
@@ -46,7 +46,7 @@ class PackageTests(unittest.TestCase):
     def test_bundles_name_the_package_version_and_the_release(self):
         from atlas_schedules.generator import generate
         request = {'schema_version': '4.0.0', 'seed': 1, 'instances': [
-            {'key': 'office', 'program_id': '90-1-2013.medium-office.source.whole-building-md-office.9d43fd', 'extent': {'floor_area': 100},
+            {'key': 'office', 'program_id': '90-1-2013.medium-office.source.whole-building-md-office.2249b0', 'extent': {'floor_area': 100},
              'operating_group': 'building', 'service_links': {'90-1-2013.medium-office.main.87f1fd': 'water'}},
             {'key': 'water', 'service_id': '90-1-2013.medium-office.main.87f1fd', 'physical_id': 'heater',
              'configuration_id': 'medium_office__90_1_2013__reviewed', 'extent': {'floor_area': 100}, 'operating_group': 'building'}]}
@@ -97,7 +97,7 @@ class PackageTests(unittest.TestCase):
         index = json.loads(files[VIEW_INDEX])
         self.assertEqual((index['kind'], index['release'], index['manifest_sha256']),
                          ('atlas_release_generator_view', tree.version, tree.manifest_sha256))
-        self.assertEqual(index['base_releases'], ['2.2.0', '2.1.0', '2.0.0'])
+        self.assertEqual(index['base_releases'], ['2.3.0', '2.2.0', '2.1.0', '2.0.0'])
         self.assertEqual(len(index['folders']), 189)
         with tempfile.TemporaryDirectory() as temporary:
             build_generator_view.write(files, Path(temporary))

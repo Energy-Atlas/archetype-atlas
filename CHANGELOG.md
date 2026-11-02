@@ -1,5 +1,40 @@
 # Changelog
 
+## Atlas release 2.4.0 and atlas-schedules 4.1.1 — 2026-11-01
+
+Stage REL-A2 of the 2026-10-31 review, round 2 ([ADR 0062](docs/adr/0062-release-2-4-0.md),
+[release notes](docs/release-notes-atlas-v2.4.0.md)).
+
+- **Release 2.4.0**, a delta on 2.3.0 (`data/atlas-releases/v2.4.0`, 2,942 files): the ADR 0060 record edits (2,938
+  changed or added files, 2,301 removed paths) and `id-map-2.4.0.json`, which maps the 2,301 programs that move (1,894
+  source, 296 department, 111 general; no construction set). What changed:
+  - **the unoccupied lighting cap field**: every known `lighting_controls` block carries
+    `unoccupied_lighting_cap: {rule, evidence_id}`, PNNL's 90.1-2019 per-zone EMS rule on 19 programs (offices,
+    restaurants, retail, warehouse) and an **explicit null** with its reason on 1,875 (90.1-2007 and 2013, the other
+    90.1-2019 types, IECC 2006 to 2021, the DOE reference models);
+  - **office lighting power exceptions**: the 11 90.1 whole-building offices take the PNNL density, among them the
+    90.1-2007 changes (small −0.9 %, medium +2.4 %, large +7.9 %) and the 90.1-2013 changes (small +23.6 %, medium
+    +15.5 %, large +16.4 %), and 90.1-2019 (+1.3 %, −3.3 %, −4.2 %); the 204 other differences are in the owner list
+    [`docs/reviews/lighting-power-pnnl-vs-90-1.md`](docs/reviews/lighting-power-pnnl-vs-90-1.md), unchanged;
+  - **PNNL building services**: 84 elevator and kitchen reach-in services in 36 90.1 folders (66 zone services listed
+    in their program's `building_service_ids`, 18 building-level exterior elevators), so the 90.1 folders export
+    building services 1.0.1.
+
+  The writer is the tagged 2.4.0 block of `scripts/atlas_delta.py`; it pins `scripts/atlas_edits_2_4_0.py`,
+  `scripts/atlas_edits.py` and the three inputs. `--check` reproduces 2.1.0 to 2.4.0, the IECC and detailed office
+  blocks still equal `build_zone_recipes` over the edited release, and `release_editor --check` re-derives every 2.4.0
+  ID. `counts.services` is counted over the resolved release (1,635) and `counts.unoccupied_lighting_cap` added.
+- **Exports** read 2.4.0 (`IN_TREE`) in Program JSON 6.1.0; the construction and building-services contracts are
+  2.3.0's. `CITATION.cff` names 2.4.0.
+- **Generator 4.1.1**: 4.1.0's code, whose wheel bundles the 2.4.0 generator view (ADR 0062 section 4). The quick start,
+  README, example requests and tests move to 4.1.1 and 2.4.0 IDs; the request schema's example ID is re-keyed (an
+  editorial revision). ADR 0049's pairing table names 4.1.0 and 4.1.1.
+- **Release assets**: the `v2.4.0` GitHub release also carries `atlas-release-2.4.0.manifest.json` and
+  `id-map-2.4.0.json`, listed in `SHA256SUMS.txt` (`scripts.build_release_assets`).
+- **Site**: builds 2.4.0.
+- **CI**: validate checks `atlas_delta --check` for 2.3.0 too; the data-release workflow verifies 2.3.0 and attaches
+  the manifest and ID map.
+
 ## Release 2.4.0 inputs: PNNL prototype corrections and Program JSON 6.1.0 (stage AT4) — 2026-11-01
 
 Source changes for data release 2.4.0, whose delta folder stage REL-A2 writes; release 2.3.0 and its exports are

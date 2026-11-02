@@ -449,6 +449,7 @@ def main():
         print('Release 2.0.0 IDs agree with their rules')
         check_generation(files)
         check_release('2.3.0')
+        check_release('2.4.0')
         return
     edited['manifest.json'] = manifest(edited, listed)
     target = atlas_snapshot.TARGET

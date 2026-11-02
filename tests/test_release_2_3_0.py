@@ -5,8 +5,7 @@ import unittest
 
 from jsonschema import Draft202012Validator
 
-import atlas_schedules
-from atlas_schedules.release import Release, current
+from atlas_schedules.release import Release
 from scripts import atlas_delta
 from scripts.common import ROOT, load_json
 
@@ -34,8 +33,7 @@ class DeltaTests(unittest.TestCase):
         listed = self.listed
         self.assertEqual((listed['release'], listed['status'], listed['base_release']['release']), ('2.3.0', 'released', '2.2.0'))
         self.assertEqual(listed['base_release']['manifest_sha256'], atlas_delta.sha((BASE/'manifest.json').read_bytes()))
-        self.assertEqual(atlas_delta.RELEASE, '2.3.0')
-        self.assertEqual(atlas_delta.CHAIN, ('2.1.0', '2.2.0', '2.3.0'))
+        self.assertEqual(atlas_delta.CHAIN[:3], ('2.1.0', '2.2.0', '2.3.0'))
         self.assertEqual(listed['decision'][0], 'docs/adr/0059-release-2-3-0.md')
         for decision in listed['decision']:
             self.assertTrue((ROOT/decision).is_file(), decision)
@@ -44,8 +42,8 @@ class DeltaTests(unittest.TestCase):
         generator = self.listed['generator']
         self.assertEqual(generator, atlas_delta.GENERATOR['2.3.0'])
         self.assertEqual((generator['version'], generator['release_tag'], generator['wheel']),
-                         (atlas_schedules.__version__, 'atlas-schedules-v4.1.0', 'atlas_schedules-4.1.0-py3-none-any.whl'))
-        self.assertEqual(generator['request_schema_version'], atlas_schedules.REQUEST_SCHEMA_VERSION)
+                         ('4.1.0', 'atlas-schedules-v4.1.0', 'atlas_schedules-4.1.0-py3-none-any.whl'))
+        self.assertEqual(generator['request_schema_version'], '4.0.0')
         self.assertEqual(sorted(self.listed['input_sha256']),
                          sorted(['LICENSE', 'LICENSE-DATA', 'data/atlas-releases/v2.2.0/manifest.json', 'scripts/atlas_delta.py',
                                  *atlas_delta.EDIT_INPUTS]))
@@ -93,15 +91,11 @@ class DeltaTests(unittest.TestCase):
         generation = [d for d in self.listed['deferred'] if d.startswith('generation blocks')]
         self.assertIn('189 of 255 folders', generation[0])
 
-    def test_the_generator_and_the_site_read_it_from_the_tree(self):
-        from scripts import site_release
-        from scripts.atlas_exports import IN_TREE, Release as Exports
-        reader = current()
-        self.assertEqual(reader.provenance(), {'version': '2.3.0', 'manifest_sha256': self.release.manifest_sha256,
-                                               'generation_schema_version': '1.0.0'})
-        self.assertEqual(site_release.newest(), '2.3.0')
-        self.assertEqual(IN_TREE[-1], '2.3.0')
-        self.assertEqual(Exports.__init__.__defaults__[-1], '2.3.0')
+    def test_in_the_tree_under_release_2_4_0(self):
+        # Release 2.4.0 is the newest since ADR 0062; 2.3.0 stays in the tree as its base and exports by name.
+        from scripts.atlas_exports import IN_TREE
+        self.assertEqual(IN_TREE[IN_TREE.index('2.3.0') + 1], '2.4.0')
+        self.assertEqual(atlas_delta.base_of('2.4.0'), '2.3.0')
         self.assertIn('release 2.3.0', (FOLDER/'README.md').read_text(encoding='utf-8'))
 
 

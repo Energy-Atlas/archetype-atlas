@@ -1,9 +1,10 @@
 name: atlas data release
 
 # A tag vX.Y.Z attaches the data archive atlas-release-X.Y.Z.zip (the release folder and its base folders
-# as they sit in data/atlas-releases) and its SHA256SUMS.txt to the GitHub release of that tag (ADR 0051
-# section 6). The tag must name the newest release in the tree (scripts.atlas_delta.RELEASE); the archive
-# is reproducible (sorted entries, fixed times; scripts/build_release_assets.py).
+# as they sit in data/atlas-releases), the release manifest and ID map as published files (from 2.4.0,
+# ADR 0062) and their SHA256SUMS.txt to the GitHub release of that tag (ADR 0051 section 6). The tag
+# must name the newest release in the tree (scripts.atlas_delta.RELEASE); the archive is reproducible
+# (sorted entries, fixed times; scripts/build_release_assets.py).
 on:
   push:
     tags: ['v*']
@@ -36,6 +37,7 @@ jobs:
           python -m scripts.atlas_snapshot --verify
           python -m scripts.atlas_delta --verify --release 2.1.0
           python -m scripts.atlas_delta --verify --release 2.2.0
+          python -m scripts.atlas_delta --verify --release 2.3.0
           python -m scripts.atlas_delta --verify
           python -m scripts.build_release_assets --data
           (cd build/release/v* && sha256sum -c SHA256SUMS.txt)
@@ -44,10 +46,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          assets="$(ls build/release/v*/*.zip build/release/v*/SHA256SUMS.txt)"
+          assets="$(ls build/release/v*/*.zip build/release/v*/*.json build/release/v*/SHA256SUMS.txt)"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" $assets --clobber --repo "$GITHUB_REPOSITORY"
           else
             gh release create "$TAG" $assets --verify-tag --repo "$GITHUB_REPOSITORY" \
-              --title "Atlas release ${TAG#v}" --notes "Atlas data release ${TAG#v}: the release folder with its bases; verify with sha256sum -c SHA256SUMS.txt (ADR 0051; docs/release-notes-atlas-${TAG}.md)."
+              --title "Atlas release ${TAG#v}" --notes "Atlas data release ${TAG#v}: the release folder with its bases, its manifest and ID map; verify with sha256sum -c SHA256SUMS.txt (ADR 0051, ADR 0062; docs/release-notes-atlas-${TAG}.md)."
           fi

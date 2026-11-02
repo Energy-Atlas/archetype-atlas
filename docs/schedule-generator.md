@@ -24,15 +24,15 @@ network access is needed at run time.
 
 Install the `atlas-schedules` wheel attached to its GitHub release
 ([ADR 0049](adr/0049-atlas-schedules-packaging.md); the package is not on PyPI;
-the generator version is the package version, 4.1.0), verify it against the
+the generator version is the package version, 4.1.1), verify it against the
 release's `SHA256SUMS.txt`, and generate the example request:
 
 ```bash
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.0/atlas_schedules-4.1.0-py3-none-any.whl
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.0/SHA256SUMS.txt
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.1/atlas_schedules-4.1.1-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.1/SHA256SUMS.txt
 sha256sum -c SHA256SUMS.txt --ignore-missing
-pip install atlas_schedules-4.1.0-py3-none-any.whl
-atlas-schedules --version          # atlas-schedules 4.1.0 (request schema 4.0.0); reads atlas release 2.3.0 from ...
+pip install atlas_schedules-4.1.1-py3-none-any.whl
+atlas-schedules --version          # atlas-schedules 4.1.1 (request schema 4.0.0); reads atlas release 2.4.0 from ...
 atlas-schedules office-and-retail.json -o bundle.json    # docs/examples/schedule-generator/office-and-retail.json
 ```
 
@@ -44,7 +44,7 @@ A request names its programmes by atlas release ID, a programme with its
   "schema_version": "4.0.0",
   "seed": 42,
   "instances": [
-    {"key": "office", "program_id": "90-1-2013.medium-office.source.whole-building-md-office.9d43fd",
+    {"key": "office", "program_id": "90-1-2013.medium-office.source.whole-building-md-office.2249b0",
      "values": "filled", "extent": {"floor_area": 400}, "operating_group": "building",
      "service_links": {"90-1-2013.medium-office.main.87f1fd": "office-water"}},
     {"key": "office-water", "service_id": "90-1-2013.medium-office.main.87f1fd",
@@ -55,9 +55,10 @@ A request names its programmes by atlas release ID, a programme with its
 ```
 
 The generator assembles each recipe from an atlas data release. The wheel
-bundles the generator view of release 2.3.0, so `pip install` alone is enough;
+bundles the generator view of release 2.4.0, so `pip install` alone is enough
+(4.1.1 is 4.1.0's code with that view, [ADR 0062](adr/0062-release-2-4-0.md));
 `ATLAS_RELEASES` or `--release-dir` points it at a release on disk instead (the
-`atlas-release-2.3.0.zip` archive of the `v2.3.0` GitHub release, extracted, or a
+`atlas-release-2.4.0.zip` archive of the `v2.4.0` GitHub release, extracted, or a
 checkout's `data/atlas-releases`), and deltas resolve over their bases. Each
 bundle records the release it read (`release.version`, `release.manifest_sha256`),
 and the same request on the same release gives the same bundle from either.
@@ -85,7 +86,7 @@ build`; `python -m scripts.build_release_assets --wheel --data` builds the
 release assets with `SHA256SUMS.txt`.
 
 Every generator release attaches `SHA256SUMS.txt` (`sha256sum` format); the quick
-start above verifies 4.1.0 with it. For 3.0.0 the wheel's digest is
+start above verifies 4.1.1 with it. For 3.0.0 the wheel's digest is
 `f082bb12f951fdebd78ddcf8ab20cc65a267a02a70213de4d7f13d56648229cb` and the sdist's
 `2f42d7c1fe970a4958d0fd2092f0e6b23c8d0515ada9f67af02377718f80eb27`; both were checked on
 2026-10-29 against an independent `python -m build` of tag `atlas-schedules-v3.0.0`
@@ -108,9 +109,9 @@ Every instance has a unique `key`. Keys cannot contain `/`, which is reserved
 for owners the generator derives.
 
 A **programme instance** has a `program_id`: an atlas release program ID such as
-`90-1-2013.medium-office.source.whole-building-md-office.9d43fd` or
-`doe-ref-pre-1980.retail-standalone.source.entry.955efc`, of a program whose
-record carries a `generation` block in the release (2,270 programs in release 2.3.0). It can
+`90-1-2013.medium-office.source.whole-building-md-office.2249b0` or
+`doe-ref-pre-1980.retail-standalone.source.entry.cf8d88`, of a program whose
+record carries a `generation` block in the release (2,270 programs in release 2.4.0). It can
 also have the following fields:
 
 - `values`: the view of the program's values the recipe takes, as the two
@@ -215,7 +216,7 @@ folder's `schedules.json` and `services.json`, and the folder's building
 configurations in `generation.json`
 ([ADR 0051](adr/0051-generation-parameters-in-the-release.md);
 `atlas_schedules.programmes.assemble`). The generator ships no copy of release
-values. In release 2.3.0, 2,270 programs carry blocks, 2,847 program views:
+values. In release 2.4.0, as in 2.3.0, 2,270 programs carry blocks, 2,847 program views:
 
 | Method | Recipe kind | Program views | Kernel |
 |---|---|---|---|
@@ -260,6 +261,13 @@ geometry's spaces. An IECC 2021 load whose magnitude differs by climate
 (`value_by_climate`) is generated with its most common `value`; its hourly
 fractions do not depend on the climate, and the consumer takes the climate's
 magnitude from the program.
+
+Release 2.4.0 adds no block (ADR 0060, ADR 0062): its 2,301 moved programs keep their blocks
+under their new IDs, and the 11 90.1 whole-building offices are generated with their PNNL lighting
+power. The 84 PNNL 90.1 elevator and reach-in services it adds carry no block, as the IECC and DOE Ref
+elevators do not: a consumer takes their schedule from the release (`schedule_id`). The unoccupied
+lighting cap is a per-zone EMS rule on the occupant count, applied by the consumer, not by the
+generator.
 
 `generation.json` and the bundle have JSON Schemas
 (`atlas_schedules/schemas/generation-v1.schema.json`, `bundle-v4.schema.json`;
