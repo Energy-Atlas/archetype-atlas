@@ -22,8 +22,11 @@ Drop 3 (schema 1.2.0, BEMGen D-220 to D-224, ADR 0059 section 6) lists every pla
 the generator refused with `status` Invalid, shown as not generated (not as failed runs); bounds a
 recommendation by the reference's zone count, flagging a cell where only finer zonings meet the
 threshold (`finer_than_reference`), which the robust rule follows; and gives the cost medians as
-medians of prototype medians (`timing.overall`). The study's program IDs are atlas release 2.0.0's;
-the links follow them to the site release's records through the releases' ID maps.
+medians of prototype medians (`timing.overall`); its program IDs were atlas release 2.0.0's, which the
+links follow to the site release's records through the releases' ID maps. Drop 4 (BEMGen D-261 to
+D-264, ADR 0050 section 8) is the study run again on atlas release 2.4.0 inputs: the same schema, the
+site release's IDs (the translation is empty), and no timing block, since R5 is pending; an untimed
+drop says so on every page (`untimed_html`) and links the archived previous drop the sidecar names.
 """
 import json
 import re
@@ -607,8 +610,8 @@ def cells_body(page, entries, axes, threshold, more_toc=(), costed=False, result
     columns = tuple(AXES[a] for a in axes)+SUMMARY_COLUMNS+(COST_COLUMNS if costed else ())
     toc = [*([('robust', 'Robust across orientations')] if results else []), ('recommended', 'Recommended zonings'), ('cells', 'Every zoning by cell'), *more_toc]
     cost_note = (' The cost ratios are the serial timing pass (R5): the zoning\'s processor time, wall clock and peak committed memory over '
-                 'its reference\'s, each the median of three repeats; <em>not timed</em> marks a cell outside the 12 timed ones (the medium '
-                 f'office and the primary school were not timed). <a href="{esc(page.rel(URL+"method/#section-cost"))}">Cost protocol</a>.'
+                 'its reference\'s, each the median of its repeats; <em>not timed</em> marks a cell outside the timed ones. '
+                 f'<a href="{esc(page.rel(URL+"method/#section-cost"))}">Cost protocol</a>.'
                  if costed else '')
     body = [filter_form(entries, axes), contents(toc),
             *([section(page, 'robust', 'Robust across orientations', robust_body(page, results, threshold, costed))] if results else []),
@@ -645,7 +648,8 @@ def programs_table(page, entries, translate=None):
 def kicker(page, drop, label):
     provenance = drop.provenance
     return (f'<p class="ea-kicker"><code>{esc(label)}</code> · geometric LOD study drop {esc(provenance.get("drop", ""))} · '
-            f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))} · BEMGen '
+            f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))} · '
+            + ('' if drop.costed else 'not timed · ')+'BEMGen '
             f'<code>{esc(str(provenance.get("bemgen", {}).get("report_commit", ""))[:12])}</code></p>')
 
 
@@ -693,7 +697,9 @@ def prototype_page(site, drop, prototype, url):
     if drop.costed:
         facts.append(('Serial cost (R5)', f'timed in {timed_cells} of {len(entries)} cells ('+', '.join(
             ' '.join(axis_text(a, axis_values(e)[a]) for a in axes) for e in entries if timed(e))+')' if timed_cells else
-            'not timed: the prototype is not among the 12 timed cells of the serial pass'))
+            'not timed: the prototype is not among the timed cells of the serial pass'))
+    else:
+        facts.append(('Serial cost (R5)', 'not timed: this drop has no serial timing pass'+(' (R5 pending)' if r5_pending(drop.provenance) else '')))
     trail = [(TITLE, URL), (name, url)]
     body = [crumbs(page, trail), kicker(page, drop, prototype), facts_html(facts), buttons,
             cells_body(page, entries, axes, threshold, [('programs', 'Atlas programs')], drop.costed, results),
@@ -718,6 +724,7 @@ def heat_transfer_page(site, drop, url):
     refusals = [(e, z) for e in entries for z in e['zonings'] if refused(z)]
     with_pick = sum(1 for e in entries if e['recommended'])
     off = sum(1 for e in entries if any(p['zoning'].get('iwht') is False or p['zoning'].get('fht') is False for p in e['recommended']))
+    rerun = any('rerun' in key.lower() for key in (drop.provenance.get('stages') or {}))
     facts = [('Cells', f'{len(entries)}: '+' × '.join(f'{len({axis_values(e)[a] for e in entries})} {AXES[a].lower()}s' for a in axes)
               + '; '+' · '.join(sorted({e['vintage'] for e in entries}))+' · '+' · '.join(sorted({orientation(e['orientation_degrees']) for e in entries}))),
              ('Zonings per cell', 'the main zonings × interior-wall heat transfer (IWHT) on or off × floor heat transfer (FHT) on or off'),
@@ -734,7 +741,9 @@ def heat_transfer_page(site, drop, url):
                'cell\'s recommendation comes from the zonings that ran (D-201); the cause is on the '
                f'<a href="{esc(page.rel(URL+"method/"))}">method page</a>.' if failed_ else
                'Every zoning the generator wrote ran; the small hotel\'s cells were run again under BEMGen\'s heat-transfer rule, which keeps '
-               'the link of a surface of a zone without HVAC (D-211, D-224).')
+               'the link of a surface of a zone without HVAC (D-211, D-224).' if rerun else
+               'Every zoning the generator wrote ran, under BEMGen\'s heat-transfer rule, which keeps the link of a surface of a zone without '
+               'HVAC (D-211).')
             + ' Zonings the generator refuses are listed under each cell as not generated.</p>'
             '<p class="ea-note">A recommendation with a switch off is a tie, not a twin: deduplication keeps the twin whose heat-transfer '
             'setting is closest to the reference\'s (both on first, D-221), so an off setting that writes the same model as the zoning with '
@@ -771,6 +780,47 @@ def stage_rows(provenance):
         rows.append((esc(stage.get('stage', '')), esc(stage.get('suite') or '') or NULL, esc(stage.get('run') or '') or NULL,
                      f'<code>{esc(str(stage.get("bemgen", "")))}</code>' if stage.get('bemgen') else NULL, esc(stage.get('gate', ''))))
     return rows
+
+
+def concurrency(provenance):
+    """How many EnergyPlus runs the R3 and R4 stages ran at once, as text, from the sidecar ('many' when it does not say)."""
+    stages = provenance.get('stages') or {}
+    values = sorted({stages[k]['concurrency'] for k in ('R3', 'R4') if isinstance(stages.get(k), dict) and stages[k].get('concurrency')})
+    return ' and '.join(str(v) for v in values) if values else 'many'
+
+
+def r5_pending(provenance):
+    return ((provenance.get('stages') or {}).get('R5') or {}).get('status') == 'pending'
+
+
+def archived(page, provenance):
+    """The archived previous drop the sidecar names: {'drop', 'inputs', 'commit', 'link'} (text, text, text, HTML), or None."""
+    previous = provenance.get('archived') or {}
+    folder = previous.get('folder') or (provenance.get('study') or {}).get('archive')
+    if not folder:
+        return None
+    return {'drop': f'drop {previous["drop"]}' if previous.get('drop') else 'the previous drop',
+            'inputs': f'atlas release {previous["atlas_inputs_release"]} inputs' if previous.get('atlas_inputs_release') else '',
+            'commit': str(previous.get('bemgen_commit', '')), 'link': bemgen_link(provenance, folder)}
+
+
+def untimed_html(page, drop, method=False):
+    """What an untimed drop says about cost: that it is not timed, why, and where the previous drop's costs stay."""
+    provenance = drop.provenance
+    body = ('<p><strong>This drop is not timed.</strong> '
+            + ('The serial timing pass (R5) has not been run on these models: it needs an otherwise idle machine and is pending. '
+               if r5_pending(provenance) else 'The serial timing pass (R5) has not been applied to this drop. ')
+            + 'No cost is shown on these pages.')
+    if method:
+        body += (' The <code>cpu_time_ratio</code> metric in the files comes from the stages\' runs, '
+                 f'{concurrency(provenance)} at a time on a shared machine, and is not runtime data.')
+    previous = archived(page, provenance)
+    if previous:
+        body += (f' The costs published with {esc(previous["drop"])} were measured on other models'
+                 + (f' ({esc(previous["inputs"])})' if previous['inputs'] else '')
+                 + f' and are not carried over; that drop is archived unchanged in BEMGen at {previous["link"]}.')
+    return body+(' When R5 runs on these models its costs come as a later drop, and the pages then show the cost columns, the overview\'s '
+                 'medians and the protocol.</p>')
 
 
 def cost_section(page, drop):
@@ -835,6 +885,10 @@ def status_section(page, drop):
     links = [(f'Study report (R6)', study.get('report')), ('Methodology', study.get('methodology')), ('Run plan', study.get('plan')),
              ('Results', study.get('results'))]
     items = ''.join(f'<li>{esc(label)}: {bemgen_link(provenance, path)} in BEMGen</li>' for label, path in links if path)
+    previous = archived(page, provenance)
+    if previous:
+        items += (f'<li>Archived previous drop ({esc(previous["drop"])}'+(f', {esc(previous["inputs"])}' if previous['inputs'] else '')
+                  + f'): {previous["link"]} in BEMGen</li>')
     body = f'<p>{esc(provenance.get("status", ""))}</p>'
     body += '<ul>'+''.join(f'<li>{esc(item)}</li>' for item in pending)+'</ul>' if pending else '<p>Nothing is pending.</p>'
     if items:
@@ -879,7 +933,7 @@ def overview_page(site, drop, urls):
                     'The rule and its limits</a>.</p>' if results else '')
     body = [
         f'<p class="ea-kicker">Geometric LOD study · drop {esc(provenance.get("drop", ""))} · {len(entries)} cells · '
-        f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))}</p>',
+        f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))}'+('' if drop.costed else ' · not timed')+'</p>',
         '<p>Which thermal zoning of a DOE prototype building is coarse enough to be cheap and fine enough to keep its ideal sensible heating '
         'and cooling loads within a stated error of the prototype\'s full zoning? For each prototype, climate zone, vintage and orientation '
         'the study simulated the prototype\'s own geometry as BEMGen writes it, zoned every room (the <strong>reference</strong>), and then the '
@@ -891,7 +945,7 @@ def overview_page(site, drop, urls):
         + (' The <strong>robust</strong> zoning of a prototype, climate zone and vintage is the coarsest that meets the threshold at both '
            'orientations; each prototype page opens with it.' if results else '')+'</p>',
         buttons, contents([('threshold', 'Threshold'), ('prototypes', 'Prototypes'), ('tally', 'Recommended zonings'),
-                           *([('cost', 'Cost')] if drop.timing else []), ('status', 'Status')]),
+                           ('cost', 'Cost'), ('status', 'Status')]),
         section(page, 'threshold', 'Threshold', threshold_html(drop.threshold)),
         section(page, 'prototypes', 'Prototypes',
                 table(rows, prototype_columns)
@@ -903,14 +957,14 @@ def overview_page(site, drop, urls):
                 + f'<a href="{esc(page.rel(URL+"method/"))}">Method and caveats</a>.</p>'),
         section(page, 'tally', 'Recommended zonings', table([(esc(label), str(count)) for label, count in overall], ('Zoning', 'Cells'))
                 + '<p class="ea-note">Counts over every cell and tie of the main matrix.</p>'+robust_tally),
-        *([section(page, 'cost', 'Cost', cost_section(page, drop))] if drop.timing else []),
+        section(page, 'cost', 'Cost', cost_section(page, drop) if drop.timing else untimed_html(page, drop)),
         section(page, 'status', 'Status', status_section(page, drop)),
     ]
     site.summaries[URL] = 'Zoning recommendations · geometric LOD study · thermal zoning · '+' '.join(prototype_name(p) for p in drop.prototypes())
     site.write(URL+'index.md', markdown(TITLE, ''.join(body)))
 
 
-def robust_method(page, results):
+def robust_method(page, results, drop=None):
     """The method page's section on the robust rule: what it is, what the data allows, and its limits."""
     if not results:
         return ('<p>This drop has one orientation per prototype, climate zone and vintage, so there is no pair to judge and no robust headline; '
@@ -941,10 +995,19 @@ def robust_method(page, results):
             '(<code>robust.pairs[].worst</code>).</p>'
             '<p><strong>Limits.</strong> Robust means robust over the two orientations the study ran, 0° and 45°, not over every orientation; '
             'a later drop with more orientations is judged over all of them by the same rule. The robust zoning is at least as fine as each '
-            'orientation\'s own recommendation, never coarser. The cost ratios of a robust row are the median over the timed sites of that '
-            'zoning in the pair, which in this drop is one site at most since only 0° cells were timed. The rule is computed at site build by '
+            'orientation\'s own recommendation, never coarser. '+robust_cost_limit(results, drop)+' The rule is computed at site build by '
             '<code>scripts/lod_site.py</code> and written into each prototype\'s JSON as a <code>robust</code> block labelled as such; the report '
             'writer\'s files are unchanged.</p>')
+
+
+def robust_cost_limit(results, drop):
+    """The robust rows' cost in the method page's limits: none in an untimed drop, else the median over the pair's timed sites."""
+    if drop is not None and not drop.costed:
+        return 'This drop is not timed, so a robust row carries no cost.'
+    timed_orientations = sorted({e['orientation_degrees'] for r in results.values() for e in r['entries'] if timed(e)})
+    return ('The cost ratios of a robust row are the median over the timed sites of that zoning in the pair'
+            + (f', which in this drop is one site at most, since only {orientation(timed_orientations[0])} cells were timed.'
+               if len(timed_orientations) == 1 else '.'))
 
 
 def method_page(site, drop, urls):
@@ -997,10 +1060,12 @@ def method_page(site, drop, urls):
                              for (p, cz, label, zones, ref), n in sorted(coarser.items()))
     file_rows = [(esc(name), esc(f.get('label', '')), esc(f.get('suite', '')), esc(f.get('run', '')), str(f.get('entries', '')), f'<code>{esc(str(f.get("sha256", ""))[:12])}</code>')
                  for name, f in files.items()]
+    previous = archived(page, provenance)
     zoning_rows = [(esc(words(s)), esc(SIMPLIFIERS.get(s, ''))) for s in simplifiers]
     stacker_rows = [(esc(words(s)), esc(STACKERS.get(s, ''))) for s in stackers]
     cost_body = (
-        '<p>Energy results do not depend on how many EnergyPlus processes run at once, so the stages ran 20 at a time and their times are '
+        '<p>Energy results do not depend on how many EnergyPlus processes run at once, so the stages ran '
+        f'{concurrency(provenance)} at a time and their times are '
         'not results (the <code>cpu_time_ratio</code> metric in the files comes from those runs and is not runtime data). Cost was measured '
         f'in a separate serial timing pass (R5, BEMGen <code>{esc(str(bemgen.get("timing_commit", "")))}</code>): {esc(timing.get("protocol", ""))}; '
         f'{esc(bemgen.get("machine", "an otherwise idle machine"))}. Per site the runner records the processor time (user plus kernel), the wall '
@@ -1011,7 +1076,8 @@ def method_page(site, drop, urls):
         + facts_html([
             ('Timed', f'{timing.get("timed_sites", "")} sites of {len(timed_cells)} cells: '
                       + ', '.join(f'{prototype_name(e["prototype"])} {e["climate_zone"]} {e["vintage"]} {orientation(e["orientation_degrees"])}' for e in timed_cells)),
-            ('Not timed', ', '.join(prototype_name(p) for p in timing.get('untimed_prototypes', []))+' (not among the 12 timed test cases, so their costs are not measured)'
+            ('Not timed', ', '.join(prototype_name(p) for p in timing.get('untimed_prototypes', []))
+                          + f' (not among the {len(timing.get("test_cases", []))} timed test cases, so their costs are not measured)'
                           if timing.get('untimed_prototypes') else ''),
             ('Repeats', ', '.join(sorted({str(e['reference']['cost'].get('repeats', '')) for e in timed_cells})) if timed_cells else ''),
             ('Gate', f'processor-time CV per site below {gate.get("limit_pct", "")} %: {gate.get("pass", "")} of {gate.get("sites", "")} sites pass; '
@@ -1031,9 +1097,7 @@ def method_page(site, drop, urls):
         + '<p>Within a session the measurement is stable; between sessions a per-site ratio is reproducible to about ±15 %. The costs shown are '
         'therefore medians: the per-cell ratios on the prototype pages are each site\'s median over its repeats, and the medians by zoning and '
         f'by prototype on the <a href="{esc(page.rel(URL+"#section-cost"))}">overview</a> are the figures to quote. No per-site precision below '
-        'the stated CV distribution is claimed (D-202).</p>') if timing else (
-        '<p>The CPU-time ratios in the files come from runs 20 at a time on a shared machine and are not runtime results; the serial timing '
-        'pass (R5) has not been applied to this drop.</p>')
+        'the stated CV distribution is claimed (D-202).</p>') if timing else untimed_html(page, drop, method=True)
     body = [
         crumbs(page, [(TITLE, URL), ('Method and caveats', URL+'method/')]),
         contents([('design', 'What was compared'), ('metrics', 'Metrics and threshold'), ('dedup', 'Deduplication'), ('robust', 'Robust across orientations'),
@@ -1058,7 +1122,8 @@ def method_page(site, drop, urls):
                 'ASHRAE Guideline 14; the peak error is the relative difference of the annual maximum hourly load; the area change is the change of '
                 'conditioned floor area against the reference. The JSON files carry further metrics (P99 peaks, load-duration-curve errors, '
                 'Kolmogorov–Smirnov distances, conditioned-temperature errors, zone-count ratios and the concurrent runs\' CPU-time ratio) that the '
-                'pages do not show; the serial costs are the <code>cost</code> objects, shown as the cost columns.</p>'
+                'pages do not show; '+('the serial costs are the <code>cost</code> objects, shown as the cost columns.</p>' if drop.costed else
+                                       'this drop carries no serial costs (R5).</p>')
                 + threshold_html(threshold)
                 + '<p>A zoning meets the threshold when every judged load passes all three limits and the area limit holds; a missing metric of a '
                 'judged load fails. The recommended zonings of a cell are those meeting it with the fewest modelled zones; ties are all listed.</p>'),
@@ -1071,7 +1136,7 @@ def method_page(site, drop, urls):
                    'The site kept is the first in zoning order (simplifier, join pieces, perimeter depth, stacker, IWHT, FHT); a reference is never dropped. ')
                 + f'In the main matrix {duplicates:,} of {tests:,} generated test sites are duplicates of a listed zoning; '
                 'each cell names them under its table.</p>'),
-        section(page, 'robust', 'Robust across orientations', robust_method(page, results)),
+        section(page, 'robust', 'Robust across orientations', robust_method(page, results, drop)),
         section(page, 'cost', 'Cost protocol', cost_body),
         section(page, 'cautions', 'Reading the recommendations', '<ul>'
                 '<li><strong>A recommendation with IWHT or FHT off is a tie with a zoning with both on.</strong> In the heat-transfer sub-study, '
@@ -1098,8 +1163,10 @@ def method_page(site, drop, urls):
                 'loads are outside the comparison. The errors say how a zoning changes the building\'s thermal demand, not its energy use.</li>'
                 '<li><strong>Deterministic inputs.</strong> The prototypes\' own geometry, glazing, atlas programs with ruleset schedules, the atlas '
                 '90.1 unified construction set and one TMY3 weather file per climate zone; no stochastic schedules, no holidays, no infiltration axis.</li>'
-                '<li><strong>Coverage.</strong> The vintages are 90.1-2007 and 90.1-2019 (atlas release 2.0.0 has no 90.1-2004 folders); climate zone 7 '
+                '<li><strong>Coverage.</strong> The vintages are 90.1-2007 and 90.1-2019 (the atlas releases have no 90.1-2004 folders); climate zone 7 '
                 'is registered as 7A, the atlas label of International Falls. IECC sets are out of scope.</li>'
+                + (f'<li><strong>Inputs (release {esc(inputs.get("release", ""))}).</strong> '+' '.join(esc(note) for note in inputs['notes'])+'</li>'
+                   if inputs.get('notes') else '')
                 + (f'<li><strong>Zonings that are not generated.</strong> Perimeter core and the single-zone stackers do not support multiplied rooms, '
                    'and a perimeter depth needs a wing at least twice as deep, so the generator refuses those zonings: '
                    + (f'{refused_count:,} in the main matrix ('+'; '.join(f'{esc(reason)}: {", ".join(sorted(names))}' for reason, names in sorted(refused_main.items()))
@@ -1126,8 +1193,9 @@ def method_page(site, drop, urls):
                    + ', '.join(sorted({e['vintage'] for e in timed_cells}))+', climate zones '+', '.join(sorted({e['climate_zone'] for e in timed_cells}))
                    + ', at '+', '.join(sorted({orientation(e['orientation_degrees']) for e in timed_cells}))+' only, and on one machine.</li>'
                    if timing else
-                   '<li><strong>Timing.</strong> The CPU-time ratios in the JSON come from runs 20 at a time on a shared machine and are not runtime '
-                   'results; the serial timing pass (R5) is not in this drop.</li>')
+                   '<li><strong>Not timed.</strong> This drop carries no serial costs'+(' (R5 pending)' if r5_pending(provenance) else '')
+                   + f'; the CPU-time ratios in the JSON come from runs {concurrency(provenance)} at a time on a shared machine and are not runtime '
+                   'results.</li>')
                 + '<li><strong>Threshold.</strong> The threshold is the report writer\'s default and an owner choice, recorded in every file; the R6 '
                 'report kept it. A later drop with another threshold carries the new one in every file.</li>'
                 '<li><strong>Not a population statement.</strong> The cells are the prototypes at their own dimensions; nothing here weights them by '
@@ -1150,6 +1218,9 @@ def method_page(site, drop, urls):
                             ('Schema', f'<code>{esc(bemgen.get("schema_copy", ""))}</code>, a copy of BEMGen\'s <code>{esc(bemgen.get("schema", ""))}</code>'
                                        f'; the main matrix is version {esc(main.get("version", ""))}'
                                        + (f', the sub-study {esc(drop.ht.get("version", ""))}' if drop.ht else '')),
+                            ('Previous drop', (f'{esc(previous["drop"])} ('+(esc(previous["inputs"])+', ' if previous['inputs'] else '')
+                                               + f'BEMGen <code>{esc(previous["commit"][:12])}</code>), archived in BEMGen at {previous["link"]}')
+                             if previous else ''),
                             ('Repository files', f'<code>data/lod-recommendations/v1/</code>; drop {esc(provenance.get("drop", ""))}'),
                             ('Licence', esc(provenance.get('licence', '')))])
                 + table(file_rows, ('File', 'Stage', 'Suite', 'Run', 'Cells', 'SHA-256'))

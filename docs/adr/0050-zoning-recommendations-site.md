@@ -230,3 +230,55 @@ since BEMGen writes LF, and BEMGen's own `provenance.json` is kept beside the si
 - D-201's caution goes, since no R4 run fails (D-224);
 - the cost medians are medians of prototype medians (D-222);
 - program links follow the site release's IDs.
+
+## 8. Drop 4 (2026-11-02): the study on atlas release 2.4.0 inputs, not timed
+
+Applied per section 4 by stage AT-LOD4, on the owner's approval of 2026-11-02 ("archive the published results; the
+new results become a new atlas-site data drop", BEMGen D-261). BEMGen stage LOD2 (D-261 to D-264) ran the study
+again at BEMGen `35e8a132` (1.10.0 with the LOD2 inputs) on atlas release 2.4.0 inputs (commit `7c543f5d`,
+release manifest `51ce9c9e…`) and moved the drop of 2026-10-29 (drop 3 here, atlas 2.0.0 inputs) unchanged into
+`research/lod-study/archive/2026-10-29-atlas-2-0-0/`. The new files come from BEMGen main `dbbd872` (the merge of
+its pull request 35).
+
+- **Files.** `research/lod-study/results/lod-recommendations.json` (`76e6f2bb…`), `lod-recommendations-ht.json`
+  (`2b452b1d…`) and `provenance.json` (`3a2ebe3e…`, kept as `bemgen-provenance.json`) are copied byte for byte
+  into `data/lod-recommendations/v1/`; BEMGen writes LF, so nothing is normalised and `sha256` equals
+  `source_sha256`. The schema is unchanged (1.2.0, `adbce622…`), so `schemas/` and `MAJOR` stay. The sidecar
+  records drop 4, the merge and run builds, the stages R3 and R4 with their suites, runs and concurrency (16),
+  R5 as `pending`, the new report and methodology, the archive folder, the previous drop (`archived`: drop 3,
+  its BEMGen commit and digests, which equal BEMGen's `compared_with`), three input notes from D-261 and D-262,
+  and one pending item.
+- **What changed in the data** (BEMGen D-264). R3: 213 of 264 cells with a recommendation (214 in drop 3); the
+  recommendation changed in 36 cells, one gained (the supermarket 5A 90.1-2019 at 45°), two lost (the
+  stand-alone retail 4A 90.1-2019); the four restaurant 4A cells are still finer than the reference. R4: 18 of
+  22, no failed run, no rerun stage. Robust across orientations: 106 of 132 pairs (107 in drop 3). The causes
+  are in the inputs: the retail's core and front keyed to their own programs (D-246), the source skylights
+  (D-249, D-252) and the small hotel's halved mechanical-room equipment (D-262).
+- **No ID translation.** The study's program IDs are release 2.4.0's, the site release's, so
+  `id_translation` (ADR 0059 section 6) returns an empty map and the pages link the IDs as written; a test
+  checks that all 235 IDs resolve in the site release and that the map is empty while the two releases agree.
+  It stays in place for a later site release.
+- **Not timed.** The drop carries no `timing` block and no `cost` (R5 needs an otherwise idle machine, D-263),
+  and drop 3's costs belong to other models, so none of them is shown. *Agent decisions:* an untimed drop now
+  says so plainly instead of leaving the cost out silently: the overview's kicker and the prototype and
+  sub-study kickers read "not timed", the overview keeps a "Cost" section that says the drop is not timed, why,
+  and where the archived drop is, each prototype page has a "Serial cost (R5)" fact "not timed", the method
+  page's cost protocol and limits say the same with the stages' concurrency from the sidecar (16, no longer a
+  hard-coded 20), the metrics paragraph no longer mentions cost columns, and the robust rule's limits say a
+  robust row carries no cost. The overview's status lists the pending R5 and links the archived drop; the
+  method page's provenance names it as "Previous drop". The prose that described drop 3's timing is now drawn
+  from the timing block (the number of timed test cases) or general (the per-cell note), and the heat-transfer
+  page names a rerun only where the sidecar records one. The coverage limit no longer names release 2.0.0, and
+  the input notes are a limits bullet "Inputs (release 2.4.0)".
+- **Tests.** `tests/test_lod_site.py` checks the drop 4 files, digests, pins and counts (213, 106 of 132, the
+  restaurant 4A flags, 9 of 18 sub-study cells with an off switch, the sensitivity row), that nothing on any
+  zoning page is a cost or a drop 3 timing figure, and what each page says about the untimed drop. The cost
+  pages, which drop 4 does not show, keep their tests on a synthetic timed drop built from this one
+  (`timed_drop`, made-up costs on two outpatient cells and a timing block of the writer's shape, valid against
+  the schema).
+- **Going live.** The drop is site data, not a data release: `data/lod-recommendations` is outside every release
+  manifest and inside the site digest (section 2, decision 7), so a merge to `main` changes the digest, the
+  catalogue workflow builds the full site uncached and deploys it to Pages. No release version changes.
+- **Left for later.** When R5 runs on these models, a drop 5 with the timing block brings the cost pages back.
+  Some of the timed method prose (the gate's short and long misses, the repeat check) still describes drop 3's
+  pass and should be checked against that drop's timing block then.
