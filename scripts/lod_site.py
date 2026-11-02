@@ -27,6 +27,11 @@ links follow to the site release's records through the releases' ID maps. Drop 4
 D-264, ADR 0050 section 8) is the study run again on atlas release 2.4.0 inputs: the same schema, the
 site release's IDs (the translation is empty), and no timing block, since R5 is pending; an untimed
 drop says so on every page (`untimed_html`) and links the archived previous drop the sidecar names.
+Drop 5 (BEMGen D-265, D-266, ADR 0050 section 9) is drop 4's results timed by R5 alone, without the
+parallel runs' `cpu_time_ratio` (`parallel_ratio`): the timed prose reads the gate's misses from the
+`cost` objects (`gate_miss_text`), the repeat check from `timing.recheck` or the sidecar's reason
+(`recheck_fact`), and the session from the sidecar's R5 stage; the sidecar's `previous` names the
+drop replaced in place (`previous_drop`), so the archived one is an earlier drop.
 """
 import json
 import re
@@ -260,6 +265,78 @@ def cost_sentence(entry):
     return (f' Serial cost (R5): processor time {num(cost.get("cpu_time_s"))} s, wall clock {num(cost.get("wall_clock_s"))} s, peak committed '
             f'memory {num(cost.get("memory_peak_commit_mib"), 0)} MiB, each the median of {cost.get("repeats", "")} repeats (processor-time '
             f'CV {pct(cost.get("cpu_time_cv_pct"))}); a zoning\'s ratios are its own medians over the reference\'s.')
+
+
+TICK_S = 0.015625  # the operating system's count of processor time, 15.6 ms
+LONG_S = 4.0  # a long site of the gate: a median processor time of at least 4 s (D-200)
+
+
+def and_list(items):
+    items = list(items)
+    return ', '.join(items[:-1])+' and '+items[-1] if len(items) > 1 else ''.join(items)
+
+
+def parallel_ratio(data):
+    """Whether a file still lists the runner's `cpu_time_ratio` of the parallel stage runs, which is no cost (BEMGen D-266 removed it)."""
+    return 'cpu_time_ratio' in (data.get('metrics') or [])
+
+
+def gate_misses(main):
+    """The timed sites at or above the gate's CV limit, from the `cost` objects: [{'cell', 'site', 'cpu_time_s', 'cv_pct'}], by site name."""
+    limit = ((main.get('timing') or {}).get('gate') or {}).get('limit_pct')
+    if limit is None:
+        return []
+    misses = []
+    for entry in main['entries']:
+        for cost in [entry['reference'].get('cost')]+[z.get('cost') for z in entry['zonings']]:
+            if cost and cost.get('cpu_time_cv_pct') is not None and cost['cpu_time_cv_pct'] >= limit:
+                misses.append({'cell': entry['id'], 'site': cost.get('timing_site_name', ''), 'cpu_time_s': cost.get('cpu_time_s'),
+                               'cv_pct': cost['cpu_time_cv_pct']})
+    return sorted(misses, key=lambda m: m['site'])
+
+
+def gate_miss_text(drop):
+    """The gate's misses in words: the short runs with their times and the tick's share, then the long sites."""
+    gate = (drop.timing or {}).get('gate') or {}
+    short_n, long_n, long_sites = gate.get('miss_short'), gate.get('miss_long'), gate.get('long_sites')
+    if not gate.get('miss'):
+        return 'no site misses'
+    parts = []
+    if short_n:
+        times = sorted(m['cpu_time_s'] for m in gate_misses(drop.main) if m['cpu_time_s'] is not None and m['cpu_time_s'] < LONG_S)
+        span = (f'{times[0]:.2f} s' if times[0] == times[-1] else f'{times[0]:.2f} to {times[-1]:.2f} s') if times else ''
+        parts.append(f'{short_n} '+('miss is a short run' if short_n == 1 else 'misses are short runs')
+                     + (f' ({span}, where the {TICK_S*1000:.1f} ms count of processor time is about {round(100*TICK_S/times[0]):d} % of the value)' if times else ''))
+    if long_sites is not None:
+        parts.append(f'{long_n} of the {long_sites} sites of at least {LONG_S:g} s miss' if long_n else
+                     f'none of the {long_sites} sites of at least {LONG_S:g} s misses')
+    return ' and '.join(parts)
+
+
+def finer_timed(drop, prototype):
+    """Whether a timed, kept zoning of the prototype has more zones than its cell's reference."""
+    return any(z.get('cost') and not z.get('duplicate_of') and z.get('zone_count') is not None and e['reference'].get('zone_count') is not None
+               and z['zone_count'] > e['reference']['zone_count'] for e in drop.entries(prototype) for z in e['zonings'])
+
+
+def recheck_fact(timing, provenance):
+    """The repeat check between sessions in brief: its figures, or that none was run for this drop (with the sidecar's reason)."""
+    recheck = timing.get('recheck')
+    if recheck:
+        return (f'{recheck.get("sites", "")} long sites timed again: {recheck.get("miss", "")} at or above the gate (largest CV '
+                f'{pct(recheck.get("cv_max_pct"))}); absolute times {change(recheck.get("median_vs_r5"))} against the pass, the test '
+                f'sites\' ratios {change(recheck.get("ratio_vs_r5_min"))} to {change(recheck.get("ratio_vs_r5_max"))} '
+                f'(median {change(recheck.get("ratio_vs_r5_median"), 1)})')
+    return ((provenance.get('stages') or {}).get('R5') or {}).get('repeat_check') or 'not run for this drop'
+
+
+def between_sessions(timing):
+    """What the drop knows of a per-site ratio between sessions."""
+    recheck = timing.get('recheck')
+    if recheck:
+        return (f'between sessions the test sites\' ratios moved by {change(recheck.get("ratio_vs_r5_min"))} to '
+                f'{change(recheck.get("ratio_vs_r5_max"))}')
+    return 'no check between sessions was run for this drop'
 
 
 # Zoning states (schema 1.2.0): simulated, refused by the generator (never simulated) or a failed run.
@@ -765,11 +842,11 @@ def threshold_html(threshold):
     return facts_html(rows)
 
 
-def bemgen_link(provenance, path):
-    """A BEMGen repository path as a link to the file at the report writer's commit, the path shown as code."""
+def bemgen_link(provenance, path, commit=None):
+    """A BEMGen repository path as a link to the file at the report writer's commit (or `commit`), the path shown as code."""
     bemgen = provenance.get('bemgen', {})
     route = 'tree' if path.endswith('/') else 'blob'  # a folder, or a file
-    href = f'{bemgen.get("repository", "").rstrip("/")}/{route}/{bemgen.get("report_commit", "")}/{path}'
+    href = f'{bemgen.get("repository", "").rstrip("/")}/{route}/{commit or bemgen.get("report_commit", "")}/{path}'
     return f'<a href="{esc(href)}"><code>{esc(path)}</code></a>'
 
 
@@ -801,7 +878,21 @@ def archived(page, provenance):
         return None
     return {'drop': f'drop {previous["drop"]}' if previous.get('drop') else 'the previous drop',
             'inputs': f'atlas release {previous["atlas_inputs_release"]} inputs' if previous.get('atlas_inputs_release') else '',
-            'commit': str(previous.get('bemgen_commit', '')), 'link': bemgen_link(provenance, folder)}
+            'commit': str(previous.get('bemgen_commit', '')), 'link': bemgen_link(provenance, folder),
+            # When the sidecar also names the drop this one replaces (`previous`), the archived one is an earlier drop, not the previous.
+            'label': 'earlier drop' if provenance.get('previous') else 'previous drop'}
+
+
+def previous_drop(provenance):
+    """The drop this one replaces in place, when the sidecar names it (`previous`): {'drop', 'timed', 'commit', 'atlas', 'note', 'link'}, or None."""
+    previous = provenance.get('previous') or {}
+    if not previous.get('drop'):
+        return None
+    results = (provenance.get('study') or {}).get('results')
+    commit = str(previous.get('bemgen_commit', ''))
+    return {'drop': f'drop {previous["drop"]}', 'timed': {False: 'not timed', True: 'timed'}.get(previous.get('timed'), ''), 'commit': commit,
+            'atlas': str(previous.get('atlas_commit', '')), 'note': str(previous.get('note', '')),
+            'link': bemgen_link(provenance, results, commit) if results and commit else ''}
 
 
 def untimed_html(page, drop, method=False):
@@ -811,7 +902,7 @@ def untimed_html(page, drop, method=False):
             + ('The serial timing pass (R5) has not been run on these models: it needs an otherwise idle machine and is pending. '
                if r5_pending(provenance) else 'The serial timing pass (R5) has not been applied to this drop. ')
             + 'No cost is shown on these pages.')
-    if method:
+    if method and parallel_ratio(drop.main):
         body += (' The <code>cpu_time_ratio</code> metric in the files comes from the stages\' runs, '
                  f'{concurrency(provenance)} at a time on a shared machine, and is not runtime data.')
     previous = archived(page, provenance)
@@ -827,7 +918,6 @@ def cost_section(page, drop):
     """The overview's cost section: the serial pass in brief and the writer's medians by prototype and by zoning."""
     timing = drop.timing or {}
     gate = timing.get('gate', {})
-    recheck = timing.get('recheck') or {}
     cells = {e['id'] for e in drop.main['entries'] if timed(e)}
     columns = ('Test sites', 'CPU ratio', 'Wall ratio', 'Memory ratio', 'CPU median s', 'CPU CV median %')
     overall = timing.get('overall') or {}
@@ -859,13 +949,14 @@ def cost_section(page, drop):
                          f'({overall.get("sites", "")} distinct test sites)' if overall else ''),
              ('Gate', f'processor-time CV per site below {gate.get("limit_pct", "")} %: {gate.get("pass", "")} of {gate.get("sites", "")} sites pass '
                       f'(median {pct(gate.get("median_pct"))}, largest {pct(gate.get("max_pct"))}); <strong>{esc(gate.get("verdict", ""))}</strong>'),
-             ('Repeat check', f'{recheck.get("sites", "")} long sites timed again: {recheck.get("miss", "")} at or above the gate (largest CV '
-                              f'{pct(recheck.get("cv_max_pct"))}); absolute times {change(recheck.get("median_vs_r5"))} against the pass, the test '
-                              f'sites\' ratios {change(recheck.get("ratio_vs_r5_min"))} to {change(recheck.get("ratio_vs_r5_max"))} '
-                              f'(median {change(recheck.get("ratio_vs_r5_median"), 1)})' if recheck else '')]
+             ('Repeat check', esc(recheck_fact(timing, drop.provenance)))]
+    above_keys = [str(r.get('label')) for r in timing.get('by_prototype', []) if (r.get('cpu_ratio') or 0) > 1]
+    above = [prototype_name(p) for p in above_keys]
+    reasons = ([f'the gate was not met ({gate.get("miss", "")} of {gate.get("sites", "")} sites miss it)'] if gate.get('verdict') != 'met' else [])
+    reasons.append(between_sessions(timing))
     return (facts_html(facts)
             + '<p>Costs are the serial timing pass (R5): one EnergyPlus at a time, three repeats, on an otherwise idle machine. They are '
-            'reported as medians, since the gate was not met and a per-site ratio is reproducible to about ±15 % between sessions; the '
+            f'reported as medians, since {" and ".join(reasons)}; the '
             'medians by prototype and by zoning below are the figures to quote, and the per-cell ratios on the prototype pages show the '
             f'spread. <a href="{esc(page.rel(URL+"method/#section-cost"))}">Cost protocol</a>.</p>'
             + '<h3>By prototype</h3>'+table(rows, ('Prototype',)+columns, 'ea-listing ea-costs')
@@ -875,7 +966,11 @@ def cost_section(page, drop):
             + ': the ratios of processor time, wall clock and peak committed memory to the reference, the median processor time in seconds and '
             'the median per-site CV. '
             'Peak committed memory hardly changes because EnergyPlus\'s own floor dominates; the saving in time follows the zone count only '
-            'for large models, since a fixed start-up dominates the small single-storey prototypes.</p>')
+            'for large models, since a fixed start-up dominates the small single-storey prototypes.'
+            + (f' A ratio above 1 ({esc(and_list(above))}) means the prototype\'s distinct timed zonings cost more than its reference at the '
+               'median'+(': some of them have more zones than the reference (the prototype page lists each zoning\'s zone count).'
+                         if all(finer_timed(drop, p) for p in above_keys) else '.') if above else '')
+            + '</p>')
 
 
 def status_section(page, drop):
@@ -885,9 +980,13 @@ def status_section(page, drop):
     links = [(f'Study report (R6)', study.get('report')), ('Methodology', study.get('methodology')), ('Run plan', study.get('plan')),
              ('Results', study.get('results'))]
     items = ''.join(f'<li>{esc(label)}: {bemgen_link(provenance, path)} in BEMGen</li>' for label, path in links if path)
+    replaced = previous_drop(provenance)
+    if replaced and replaced['link']:
+        items += (f'<li>Previous drop ({esc(replaced["drop"])}'+(f', {esc(replaced["timed"])}' if replaced['timed'] else '')
+                  + f'): {replaced["link"]} in BEMGen</li>')
     previous = archived(page, provenance)
     if previous:
-        items += (f'<li>Archived previous drop ({esc(previous["drop"])}'+(f', {esc(previous["inputs"])}' if previous['inputs'] else '')
+        items += (f'<li>Archived {previous["label"]} ({esc(previous["drop"])}'+(f', {esc(previous["inputs"])}' if previous['inputs'] else '')
                   + f'): {previous["link"]} in BEMGen</li>')
     body = f'<p>{esc(provenance.get("status", ""))}</p>'
     body += '<ul>'+''.join(f'<li>{esc(item)}</li>' for item in pending)+'</ul>' if pending else '<p>Nothing is pending.</p>'
@@ -933,7 +1032,7 @@ def overview_page(site, drop, urls):
                     'The rule and its limits</a>.</p>' if results else '')
     body = [
         f'<p class="ea-kicker">Geometric LOD study · drop {esc(provenance.get("drop", ""))} · {len(entries)} cells · '
-        f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))}'+('' if drop.costed else ' · not timed')+'</p>',
+        f'atlas inputs release {esc(provenance.get("atlas_inputs", {}).get("release", ""))}'+(' · timed (R5)' if drop.costed else ' · not timed')+'</p>',
         '<p>Which thermal zoning of a DOE prototype building is coarse enough to be cheap and fine enough to keep its ideal sensible heating '
         'and cooling loads within a stated error of the prototype\'s full zoning? For each prototype, climate zone, vintage and orientation '
         'the study simulated the prototype\'s own geometry as BEMGen writes it, zoned every room (the <strong>reference</strong>), and then the '
@@ -1061,12 +1160,29 @@ def method_page(site, drop, urls):
     file_rows = [(esc(name), esc(f.get('label', '')), esc(f.get('suite', '')), esc(f.get('run', '')), str(f.get('entries', '')), f'<code>{esc(str(f.get("sha256", ""))[:12])}</code>')
                  for name, f in files.items()]
     previous = archived(page, provenance)
+    replaced = previous_drop(provenance)
     zoning_rows = [(esc(words(s)), esc(SIMPLIFIERS.get(s, ''))) for s in simplifiers]
     stacker_rows = [(esc(words(s)), esc(STACKERS.get(s, ''))) for s in stackers]
+    r5 = (provenance.get('stages') or {}).get('R5') or {}
+    idf_check = timing.get('idf_check') or {}
+    if recheck:
+        recheck_text = (f'the {recheck.get("sites", "")} long sites timed again (BEMGen <code>{esc(str(bemgen.get("recheck_commit", "")))}</code>, '
+                        f'run <code>{esc(recheck.get("run", ""))}</code>, {", ".join(str(r) for r in recheck.get("repeats", []))} serial repeats on the idle '
+                        f'machine): {recheck.get("miss", "")} of {recheck.get("sites", "")} at or above {gate.get("limit_pct", "")} % (median CV '
+                        f'{pct(recheck.get("cv_median_pct"))}, largest {pct(recheck.get("cv_max_pct"))}; the pass had {recheck.get("r5_miss_same_sites", "")} '
+                        f'misses among them), the third repeat over the first two median {num(recheck.get("r3_over_r12_median"), 3)}; but absolute times '
+                        f'{change(recheck.get("median_vs_r5"))} against the pass and the {recheck.get("test_sites", "")} test sites\' ratios moved by '
+                        f'{change(recheck.get("ratio_vs_r5_min"))} to {change(recheck.get("ratio_vs_r5_max"))} (median {change(recheck.get("ratio_vs_r5_median"), 1)})')
+    else:
+        recheck_text = (esc(recheck_fact(timing, provenance))
+                        + (f'; the repeat check of {esc(previous["drop"])} timed other models and is not carried over'
+                           if previous and (provenance.get("archived") or {}).get("repeat_check") else ''))
     cost_body = (
         '<p>Energy results do not depend on how many EnergyPlus processes run at once, so the stages ran '
-        f'{concurrency(provenance)} at a time and their times are '
-        'not results (the <code>cpu_time_ratio</code> metric in the files comes from those runs and is not runtime data). Cost was measured '
+        f'{concurrency(provenance)} at a time and their times are not results '
+        + ('(the <code>cpu_time_ratio</code> metric in the files comes from those runs and is not runtime data). ' if parallel_ratio(main) else
+           '(the files carry no processor-time ratio of those runs, BEMGen D-266). ')
+        + 'Cost was measured '
         f'in a separate serial timing pass (R5, BEMGen <code>{esc(str(bemgen.get("timing_commit", "")))}</code>): {esc(timing.get("protocol", ""))}; '
         f'{esc(bemgen.get("machine", "an otherwise idle machine"))}. Per site the runner records the processor time (user plus kernel), the wall '
         'clock and the peak committed private memory; a site\'s cost is the median over its repeats, its <strong>cost ratio</strong> that median '
@@ -1080,24 +1196,20 @@ def method_page(site, drop, urls):
                           + f' (not among the {len(timing.get("test_cases", []))} timed test cases, so their costs are not measured)'
                           if timing.get('untimed_prototypes') else ''),
             ('Repeats', ', '.join(sorted({str(e['reference']['cost'].get('repeats', '')) for e in timed_cells})) if timed_cells else ''),
+            ('Timed IDFs', esc(f"{idf_check.get('identical')} of {idf_check.get('sites')} byte-identical to R3's") if idf_check.get('sites') else ''),
+            ('Session', '; '.join(esc(r5[k]) for k in ('session', 'load') if r5.get(k))),
+            ('Drift over the repeats', esc(r5.get('drift', ''))),
             ('Gate', f'processor-time CV per site below {gate.get("limit_pct", "")} %: {gate.get("pass", "")} of {gate.get("sites", "")} sites pass; '
                      f'median {pct(gate.get("median_pct"))}, P90 {pct(gate.get("p90_pct"))}, largest {pct(gate.get("max_pct"))}; '
-                     f'{gate.get("miss_short", "")} misses are short runs (0.8 to 3.3 s, where the 15.6 ms count of processor time is about 2 % of the '
-                     f'value) and {gate.get("miss_long", "")} are among the {gate.get("long_sites", "")} sites of at least 4 s, which late in the third '
-                     f'repeat took 13 to 24 % more processor time for a reason not established; <strong>{esc(gate.get("verdict", ""))}</strong>'),
+                     f'{gate_miss_text(drop)}; <strong>{esc(gate.get("verdict", ""))}</strong>'),
             ('Treatment', esc(gate.get('treatment', ''))),
-            ('Repeat check', f'the {recheck.get("sites", "")} long sites timed again (BEMGen <code>{esc(str(bemgen.get("recheck_commit", "")))}</code>, '
-                             f'run <code>{esc(recheck.get("run", ""))}</code>, {", ".join(str(r) for r in recheck.get("repeats", []))} serial repeats on the idle '
-                             f'machine): {recheck.get("miss", "")} of {recheck.get("sites", "")} at or above {gate.get("limit_pct", "")} % (median CV '
-                             f'{pct(recheck.get("cv_median_pct"))}, largest {pct(recheck.get("cv_max_pct"))}; the pass had {recheck.get("r5_miss_same_sites", "")} '
-                             f'misses among them), the third repeat over the first two median {num(recheck.get("r3_over_r12_median"), 3)}; but absolute times '
-                             f'{change(recheck.get("median_vs_r5"))} against the pass and the {recheck.get("test_sites", "")} test sites\' ratios moved by '
-                             f'{change(recheck.get("ratio_vs_r5_min"))} to {change(recheck.get("ratio_vs_r5_max"))} (median {change(recheck.get("ratio_vs_r5_median"), 1)})'
-                             if recheck else '')])
-        + '<p>Within a session the measurement is stable; between sessions a per-site ratio is reproducible to about ±15 %. The costs shown are '
-        'therefore medians: the per-cell ratios on the prototype pages are each site\'s median over its repeats, and the medians by zoning and '
-        f'by prototype on the <a href="{esc(page.rel(URL+"#section-cost"))}">overview</a> are the figures to quote. No per-site precision below '
-        'the stated CV distribution is claimed (D-202).</p>') if timing else untimed_html(page, drop, method=True)
+            ('Repeat check', recheck_text)])
+        + f'<p>Within the session the measurement is stable (median processor-time CV {pct(gate.get("median_pct"))}); '
+        + ('no check between sessions was run for this drop, so how far a per-site ratio moves between sessions is not measured on these models.'
+           if not recheck else between_sessions(timing)+'.')
+        + ' The costs shown are therefore medians: the per-cell ratios on the prototype pages are each site\'s median over its repeats, and the '
+        f'medians by zoning and by prototype on the <a href="{esc(page.rel(URL+"#section-cost"))}">overview</a> are the figures to quote. No '
+        'per-site precision below the stated CV distribution is claimed (D-202).</p>') if timing else untimed_html(page, drop, method=True)
     body = [
         crumbs(page, [(TITLE, URL), ('Method and caveats', URL+'method/')]),
         contents([('design', 'What was compared'), ('metrics', 'Metrics and threshold'), ('dedup', 'Deduplication'), ('robust', 'Robust across orientations'),
@@ -1121,7 +1233,8 @@ def method_page(site, drop, urls):
                 'CV(RMSE) and NMBE are the hourly coefficient of variation of the root-mean-square error and the normalised mean bias error of '
                 'ASHRAE Guideline 14; the peak error is the relative difference of the annual maximum hourly load; the area change is the change of '
                 'conditioned floor area against the reference. The JSON files carry further metrics (P99 peaks, load-duration-curve errors, '
-                'Kolmogorov–Smirnov distances, conditioned-temperature errors, zone-count ratios and the concurrent runs\' CPU-time ratio) that the '
+                'Kolmogorov–Smirnov distances, conditioned-temperature errors and zone-count ratios'
+                + (' and the concurrent runs\' CPU-time ratio' if parallel_ratio(main) else '')+') that the '
                 'pages do not show; '+('the serial costs are the <code>cost</code> objects, shown as the cost columns.</p>' if drop.costed else
                                        'this drop carries no serial costs (R5).</p>')
                 + threshold_html(threshold)
@@ -1187,15 +1300,19 @@ def method_page(site, drop, urls):
                    + '. With the three error limits scaled (area limit and judging floor unchanged), the cells with a recommendation are '
                    + ', '.join(f'{r.get("cells_with_recommendation")} at ×{r.get("factor"):g}' for r in sensitivity.get('rows', []))
                    + ' (D-223).</li>' if judged_loads and sensitivity else '')
-                + ('<li><strong>Cost precision and scope.</strong> The timing gate was not met, so costs are medians (the cost protocol above); the '
-                   + ', '.join(prototype_name(p) for p in timing.get('untimed_prototypes', []))
-                   + ' were not timed; costs are measured in '
+                + ('<li><strong>Cost precision and scope.</strong> '
+                   + (f'The timing gate was not met ({gate.get("miss", "")} of {gate.get("sites", "")} sites miss it), so costs are medians '
+                      '(the cost protocol above)' if gate.get('verdict') != 'met' else 'Costs are medians (the cost protocol above)')
+                   + (f'; the prototypes {esc(and_list([prototype_name(p) for p in timing["untimed_prototypes"]]))} were not timed'
+                      if timing.get('untimed_prototypes') else '')
+                   + '; costs are measured in '
                    + ', '.join(sorted({e['vintage'] for e in timed_cells}))+', climate zones '+', '.join(sorted({e['climate_zone'] for e in timed_cells}))
-                   + ', at '+', '.join(sorted({orientation(e['orientation_degrees']) for e in timed_cells}))+' only, and on one machine.</li>'
+                   + ', at '+', '.join(sorted({orientation(e['orientation_degrees']) for e in timed_cells}))+' only, '
+                   + ('and on one machine.</li>' if recheck else 'in one session on one machine, and no repeat check was run for this drop.</li>')
                    if timing else
                    '<li><strong>Not timed.</strong> This drop carries no serial costs'+(' (R5 pending)' if r5_pending(provenance) else '')
-                   + f'; the CPU-time ratios in the JSON come from runs {concurrency(provenance)} at a time on a shared machine and are not runtime '
-                   'results.</li>')
+                   + (f'; the CPU-time ratios in the JSON come from runs {concurrency(provenance)} at a time on a shared machine and are not runtime '
+                      'results' if parallel_ratio(main) else '')+'.</li>')
                 + '<li><strong>Threshold.</strong> The threshold is the report writer\'s default and an owner choice, recorded in every file; the R6 '
                 'report kept it. A later drop with another threshold carries the new one in every file.</li>'
                 '<li><strong>Not a population statement.</strong> The cells are the prototypes at their own dimensions; nothing here weights them by '
@@ -1218,8 +1335,13 @@ def method_page(site, drop, urls):
                             ('Schema', f'<code>{esc(bemgen.get("schema_copy", ""))}</code>, a copy of BEMGen\'s <code>{esc(bemgen.get("schema", ""))}</code>'
                                        f'; the main matrix is version {esc(main.get("version", ""))}'
                                        + (f', the sub-study {esc(drop.ht.get("version", ""))}' if drop.ht else '')),
-                            ('Previous drop', (f'{esc(previous["drop"])} ('+(esc(previous["inputs"])+', ' if previous['inputs'] else '')
-                                               + f'BEMGen <code>{esc(previous["commit"][:12])}</code>), archived in BEMGen at {previous["link"]}')
+                            ('Previous drop', (f'{esc(replaced["drop"])} ('+(esc(replaced["timed"])+', ' if replaced['timed'] else '')
+                                               + f'BEMGen <code>{esc(replaced["commit"][:12])}</code>'
+                                               + (f', this repository at <code>{esc(replaced["atlas"])}</code>' if replaced['atlas'] else '')
+                                               + f'): {esc(replaced["note"])}') if replaced else ''),
+                            ('Archived drop' if replaced else 'Previous drop',
+                             (f'{esc(previous["drop"])} ('+(esc(previous["inputs"])+', ' if previous['inputs'] else '')
+                              + f'BEMGen <code>{esc(previous["commit"][:12])}</code>), archived in BEMGen at {previous["link"]}')
                              if previous else ''),
                             ('Repository files', f'<code>data/lod-recommendations/v1/</code>; drop {esc(provenance.get("drop", ""))}'),
                             ('Licence', esc(provenance.get('licence', '')))])

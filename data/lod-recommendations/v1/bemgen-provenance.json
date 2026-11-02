@@ -70,28 +70,62 @@
     },
     "R5": {
       "stage": "R5 timing",
-      "status": "pending",
-      "gate": "not run: R5, the serial timing pass, is not run for this drop: it needs an otherwise idle machine (D-200) and is left for one (D-263); the costs of the drop published on 2026-10-29 are not carried over, since its models differ"
+      "suite": "lod-timing-20261102-034653",
+      "runs": [
+        "run_20261102-034718"
+      ],
+      "bemgen": "1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab",
+      "energyplus": "26.2.0 (4bd7a1f26f)",
+      "concurrency": 1,
+      "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+      "sites": 528,
+      "status": {
+        "Completed": 440,
+        "Invalid": 88
+      },
+      "test_cases": 22,
+      "test_cases_with_recommendation": 18,
+      "test_cases_finer_than_reference": 0,
+      "gate": "CPU-time CV < 5 %: 242 of 244 sites, not met; reported as medians (D-202)",
+      "timing_test_cases": 12,
+      "timed_sites": 244,
+      "untimed_prototypes": [
+        "LargeHotel",
+        "MediumOffice"
+      ]
     },
     "R5 repeat check": null
   },
   "sources": {
     "R3 recommendations": {
       "path": "D:\\bemgen-results-lod2\\lod-study\\r6\\main-report\\lod-recommendations.json",
-      "sha256": "94c2896aeb58f63eb561d2ef0bf95ad710473130193efe443280cc3991fdeb87",
+      "sha256": "24539e1649a80e5b5b19fc444ea7c6a9e5df4bf080b0b5f8d55e06d7dc0b310b",
       "sites_csv_sha256": "e986a93a8fdf6759626c820a309a2f63fce76be19d265c5aa0be39c9b954f740",
       "note": "report.py of this change run again on the stage's merged database and suite (the stage folder stays read-only, D-219): every planned zoning listed, the recommendation bounded by the reference's zone count, the both-on twin kept, LF output"
     },
     "R4 recommendations": {
       "path": "D:\\bemgen-results-lod2\\lod-study\\r6\\ht-report\\lod-recommendations.json",
-      "sha256": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995",
+      "sha256": "50dd9bb981e65f857c6f7fa6830c8042f51f128602fd14587244463b80bc36c3",
       "sites_csv_sha256": "fcbfa34aec08519fad086b57c35636861a154a9e655131bc7c3801d4996014d6",
       "note": "report.py of this change run again on the stage's merged database and suite (the stage folder stays read-only, D-219): every planned zoning listed, the recommendation bounded by the reference's zone count, the both-on twin kept, LF output"
+    },
+    "R5 recommendations": {
+      "path": "D:\\bemgen-results-lod2\\lod-study\\r6\\timing-report\\lod-recommendations.json",
+      "sha256": "4cc8b4702bf3c0460a4b1b9c1b260a26af76c396c2679dc341dc6f321e975f5c",
+      "sites_csv_sha256": "f3de64bfa9f7f287002eed907a3b6fafb1d1e68406d493dc21284905e11252ac",
+      "note": "report.py of this change run again on the stage's merged database and suite (the stage folder stays read-only, D-219): every planned zoning listed, the recommendation bounded by the reference's zone count, the both-on twin kept, LF output"
+    },
+    "R5 central database": {
+      "path": "D:\\bemgen-results-lod2\\lod-study\\timing\\merged\\central.duckdb",
+      "tables": [
+        "site_timing",
+        "site_timing_summary"
+      ]
     }
   },
   "files": {
-    "lod-recommendations.json": "76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7",
-    "lod-recommendations-ht.json": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995"
+    "lod-recommendations.json": "65b2371768436d216e2fecb6b9d6affeb0ca493cc90a883d70cf68c4de350382",
+    "lod-recommendations-ht.json": "50dd9bb981e65f857c6f7fa6830c8042f51f128602fd14587244463b80bc36c3"
   },
   "compared_with": {
     "folder": "research/lod-study/archive/2026-10-29-atlas-2-0-0",
