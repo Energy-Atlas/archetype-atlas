@@ -5,8 +5,9 @@
   "written_by": "scripts/lod-study/study_tables.py",
   "run_plan": "docs/plans/2026-10-29-lod-study-run-plan.md",
   "atlas_inputs": {
-    "release": "2.0.0",
-    "commit": "96a2e928ba60be6b54aa68d149e8de4222595035",
+    "release": "2.4.0",
+    "commit": "7c543f5df904b89f180e84ebec5bd21b6decd19e",
+    "release_manifest_sha256": "51ce9c9e04f3e8d23d4b326d841ef7cc3299b60485cb8a0d2153a3dc3317bd7f",
     "manifest": "research/lod-study/inputs.manifest.json"
   },
   "energyplus_pin": {
@@ -29,13 +30,13 @@
   "stages": {
     "R3": {
       "stage": "R3 main",
-      "suite": "lod-main-20261029-051941",
+      "suite": "lod-main-20261101-225850",
       "runs": [
-        "run_20261029-052718"
+        "run_20261101-230342"
       ],
-      "bemgen": "1.5.0+2ed856cc9d92919bf66f9ee9f535f0c0f53b336c",
+      "bemgen": "1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab",
       "energyplus": "26.2.0 (4bd7a1f26f)",
-      "concurrency": 20,
+      "concurrency": 16,
       "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
       "sites": 6336,
       "status": {
@@ -43,19 +44,19 @@
         "Invalid": 1056
       },
       "test_cases": 264,
-      "test_cases_with_recommendation": 214,
+      "test_cases_with_recommendation": 213,
       "test_cases_finer_than_reference": 4,
       "gate": "complete: 5280 of 5280 simulated sites succeeded; 1056 refused by the generator by documented limits (listed with their reason)"
     },
     "R4": {
       "stage": "R4 IWHT/FHT",
-      "suite": "lod-ht-20261029-071714",
+      "suite": "lod-ht-20261102-001857",
       "runs": [
-        "run_20261029-071919"
+        "run_20261102-002039"
       ],
-      "bemgen": "1.5.0+2ed856cc9d92919bf66f9ee9f535f0c0f53b336c",
+      "bemgen": "1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab",
       "energyplus": "26.2.0 (4bd7a1f26f)",
-      "concurrency": 20,
+      "concurrency": 16,
       "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
       "sites": 2112,
       "status": {
@@ -65,113 +66,38 @@
       "test_cases": 22,
       "test_cases_with_recommendation": 18,
       "test_cases_finer_than_reference": 0,
-      "gate": "complete: 1760 of 1760 simulated sites succeeded; 352 refused by the generator by documented limits (listed with their reason); the cells SmallHotel 3C, SmallHotel 5A are those of the rerun (D-224), the others the first run's, whose IDFs equal the rerun commit's apart from comment lines"
+      "gate": "complete: 1760 of 1760 simulated sites succeeded; 352 refused by the generator by documented limits (listed with their reason)"
     },
     "R5": {
       "stage": "R5 timing",
-      "suite": "lod-timing-20261029-080232",
-      "runs": [
-        "run_20261029-083427"
-      ],
-      "bemgen": "1.6.0+b29931c80254d15fa8362b57a9404d7e4da6c5ab",
-      "energyplus": "26.2.0 (4bd7a1f26f)",
-      "concurrency": 1,
-      "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
-      "sites": 528,
-      "status": {
-        "Completed": 440,
-        "Invalid": 88
-      },
-      "test_cases": 22,
-      "test_cases_with_recommendation": 18,
-      "test_cases_finer_than_reference": 0,
-      "gate": "CPU-time CV < 5 %: 192 of 218 sites, not met; reported as medians (D-202)",
-      "timing_test_cases": 12,
-      "timed_sites": 218,
-      "untimed_prototypes": [
-        "MediumOffice",
-        "PrimarySchool"
-      ]
+      "status": "pending",
+      "gate": "not run: R5, the serial timing pass, is not run for this drop: it needs an otherwise idle machine (D-200) and is left for one (D-263); the costs of the drop published on 2026-10-29 are not carried over, since its models differ"
     },
-    "R5 repeat check": {
-      "run": "run_20261029-144634",
-      "bemgen": "1.6.0+d32fa2a9d7df90a9202e8d7d3c7004d03374f0ec",
-      "sites": 34,
-      "miss": 0,
-      "evidence": "archived",
-      "rederivable": false,
-      "folder": "D:\\bgdiag\\r6-retime",
-      "gate": "0 of 34 long sites at or above 5 % (D-202); archived summary, its run folder lost, not re-derivable (D-219)",
-      "archive": "research/lod-study/archive/r5-repeat-check-20261029.json",
-      "archive_sha256": "3eb7761be90175d9985a2237fda16bb62be613270a3dee2875ed5a6d36f1f655"
-    },
-    "R4 first run, rerun cells": {
-      "cells": [
-        "SmallHotel 3C",
-        "SmallHotel 5A"
-      ],
-      "status": {
-        "Completed": 168,
-        "RunFailed": 24
-      },
-      "test_cases_with_recommendation": 2,
-      "gate": "superseded by the rerun (D-224)"
-    },
-    "R4 rerun": {
-      "stage": "R4 small-hotel rerun (D-211's heat-transfer rule)",
-      "suite": "lod-ht-smallhotel-20261101-042906",
-      "runs": [
-        "run_20261101-043133"
-      ],
-      "bemgen": "1.8.0+d4eb86812f5dec6d1d70c7d760b0f4eed0f58e20",
-      "energyplus": "26.2.0 (4bd7a1f26f)",
-      "concurrency": 2,
-      "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
-      "sites": 192,
-      "status": {
-        "Completed": 192
-      },
-      "test_cases": 2,
-      "test_cases_with_recommendation": 2,
-      "test_cases_finer_than_reference": 0,
-      "gate": "complete: 192 of 192 simulated sites succeeded"
-    }
+    "R5 repeat check": null
   },
   "sources": {
     "R3 recommendations": {
-      "path": "D:\\bemgen-results\\lod-study\\r6\\main-report\\lod-recommendations.json",
-      "sha256": "2ac7dd499951f629a4feef9758f86d0ad4c79ba5dca3e500eb1d44bf58900844",
-      "sites_csv_sha256": "54c506832f3abcf2a5b6c18a30795a774378d262deef5a735119fdc3e420d4c0",
+      "path": "D:\\bemgen-results-lod2\\lod-study\\r6\\main-report\\lod-recommendations.json",
+      "sha256": "94c2896aeb58f63eb561d2ef0bf95ad710473130193efe443280cc3991fdeb87",
+      "sites_csv_sha256": "e986a93a8fdf6759626c820a309a2f63fce76be19d265c5aa0be39c9b954f740",
       "note": "report.py of this change run again on the stage's merged database and suite (the stage folder stays read-only, D-219): every planned zoning listed, the recommendation bounded by the reference's zone count, the both-on twin kept, LF output"
     },
     "R4 recommendations": {
-      "path": "D:\\bemgen-results\\lod-study\\r6\\ht-report\\lod-recommendations.json",
-      "sha256": "7d732d86be6b2c58b0b44f21560b5586c0f5e5c2d1c17a9251fc30ead7e7a875",
-      "sites_csv_sha256": "751be6b8c941466f2326fb08f9d613be1e9c32f32c172667cecbaa2da2581927",
+      "path": "D:\\bemgen-results-lod2\\lod-study\\r6\\ht-report\\lod-recommendations.json",
+      "sha256": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995",
+      "sites_csv_sha256": "fcbfa34aec08519fad086b57c35636861a154a9e655131bc7c3801d4996014d6",
       "note": "report.py of this change run again on the stage's merged database and suite (the stage folder stays read-only, D-219): every planned zoning listed, the recommendation bounded by the reference's zone count, the both-on twin kept, LF output"
-    },
-    "R5 recommendations": {
-      "path": "D:\\bemgen-results\\lod-study\\r6\\timing-report\\lod-recommendations.json",
-      "sha256": "5a6b408449b193ce7986c9874305e0103429925912f77e68db0cf59ff536e10d",
-      "sites_csv_sha256": "0bc769335440f7a88c6909fce5425a81b4fc192890cd797899aad917d2021820",
-      "note": "report.py of this change run again on the stage's merged database and suite (the stage folder stays read-only, D-219): every planned zoning listed, the recommendation bounded by the reference's zone count, the both-on twin kept, LF output"
-    },
-    "R5 central database": {
-      "path": "D:\\bemgen-results\\lod-study\\timing\\merged\\central.duckdb",
-      "tables": [
-        "site_timing",
-        "site_timing_summary"
-      ]
-    },
-    "R4 rerun recommendations": {
-      "path": "D:\\bemgen-results\\lod-study\\ht-smallhotel\\report\\lod-recommendations.json",
-      "sha256": "d1d3a703ccaf58513995577909feb838727cac5491de7c06a49df5b9ab66a611",
-      "sites_csv_sha256": "322aa1ac968892f568b2d53694250fd14bb4c750c253b7f903d11d666632dfc2",
-      "note": "the rerun stage's report (report.py of the commit it ran at)"
     }
   },
   "files": {
-    "lod-recommendations.json": "439fc0a4b430c111e4fa85f7cd436000e937c2cec2b71fb15f27a3a23d557c80",
-    "lod-recommendations-ht.json": "ca89a7d7e28b6ba12ce451be2718c898b73c43244764ca974178376c44a2f897"
+    "lod-recommendations.json": "76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7",
+    "lod-recommendations-ht.json": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995"
+  },
+  "compared_with": {
+    "folder": "research/lod-study/archive/2026-10-29-atlas-2-0-0",
+    "files": {
+      "lod-recommendations.json": "439fc0a4b430c111e4fa85f7cd436000e937c2cec2b71fb15f27a3a23d557c80",
+      "lod-recommendations-ht.json": "ca89a7d7e28b6ba12ce451be2718c898b73c43244764ca974178376c44a2f897"
+    }
   }
 }

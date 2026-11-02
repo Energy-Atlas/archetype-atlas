@@ -1,5 +1,20 @@
 # Changelog
 
+## Zoning recommendations drop 4: the LOD study on atlas release 2.4.0 inputs — 2026-11-02
+
+Stage AT-LOD4 ([ADR 0050 section 8](docs/adr/0050-zoning-recommendations-site.md)).
+
+- **Drop 4** (BEMGen `dbbd872`, stage LOD2, D-261 to D-264): the study run again at BEMGen `35e8a132` on release
+  2.4.0 inputs. The three files are copied byte for byte into `data/lod-recommendations/v1/` (schema 1.2.0,
+  unchanged), and the sidecar records drop 4, R5 pending and the archived drop 3. R3: 213 of 264 cells with a
+  recommendation (214 in drop 3), 36 changed. R4: 18 of 22. Robust across orientations: 106 of 132 pairs.
+- **Not timed.** The drop has no serial costs, and drop 3's costs, which belong to other models, are not shown.
+  The pages say so: the kickers, a "Cost" section on the overview, a "Serial cost (R5)" fact per prototype, the
+  method page's cost protocol and limits, and the status with the pending R5. The status and the provenance link
+  the archived drop in BEMGen.
+- **No ID translation**: the study's IDs are release 2.4.0's, so the links use them as written.
+- The cost pages keep their tests on a synthetic timed drop.
+
 ## Atlas release 2.4.0 and atlas-schedules 4.1.1 — 2026-11-01
 
 Stage REL-A2 of the 2026-10-31 review, round 2 ([ADR 0062](docs/adr/0062-release-2-4-0.md),
