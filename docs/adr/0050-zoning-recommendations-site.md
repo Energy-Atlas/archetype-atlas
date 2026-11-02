@@ -282,3 +282,62 @@ its pull request 35).
 - **Left for later.** When R5 runs on these models, a drop 5 with the timing block brings the cost pages back.
   Some of the timed method prose (the gate's short and long misses, the repeat check) still describes drop 3's
   pass and should be checked against that drop's timing block then.
+
+## 9. Drop 5 (2026-11-02): drop 4 timed by R5, and the practice for a drop
+
+Applied by stage AT-LOD5 on the owner's approval. BEMGen stage LOD2-R5 (D-265, D-266) ran R5, the serial
+timing pass, on an otherwise idle machine at BEMGen `35e8a132`, the build of R1 to R4, and wrote the files
+again; they come from BEMGen main `99c0b0a` (the merge of its pull request 36).
+
+- **Files.** `lod-recommendations.json` (`65b23717…`), `lod-recommendations-ht.json` (`50dd9bb9…`) and
+  `provenance.json` (`834b63d2…`, kept as `bemgen-provenance.json`) are copied byte for byte (LF, so `sha256`
+  equals `source_sha256`). The schema keeps version 1.2.0, but D-266 changed its `$comment` and the `cost`
+  description, so the copy in `schemas/` is replaced byte for byte (`8baff002…`) and recorded as its
+  revision 4, class editorial (`scripts.schema_revisions`, external schema). The sidecar records drop 5, the
+  merge, run and timing builds, the machine, R5 with its suite, run, gate, 732 runs, the session, its load,
+  the drift over the repeats and the reason no repeat check was run, the decisions D-265 and D-266, the
+  previous drop (`previous`: drop 4, not timed, its BEMGen commit and digests), the archived drop 3 (now with
+  `repeat_check: true`) and no pending item.
+- **What changed in the data.** The recommendations are drop 4's: stripped of `cost`, `timing` and
+  `cpu_time_ratio`, both files equal drop 4's. The main matrix gains the serial `cost` of 12 references and
+  232 test sites (12 cells, all 90.1-2019 at 0°, climate zones 3C and 5A) and the `timing` block: gate not met
+  by 2 of 244 sites (both 0.89 s supermarket 3C runs; none of the 40 sites of at least 4 s), median CV 1.71 %,
+  P90 3.34 %, largest 7.01 %; `recheck` null; the median of the nine prototype medians 0.479 of the
+  reference's processor time, 0.495 wall clock, 0.981 peak committed memory; the medium office and the large
+  hotel not timed. D-266 removed `cpu_time_ratio`, the runner's ratio of the parallel stage runs, from every
+  zoning's `metrics` and the top-level list, which is why the sub-study file has a new digest too.
+- **The cost pages come back**, and every piece of timed prose was checked against this drop. *Agent
+  decisions:* the gate's misses on the method page are read from the `cost` objects (`gate_misses`: their
+  number, times and the 15.6 ms tick's share), and the long sites from the gate, where the text described
+  drop 3's ten short and sixteen long misses with fixed times; the late-repeat slowdown of drop 3 is no longer
+  stated, and the drift over the repeats comes from the sidecar's R5 `drift` with the session and load
+  (`session`, `load`); "reproducible to about ±15 % between sessions" was drop 3's repeat check and now
+  comes only from a `timing.recheck`, so without one the overview and the method page say no check between
+  sessions was run for this drop and why (the sidecar's `repeat_check`), and the method page adds that the
+  archived drop's check timed other models; the limits bullet states the gate's misses, names the untimed
+  prototypes in a list, and says "in one session" when there is no repeat check; the parallel runs'
+  `cpu_time_ratio` is mentioned (metrics paragraph, cost protocol, untimed limits) only when a file still
+  lists it (`parallel_ratio`), else the cost protocol says the files carry none (D-266); a "Timed IDFs" fact
+  reports `timing.idf_check`; the overview's note names a prototype whose median ratio exceeds 1 (the
+  full-service restaurant, 1.58) and, where the data shows it, that some of its timed zonings have more zones
+  than the reference; the overview's kicker reads "timed (R5)" as drop 4's read "not timed"; the status lists
+  the previous drop 4 (its results at BEMGen `dbbd872`) and the archived drop 3 as an earlier drop, and the
+  method page's provenance names both.
+- **Tests first.** `tests/test_lod_site.py` was changed before the generator and failed (4 failures,
+  2 errors): the drop 5 files, digests and pins, the R5 figures (244 sites, 12 cells, 242 of 244, the two
+  misses, 0.479/0.495/0.981, no recheck, no `cpu_time_ratio`), what each page says, and that no page carries
+  a figure of drop 3's timing pass (0.659, 26 misses, ±15 %, 13 to 24 %, `b29931c`, `d32fa2a`) or a claim
+  about the parallel runs' ratio. Unit tests cover a recheck present and absent, the misses and
+  `parallel_ratio`; the synthetic timed drop now strips the repository's costs first.
+- **The practice for a drop.** Section 4's procedure, plus what drops 3 to 5 taught: (1) copy the writer's
+  files byte for byte and check them against BEMGen's `provenance.json`; (2) diff the new files against the
+  previous drop's with the expected changes stripped, so the drop's real changes are known; (3) replace the
+  schema copy only byte for byte and record it with `scripts.schema_revisions`; (4) write the sidecar from the
+  BEMGen decisions, naming what was not done as well as what was; (5) change the tests first, pinning the new
+  figures and forbidding the previous drops' figures on every page; (6) read every timed and drop-specific
+  sentence of `lod_site.py` against the new files: prose that states a number or an event must come from a
+  file or the sidecar, not from the code; (7) run `tests.test_lod_site`, `suite_site`, `mkdocs build --strict`
+  and `site_check --require-complete`; (8) record the drop as a section here and in the changelog, and after
+  the merge check the live pages.
+- **Going live.** As in section 8: site data, not a data release; the merge changes the site digest and the
+  catalogue workflow deploys the full site. No release version changes.

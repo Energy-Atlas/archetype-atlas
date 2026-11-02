@@ -1,5 +1,20 @@
 # Changelog
 
+## Zoning recommendations drop 5: drop 4 timed by R5 — 2026-11-02
+
+Stage AT-LOD5 ([ADR 0050 section 9](docs/adr/0050-zoning-recommendations-site.md)).
+
+- **Drop 5** (BEMGen `99c0b0a`, stage LOD2-R5, D-265, D-266): drop 4's recommendations, now with the serial
+  costs of R5, run on an otherwise idle machine at BEMGen `35e8a132`. The three files and the schema (1.2.0,
+  description only) are copied byte for byte; the sidecar records drop 5, R5, the session, the previous drop 4
+  and the archived drop 3. 244 sites of 12 cells timed; the gate is not met by 2 of 244 short sites; no repeat
+  check between sessions; median of the prototype medians 0.479 processor time, 0.495 wall clock, 0.981 peak
+  committed memory. The medium office and the large hotel are not timed.
+- **The cost pages come back**: cost columns, the overview's medians by prototype and zoning, the cost
+  protocol and limits. The timed prose now comes from the files and the sidecar (the gate's misses, the
+  repeat check, the session), so no figure of drop 3's timing pass is shown.
+- **No `cpu_time_ratio`** (D-266): the pages mention the parallel runs' ratio only when a file lists it.
+
 ## Zoning recommendations drop 4: the LOD study on atlas release 2.4.0 inputs — 2026-11-02
 
 Stage AT-LOD4 ([ADR 0050 section 8](docs/adr/0050-zoning-recommendations-site.md)).

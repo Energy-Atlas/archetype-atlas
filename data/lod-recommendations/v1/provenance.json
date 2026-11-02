@@ -1,8 +1,8 @@
 {
  "format": "atlas-lod-recommendations-provenance",
  "version": "1.0.0",
- "drop": 4,
- "status": "Data drop 4 of the geometric LOD study: the study run again on atlas release 2.4.0 inputs at BEMGen 1.10.0 (stage LOD2, D-261 to D-264), every stage at 35e8a132; the drop of 2026-10-29 on atlas release 2.0.0 inputs (drop 3 on this site) is archived in BEMGen. Schema 1.2.0 as before. R3: a zoning with at most the reference's zone count meets the threshold in 213 of 264 cells (214 in drop 3; the recommendation changed in 36 cells, gained in 1, lost in 2), the four full-service restaurant 4A cells finer only; R4: 18 of 22, no failed run. The changes follow from the inputs: the stand-alone retail's core and front keyed to their own programs (D-246), the source skylights of the retail, warehouse, 90.1-2019 supermarket and school gym (D-249, D-252), and the small hotel's halved mechanical-room equipment (D-262). This drop is not timed: R5 has not been run on these models and the serial costs of drop 3, which belong to other models, are not carried over (D-263).",
+ "drop": 5,
+ "status": "Data drop 5 of the geometric LOD study: drop 4's results on atlas release 2.4.0 inputs (every stage at BEMGen 35e8a132), now timed by R5, the serial timing pass run on an otherwise idle machine (BEMGen stage LOD2-R5, D-265), and without the processor-time ratio of the parallel stage runs (D-266). Schema 1.2.0 as before. The recommendations are drop 4's unchanged (R3: 213 of 264 cells; R4: 18 of 22); the files differ from drop 4's only by the cost and timing members R5 adds and the cpu_time_ratio member D-266 removes. R5 timed 244 sites of 12 test cases (12 references and 232 test sites, 732 runs) on 2026-11-02 from about 04:20 to 05:11 local time without interruption, the machine's total processor load 5.6 % on average and at most 9.5 %. The gate (processor-time CV below 5 % over the three repeats) is not met by 2 of 244 sites, both 0.9 s supermarket 3C runs, so the costs are medians (D-202); the late-repeat slowdown of the earlier timed drop did not recur. No repeat check between sessions was run for this drop. The medium office and the large hotel are not among the timed test cases.",
  "study": {
   "name": "lod-study-v1",
   "title": "How Much Thermal Zoning Detail Is Enough?",
@@ -27,7 +27,9 @@
    "D-261",
    "D-262",
    "D-263",
-   "D-264"
+   "D-264",
+   "D-265",
+   "D-266"
   ],
   "report": "research/lod-study/report/2026-11-02-lod-study-report.md",
   "methodology": "research/lod-study/report/2026-11-02-lod-study-methodology.md",
@@ -38,20 +40,24 @@
  },
  "bemgen": {
   "repository": "https://github.com/EnvironmentalSystemsLab/BEMGen",
-  "report_commit": "dbbd87257ef1129138c93e1ec2320398beb1d943",
-  "report_commit_note": "The merge of BEMGen pull request 35 (stage LOD2, 2026-11-02): research/lod-study/results/ from which these files are copied, written by scripts/lod-study/study_tables.py from report.py of 35e8a132 run again on the stages' databases; the drop of 2026-10-29 moved unchanged to research/lod-study/archive/2026-10-29-atlas-2-0-0/.",
+  "report_commit": "99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5",
+  "report_commit_note": "The merge of BEMGen pull request 36 (stage LOD2-R5, 2026-11-02): research/lod-study/results/ from which these files are copied, written by scripts/lod-study/study_tables.py from report.py of D-266 run again on the stages' databases, R5's included; the drop of 2026-10-29 stays archived unchanged in research/lod-study/archive/2026-10-29-atlas-2-0-0/.",
   "run_commit": "35e8a132",
-  "run_commit_note": "v1.10.0 + the LOD2 inputs: the build of every stage of this drop (R1 to R4), run in a clean detached checkout (D-263).",
+  "run_commit_note": "v1.10.0 + the LOD2 inputs: the build of every stage of this drop (R1 to R5), run in a clean detached checkout (D-263, D-265).",
+  "timing_commit": "35e8a132",
+  "timing_commit_note": "The build of the R5 serial timing pass, the same as R1 to R4's (D-265): its 244 timed IDFs are byte-identical to R3's (timing.idf_check).",
+  "machine": "Intel Core i7-14700F (8 performance and 12 efficiency cores, 28 logical processors), otherwise idle during the timing pass",
   "writer": "scripts/lod-study/report.py",
   "tables": "scripts/lod-study/study_tables.py",
   "schema": "scripts/lod-study/schemas/lod-recommendations-v1.schema.json",
   "schema_version": "1.2.0",
   "schema_copy": "schemas/lod-recommendations-v1.schema.json",
-  "schema_sha256": "adbce622d21d2f1b3e438b044f21406015e045f3bb9dc2b20ed12dd4c30b24f6",
+  "schema_sha256": "8baff002a063e70d6f9adbc6720af415f18614c7f3c81398af57fe1a1011d923",
+  "schema_note": "BEMGen's schema at 99c0b0a: version 1.2.0 unchanged; D-266 changed only its $comment and the cost description (cpu_time_ratio is no longer written into metrics).",
   "energyplus": "26.2.0 (4bd7a1f26f)",
   "provenance": "research/lod-study/results/provenance.json",
   "provenance_copy": "data/lod-recommendations/v1/bemgen-provenance.json",
-  "provenance_sha256": "3a2ebe3e6dc2491e7e912b88aeda2ddb1298484063f59a4a912bab013b6454be"
+  "provenance_sha256": "834b63d237e2ecc05cf95ced0965e81a1569118124e048c123f3dae772790b5a"
  },
  "atlas_inputs": {
   "release": "2.4.0",
@@ -117,42 +123,74 @@
   },
   "R5": {
    "stage": "R5 serial timing pass",
-   "status": "pending",
-   "gate": "not run: R5, the serial timing pass, is not run for this drop: it needs an otherwise idle machine (D-200) and is left for one (D-263); the costs of the drop published on 2026-10-29 are not carried over, since its models differ"
+   "suite": "lod-timing-20261102-034653",
+   "run": "run_20261102-034718",
+   "bemgen": "1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab",
+   "sites": 528,
+   "status": {
+    "Completed": 440,
+    "Invalid": 88
+   },
+   "gate": "CPU-time CV < 5 %: 242 of 244 sites, not met; reported as medians (D-202)",
+   "concurrency": 1,
+   "timing_test_cases": 12,
+   "timed_sites": 244,
+   "timed_runs": 732,
+   "untimed_prototypes": [
+    "LargeHotel",
+    "MediumOffice"
+   ],
+   "session": "2026-11-02, the timing pass from about 04:20 to 05:11 local time: 732 of 732 runs, no interruption, no resume",
+   "load": "the machine otherwise idle: total processor load 5.6 % on average and at most 9.5 % in 30-s samples, one sample with a foreign process (a system service, 2.8 %)",
+   "drift": "each repeat's median over the sites' medians is 1.000, and the third repeat of the 40 sites of at least 4 s a median 0.996 of the mean of the first two (at most 1.024): the late-repeat slowdown of the earlier timed drop did not recur (D-265)",
+   "repeat_check": "not run for this drop: a check between sessions needs a second session on an otherwise idle machine (D-265)"
   },
   "R6": {
    "stage": "R6 study report, methodology and consolidated results",
-   "bemgen": "1.10.0+dbbd87257ef1129138c93e1ec2320398beb1d943",
-   "gate": "written by scripts/lod-study/study_tables.py --write and compared with the archived drop; tables verified by --check (D-264)"
+   "bemgen": "1.10.0+99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5",
+   "gate": "written by scripts/lod-study/study_tables.py --write from report.py of D-266 and compared with the archived drop; tables verified by --check (D-264, D-265, D-266)"
   }
  },
  "files": {
   "lod-recommendations.json": {
    "stage": "main",
-   "label": "R3 main matrix",
-   "content": "11 prototypes x 6 climate zones (2A, 2B, 3C, 4A, 5A, 7A) x 2 vintages (90.1-2007, 90.1-2019) x 2 orientations (0, 45 degrees), 264 test cases, every planned zoning of the 24 main zonings (IWHT and FHT on) each, those the generator refused as status Invalid; judged_loads and sensitivity; no timing block and no cost objects (R5 pending)",
+   "label": "R3 main matrix with the R5 serial costs",
+   "content": "11 prototypes x 6 climate zones (2A, 2B, 3C, 4A, 5A, 7A) x 2 vintages (90.1-2007, 90.1-2019) x 2 orientations (0, 45 degrees), 264 test cases, every planned zoning of the 24 main zonings (IWHT and FHT on) each, those the generator refused as status Invalid; judged_loads and sensitivity; a cost object on the 12 timed references and 232 timed test sites of R5 and a top-level timing block with the D-222 medians; no cpu_time_ratio in metrics (D-266)",
    "spec": "research/lod-study/specs/main.yaml",
    "suite": "lod-main-20261101-225850",
    "run": "run_20261101-230342",
-   "source": "research/lod-study/results/lod-recommendations.json at dbbd872",
+   "timing_suite": "lod-timing-20261102-034653",
+   "timing_run": "run_20261102-034718",
+   "source": "research/lod-study/results/lod-recommendations.json at 99c0b0a",
    "entries": 264,
-   "sha256": "76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7",
-   "source_sha256": "76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7",
+   "sha256": "65b2371768436d216e2fecb6b9d6affeb0ca493cc90a883d70cf68c4de350382",
+   "source_sha256": "65b2371768436d216e2fecb6b9d6affeb0ca493cc90a883d70cf68c4de350382",
    "transformation": "copied byte for byte from BEMGen's committed results file (LF line endings); source_sha256 is BEMGen's file, sha256 the repository file, equal"
   },
   "lod-recommendations-ht.json": {
    "stage": "ht",
    "label": "R4 heat-transfer sub-study",
-   "content": "11 prototypes x 2 climate zones (3C, 5A) x 90.1-2019 x 0 degrees, 22 test cases, every planned zoning of the 24 main zonings x interior-wall heat transfer (IWHT) on and off x floor heat transfer (FHT) on and off, 96 each, those the generator refused as status Invalid",
+   "content": "11 prototypes x 2 climate zones (3C, 5A) x 90.1-2019 x 0 degrees, 22 test cases, every planned zoning of the 24 main zonings x interior-wall heat transfer (IWHT) on and off x floor heat transfer (FHT) on and off, 96 each, those the generator refused as status Invalid; no cpu_time_ratio in metrics (D-266), otherwise as in drop 4",
    "spec": "research/lod-study/specs/ht.yaml",
    "suite": "lod-ht-20261102-001857",
    "run": "run_20261102-002039",
-   "source": "research/lod-study/results/lod-recommendations-ht.json at dbbd872",
+   "source": "research/lod-study/results/lod-recommendations-ht.json at 99c0b0a",
    "entries": 22,
-   "sha256": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995",
-   "source_sha256": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995",
+   "sha256": "50dd9bb981e65f857c6f7fa6830c8042f51f128602fd14587244463b80bc36c3",
+   "source_sha256": "50dd9bb981e65f857c6f7fa6830c8042f51f128602fd14587244463b80bc36c3",
    "transformation": "copied byte for byte from BEMGen's committed results file (LF line endings); source_sha256 is BEMGen's file, sha256 the repository file, equal"
   }
+ },
+ "previous": {
+  "drop": 4,
+  "bemgen_commit": "dbbd87257ef1129138c93e1ec2320398beb1d943",
+  "atlas_commit": "6d202b89",
+  "timed": false,
+  "files": {
+   "lod-recommendations.json": "76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7",
+   "lod-recommendations-ht.json": "2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995"
+  },
+  "note": "The drop this site carried before: the same R3 and R4 results, not timed. Its files differ from this drop's only by the cost and timing members R5 adds and the cpu_time_ratio member of the parallel runs that D-266 removes; in this repository at commit 6d202b89."
  },
  "archived": {
   "drop": 3,
@@ -163,10 +201,9 @@
    "lod-recommendations.json": "439fc0a4b430c111e4fa85f7cd436000e937c2cec2b71fb15f27a3a23d557c80",
    "lod-recommendations-ht.json": "ca89a7d7e28b6ba12ce451be2718c898b73c43244764ca974178376c44a2f897"
   },
-  "note": "The drop this site carried before: drop 3, atlas release 2.0.0 inputs, R3 and R4 at 2ed856c, R5 at b29931c, tables at 8d2e3bd, with the serial costs of its own models. Archived unchanged in BEMGen; in this repository at commit 31ae04fe."
+  "repeat_check": true,
+  "note": "The drop of 2026-10-29: drop 3 on this site, atlas release 2.0.0 inputs, R3 and R4 at 2ed856c, R5 at b29931c, tables at 8d2e3bd, with the serial costs and the repeat check of its own models, which are not carried over (D-263, D-265). Archived unchanged in BEMGen; in this repository at commit 31ae04fe."
  },
- "pending": [
-  "R5, the serial timing pass: not run for this drop, since it needs an otherwise idle machine (D-200, D-263). Until it runs the pages show no costs; drop 3's costs are not carried over, since its models differ."
- ],
- "licence": "Original data CC BY 4.0 (ADR 0048, ADR 0050); attribution: Archetype Atlas, Energy-Atlas, LOD recommendations drop 4"
+ "pending": [],
+ "licence": "Original data CC BY 4.0 (ADR 0048, ADR 0050); attribution: Archetype Atlas, Energy-Atlas, LOD recommendations drop 5"
 }

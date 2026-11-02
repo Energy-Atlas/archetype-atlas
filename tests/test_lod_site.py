@@ -47,26 +47,28 @@ class DataDropTests(unittest.TestCase):
             self.assertEqual(len(json.loads(data)['entries']), entry['entries'], name)
             for key in ('stage', 'suite', 'run', 'source_sha256', 'source'):
                 self.assertTrue(entry.get(key), f'{name}: {key}')
-        self.assertEqual(self.provenance['drop'], 4)
-        # BEMGen dbbd872's research/lod-study/results/ (stage LOD2, D-261 to D-264): the study run again on atlas release 2.4.0.
-        self.assertEqual(files[lod_site.MAIN]['source_sha256'], '76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7')
-        self.assertEqual(files[lod_site.HT]['source_sha256'], '2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995')
-        self.assertNotIn('timing_suite', files[lod_site.MAIN])
+        self.assertEqual(self.provenance['drop'], 5)
+        # BEMGen 99c0b0a's research/lod-study/results/ (stage LOD2-R5, D-265, D-266): drop 4's results with R5's serial costs.
+        self.assertEqual(files[lod_site.MAIN]['source_sha256'], '65b2371768436d216e2fecb6b9d6affeb0ca493cc90a883d70cf68c4de350382')
+        self.assertEqual(files[lod_site.HT]['source_sha256'], '50dd9bb981e65f857c6f7fa6830c8042f51f128602fd14587244463b80bc36c3')  # D-266: no cpu_time_ratio
+        self.assertEqual((files[lod_site.MAIN]['timing_suite'], files[lod_site.MAIN]['timing_run']), ('lod-timing-20261102-034653', 'run_20261102-034718'))
         bemgen = self.provenance['bemgen']
-        self.assertEqual(bemgen['report_commit'], 'dbbd87257ef1129138c93e1ec2320398beb1d943')
-        self.assertEqual(bemgen['run_commit'], '35e8a132')
-        for key in ('timing_commit', 'recheck_commit', 'rerun_commit', 'machine'):  # no R5 and no rerun in this drop
+        self.assertEqual(bemgen['report_commit'], '99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5')
+        self.assertEqual((bemgen['run_commit'], bemgen['timing_commit']), ('35e8a132', '35e8a132'))  # R5 at the build of R1 to R4 (D-265)
+        self.assertIn('i7-14700F', bemgen['machine'])
+        for key in ('recheck_commit', 'rerun_commit'):  # no repeat check and no rerun in this drop
             self.assertNotIn(key, bemgen)
         self.assertEqual(bemgen['schema_version'], '1.2.0')
         self.assertEqual(bemgen['schema_sha256'], hashlib.sha256(SCHEMA.read_bytes()).hexdigest())
-        self.assertEqual(bemgen['schema_sha256'], 'adbce622d21d2f1b3e438b044f21406015e045f3bb9dc2b20ed12dd4c30b24f6')  # schema unchanged (D-264)
+        # BEMGen 99c0b0a's schema: version 1.2.0 unchanged; only its $comment and the cost description changed (D-266).
+        self.assertEqual(bemgen['schema_sha256'], '8baff002a063e70d6f9adbc6720af415f18614c7f3c81398af57fe1a1011d923')
         # BEMGen's own provenance file, copied byte for byte beside the sidecar, names the same two files and inputs.
         copy = lod_site.DROP/'bemgen-provenance.json'
         self.assertEqual(hashlib.sha256(copy.read_bytes()).hexdigest(), bemgen['provenance_sha256'])
-        self.assertEqual(bemgen['provenance_sha256'], '3a2ebe3e6dc2491e7e912b88aeda2ddb1298484063f59a4a912bab013b6454be')
+        self.assertEqual(bemgen['provenance_sha256'], '834b63d237e2ecc05cf95ced0965e81a1569118124e048c123f3dae772790b5a')
         theirs = json.loads(copy.read_bytes())
         self.assertEqual(theirs['files'], {name: entry['sha256'] for name, entry in files.items()})
-        self.assertEqual(theirs['stages']['R5']['status'], 'pending')
+        self.assertIsNone(theirs['stages']['R5 repeat check'])
         inputs = self.provenance['atlas_inputs']
         self.assertEqual((inputs['release'], inputs['commit'], inputs['release_manifest_sha256']),
                          ('2.4.0', '7c543f5df904b89f180e84ebec5bd21b6decd19e', '51ce9c9e04f3e8d23d4b326d841ef7cc3299b60485cb8a0d2153a3dc3317bd7f'))
@@ -74,11 +76,16 @@ class DataDropTests(unittest.TestCase):
                          {k: inputs[k] for k in ('release', 'commit', 'release_manifest_sha256')})
         manifest = ROOT/'data/atlas-releases/v2.4.0/manifest.json'  # the inputs' release is this repository's
         self.assertEqual(hashlib.sha256(manifest.read_bytes()).hexdigest(), inputs['release_manifest_sha256'])
-        self.assertEqual(len(self.provenance['pending']), 1)
-        self.assertIn('R5', self.provenance['pending'][0])
+        self.assertEqual(self.provenance['pending'], [])
         stages = self.provenance['stages']
         self.assertEqual(list(stages), ['R3', 'R4', 'R5', 'R6'])
-        self.assertEqual(stages['R5']['status'], 'pending')
+        ours, r5 = stages['R5'], theirs['stages']['R5']  # the sidecar's R5 is BEMGen's
+        self.assertEqual((ours['suite'], [ours['run']], ours['bemgen'], ours['concurrency'], ours['timed_sites'], ours['untimed_prototypes'], ours['gate']),
+                         (r5['suite'], r5['runs'], r5['bemgen'], r5['concurrency'], r5['timed_sites'], r5['untimed_prototypes'], r5['gate']))
+        self.assertEqual((ours['timed_runs'], ours['status']), (732, {'Completed': 440, 'Invalid': 88}))
+        for key in ('session', 'load', 'drift', 'repeat_check'):  # what the method page says about the session
+            self.assertTrue(ours[key], key)
+        self.assertTrue(self.provenance['archived']['repeat_check'])  # drop 3 had one; its figures are not this drop's
         self.assertEqual((stages['R3']['test_cases_with_recommendation'], stages['R3']['test_cases_finer_than_reference']), (213, 4))
         self.assertEqual((stages['R4']['test_cases_with_recommendation'], stages['R4']['status']), (18, {'Completed': 1760, 'Invalid': 352}))
         self.assertEqual({stages[k]['bemgen'] for k in ('R3', 'R4')}, {'1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab'})
@@ -88,7 +95,11 @@ class DataDropTests(unittest.TestCase):
         self.assertEqual((archived['drop'], archived['atlas_inputs_release'], archived['folder']),
                          (3, '2.0.0', 'research/lod-study/archive/2026-10-29-atlas-2-0-0/'))
         self.assertEqual(archived['files'], theirs['compared_with']['files'])
-        self.assertIn('drop 4', self.provenance['licence'])
+        previous = self.provenance['previous']  # drop 4: the same results, not timed
+        self.assertEqual((previous['drop'], previous['bemgen_commit'], previous['timed']), (4, 'dbbd87257ef1129138c93e1ec2320398beb1d943', False))
+        self.assertEqual(previous['files'], {lod_site.MAIN: '76e6f2bb05154165ff74e5fdfdc2f21f32421a9a04b3a287765c17dbd4685aa7',
+                                             lod_site.HT: '2b452b1d814f9b21de6dcbae551ecd9aed66ef8730fe674528f55f4eeb52c995'})
+        self.assertIn('drop 5', self.provenance['licence'])
         self.assertIn('CC BY 4.0', self.provenance['licence'])
 
     def test_the_loader_accepts_schema_1_0_0_to_1_2_0(self):
@@ -124,15 +135,34 @@ class DataDropTests(unittest.TestCase):
                                            'FullServiceRestaurant|4A|90.1-2019|0.0', 'FullServiceRestaurant|4A|90.1-2019|45.0'])
         self.assertTrue(all(not e['recommended'] for e in drop.main['entries'] if lod_site.finer(e)))
 
-    def test_the_drop_is_not_timed(self):
-        # D-263: R5 waits for an idle machine; the files carry no timing block and no cost, and drop 3's costs are not carried over.
+    def test_the_drop_is_timed_by_r5_alone(self):
+        # D-265: R5 run on an idle machine at the build of R1 to R4; the main matrix carries its costs and timing block, the sub-study none.
         drop = lod_site.Drop()
-        self.assertNotIn('timing', drop.main)
-        self.assertIsNone(drop.timing)
-        self.assertFalse(drop.costed)
-        for data in (drop.main, drop.ht):
-            self.assertFalse(any(lod_site.timed(e) for e in data['entries']))
-            self.assertFalse(any(z.get('cost') for e in data['entries'] for z in e['zonings']))
+        timing = drop.timing
+        self.assertTrue(drop.costed)
+        self.assertEqual((timing['stage'], timing['run'], timing['timed_sites'], len(timing['test_cases'])), ('R5', 'run_20261102-034718', 244, 12))
+        self.assertEqual(timing['tool_version'], '1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab')
+        self.assertEqual((timing['idf_check']['sites'], timing['idf_check']['identical']), (244, 244))
+        self.assertEqual(sorted(timing['untimed_prototypes']), ['LargeHotel', 'MediumOffice'])
+        gate = timing['gate']
+        self.assertEqual((gate['pass'], gate['sites'], gate['miss_short'], gate['miss_long'], gate['long_sites'], gate['verdict']), (242, 244, 2, 0, 40, 'not met'))
+        self.assertEqual((round(gate['median_pct'], 2), round(gate['p90_pct'], 2), round(gate['max_pct'], 2)), (1.71, 3.34, 7.01))
+        self.assertIsNone(timing['recheck'])  # no repeat check for this drop; the archived drop's timed other models
+        overall = timing['overall']
+        self.assertEqual((round(overall['cpu_ratio'], 3), round(overall['wall_ratio'], 3), round(overall['commit_ratio'], 3)), (0.479, 0.495, 0.981))
+        self.assertEqual((overall['sites'], overall['prototypes']), (88, 9))
+        timed_cells = [e for e in drop.main['entries'] if lod_site.timed(e)]
+        self.assertEqual(len(timed_cells), 12)
+        self.assertEqual({(e['vintage'], e['orientation_degrees']) for e in timed_cells}, {('90.1-2019', 0.0)})
+        costs = [e['reference']['cost'] for e in timed_cells]+[z['cost'] for e in drop.main['entries'] for z in e['zonings'] if z.get('cost')]
+        self.assertEqual(len(costs), 244)
+        misses = lod_site.gate_misses(drop.main)  # the two supermarket 3C sites of 0.89 s (D-265)
+        self.assertEqual([(m['site'], round(m['cpu_time_s'], 2)) for m in misses], [('1af77aa7a44f8aec/4a03e311', 0.89), ('1af77aa7a44f8aec/d7b48f38', 0.89)])
+        self.assertFalse(any(lod_site.timed(e) or any(z.get('cost') for z in e['zonings']) for e in drop.ht['entries']))
+        for data in (drop.main, drop.ht):  # D-266: the parallel runs' processor-time ratio is gone; the only cost is `cost`
+            self.assertNotIn('cpu_time_ratio', data['metrics'])
+            self.assertFalse(any('cpu_time_ratio' in z['metrics'] for e in data['entries'] for z in e['zonings']))
+            self.assertFalse(lod_site.parallel_ratio(data))
         for e in drop.ht['entries']:  # every sub-study zoning carries its zoning fields
             for z in e['zonings']:
                 self.assertIsNotNone(z['zoning'].get('simplifier'), z['site_name'])
@@ -235,6 +265,25 @@ class LabelTests(unittest.TestCase):
         self.assertEqual((lod_site.change(1.1514), lod_site.change(0.8288), lod_site.change(0.9553, 1), lod_site.change(None)), ('+15 %', '-17 %', '-4.5 %', lod_site.NULL))
         self.assertEqual((lod_site.pct(2.2213), lod_site.pct(None)), ('2.2 %', lod_site.NULL))
 
+    def test_the_repeat_check_and_the_gate_misses_come_from_the_timing_block(self):
+        recheck = {'sites': 34, 'miss': 0, 'cv_max_pct': 4.8, 'median_vs_r5': 1.1514, 'ratio_vs_r5_min': 0.8288, 'ratio_vs_r5_max': 1.0519,
+                   'ratio_vs_r5_median': 0.9553}
+        self.assertEqual(lod_site.recheck_fact({'recheck': recheck}, {}),
+                         "34 long sites timed again: 0 at or above the gate (largest CV 4.8 %); absolute times +15 % against the pass, the test "
+                         "sites' ratios -17 % to +5 % (median -4.5 %)")
+        self.assertEqual(lod_site.between_sessions({'recheck': recheck}), "between sessions the test sites' ratios moved by -17 % to +5 %")
+        self.assertEqual(lod_site.recheck_fact({'recheck': None}, {}), 'not run for this drop')  # the sidecar gives the reason when it has one
+        self.assertEqual(lod_site.recheck_fact({}, {'stages': {'R5': {'repeat_check': 'not run: no idle session'}}}), 'not run: no idle session')
+        self.assertEqual(lod_site.between_sessions({}), 'no check between sessions was run for this drop')
+        main = {'timing': {'gate': {'limit_pct': 5.0}}, 'entries': [
+            {'id': 'c', 'reference': {'cost': {'cpu_time_s': 9.0, 'cpu_time_cv_pct': 6.0, 'timing_site_name': 'c/R'}},
+             'zonings': [{'cost': {'cpu_time_s': 1.0, 'cpu_time_cv_pct': 5.0, 'timing_site_name': 'c/1'}},
+                         {'cost': {'cpu_time_s': 1.0, 'cpu_time_cv_pct': 4.9, 'timing_site_name': 'c/2'}}, {'site_name': 'c/3'}]}]}
+        self.assertEqual([(m['site'], m['cpu_time_s']) for m in lod_site.gate_misses(main)], [('c/1', 1.0), ('c/R', 9.0)])  # at or above the limit
+        self.assertTrue(lod_site.parallel_ratio({'metrics': ['cpu_time_ratio']}))
+        self.assertFalse(lod_site.parallel_ratio({'metrics': ['zone_count_ratio']}))
+        self.assertEqual((lod_site.and_list(['A']), lod_site.and_list(['A', 'B']), lod_site.and_list(['A', 'B', 'C'])), ('A', 'A and B', 'A, B and C'))
+
 
 class PageTests(unittest.TestCase):
     @classmethod
@@ -323,63 +372,99 @@ class PageTests(unittest.TestCase):
         self.assertIn('flagged <em>finer than the reference</em>: Full-service restaurant 4A 90.1-2007 0°', method)
         self.assertNotIn('5 zones against the reference', method)
 
-    def test_the_pages_say_plainly_that_the_drop_is_not_timed(self):
+    def test_the_pages_show_the_r5_costs_and_no_figure_of_an_earlier_timing_pass(self):
         pages = self.result['pages']
-        self.assertEqual(self.result['timed_cells'], 0)
+        self.assertEqual(self.result['timed_cells'], 12)
         overview = self.page(pages['overview'])
-        self.assertIn('Geometric LOD study · drop 4 · 264 cells · atlas inputs release 2.4.0 · not timed</p>', overview)
+        self.assertIn('Geometric LOD study · drop 5 · 264 cells · atlas inputs release 2.4.0 · timed (R5)</p>', overview)
         self.assertIn('<li><a href="#section-cost">Cost</a></li>', overview)
         cost = overview.split('id="section-cost"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('<strong>This drop is not timed.</strong>', cost)
-        self.assertIn('The serial timing pass (R5) has not been run on these models: it needs an otherwise idle machine and is pending.', cost)
-        self.assertIn('No cost is shown on these pages.', cost)
-        self.assertIn('The costs published with drop 3 were measured on other models (atlas release 2.0.0 inputs) and are not carried over', cost)
-        self.assertIn('<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/dbbd87257ef1129138c93e1ec2320398beb1d943/'
-                      'research/lod-study/archive/2026-10-29-atlas-2-0-0/">', cost)
-        self.assertNotIn('<h3>By prototype</h3>', cost)
-        for url in pages.values():  # no cost column anywhere, and no figure of drop 3's timing pass
-            text = self.page(url)
-            self.assertNotIn('CPU ratio', text, url)
-            self.assertNotIn('0.659', text, url)
-            self.assertNotIn('b29931c', text, url)
-            self.assertNotIn('Serial cost (R5): processor time', text, url)
+        self.assertNotIn('This drop is not timed', cost)
+        by_prototype = cost.split('<h3>By prototype</h3>', 1)[1].split('<h3>By zoning</h3>', 1)[0]
+        self.assertIn('<tr><td>Outpatient</td><td>8</td><td>0.064</td><td>0.066</td><td>0.752</td><td>3.2</td><td>0.8</td></tr>', by_prototype)
+        self.assertIn('<tr><td>Strip mall</td><td>4</td><td>0.479</td><td>0.495</td><td>0.981</td>', by_prototype)
+        self.assertIn('<tr><td>Full-service restaurant</td><td>3</td><td>1.580</td><td>1.608</td><td>1.010</td>', by_prototype)
+        for name in ('Medium office', 'Large hotel'):
+            self.assertIn(f'<tr><td>{name}</td><td colspan="6" class="ea-unjudged ea-untimed"><em>not timed</em></td></tr>', by_prototype)
+        self.assertEqual(cost.split('<h3>By zoning</h3>', 1)[1].count('<tr><td>'), 19)
+        self.assertIn('<tr><td>Conditioned merge + Single zone building</td><td>10</td><td>8</td><td>0.266</td>', cost)
+        self.assertIn("<dt>Overall</dt><dd>processor time 0.479, wall clock 0.495 and peak committed memory 0.981 of the reference's: "
+                      'the median of the 9 prototype medians (88 distinct test sites)</dd>', cost)
+        self.assertIn('<dt>Gate</dt><dd>processor-time CV per site below 5.0 %: 242 of 244 sites pass (median 1.7 %, largest 7.0 %); '
+                      '<strong>not met</strong></dd>', cost)
+        self.assertIn('<dt>Repeat check</dt><dd>not run for this drop: a check between sessions needs a second session on an otherwise idle '
+                      'machine (D-265)</dd>', cost)
+        self.assertIn('They are reported as medians, since the gate was not met (2 of 244 sites miss it) and no check between sessions was run '
+                      'for this drop;', cost)
+        self.assertIn('A ratio above 1 (Full-service restaurant) means', cost)
         office = self.page(pages['prototype:MediumOffice'])
-        self.assertIn('<dt>Serial cost (R5)</dt><dd>not timed: this drop has no serial timing pass (R5 pending)</dd>', office)
-        self.assertIn('geometric LOD study drop 4 · atlas inputs release 2.4.0 · not timed · BEMGen <code>dbbd87257ef1</code>', office)
-        self.assertNotIn('This cell was not timed', office)  # the cell sentences say nothing when the whole drop is untimed
+        self.assertIn('<dt>Serial cost (R5)</dt><dd>not timed: the prototype is not among the timed cells of the serial pass</dd>', office)
+        self.assertIn('geometric LOD study drop 5 · atlas inputs release 2.4.0 · BEMGen <code>99c0b0adcd44</code>', office)
+        outpatient = self.page(pages['prototype:Outpatient'])
+        self.assertIn('<dt>Serial cost (R5)</dt><dd>timed in 1 of 24 cells (3C 90.1-2019 0°)</dd>', outpatient)
+        self.assertIn('Serial cost (R5): processor time 49.3 s, wall clock 49.6 s, peak committed memory 303 MiB, each the median of 3 repeats', outpatient)
+        self.assertIn('<th>CPU ratio</th>', outpatient)
         method = self.page(pages['method'])
         cost = method.split('id="section-cost"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('<strong>This drop is not timed.</strong>', cost)
-        self.assertIn("the stages' runs, 16 at a time on a shared machine, and is not runtime data", cost)
-        self.assertIn('drop 3', cost)
-        self.assertNotIn('<dt>Gate</dt>', cost)
+        self.assertNotIn('This drop is not timed', cost)
+        self.assertIn('so the stages ran 16 at a time and their times are not results (the files carry no processor-time ratio of those runs, '
+                      'BEMGen D-266).', cost)
+        self.assertIn('Cost was measured in a separate serial timing pass (R5, BEMGen <code>35e8a132</code>): serial timing pass: --parallel 1 '
+                      '--timing-repeats 3 --timing-test-cases 12', cost)
+        self.assertIn('Intel Core i7-14700F (8 performance and 12 efficiency cores, 28 logical processors), otherwise idle during the timing pass', cost)
+        self.assertIn('<dt>Timed IDFs</dt><dd>244 of 244 byte-identical to R3&#x27;s</dd>', cost)
+        self.assertIn('<dt>Not timed</dt><dd>Large hotel, Medium office (not among the 12 timed test cases', cost)
+        self.assertIn('<dt>Session</dt><dd>2026-11-02, the timing pass from about 04:20 to 05:11 local time: 732 of 732 runs, no interruption, '
+                      'no resume; the machine otherwise idle', cost)
+        self.assertIn('<dt>Drift over the repeats</dt><dd>each repeat&#x27;s median over the sites&#x27; medians is 1.000', cost)
+        self.assertIn('did not recur (D-265)</dd>', cost)
+        self.assertIn('<dt>Gate</dt><dd>processor-time CV per site below 5.0 %: 242 of 244 sites pass; median 1.7 %, P90 3.3 %, largest 7.0 %; '
+                      '2 misses are short runs (0.89 s, where the 15.6 ms count of processor time is about 2 % of the value) and none of the 40 '
+                      'sites of at least 4 s misses; <strong>not met</strong></dd>', cost)
+        self.assertIn('<dt>Repeat check</dt><dd>not run for this drop: a check between sessions needs a second session on an otherwise idle '
+                      'machine (D-265); the repeat check of drop 3 timed other models and is not carried over</dd>', cost)
+        self.assertIn('Within the session the measurement is stable (median processor-time CV 1.7 %); no check between sessions was run for '
+                      'this drop, so how far a per-site ratio moves between sessions is not measured on these models.', cost)
         limits = method.split('id="section-limits"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('<li><strong>Not timed.</strong> This drop carries no serial costs (R5 pending); the CPU-time ratios in the JSON come '
-                      'from runs 16 at a time on a shared machine and are not runtime results.</li>', limits)
-        self.assertNotIn('Cost precision and scope', limits)
+        self.assertIn('<li><strong>Cost precision and scope.</strong> The timing gate was not met (2 of 244 sites miss it), so costs are medians '
+                      '(the cost protocol above); the prototypes Large hotel and Medium office were not timed; costs are measured in 90.1-2019, climate zones '
+                      '3C, 5A, at 0° only, in one session on one machine, and no repeat check was run for this drop.</li>', limits)
+        self.assertNotIn('Not timed.', limits)
         robust = method.split('id="section-robust"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('This drop is not timed, so a robust row carries no cost.', robust)
-        self.assertNotIn('only 0° cells were timed', robust)
+        self.assertIn('which in this drop is one site at most, since only 0° cells were timed', robust)
         metrics = method.split('id="section-metrics"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('this drop carries no serial costs', metrics)
+        self.assertIn('the serial costs are the <code>cost</code> objects, shown as the cost columns', metrics)
+        self.assertNotIn('CPU-time ratio', metrics)
+        provenance = method.split('id="section-provenance"', 1)[1]
+        self.assertIn('the R3 and R4 runs with the IDF writer at <code>35e8a132</code>; the R5 timing pass at <code>35e8a132</code>; EnergyPlus', provenance)
+        self.assertNotIn('its repeat check at', provenance)
+        # Nothing of an earlier drop's timing pass or of the parallel runs' ratio on any page (drop 3: 0.659 overall, 26 misses, ±15 %,
+        # 13 to 24 % late in the third repeat, builds b29931c and d32fa2a).
+        for url in pages.values():
+            text = self.page(url)
+            for figure in ('0.659', '±15', '+15 %', '13 to 24', '26 misses', '192 of 218', '218 sites', 'b29931c', 'd32fa2a', '0.8 to 3.3 s',
+                           'cpu_time_ratio</code> metric', 'CPU-time ratios in the JSON', 'This drop is not timed', 'R5 pending'):
+                self.assertNotIn(figure, text, (url, figure))
 
-    def test_the_overview_status_names_the_new_report_the_pending_stage_and_the_archived_drop(self):
+    def test_the_overview_status_names_the_report_the_stages_and_the_earlier_drops(self):
         overview = self.page(self.result['pages']['overview'])
         status = overview.split('id="section-status"', 1)[1].split('</section>', 1)[0]
-        self.assertNotIn('Nothing is pending.', status)
-        self.assertIn('<ul><li>R5, the serial timing pass: not run for this drop', status)
-        commit = 'https://github.com/EnvironmentalSystemsLab/BEMGen/blob/dbbd87257ef1129138c93e1ec2320398beb1d943/'
+        self.assertIn('<p>Nothing is pending.</p>', status)
+        commit = 'https://github.com/EnvironmentalSystemsLab/BEMGen/blob/99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5/'
         self.assertIn(f'<li>Study report (R6): <a href="{commit}research/lod-study/report/2026-11-02-lod-study-report.md">'
                       '<code>research/lod-study/report/2026-11-02-lod-study-report.md</code></a> in BEMGen</li>', status)
         self.assertIn('<code>research/lod-study/report/2026-11-02-lod-study-methodology.md</code>', status)
-        self.assertIn('<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/dbbd87257ef1129138c93e1ec2320398beb1d943/research/lod-study/results/">', status)
-        self.assertIn('<li>Archived previous drop (drop 3, atlas release 2.0.0 inputs): <a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/'
-                      'dbbd87257ef1129138c93e1ec2320398beb1d943/research/lod-study/archive/2026-10-29-atlas-2-0-0/">', status)
+        self.assertIn('<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5/research/lod-study/results/">', status)
+        self.assertIn('<li>Previous drop (drop 4, not timed): <a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/'
+                      'dbbd87257ef1129138c93e1ec2320398beb1d943/research/lod-study/results/"><code>research/lod-study/results/</code></a> in BEMGen</li>', status)
+        self.assertIn('<li>Archived earlier drop (drop 3, atlas release 2.0.0 inputs): <a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/'
+                      '99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5/research/lod-study/archive/2026-10-29-atlas-2-0-0/">', status)
         self.assertIn('<td>R3 main matrix</td><td>lod-main-20261101-225850</td><td>run_20261101-230342</td>', status)
         self.assertIn('<td>R4 heat-transfer sub-study (IWHT/FHT)</td><td>lod-ht-20261102-001857</td>', status)
-        self.assertIn(f'<td>R5 serial timing pass</td><td>{lod_site.NULL}</td><td>{lod_site.NULL}</td><td>{lod_site.NULL}</td><td>not run:', status)
-        self.assertIn('drop 4', status)
-        self.assertIn('213 of 264 cells (214 in drop 3', status)
+        self.assertIn('<td>R5 serial timing pass</td><td>lod-timing-20261102-034653</td><td>run_20261102-034718</td>'
+                      '<td><code>1.10.0+35e8a132f785a5329f4fd6015fce82a655e634ab</code></td><td>CPU-time CV &lt; 5 %: 242 of 244 sites, not met', status)
+        self.assertIn('drop 5', status)
+        self.assertIn('No repeat check between sessions was run for this drop.', status)
 
     def test_the_method_page_states_the_reading_cautions_and_the_provenance(self):
         method = self.page(self.result['pages']['method'])
@@ -401,15 +486,16 @@ class PageTests(unittest.TestCase):
         design = method.split('id="section-design"', 1)[1].split('</section>', 1)[0]
         self.assertIn('with the skylights of its programs&#x27; atlas family laid out as the source does', design)
         provenance = method.split('id="section-provenance"', 1)[1]
-        self.assertIn('the R3 and R4 runs with the IDF writer at <code>35e8a132</code>; EnergyPlus 26.2.0', provenance)
-        self.assertNotIn('the R5 timing pass at', provenance)
-        self.assertIn('<dt>Report</dt><dd><a href="https://github.com/EnvironmentalSystemsLab/BEMGen/blob/dbbd87257ef1129138c93e1ec2320398beb1d943/research/lod-study/report/2026-11-02-lod-study-report.md">', provenance)
+        self.assertIn('the R3 and R4 runs with the IDF writer at <code>35e8a132</code>; the R5 timing pass at <code>35e8a132</code>; EnergyPlus 26.2.0', provenance)
+        self.assertIn('<dt>Report</dt><dd><a href="https://github.com/EnvironmentalSystemsLab/BEMGen/blob/99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5/research/lod-study/report/2026-11-02-lod-study-report.md">', provenance)
         self.assertIn('<dt>Atlas inputs</dt><dd>release 2.4.0 at <code>7c543f5df904</code>', provenance)
-        self.assertIn('<dt>Previous drop</dt><dd>drop 3 (atlas release 2.0.0 inputs, BEMGen <code>8d2e3bda3fb9</code>), archived in BEMGen at '
-                      '<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/dbbd87257ef1129138c93e1ec2320398beb1d943/research/lod-study/archive/2026-10-29-atlas-2-0-0/">', provenance)
+        self.assertIn('<dt>Previous drop</dt><dd>drop 4 (not timed, BEMGen <code>dbbd87257ef1</code>, this repository at <code>6d202b89</code>): '
+                      'The drop this site carried before: the same R3 and R4 results, not timed.', provenance)
+        self.assertIn('<dt>Archived drop</dt><dd>drop 3 (atlas release 2.0.0 inputs, BEMGen <code>8d2e3bda3fb9</code>), archived in BEMGen at '
+                      '<a href="https://github.com/EnvironmentalSystemsLab/BEMGen/tree/99c0b0adcd4449bedbe0f7a1b86b0db75e2d3ce5/research/lod-study/archive/2026-10-29-atlas-2-0-0/">', provenance)
         self.assertIn('the main matrix is version 1.2.0, the sub-study 1.2.0', provenance)
-        self.assertIn('<code>76e6f2bb0515</code>', provenance)
-        self.assertIn('<code>2b452b1d814f</code>', provenance)
+        self.assertIn('<code>65b237176843</code>', provenance)
+        self.assertIn('<code>50dd9bb981e6</code>', provenance)
         heat = self.page(self.result['pages']['heat_transfer'])
         self.assertIn("Every zoning the generator wrote ran, under BEMGen's heat-transfer rule", heat)
         self.assertNotIn('run again', heat)  # no rerun stage in this drop (D-263)
@@ -417,8 +503,11 @@ class PageTests(unittest.TestCase):
     def test_a_drop_without_costs_or_stages_says_it_is_not_timed(self):
         with tempfile.TemporaryDirectory() as temporary:
             folder = Path(temporary)
-            shutil.copy(lod_site.DROP/lod_site.HT, folder/lod_site.MAIN)  # a document without costs as the main matrix, no sub-study
-            provenance = {k: v for k, v in self.drop.provenance.items() if k not in ('stages', 'archived', 'pending')}
+            # A document without costs as the main matrix, no sub-study; like a file before D-266 it lists the parallel runs' ratio.
+            document = json.loads((lod_site.DROP/lod_site.HT).read_text(encoding='utf-8'))
+            document['metrics'].append('cpu_time_ratio')
+            (folder/lod_site.MAIN).write_text(json.dumps(document), encoding='utf-8')
+            provenance = {k: v for k, v in self.drop.provenance.items() if k not in ('stages', 'archived', 'previous', 'pending')}
             provenance['study'] = {k: v for k, v in provenance['study'].items() if k != 'archive'}
             (folder/lod_site.PROVENANCE).write_text(json.dumps(provenance), encoding='utf-8')
             with tempfile.TemporaryDirectory() as target:
@@ -660,7 +749,7 @@ class RobustPageTests(unittest.TestCase):
             self.assertIn(f'Robust across orientations in <strong>{robust_pairs} of 12</strong> cell pairs (0° and 45°)', section)
             self.assertIn('<th>Climate zone</th><th>Vintage</th><th>Robust zoning</th><th>Zones</th><th>Heating error %</th><th>Cooling error %</th>'
                           '<th>Heating CV(RMSE) %</th><th>Cooling CV(RMSE) %</th><th>Heating NMBE %</th><th>Cooling NMBE %</th><th>Area change %</th>'
-                          '<th>Per orientation</th>', section)  # an untimed drop has no cost columns
+                          '<th>CPU ratio</th><th>Wall ratio</th><th>Memory ratio</th><th>Per orientation</th>', section)  # a timed drop has the cost columns
             self.assertIn('href="../method/#section-robust"', section)
 
     def test_the_robust_rows_show_the_worse_orientation(self):
@@ -670,7 +759,7 @@ class RobustPageTests(unittest.TestCase):
         self.assertEqual((lod_site.zoning_label(r['zoning']), r['zone_count'], r['same_pick']), ('Perimeter core 3 m + Stack', 5, True))
         row_ = next(x for x in re.findall(r'<tr class="ea-robust[^>]*>.*?</tr>', section) if 'pair:StandAloneRetail|3C|90.1-2019"' in x)
         self.assertIn('<td>Perimeter core 3 m + Stack <span class="ea-ties">(tie: Perimeter core 4.57 m + Stack)</span></td><td>5</td>', row_)
-        self.assertNotIn(lod_site.NOT_TIMED, row_)
+        self.assertIn(lod_site.NOT_TIMED, row_)  # the retail is timed in 5A 90.1-2019 0° only
         for name in lod_site.ERROR_KEYS:
             values = [z['metrics'][name] for _, z in r['picks']]
             self.assertIn(f'>{lod_site.num(max(values, key=abs))}<', row_, name)
@@ -681,8 +770,12 @@ class RobustPageTests(unittest.TestCase):
                       '<a href="#cell-StandAloneRetail-3C-90.1-2007-45.0">45°</a>: Conditioned merge + Single zone building (1 zone)', row_)
         hospital = self.page(self.result['pages']['prototype:Hospital'])
         self.assertIn('<td>Conditioned merge + Stack <span class="ea-ties">(tie: Conditioned merge + Stacked floor zone multiplier)</span></td>', hospital)
-        for prototype in self.drop.prototypes():
-            self.assertNotIn(lod_site.NOT_TIMED, self.page(self.result['pages']['prototype:'+prototype]), prototype)
+        timed_pair = next(x for x in re.findall(r'<tr class="ea-robust[^>]*>.*?</tr>', section) if 'pair:StandAloneRetail|5A|90.1-2019"' in x)
+        self.assertNotIn(lod_site.NOT_TIMED, timed_pair)  # the pair's timed 0° site gives the robust row its cost
+        for prototype in ('MediumOffice', 'LargeHotel'):  # not timed: every robust row says so
+            robust = self.page(self.result['pages']['prototype:'+prototype]).split('id="section-robust"', 1)[1].split('</section>', 1)[0]
+            rows = re.findall(r'<tr class="ea-robust[^>]*>.*?</tr>', robust)
+            self.assertTrue(rows and all(lod_site.NOT_TIMED in r or 'none meets the threshold at both orientations' in r for r in rows), prototype)
 
     def test_the_overview_tallies_the_robust_pairs(self):
         overview = self.page(self.result['pages']['overview'])
@@ -718,7 +811,8 @@ class RobustPageTests(unittest.TestCase):
         block = slice_json['robust']
         self.assertEqual((block['rule'], len(block['pairs'])), (lod_site.ROBUST_RULE, 12))
         self.assertEqual([p['status'] for p in block['pairs']].count('robust'), 11)
-        self.assertTrue(all(p.get('cost') is None for p in block['pairs']))  # not timed
+        costed = [p['cells'] for p in block['pairs'] if p.get('cost') is not None]  # the one timed pair, from its 0° site
+        self.assertEqual(costed, [['StandAloneRetail|5A|90.1-2019|0.0', 'StandAloneRetail|5A|90.1-2019|45.0']])
         self.assertEqual(block['pairs'][0]['cells'], ['StandAloneRetail|2A|90.1-2007|0.0', 'StandAloneRetail|2A|90.1-2007|45.0'])
         self.assertNotIn('robust', self.drop.main)  # the writer's file is unchanged
         self.assertNotIn('robust', site_store.read(self.temporary.name, self.site.store.put(self.drop.main)))
@@ -759,8 +853,14 @@ RATIOS = {'cpu_time_ratio': 0.125, 'wall_clock_ratio': 0.25, 'memory_peak_commit
 
 def timed_drop(folder):
     """A synthetic timed drop in `folder`: the repository's drop with serial costs on two outpatient cells and a timing block of the
-    writer's shape (schema 1.1.0 and later). The values are made up; they test the cost pages, which the untimed drop 4 does not show."""
+    writer's shape (schema 1.1.0 and later). The values are made up; they test the cost pages on known figures, whatever the drop in the
+    repository carries: its own costs and timing block are removed first."""
     main = json.loads((lod_site.DROP/lod_site.MAIN).read_text(encoding='utf-8'))
+    main.pop('timing', None)
+    for entry in main['entries']:
+        entry['reference'].pop('cost', None)
+        for zoning in entry['zonings']:
+            zoning.pop('cost', None)
     sites = 0
     for entry in main['entries']:
         if entry['id'] in TIMED:
@@ -791,7 +891,7 @@ def timed_drop(folder):
 
 
 class CostedPageTests(unittest.TestCase):
-    """The cost columns and sections of a timed drop (drop 2 and 3 were timed; drop 4 is not), on a synthetic timed drop."""
+    """The cost columns and sections of a timed drop on a synthetic one (drops 2, 3 and 5 are timed, drop 4 is not)."""
 
     @classmethod
     def setUpClass(cls):
@@ -866,7 +966,8 @@ class CostedPageTests(unittest.TestCase):
         self.assertIn('(not among the 2 timed test cases, so their costs are not measured)', cost)
         limits = method.split('id="section-limits"', 1)[1].split('</section>', 1)[0]
         self.assertIn('<strong>Cost precision and scope.</strong>', limits)
-        self.assertIn('costs are measured in 90.1-2019, climate zones 3C, 5A, at 0° only, and on one machine.', limits)
+        self.assertIn('costs are measured in 90.1-2019, climate zones 3C, 5A, at 0° only, in one session on one machine, and no repeat check was '
+                      'run for this drop.', limits)
         robust = method.split('id="section-robust"', 1)[1].split('</section>', 1)[0]
         self.assertIn('which in this drop is one site at most, since only 0° cells were timed', robust)
         self.assertIn('the R5 timing pass at <code>abc1234</code>', method.split('id="section-provenance"', 1)[1])
