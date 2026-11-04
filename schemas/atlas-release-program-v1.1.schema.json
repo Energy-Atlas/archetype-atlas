@@ -1,0 +1,765 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:archetype-atlas:atlas-release-program:1.1.0",
+ "$comment": "revision 1 (2026-11-04). Versioning: docs/schema-versioning.md; revisions and hashes: schemas/revisions.json.",
+ "title": "Atlas release program record 1.1.0",
+ "description": "One file under <family>/<template>/<building type>/programs/ of a data release (ADR 0036, ADR 0038, ADR 0046 section 8): a commercial program or mix (90.1, DOE Ref, IECC), a ResStock dwelling, or a code-prototype dwelling (IECC residential, manufactured housing). These are the release's internal records; consumers read the Program JSON exports, which have their own schemas. This schema fixes each shape's fields and the null rule: a load or parameter whose status is unknown has a null value (never an implied zero), and a known load has a value; a known parameter may be null when the source states an absence (ADR 0040 item 9). The generation block is not part of the record; it lives in the folder's generation.json. 1.1.0 (release 2.5.0, ADR 0063): a mix's composition may state setpoint_coverage, the represented-area share of its members that have each setpoint side (null where a member's side is unknown); every 1.0.0 record validates with the same meaning.",
+ "oneOf": [
+  {
+   "$ref": "#/$defs/commercial_program"
+  },
+  {
+   "$ref": "#/$defs/resstock_dwelling"
+  },
+  {
+   "$ref": "#/$defs/prototype_dwelling"
+  }
+ ],
+ "$defs": {
+  "release_id": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9.-]*\\.[0-9a-f]{6}$"
+  },
+  "ids": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "status": {
+   "enum": [
+    "known",
+    "unknown"
+   ]
+  },
+  "filling": {
+   "type": "object",
+   "required": [
+    "set"
+   ],
+   "properties": {
+    "set": {
+     "type": "object"
+    }
+   }
+  },
+  "load": {
+   "type": "object",
+   "required": [
+    "quantity",
+    "status",
+    "value",
+    "unit",
+    "basis",
+    "schedule_id",
+    "scope",
+    "demand_id",
+    "evidence_id",
+    "required_inputs"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "quantity": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "#/$defs/status"
+    },
+    "value": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "unit": {
+     "type": "string"
+    },
+    "basis": {
+     "type": "string"
+    },
+    "schedule_id": {
+     "type": [
+      "string",
+      "object",
+      "null"
+     ]
+    },
+    "scope": {
+     "type": "string"
+    },
+    "demand_id": {
+     "type": "string"
+    },
+    "evidence_id": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "required_inputs": {
+     "$ref": "#/$defs/ids"
+    },
+    "thermal_effects": {
+     "type": "object"
+    },
+    "service_id": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "target_temperature_degC": {
+     "type": [
+      "number",
+      "object",
+      "null"
+     ]
+    },
+    "zone_heat_assignment": {
+     "type": "string"
+    },
+    "value_by_climate": {
+     "type": "object",
+     "additionalProperties": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "climate_evidence_ids": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "schedule_peak_scaling": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "alternates": {
+     "type": "array"
+    },
+    "unresolved": {
+     "type": [
+      "object",
+      "array",
+      "string"
+     ]
+    },
+    "unresolved_reason": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "filling": {
+     "$ref": "#/$defs/filling"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "unknown"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "value": {
+        "type": "null"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "known"
+       }
+      }
+     },
+     "then": {
+      "properties": {
+       "value": {
+        "type": "number"
+       }
+      }
+     }
+    }
+   ]
+  },
+  "parameter": {
+   "oneOf": [
+    {
+     "type": "object",
+     "required": [
+      "filling"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "filling": {
+       "$ref": "#/$defs/filling"
+      }
+     }
+    },
+    {
+     "type": "object",
+     "required": [
+      "status",
+      "value",
+      "unit",
+      "evidence_id",
+      "required_inputs"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "status": {
+       "$ref": "#/$defs/status"
+      },
+      "value": true,
+      "unit": {
+       "type": "string"
+      },
+      "evidence_id": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "required_inputs": {
+       "$ref": "#/$defs/ids"
+      },
+      "filling": {
+       "$ref": "#/$defs/filling"
+      }
+     },
+     "allOf": [
+      {
+       "if": {
+        "properties": {
+         "status": {
+          "const": "unknown"
+         }
+        }
+       },
+       "then": {
+        "properties": {
+         "value": {
+          "type": "null"
+         }
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "composition": {
+   "type": "object",
+   "required": [
+    "method",
+    "members"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "method": {
+     "type": "string"
+    },
+    "members": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "type": "object",
+      "required": [
+       "program_id",
+       "represented_area_m2",
+       "weight",
+       "source_program_id",
+       "source_geometry_file_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "program_id": {
+        "$ref": "#/$defs/release_id"
+       },
+       "represented_area_m2": {
+        "type": "number",
+        "exclusiveMinimum": 0
+       },
+       "weight": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+       },
+       "source_program_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "source_geometry_file_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     }
+    },
+    "setpoint_coverage": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "heating",
+      "cooling"
+     ],
+     "description": "Per setpoint side, the represented-area share of the members that have that side (ADR 0063).",
+     "properties": {
+      "heating": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0,
+       "maximum": 1
+      },
+      "cooling": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0,
+       "maximum": 1
+      }
+     }
+    }
+   }
+  },
+  "commercial_program": {
+   "type": "object",
+   "required": [
+    "id",
+    "name",
+    "template",
+    "building_type",
+    "source_family",
+    "derivation",
+    "mode",
+    "climate",
+    "gate",
+    "optional",
+    "available_details",
+    "required_inputs",
+    "evidence_ids",
+    "service_ids",
+    "loads",
+    "parameters"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/release_id"
+    },
+    "name": {
+     "type": "string"
+    },
+    "template": {
+     "type": "string"
+    },
+    "building_type": {
+     "type": "string"
+    },
+    "source_family": {
+     "type": "string"
+    },
+    "source_id": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "derivation": {
+     "enum": [
+      "normalized",
+      "composed"
+     ]
+    },
+    "mode": {
+     "type": "string"
+    },
+    "climate": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gate": {
+     "$ref": "#/$defs/ids"
+    },
+    "optional": {
+     "type": "boolean"
+    },
+    "available_details": {
+     "$ref": "#/$defs/ids"
+    },
+    "required_inputs": {
+     "$ref": "#/$defs/ids"
+    },
+    "evidence_ids": {
+     "$ref": "#/$defs/ids"
+    },
+    "filling_evidence_ids": {
+     "$ref": "#/$defs/ids"
+    },
+    "service_ids": {
+     "$ref": "#/$defs/ids"
+    },
+    "loads": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/load"
+     }
+    },
+    "parameters": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "#/$defs/parameter"
+     }
+    },
+    "composition": {
+     "$ref": "#/$defs/composition"
+    },
+    "fenestration": {
+     "type": "object"
+    },
+    "lighting_controls": {
+     "type": [
+      "object",
+      "null"
+     ]
+    },
+    "source_calendar": {
+     "type": "object"
+    },
+    "source_zones": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "name",
+       "floor_area_m2",
+       "multiplier",
+       "counted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "floor_area_m2": {
+        "type": "number",
+        "minimum": 0
+       },
+       "multiplier": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "counted": {
+        "type": "boolean"
+       }
+      }
+     }
+    },
+    "source_spaces": {
+     "type": "array"
+    },
+    "excluded_source_spaces": {
+     "type": "array"
+    },
+    "pnnl_building_type": {
+     "type": "string"
+    },
+    "standards_building_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "unresolved": {
+     "type": [
+      "object",
+      "array"
+     ]
+    },
+    "unresolved_loads": {
+     "type": [
+      "object",
+      "array"
+     ]
+    }
+   },
+   "if": {
+    "properties": {
+     "derivation": {
+      "const": "composed"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "composition"
+    ]
+   }
+  },
+  "resstock_dwelling": {
+   "type": "object",
+   "required": [
+    "id",
+    "name",
+    "template",
+    "building_type",
+    "source_family",
+    "source_id",
+    "derivation",
+    "climate",
+    "gate",
+    "available_details",
+    "required_inputs",
+    "evidence_ids",
+    "service_ids",
+    "loads",
+    "parameters",
+    "filling",
+    "readiness",
+    "unresolved_options",
+    "building_context",
+    "construction_set_id",
+    "floor_area_bin",
+    "scope",
+    "vintage"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/release_id"
+    },
+    "name": {
+     "type": "string"
+    },
+    "template": {
+     "type": "string"
+    },
+    "building_type": {
+     "type": "string"
+    },
+    "source_family": {
+     "const": "existing_stock_source_fixture"
+    },
+    "source_id": {
+     "type": "string"
+    },
+    "derivation": {
+     "type": "string"
+    },
+    "climate": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gate": {
+     "$ref": "#/$defs/ids"
+    },
+    "available_details": {
+     "$ref": "#/$defs/ids"
+    },
+    "required_inputs": {
+     "$ref": "#/$defs/ids"
+    },
+    "evidence_ids": {
+     "$ref": "#/$defs/ids"
+    },
+    "service_ids": {
+     "$ref": "#/$defs/ids"
+    },
+    "loads": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/load"
+     }
+    },
+    "parameters": {
+     "type": "object"
+    },
+    "filling": {
+     "type": [
+      "object",
+      "null"
+     ]
+    },
+    "readiness": {
+     "type": [
+      "object",
+      "string"
+     ]
+    },
+    "unresolved_options": {
+     "type": "array"
+    },
+    "building_context": {
+     "type": "object"
+    },
+    "construction_set_id": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "floor_area_bin": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "scope": {
+     "type": "string"
+    },
+    "vintage": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "commercial_counterparts": {
+     "type": "array"
+    }
+   }
+  },
+  "prototype_dwelling": {
+   "type": "object",
+   "required": [
+    "id",
+    "name",
+    "template",
+    "building_type",
+    "source_family",
+    "kind",
+    "climate",
+    "scope",
+    "axes",
+    "variant",
+    "loads",
+    "controls",
+    "services",
+    "ventilation",
+    "fenestration",
+    "floor_area",
+    "construction_set_id",
+    "evidence_ids",
+    "model_count",
+    "vintage"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/release_id"
+    },
+    "name": {
+     "type": "string"
+    },
+    "template": {
+     "type": "string"
+    },
+    "building_type": {
+     "type": "string"
+    },
+    "source_family": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "dwelling"
+    },
+    "climate": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "scope": {
+     "type": "string"
+    },
+    "axes": {
+     "type": "object"
+    },
+    "variant": {
+     "type": "object"
+    },
+    "loads": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "quantity",
+       "value",
+       "unit",
+       "basis"
+      ]
+     }
+    },
+    "controls": {
+     "type": "array"
+    },
+    "services": {
+     "type": "array"
+    },
+    "ventilation": {
+     "type": "array"
+    },
+    "fenestration": {
+     "type": "array"
+    },
+    "floor_area": {
+     "type": "array"
+    },
+    "construction_set_id": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "evidence_ids": {
+     "$ref": "#/$defs/ids"
+    },
+    "model_count": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "vintage": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "edition": {
+     "type": "string"
+    },
+    "building_context": {
+     "type": "object"
+    },
+    "template_key": {
+     "type": "string"
+    },
+    "tier": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  }
+ }
+}

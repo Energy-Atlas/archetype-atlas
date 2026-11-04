@@ -50,7 +50,8 @@ From release 2.3.0 (Program JSON 6.0.0, [ADR 0054](https://github.com/Energy-Atl
 a null never stands alone. Every load has a `status`: `known` (the source value, a source zero included),
 `unknown` (null, with its `reason`) or `filled` (a stored filling, with its rules and basis; filled version only).
 `nulls` gives every other null its meaning by JSON pointer: `unknown` (the source does not give it), `none`
-(known: there is none) or `not_applicable` (the field does not apply). A known 0 is a value: a source zero, or the
+(known: there is none), `not_applicable` (the field does not apply) or, from 6.2.0, `not_conditioned` (a setpoint side
+no source equipment serves). A known 0 is a value: a source zero, or the
 accepted absence of an unknown load in the filled version (rule `accepted_absence`, ADR 0016, stored on the record).
 The filled version lists its zero loads in `metadata.absent_demands`.
 
@@ -59,11 +60,26 @@ adds one optional field and nothing else: `lighting_controls.unoccupied_lighting
 lighting cap or, where the source has none, `rule: null` with its reason in `nulls`
 ([lighting controls guide](lighting-controls.md#the-unoccupied-lighting-cap)).
 
+From release 2.5.0, Program JSON 6.2.0 ([ADR 0063](https://github.com/Energy-Atlas/archetype-atlas/blob/main/docs/adr/0063-conditioning-sides-and-per-side-mixes.md))
+decides each setpoint side from the source equipment:
+
+- **A side no source equipment serves is absent.** The warehouse bulk storage, the stand-alone retail entry and the
+  small-hotel stairs and mechanical room have unit heaters and nothing that cools: `controls.cooling_enabled` is
+  `false`, `cooling_setpoint_schedule_id` is null and `nulls` gives it the status `not_conditioned` with the systems
+  and the source schedule it replaces (for example 50 °C, which no equipment acts on). Spaces no system serves (the
+  90.1 small-hotel storage and laundry) have neither side. The source version states `conditioning_state`
+  (`heating_only`, `unconditioned`, …) wherever both flags are known.
+- **A mix averages each side over the members that have it**, with the weights renormalised, and
+  `controls.setpoint_coverage` gives each side's coverage: the represented-area share of the members that have it.
+  The 90.1-2019 warehouse storage mix cools at the fine storage's 26.7 °C with `{"heating": 1.0, "cooling": 0.303}`;
+  a side no member has is null (`not_conditioned`, coverage 0).
+
 Hot water differs by family: DOE Ref and IECC programs carry it as a load, 0 where the source zone has no draw;
 a 90.1 program carries it only where openstudio-standards assigns a draw to its space type, and otherwise its
 folder's `water.json` says whether the space has no local draw, an unknown assignment or a share of a building
-draw. Conditioning differs too: IECC programs state it; 90.1 and DOE Ref programs state it where a filling sets
-it, and otherwise their setpoint schedules imply it.
+draw. Conditioning differs too: IECC programs state it from their thermostats; 90.1 and DOE Ref programs state it
+where their source equipment leaves a side unserved (6.2.0) or a filling sets it, and otherwise their setpoint
+schedules imply it.
 
 The meanings, which the exporter applies (the first matching row wins):
 

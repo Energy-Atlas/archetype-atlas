@@ -9,6 +9,8 @@ holds and its manifest; `--all` validates every file of the resolved release (th
 releases validate as they are; their manifests are pinned and never edited). Files of other kinds
 (construction packages, systems, water, components, evidence, id-map) are the writers' internal
 records, whose consumer contracts are the export schemas; they have no release-record schema yet.
+Program records validate against the program record schema 1.1.0 (ADR 0063: a mix's `composition.setpoint_coverage`),
+which every earlier release's records meet as they did 1.0.0.
 """
 import argparse
 from functools import lru_cache
@@ -26,7 +28,7 @@ SCHEMAS = (
     (re.compile(r'^(commercial|residential)/[^/]+/[^/]+/generation\.json$'), GENERATION),
     (re.compile(r'^(commercial|residential)/[^/]+/[^/]+/schedules\.json$'), ROOT/'schemas/atlas-release-schedules-v1.schema.json'),
     (re.compile(r'^commercial/[^/]+/[^/]+/services\.json$'), ROOT/'schemas/atlas-release-services-v1.schema.json'),
-    (re.compile(r'^(commercial|residential)/[^/]+/[^/]+/programs/(.+/)?[^/]+\.json$'), ROOT/'schemas/atlas-release-program-v1.schema.json'),
+    (re.compile(r'^(commercial|residential)/[^/]+/[^/]+/programs/(.+/)?[^/]+\.json$'), ROOT/'schemas/atlas-release-program-v1.1.schema.json'),
 )
 
 
