@@ -99,6 +99,7 @@ The meanings, which the exporter applies (the first matching row wins):
 | `/controls/heating_enabled` | `unknown` | The source states no conditioning; setpoint schedules, where given, imply it (the filled version resolves it). |
 | `/controls/cooling_enabled` | `unknown` | The source states no conditioning; setpoint schedules, where given, imply it (the filled version resolves it). |
 | `/controls/*` | `unknown` (or the record's) | The source gives no value for this control. |
+| `/controls/setpoint_coverage/*` | `unknown` | A member's setpoint side is unknown, so the mix's coverage and setpoint on that side are unknown too (ADR 0012: an unknown propagates; ADR 0063). |
 | `/default_policy_id` | `none` | No default policy: the source version applies none. |
 | `/fenestration/wwr/*` | `not_applicable` | No exterior wall faces this direction in the program's source zones. |
 | `/fenestration/roof` | `not_applicable` | No exterior roof over the program's source zones. |

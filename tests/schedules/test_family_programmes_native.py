@@ -17,7 +17,7 @@ from atlas_schedules.commercial.sampler import load_tables, sample_operating_par
 from atlas_schedules.commercial.transform import Slot, transform
 from atlas_schedules.programmes import configuration_people, load_configuration, schedules
 from atlas_schedules.seeds import commercial_group_seed
-from tests.schedules.helpers import TOLERANCE, load_recipe, load_service, retired, unpack_days
+from tests.schedules.helpers import TOLERANCE, load_recipe, load_service, not_conditioned, retired, unpack_days
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/commercial/family-programmes.json.gz"
 GROUP = "building"
@@ -63,7 +63,8 @@ class FamilyProgrammes(unittest.TestCase):
         for case in self.compared:
             configuration = load_configuration(case["configuration_id"])
             slots = _slots(case)
-            self.assertEqual(sorted(slots), sorted(case["expected"]), case["case_id"])
+            expected = [k for k in case["expected"] if case["subject"] == "water" or not not_conditioned(case["subject"], k)]
+            self.assertEqual(sorted(slots), sorted(expected), case["case_id"])
             result = transform(slots, configuration_people(configuration), case["operating"],
                                invert_rule_days=configuration["invert_rule_days"], flat_days="native")
             for name in slots:
