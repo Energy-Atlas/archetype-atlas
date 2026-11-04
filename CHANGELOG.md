@@ -1,5 +1,30 @@
 # Changelog
 
+## Atlas release 2.5.0 and atlas-schedules 4.1.2: conditioning sides and per-side mixes — 2026-11-04
+
+Stage AT5 (owner decisions D1b, D2b, D3 and D5 of 2026-11-04; [ADR 0063](docs/adr/0063-conditioning-sides-and-per-side-mixes.md),
+[ADR 0064](docs/adr/0064-release-2-5-0.md), [release notes](docs/release-notes-atlas-v2.5.0.md),
+[BEMGen handoff](docs/bemgen-handoff-release-2-5-0.md)).
+
+- **Conditioning sides from the source equipment** (`scripts.conditioning_sides`,
+  `data/program-inputs/conditioning-sides-v1.json`): for every 90.1 and DOE Ref source program, whether the
+  openstudio-standards prototype's HVAC map serves its heating and its cooling, each system type read as the builder
+  `Prototype.Model.hvac.rb` dispatches it to makes it (a unit heater heats only; a PVAV cools although its map record
+  has no `cooling_type`; CRAH and CRAC have no heating coil), checked against the pinned code. 1,168 programs, 123
+  folders; the DOE Ref hospital basement follows its DOE file. `--review` cross-checks the PNNL and DOE IDFs
+  (`docs/reviews/conditioning-sides-idf-check.md`). New lock `sources/conditioning-sides-lock.json`.
+- **Release 2.5.0**, a delta on 2.4.0 (792 files): 72 source programs get each unserved setpoint side as an explicit
+  null with `parameters.conditioning` and evidence (warehouse bulk, retail entry, small-hotel stairs and mechanical room
+  heated only; 90.1 small-hotel storage and laundry, 90.1 midrise corridors, DOE Ref outpatient support rooms and the
+  courthouse parking unconditioned; data centres without a heating side); every mix averages each side over the
+  members that have it and records `composition.setpoint_coverage` (69 below 1; the 90.1-2019 warehouse storage mix
+  cools at 26.7 degC, coverage 0.303, where 2.4.0 had 42.9 degC). 518 IDs move (`id-map-2.5.0.json`).
+- **Program JSON 6.2.0**: the null status `not_conditioned`, `controls.setpoint_coverage`, and the source version's
+  `conditioning_state` where both flags are known. Release-record program schema 1.1.0.
+- **ADR 0012 amended** (per-side mixes); ADR 0037's small-hotel mix note amended.
+- **atlas-schedules 4.1.2**: 4.1.0's code, bundling the 2.5.0 generator view.
+- **Site**: program pages show a *Conditioning* fact (heated only, unconditioned) and a mix's setpoint coverage.
+
 ## Zoning recommendations drop 5: drop 4 timed by R5 — 2026-11-02
 
 Stage AT-LOD5 ([ADR 0050 section 9](docs/adr/0050-zoning-recommendations-site.md)).

@@ -15,7 +15,37 @@ are recorded under `docs/` and `sources/`; the catalogue site's
 [coverage page](https://energy-atlas.github.io/archetype-atlas/coverage/) counts what the
 current release covers, generated from it.
 
-## Release 2.4.0
+## Release 2.5.0
+
+**Atlas release 2.5.0** (`data/atlas-releases/v2.5.0`, status `released`) is a delta on 2.4.0
+([ADR 0064](docs/adr/0064-release-2-5-0.md),
+[release notes](docs/release-notes-atlas-v2.5.0.md)). It decides each setpoint side from the source
+equipment ([ADR 0063](docs/adr/0063-conditioning-sides-and-per-side-mixes.md)):
+- a 90.1 or DOE Ref source program whose prototype HVAC map serves no heating or no cooling has that
+  setpoint side as an explicit null, with `parameters.conditioning` and evidence citing the systems
+  and the replaced schedule (72 programs: the warehouse bulk storage, the stand-alone retail entry
+  and the small-hotel stairs and mechanical room are heated only; the 90.1 small-hotel storage and
+  laundry, the 90.1 midrise corridors, the DOE Ref outpatient support rooms and the courthouse
+  parking are unconditioned; the data centres have no heating side);
+- every mix averages each setpoint side over the members that have it and records
+  `composition.setpoint_coverage` (69 mixes have a coverage below 1; the 90.1-2019 warehouse
+  storage mix cools at 26.7 degC with cooling coverage 0.303, not at 42.9 degC);
+- the ID moves that follow (518 programs: all 446 mixes and 72 source programs), mapped in
+  `id-map-2.5.0.json`.
+
+Its exports follow Program JSON 6.2.0 (ADR 0063: the null status `not_conditioned` and
+`controls.setpoint_coverage`); the construction and building-services contracts are unchanged,
+naming `atlas-release-2.5.0`. `atlas-schedules` 4.1.2 bundles it. The `v2.5.0` GitHub release
+carries `atlas-release-2.5.0.zip` (the `v2.0.0/` to `v2.5.0/` folders),
+`atlas-release-2.5.0.manifest.json`, `id-map-2.5.0.json`, the `atlas-schedules` 4.1.2 wheel and
+`SHA256SUMS.txt`.
+
+```console
+python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
+python -m scripts.atlas_delta --check                     # rebuild 2.5.0 from its inputs; every block assembles
+python -m scripts.conditioning_sides --check              # rebuild the conditioning-side input from the pinned sources
+python -m scripts.atlas_exports --program ID --version filled    # exports 2.5.0 by default
+```
 
 **Atlas release 2.4.0** (`data/atlas-releases/v2.4.0`, status `released`) is a delta on 2.3.0
 ([ADR 0062](docs/adr/0062-release-2-4-0.md),
@@ -35,12 +65,6 @@ the construction and building-services contracts are 2.3.0's, naming `atlas-rele
 `atlas-schedules` 4.1.1 bundles it. The `v2.4.0` GitHub release carries `atlas-release-2.4.0.zip`
 (the `v2.0.0/` to `v2.4.0/` folders), `atlas-release-2.4.0.manifest.json`, `id-map-2.4.0.json` and
 `SHA256SUMS.txt`.
-
-```console
-python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
-python -m scripts.atlas_delta --check                     # rebuild 2.4.0 from its inputs; every block assembles
-python -m scripts.atlas_exports --program ID --version filled    # exports 2.4.0 by default
-```
 
 **Atlas release 2.3.0** (`data/atlas-releases/v2.3.0`, status `released`) is a delta on 2.2.0
 ([ADR 0059](docs/adr/0059-release-2-3-0.md),
@@ -145,7 +169,7 @@ load target bound to its generated shape. It is a readable port of ComStock /
 openstudio-standards 0.8.6 hours-of-operation sampling and of OpenStudio-HPXML's
 ResStock occupant model ([ADR 0035](docs/adr/0035-readable-generator-restructure.md)).
 
-Generator 4.1.1 assembles its recipes from an atlas data release
+Generator 4.1.2 assembles its recipes from an atlas data release
 ([ADR 0051](docs/adr/0051-generation-parameters-in-the-release.md)): requests name
 programs by release ID with a `values` view. Install it as the `atlas-schedules` package
 from the wheel attached to its GitHub release
@@ -153,17 +177,17 @@ from the wheel attached to its GitHub release
 jsonschema; not on PyPI), and verify the download:
 
 ```console
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.1/atlas_schedules-4.1.1-py3-none-any.whl
-curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.1/SHA256SUMS.txt
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.2/atlas_schedules-4.1.2-py3-none-any.whl
+curl -LO https://github.com/Energy-Atlas/archetype-atlas/releases/download/atlas-schedules-v4.1.2/SHA256SUMS.txt
 sha256sum -c SHA256SUMS.txt --ignore-missing
-pip install atlas_schedules-4.1.1-py3-none-any.whl
+pip install atlas_schedules-4.1.2-py3-none-any.whl
 atlas-schedules --version                          # the generator and the release it reads
 atlas-schedules request.json -o bundle.json
 atlas-schedules translate old-request.json         # a 3.0.0 request's definition IDs as release IDs
 ```
 
-The wheel bundles the generator view of release 2.4.0 (4.1.1 is 4.1.0's code with that view,
-[ADR 0062](docs/adr/0062-release-2-4-0.md)); `ATLAS_RELEASES` or
+The wheel bundles the generator view of release 2.5.0 (4.1.2 is 4.1.0's code with that view,
+[ADR 0064](docs/adr/0064-release-2-5-0.md)); `ATLAS_RELEASES` or
 `--release-dir` reads a release on disk instead. From a checkout, `python -m pip
 install -r requirements.txt` and `python -m atlas_schedules request.json` run the
 same code against `data/atlas-releases`; `python -m scripts.build_generator_view`

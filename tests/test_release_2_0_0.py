@@ -30,7 +30,7 @@ class Release200Tests(unittest.TestCase):
         self.assertIsNone(self.listed['base_release'])
         self.assertEqual((self.listed['snapshot_of']['release'], self.listed['status']), ('1.6.0', 'released'))
         # 2.1.0 and 2.2.0 are deltas on this release (ADR 0046 section 12, ADR 0051)
-        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0', 'v2.2.0', 'v2.3.0', 'v2.4.0'])
+        self.assertEqual(sorted(p.name for p in (ROOT/'data/atlas-releases').iterdir()), ['v2.0.0', 'v2.1.0', 'v2.2.0', 'v2.3.0', 'v2.4.0', 'v2.5.0'])
         self.assertIn(EXPORTER_INPUTS, self.files)
 
     def test_generator_recipes_for_the_90_1_and_doe_ref_programs(self):
