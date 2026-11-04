@@ -12,7 +12,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.helpers import assert_binding, assert_schedule, rebuilt, translate
+from tests.schedules.helpers import assert_binding, assert_schedule, changed_setpoint, rebuilt, translate
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/mixtures.json.gz"
 
@@ -39,8 +39,12 @@ class LegacyMixtures(unittest.TestCase):
             with self.subTest(scenario=scenario["scenario"]):
                 bundle = generate(translate_mixture(scenario["request"], scenario["seed"]), residential_rng="ruby_mt", flat_days="native")
                 mixed = bundle["mixture"]
-                self.assertEqual(sorted(mixed["schedules"]), sorted(scenario["schedules"]))
+                changed = {slot for slot in scenario["schedules"]
+                           if changed_setpoint([i.get("program_id") for i in scenario["request"]["instances"]], slot)}
+                self.assertEqual(sorted(set(mixed["schedules"]) - changed), sorted(set(scenario["schedules"]) - changed))
                 for slot, packed in scenario["schedules"].items():
+                    if slot in changed:
+                        continue
                     values = np.asarray(bundle["schedules"][mixed["schedules"][slot]]["values"])
                     assert_schedule(self, slot, values, packed)
                 expected = [b for b in scenario["bindings"] if b["amplitude"] is not None]

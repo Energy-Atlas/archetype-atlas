@@ -1,6 +1,9 @@
 # ADR 0012: Area-weighted program composition as an experimental simplification
 
-Date: 2026-10-07. Status: accepted research specification; release implementation pending.
+Date: 2026-10-07. Status: accepted research specification; release implementation pending. Amended by
+[ADR 0063](0063-conditioning-sides-and-per-side-mixes.md) (2026-11-04, release 2.5.0): each setpoint side is averaged
+over the members that have that side, with the weights renormalised, and the mix records each side's coverage; a side
+no member has is a known null.
 
 ## Context
 
@@ -17,6 +20,10 @@ eligible leaf areas A_i, compute w_i = A_i / sum(A_i) using unrounded represente
 source areas. Blend heating and cooling setpoint schedules pointwise:
 
 `T_mix(t) = sum(w_i * T_i(t))`.
+
+*Amended (ADR 0063 section 2.3):* per side, over the members `S` that have that side (a member whose record states the
+side not conditioned lacks it), `w_i = A_i / sum_{j in S}(A_j)`; `coverage = sum_{i in S}(A_i) / sum(A_i)`; an empty `S`
+gives a known null.
 
 Apply area weighting to other compatible numerical program values. For scheduled
 loads, weight their hourly densities: `q_mix(t) = sum(w_i * d_i * s_i(t))`.

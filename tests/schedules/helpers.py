@@ -35,6 +35,35 @@ def load_recipe(program_id: str, values: str | None = None) -> dict:
     return programmes.load_recipe(release_id, values or view)
 
 
+def not_conditioned(program_id: str, slot: str) -> bool:
+    """Whether a captured setpoint slot is a side the release record states not conditioned (ADR 0063): the native
+    capture builds every space type's thermostat, the release leaves out a side no source equipment serves."""
+    if slot not in ("heating_setpoint", "cooling_setpoint"):
+        return False
+    from atlas_schedules.release import current
+    release_id, _ = release_key(program_id)
+    record = current().program(release_id)[1]
+    parameter = record["parameters"].get(f"{slot}_schedule_id") or {}
+    stated = (record["parameters"].get("conditioning") or {}).get("value") or {}
+    side = slot.split("_")[0]
+    return parameter.get("status") == "known" and parameter.get("value") is None and stated.get(f"{side}_enabled") is False
+
+
+def changed_setpoint(program_ids, slot: str) -> bool:
+    """Whether ADR 0063 changed a setpoint slot of these programmes: a side one of them, or a member of a composition
+    among them, no longer has (release 2.5.0). The legacy keys were captured before; the setpoint stays compared
+    everywhere else."""
+    for program_id in program_ids:
+        if not program_id:
+            continue
+        if not_conditioned(program_id, slot):
+            return True
+        recipe = load_recipe(program_id)
+        if recipe["kind"] == "composition" and any(not_conditioned(member, slot) for member, _ in recipe["composition"]["members"]):
+            return True
+    return False
+
+
 def load_service(service_id: str) -> dict:
     return programmes.load_service(release_service(service_id))
 

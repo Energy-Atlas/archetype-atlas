@@ -26,7 +26,12 @@ release in `RELEASES` into its new form after the previous form validated. What 
 Release 2.4.0 on exports Program JSON **6.1.0** (ADR 0061): 6.0.0 with the optional
 `lighting_controls.unoccupied_lighting_cap` (`{rule, evidence_id}`; the rule null where the source model has none, its
 reason in `nulls`). `PROGRAM_BY_RELEASE` names each release's Program JSON contract; the construction and building
-services contracts of 2.3.0 hold for 2.4.0.
+services contracts of 2.3.0 hold for 2.4.0 and 2.5.0.
+
+Release 2.5.0 on exports Program JSON **6.2.0** (ADR 0063): 6.1.0 with the null status `not_conditioned` (a setpoint
+side the source conditions with no equipment, or a mix side no member has, with its reason) and the optional
+`controls.setpoint_coverage` of a mix (`{heating, cooling}`, the represented-area share of the members with each side).
+The source version also states `conditioning_state` where both conditioning flags are known.
 """
 import copy
 import fnmatch
@@ -36,10 +41,20 @@ import re
 from scripts.definition_contract import stable_id
 from scripts.iecc_commercial_zones import CITIES
 
-RELEASES = ('2.3.0', '2.4.0')
+RELEASES = ('2.3.0', '2.4.0', '2.5.0')
 PROGRAM = ('program-json-v6.schema.json', '6.0.0', 'urn:archetype-atlas:program-json:6.0.0')
 PROGRAM_6_1 = ('program-json-v6.1.schema.json', '6.1.0', 'urn:archetype-atlas:program-json:6.1.0')
-PROGRAM_BY_RELEASE = {'2.3.0': PROGRAM, '2.4.0': PROGRAM_6_1}
+PROGRAM_6_2 = ('program-json-v6.2.schema.json', '6.2.0', 'urn:archetype-atlas:program-json:6.2.0')
+PROGRAM_BY_RELEASE = {'2.3.0': PROGRAM, '2.4.0': PROGRAM_6_1, '2.5.0': PROGRAM_6_2}
+NOT_CONDITIONED = 'not_conditioned'
+SIDES = ('heating', 'cooling')
+SETPOINT_COVERAGE = {
+    'type': 'object', 'additionalProperties': False, 'required': list(SIDES),
+    'description': "A mix only (6.2.0, ADR 0063): for each setpoint side, the represented-area share of the mix's members "
+                   "that have that side. The side's setpoint is averaged over those members with their weights renormalised; "
+                   'a coverage of 0 is a side no member has (its setpoint is null, status not_conditioned); null where a '
+                   "member's side is unknown, so the mix side is unknown too.",
+    'properties': {side: {'anyOf': [{'type': 'number', 'minimum': 0, 'maximum': 1}, {'type': 'null'}]} for side in SIDES}}
 CAP_FIELD = 'unoccupied_lighting_cap'
 DETAILED = ('construction-json-v5.schema.json', '5.0.0', 'urn:archetype-atlas:construction-set:5.0.0')
 UNIFIED = ('construction-equivalent-v4.schema.json', '4.0.0', 'urn:archetype-atlas:construction-equivalent:4.0.0')
@@ -198,6 +213,8 @@ NULLS = [
     ('/controls/heating_enabled', 'unknown', None, 'The source states no conditioning; setpoint schedules, where given, imply it (the filled version resolves it).'),
     ('/controls/cooling_enabled', 'unknown', None, 'The source states no conditioning; setpoint schedules, where given, imply it (the filled version resolves it).'),
     ('/controls/*', 'unknown', 'record', 'The source gives no value for this control.'),
+    ('/controls/setpoint_coverage/*', 'unknown', None, "A member's setpoint side is unknown, so the mix's coverage and setpoint "
+                                                       'on that side are unknown too (ADR 0012: an unknown propagates; ADR 0063).'),
     ('/default_policy_id', 'none', None, 'No default policy: the source version applies none.'),
     ('/fenestration/wwr/*', 'not_applicable', None, 'No exterior wall faces this direction in the program\'s source zones.'),
     ('/fenestration/roof', 'not_applicable', None, 'No exterior roof over the program\'s source zones.'),
@@ -364,6 +381,29 @@ def program_schema_6_1(previous):
         controls['properties'][CAP_FIELD] = copy.deepcopy(UNOCCUPIED_LIGHTING_CAP)
         controls['description'] += (" 6.1.0: `unoccupied_lighting_cap` gives the source model's unoccupied lighting cap "
                                     '(the rule or null); the exporter gives it on every known block.')
+    return schema
+
+
+def program_schema_6_2(previous):
+    """Program JSON 6.2.0 from 6.1.0: the not_conditioned null status and a mix's setpoint coverage (ADR 0063)."""
+    name, version, identity = PROGRAM_6_2
+    schema = json.loads(json.dumps(previous).replace(PROGRAM_6_1[2], identity))
+    schema['title'] = f'Self-contained program JSON {version}'
+    schema['description'] = (
+        'Release 2.5.0 export (ADR 0063). 6.2.0 adds the null status not_conditioned (a setpoint side the source model '
+        'conditions with no equipment, or a mix side none of its members has, with its reason) and controls.setpoint_coverage '
+        '(a mix: the represented-area share of the members with each side); the source version states conditioning_state '
+        'where both flags are known. Every 6.1.0 field keeps its meaning. ' + previous['description'])
+    for variant_name in ('source', 'filled'):
+        variant = schema['$defs'][variant_name]
+        variant['properties']['schema_version'] = {'const': version}
+        entry = variant['properties']['nulls']['additionalProperties']
+        entry['properties']['status'] = {
+            'enum': [*entry['properties']['status']['enum'], NOT_CONDITIONED],
+            'description': 'unknown: the source does not give it; none: known, there is none; not_applicable: the field does '
+                           'not apply; not_conditioned (6.2.0): a setpoint side no source equipment serves (a mix: none of its '
+                           'members has it), so the side is absent.'}
+        variant['$defs']['controls']['properties']['setpoint_coverage'] = copy.deepcopy(SETPOINT_COVERAGE)
     return schema
 
 
@@ -536,8 +576,49 @@ def program_document(document, version, context):
     controls = out.get('lighting_controls')
     if isinstance(controls, dict) and controls.get('status') == 'known':
         controls['daylighting_origin'] = daylighting_origin(controls, shared)
+    if contract(context.release_label) is PROGRAM_6_2:
+        sides(out, version, context)
+    elif 'setpoint_coverage' in ((context.record or {}).get('composition') or {}):
+        raise ValueError(f'{out["id"]}: Program JSON {out["schema_version"]} has no setpoint coverage')
     out['nulls'] = nulls(out, context)
     return out
+
+
+def sides(out, version, context):
+    """6.2.0 (ADR 0063): a mix's setpoint coverage, and the conditioning state of a source version whose flags are known."""
+    controls = out['controls']
+    coverage = ((context.record or {}).get('composition') or {}).get('setpoint_coverage')
+    if coverage is not None:
+        if version == 'filled' and None in coverage.values():
+            # A member side unknown in the record: the filled version mixes the members its own view conditions
+            # (scripts.program_json_v3), so the side takes that view's share. Where the record states every member's side,
+            # both views mix the same members and the record's share holds.
+            found = {r['field']: r['active_area_fraction'] for r in (out.get('metadata') or {}).get('resolutions', [])
+                     if r.get('rule') == 'area-weighted-active-member-controls'}
+            coverage = {side: coverage[side] if coverage[side] is not None else found.get(f'{side}_setpoint_schedule_id', 0.0)
+                        for side in SIDES}
+        controls['setpoint_coverage'] = dict(coverage)
+    if version == 'source':
+        heating, cooling = controls.get('heating_enabled'), controls.get('cooling_enabled')
+        if isinstance(heating, bool) and isinstance(cooling, bool):
+            controls['conditioning_state'] = ('heating_and_cooling' if heating and cooling else 'heating_only' if heating
+                                              else 'cooling_only' if cooling else 'unconditioned')
+
+
+def not_conditioned(document, context, side):
+    """The not_conditioned meaning of a null setpoint side, or None where the record does not state the side absent."""
+    parameters = (context.record or {}).get('parameters', {})
+    stated = parameters.get('conditioning') or {}
+    if stated.get('status') != 'known' or stated['value'].get(f'{side}_enabled') is not False:
+        return None
+    if ((context.record or {}).get('composition') or {}).get('setpoint_coverage') is not None:
+        return {'status': NOT_CONDITIONED,
+                'reason': f'Not conditioned: none of the mix members has a {side} side (setpoint_coverage {side} 0, ADR 0063), '
+                          'so the mix has none.'}
+    parameter = parameters.get(f'{side}_setpoint_schedule_id') or {}
+    row = next((r for r in document['source']['evidence'] if r['id'] == parameter.get('evidence_id')), None)
+    return {'status': NOT_CONDITIONED,
+            'reason': (row or {}).get('interpretation_note') or f'Not conditioned: no source equipment serves {side} (ADR 0063).'}
 
 
 def nulls(document, context):
@@ -567,7 +648,12 @@ def nulls(document, context):
                 entry['reason'] = row['interpretation_note'] or text
             elif source == 'record' and parts[1] == 'controls':
                 parameter = parameters.get(parts[2]) or {}
-                if parameter.get('status') == 'known':
+                absent = (not_conditioned(document, context, parts[2].split('_')[0])
+                          if contract(context.release_label) is PROGRAM_6_2
+                          and parts[2] in ('heating_setpoint_schedule_id', 'cooling_setpoint_schedule_id') else None)
+                if absent:
+                    entry = absent
+                elif parameter.get('status') == 'known':
                     entry = {'status': 'none', 'reason': 'Known: the source has no such schedule or value for this program.'}
                 elif (context.record or {}).get('unresolved', {}).get(parts[2]):
                     reason_id = context.record['unresolved'][parts[2]]

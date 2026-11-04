@@ -432,6 +432,9 @@ def write_program(site, pid, exports, manifest):
     if sets:
         facts.append(('Construction sets', ', '.join(link_to(site, url, s, release.sets[s][1].get('name') or s) for s in sets)))
     facts.append(('Generation', generation_fact(site, url, folder, pid)))
+    conditioning = conditioning_fact(record)
+    if conditioning:
+        facts.append(('Conditioning', conditioning))
     members = (record.get('composition') or {}).get('members') or []
     member_rows = [(link_to(site, url, m['program_id'], release.programs[m['program_id']][2].get('name', m['program_id'])) if m['program_id'] in release.programs else esc(m['program_id']),
                     esc(json.dumps(m.get('represented_area_m2'))), esc(json.dumps(m.get('weight')))) for m in members]
@@ -447,6 +450,29 @@ def write_program(site, pid, exports, manifest):
                                  **program_index(folder_path, mode, record)}
     for version in VERSIONS:
         exports[version].pop('document')
+
+
+CONDITIONING_STATES = {(True, True): 'heating and cooling', (True, False): 'heating only', (False, True): 'cooling only',
+                       (False, False): 'unconditioned'}
+
+
+def conditioning_fact(record):
+    """A program's conditioning sides in one line (ADR 0063): the record's stated sides, and a mix's per-side coverage."""
+    parameters = record.get('parameters') or {}
+    stated = parameters.get('conditioning') or {}
+    coverage = (record.get('composition') or {}).get('setpoint_coverage')
+    parts = []
+    if stated.get('status') == 'known' and isinstance(stated.get('value'), dict):
+        sides = tuple(stated['value'].get(f'{side}_enabled') for side in ('heating', 'cooling'))
+        if sides in CONDITIONING_STATES:
+            absent = [side for side, on in zip(('heating', 'cooling'), sides) if not on]
+            parts.append(esc(CONDITIONING_STATES[sides]) + (f' ({esc(" and ".join(absent))} <code>not_conditioned</code>: no source '
+                                                          'equipment serves it)' if absent and not coverage else ''))
+    if coverage:
+        shares = ', '.join(f'{side} {"unknown" if coverage[side] is None else format(coverage[side], ".3f")}'
+                           for side in ('heating', 'cooling'))
+        parts.append(f'setpoint coverage {esc(shares)} (the represented-area share of the members with each side)')
+    return ' · '.join(parts)
 
 
 def program_index(folder, mode, record):

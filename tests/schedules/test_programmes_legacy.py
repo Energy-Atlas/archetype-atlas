@@ -13,7 +13,8 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.helpers import assert_binding, assert_schedule, legacy_fixed_slot, load_recipe, rebuilt, release_key
+from tests.schedules.helpers import (assert_binding, assert_schedule, changed_setpoint, legacy_fixed_slot, load_recipe, rebuilt,
+                                     release_key)
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/programmes.json.gz"
 UNIT_EXTENT = {"floor_area": 1, "dwelling_unit": 1, "person": 1, "absolute": 1}
@@ -38,7 +39,7 @@ class LegacyProgrammes(unittest.TestCase):
                 bundle = generate(request_for(case["program_id"]), residential_rng="ruby_mt", flat_days="native")
                 owner = bundle["owners"][0]
                 for slot, packed in case["slots"].items():
-                    if legacy_fixed_slot(owner, slot):
+                    if legacy_fixed_slot(owner, slot) or changed_setpoint([case["program_id"]], slot):
                         continue
                     values = np.asarray(bundle["schedules"][owner["schedules"][slot]]["values"])
                     assert_schedule(self, slot, values, packed)

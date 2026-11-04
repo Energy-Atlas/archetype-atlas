@@ -163,7 +163,9 @@ Applying the register settled these points. They refine section 3 and do not cha
 its rules.
 - **Small-hotel mixes.** DOE gives the elevator cores and the attic no thermostat, so
   their null setpoints are source-backed. They are kept (`R-UNCONTROLLED`), not
-  filled. The mixes that include them keep null setpoints.
+  filled. The mixes that include them keep null setpoints. *Amended by
+  [ADR 0063](0063-conditioning-sides-and-per-side-mixes.md) (release 2.5.0):* those mixes average each side over
+  the members that have it, with its coverage; the elevator cores and the attic keep their records.
 - **Re-tagging:**
   - Only the zones whose DOE loads differ get a new program: Outpatient `Utility`
     (utility rooms and sterile storage) and PrimarySchool `ComputerRoom` and

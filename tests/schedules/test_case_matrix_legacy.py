@@ -16,7 +16,7 @@ import unittest
 import numpy as np
 
 from atlas_schedules.generator import generate
-from tests.schedules.helpers import (assert_binding, assert_schedule, legacy_fixed_slot, load_recipe, rebuilt, retired,
+from tests.schedules.helpers import (assert_binding, assert_schedule, changed_setpoint, legacy_fixed_slot, load_recipe, rebuilt, retired,
                                      translate, without_rebuilt)
 
 ANSWER_KEY = Path(__file__).resolve().parents[1] / "answer_keys/orchestration/case-matrix.json.gz"
@@ -39,7 +39,8 @@ class LegacyCaseMatrix(unittest.TestCase):
                     owner = owners[key]
                     parent = legacy.get("program_id") and load_recipe(legacy["program_id"])["kind"] == "composition"
                     for slot, packed in legacy["schedules"].items():
-                        if parent and slot.startswith("load/") or legacy_fixed_slot(owner, slot):
+                        if parent and slot.startswith("load/") or legacy_fixed_slot(owner, slot) or (
+                                changed_setpoint([legacy.get("program_id")], slot)):
                             continue
                         values = np.asarray(bundle["schedules"][owner["schedules"][slot]]["values"])
                         assert_schedule(self, slot, values, packed)

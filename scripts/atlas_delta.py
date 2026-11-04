@@ -710,5 +710,132 @@ def manifest(release, delta, base_manifest):
 # <<< release 2.4.0
 
 
+# >>> release 2.5.0
+# Release 2.5.0 (ADR 0064), a delta on 2.4.0. Nothing above this block changes: releases 2.3.0 and 2.4.0 pin the file
+# without it. The block keeps the earlier names as they are and adds its own:
+# - the record edits of ADR 0063 (`scripts.atlas_edits_2_5_0.edit` over the resolved 2.4.0): each 90.1 and DOE Ref
+#   source-program side that no source equipment serves becomes an explicit null with `parameters.conditioning`, and
+#   every mix records its per-side `composition.setpoint_coverage`, its setpoint sides mixed over the members that have
+#   them. The files they change or add, the paths they remove (the old names of the moved program IDs) and
+#   `id-map-2.5.0.json`, the map from 2.4.0 to 2.5.0 IDs;
+# - no generation.json of its own beyond the edits', which follow the moved IDs; the IECC commercial and detailed office
+#   documents must still equal `scripts.build_zone_recipes` over the edited release;
+# - `counts.conditioning_sides`: the source programs with a side not conditioned and the mixes by coverage.
+from collections import Counter  # noqa: E402
+
+ID_MAP_2_5_0 = 'id-map-2.5.0.json'
+EDIT_INPUTS_2_5_0 = ('scripts/atlas_edits_2_5_0.py', 'scripts/atlas_edits_2_4_0.py', 'scripts/atlas_edits.py',
+                     'scripts/conditioning_sides.py', 'data/program-inputs/conditioning-sides-v1.json',
+                     'sources/conditioning-sides-lock.json')
+CHAIN = ('2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0')
+RELEASE = CHAIN[-1]
+DECISIONS['2.5.0'] = ('docs/adr/0064-release-2-5-0.md', 'docs/adr/0063-conditioning-sides-and-per-side-mixes.md',
+                      'docs/adr/0012-program-composition-simplification.md',
+                      'docs/adr/0056-release-record-schemas-and-versioning.md', 'docs/adr/0048-open-licences.md')
+GENERATOR['2.5.0'] = {'version': '4.1.2', 'package': PACKAGE, 'wheel': 'atlas_schedules-4.1.2-py3-none-any.whl',
+                      'release_tag': 'atlas-schedules-v4.1.2', 'request_schema_version': '4.0.0',
+                      'reads': 'release 2.x, generation 1.x'}
+README['2.5.0'] = """# Energy Archetype Atlas release 2.5.0 (conditioning sides and per-side mixes, delta on 2.4.0)
+
+A delta release (ADR 0036 section 2, ADR 0064): this folder holds only its own files, and a
+reader resolves every other path in `../v2.4.0/`, `../v2.3.0/`, `../v2.2.0/`, `../v2.1.0/` and
+then `../v2.0.0/`, whose manifest hashes the chain of `manifest.json` files records. `removed`
+lists the 2.4.0 paths this release drops: the old names of the programs whose IDs move.
+
+- Conditioning sides (ADR 0063 section 1): a 90.1 or DOE Ref source program whose source HVAC
+  equipment (the openstudio-standards prototype HVAC map, each system type read as its builder
+  makes it) serves no heating or no cooling has that setpoint side as an explicit null, and
+  `parameters.conditioning` states both sides, citing the systems, the spaces and the replaced
+  schedule, which stays in the folder's `schedules.json`. The warehouse bulk storage, the
+  stand-alone retail entry and the small-hotel stairs and mechanical room are heated only; the
+  90.1 small-hotel storage and laundry are unconditioned (the DOE Ref storage is heated only).
+- Per-side mixes (section 2, amending ADR 0012): every mix records
+  `composition.setpoint_coverage`, the represented-area share of its members with each side,
+  and each side is mixed over the members that have it with the weights renormalised; a side
+  no member has is a known null. `warehouse.department.storage-mixed` now cools at the fine
+  storage setpoint with cooling coverage 0.303 (90.1), where 2.4.0 averaged 50 degC in.
+- `id-map-2.5.0.json`: every 2.4.0 ID that moves, mapped to its 2.5.0 ID (`ids`). The earlier
+  maps keep the earlier moves.
+- Citing files follow the new IDs: `generation.json`, `services.json`,
+  `definition-map.json` and `exporter-inputs.json`.
+- `LICENSE` is the MIT License for code and `LICENSE-DATA` the CC BY 4.0 legal code for data
+  and documentation; attribute as "Archetype Atlas, Energy-Atlas" with the release number.
+
+Exports of this release take Program JSON 6.2.0 (ADR 0063: the `not_conditioned` null status
+and `controls.setpoint_coverage`); constructions 5.0.0, 4.0.0 and 2.0.0 and building services
+1.0.1 are unchanged, naming `atlas-release-2.5.0`. The generator (`atlas-schedules` 4.1.2,
+whose wheel bundles this release) reads it. Resolve the chain with `python -m scripts.atlas_delta`
+(`scripts.atlas_delta.files('2.5.0')`); verify with `--verify`, rebuild and compare with
+`--check`. Upstream notices are in 2.0.0's `notices/`.
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def edits_2_5_0():
+    """The ADR 0063 edits over the resolved release 2.4.0 (scripts.atlas_edits_2_5_0)."""
+    from scripts import atlas_edits_2_5_0
+    return atlas_edits_2_5_0.edit(files('2.4.0'))
+
+
+def _build_2_5_0():
+    from scripts import atlas_edits_2_5_0
+    edited = edits_2_5_0()
+    out = {'LICENSE': (ROOT/'LICENSE').read_bytes(), 'LICENSE-DATA': (ROOT/'LICENSE-DATA').read_bytes(),
+           'README.md': README['2.5.0'].encode('utf-8')}
+    clash = sorted(set(edited.files) & set(out))
+    if clash:
+        raise ValueError(f'The edits write release files the writer owns: {clash}')
+    out.update(edited.files)
+    out[ID_MAP_2_5_0] = atlas_edits_2_5_0.id_map_bytes(edited.ids)
+    zone_documents_hold(edited.resolved(files('2.4.0')))
+    return out
+
+
+_build_before_2_5_0 = build
+_manifest_before_2_5_0 = manifest
+
+
+def build(release):
+    """The delta's files, each valid against its release-record schema; earlier releases as their blocks build them."""
+    if _version(release) < (2, 5, 0):
+        return _build_before_2_5_0(release)
+    out = _build_2_5_0()
+    release_schemas.check(out, f'release {release}')
+    return out
+
+
+def manifest(release, delta, base_manifest):
+    """2.4.0's manifest rule with the 2.5.0 edits, inputs and ID map in place of 2.4.0's."""
+    if _version(release) < (2, 5, 0):
+        return _manifest_before_2_5_0(release, delta, base_manifest)
+    out = _manifest_before_2_3_0(release, delta, base_manifest)
+    out['input_sha256'][WRITER] = sha(pinned_writer(release))
+    edited = edits_2_5_0()
+    out['input_sha256'].update({path: sha((ROOT/path).read_bytes()) for path in EDIT_INPUTS_2_5_0})
+    out['input_sha256']['LICENSE-DATA'] = sha(delta['LICENSE-DATA'])
+    out['removed'] = list(edited.removed)
+    if any('.construction-' in i for i in edited.ids):
+        raise ValueError('A construction set moved; release 2.5.0 moves programs only')
+    out['counts']['moved_ids'] = {'programs': len(edited.ids), 'construction_sets': 0, 'id_map': ID_MAP_2_5_0}
+    out['counts']['services'] = services_count(edited.resolved(files('2.4.0')))
+    if out['counts']['services'] != base_manifest['counts']['services']:
+        raise ValueError('Release 2.5.0 adds or removes no building service')
+    summary = edited.summary
+    coverage = Counter('all' if v['heating'][1] == v['cooling'][1] == 'all' else
+                       'unknown' if 'unknown' in (v['heating'][1], v['cooling'][1]) else 'partial'
+                       for v in summary['mixes'].values())
+    out['counts']['conditioning_sides'] = {
+        'source_programs_not_conditioned': {side: sum(side in v for v in summary['conditioning']['changed'].values())
+                                            for side in ('heating', 'cooling')},
+        'source_programs_changed': len(summary['conditioning']['changed']),
+        'source_programs_mixed_service': len(summary['conditioning']['mixed']),
+        'mixes': {'full_coverage': coverage['all'], 'partial_coverage': coverage['partial'], 'unknown_side': coverage['unknown']}}
+    kept = [d for d in out['deferred'] if not d.startswith('generation blocks')]
+    out['deferred'] = generation_coverage.deferred(generation_reader(release, delta)) + kept
+    release_schemas.check({'manifest.json': out}, f'release {release}')
+    return out
+# <<< release 2.5.0
+
+
 if __name__ == '__main__':
     main()
