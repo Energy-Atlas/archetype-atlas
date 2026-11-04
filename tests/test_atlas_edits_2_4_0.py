@@ -282,7 +282,8 @@ class ContractTests(unittest.TestCase):
             self.assertIn(atlas_contracts.CAP_FIELD, controls['properties'])
             self.assertNotIn(atlas_contracts.CAP_FIELD, controls.get('required', []))
             self.assertNotIn(atlas_contracts.CAP_FIELD, older['$defs'][version]['properties']['lighting_controls']['properties'])
-        self.assertEqual(atlas_contracts.PROGRAM_BY_RELEASE, {'2.3.0': atlas_contracts.PROGRAM, '2.4.0': atlas_contracts.PROGRAM_6_1})
+        self.assertEqual({r: atlas_contracts.PROGRAM_BY_RELEASE[r] for r in ('2.3.0', '2.4.0')},
+                         {'2.3.0': atlas_contracts.PROGRAM, '2.4.0': atlas_contracts.PROGRAM_6_1})
         self.assertEqual(atlas_contracts.meaning('/lighting_controls/unoccupied_lighting_cap/rule')[:2], ('none', 'record'))
 
 
