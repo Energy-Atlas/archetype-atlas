@@ -1,0 +1,47 @@
+{
+  "lock_version": 1,
+  "retrieval_date": "2026-11-09",
+  "retrieval": "Downloaded for the unconditioned-attic boundary semantics (ADR 0065): how OpenStudio 3.10.0 (the runtime of sources/runtime-lock.json, commit 86d7e215a1) resolves the construction of an interzone surface pair whose two spaces inherit different default constructions. python -m scripts.fetch --lock sources/construction-interzone-lock.json --cache-root <dir>. Evidence only; never compiled or executed.",
+  "sources": [
+    {
+      "source_id": "openstudio-3100",
+      "project": "OpenStudio",
+      "repository": "https://github.com/NatLabRockies/OpenStudio",
+      "version": "86d7e215a145557e4e029732628f5e3281898d35",
+      "tag": "v3.10.0",
+      "license": "BSD-3-Clause style OpenStudio licence; the notice is retained in each file header (https://openstudio.net/license)"
+    }
+  ],
+  "files": [
+    {
+      "source_id": "openstudio-3100",
+      "path": "src/model/Surface.cpp",
+      "url": "https://raw.githubusercontent.com/NatLabRockies/OpenStudio/86d7e215a145557e4e029732628f5e3281898d35/src/model/Surface.cpp",
+      "sha256": "61d779b074b9c54f3fd3dee1eb581ef772b86f7acd77a0b41d86412e7ffce99b",
+      "size_bytes": 101514,
+      "source_revision": "86d7e215a145557e4e029732628f5e3281898d35",
+      "openstudio_version": "3.10.0",
+      "locator": "Surface_Impl::construction, Surface_Impl::constructionWithSearchDistance"
+    },
+    {
+      "source_id": "openstudio-3100",
+      "path": "src/model/Space.cpp",
+      "url": "https://raw.githubusercontent.com/NatLabRockies/OpenStudio/86d7e215a145557e4e029732628f5e3281898d35/src/model/Space.cpp",
+      "sha256": "1a7360a86826364195aa0375f739983a204e63a055d064f58d120a4df22af4b9",
+      "size_bytes": 145289,
+      "source_revision": "86d7e215a145557e4e029732628f5e3281898d35",
+      "openstudio_version": "3.10.0",
+      "locator": "Space_Impl::getDefaultConstructionWithSearchDistance (search distances 1 space, 2 space type, 3 story, 4 building, 5 building space type)"
+    },
+    {
+      "source_id": "openstudio-3100",
+      "path": "src/energyplus/ForwardTranslator.cpp",
+      "url": "https://raw.githubusercontent.com/NatLabRockies/OpenStudio/86d7e215a145557e4e029732628f5e3281898d35/src/energyplus/ForwardTranslator.cpp",
+      "sha256": "c4a89700a3b04b68ad0b99b87961587ac8406418e8f788b96e32f76f358ec15d",
+      "size_bytes": 216657,
+      "source_revision": "86d7e215a145557e4e029732628f5e3281898d35",
+      "openstudio_version": "3.10.0",
+      "locator": "ForwardTranslator::resolveMatchedSurfaceConstructionConflicts"
+    }
+  ]
+}
