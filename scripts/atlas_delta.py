@@ -837,5 +837,149 @@ def manifest(release, delta, base_manifest):
 # <<< release 2.5.0
 
 
+# >>> release 2.6.0
+# Release 2.6.0 (ADR 0066), a delta on 2.5.0. Nothing above this block changes: releases 2.3.0 to 2.5.0 pin the file
+# without it. The block keeps the earlier names as they are and adds its own:
+# - the record edits of ADR 0065 section 3 (`scripts.atlas_edits_2_6_0.edit` over the resolved 2.5.0): the unified
+#   InteriorCeiling derivation of every openstudio-standards attic context without the attic-paired ceilings, the replaced
+#   derivation kept as `provenance.interior_ceiling_correction`, and the OpenStudio evidence row in the template's
+#   construction evidence. The files they change or add, the paths they remove (the old names of the moved construction
+#   sets) and `id-map-2.6.0.json`, the map from 2.5.0 to 2.6.0 IDs;
+# - no program, schedule, service or generation.json change: the build refuses a moved program or a changed generation
+#   document, and the IECC commercial and detailed office documents must still equal `scripts.build_zone_recipes`;
+# - `counts.interior_ceiling_corrections` (sets and contexts) and `counts.unified_attics`, the unified contexts whose
+#   4.1.0 export states an attic (ADR 0065), by family.
+ID_MAP_2_6_0 = 'id-map-2.6.0.json'
+EDIT_INPUTS_2_6_0 = ('scripts/atlas_edits_2_6_0.py', 'scripts/atlas_edits.py', 'sources/construction-interzone-lock.json')
+CHAIN = ('2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0')
+RELEASE = CHAIN[-1]
+DECISIONS['2.6.0'] = ('docs/adr/0066-release-2-6-0.md', 'docs/adr/0065-unconditioned-attic-boundaries.md',
+                      'docs/adr/0056-release-record-schemas-and-versioning.md', 'docs/adr/0048-open-licences.md')
+# No generator change (ADR 0066 section 4): the recipes are 2.5.0's, which atlas-schedules 4.1.2 carries.
+GENERATOR['2.6.0'] = dict(GENERATOR['2.5.0'])
+README['2.6.0'] = """# Energy Archetype Atlas release 2.6.0 (unconditioned attics in the unified constructions, delta on 2.5.0)
+
+A delta release (ADR 0036 section 2, ADR 0066): this folder holds only its own files, and a
+reader resolves every other path in `../v2.5.0/`, `../v2.4.0/`, `../v2.3.0/`, `../v2.2.0/`,
+`../v2.1.0/` and then `../v2.0.0/`, whose manifest hashes the chain of `manifest.json` files
+records. `removed` lists the 2.5.0 paths this release drops: the old names of the construction
+sets whose IDs move.
+
+- InteriorCeiling of the openstudio-standards attic contexts (ADR 0065 section 3): in the 90.1
+  and DOE Ref sets with an unconditioned `Attic` space type, the occupied zones' ceilings under
+  the attic take the attic floor reversed in the source (OpenStudio interzone resolution), not
+  the building-default interior ceiling. Their area leaves the unified `InteriorCeiling`
+  derivation of 568 contexts in 24 construction sets (SmallOffice and SmallOfficeDetailed,
+  the restaurants, the generic office, the DOE Ref small hotel); in each the reference area
+  becomes 0. The derivation it replaced stays in the record
+  (`provenance.interior_ceiling_correction`) with the OpenStudio evidence. The recipe, its
+  assembly, the detailed rules and every other component are unchanged.
+- `id-map-2.6.0.json`: every 2.5.0 ID that moves (the 24 construction sets), mapped to its
+  2.6.0 ID (`ids`). The earlier maps keep the earlier moves. No program, schedule or service
+  moves.
+- Citing files follow the new IDs: the small-hotel evidence and `id-map-2.3.0.json`.
+- `LICENSE` is the MIT License for code and `LICENSE-DATA` the CC BY 4.0 legal code for data
+  and documentation; attribute as "Archetype Atlas, Energy-Atlas" with the release number.
+
+Exports of this release take unified constructions 4.1.0 (ADR 0065) for every unified context:
+`attics` (the unconditioned attic, its conditioned boundary and the derived
+`attic_omitted_roof`), `components.<role>.attics` and `export_corrections`; Program JSON 6.2.0,
+detailed constructions 5.0.0, source-model constructions 2.0.0 and building services 1.0.1 are
+unchanged, naming `atlas-release-2.6.0`. The generator (`atlas-schedules` 4.1.2) reads it; its
+recipes are 2.5.0's. Resolve the chain with `python -m scripts.atlas_delta`
+(`scripts.atlas_delta.files('2.6.0')`); verify with `--verify`, rebuild and compare with
+`--check`. Upstream notices are in 2.0.0's `notices/`.
+"""
+
+
+@functools.lru_cache(maxsize=1)
+def edits_2_6_0():
+    """The ADR 0065 section 3 edits over the resolved release 2.5.0 (scripts.atlas_edits_2_6_0)."""
+    from scripts import atlas_edits_2_6_0
+    return atlas_edits_2_6_0.edit(files('2.5.0'))
+
+
+def _build_2_6_0():
+    from scripts import atlas_edits_2_6_0
+    edited = edits_2_6_0()
+    out = {'LICENSE': (ROOT/'LICENSE').read_bytes(), 'LICENSE-DATA': (ROOT/'LICENSE-DATA').read_bytes(),
+           'README.md': README['2.6.0'].encode('utf-8')}
+    clash = sorted(set(edited.files) & set(out))
+    if clash:
+        raise ValueError(f'The edits write release files the writer owns: {clash}')
+    moved = sorted(p for p in edited.files if '/programs/' in p or p.endswith(('/generation.json', '/schedules.json', '/services.json')))
+    if moved:
+        raise ValueError(f'Release 2.6.0 changes no program, schedule, service or generation document: {moved[:3]}')
+    out.update(edited.files)
+    out[ID_MAP_2_6_0] = atlas_edits_2_6_0.id_map_bytes(edited.ids)
+    zone_documents_hold(edited.resolved(files('2.5.0')))
+    return out
+
+
+def unified_attics(resolved):
+    """{'contexts': n, 'by_family': {family: n}} of the unified contexts whose 4.1.0 export states an attic (ADR 0065)."""
+    from scripts import attic_boundary
+    suite = atlas_constructions_reader(resolved)
+    families = Counter()
+    for sid, record in sorted(suite.sets.items()):
+        for key in sorted(record['contexts']):
+            if 'unified' not in record['contexts'][key]:
+                continue
+            fam, found = attic_boundary.recognise(suite.export(sid, key, 'detailed'), suite.export(sid, key, 'unified'))
+            if found:
+                families[fam] += 1
+    return {'contexts': sum(families.values()), 'by_family': dict(sorted(families.items()))}
+
+
+def atlas_constructions_reader(resolved):
+    from scripts import atlas_constructions
+    return atlas_constructions.read_files({p: d for p, d in resolved.items() if '/constructions/' in p or p.startswith('evidence/')
+                                           or '/library/' in p})
+
+
+_build_before_2_6_0 = build
+_manifest_before_2_6_0 = manifest
+
+
+def build(release):
+    """The delta's files, each valid against its release-record schema; earlier releases as their blocks build them."""
+    if _version(release) < (2, 6, 0):
+        return _build_before_2_6_0(release)
+    out = _build_2_6_0()
+    release_schemas.check(out, f'release {release}')
+    return out
+
+
+def manifest(release, delta, base_manifest):
+    """2.5.0's manifest rule with the 2.6.0 edits, inputs and ID map in place of 2.5.0's."""
+    if _version(release) < (2, 6, 0):
+        return _manifest_before_2_6_0(release, delta, base_manifest)
+    out = _manifest_before_2_3_0(release, delta, base_manifest)
+    out['input_sha256'][WRITER] = sha(pinned_writer(release))
+    edited = edits_2_6_0()
+    out['input_sha256'].update({path: sha((ROOT/path).read_bytes()) for path in EDIT_INPUTS_2_6_0})
+    out['input_sha256']['LICENSE-DATA'] = sha(delta['LICENSE-DATA'])
+    out['removed'] = list(edited.removed)
+    if any('.construction-' not in i for i in edited.ids):
+        raise ValueError('A program moved; release 2.6.0 moves construction sets only')
+    out['counts']['moved_ids'] = {'programs': 0, 'construction_sets': len(edited.ids), 'id_map': ID_MAP_2_6_0}
+    resolved = edited.resolved(files('2.5.0'))
+    if services_count(resolved) != base_manifest['counts']['services']:
+        raise ValueError('Release 2.6.0 adds or removes no building service')
+    if generation_counts(release, delta) != base_manifest['counts']['generation']:
+        raise ValueError('Release 2.6.0 changes no generation block')
+    summary = edited.summary
+    out['counts']['interior_ceiling_corrections'] = {
+        'construction_sets': len(summary['interior_ceiling']),
+        'contexts': sum(len(v) for v in summary['interior_ceiling'].values()),
+        'unresolved': len(summary['unresolved'])}
+    out['counts']['unified_attics'] = unified_attics(resolved)
+    kept = [d for d in out['deferred'] if not d.startswith('generation blocks')]
+    out['deferred'] = generation_coverage.deferred(generation_reader(release, delta)) + kept
+    release_schemas.check({'manifest.json': out}, f'release {release}')
+    return out
+# <<< release 2.6.0
+
+
 if __name__ == '__main__':
     main()

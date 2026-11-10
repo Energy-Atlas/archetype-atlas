@@ -27,7 +27,7 @@ class Schemas(unittest.TestCase):
         self.assertEqual(schema_revisions.problems(), [])
 
     def test_published_manifests_and_deltas_validate(self):
-        for release in ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0'):
+        for release in ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0'):
             folder = atlas_delta.folder_of(release)
             files = {'manifest.json': (folder/'manifest.json').read_bytes()}
             if release != '2.0.0':

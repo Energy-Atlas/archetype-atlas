@@ -32,6 +32,11 @@ Release 2.5.0 on exports Program JSON **6.2.0** (ADR 0063): 6.1.0 with the null 
 side the source conditions with no equipment, or a mix side no member has, with its reason) and the optional
 `controls.setpoint_coverage` of a mix (`{heating, cooling}`, the represented-area share of the members with each side).
 The source version also states `conditioning_state` where both conditioning flags are known.
+
+Release 2.6.0 (ADR 0066) keeps Program JSON 6.2.0 and exports unified constructions **4.1.0** (ADR 0065) for every
+unified context: 4.0.0 with the optional `attics`, `components.<role>.attics` and `export_corrections`
+(`UNIFIED_BY_RELEASE`). Detailed constructions 5.0.0, source model constructions 2.0.0 and building services 1.0.1
+are unchanged.
 """
 import copy
 import fnmatch
@@ -41,11 +46,11 @@ import re
 from scripts.definition_contract import stable_id
 from scripts.iecc_commercial_zones import CITIES
 
-RELEASES = ('2.3.0', '2.4.0', '2.5.0')
+RELEASES = ('2.3.0', '2.4.0', '2.5.0', '2.6.0')
 PROGRAM = ('program-json-v6.schema.json', '6.0.0', 'urn:archetype-atlas:program-json:6.0.0')
 PROGRAM_6_1 = ('program-json-v6.1.schema.json', '6.1.0', 'urn:archetype-atlas:program-json:6.1.0')
 PROGRAM_6_2 = ('program-json-v6.2.schema.json', '6.2.0', 'urn:archetype-atlas:program-json:6.2.0')
-PROGRAM_BY_RELEASE = {'2.3.0': PROGRAM, '2.4.0': PROGRAM_6_1, '2.5.0': PROGRAM_6_2}
+PROGRAM_BY_RELEASE = {'2.3.0': PROGRAM, '2.4.0': PROGRAM_6_1, '2.5.0': PROGRAM_6_2, '2.6.0': PROGRAM_6_2}
 NOT_CONDITIONED = 'not_conditioned'
 SIDES = ('heating', 'cooling')
 SETPOINT_COVERAGE = {
@@ -440,6 +445,8 @@ def construction_schema(previous, representation):
 
 
 UNIFIED_ATTICS = ('construction-equivalent-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-equivalent:4.1.0')
+# The unified construction contract each release exports (ADR 0066): 4.1.0, with the attic semantics, from 2.6.0.
+UNIFIED_BY_RELEASE = {'2.3.0': UNIFIED, '2.4.0': UNIFIED, '2.5.0': UNIFIED, '2.6.0': UNIFIED_ATTICS}
 POSITIVE = {'type': 'number', 'exclusiveMinimum': 0}
 SHARE = {'anyOf': [{'type': 'number', 'minimum': 0, 'maximum': 1}, {'type': 'null'}]}
 ATTIC_PART = {

@@ -41,6 +41,12 @@ openstudio-standards corrections (ADR 0065 section 3): OpenStudio gives the occu
 attic floor's construction reversed (the space-type set's search distance 2 beats the building default's 4;
 ForwardTranslator::resolveMatchedSurfaceConstructionConflicts). The stored InteriorCeiling counted those ceilings as
 the building default interior ceiling; the 4.1.0 export removes that paired area from the InteriorCeiling derivation.
+
+From release 2.6.0 (ADR 0066) the records carry that correction: the stored InteriorCeiling derivation is the corrected
+one, and the unified record's `provenance.interior_ceiling_correction` keeps the derivation it replaced (releases 2.0.0
+to 2.5.0), the paired area, the reason and the evidence (`record_correction`). The export then states the correction
+from the record (`export_corrections`, `stored` being the replaced derivation) after checking that the rule gives the
+stored value from the replaced one, and does not apply it a second time.
 """
 import argparse
 import copy
@@ -70,6 +76,8 @@ R_SE, R_AI = EXTERIOR_FILMS[0], INTERIOR_FILMS[0]
 EXTERIOR_ROLES = ('ExteriorRoof', 'ExteriorFloor', 'ExteriorWall')
 STANDARDS_REVISION = 'c8c1b9ebb30c5f1a441231bf3eae76b18fbbe907'
 INTERZONE_LOCK = 'sources/construction-interzone-lock.json'
+# The unified record's provenance member that carries the InteriorCeiling correction from release 2.6.0 (ADR 0066).
+CARRIED = 'interior_ceiling_correction'
 
 
 class AtticError(ValueError):
@@ -367,11 +375,45 @@ def _ceiling_correction(fam, unified, detailed, attics, evidence_id):
             'evidence_ids': [evidence_id]}
 
 
+def record_correction(correction, decision):
+    """The provenance member a release record keeps for a correction it carries (ADR 0066): the replaced value, not the
+    corrected one, which is the stored value itself."""
+    if correction['status'] != 'corrected':
+        raise AtticError('Only a corrected value is carried in the record')
+    return {'decision': decision, 'evidence_ids': list(correction['evidence_ids']), 'paired_ceiling_area_m2': correction['paired_ceiling_area_m2'],
+            'pointer': correction['pointer'], 'reason': correction['reason'], 'replaced': copy.deepcopy(correction['stored']),
+            'status': 'corrected'}
+
+
+def carried_correction(fam, unified, detailed, found, carried, evidence_id):
+    """The export_corrections entry of a correction the record carries, after checking it: the rule applied to the
+    replaced derivation gives the stored one, with the same paired area and evidence."""
+    pointer = '/components/InteriorCeiling/derivation'
+    if carried.get('pointer') != pointer or carried.get('status') != 'corrected':
+        raise AtticError(f'Unknown carried correction {carried.get("pointer")} {carried.get("status")}')
+    replaced = copy.deepcopy(unified)
+    replaced['components']['InteriorCeiling'] = {**unified['components']['InteriorCeiling'], 'derivation': carried['replaced']}
+    expected = _ceiling_correction(fam, replaced, detailed, found, evidence_id)
+    current = unified['components']['InteriorCeiling']['derivation']
+    if (expected is None or expected['status'] != 'corrected' or expected['corrected'] != current
+            or expected['paired_ceiling_area_m2'] != carried['paired_ceiling_area_m2'] or carried['evidence_ids'] != [evidence_id]):
+        raise AtticError('The carried InteriorCeiling correction does not follow from the replaced derivation')
+    return {'pointer': pointer, 'status': 'corrected', 'stored': copy.deepcopy(carried['replaced']), 'corrected': copy.deepcopy(current),
+            'paired_ceiling_area_m2': carried['paired_ceiling_area_m2'], 'reason': carried['reason'],
+            'evidence_ids': list(carried['evidence_ids'])}
+
+
 def augment(detailed, unified):
-    """Unified 4.1.0 from a validated unified 4.0.0 document and its detailed document. Returns (document, attics)."""
+    """Unified 4.1.0 from a validated unified 4.0.0 document and its detailed document. Returns (document, attics).
+
+    A record that carries its InteriorCeiling correction (release 2.6.0 on, `provenance.interior_ceiling_correction`)
+    is stated from the record and not corrected again."""
     fam, found = recognise(detailed, unified)
     out = copy.deepcopy(unified)
     out['schema_version'] = CONTRACT[1]
+    carried = (out.get('provenance') or {}).pop(CARRIED, None)
+    if carried is not None and not (fam == 'openstudio_standards_rules' and found):
+        raise AtticError('A carried InteriorCeiling correction in a context without an openstudio-standards attic')
     if not found:
         return out, {}
     prefix = unified['id'].split('.')[0]
@@ -422,11 +464,17 @@ def augment(detailed, unified):
     out['attics'] = attics
     for role, items in notes.items():
         out['components'][role]['attics'] = items
-    correction = _ceiling_correction(fam, unified, detailed, found, evidence_ids[-1]) if corrected_needed else None
+    if carried is not None:
+        correction = carried_correction(fam, unified, detailed, found, carried, evidence_ids[-1])
+    else:
+        correction = _ceiling_correction(fam, unified, detailed, found, evidence_ids[-1]) if corrected_needed else None
     if correction:
         if correction['status'] == 'corrected':
             out['components']['InteriorCeiling']['derivation'] = correction['corrected']
         out['export_corrections'] = [correction]
+    clash = sorted(k for k in rows if k in out['evidence'] and out['evidence'][k] != rows[k])
+    if clash:
+        raise AtticError(f'Stored evidence rows differ from the attic rows of the same ID: {clash}')
     out['evidence'] = {**out['evidence'], **rows}
     out['evidence'] = dict(sorted(out['evidence'].items()))
     out['assemblies'] = dict(sorted(out['assemblies'].items()))
@@ -444,7 +492,7 @@ def contexts(release):
 def export(release, set_id, key):
     """Unified 4.1.0 of one context, validated; with its recognised attics."""
     from scripts import atlas_exports
-    unified = release.construction(set_id, key, 'unified')
+    unified = release.construction(set_id, key, 'unified', attics=False)
     detailed = release.constructions.export(set_id, key, 'detailed')
     document, found = augment(detailed, unified)
     errors = atlas_exports.schema_errors(CONTRACT[0], document)
@@ -482,7 +530,7 @@ def inventory_rows(release, only=None):
     """One row per (context, attic): what the consumer sees as ExteriorRoof and what the source boundary is."""
     out = []
     for sid, key in candidates(release, only):
-        unified = release.construction(sid, key, 'unified')
+        unified = release.construction(sid, key, 'unified', attics=False)
         detailed = release.constructions.export(sid, key, 'detailed')
         fam, found = recognise(detailed, unified)
         document, _ = augment(detailed, unified)

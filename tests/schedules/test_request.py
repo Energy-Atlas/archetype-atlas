@@ -221,7 +221,7 @@ class CommandLine(unittest.TestCase):
         result = subprocess.run([sys.executable, "-m", "atlas_schedules", "--version"], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         version = re.escape(atlas_schedules.__version__)
-        self.assertRegex(result.stdout, rf"^atlas-schedules {version} \(request schema 4\.0\.0\); reads atlas release 2\.5\.0 from ")
+        self.assertRegex(result.stdout, rf"^atlas-schedules {version} \(request schema 4\.0\.0\); reads atlas release 2\.6\.0 from ")
 
     def test_cli_translates_a_3_0_0_request_and_refuses_it_untranslated(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -242,7 +242,7 @@ class CommandLine(unittest.TestCase):
                                         str(Path(__file__).resolve().parents[2] / "data/atlas-releases"), str(new)],
                                        capture_output=True, text=True)
             self.assertEqual(generated.returncode, 0, generated.stderr)
-            self.assertEqual(json.loads(generated.stdout)["release"]["version"], "2.5.0")
+            self.assertEqual(json.loads(generated.stdout)["release"]["version"], "2.6.0")
 
     def test_definition_ids_in_a_4_0_0_request_name_the_translation(self):
         with self.assertRaises(GeneratorError) as caught:

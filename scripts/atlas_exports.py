@@ -49,7 +49,7 @@ from scripts.construction_equivalent_export import mass_agrees
 RELEASE = 'atlas-release-1.0.0'
 SCHEMAS = ROOT/'schemas'
 PROGRAM_SCHEMA = 'program-json-v5.schema.json'
-MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
+MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0'), 'program': ('program-json-v5.1.schema.json', '5.1.0'),
          'detailed': ('construction-json-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-set:4.1.0'),
          'unified': ('construction-equivalent-v3.1.schema.json', '3.1.0', 'urn:archetype-atlas:construction-equivalent:3.1.0'),
          'services': ('building-services-v1.schema.json', '1.0.0')}
@@ -57,23 +57,26 @@ MINOR = {'releases': ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0
 SERVICES_PATCH = '1.0.1'
 HUMIDITY = ('humidifying_setpoint_schedule_id', 'dehumidifying_setpoint_schedule_id')
 # Release 1.3.0, the IECC commercial family (ADR 0040): additive minors over 5.1.0 and 4.1.0.
-IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
+IECC = {'releases': ('1.3.0', '1.4.0', '1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0'), 'program': ('program-json-v5.2.schema.json', '5.2.0'),
         'detailed': ('construction-json-v4.2.schema.json', '4.2.0', 'urn:archetype-atlas:construction-set:4.2.0')}
 # Release 1.5.0, the lighting controls (ADR 0044): Program JSON 5.4.0, an additive minor over 5.3.0, for every program.
-LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
+LIGHTING = {'releases': ('1.5.0', '1.6.0', '2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0'), 'program': ('program-json-v5.4.schema.json', '5.4.0')}
 # Program JSON 5.4.0 names its release by pattern from release 2.2.0 (ADR 0051 section 5): a 5.4.x widening, so a
 # later data release needs no schema edit; every label the enum admitted still matches.
 RELEASE_LABEL = {'type': 'string', 'pattern': r'^atlas-release-\d+\.\d+\.\d+$'}
 # Release 2.0.0, milestone B (ADR 0046 section 9): detailed constructions 4.3.0, 4.2.0 with the PNNL prototype alternates.
-ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0'),
+ALTERNATES = {'releases': ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0'),
               'detailed': ('construction-json-v4.3.schema.json', '4.3.0', 'urn:archetype-atlas:construction-set:4.3.0')}
 # The releases in the tree, oldest first: the 2.0.0 snapshot and its deltas (scripts.atlas_delta); the last is the newest.
-IN_TREE = ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0')
+IN_TREE = ('2.0.0', '2.1.0', '2.2.0', '2.3.0', '2.4.0', '2.5.0', '2.6.0')
 # Release 2.3.0 on (ADR 0054): Program JSON 6.0.0 and constructions 5.0.0 / 4.0.0 / source model 2.0.0
 # (scripts.atlas_contracts); each export is formed as before, validated, then turned into its new form.
 # Release 2.4.0 (ADR 0061, ADR 0062) exports Program JSON 6.1.0, 6.0.0 with the unoccupied lighting cap.
 # Release 2.5.0 (ADR 0063, ADR 0064) exports Program JSON 6.2.0, 6.1.0 with the not_conditioned null status and a mix's
 # setpoint coverage.
+# Release 2.6.0 (ADR 0065, ADR 0066) exports unified constructions 4.1.0 for every unified context: the 4.0.0 form, then
+# the attic semantics of scripts.attic_boundary (atlas_contracts.UNIFIED_BY_RELEASE); its records carry the corrected
+# InteriorCeiling derivation of the openstudio-standards attic contexts.
 # The shared mass-accounting contract 1.1.0: 1.0.0 with the internal-mass evidence that 4.1.0 / 3.1.0 embed.
 MASS = ('construction-mass-accounting-v1.1.schema.json', '1.1.0', 'urn:archetype-atlas:construction-mass-accounting:1.1.0')
 ROLES = ('ExteriorWall','ExteriorRoof', 'ExteriorFloor', 'GroundFloor', 'ExteriorWindow', 'Skylight', 'ExteriorDoor', 'GlassDoor')
@@ -870,8 +873,10 @@ class Release:
             raise ValueError(folder+': '+'; '.join(errors[:5]))
         return document
 
-    def construction(self, set_id, key, representation):
-        """Construction detailed 4.0.0 or unified 3.0.0 for one context of a set."""
+    def construction(self, set_id, key, representation, attics=None):
+        """Construction detailed 4.0.0 or unified 3.0.0 for one context of a set; from release 2.3.0 detailed 5.0.0 and
+        unified 4.0.0, and from 2.6.0 unified 4.1.0 (ADR 0066). `attics=False` gives a 2.6.0 unified context in its
+        4.0.0 form, which scripts.attic_boundary turns into 4.1.0."""
         name, _, version, _ = CONSTRUCTION_SCHEMAS[representation]
         # IDF-derived dwelling sets live under residential/; commercial IECC sets share the `iecc-` prefix.
         if set_id.startswith(('iecc-', 'hud-code.', 'doe-final-rule.')) and any(
@@ -887,6 +892,10 @@ class Release:
             if errors:
                 raise ValueError(f'{set_id} {key}: '+'; '.join(errors[:5]))
             return document
+        if (representation == 'unified' and attics is not False
+                and atlas_contracts.UNIFIED_BY_RELEASE.get(self.release) == atlas_contracts.UNIFIED_ATTICS):
+            from scripts import attic_boundary
+            return attic_boundary.export(self, set_id, key)[0]
         if self.release != '1.0.0':
             name, version, _ = MINOR[representation]
         if self.release in IECC['releases'] and representation == 'detailed':
