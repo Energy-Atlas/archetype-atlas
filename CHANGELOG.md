@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased: unconditioned attics in the unified constructions (branch `codex/commercial-attic-roof-semantics`)
+
+[ADR 0065](docs/adr/0065-unconditioned-attic-boundaries.md), proposed; release 2.5.0 and its 4.0.0 exports unchanged.
+
+- **Unified constructions 4.1.0** (`schemas/construction-equivalent-v4.1.schema.json`, additive): optional `attics`
+  (an unconditioned attic's exterior parts, its conditioned boundary and zone-side orientation, the roof-to-boundary
+  area ratio, the source's default roof rule, and `attic_omitted_roof`, a series-stack equivalent with U bounds),
+  `components.<role>.attics` and `export_corrections`.
+- **`scripts.attic_boundary`**: recognises the attics of the openstudio-standards (90.1, DOE Ref), IECC and ResStock
+  sets from the stored rules; `--export` writes 4.1.0, `--inventory` the attic inventory (926 contexts of release
+  2.5.0); `python -m scripts.atlas_exports ... --representation unified --attics` exports one context.
+- **InteriorCeiling correction** in the 4.1.0 export of openstudio-standards sets: the zone ceilings paired with the
+  attic floor take the attic floor reversed in the source (OpenStudio interzone resolution, new lock
+  `sources/construction-interzone-lock.json`), so their area leaves the InteriorCeiling derivation.
+
 ## Atlas release 2.5.0 and atlas-schedules 4.1.2: conditioning sides and per-side mixes — 2026-11-04
 
 Stage AT5 (owner decisions D1b, D2b, D3 and D5 of 2026-11-04; [ADR 0063](docs/adr/0063-conditioning-sides-and-per-side-mixes.md),
