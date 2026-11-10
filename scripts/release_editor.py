@@ -451,6 +451,7 @@ def main():
         check_release('2.3.0')
         check_release('2.4.0')
         check_release('2.5.0')
+        check_release('2.6.0')
         return
     edited['manifest.json'] = manifest(edited, listed)
     target = atlas_snapshot.TARGET

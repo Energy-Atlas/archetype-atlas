@@ -1,0 +1,286 @@
+{
+  "base_release": {
+    "manifest_sha256": "f652c8ad42783b191e1627f038ccc284be94c732270b484cf00046b0cbcdf0d1",
+    "path": "data/atlas-releases/v2.5.0",
+    "release": "2.5.0"
+  },
+  "counts": {
+    "conditioning_sides": {
+      "mixes": {
+        "full_coverage": 373,
+        "partial_coverage": 69,
+        "unknown_side": 4
+      },
+      "source_programs_changed": 72,
+      "source_programs_mixed_service": 2,
+      "source_programs_not_conditioned": {
+        "cooling": 60,
+        "heating": 47
+      }
+    },
+    "construction_contexts": 5097,
+    "construction_sets": 232,
+    "folders": 230,
+    "generation": {
+      "configurations": 219,
+      "definition_programs": 1216,
+      "definition_services": 150,
+      "generation_folders": 189,
+      "methods": {
+        "composition": 422,
+        "comstock_hours": 1765,
+        "fixed": 22,
+        "resstock_dwelling": 41,
+        "resstock_unit": 20
+      },
+      "program_views": 2847,
+      "programs_with_generation": 2270,
+      "retired_definition_programs": 12,
+      "services_with_generation": 507
+    },
+    "hvac_systems": 1198,
+    "interior_ceiling_corrections": {
+      "construction_sets": 24,
+      "contexts": 568,
+      "unresolved": 0
+    },
+    "moved_ids": {
+      "construction_sets": 24,
+      "id_map": "id-map-2.6.0.json",
+      "programs": 0
+    },
+    "plain_daylighting_programs": 1373,
+    "programs": 2978,
+    "residential_annual_schedules": 641,
+    "residential_construction_contexts": 1153,
+    "residential_construction_sets": 59,
+    "residential_folders": 25,
+    "residential_programs": 73,
+    "services": 1635,
+    "unified_attics": {
+      "by_family": {
+        "openstudio_standards_rules": 568,
+        "pnnl_idf": 342,
+        "resstock": 16
+      },
+      "contexts": 926
+    },
+    "unoccupied_lighting_cap": {
+      "programs_with_null_rule": 1875,
+      "programs_with_rule": 19
+    },
+    "water_programs": 734
+  },
+  "decision": [
+    "docs/adr/0066-release-2-6-0.md",
+    "docs/adr/0065-unconditioned-attic-boundaries.md",
+    "docs/adr/0056-release-record-schemas-and-versioning.md",
+    "docs/adr/0048-open-licences.md"
+  ],
+  "deferred": [
+    "generation blocks: 189 of 255 folders carry generation.json, with a block for every program, plenums and attics included (an unconditioned program without loads generates as inactive); the other folders, by class (ADR 0055):",
+    "generation blocks of commercial types without a ComStock sampling building type, 36 folders (90-1-2007, 90-1-2013, 90-1-2019: college, courthouse, laboratory, large-data-center-high-ite, large-data-center-low-ite, office, small-data-center-high-ite, small-data-center-low-ite, super-tall-building, tall-building; doe-ref-1980-2004, doe-ref-pre-1980: college, courthouse, office): none, because the generator samples ComStock operating hours for 15 building types (atlas_schedules.programmes.SAMPLING); college, courthouse, laboratory, the data centres, the generic office and the tall and super-tall buildings have none, so their programs have no comstock_hours configuration (ADR 0039, ADR 0055)",
+    "generation blocks of IECC commercial apartment buildings, 12 folders (iecc-2006, iecc-2009, iecc-2012, iecc-2015, iecc-2018, iecc-2021: highrise-apartment, midrise-apartment): none, because an apartment is a ResStock unit drawn under the folder's heating and cooling systems (scripts.build_apartment_units, ADR 0047), and the IECC commercial systems are deferred (ADR 0040 item 10)",
+    "generation blocks of residential code-prototype dwellings (IECC residential, manufactured housing), 18 folders (doe-final-rule, hud-code: multi-section, single-section; iecc-2006, iecc-2009, iecc-2012, iecc-2015, iecc-2018, iecc-2021, iecc-2024: multifamily, single-family): none, because PNNL and DOE EnergyPlus prototypes with no ResStock dwelling inputs to draw from and no generator family (ADR 0041, ADR 0042; ADR 0046 plan X-3)",
+    "systems and water heaters of the IECC commercial family (ADR 0040)",
+    "systems and water heaters of the residential families (ADR 0038 section 7)"
+  ],
+  "files": {
+    "LICENSE": {
+      "bytes": 1084,
+      "sha256": "ef56f6c82ff47887cdf79dac0b204a3ea7b469cce1d6398b3b18d5ebfc5c84c5"
+    },
+    "LICENSE-DATA": {
+      "bytes": 14527,
+      "sha256": "419896aea50c15d6e40c5b4baf4bd346f78223b9a354c7357ad00262afdc08ec"
+    },
+    "README.md": {
+      "bytes": 2423,
+      "sha256": "3e0664b428cb86b309b6dbab78a95aacf2af1d0cf71747501857c75ee28d8218"
+    },
+    "commercial/90-1-2007/full-service-restaurant/constructions/90-1-2007.full-service-restaurant.construction-package.f7dddb.json": {
+      "bytes": 693251,
+      "sha256": "814420f09e177b50222f14f369d642bea82c84765688902f3297edf92a4ed235"
+    },
+    "commercial/90-1-2007/office/constructions/90-1-2007.office.construction-package.8f70b7.json": {
+      "bytes": 3133889,
+      "sha256": "81fa9032b1f96690c058c2dc1e8311bf96a1f435f28fa2826448a43a2f9c39f0"
+    },
+    "commercial/90-1-2007/quick-service-restaurant/constructions/90-1-2007.quick-service-restaurant.construction-package.c2dfff.json": {
+      "bytes": 693727,
+      "sha256": "d72515e93173075c49ae75adfa95556d729b1b04f8b3261beede33a2236909f4"
+    },
+    "commercial/90-1-2007/small-office-detailed/constructions/90-1-2007.small-office-detailed.construction-package.7fae32.json": {
+      "bytes": 688445,
+      "sha256": "ba435bc28270fddb3b9c329b9ec5c47b454de5d0e838e8d1fd5e3d09acb86cf8"
+    },
+    "commercial/90-1-2007/small-office/constructions/90-1-2007.small-office.construction-package.1a2da4.json": {
+      "bytes": 706267,
+      "sha256": "4d9f0953f956ce7fd209f3b23f60eb5be9726109d7edb0b7ad457826fbcbb048"
+    },
+    "commercial/90-1-2013/full-service-restaurant/constructions/90-1-2013.full-service-restaurant.construction-package.b5acaa.json": {
+      "bytes": 499132,
+      "sha256": "db608b2bef97a1389cae00f7b3a772ee9c17fdb8962bb00c2be6b71e4fdfd3ce"
+    },
+    "commercial/90-1-2013/office/constructions/90-1-2013.office.construction-package.52af7c.json": {
+      "bytes": 1956065,
+      "sha256": "2738d75d95cd64c9777a1b3c659b70516697deb2292e7e28cf4134df9eb5e299"
+    },
+    "commercial/90-1-2013/quick-service-restaurant/constructions/90-1-2013.quick-service-restaurant.construction-package.163b35.json": {
+      "bytes": 499609,
+      "sha256": "3cbd24c7f50ef6513885ce158a605e47a8877088977594c1afdc44eb297df3ad"
+    },
+    "commercial/90-1-2013/small-office-detailed/constructions/90-1-2013.small-office-detailed.construction-package.f3e1aa.json": {
+      "bytes": 508067,
+      "sha256": "3e71b129a9b6f0b4c007dc1b70ecde4a7ffafcf7ed96f0442430d11db818fb2e"
+    },
+    "commercial/90-1-2013/small-office/constructions/90-1-2013.small-office.construction-package.b65f1b.json": {
+      "bytes": 510881,
+      "sha256": "b6259421f2b930332195d0114781156f41f8f5c0b71e1812ea7fe471bc66c2e1"
+    },
+    "commercial/90-1-2019/full-service-restaurant/constructions/90-1-2019.full-service-restaurant.construction-package.b4f229.json": {
+      "bytes": 499169,
+      "sha256": "ac8e0c4f7f0e5b5aa6fbb8b815e86804645bfd17cfd748e2bdd373d8455ffcbf"
+    },
+    "commercial/90-1-2019/office/constructions/90-1-2019.office.construction-package.400094.json": {
+      "bytes": 1956216,
+      "sha256": "d96ed2fa442543f9f1e740d98ec08be01fb8385c02bf9a773a81ec7e0be74e09"
+    },
+    "commercial/90-1-2019/quick-service-restaurant/constructions/90-1-2019.quick-service-restaurant.construction-package.7f53af.json": {
+      "bytes": 499646,
+      "sha256": "b1a0454dcd76e38819a22cf021dc8d83fea1347feae30dbec1208e1cd3764491"
+    },
+    "commercial/90-1-2019/small-office-detailed/constructions/90-1-2019.small-office-detailed.construction-package.ff7fc8.json": {
+      "bytes": 508084,
+      "sha256": "61da251a8e8f6e63b7b4160928724b904fa46a8e5eacd7f6a458cf58976ff499"
+    },
+    "commercial/90-1-2019/small-office/constructions/90-1-2019.small-office.construction-package.0db6b3.json": {
+      "bytes": 513164,
+      "sha256": "2054095fa51de96ea87866675e68978e76f0c0dc5aca7f3502800bb3a259e146"
+    },
+    "commercial/doe-ref-1980-2004/full-service-restaurant/constructions/doe-ref-1980-2004.full-service-restaurant.construction-package.467c53.json": {
+      "bytes": 523470,
+      "sha256": "08ee355b1cfc3d614f1fc2fa61c9efb0d6fdf4c088ca2f8ec6cccef3ccb30ba9"
+    },
+    "commercial/doe-ref-1980-2004/office/constructions/doe-ref-1980-2004.office.construction-package.ba663d.json": {
+      "bytes": 2018513,
+      "sha256": "7eb156f0c44bb0f0d991fb75b448a22cabe94e3f7241ca3b1c4a28a5d56a6c87"
+    },
+    "commercial/doe-ref-1980-2004/quick-service-restaurant/constructions/doe-ref-1980-2004.quick-service-restaurant.construction-package.0cbcab.json": {
+      "bytes": 524052,
+      "sha256": "96fde016e39bcbd5fb339b15b743a1c2bb9c646ded87b255878fba8a1f3b6dcc"
+    },
+    "commercial/doe-ref-1980-2004/small-hotel/constructions/doe-ref-1980-2004.small-hotel.construction-package.c81d50.json": {
+      "bytes": 1681751,
+      "sha256": "bfdd4c612bb9d575419636db1b265a70726c4b7f9a97728137286913005b3886"
+    },
+    "commercial/doe-ref-1980-2004/small-office-detailed/constructions/doe-ref-1980-2004.small-office-detailed.construction-package.bdc90e.json": {
+      "bytes": 549359,
+      "sha256": "d049cdf5c13a07650612f6f58934d3b0b63411ac342f21e22291a07b574f6a53"
+    },
+    "commercial/doe-ref-1980-2004/small-office/constructions/doe-ref-1980-2004.small-office.construction-package.b06b3a.json": {
+      "bytes": 525433,
+      "sha256": "4c4e952185dcddc5dac1fd11fb34207de5df8867b841659fd38f98d2fc98b2ec"
+    },
+    "commercial/doe-ref-pre-1980/office/constructions/doe-ref-pre-1980.office.construction-package.3f9fee.json": {
+      "bytes": 1917308,
+      "sha256": "977bdb3afbce83b6bd71647a35a6a648dafd037d6f9f9a48356b9c83f1b2b3be"
+    },
+    "commercial/doe-ref-pre-1980/small-hotel/constructions/doe-ref-pre-1980.small-hotel.construction-package.5284a7.json": {
+      "bytes": 1659796,
+      "sha256": "0fd8a4eab1f6bd2c1203c3a2e1a577688b068c9f2bec14d02245753a863b15b8"
+    },
+    "commercial/doe-ref-pre-1980/small-office-detailed/constructions/doe-ref-pre-1980.small-office-detailed.construction-package.14f979.json": {
+      "bytes": 536459,
+      "sha256": "a667fda6509be3c1170b133eb735f299eea06d0802a9f31f6e323545994b8c69"
+    },
+    "evidence/commercial/90-1-2007/library.json": {
+      "bytes": 1730351,
+      "sha256": "cf3237b331c47b86b6cebf406683fb87711606b7c41151ef01e5c25cd6e35f27"
+    },
+    "evidence/commercial/90-1-2013/library.json": {
+      "bytes": 1790591,
+      "sha256": "100c3705b09628484348c72fb78c161e8d4873305c2c6aa9840c1e3beeb47f69"
+    },
+    "evidence/commercial/90-1-2019/library.json": {
+      "bytes": 2179859,
+      "sha256": "cb647fab4f494c5c64dbf9b769d3c486398015cb5cfcd93f9012bbf1ec8f5e8b"
+    },
+    "evidence/commercial/doe-ref-1980-2004/library.json": {
+      "bytes": 1559700,
+      "sha256": "55b2d2d2ca59e1b77619e2ac3cf152bfdf9edb940cf91c4cd3fbfb567210fbee"
+    },
+    "evidence/commercial/doe-ref-1980-2004/small-hotel.json": {
+      "bytes": 463958,
+      "sha256": "b46948763a07c3d20e5cf00384aa468dedfb8ab875a63c6cc3a4cfd18c07c72b"
+    },
+    "evidence/commercial/doe-ref-pre-1980/library.json": {
+      "bytes": 1185307,
+      "sha256": "e8b3fb7673b8afec34707825cdbbdf3776889b59ab121b440be68404464ce881"
+    },
+    "evidence/commercial/doe-ref-pre-1980/small-hotel.json": {
+      "bytes": 459941,
+      "sha256": "4e5549cdd94bbaa56b51404c2f9536f2c27059e4e5565bb72bf577110394076d"
+    },
+    "id-map-2.3.0.json": {
+      "bytes": 171394,
+      "sha256": "a1ce4c0ef1b8bbc967c0dececd839cb70ed41fee53ca2e941980be88856a76c7"
+    },
+    "id-map-2.6.0.json": {
+      "bytes": 3226,
+      "sha256": "3fa0c005c4c69630346aa06a2e6ec2b57485c94c2aebcc34029da3231862218a"
+    }
+  },
+  "generated_by": "python -m scripts.atlas_delta --write --release 2.6.0",
+  "generation": {
+    "schema_version": "1.0.0"
+  },
+  "generator": {
+    "package": "atlas-schedules",
+    "reads": "release 2.x, generation 1.x",
+    "release_tag": "atlas-schedules-v4.1.2",
+    "request_schema_version": "4.0.0",
+    "version": "4.1.2",
+    "wheel": "atlas_schedules-4.1.2-py3-none-any.whl"
+  },
+  "input_sha256": {
+    "LICENSE": "ef56f6c82ff47887cdf79dac0b204a3ea7b469cce1d6398b3b18d5ebfc5c84c5",
+    "LICENSE-DATA": "419896aea50c15d6e40c5b4baf4bd346f78223b9a354c7357ad00262afdc08ec",
+    "data/atlas-releases/v2.5.0/manifest.json": "f652c8ad42783b191e1627f038ccc284be94c732270b484cf00046b0cbcdf0d1",
+    "scripts/atlas_delta.py": "8fde0da1aba8b0877bc64548c4d2fe9c1b02edce171e88a87a79a993246d0407",
+    "scripts/atlas_edits.py": "9bb10c5a82f30479262299dbe5d34fca0fc8c5d5853ad25e0ab2dcc5b01d39e3",
+    "scripts/atlas_edits_2_6_0.py": "b0813653f051d8d65e6e20ad3635e29f4c4e1c3f2ccc6200cf541d3fe031fcd3",
+    "sources/construction-interzone-lock.json": "9bf46747c323f88b40b4afd88de3362a8f04d192c72633b4db432ff1a22b1943"
+  },
+  "kind": "atlas_release",
+  "release": "2.6.0",
+  "removed": [
+    "commercial/90-1-2007/full-service-restaurant/constructions/90-1-2007.full-service-restaurant.construction-package.38e691.json",
+    "commercial/90-1-2007/office/constructions/90-1-2007.office.construction-package.76ce5d.json",
+    "commercial/90-1-2007/quick-service-restaurant/constructions/90-1-2007.quick-service-restaurant.construction-package.121b72.json",
+    "commercial/90-1-2007/small-office-detailed/constructions/90-1-2007.small-office-detailed.construction-package.b1ba8a.json",
+    "commercial/90-1-2007/small-office/constructions/90-1-2007.small-office.construction-package.e22541.json",
+    "commercial/90-1-2013/full-service-restaurant/constructions/90-1-2013.full-service-restaurant.construction-package.52a616.json",
+    "commercial/90-1-2013/office/constructions/90-1-2013.office.construction-package.b6078e.json",
+    "commercial/90-1-2013/quick-service-restaurant/constructions/90-1-2013.quick-service-restaurant.construction-package.5e6217.json",
+    "commercial/90-1-2013/small-office-detailed/constructions/90-1-2013.small-office-detailed.construction-package.9062da.json",
+    "commercial/90-1-2013/small-office/constructions/90-1-2013.small-office.construction-package.19f92f.json",
+    "commercial/90-1-2019/full-service-restaurant/constructions/90-1-2019.full-service-restaurant.construction-package.bdc947.json",
+    "commercial/90-1-2019/office/constructions/90-1-2019.office.construction-package.ac362e.json",
+    "commercial/90-1-2019/quick-service-restaurant/constructions/90-1-2019.quick-service-restaurant.construction-package.c422d6.json",
+    "commercial/90-1-2019/small-office-detailed/constructions/90-1-2019.small-office-detailed.construction-package.7eee9d.json",
+    "commercial/90-1-2019/small-office/constructions/90-1-2019.small-office.construction-package.ae5eb1.json",
+    "commercial/doe-ref-1980-2004/full-service-restaurant/constructions/doe-ref-1980-2004.full-service-restaurant.construction-package.fffe29.json",
+    "commercial/doe-ref-1980-2004/office/constructions/doe-ref-1980-2004.office.construction-package.e37894.json",
+    "commercial/doe-ref-1980-2004/quick-service-restaurant/constructions/doe-ref-1980-2004.quick-service-restaurant.construction-package.832e12.json",
+    "commercial/doe-ref-1980-2004/small-hotel/constructions/doe-ref-1980-2004.small-hotel.construction-package.c37a78.json",
+    "commercial/doe-ref-1980-2004/small-office-detailed/constructions/doe-ref-1980-2004.small-office-detailed.construction-package.8575fa.json",
+    "commercial/doe-ref-1980-2004/small-office/constructions/doe-ref-1980-2004.small-office.construction-package.acc90f.json",
+    "commercial/doe-ref-pre-1980/office/constructions/doe-ref-pre-1980.office.construction-package.dedec0.json",
+    "commercial/doe-ref-pre-1980/small-hotel/constructions/doe-ref-pre-1980.small-hotel.construction-package.39473b.json",
+    "commercial/doe-ref-pre-1980/small-office-detailed/constructions/doe-ref-pre-1980.small-office-detailed.construction-package.db34c2.json"
+  ],
+  "schema_version": "1.0.0",
+  "scope": "commercial and residential",
+  "status": "released"
+}
