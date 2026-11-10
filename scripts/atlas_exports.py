@@ -145,6 +145,7 @@ def derived_schemas():
     out[atlas_contracts.PROGRAM_6_2[0]] = atlas_contracts.program_schema_6_2(out[atlas_contracts.PROGRAM_6_1[0]])
     out[atlas_contracts.DETAILED[0]] = atlas_contracts.construction_schema(out[ALTERNATES['detailed'][0]], 'detailed')
     out[atlas_contracts.UNIFIED[0]] = atlas_contracts.construction_schema(out[MINOR['unified'][0]], 'unified')
+    out[atlas_contracts.UNIFIED_ATTICS[0]] = atlas_contracts.construction_schema_attics(out[atlas_contracts.UNIFIED[0]])
     out[atlas_contracts.SOURCE_MODEL[0]] = atlas_contracts.source_model_schema(out[prototype_dwellings.CONSTRUCTION_SCHEMA[0]])
     return {name: with_marker(name, schema) for name, schema in out.items()}
 

@@ -439,6 +439,102 @@ def construction_schema(previous, representation):
     return schema
 
 
+UNIFIED_ATTICS = ('construction-equivalent-v4.1.schema.json', '4.1.0', 'urn:archetype-atlas:construction-equivalent:4.1.0')
+POSITIVE = {'type': 'number', 'exclusiveMinimum': 0}
+SHARE = {'anyOf': [{'type': 'number', 'minimum': 0, 'maximum': 1}, {'type': 'null'}]}
+ATTIC_PART = {
+    'type': 'object', 'additionalProperties': False,
+    'required': ['role', 'contributors', 'reference_area_m2', 'share_of_component_reference_area'],
+    'description': 'One part of an attic in the source reference: a component role, its source contributors over or under '
+                   'the attic (with each contributor\'s own common-film U), their reference area and its share of the '
+                   "role's source reference area.",
+    'properties': {
+        'role': TEXT,
+        'contributors': {'type': 'array', 'minItems': 1, 'items': {
+            'type': 'object', 'additionalProperties': False, 'required': ['assembly_id', 'reference_area_m2', 'u_reference_W_m2_K'],
+            'properties': {'assembly_id': {'type': 'string', 'minLength': 1}, 'reference_area_m2': {'type': 'number', 'minimum': 0},
+                           'u_reference_W_m2_K': POSITIVE}}},
+        'reference_area_m2': {'type': 'number', 'minimum': 0}, 'share_of_component_reference_area': SHARE}}
+ATTIC = {
+    'type': 'object', 'additionalProperties': False,
+    'required': ['id', 'kind', 'source', 'exterior_parts', 'conditioned_boundary', 'other_interior_parts',
+                 'area_ratio_roof_to_boundary', 'attic_omitted_roof', 'evidence_ids'],
+    'description': '4.1.0 (ADR 0065): an unconditioned attic between the occupied zones and the roof in the source reference. '
+                   'ExteriorRoof over it is the attic roof deck, not the thermal boundary of the occupied zones; the '
+                   'conditioned boundary (the attic floor, seen from the zone as a ceiling) is.',
+    'properties': {
+        'id': {'type': 'string', 'minLength': 1}, 'kind': {'const': 'unconditioned_attic'},
+        'source': {'type': 'object', 'additionalProperties': False, 'required': ['family', 'space', 'ventilation'],
+                   'properties': {'family': {'enum': ['openstudio_standards_rules', 'pnnl_idf', 'resstock']},
+                                  'space': TEXT, 'ventilation': {'enum': ['vented', 'unvented', 'not_stated']}}},
+        'exterior_parts': {'type': 'array', 'minItems': 1, 'items': copy.deepcopy(ATTIC_PART),
+                           'description': 'The attic\'s exterior parts: its roof deck, and soffit or gable walls where the source has them.'},
+        'conditioned_boundary': {**copy.deepcopy(ATTIC_PART), 'required': [*ATTIC_PART['required'], 'zone_side'],
+                                 'properties': {**copy.deepcopy(ATTIC_PART['properties']), 'zone_side': {
+                                     'type': 'object', 'additionalProperties': False, 'required': ['orientation', 'zone_role'],
+                                     'description': 'The zone face of the boundary: reverse_layers where the contributor is '
+                                                    'the attic floor (its outside faces the zone), as_listed where it is already '
+                                                    'in ceiling orientation.',
+                                     'properties': {'orientation': {'enum': ['reverse_layers', 'as_listed']},
+                                                    'zone_role': {'const': 'InteriorCeiling'}}}}},
+        'other_interior_parts': {'type': 'array', 'items': copy.deepcopy(ATTIC_PART),
+                                 'description': 'Other interior adjacencies of the attic (a garage ceiling, attic partitions); '
+                                                'not part of the occupied zones\' boundary.'},
+        'area_ratio_roof_to_boundary': POSITIVE,
+        'source_default_exterior_roof': {
+            'type': 'object', 'required': ['assembly_id', 'u_reference_W_m2_K'],
+            'description': "openstudio-standards sets: the source's building-default ExteriorRoof rule, the construction the "
+                           'source gives a roof directly over an occupied space; it has no reference area where every roof '
+                           'is over the attic, so the unified ExteriorRoof omits it. A source assembly of the detailed '
+                           'document, stated here and not fitted.',
+            'properties': {'assembly_id': {'type': 'string', 'minLength': 1}, 'u_reference_W_m2_K': POSITIVE}},
+        'attic_omitted_roof': {'type': 'object', 'required': ['method', 'status', 'assembly_id'],
+                               'description': 'A derived assembly for the top of the occupied zones when the attic is not '
+                                              'instantiated (method attic_series_stack_1.0.0, ADR 0065 section 2); with its '
+                                              'stack, U bounds, capacity and stated approximation, or blocked with a reason.',
+                               'properties': {'method': {'const': 'attic_series_stack_1.0.0'}, 'status': {'enum': ['ready', 'blocked']},
+                                              'assembly_id': {'type': ['string', 'null']}, 'reason': TEXT,
+                                              'u_bounds_W_m2_K': {'type': 'object', 'additionalProperties': POSITIVE},
+                                              'capacity_J_m2_K': {'type': 'object', 'additionalProperties': {'type': 'number', 'minimum': 0}},
+                                              'area_ratio_roof_to_boundary': POSITIVE}},
+        'evidence_ids': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}, 'minItems': 1}}}
+COMPONENT_ATTICS = {
+    'type': 'array', 'minItems': 1,
+    'description': '4.1.0 (ADR 0065): the part of this role\'s source reference area that belongs to an attic of `attics`.',
+    'items': {'type': 'object', 'additionalProperties': False,
+              'required': ['attic_id', 'part', 'assembly_ids', 'reference_area_m2', 'share_of_component_reference_area'],
+              'properties': {'attic_id': {'type': 'string', 'minLength': 1},
+                             'part': {'enum': ['exterior', 'conditioned_boundary', 'other_interior']},
+                             'assembly_ids': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}, 'minItems': 1},
+                             'reference_area_m2': {'type': 'number', 'minimum': 0}, 'share_of_component_reference_area': SHARE}}}
+EXPORT_CORRECTION = {
+    'type': 'object', 'additionalProperties': False, 'required': ['pointer', 'status', 'reason', 'evidence_ids'],
+    'description': '4.1.0 (ADR 0065 section 3): a value the export corrects against the stored release record, with both '
+                   'values, or a correction it could not resolve.',
+    'properties': {'pointer': TEXT, 'status': {'enum': ['corrected', 'unresolved']}, 'reason': TEXT,
+                   'stored': {'type': 'object'}, 'corrected': {'type': 'object'},
+                   'paired_ceiling_area_m2': {'type': 'number', 'minimum': 0},
+                   'evidence_ids': {'type': 'array', 'items': {'type': 'string', 'minLength': 1}, 'minItems': 1}}}
+
+
+def construction_schema_attics(previous):
+    """Unified constructions 4.1.0 from 4.0.0: the optional `attics`, `components.<role>.attics` and `export_corrections`
+    (ADR 0065). Every 4.0.0 field keeps its meaning; a 4.0.0 document with its schema_version raised validates."""
+    name, version, identity = UNIFIED_ATTICS
+    schema = copy.deepcopy(previous)
+    schema['$id'] = identity
+    schema['title'] = f'Additional building-level equivalent construction {version}'
+    schema['description'] = ('Release 2.3.0 export (ADR 0054) with the unconditioned-attic semantics of ADR 0065. 4.1.0 adds, '
+                             'all optional: `attics` (an unconditioned attic, its parts, the conditioned boundary and a derived '
+                             'attic-omitted roof), `components.<role>.attics` and `export_corrections`.')
+    props = schema['properties']
+    props['schema_version'] = {'const': version}
+    props['attics'] = {'type': 'array', 'minItems': 1, 'items': copy.deepcopy(ATTIC)}
+    props['export_corrections'] = {'type': 'array', 'minItems': 1, 'items': copy.deepcopy(EXPORT_CORRECTION)}
+    schema['$defs']['component']['properties']['attics'] = copy.deepcopy(COMPONENT_ATTICS)
+    return schema
+
+
 def source_model_schema(previous):
     """Source model constructions 2.0.0 from 1.0.0: evidence rows in the shared shape, the release by pattern."""
     name, version, identity = SOURCE_MODEL
