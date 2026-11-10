@@ -944,6 +944,8 @@ def main():
     parser.add_argument('--context')
     parser.add_argument('--representation', choices=tuple(CONSTRUCTION_SCHEMAS), default='detailed')
     parser.add_argument('--release', choices=IN_TREE, default=IN_TREE[-1])
+    parser.add_argument('--attics', action='store_true',
+                        help='unified constructions 4.1.0 with the unconditioned-attic semantics (ADR 0065, scripts.attic_boundary)')
     parser.add_argument('--building-services', metavar='FOLDER', help='e.g. doe-ref-1980-2004/hospital (release 1.1.0)')
     args = parser.parse_args()
     if args.schemas or args.check_schemas:
@@ -962,6 +964,11 @@ def main():
         document = release.building_services(args.building_services)
     elif args.program:
         document = release.program(args.program, args.version)
+    elif args.construction and args.context and args.attics:
+        if args.representation != 'unified':
+            parser.error('--attics applies to the unified representation')
+        from scripts import attic_boundary
+        document = attic_boundary.export(release, args.construction, args.context)[0]
     elif args.construction and args.context:
         document = release.construction(args.construction, args.context, args.representation)
     else:
