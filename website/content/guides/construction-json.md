@@ -7,7 +7,10 @@ A construction set page lists every context of the set with its exports in relea
   prototype alternates.
 - **Unified** ({{ schema:building_level_equivalent }}): precomputed archetype shares and simplified ordinary
   components. Every commercial set has one, the IECC commercial sets from release 1.6.0 (ADR 0045), and so do the
-  ResStock dwellings' sets.
+  ResStock dwellings' sets. From release 2.6.0 the unified documents are 4.1.0 (ADR 0065, ADR 0066): a context with an
+  unconditioned attic states it in `attics`, with the conditioned boundary under the attic and an `attic_omitted_roof`
+  for a model without the attic, and the openstudio-standards attic contexts state their corrected `InteriorCeiling` in
+  `export_corrections`.
 - **Source model constructions** ({{ schema:source_model_construction }}): the IDF-derived envelopes of the IECC
   residential and manufactured-housing prototypes, one document per climate and foundation or location. One
   document serves both representations; the site index names it as both `detailed` and `unified`.

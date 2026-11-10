@@ -15,7 +15,34 @@ are recorded under `docs/` and `sources/`; the catalogue site's
 [coverage page](https://energy-atlas.github.io/archetype-atlas/coverage/) counts what the
 current release covers, generated from it.
 
-## Release 2.5.0
+## Release 2.6.0
+
+**Atlas release 2.6.0** (`data/atlas-releases/v2.6.0`, status `released`) is a delta on 2.5.0
+([ADR 0066](docs/adr/0066-release-2-6-0.md),
+[release notes](docs/release-notes-atlas-v2.6.0.md)). It publishes the unconditioned-attic repair of
+[ADR 0065](docs/adr/0065-unconditioned-attic-boundaries.md):
+- unified constructions 4.1.0 as the release's unified contract, for every unified context: `attics`
+  (the attic's exterior parts, the conditioned boundary under it and the derived `attic_omitted_roof`
+  for a model without the attic), `components.<role>.attics` and `export_corrections`, in 926 contexts
+  (568 openstudio-standards, 342 IECC, 16 ResStock);
+- the corrected `InteriorCeiling` derivation of the 568 openstudio-standards attic contexts in the
+  stored records: the occupied zones' ceilings under the attic take the attic floor reversed in the
+  source, so their area leaves `InteriorCeiling` (reference area 0); the replaced derivation stays in
+  the record with the OpenStudio evidence;
+- the ID moves that follow (24 construction sets, no program), mapped in `id-map-2.6.0.json`.
+
+Program JSON 6.2.0, detailed constructions 5.0.0, source-model constructions 2.0.0 and building
+services 1.0.1 are unchanged, naming `atlas-release-2.6.0`. `atlas-schedules` 4.1.2 stays the
+generator (its recipes are unchanged). The `v2.6.0` GitHub release, created when the tag is pushed,
+carries `atlas-release-2.6.0.zip` (the `v2.0.0/` to `v2.6.0/` folders),
+`atlas-release-2.6.0.manifest.json`, `id-map-2.6.0.json` and `SHA256SUMS.txt`.
+
+```console
+python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
+python -m scripts.atlas_delta --check                     # rebuild 2.6.0 from its inputs; every block assembles
+python -m scripts.atlas_exports --construction SET --context KEY --representation unified   # unified 4.1.0
+python -m scripts.attic_boundary --export DIR             # every attic context, with SHA256SUMS
+```
 
 **Atlas release 2.5.0** (`data/atlas-releases/v2.5.0`, status `released`) is a delta on 2.4.0
 ([ADR 0064](docs/adr/0064-release-2-5-0.md),
@@ -42,9 +69,9 @@ carries `atlas-release-2.5.0.zip` (the `v2.0.0/` to `v2.5.0/` folders),
 
 ```console
 python -m scripts.atlas_delta --verify                    # the delta against its manifest and base
-python -m scripts.atlas_delta --check                     # rebuild 2.5.0 from its inputs; every block assembles
+python -m scripts.atlas_delta --check --release 2.5.0     # rebuild 2.5.0 from its inputs; every block assembles
 python -m scripts.conditioning_sides --check              # rebuild the conditioning-side input from the pinned sources
-python -m scripts.atlas_exports --program ID --version filled    # exports 2.5.0 by default
+python -m scripts.atlas_exports --release 2.5.0 --program ID --version filled
 ```
 
 **Atlas release 2.4.0** (`data/atlas-releases/v2.4.0`, status `released`) is a delta on 2.3.0
@@ -187,7 +214,8 @@ atlas-schedules translate old-request.json         # a 3.0.0 request's definitio
 ```
 
 The wheel bundles the generator view of release 2.5.0 (4.1.2 is 4.1.0's code with that view,
-[ADR 0064](docs/adr/0064-release-2-5-0.md)); `ATLAS_RELEASES` or
+[ADR 0064](docs/adr/0064-release-2-5-0.md)); release 2.6.0 has the same recipes and names 4.1.2
+([ADR 0066](docs/adr/0066-release-2-6-0.md)). `ATLAS_RELEASES` or
 `--release-dir` reads a release on disk instead. From a checkout, `python -m pip
 install -r requirements.txt` and `python -m atlas_schedules request.json` run the
 same code against `data/atlas-releases`; `python -m scripts.build_generator_view`

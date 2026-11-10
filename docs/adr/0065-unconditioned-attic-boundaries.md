@@ -1,6 +1,8 @@
 # ADR 0065: Unconditioned attics in the unified constructions (unified 4.1.0)
 
-Status: proposed (2026-11-09; branch `codex/commercial-attic-roof-semantics`, not merged, not released). Raised by
+Status: proposed (2026-11-09; branch `codex/commercial-attic-roof-semantics`, merged in PR #54); published by release
+2.6.0 at the repository owner's request ([ADR 0066](0066-release-2-6-0.md)), which carries section 3's correction in the
+stored records and exports 4.1.0 for every unified context. Sections 1 to 3 describe the export over release 2.5.0. Raised by
 BEMGen's gap G2: its DOE SmallOffice models omit the source attic and map `ExteriorRoof` to the zones' outdoor-facing
 ceilings, so the top of the occupied zones gets the attic roof deck (U 2.61 W/m2K) instead of the insulated attic floor
 (U 0.10 to 0.55 W/m2K). This ADR does not change release 2.5.0: its records and its 4.0.0 exports keep their bytes.
@@ -102,7 +104,8 @@ plenum-floor hard assignment of `model_add_constructions` is left to the owner (
   unified --attics` and `python -m scripts.attic_boundary --export DIR` write 4.1.0 from its records, naming
   `atlas-release-2.5.0` (the data), with the correction stated. Publishing the correction in the stored records and
   4.1.0 as a release contract needs a delta release (2.6.0) under ADR 0036 / 0046: an edits module over 2.5.0, the
-  writer block, release notes, the BEMGen handoff and the release tests. That is the owner's decision.
+  writer block, release notes, the BEMGen handoff and the release tests. That is the owner's decision. *Taken:* release
+  2.6.0, [ADR 0066](0066-release-2-6-0.md).
 - BEMGen: dispatch on `MINOR` 1; where `attics` is present and the attic is not instantiated, use
   `attic_omitted_roof.assembly_id` for the occupied zones' top surfaces in place of `ExteriorRoof`, deduct the boundary
   from `FloorDistributedMass`, and keep `ExteriorRoof` for roofs over occupied space only where the document has no

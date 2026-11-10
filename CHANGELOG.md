@@ -1,8 +1,24 @@
 # Changelog
 
-## Unreleased: unconditioned attics in the unified constructions (branch `codex/commercial-attic-roof-semantics`)
+## Atlas release 2.6.0: unconditioned attics in the unified constructions — 2026-11-09
 
-[ADR 0065](docs/adr/0065-unconditioned-attic-boundaries.md), proposed; release 2.5.0 and its 4.0.0 exports unchanged.
+The repository owner's request for a release with the attic repair ([ADR 0065](docs/adr/0065-unconditioned-attic-boundaries.md),
+[ADR 0066](docs/adr/0066-release-2-6-0.md), [release notes](docs/release-notes-atlas-v2.6.0.md),
+[BEMGen handoff](docs/bemgen-handoff-release-2-6-0.md)).
+
+- **Release 2.6.0**, a delta on 2.5.0 (36 files): the unified `InteriorCeiling` derivation of the 568 openstudio-standards
+  attic contexts (24 sets: 90.1 and DOE Ref SmallOffice, SmallOfficeDetailed, the restaurants, the generic office, the DOE
+  Ref small hotel) without the attic-paired ceilings, reference area 0; the replaced derivation kept as
+  `provenance.interior_ceiling_correction` with the OpenStudio evidence row in each template's construction evidence. 24
+  construction set IDs move (`id-map-2.6.0.json`); no program, schedule, service or library record changes.
+- **Unified constructions 4.1.0 is the release's unified contract** (`scripts.atlas_contracts.UNIFIED_BY_RELEASE`): every
+  unified export of 2.6.0 is 4.1.0, with `attics`, `components.<role>.attics` and `export_corrections` in the 926 attic
+  contexts; the exporter states the record's correction and does not apply it twice. The 568 corrected documents equal
+  the pre-release 4.1.0 exports of 2.5.0 except for the release label and the set IDs.
+- **No generator release**: the 2.6.0 manifest names `atlas-schedules` 4.1.2 (same recipes, ADR 0049 pairing row added).
+- CI rebuilds the 2.5.0 delta too (`atlas_delta --check --release 2.5.0`); the data-release workflow verifies it.
+
+The contract and the rule, merged before the release (PR #54):
 
 - **Unified constructions 4.1.0** (`schemas/construction-equivalent-v4.1.schema.json`, additive): optional `attics`
   (an unconditioned attic's exterior parts, its conditioned boundary and zone-side orientation, the roof-to-boundary
